@@ -30,14 +30,14 @@ class readFile(OWWidget,OWRpy):
 	
 	def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
 		#something to handle the conversion
-		self.r('filename' + self.variable_suffix + ' <- choose.files()')
-		#self.infob.setText(self.r['filename' + self.variable_suffix])
-		if self.r.length(self.r['filename' + self.variable_suffix])[0] == 0:
+		r('filename' + self.variable_suffix + ' <- choose.files()')
+		#self.infob.setText(r['filename' + self.variable_suffix])
+		if r.length(r['filename' + self.variable_suffix]) == 0:
 			return
 		
-		self.r('data' + self.variable_suffix + '= read.delim(filename' + self.variable_suffix + ')')
+		r('data' + self.variable_suffix + '= read.delim(filename' + self.variable_suffix + ',na.strings="?")')
 		self.infoa.setText("data loaded")
-		self.infob.setText("Number of rows: " + str(self.r.nrow(self.r['data' + self.variable_suffix])[0]))
+		self.infob.setText("Number of rows: " + str(r.nrow(r['data' + self.variable_suffix])))
 		self.warnings.setText("")
 
 		self.send("data.frame", 'data' + self.variable_suffix)
