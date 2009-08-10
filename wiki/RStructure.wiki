@@ -1,0 +1,24 @@
+#summary A discription of the structure of the program and how data is passed between widgets
+
+= Introduction =
+
+r-orange is a three tiered platform for data visualization and mining.  The system combines the visual appeal of orange (running on PyQt) with the logical power of Python and the statistical power of R.  
+
+The user interacts with the data at the orange level where PyQt and orange widgets facilitate selection of options and data handling.  Options are often prepopulated making data interaction easier.  Orange interacts with the Python level where Python acts as a logic engine handling variable types, assignment of options, presetting of options, &c.  Finally, Python directs calls to the R level through rpy where R generates variables and performs statistical processing as well as handling data structure and some low-level plotting.
+
+Essentially all "data" is stored at the R level in the form of variables that are created by Python.  Python then hands dict's of variable names to later widgets at the orange level.  We have established some guidelines for the construction of these dict's so that widgets will be able to interact normally.
+
+* All dicts that are passed contain a *'data'* element.  This is entended to be the first thing that is called by down-stream widgets.  Data is a list, usually of length 1 containing a string specifying an R variable.  Of particular note, 'data' must always be of the data.frame type in R, all widgets are designed to recognize data.frames as the 'data' object.  Some may require other types of elements but they will extract those elements from other items in the dict.
+* Other elements in the dict may be named accordingly, in future this document may contain some common dict names (ex: 'eset') and a discription of them
+* The elements that are not 'data' are entended to help downstream widgets to collect data that may be pertinent to them to preset options so that the user does not need to.  Widgets should be created to override this wherever possible so that the infromation can be included at the orange level.
+
+
+
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
