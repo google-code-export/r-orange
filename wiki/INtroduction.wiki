@@ -1,0 +1,13 @@
+#summary A brief description of the structure of our widgets and what they do.
+
+= Introduction =
+
+r-orange attempts to facilitate the use of R by providing a wrapper for common functions and redesigning the entire R work flow from that of sequential function calling to that of a streamlined information processing.  As such, r-orange uses the orange platform to generate work flows (more on the underlying RStructure later).  Once widgets are connected
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
