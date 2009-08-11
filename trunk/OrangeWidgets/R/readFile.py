@@ -34,9 +34,9 @@ class readFile(OWWidget,OWRpy):
 		if self.r.length(self.r['filename' + self.variable_suffix])[0] == 0:
 			return
 		
-		self.r('data' + self.variable_suffix + '= read.delim(filename' + self.variable_suffix + ')')
-		self.infoa.setText("data loaded")
-		self.infob.setText("Number of rows: " + str(self.r.nrow(self.r['data' + self.variable_suffix])[0]))
-		self.warnings.setText("")
 
-		self.send("data.frame", 'data' + self.variable_suffix)
+		data = r('data' + self.variable_suffix + '= read.delim(filename' + self.variable_suffix + ')')
+		r('exampleTable_data' + self.variable_suffix + '<- data'+self.variable_suffix)
+		r('exampleTable_data' + self.variable_suffix + '[is.na(data' + self.variable_suffix + ')] <- "?"')
+		self.send("Examples", self.convertDataframeToExampleTable('exampleTable_data' + self.variable_suffix))
+		self.send("data.frame", 'data' + self.variable_suffix)>>>>>>> .r23
