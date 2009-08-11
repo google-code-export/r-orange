@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<schema>
+	<widgets>
+		<widget caption="Read Files" widgetName="readFile" xPos="30" yPos="150"/>
+		<widget caption="Select Data" widgetName="OWSelectData" xPos="180" yPos="190"/>
+	</widgets>
+	<channels/>
+	<settings settingsDictionary="{'Select Data': &quot;(dp1\nS'widgetHeight'\np2\nI555\nsS'updateOnChange'\np3\nI00\nsS'widgetYPosition'\np4\nI322\nsS'widgetShown'\np5\nI0\nsS'purgeClasses'\np6\nI01\nsS'widgetWidth'\np7\nI623\nsS'purgeAttributes'\np8\nI01\nsS'localContextsVersion'\np9\n(I100\nI0\ntp10\nsS'localContexts'\np11\n(lp12\nsS'widgetXPosition'\np13\nI696\ns.&quot;, 'Read Files': &quot;(dp1\nS'widgetShown'\np2\nNsS'widgetHeight'\np3\nNsS'widgetXPosition'\np4\nNsS'widgetWidth'\np5\nNsS'widgetYPosition'\np6\nNs.&quot;}"/>
+</schema>
