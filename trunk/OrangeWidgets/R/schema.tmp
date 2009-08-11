@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<schema>
-	<widgets>
-		<widget caption="Read Files" widgetName="readFile" xPos="30" yPos="150"/>
-		<widget caption="Data Table" widgetName="OWDataTable" xPos="140" yPos="150"/>
-	</widgets>
-	<channels/>
-	<settings settingsDictionary="{'Read Files': &quot;(dp1\nS'widgetShown'\np2\nI0\nsS'widgetHeight'\np3\nI161\nsS'widgetXPosition'\np4\nI849\nsS'widgetWidth'\np5\nI207\nsS'widgetYPosition'\np6\nI470\ns.&quot;, 'Data Table': &quot;(dp1\nS'widgetYPosition'\np2\nI373\nsS'showMeta'\np3\nI1\nsS'distColorRgb'\np4\n(I220\nI220\nI220\nI255\ntp5\nsS'widgetHeight'\np6\nI358\nsS'widgetXPosition'\np7\nI477\nsS'showAttributeLabels'\np8\nI1\nsS'showDistributions'\np9\nI1\nsS'widgetShown'\np10\nI0\nsS'widgetWidth'\np11\nI1098\ns.&quot;}"/>
-</schema>
