@@ -56,7 +56,8 @@ class limmaDecide(OWWidget):
 		
 	def process(self, dataset):
 		if dataset:
-			self.data = dataset
+			self.data = dataset['data'][0]
+			self.olddata = dataset
 			self.infoa.setText("Data connected")
 		else: return
 		
@@ -64,7 +65,7 @@ class limmaDecide(OWWidget):
 		#run the analysis using the parameters selected or input
 		r('siggenes_'+str(self.rand)+'<-decideTests('+str(self.data)+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
 		self.infoa.setText("Gene Matrix Processed and sent!  You may use this list to subset in the future.")
-		self.sending = 'siggenes_'+str(self.rand)
+		self.sending = {'data':['siggenes_'+str(self.rand)]}
 		r('siggenes_'+str(self.rand)+'[,2]!=0 -> geneissig')
 		r('siggenes_'+str(self.rand)+'[geneissig,] -> dfsg')
 		if self.eset != None:
@@ -91,14 +92,16 @@ class limmaDecide(OWWidget):
 		
 	def processeset(self, data):
 		if data:
-			self.eset = data
+			self.eset = data['data'][0]
 			if self.sending != None:
 				self.sendesetsubset()
 		else: return
 	
 	def sendesetsubset(self):
 		r('esetsubset_'+str(self.rand)+'<-'+self.eset+'[rownames(dfsg),]')
-		self.send("Expression Subset", 'esetsubset_'+str(self.rand))
+		self.newdata = self.olddata.copy()
+		self.newdata['data']=['esetsubset_'+str(self.rand)]
+		self.send("Expression Subset", self.newdata)
 		
 				
 class MyTable(QTableWidget):
@@ -112,7 +115,7 @@ class MyTable(QTableWidget):
 		for key in self.tdata:
 			m=0
 			for item in self.tdata[key]:
-				newitem = QTableWidgetItem(item)
+				newitem = QTableWidgetItem(str(item))
 				self.setItem(m,n,newitem)
 				m += 1
 			n += 1

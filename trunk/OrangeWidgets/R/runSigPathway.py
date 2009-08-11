@@ -22,9 +22,10 @@ class runSigPathway(OWWidget):
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 	
-		self.inputs = [("Expression Set", orange.Variable, self.process), ("Pathway Annotation List", orange.Variable, self.processPathAnnot)]
+		self.inputs = [("Expression Set", orange.Variable, self.process), ("Pathway Annotation List", orange.Variable, self.processPathAnnot), ('Phenotype Vector', orange.Variable, self.phenotypeConnected)]
 		self.outputs = [("Pathway Analysis File", orange.Variable), ("Pathway Annotation List", orange.Variable), ("Pathway List", orange.Variable)]
 		
+		self.Rpannot = None
 		self.data = ''
 		self.affy = ''
 		self.pAnnots = ''
@@ -35,7 +36,7 @@ class runSigPathway(OWWidget):
 		self.availablePaths = []
 		self.minNPS = str(20)
 		self.maxNPS = str(500)
-		self.phenotype = 'phenotype' #may make the phenotype data inheritable from the subsetting widget or make some type of call to the table maker or data.entry in R, the variable is required
+		self.phenotype = ''
 		self.weightType = 'constant'
 		
 		#GUI
@@ -47,20 +48,17 @@ class runSigPathway(OWWidget):
 		
 		
 		sigPathOptions = OWGUI.widgetBox(self.controlArea, "Options")
-		self.pAnnotlist = OWGUI.comboBox(sigPathOptions, self, "pAnnots", label = "Pathway Annotation File:", items = self.availablePaths) #Gets the availiable pathway annotation files.
+		self.pAnnotlist = OWGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
 		self.pAnnotlist.setEnabled(False)
-		self.getNewAnnotButton = OWGUI.button(sigPathOptions, self, label = "New Annotation File", width = 150)
+		self.getNewAnnotButton = OWGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
+		OWGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
 		OWGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
-		OWGUI.button(sigPathOptions, self, "Update", callback = self.updatePaths, width = 150)
+
 		
 		
-		fileOptions = OWGUI.widgetBox(self.controlArea, "File Options") #To set the working directory and the file names
-		self.wdline = OWGUI.lineEdit(fileOptions, self, "wd", label = "Annotation File Folder:", orientation=0)
-		#self.wdline.setEnabled(False)
-		self.wdfilebutton = OWGUI.button(fileOptions, self, "Set File Folder", callback = self.setFileFolder, width = 150)
-		#self.wdfilebutton.setEnabled(False)
-		
-	
+	def loadpAnnot(self):
+		r('load(choose.files())')
+		self.pAnnots = 'G'
 	def setFileFolder(self):
 		self.wd = r('choose.dir()')
 	
@@ -77,6 +75,10 @@ class runSigPathway(OWWidget):
 			elif 'affy' in data:
 				self.affy = data['affy'][0]
 				self.chiptype = r('annotation('+self.affy+')')
+			if self.chiptype != '':
+				self.infob.setText('Your chip type is '+self.chiptype)
+			if 'classes' in self.olddata:
+				self.phenotype = self.olddata['classes'][0]
 		else: return
 	def processPathAnnot(self, data): #connect a processed annotation file if removed, re-enable the choose file function
 		if data:
@@ -128,7 +130,7 @@ class runSigPathway(OWWidget):
 		
 	def runPath(self):
 		r('sigpath_'+self.rand+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'")')
-		self.newdata = self.olddata
+		self.newdata = self.olddata.copy()
 		self.newdata['data'] = ['sigpath_'+self.rand+'$df.pathways']
 		self.newdata['sigPathObj'] = ['sigpath_'+self.rand]
 		self.send("Pathway Analysis File", self.newdata)
@@ -138,8 +140,13 @@ class runSigPathway(OWWidget):
 		self.createTable()
 	
 	def createTable(self):
+		try: self.table
+		except: pass
+		else: self.table.hide()
 		self.table = MyTable(self.tstruct)  #This section of code is really messy, clean once working properly
+		
 		self.table.show()
+		self.table.setMinimumSize(500, 500)
 		self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), self.cellClicked)
 	
 		
@@ -147,9 +154,16 @@ class runSigPathway(OWWidget):
 		clickedRow = int(item.row())+1
 		subtable = {'data':['sigpath_'+self.rand+'$list.gPS[['+str(clickedRow)+']]']}
 		self.send("Pathway List", subtable)
-		
+		try: self.table2
+		except: pass
+		else: self.table2.hide()
 		self.table2 = MyTable(subtable['data'][0])
+		self.table2.setMinimumSize(400, 400)
 		self.table2.show()
+	def phenotypeConnected(self, data):
+		if data:
+			self.phenotype = data['data'][0]
+		else: return
 		
 		
 		

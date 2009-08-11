@@ -57,20 +57,22 @@ class affyRMA(OWWidget):
 		OWGUI.button(run, self, 'test', callback = self.checkRCode, width=200)
 		
 	def normalize(self):
-		if self.selectMethod == 1:
+		if self.selectMethod == 0:
 			self.runRMA()
-		if self.selectMethod == 2:
+		if self.selectMethod == 1:
 			self.runMAS5()
-		if self.selectMethod == 3:
+		if self.selectMethod == 2:
 			self.runCustom()
 	
 	def runRMA(self):
+		self.infoa.setText('Processing')
 		r('normalized_affybatch'+self.rand+'<-rma('+self.data+')') #makes the rma normalization
 		neset = {'data':['exprs(normalized_affybatch'+self.rand+')'], 'eset':['normalized_affybatch'+self.rand], 'normmethod':['rma']}
 		
 		self.send("Normalized eSet", neset)
 	
 	def runMAS5(self):
+		self.infoa.setText('Processing')
 		r('normalized_affybatch'+self.rand+'<-mas5('+self.data+')') #makes the rma normalization
 		neset = {'data':['exprs(normalized_affybatch'+self.rand+')'], 'eset':['normalized_affybatch'+self.rand], 'normmethod':['mas5']}
 		
@@ -88,13 +90,15 @@ class affyRMA(OWWidget):
 			self.normoptions = ',method='+self.normmeth
 	
 	def process(self, dataset):
-		if dataset['eset']:
+		try: dataset['eset'][0]
+		except: pass
+		else:
 			self.data = str(dataset['eset'][0])
 			if r('length(exprs('+self.data+')[1,])') > 10:
 				self.setLiWong()
 			else:
 				self.setRMA()
-		else: return
+	
 	
 	def setLiWong(self):
 		self.bgcorrectselector.setCurrentIndex(self.bgcorrectselector.findText('FALSE'))
@@ -117,6 +121,7 @@ class affyRMA(OWWidget):
 		
 	
 	def runCustom(self):
+		self.infoa.setText('Processing')
 		self.collectOptions()
 		if self.data:
 			r('normalized_affybatch'+self.rand+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")')
@@ -131,6 +136,7 @@ class affyRMA(OWWidget):
 		self.pmcorrectselector.setEnabled(False)
 		self.summethselector.setEnabled(False)
 		self.normselector.setEnabled(False)
+		self.infoa.setText('Data has been connected')
 	
 	def setMAS5(self):
 		self.bgcorrectselector.setEnabled(False)
@@ -140,11 +146,11 @@ class affyRMA(OWWidget):
 		self.normselector.setEnabled(False)
 		
 	def selectMethodChanged(self):
-		if self.selectMethod == 1:
+		if self.selectMethod == 0:
 			self.setRMA()
-		if self.selectMethod == 2:
+		if self.selectMethod == 1:
 			self.setMAS5()
-		if self.selectMethod == 3:
+		if self.selectMethod == 2:
 			self.setLiWong()
 		
 	

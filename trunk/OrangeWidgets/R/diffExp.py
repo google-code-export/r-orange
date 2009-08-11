@@ -46,10 +46,10 @@ class diffExp(OWWidget):
 		self.selectedArrays = OWGUI.listBox(selecteda, self)
 		clearaButton = OWGUI.button(selecteda, self, "Clear",callback = self.clearA, width = 200)
 		
-		selectedb = OWGUI.widgetBox(self.controlArea, "Selected Arrays")
-		grid.addWidget(selectedb, 0,2)
-		self.selectedArraysB = OWGUI.listBox(selectedb, self)
-		clearbButton = OWGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
+		# selectedb = OWGUI.widgetBox(self.controlArea, "Selected Arrays")
+		# grid.addWidget(selectedb, 0,2)
+		# self.selectedArraysB = OWGUI.listBox(selectedb, self)
+		# clearbButton = OWGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
 	
 	def clearA(self):
 		self.infoa.setText(str(self.selectedArrays.count()))
@@ -69,7 +69,8 @@ class diffExp(OWWidget):
 		
 	def process(self, data):
 		if data:
-			self.data = data
+			self.data = data['data'][0]
+			self.olddata = data
 			self.samplenames = r('colnames('+self.data+')') #collect the sample names to make the differential matrix
 			for v in self.samplenames:
 				self.arrays.addItem(v)
@@ -92,8 +93,10 @@ class diffExp(OWWidget):
 		#now use the class vector to continue the flow by making
 		r('fit<-lmFit('+self.data+', design)')
 		r('results_'+str(self.rand)+'<-eBayes(fit)')
-		ebay = 'results_'+str(self.rand)
-		self.send('eBayes fit', ebay)
+		self.newdata = self.olddata.copy()
+		self.newdata['data']=['results_'+str(self.rand)]
+		self.newdata['classes'] = ['cla']
+		self.send('eBayes fit', self.newdata)
 		self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
 		
 		

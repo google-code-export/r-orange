@@ -15,8 +15,7 @@ class readFile(OWWidget,OWRpy):
 		OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		OWRpy.__init__(self)
 		self.inputs = None
-        
-		self.outputs = [("data.frame", orange.Variable),("Examples", ExampleTable)]
+		self.outputs = [("data.frame", orange.Variable)]
 		box = OWGUI.widgetBox(self.controlArea, "Data File", addSpace = True, orientation=0)
 		self.filecombo = QComboBox(box)
 		self.filecombo.setMinimumWidth(150)
@@ -30,15 +29,14 @@ class readFile(OWWidget,OWRpy):
 	
 	def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
 		#something to handle the conversion
-		r('filename' + self.variable_suffix + ' <- choose.files()')
-		#self.infob.setText(r['filename' + self.variable_suffix])
-		if r.length(r['filename' + self.variable_suffix]) == 0:
+		self.r('filename' + self.variable_suffix + ' <- choose.files()')
+		#self.infob.setText(self.r['filename' + self.variable_suffix])
+		if self.r.length(self.r['filename' + self.variable_suffix])[0] == 0:
 			return
 		
-		data = r('data' + self.variable_suffix + '= read.delim(filename' + self.variable_suffix + ',na.strings="?")')
+		self.r('data' + self.variable_suffix + '= read.delim(filename' + self.variable_suffix + ')')
 		self.infoa.setText("data loaded")
-		self.infob.setText("Number of rows: " + str(r.nrow(data)))
+		self.infob.setText("Number of rows: " + str(self.r.nrow(self.r['data' + self.variable_suffix])[0]))
 		self.warnings.setText("")
 
 		self.send("data.frame", 'data' + self.variable_suffix)
-		self.send("Examples", self.convertDataframeToExampleTable('data' + self.variable_suffix))

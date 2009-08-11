@@ -28,23 +28,29 @@ class Heatmap(OWWidget):
 		#GUI
 		infobox = OWGUI.widgetBox(self.controlArea, "Options")
 		OWGUI.button(infobox, self, "Replot", callback=self.makePlot, width=200)
+		self.infoa = OWGUI.widgetLabel(infobox, "Nothing to report")
 		
 		
 	def processMatrix(self, data):
 		if data:
-			self.data = data['data'][0]
-			if r('class('+self.data+')') == "data.frame":
-				self.data = 'as.matrix('+self.data+')'
+			self.plotdata = data['data'][0]
+			if 'classes' in data:
+				self.classes = data['classes'][0]
+			else:
+				self.classes = 'rep(0, length('+self.plotdata+'[1,]))'
+			# if r('class('+self.data+')') == "data.frame":
+				# self.data = 'as.matrix('+self.data+')'
 			self.rowvChoiceprocess()
 			self.makePlot()
 		else: return
 	
 	def makePlot(self):
-		r('heatmap('+self.data+', Rowv='+self.rowvChoice+', col=rainbow(60))')
+		self.infoa.setText("You are plotting "+self.plotdata)
+		r('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', ColSideColors=rgb(t(col2rgb('+self.classes+'+2)), maxColorValue=255))')
 		
 	def rowvChoiceprocess(self):
-		if self.data:
-			rowlen = r('length(rownames('+self.data+'))')
+		if self.plotdata:
+			rowlen = r('length(rownames('+self.plotdata+'))')
 			if rowlen > 1000:
 				self.rowvChoice = 'NA'
 			else:
