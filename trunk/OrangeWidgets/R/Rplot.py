@@ -27,7 +27,7 @@ class Rplot(OWWidget, OWRpy):
 		self.outputs = [("Selected Points", orange.Variable), ("Not Selected Points", orange.Variable)]
 		r('df1<-data.frame(a=c(1,2,3), b=c(7,4,5))')
 		self.state = {}
-		self.state['data'] = 'df1'
+		#self.state['data'] = 'df1'
 		self.graphShowGrid = 1  # show gridlines in the graph
 		self.graphDrawLines = 1
 		self.graphPointSize = 5
@@ -55,18 +55,20 @@ class Rplot(OWWidget, OWRpy):
 		self.graph.enableGridXB(self.graphShowGrid)
 		
 	def process(self, data):
-		self.state['data'] = data['data'][0]
-		self.samplenames = r('colnames('+self.state['data']+')') #collect the sample names to make the differential matrix
-		for v in self.samplenames:
-			self.arraysA.addItem(v)
-			self.arraysB.addItem(v)
+		if data:
+			self.state['data'] = 'as.data.frame('+data['data'][0]+')'#coerce to data.frame
+			self.samplenames = r('colnames('+self.state['data']+')') #collect the sample names to make the differential matrix
+			for v in self.samplenames:
+				self.arraysA.addItem(v)
+				self.arraysB.addItem(v)
+		else: return
 		
 	
 	def plot(self):
-		#self.vecA = r(self.state['data']+'[,"'+self.arraysA.selectedItems()[0].text()+'"]')
-		#self.vecB = r(self.state['data']+'[,"'+self.arraysB.selectedItems()[0].text()+'"]')
-		self.vecA = r(self.state['data']+'[,"a"]')
-		self.vecB = r(self.state['data']+'[,"b"]')
+		self.vecA = r(self.state['data']+'[,"'+str(self.arraysA.selectedItems()[0].text())+'"]')
+		self.vecB = r(self.state['data']+'[,"'+str(self.arraysB.selectedItems()[0].text())+'"]')
+		#self.vecA = r(self.state['data']+'[,"a"]')
+		#self.vecB = r(self.state['data']+'[,"b"]')
 		if not self.vecA and self.vecB: return
 		curve = self.graph.addCurve('MyData', xData=self.vecA, yData=self.vecB, autoScale=True)
 		self.setGraphStyle(curve)
