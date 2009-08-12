@@ -8,6 +8,7 @@
 from OWRpy import *
 from OWWidget import *
 import OWGUI
+import textwrap
 
 class readFile(OWWidget,OWRpy):
     
@@ -45,8 +46,10 @@ class readFile(OWWidget,OWRpy):
         self.infob.setText(fn)
         self.infoc.setText("Number of rows: " + str(r('nrow(data' + self.variable_suffix + ')')))
         col_def = r.sapply(data,'class')
-        self.infod.setText(str(col_def))
-        
+        l = []
+        for i,v in col_def.iteritems():
+            l.append(i + ': ' + v)
+        self.infod.setText("\n".join(l))
 
         self.send("data.frame", 'data' + self.variable_suffix)
         self.send("Examples", self.convertDataframeToExampleTable(dataframe))

@@ -73,7 +73,7 @@ class SchemaDoc(QWidget):
     def saveTempDoc(self):
         if self.widgets != []:
             tempName = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
-            self.save(tempName)
+            self.save(tempName,True)
         
     def removeTempDoc(self):
         tempName = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
@@ -400,7 +400,7 @@ class SchemaDoc(QWidget):
         self.save(name)
 
     # save the file
-    def save(self, filename = None):
+    def save(self, filename = None,tmp = False):
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
         
@@ -439,18 +439,24 @@ class SchemaDoc(QWidget):
         settings.setAttribute("settingsDictionary", str(settingsDict))      
         xmlText = doc.toprettyxml()
 		
-        file = open(filename, "wt")
-        file = open('schema.tmp', "wt")
-        file.write(xmlText)
-        file.close()
-        doc.unlink()
-        r('save.image("tmp.RData")')
-        
-        zout = zipfile.ZipFile(filename, "w")
-        for fname in ['schema.tmp','tmp.RData']:
-            zout.write(fname)
-        zout.close()
-        #d = open('G:/Python25/Lib/site-packages/orange/OrangeWidgets/R/RData', mode='rb')
+        if not tmp:
+            file = open('schema.tmp', "wt")
+            file.write(xmlText)
+            file.close()
+            doc.unlink()
+            r('save.image("tmp.RData")')
+            zout = zipfile.ZipFile(filename, "w")
+            for fname in ['schema.tmp','tmp.RData']:
+                zout.write(fname)
+            zout.close()
+            os.remove('tmp.RData')
+            os.remove('schema.tmp')
+        else :
+            file = open(filename, "wt")
+            file.write(xmlText)
+            file.close()
+            doc.unlink()
+            
         
         if os.path.splitext(filename)[1].lower() == ".ows":
             (self.schemaPath, self.schemaName) = os.path.split(filename)

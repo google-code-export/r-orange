@@ -47,3 +47,5 @@ class OWRpy():
         r('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
         
+        
+        
