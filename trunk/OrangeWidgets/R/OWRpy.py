@@ -36,8 +36,11 @@ class OWRpy():
                 colClasses.append(orange.StringVariable(i))
             elif col_def[i] == 'character':
                 colClasses.append(orange.StringVariable(i))
-
-
+            elif col_def[i] == 'logical':
+                colClasses.append(orange.StringVariable(i))
+            else:
+                colClasses.append(orange.StringVariable(i))
+                
         r('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name)
         r('exampleTable_data' + self.variable_suffix + '[is.na(' + dataFrame_name + ')] <- "?"')
 
