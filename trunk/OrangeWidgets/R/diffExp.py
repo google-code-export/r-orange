@@ -10,21 +10,24 @@ set_options(RHOME='c:/progra~1/r/R-2.6.2/')
 from rpy import *
 from OWWidget import *
 import OWGUI
+from OWRpy import *
+
 r.require('affy')
 r.require('gcrma')
 r.require('limma')
 
-class diffExp(OWWidget):
+class diffExp(OWWidget, OWRpy):
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
+		OWRpy.__init__(self)
 		
 		self.inputs = [("Expression Set", orange.Variable, self.process)]
 		self.outputs = [("eBayes fit", orange.Variable)]
 		
-		self.data = None
+		self.state = {}
+		self.state['vs'] = self.variable_suffix
 		self.samplenames = None #names of the samples (as a python object) to be used for generating the differential expression matrix
 		self.classA = True #a container to maintain which list to add the arrays to
-		self.rand = random.random()
 		
 		#GUI
 		
@@ -69,9 +72,9 @@ class diffExp(OWWidget):
 		
 	def process(self, data):
 		if data:
-			self.data = data['data'][0]
+			self.state['data'] = data['data'][0]
 			self.olddata = data
-			self.samplenames = r('colnames('+self.data+')') #collect the sample names to make the differential matrix
+			self.samplenames = r('colnames('+self.state['data']+')') #collect the sample names to make the differential matrix
 			for v in self.samplenames:
 				self.arrays.addItem(v)
 		else: return
@@ -83,7 +86,7 @@ class diffExp(OWWidget):
 			h += '"'+str(self.selectedArrays.item(int(j)).text())+'",'
 		
 		self.infoa.setText(h)
-		r('cla<-colnames('+self.data+') %in% c('+h[:len(h)-1]+')') #make the cla object in R to assign the classes based on the values of h
+		r('cla<-colnames('+self.state['data']+') %in% c('+h[:len(h)-1]+')') #make the cla object in R to assign the classes based on the values of h
 		# for a in range(i): #loop that makes a string that will be sent to r to make the vector that we want for class designation
 			# h = h+'holder_'+str(a)+'+'
 		
@@ -91,14 +94,18 @@ class diffExp(OWWidget):
 		r('design<-model.matrix(~class, cvect)')
 		
 		#now use the class vector to continue the flow by making
-		r('fit<-lmFit('+self.data+', design)')
-		r('results_'+str(self.rand)+'<-eBayes(fit)')
+		r('fit<-lmFit('+self.state['data']+', design)')
+		r('results_'+str(self.state['vs'])+'<-eBayes(fit)')
 		self.newdata = self.olddata.copy()
-		self.newdata['data']=['results_'+str(self.rand)]
+		self.newdata['data']=['results_'+str(self.state['vs'])]
 		self.newdata['classes'] = ['cla']
 		self.send('eBayes fit', self.newdata)
 		self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
-		
+		self.setState()
+	
+	def setState(self):
+		self.state['classA'] = self.classA
+		self.state['samplenames'] = self.samplenames
 		
 	
 	def printSelected(self):

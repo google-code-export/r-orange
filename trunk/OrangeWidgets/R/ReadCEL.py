@@ -11,19 +11,22 @@ from rpy import *
 from OWWidget import *
 import OWGUI
 import orngIO
+from OWRpy import *
 
 r.require('affy')
 
-class ReadCEL(OWWidget):
+class ReadCEL(OWWidget, OWRpy):
 	def __init__(self, parent=None, signalManager=None):
-		OWWidget.__init__(self, parent, signalManager, 'SampleData')
+		OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		
 		self.inputs = None #There is the posibility of inputs to set the class, phenotype, abstract, etc. of the affybatch
 		self.outputs = [("Affybatch Expression Matrix", orange.Variable)]
 		
+		self.state = {}
 		self.celfilepath = None #sets the celfilepath to the current wd, not that there should be anything in there that it can read but it's better than nothing
-		self.rand = 'random'
-		self.FD = 'choose.dir()'
+		self.state['vs'] = self.variable_suffix
+		self.state['FD'] = 'choose.dir()'
 		
 		#Build a GUI to select either a folder or a txt file with the names of file locations in it to pass to the ReadAffy command of bioconductor
 		#This should include a button for processing the files and a window for viewing the contents of the txt file (possibly added in the future)
@@ -37,6 +40,7 @@ class ReadCEL(OWWidget):
 		processbox = OWGUI.widgetBox(self.controlArea, "Process")
 		processbutton = OWGUI.button(processbox, self, 'Process', callback = self.procesS, width = 200)
 		self.infoa = OWGUI.widgetLabel(processbox, 'Data not yet processed.')
+		self.infob = OWGUI.widgetLabel(processbox, 'file_suffix: ' + self.variable_suffix)
 	
 	def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
 		FN = 'r.choose.dir()'
@@ -49,12 +53,12 @@ class ReadCEL(OWWidget):
 	def procesS(self):
 		#QCursor.setShape(QCursor.shape(3))
 		if self.celfilepath == None:
-			r('affybatch_'+self.rand+'<-ReadAffy(celfile.path='+self.FD+')')
-			eset = {'data':['exprs(affybatch_'+self.rand+')'], 'eset':['affybatch_'+self.rand]}
+			r('affybatch_'+self.state['vs']+'<-ReadAffy(celfile.path='+self.state['FD']+')')
+			self.state['eset'] = {'data':['exprs(affybatch_'+self.state['vs']+')'], 'eset':['affybatch_'+self.state['vs']]}
 			self.infoa.setText("Your data has been processed.")
 		else:
-			r('affybatch_'+self.rand+'<-ReadAffy(celfile.path='+self.FD+')')
-			eset = {'data':['exprs(affybatch_'+self.rand+')'], 'eset':['affybatch_'+self.rand]}
+			r('affybatch_'+self.state['vs']+'<-ReadAffy(celfile.path='+self.state['FD']+')')
+			self.state['eset'] = {'data':['exprs(affybatch_'+self.state['vs']+')'], 'eset':['affybatch_'+self.state['vs']]}
 		
-		self.send("Affybatch Expression Matrix", eset)
+		self.send("Affybatch Expression Matrix", self.state['eset'])
 		#QCursor.setShape(QCursor.shape(0))
