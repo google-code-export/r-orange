@@ -93,7 +93,7 @@ class readFile(OWWidget,OWRpy):
             l.append(i + ': ' + v)
         self.infod.setText("\n".join(l))
         
-        self.send("data.frame", {'data':'data' + self.variable_suffix})
+        self.send("data.frame", {'data':self.Rvariables['dataframe']})
         
     
         

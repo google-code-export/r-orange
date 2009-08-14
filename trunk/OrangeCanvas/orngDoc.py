@@ -9,9 +9,10 @@ from xml.dom.minidom import Document, parse
 import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 from orngSignalManager import SignalManager
-import cPickle, math, orngHistory
-from OWRpy import *
-import zipfile
+import cPickle, math, orngHistory, zipfile
+from OWRpy import OWRpy
+r = OWRpy()
+
 
 class SchemaDoc(QWidget):
     def __init__(self, canvasDlg, *args):
@@ -443,7 +444,7 @@ class SchemaDoc(QWidget):
             file.write(xmlText)
             file.close()
             doc.unlink()
-            r('save.image("tmp.RData")')
+            r.rsession('save.image("tmp.RData")')
             zout = zipfile.ZipFile(filename, "w")
             for fname in ['schema.tmp','tmp.RData']:
                 zout.write(fname)
@@ -488,7 +489,7 @@ class SchemaDoc(QWidget):
             for name in zfile.namelist():
                 file(os.path.basename(name), 'wb').write(zfile.read(name))
             
-            r('load("tmp.RData")')
+            r.rsession('load("tmp.RData")')
             doc = parse('schema.tmp')
             schema = doc.firstChild
             

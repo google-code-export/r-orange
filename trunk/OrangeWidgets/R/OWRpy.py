@@ -27,7 +27,7 @@ class OWRpy():
         
     #convert R data.frames to Orange exampleTables
     def convertDataframeToExampleTable(self, dataFrame_name):
-        set_default_mode(CLASS_CONVERSION)
+        #set_default_mode(CLASS_CONVERSION)
 
         dataFrame = self.rsession(dataFrame_name)	
         col_names = self.rsession('colnames(' + dataFrame_name + ')')
