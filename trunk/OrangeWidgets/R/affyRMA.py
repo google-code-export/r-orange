@@ -5,21 +5,17 @@
 <priority>1010</priority>
 """
 
-from rpy_options import set_options
-set_options(RHOME='c:/progra~1/r/R-2.6.2/')
-from rpy import *
 from OWWidget import *
 from OWRpy import *
 import OWGUI
 r.require('affy')
 
 class affyRMA(OWWidget, OWRpy):
+	settingsList = ['vs', 'normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self)
 		
-		self.inputs = [("Affybatch Expression Matrix", orange.Variable, self.process)]
-		self.outputs = [("Normalized eSet", orange.Variable)]
 		
 		self.state = {}
 		self.state['vs'] = self.variable_suffix
@@ -32,6 +28,13 @@ class affyRMA(OWWidget, OWRpy):
 		self.summarymeth = 'liwong'
 		self.norm = ['quantiles']
 		self.selectMethod = 3
+		
+		self.loadSettings()
+		
+		self.inputs = [("Affybatch Expression Matrix", orange.Variable, self.process)]
+		self.outputs = [("Normalized eSet", orange.Variable)]
+		
+		
 		
 		
 		
