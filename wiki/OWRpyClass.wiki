@@ -1,0 +1,13 @@
+#summary The parent class of all R widgets in orange
+
+= Introduction =
+
+This class should be used as the parent class for every widget that wants access to the R session. It initiates a R session using the rpy class. RPATH environment variable must be set to the home directory of the R. 
+
+
+== Class Attributes ==
+* variable_suffix = A unique identifier for each widget
+* Rvariables = a dictionary which holds all the R object names used by the widget
+== Class Methods == 
+* rsession = the wrapper around rpy class used to communicate with the R sesssion
+* convertDataframeToExampleTable = convert a data frame into an orange exampleTable.
