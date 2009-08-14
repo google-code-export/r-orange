@@ -2,11 +2,11 @@
 
 = Introduction =
 
-This class should be used as the parent class for every widget that wants access to the R session. It initiates a R session using the rpy class. RPATH environment variable must be set to the home directory of the R. 
+This class should be used as the parent class for every widget that wants access to the R session. It initiates a R session using the rpy class. RPATH environment variable must be set to the home directory of R (ideally done by the r-orange installer, coming later). 
 
 
 == Class Attributes ==
- * variable_suffix: A unique identifier for each widget
+ * variable_suffix: A unique identifier for each widget used to identify R variables and their parent widgets.
  * Rvariables: a dictionary which holds all the R object names used by the widget
 == Class Methods == 
  * rsession: the wrapper around rpy class used to communicate with the R sesssion
