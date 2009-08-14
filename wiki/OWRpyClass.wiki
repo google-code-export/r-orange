@@ -6,8 +6,8 @@ This class should be used as the parent class for every widget that wants access
 
 
 == Class Attributes ==
-* variable_suffix: A unique identifier for each widget
-* Rvariables: a dictionary which holds all the R object names used by the widget
+ * variable_suffix: A unique identifier for each widget
+ * Rvariables: a dictionary which holds all the R object names used by the widget
 == Class Methods == 
-* rsession: the wrapper around rpy class used to communicate with the R sesssion
-* convertDataframeToExampleTable: convert a data frame into an orange exampleTable.
+ * rsession: the wrapper around rpy class used to communicate with the R sesssion
+ * convertDataframeToExampleTable: convert a data frame into an orange exampleTable.
