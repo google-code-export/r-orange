@@ -316,7 +316,6 @@ class SchemaDoc(QWidget):
             return
         while widget.inLines != []: self.removeLine1(widget.inLines[0])
         while widget.outLines != []:  self.removeLine1(widget.outLines[0])
-
         self.signalManager.removeWidget(widget.instance)
         self.widgets.remove(widget)
         widget.remove()

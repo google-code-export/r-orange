@@ -9,9 +9,11 @@ from OWRpy import *
 from OWWidget import *
 import OWGUI
 import textwrap
+import re
 
 class readFile(OWWidget,OWRpy):
     settingsList = ['recentFiles', 'variable_suffix']
+    
     def __init__(self, parent=None, signalManager=None):
         OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         OWRpy.__init__(self)
@@ -19,9 +21,11 @@ class readFile(OWWidget,OWRpy):
         self.recentFiles=["(none)"]
         self.loadSettings()
         self.inputs = None
-        self.outputs = [("data.frame", orange.Variable),("Examples", ExampleTable)]
-        self.Rdataframe = 'data' + self.variable_suffix
-        self.Rfilename = 'filename' + self.variable_suffix
+        self.outputs = [("data.frame", orange.Variable)]
+        
+        self.Rvariables['dataframe'] = 'data' + self.variable_suffix
+        self.Rvariables['filename'] = 'filename' + self.variable_suffix
+        
         box = OWGUI.widgetBox(self.controlArea, "Data File", addSpace = True, orientation=0)
         self.filecombo = QComboBox(box)
         self.filecombo.setMinimumWidth(150)
@@ -32,10 +36,12 @@ class readFile(OWWidget,OWRpy):
         self.infob = OWGUI.widgetLabel(box, '')
         self.infoc = OWGUI.widgetLabel(box, '')
         self.infod = OWGUI.widgetLabel(box, '')
-        self.recentFiles=filter(os.path.exists, self.recentFiles)
+        
+        #self.recentFiles=filter(os.path.exists, self.recentFiles)
         self.setFileList()
-        if r.exists(self.Rdataframe):
-            self.loadFile()
+        self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
+        if self.rsession('exists("' + self.Rvariables['dataframe'] + '")'):
+            self.loadFile(False)
 
     def setFileList(self):
         self.filecombo.clear()
@@ -46,7 +52,7 @@ class readFile(OWWidget,OWRpy):
                 self.filecombo.addItem("(none)")
             else:
                 self.filecombo.addItem(os.path.split(file)[1])
-        self.filecombo.addItem("Browse documentation data sets...")
+        
 
     def selectFile(self, n):
         if n < len(self.recentFiles) :
@@ -58,35 +64,37 @@ class readFile(OWWidget,OWRpy):
 
         if len(self.recentFiles) > 0:
             self.setFileList()
-    
+        self.rsession(self.Rvariables['filename'] + ' = "' + self.recentFiles[0].replace('\\', '/') + '"')
+        self.loadFile(True)
     
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
         #something to handle the conversion
         
-        fn = r(self.Rfilename + ' <- choose.files()')
-        if r('length(' + self.Rfilename +')') != 0:
+        fn = self.rsession(self.Rvariables['filename'] + ' <- choose.files()')
+        if self.rsession('length(' + self.Rvariables['filename'] +')') != 0:
+            if fn in self.recentFiles: self.recentFiles.remove(fn)
             self.recentFiles.insert(0, fn)
             self.setFileList()
-            self.loadFile(self.Rfilename)
+            self.loadFile(True)
 
-    def loadFile(self,fn=None):
-        print 'asdfasdf'
-        if fn != None:
-            data = r(self.Rdataframe + '= read.delim(' + self.Rfilename + ')')
+    def loadFile(self,load):
+        
+        if load:
+            data = self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')')
         else:
-            data = r(self.Rdataframe)
-        col_names = r('colnames(' + self.Rdataframe + ')')
+            data = self.rsession(self.Rvariables['dataframe'])
+        col_names = self.rsession('colnames(' + self.Rvariables['dataframe'] + ')')
         self.infoa.setText("data loaded")
-        self.infob.setText(r(self.Rfilename))
-        self.infoc.setText("Number of rows: " + str(r('nrow(data' + self.variable_suffix + ')')))
-        col_def = r.sapply(data,'class')
+        self.infob.setText(self.rsession(self.Rvariables['filename']))
+        self.infoc.setText("Number of rows: " + str(self.rsession('nrow(data' + self.variable_suffix + ')')))
+        col_def = self.rsession('sapply(' + self.Rvariables['dataframe'] + ',class)')
         l = []
         for i,v in col_def.iteritems():
             l.append(i + ': ' + v)
         self.infod.setText("\n".join(l))
-
-        self.send("data.frame", 'data' + self.variable_suffix)
-        self.send("Examples", self.convertDataframeToExampleTable(self.Rdataframe))
+        
+        self.send("data.frame", {'data':'data' + self.variable_suffix})
+        
     
         
         

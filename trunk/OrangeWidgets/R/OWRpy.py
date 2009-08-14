@@ -7,7 +7,7 @@
 from OWWidget import *
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
-from rpy import *
+import rpy
 
 class OWRpy():
     #a class variable which is incremented every time OWRpy is instantiated.
@@ -18,16 +18,20 @@ class OWRpy():
         OWRpy.num_widgets += 1
         #this should be appended to every R variable
         self.variable_suffix = '_' + str(OWRpy.num_widgets)
-        #create easy access to the R object
-        
+        #keep all R variable name in this dict
+        self.Rvariables = {}
+    
+    def rsession(self,query):
+        output  = rpy.r(query)
+        return output
         
     #convert R data.frames to Orange exampleTables
     def convertDataframeToExampleTable(self, dataFrame_name):
         set_default_mode(CLASS_CONVERSION)
 
-        dataFrame = r(dataFrame_name)	
-        col_names = r('colnames(' + dataFrame_name + ')')
-        col_def = r.sapply(dataFrame,'class')
+        dataFrame = self.rsession(dataFrame_name)	
+        col_names = self.rsession('colnames(' + dataFrame_name + ')')
+        col_def = self.rsession("sapply(" + dataFrame_name + ",class)")
         colClasses = []
         for i in col_names:
             if col_def[i] == 'numeric' or col_def[i] == 'integer':
@@ -41,13 +45,13 @@ class OWRpy():
             else:
                 colClasses.append(orange.StringVariable(i))
                 
-        r('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name)
-        r('exampleTable_data' + self.variable_suffix + '[is.na(' + dataFrame_name + ')] <- "?"')
+        self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name)
+        self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(' + dataFrame_name + ')] <- "?"')
 
-        d = r('as.matrix(exampleTable_data' + self.variable_suffix + ')')
+        d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
         domain = orange.Domain(colClasses)
         data = orange.ExampleTable(domain, d)
-        r('rm(exampleTable_data' + self.variable_suffix + ')')
+        self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
         
         
