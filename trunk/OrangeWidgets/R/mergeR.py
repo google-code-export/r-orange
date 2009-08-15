@@ -47,7 +47,7 @@ class mergeR(OWWidget):
 		
 	def processA(self, data):
 		if data:
-			self.dataA = str(data['data'][0])
+			self.dataA = str(data['data'])
 			self.run()
 			colsA = r('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
 			for v in colsA:
@@ -57,7 +57,7 @@ class mergeR(OWWidget):
 
 	def processB(self, data):
 		if data:
-			self.dataB = str(data['data'][0])
+			self.dataB = str(data['data'])
 			self.run()
 			colsB = r('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
 			for v in colsB:
@@ -73,17 +73,17 @@ class mergeR(OWWidget):
 					self.infoa.setText('columns not selected yet')
 				elif self.colAsel != '' and self.colBsel != '':
 					r('mergetab_'+self.rand+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
-					mtab = {'data':['mergetab_'+self.rand]}
+					mtab = {'data':'mergetab_'+self.rand}
 					self.send("ExampleTable", mtab)
 				elif self.colAsel == '' and self.colBsel != '':
 					r('mergetab_'+self.rand+'<-'+self.dataA+'['+self.dataB+'[,"'+self.colBsel+'"],]')
-					mtab = {'data':['mergetab_'+self.rand]}
+					mtab = {'data':'mergetab_'+self.rand}
 					self.send("ExampleTable", mtab)
 				else: return
 
 			else:
 				r('mergetab_'+self.rand+'<-merge('+self.dataA+', '+self.dataB+')')
-				mtab = {'data':['mergetab_'+self.rand]}
+				mtab = {'data':'mergetab_'+self.rand}
 				self.send("ExampleTable", mtab)
 		else: return 
 	

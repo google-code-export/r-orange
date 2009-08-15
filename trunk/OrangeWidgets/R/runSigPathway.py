@@ -12,19 +12,22 @@ from rpy import *
 from OWWidget import *
 import OWGUI
 import random
+from OWRpy import *
 r.require('affy')
 r.require('gcrma')
 r.require('limma')
 r.require('panp')
 r.require('sigPathway')
 
-class runSigPathway(OWWidget):
+class runSigPathway(OWWidget, OWRpy):
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
+		OWRpy.__init__(self)
 	
 		self.inputs = [("Expression Set", orange.Variable, self.process), ("Pathway Annotation List", orange.Variable, self.processPathAnnot), ('Phenotype Vector', orange.Variable, self.phenotypeConnected)]
 		self.outputs = [("Pathway Analysis File", orange.Variable), ("Pathway Annotation List", orange.Variable), ("Pathway List", orange.Variable)]
 		
+		self.vs = self.variable_suffix
 		self.Rpannot = None
 		self.data = ''
 		self.affy = ''
@@ -65,24 +68,27 @@ class runSigPathway(OWWidget):
 	def process(self, data): #collect a preprocessed file for pathway analysis
 		if data:
 			self.olddata = data
-			self.data = data['data'][0]
+			self.data = data['data']
 			self.pAnnotlist.setEnabled(True)
 			self.infoa.setText("Data connected")
 			if 'eset' in data:
-				self.affy = data['eset'][0]
+				self.affy = data['eset']
 				self.chiptype = r('annotation('+self.affy+')')
 				
 			elif 'affy' in data:
-				self.affy = data['affy'][0]
+				self.affy = data['affy']
 				self.chiptype = r('annotation('+self.affy+')')
 			if self.chiptype != '':
 				self.infob.setText('Your chip type is '+self.chiptype)
 			if 'classes' in self.olddata:
-				self.phenotype = self.olddata['classes'][0]
+				self.phenotype = self.olddata['classes']
+			else:
+				self.rsession('data.entry(colnames('+self.data+'), cla'+self.vs+'=NULL)')
+				self.phenotype = 'cla'+self.vs
 		else: return
 	def processPathAnnot(self, data): #connect a processed annotation file if removed, re-enable the choose file function
 		if data:
-			self.pAnnots = data['data'][0]
+			self.pAnnots = data['data']
 			self.pAnnotlist.setEnabled(False)
 		else: 
 			self.pAnnotlist.setEnabled(True)
@@ -131,12 +137,12 @@ class runSigPathway(OWWidget):
 	def runPath(self):
 		r('sigpath_'+self.rand+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'")')
 		self.newdata = self.olddata.copy()
-		self.newdata['data'] = ['sigpath_'+self.rand+'$df.pathways']
-		self.newdata['sigPathObj'] = ['sigpath_'+self.rand]
+		self.newdata['data'] = 'sigpath_'+self.rand+'$df.pathways'
+		self.newdata['sigPathObj'] = 'sigpath_'+self.rand
 		self.send("Pathway Analysis File", self.newdata)
 		
 		#make the table to show the results, should be interactive and send an object containing the subset to the pathway list
-		self.tstruct = self.newdata['data'][0]
+		self.tstruct = self.newdata['data']
 		self.createTable()
 	
 	def createTable(self):
@@ -152,17 +158,17 @@ class runSigPathway(OWWidget):
 		
 	def cellClicked(self, item):
 		clickedRow = int(item.row())+1
-		subtable = {'data':['sigpath_'+self.rand+'$list.gPS[['+str(clickedRow)+']]']}
+		subtable = {'data':'sigpath_'+self.rand+'$list.gPS[['+str(clickedRow)+']]'}
 		self.send("Pathway List", subtable)
 		try: self.table2
 		except: pass
 		else: self.table2.hide()
-		self.table2 = MyTable(subtable['data'][0])
+		self.table2 = MyTable(subtable['data'])
 		self.table2.setMinimumSize(400, 400)
 		self.table2.show()
 	def phenotypeConnected(self, data):
 		if data:
-			self.phenotype = data['data'][0]
+			self.phenotype = data['data']
 		else: return
 		
 		

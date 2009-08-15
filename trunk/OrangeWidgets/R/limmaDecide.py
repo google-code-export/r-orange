@@ -11,12 +11,12 @@ from OWRpy import *
 
 
 class limmaDecide(OWWidget, OWRpy):
-	settingsList = ['vs', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'Rvariables']
+	settingsList = ['vs', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'Rvariables', 'data', 'sending']
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self)
 		
-		self.vs = self.version_suffix
+		self.vs = self.variable_suffix
 		self.rsession("require('affy')")
 		self.rsession("require('gcrma')")
 		self.rsession("require('limma')")
@@ -27,6 +27,7 @@ class limmaDecide(OWWidget, OWRpy):
 		self.pval = "0.05"
 		self.data = ''
 		self.Rvariables = {'gcm':'siggenes_'+self.vs, 'eset_sub':'esetsubset_'+self.vs}
+		self.sending = None
 		self.loadSettings()
 		
 		self.inputs = [("eBayes fit", orange.Variable, self.process), ('NormalizedAffybatch',orange.Variable, self.processeset)]
@@ -58,6 +59,7 @@ class limmaDecide(OWWidget, OWRpy):
 	def process(self, dataset):
 		if dataset:
 			self.data = dataset['data']
+			self.ebdata = dataset
 			self.infoa.setText("Data connected")
 		else: return
 		
@@ -65,7 +67,7 @@ class limmaDecide(OWWidget, OWRpy):
 		#run the analysis using the parameters selected or input
 		self.rsession(self.Rvariables['gcm']+'<-decideTests('+str(self.data)+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
 		self.infoa.setText("Gene Matrix Processed and sent!  You may use this list to subset in the future.")
-		self.sending = self.Rvariables['gcm']
+		self.sending = {'data':self.Rvariables['gcm']}
 		self.send("Gene Change Matrix", self.sending)
 		# show table of the significant gene changes
 		self.rsession(self.Rvariables['gcm']+'[,2]!=0 -> geneissig')
@@ -101,7 +103,7 @@ class limmaDecide(OWWidget, OWRpy):
 	
 	def sendesetsubset(self):
 		self.rsession(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames(dfsg),]')
-		self.newdata = self.olddata.copy()
+		self.newdata = self.ebdata.copy()
 		self.newdata['data']=self.Rvariables['eset_sub']
 		self.send("Expression Subset", self.newdata)
 		
