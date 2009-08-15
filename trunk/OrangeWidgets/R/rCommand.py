@@ -9,14 +9,19 @@ from OWRpy import *
 from OWWidget import *
 import OWGUI
 
-class rCommand(OWWidget):
+class rCommand(OWWidget, OWRpy):
+	settingsList = ['command', 'sendthis']
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
+		OWRpy.__init__(self)
+		
+		self.command = ''
+		self.sendthis = ''
+		self.loadSettings()
 		
 		self.inputs = [('R object', orange.Variable, self.process)]
 		self.outputs = [('R object', orange.Variable)]
-		self.command = ''
-		self.sendthis = ''
+		
 		
 		
 		#GUI
@@ -34,14 +39,20 @@ class rCommand(OWWidget):
 	def putrecieved(self):
 		self.command += str(self.data)
 	def sendThis(self):
-		sendt = {'data':[self.sendthis]}
+		sendt = {'data':self.sendthis}
 		self.send('R object', sendt)
 	def runR(self):
-		self.infoa.setText(str(r(self.command)))
+		self.rsession('txt<-capture.output('+self.command+')')
+		self.rsession('require(tcltk)')
+		self.rsession('tt<-tktoplevel()')
+		self.rsession('txtWidget <- tktext(tt)')
+		self.rsession('tkpack(txtWidget)')
+		self.rsession('tkinsert(txtWidget, "end", paste(txt, collapse="\n"))')
+		#self.infoa.setText(str(r(self.command)))
 		
 		
 	def process(self, data):
 		if data:
-			self.data = str(data['data'][0])
+			self.data = str(data['data'])
 			self.infob.setText(self.data)
 		else: return
