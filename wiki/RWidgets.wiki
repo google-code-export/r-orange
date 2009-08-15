@@ -10,6 +10,9 @@ OWRpy is the parent class of all R widgets.
 =Specifications=
 
 {{{
+# The OWRpy is required for very R widget
+from OWRpy import *
+
 class newRWidget(OWRpy):
 
      #a set of variable names that will be saved 
