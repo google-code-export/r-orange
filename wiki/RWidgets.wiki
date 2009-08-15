@@ -25,7 +25,8 @@ class newRWidget(OWRpy):
 
         #Method to create all R variable names that will be used by this widget
         #this variables are saved in self.Rvariables
-        self.Rvariables = self.setRvariableNames(['dataframe','filename'])
+        #self.Rvariables should be used to access all R session variables
+        self.setRvariableNames(['dataframe','filename'])
         
         #Method to load all required libraries
         #If the libraries do not exist they are installed
