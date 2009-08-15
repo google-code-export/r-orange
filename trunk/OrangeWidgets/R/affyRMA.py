@@ -8,18 +8,16 @@
 from OWWidget import *
 from OWRpy import *
 import OWGUI
-r.require('affy')
 
 class affyRMA(OWWidget, OWRpy):
-	settingsList = ['vs', 'normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'
+	settingsList = ['vs', 'normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self)
 		
 		
-		self.state = {}
-		self.state['vs'] = self.variable_suffix
-		self.state['data'] = None
+		self.vs = self.variable_suffix
+		self.data = None
 		self.normmeth = 'quantiles'
 		self.normoptions = ''
 		self.bgcorrect = 'FALSE'
@@ -30,7 +28,7 @@ class affyRMA(OWWidget, OWRpy):
 		self.selectMethod = 3
 		
 		self.loadSettings()
-		
+		self.rsession('require("affy")')
 		self.inputs = [("Affybatch Expression Matrix", orange.Variable, self.process)]
 		self.outputs = [("Normalized eSet", orange.Variable)]
 		
@@ -51,11 +49,11 @@ class affyRMA(OWWidget, OWRpy):
 		self.normselector.setEnabled(False)
 		self.bgcorrectselector = OWGUI.comboBox(info, self, 'bgcorrect', label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
 		self.bgcorrectselector.setEnabled(False)
-		self.bgcmethselector = OWGUI.comboBox(info, self, 'bgcorrectmeth', label="Background Correct Methods", items=r('bgcorrect.methods'), orientation=0)
+		self.bgcmethselector = OWGUI.comboBox(info, self, 'bgcorrectmeth', label="Background Correct Methods", items=self.rsession('bgcorrect.methods'), orientation=0)
 		self.bgcmethselector.setEnabled(False)
-		self.pmcorrectselector = OWGUI.comboBox(info, self, 'pmcorrect', label="Perfect Match Correct Methods", items=r('pmcorrect.methods'), orientation=0)
+		self.pmcorrectselector = OWGUI.comboBox(info, self, 'pmcorrect', label="Perfect Match Correct Methods", items=self.rsession('pmcorrect.methods'), orientation=0)
 		self.pmcorrectselector.setEnabled(False)
-		self.summethselector = OWGUI.comboBox(info, self, 'summarymeth', label="Summary Methods", items=r('express.summary.stat.methods'), orientation=0)
+		self.summethselector = OWGUI.comboBox(info, self, 'summarymeth', label="Summary Methods", items=self.rsession('express.summary.stat.methods'), orientation=0)
 		self.summethselector.setEnabled(False)
 		
 		
@@ -75,14 +73,14 @@ class affyRMA(OWWidget, OWRpy):
 	
 	def runRMA(self):
 		self.infoa.setText('Processing')
-		r('normalized_affybatch'+self.state['vs']+'<-rma('+self.state['data']+')') #makes the rma normalization
+		self.rsession('normalized_affybatch'+self.state['vs']+'<-rma('+self.state['data']+')') #makes the rma normalization
 		neset = {'data':['exprs(normalized_affybatch'+self.state['vs']+')'], 'eset':['normalized_affybatch'+self.state['vs']], 'normmethod':['rma']}
 		
 		self.send("Normalized eSet", neset)
 	
 	def runMAS5(self):
 		self.infoa.setText('Processing')
-		r('normalized_affybatch'+self.state['vs']+'<-mas5('+self.state['data']+')') #makes the rma normalization
+		self.rsession('normalized_affybatch'+self.state['vs']+'<-mas5('+self.state['data']+')') #makes the rma normalization
 		neset = {'data':['exprs(normalized_affybatch'+self.state['vs']+')'], 'eset':['normalized_affybatch'+self.state['vs']], 'normmethod':['mas5']}
 		
 		self.send("Normalized eSet", neset)
@@ -99,14 +97,16 @@ class affyRMA(OWWidget, OWRpy):
 			self.normoptions = ',method='+self.normmeth
 	
 	def process(self, dataset):
-		try: dataset['eset'][0]
-		except: pass
+		try: dataset['eset']
+		except: 
+			self.infoa.setText("Fail, eset not connected.")
+			return
+		
+		self.data = dataset['eset']
+		if self.rsession('length(exprs('+self.data+')[1,])') > 10:
+			self.setLiWong()
 		else:
-			self.state['data'] = str(dataset['eset'][0])
-			if r('length(exprs('+self.state['data']+')[1,])') > 10:
-				self.setLiWong()
-			else:
-				self.setRMA()
+			self.setRMA()
 	
 	
 	def setLiWong(self):
@@ -123,7 +123,7 @@ class affyRMA(OWWidget, OWRpy):
 		self.summethselector.setEnabled(True)
 		self.norm = ['quantiles']
 		self.normselector.clear()
-		self.normselector.addItems(r('normalize.methods('+self.data+')'))
+		self.normselector.addItems(self.rsession('normalize.methods('+self.data+')'))
 		self.normselector.setCurrentIndex(self.normselector.findText('invariantset'))
 		self.normselector.setEnabled(True)
 		self.infoa.setText('Data has been connected')
@@ -133,7 +133,7 @@ class affyRMA(OWWidget, OWRpy):
 		self.infoa.setText('Processing')
 		self.collectOptions()
 		if self.state['data']:
-			r('normalized_affybatch'+self.state['vs']+'<-expresso('+self.state['data']+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")')
+			self.rsession('normalized_affybatch'+self.state['vs']+'<-expresso('+self.state['data']+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")')
 			normset = 'normalized_affybatch'+self.state['vs']
 			self.infob.setText('Normalization compleated.')
 			self.send("Normalized eSet", normset)

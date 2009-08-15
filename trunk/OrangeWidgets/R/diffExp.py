@@ -5,27 +5,28 @@
 <priority>70</priority>
 """
 
-from rpy_options import set_options
-set_options(RHOME='c:/progra~1/r/R-2.6.2/')
-from rpy import *
 from OWWidget import *
 import OWGUI
 from OWRpy import *
 
-r.require('affy')
-r.require('gcrma')
-r.require('limma')
+
 
 class diffExp(OWWidget, OWRpy):
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self)
 		
+		self.vs = self.variable_suffix
+		self.Rvariables = {'results':'results_'+self.vs, 'classes':'cla'+self.vs}
+
+
+		self.rsession('require("affy")')
+		self.rsession('require("gcrma")')
+		self.rsession('require("limma")')
+
 		self.inputs = [("Expression Set", orange.Variable, self.process)]
 		self.outputs = [("eBayes fit", orange.Variable)]
-		
-		self.state = {}
-		self.state['vs'] = self.variable_suffix
+
 		self.samplenames = None #names of the samples (as a python object) to be used for generating the differential expression matrix
 		self.classA = True #a container to maintain which list to add the arrays to
 		
@@ -72,9 +73,9 @@ class diffExp(OWWidget, OWRpy):
 		
 	def process(self, data):
 		if data:
-			self.state['data'] = data['data'][0]
-			self.olddata = data
-			self.samplenames = r('colnames('+self.state['data']+')') #collect the sample names to make the differential matrix
+			self.data = data['data']
+			self.olddata = data.copy()
+			self.samplenames = self.rsession('colnames('+self.data+')') #collect the sample names to make the differential matrix
 			for v in self.samplenames:
 				self.arrays.addItem(v)
 		else: return
@@ -85,28 +86,20 @@ class diffExp(OWWidget, OWRpy):
 		for j in xrange(self.selectedArrays.count()): #loop that makes r objects named holder_1,2,... that will be used to make the final vector
 			h += '"'+str(self.selectedArrays.item(int(j)).text())+'",'
 		
-		self.infoa.setText(h)
-		r('cla<-colnames('+self.state['data']+') %in% c('+h[:len(h)-1]+')') #make the cla object in R to assign the classes based on the values of h
-		# for a in range(i): #loop that makes a string that will be sent to r to make the vector that we want for class designation
-			# h = h+'holder_'+str(a)+'+'
+		#self.infoa.setText(h)
+		self.rsession(self.Rvariables['classes']+'<-as.numeric(colnames('+self.data+') %in% c('+h[:len(h)-1]+'))') #make the cla object in R to assign the classes based on the values of h
+
 		
-		r('cvect<-data.frame(type=1, class=cla)')
-		r('design<-model.matrix(~class, cvect)')
-		
-		#now use the class vector to continue the flow by making
-		r('fit<-lmFit('+self.state['data']+', design)')
-		r('results_'+str(self.state['vs'])+'<-eBayes(fit)')
+		self.rsession('cvect<-data.frame(type=1, class='+self.Rvariables['classes']+')') 
+		self.rsession('design<-model.matrix(~class, cvect)')
+		self.rsession('fit<-lmFit('+self.data+', design)')
+		self.rsession(self.Rvariables['results']+'<-eBayes(fit)')
 		self.newdata = self.olddata.copy()
-		self.newdata['data']=['results_'+str(self.state['vs'])]
-		self.newdata['classes'] = ['cla']
+		self.newdata['data']=self.Rvariables['results']
+		self.newdata['classes'] = self.Rvariables['classes']
 		self.send('eBayes fit', self.newdata)
 		self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
-		self.setState()
-	
-	def setState(self):
-		self.state['classA'] = self.classA
-		self.state['samplenames'] = self.samplenames
-		
+
 	
 	def printSelected(self):
 		if self.classA == True:

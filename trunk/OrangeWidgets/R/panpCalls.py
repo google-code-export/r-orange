@@ -46,7 +46,7 @@ class panpCalls(OWWidget, OWRpy):
 		if dataset:
 			self.data = dataset
 			if 'eset' in self.data:
-				self.eset = self.data['eset'][0]
+				self.eset = self.data['eset']
 			else:
 				self.infoa.setText("Processing imposible, not of eset or affybatch type")
 		else:
@@ -54,15 +54,15 @@ class panpCalls(OWWidget, OWRpy):
 			
 	def processEset(self):
 		self.infoa.setText("Processing Started!!!")
-		r('PA<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')')
+		self.rsession('PA<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')')
 		self.infoa.setText('PA calls have been calculated')
-		r('PAcalls<-PA$Pcalls == "A"')
-		r('PAcalls_sum<-apply(PAcalls, 1, sum)')
-		r('Present<- PAcalls_sum/length(PAcalls[1,]) > '+self.percentA+'/100')
-		r(self.peset+'<-exprs('+self.eset+')[Present,]')
+		self.rsession('PAcalls<-PA$Pcalls == "A"')
+		self.rsession('PAcalls_sum<-apply(PAcalls, 1, sum)')
+		self.rsession('Present<- PAcalls_sum/length(PAcalls[1,]) > '+self.percentA+'/100')
+		self.rsession(self.peset+'<-exprs('+self.eset+')[Present,]')
 		self.infoa.setText('Expression matrix with expression values for present genes has been created and sent!  You may now generate a fit using the Diff Exp widget')
 		self.senddata = self.data.copy()
-		self.senddata['data'] = [self.peset]
+		self.senddata['data'] = self.peset
 		self.send('Present Gene Signal Matrix', self.senddata)
 
 

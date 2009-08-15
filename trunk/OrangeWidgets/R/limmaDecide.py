@@ -5,31 +5,32 @@
 <priority>2030</priority>
 """
 
-from rpy_options import set_options
-set_options(RHOME='c:/progra~1/r/R-2.6.2/')
-from rpy import *
 from OWWidget import *
 import OWGUI
-import random
-r.require('affy')
-r.require('gcrma')
-r.require('limma')
-r.require('panp')
+from OWRpy import *
 
-class limmaDecide(OWWidget):
+
+class limmaDecide(OWWidget, OWRpy):
+	settingsList = ['vs', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'Rvariables']
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
-		self.inputs = [("eBayes fit", orange.Variable, self.process), ('NormalizedAffybatch',orange.Variable, self.processeset)]
-		self.outputs = [("Gene Change Matrix", orange.Variable), ("Expression Subset", orange.Variable)]
+		OWRpy.__init__(self)
 		
-		self.rand = random.random()
-		self.data = None
+		self.vs = self.version_suffix
+		self.rsession("require('affy')")
+		self.rsession("require('gcrma')")
+		self.rsession("require('limma')")
+		self.rsession("require('panp')")
 		self.dmethod = "separate"
 		self.adjmethods = "BH"
 		self.foldchange = "0"
 		self.pval = "0.05"
-		self.sending = None
-		self.eset = None
+		self.data = ''
+		self.Rvariables = {'gcm':'siggenes_'+self.vs, 'eset_sub':'esetsubset_'+self.vs}
+		self.loadSettings()
+		
+		self.inputs = [("eBayes fit", orange.Variable, self.process), ('NormalizedAffybatch',orange.Variable, self.processeset)]
+		self.outputs = [("Gene Change Matrix", orange.Variable), ("Expression Subset", orange.Variable)]
 		
 		#GUI
 		#want to have an options part, a data viewing part and a run part
@@ -56,29 +57,29 @@ class limmaDecide(OWWidget):
 		
 	def process(self, dataset):
 		if dataset:
-			self.data = dataset['data'][0]
-			self.olddata = dataset
+			self.data = dataset['data']
 			self.infoa.setText("Data connected")
 		else: return
 		
 	def runAnalysis(self):
 		#run the analysis using the parameters selected or input
-		r('siggenes_'+str(self.rand)+'<-decideTests('+str(self.data)+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
+		self.rsession(self.Rvariables['gcm']+'<-decideTests('+str(self.data)+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
 		self.infoa.setText("Gene Matrix Processed and sent!  You may use this list to subset in the future.")
-		self.sending = {'data':['siggenes_'+str(self.rand)]}
-		r('siggenes_'+str(self.rand)+'[,2]!=0 -> geneissig')
-		r('siggenes_'+str(self.rand)+'[geneissig,] -> dfsg')
+		self.sending = self.Rvariables['gcm']
+		self.send("Gene Change Matrix", self.sending)
+		# show table of the significant gene changes
+		self.rsession(self.Rvariables['gcm']+'[,2]!=0 -> geneissig')
+		self.rsession(self.Rvariables['gcm']+'[geneissig,] -> dfsg')
+		
 		if self.eset != None:
-			self.sendesetsubset()
-		else:
-			self.send("Gene Change Matrix", self.sending)
+			self.sendesetsubset()			
 		
 		#now make the table to do the subsetting
 		#first get the data as a python obj
 
 		#self.probesets = r('rownames(dfsg)')
 		#self.dirchange = r('dfsg[,1]')
-		self.siggenemat = r('data.frame(Names=rownames(dfsg), Change=dfsg[,1])') #makes a dict object in orange with keys Names and Change
+		self.siggenemat = self.rsession('data.frame(Names=rownames(dfsg), Change=dfsg[,1])') #makes a dict object in orange with keys Names and Change
 		
 		#now put the data into a table in orange
 		#self.table = self.createTable()
@@ -92,15 +93,16 @@ class limmaDecide(OWWidget):
 		
 	def processeset(self, data):
 		if data:
-			self.eset = data['data'][0]
+			self.eset = data['data'] #this is data from an expression matrix or data.frame
+			self.olddata = data.copy()
 			if self.sending != None:
 				self.sendesetsubset()
 		else: return
 	
 	def sendesetsubset(self):
-		r('esetsubset_'+str(self.rand)+'<-'+self.eset+'[rownames(dfsg),]')
+		self.rsession(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames(dfsg),]')
 		self.newdata = self.olddata.copy()
-		self.newdata['data']=['esetsubset_'+str(self.rand)]
+		self.newdata['data']=self.Rvariables['eset_sub']
 		self.send("Expression Subset", self.newdata)
 		
 				
