@@ -1,0 +1,25 @@
+#summary OWRpy: The parent class of R widgets
+
+= Introduction =
+OWRpy is the parent class of all R widgets. 
+ * Provides the interface between orange and the R session.
+ * Manges R variables
+ * Manges and installs needed R libraries 
+ * Cleans up R session on widget delete
+
+=Specifications=
+
+{{{
+class newRWidget(OWRpy):
+   #a set of variable names that will be saved 
+   #all ways have 'variable_suffix' to maintain proper connection between the schema and R session
+   settingsList = ['variable_suffix','recentFiles']
+
+   def __init__(self, parent=None, signalManager=None):
+      #initialize OWRpy and all base widget functionality
+      OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+
+.
+.
+.
+}}}
