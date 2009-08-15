@@ -10,4 +10,7 @@ This class should be used as the parent class for every widget that wants access
  * Rvariables: a dictionary which holds all the R object names used by the widget
 == Class Methods == 
  * rsession: the wrapper around rpy class used to communicate with the R sesssion
+ * require_librarys: use this class to load R packages
+  * will install if does not exist
+ * setRvariableNames: takes a list of variables names in creates unique R session names
  * convertDataframeToExampleTable: convert a data frame into an orange exampleTable.
