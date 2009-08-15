@@ -5,14 +5,9 @@
 <priority>80</priority>
 """
 
-from rpy_options import set_options
-set_options(RHOME='c:/progra~1/r/R-2.6.2/')
-from rpy import *
+from OWRpy import *
 from OWWidget import *
 import OWGUI
-r.require('affy')
-r.require('gcrma')
-r.require('limma')
 
 class rCommand(OWWidget):
 	def __init__(self, parent=None, signalManager=None):

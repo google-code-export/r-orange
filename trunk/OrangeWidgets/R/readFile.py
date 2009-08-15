@@ -20,12 +20,15 @@ class readFile(OWWidget,OWRpy):
         
         self.recentFiles=["(none)"]
         self.loadSettings()
+        
+        #set R variable names        
+        self.Rvariables = self.setRvariableNames(['dataframe','filename'])
+        
+        #signals
         self.inputs = None
         self.outputs = [("data.frame", orange.Variable)]
         
-        self.Rvariables['dataframe'] = 'data' + self.variable_suffix
-        self.Rvariables['filename'] = 'filename' + self.variable_suffix
-        
+        #GUI
         box = OWGUI.widgetBox(self.controlArea, "Data File", addSpace = True, orientation=0)
         self.filecombo = QComboBox(box)
         self.filecombo.setMinimumWidth(150)
@@ -86,7 +89,7 @@ class readFile(OWWidget,OWRpy):
         col_names = self.rsession('colnames(' + self.Rvariables['dataframe'] + ')')
         self.infoa.setText("data loaded")
         self.infob.setText(self.rsession(self.Rvariables['filename']))
-        self.infoc.setText("Number of rows: " + str(self.rsession('nrow(data' + self.variable_suffix + ')')))
+        self.infoc.setText("Number of rows: " + str(self.rsession('nrow(' + self.Rvariables['dataframe'] + ')')))
         col_def = self.rsession('sapply(' + self.Rvariables['dataframe'] + ',class)')
         l = []
         for i,v in col_def.iteritems():

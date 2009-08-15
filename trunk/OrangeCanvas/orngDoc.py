@@ -391,16 +391,16 @@ class SchemaDoc(QWidget):
         if self.schemaName == "":
             self.saveDocumentAs()
         else:
-            self.save()
+            self.save(None,False)
 
     def saveDocumentAs(self):
         name = str(QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.ows)"))
         if os.path.splitext(name)[0] == "": return
         if os.path.splitext(name)[1].lower() != ".ows": name = os.path.splitext(name)[0] + ".ows"
-        self.save(name)
+        self.save(name,False)
 
     # save the file
-    def save(self, filename = None,tmp = False):
+    def save(self, filename = None,tmp = True):
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
         
@@ -449,8 +449,8 @@ class SchemaDoc(QWidget):
             for fname in ['schema.tmp','tmp.RData']:
                 zout.write(fname)
             zout.close()
-            os.remove('tmp.RData')
-            os.remove('schema.tmp')
+            # os.remove('tmp.RData')
+            # os.remove('schema.tmp')
         else :
             file = open(filename, "wt")
             file.write(xmlText)
