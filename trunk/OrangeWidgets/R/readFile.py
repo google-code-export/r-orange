@@ -21,7 +21,7 @@ class readFile(OWRpy):
         self.loadSettings()
         
         #set R variable names        
-        self.Rvariables = self.setRvariableNames(['dataframe','filename'])
+        self.setRvariableNames(['dataframe','filename'])
         
         #signals
         self.inputs = None

@@ -64,10 +64,9 @@ class OWRpy(OWWidget):
             self.rsession('require('  + library + ')')
     
     def setRvariableNames(self,names):
-        dict = {}
         for x in names:
-            dict[x] = x + self.variable_suffix
-        return dict
+            self.Rvariables[x] = x + self.variable_suffix
+        
             
     #convert R data.frames to Orange exampleTables
     def convertDataframeToExampleTable(self, dataFrame_name):

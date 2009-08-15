@@ -8,6 +8,7 @@
 
 from OWRpy import *
 import OWGUI
+
 class affyRMA(OWRpy):
     settingsList = ['variable_suffix', 'normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
     def __init__(self, parent=None, signalManager=None):
@@ -30,7 +31,7 @@ class affyRMA(OWRpy):
         
         
         #set R variable names
-        self.Rvariables = self.setRvariableNames(['normalized_affybatch','folder'])
+        self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals		
         self.inputs = [("Affybatch Expression Matrix", orange.Variable, self.process)]

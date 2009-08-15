@@ -5,11 +5,8 @@
 <priority>10</priority>
 """
 
-from OWWidget import *
-import OWGUI
-import orngIO
 from OWRpy import *
-
+import OWGUI
 
 class ReadCEL(OWRpy):
     settingsList = ['variable_suffix','recentFiles']
@@ -26,7 +23,7 @@ class ReadCEL(OWRpy):
         
         
         #set R variable names
-        self.Rvariables = self.setRvariableNames(['eset','folder'])
+        self.setRvariableNames(['eset','folder'])
         
         #signals
         self.inputs = None 
@@ -79,7 +76,7 @@ class ReadCEL(OWRpy):
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
         folder = self.rsession(self.Rvariables['folder'] +'<-choose.dir()')
-        if self.rsession('length(' + self.Rvariables['folder'] +')') != 0:
+        if not self.rsession('is.na(' + self.Rvariables['folder'] +')'):
             if folder in self.recentFiles: self.recentFiles.remove(folder)
             self.recentFiles.insert(0, folder)
             self.setFileList()
