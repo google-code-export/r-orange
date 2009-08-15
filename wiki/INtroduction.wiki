@@ -7,11 +7,3 @@ r-orange attempts to facilitate the use of R by providing a wrapper for common f
 This platform has many advantages over other GUI based R interaction environments.  To begin with the power of the Qt package can be used for graphics and data interaction to a degree not realized in the R environment or environments relying on Tk.  Another advantage is the access to the rich package repositories of python for data editing and interaction.  Widgets and work flows are very easy to generate and most R functions can be incorporated with ease.
 
 This interface is designed to bring the power of the R statistical environment to the general researcher or user.  As such widgets are designed to operate with a minimum of expertise with every attempt being made to automate criteria selection and to make the many underlying operations invisible to the user.  With that said, this environment is proving useful to even experienced R users because of it's ease in work flow generation and simplicity of processing.  In our experience, often one will want to perform the same task repeatedly on different sets of data (subset -> merge data -> statistical calculation -> subset on significant criteria -> (visualize, record output, save data)).  To achieve this with any reasonable speed one would normally write a function and make multiple calls to that function, a process that may take much time to troubleshoot and would be immutable (an interesting finding would make the user perform the tasks again outside of the function to collect the variables to interrogate).  In r-orange this can be done easily, repeatedly, and at any point other widgets may be connected to those on the canvas for further data mining.
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
