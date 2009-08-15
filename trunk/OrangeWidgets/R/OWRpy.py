@@ -5,13 +5,15 @@
 #
 
 from OWWidget import *
+import os
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
+import time
 
-class OWRpy():
+class OWRpy(OWWidget):
     #a class variable which is incremented every time OWRpy is instantiated.
-    
+    processing  = False
     num_widgets = 0
     def __init__(self):	
         #The class variable is used to create the unique names in R
@@ -20,12 +22,34 @@ class OWRpy():
         self.variable_suffix = '_' + str(OWRpy.num_widgets)
         #keep all R variable name in this dict
         self.Rvariables = {}
+        
+        
     
-    def rsession(self,query):
+    def rsession(self,query,processing_notice=False):
+        if processing_notice:
+            self.progressBarInit()
+            self.progressBarSet(30)
         print query
         output  = rpy.r(query)
+        OWRpy.processing = False
+        if processing_notice:
+            self.progressBarFinished()
         return output
-        
+        # print 'in rssion:' + str(OWRpy.processing)
+        # while True:
+            # if not OWRpy.processing:
+                # OWRpy.processing = True
+                # print query
+                # output  = rpy.r(query)
+                # OWRpy.processing = False
+                # print 'done'
+                # return output
+            # else:
+                # return
+                # print 'asdf'
+                # OWRpy.processing = False
+                
+            
     def require_librarys(self,librarys):
         for library in librarys:
             print self.rsession("library('"+ library +"',logical.return=T)") == False
@@ -74,5 +98,10 @@ class OWRpy():
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
         
-        
+    def onDeleteWidget(self):
+        for k in self.Rvariables:
+            print self.Rvariables[k]
+            self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+            
+
         

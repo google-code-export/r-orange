@@ -6,12 +6,11 @@
 """
 
 from OWRpy import *
-from OWWidget import *
 import OWGUI
 import textwrap
 import re
 
-class readFile(OWWidget,OWRpy):
+class readFile(OWRpy):
     settingsList = ['recentFiles', 'variable_suffix']
     
     def __init__(self, parent=None, signalManager=None):
@@ -83,7 +82,7 @@ class readFile(OWWidget,OWRpy):
     def loadFile(self,load):
         
         if load:
-            data = self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')')
+            data = self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')',True)
         else:
             data = self.rsession(self.Rvariables['dataframe'])
         col_names = self.rsession('colnames(' + self.Rvariables['dataframe'] + ')')
@@ -98,7 +97,6 @@ class readFile(OWWidget,OWRpy):
         
         self.send("data.frame", {'data':self.Rvariables['dataframe']})
         
-    
         
         
         

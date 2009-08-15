@@ -6,11 +6,9 @@
 """
 
 from OWRpy import *
-from OWWidget import *
 import OWGUI
 
-class rCommand(OWWidget, OWRpy):
-	settingsList = ['command', 'sendthis']
+class rCommand(OWRpy):
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self)
