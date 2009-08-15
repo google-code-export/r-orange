@@ -13,8 +13,6 @@
 # all sorts of preprocessing (including discretization) on the table,
 # output a new table and export it in variety of formats.
 from OWRpy import *
-
-from OWWidget import *
 import OWGUI
 import math
 from orngDataCaching import *
@@ -23,12 +21,12 @@ from orngDataCaching import *
 
 OrangeValueRole = Qt.UserRole + 1
 
-class OWDataTable(OWWidget,OWRpy):
+class OWDataTable(OWRpy):
     settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels"]
 
     def __init__(self, parent=None, signalManager = None):
-        OWWidget.__init__(self, parent, signalManager, "Data Table")
-        OWRpy.__init__(self)
+        OWRpy.__init__(self, parent, signalManager, "Data Table")
+        #OWRpy.__init__(self)
         self.inputs = [("Examples", orange.Variable, self.dataset, Multiple + Default)]
         self.outputs = []
 

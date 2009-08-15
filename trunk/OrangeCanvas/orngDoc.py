@@ -10,8 +10,8 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
-from OWRpy import OWRpy
-r = OWRpy()
+# from OWRpy import OWRpy
+# r = OWRpy()
 
 
 class SchemaDoc(QWidget):
@@ -48,7 +48,7 @@ class SchemaDoc(QWidget):
 
         if self.canvasDlg.settings["dontAskBeforeClose"]:
             if newSettings and self.schemaName != "":
-                self.save()
+                self.save(True)
             self.clear()
             self.removeTempDoc()
             ce.accept()
@@ -444,7 +444,8 @@ class SchemaDoc(QWidget):
             file.write(xmlText)
             file.close()
             doc.unlink()
-            r.rsession('save.image("tmp.RData")')
+            import rpy
+            rpy.r('save.image("tmp.RData")')
             zout = zipfile.ZipFile(filename, "w")
             for fname in ['schema.tmp','tmp.RData']:
                 zout.write(fname)
@@ -488,8 +489,8 @@ class SchemaDoc(QWidget):
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.basename(name), 'wb').write(zfile.read(name))
-            
-            r.rsession('load("tmp.RData")')
+            import rpy
+            rpy.r('load("tmp.RData")')
             doc = parse('schema.tmp')
             schema = doc.firstChild
             

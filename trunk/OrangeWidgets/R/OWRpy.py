@@ -5,7 +5,6 @@
 #
 
 from OWWidget import *
-import os
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
@@ -13,9 +12,13 @@ import time
 
 class OWRpy(OWWidget):
     #a class variable which is incremented every time OWRpy is instantiated.
-    processing  = False
+    # processing  = False
     num_widgets = 0
-    def __init__(self):	
+    
+    def __init__(self,parent=None, signalManager=None, title="R Widget",**args):	
+        OWWidget.__init__(self, parent, signalManager, title, **args)
+        
+        
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
         #this should be appended to every R variable
@@ -31,7 +34,7 @@ class OWRpy(OWWidget):
             self.progressBarSet(30)
         print query
         output  = rpy.r(query)
-        OWRpy.processing = False
+        # OWRpy.processing = False
         if processing_notice:
             self.progressBarFinished()
         return output
@@ -105,3 +108,13 @@ class OWRpy(OWWidget):
             
 
         
+        
+
+        
+        
+        
+
+        
+#
+
+global_r = OWRpy()

@@ -11,8 +11,8 @@ import OWGUI
 class affyRMA(OWRpy):
     settingsList = ['variable_suffix', 'normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
     def __init__(self, parent=None, signalManager=None):
-        OWWidget.__init__(self, parent, signalManager, "Normalization")
-        OWRpy.__init__(self)
+        OWRpy.__init__(self, parent, signalManager, "Normalization")
+        #OWRpy.__init__(self)
         
         #default values        
         self.normmeth = 'quantiles'
@@ -70,7 +70,7 @@ class affyRMA(OWRpy):
         if self.selectMethod == 0:
             self.rsession(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
         if self.selectMethod == 1:
-            self.rsession(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the rma normalization
+            self.rsession(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
         if self.selectMethod == 2:
             self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
 
@@ -78,10 +78,6 @@ class affyRMA(OWRpy):
         neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch'], 'normmethod':'rma'}
         
         self.send("Normalized eSet", neset)
-    
-    
-    # def checkRCode(self):
-        # self.infob.setText('normalized_affybatch'+self.state['vs']+'<-expresso('+self.state['data']+', bg.correct='+self.bgcorrect+', bgcorrect.method='+self.bgcorrectmeth+', pmcorrect.method='+self.pmcorrect+', summary.method='+self.summarymeth+')')
         
     def collectOptions(self):
         if self.normmeth == None: self.normoptions = ""
@@ -92,9 +88,7 @@ class affyRMA(OWRpy):
             self.normoptions = ',method='+self.normmeth
     
     def process(self, dataset):
-        
         try: 
-            
             print str(dataset['eset'])
             self.data = str(dataset['eset'])
             
@@ -110,18 +104,6 @@ class affyRMA(OWRpy):
             self.infoa.setText('Data Loaded')
         except: 
             print 'error'
-    
-    
-    
-    def runCustom(self):
-        self.infoa.setText('Processing')
-        self.collectOptions()
-        if self.state['data']:
-            self.rsession('normalized_affybatch'+self.state['vs']+'<-expresso('+self.state['data']+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")')
-            normset = 'normalized_affybatch'+self.state['vs']
-            self.infob.setText('Normalization compleated.')
-            self.send("Normalized eSet", normset)
-        else: return
     
     def selectMethodChanged(self):
         if self.selectMethod == 0:
@@ -154,6 +136,6 @@ class affyRMA(OWRpy):
             self.normselector.setCurrentIndex(self.normselector.findText('invariantset'))
             self.normselector.setEnabled(True)
         
-        self.infoa.setText('Data has been connected')
+        self.infoa.setText('Ready to Normalize')
 
             

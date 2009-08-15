@@ -11,11 +11,11 @@ import orngIO
 from OWRpy import *
 
 
-class ReadCEL( OWRpy):
+class ReadCEL(OWRpy):
     settingsList = ['variable_suffix','recentFiles']
     def __init__(self, parent=None, signalManager=None):
-        OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        OWRpy.__init__(self)
+        OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
+        #OWRpy.__init__(self)
 
         #default values        
         self.recentFiles = ['(none)']

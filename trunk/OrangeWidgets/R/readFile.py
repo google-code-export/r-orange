@@ -14,8 +14,8 @@ class readFile(OWRpy):
     settingsList = ['recentFiles', 'variable_suffix']
     
     def __init__(self, parent=None, signalManager=None):
-        OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        OWRpy.__init__(self)
+        #OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
         self.recentFiles=["(none)"]
         self.loadSettings()

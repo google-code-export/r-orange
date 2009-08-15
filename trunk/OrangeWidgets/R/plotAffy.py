@@ -10,8 +10,8 @@ import OWGUI
 
 class plotAffy(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWWidget.__init__(self, parent, signalManager, "Sample Data")
-        
+        OWRpy.__init__(self, parent, signalManager, "plotAffy")
+        #OWRpy.__init__(self)
         
         
         #default values        
