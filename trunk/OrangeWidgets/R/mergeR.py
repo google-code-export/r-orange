@@ -13,6 +13,7 @@ import OWGUI
 r.require('affy')
 
 class mergeR(OWWidget):
+	settingsList = ['vs']
 	def __init__(self, parent=None, signalManager=None):
 		OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		

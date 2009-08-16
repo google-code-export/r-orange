@@ -4,19 +4,14 @@
 <icon>icons/readcel.png</icons>
 <priority>2010</priority>
 """
-from OWWidget import *
 from OWRpy import *
 import OWGUI
-r.require('affy')
-r.require('gcrma')
-r.require('limma')
-r.require('panp')
 
-class panpCalls(OWWidget, OWRpy):
+class panpCalls(OWRpy):
 	settingsList = ['vs', 'senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset']
 	def __init__(self, parent=None, signalManager=None):
-		OWWidget.__init__(self, parent, signalManager, "Sample Data")
-		OWRpy.__init__(self)
+		#OWWidget.__init__(self, parent, signalManager, "Sample Data")
+		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		
 		self.senddata = {}
 		self.data = {}
@@ -27,6 +22,11 @@ class panpCalls(OWWidget, OWRpy):
 		self.percentA = '20'
 		self.peset = 'peset'+str(self.vs)
 		self.loadSettings()
+		
+		self.rsession('require(affy)')
+		self.rsession('require(gcrma)')
+		self.rsession('require(limma)')
+		self.rsession('require(panp)')
 		
 		self.inputs = [("Expression Set", orange.Variable, self.process)]
 		self.outputs = [("Present Gene Signal Matrix", orange.Variable)]

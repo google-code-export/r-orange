@@ -9,13 +9,16 @@ from OWRpy import *
 import OWGUI
 
 class rCommand(OWRpy):
+	settingsList = ['command', 'sendthis', 'sendt']
 	def __init__(self, parent=None, signalManager=None):
-		OWWidget.__init__(self, parent, signalManager, "Sample Data")
+		#OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self)
 		
 		self.command = ''
 		self.sendthis = ''
+		self.sendt = {}
 		self.loadSettings()
+		self.sendMe()
 		
 		self.inputs = [('R object', orange.Variable, self.process)]
 		self.outputs = [('R object', orange.Variable)]
@@ -37,8 +40,8 @@ class rCommand(OWRpy):
 	def putrecieved(self):
 		self.command += str(self.data)
 	def sendThis(self):
-		sendt = {'data':self.sendthis}
-		self.send('R object', sendt)
+		self.sendt = {'data':self.sendthis}
+		self.send('R object', self.sendt)
 	def runR(self):
 		self.rsession('txt<-capture.output('+self.command+')')
 		self.rsession('require(tcltk)')
@@ -54,3 +57,6 @@ class rCommand(OWRpy):
 			self.data = str(data['data'])
 			self.infob.setText(self.data)
 		else: return
+	
+	def sendMe(self):
+		self.send('R Object', self.sendt)

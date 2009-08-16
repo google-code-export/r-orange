@@ -5,16 +5,14 @@
 <priority>2030</priority>
 """
 
-from OWWidget import *
 import OWGUI
 from OWRpy import *
 
 
-class limmaDecide(OWWidget, OWRpy):
-	settingsList = ['vs', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'Rvariables', 'data', 'sending']
+class limmaDecide(OWRpy):
+	settingsList = ['vs', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'Rvariables', 'data', 'sending', 'ebdata']
 	def __init__(self, parent=None, signalManager=None):
-		OWWidget.__init__(self, parent, signalManager, "Sample Data")
-		OWRpy.__init__(self)
+		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		
 		self.vs = self.variable_suffix
 		self.rsession("require('affy')")
@@ -26,9 +24,12 @@ class limmaDecide(OWWidget, OWRpy):
 		self.foldchange = "0"
 		self.pval = "0.05"
 		self.data = ''
+		self.ebdata = ''
 		self.Rvariables = {'gcm':'siggenes_'+self.vs, 'eset_sub':'esetsubset_'+self.vs}
 		self.sending = None
 		self.loadSettings()
+		
+		#self.sendMe()
 		
 		self.inputs = [("eBayes fit", orange.Variable, self.process), ('NormalizedAffybatch',orange.Variable, self.processeset)]
 		self.outputs = [("Gene Change Matrix", orange.Variable), ("Expression Subset", orange.Variable)]
@@ -54,7 +55,7 @@ class limmaDecide(OWWidget, OWRpy):
 		self.infoa = OWGUI.widgetLabel(computebox, "Data not yet connected")
 		runbutton = OWGUI.button(computebox, self, "Run Analysis", callback = self.runAnalysis, width=200)
 		
-		self.table = OWGUI.table(self.controlArea, 0,0)
+		#self.table = OWGUI.table(self.controlArea, 0,0)
 		
 	def process(self, dataset):
 		if dataset:
@@ -97,7 +98,7 @@ class limmaDecide(OWWidget, OWRpy):
 		if data:
 			self.eset = data['data'] #this is data from an expression matrix or data.frame
 			self.olddata = data.copy()
-			if self.sending != None:
+			if self.sending != None and self.ebdata != '':
 				self.sendesetsubset()
 		else: return
 	
@@ -105,7 +106,11 @@ class limmaDecide(OWWidget, OWRpy):
 		self.rsession(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames(dfsg),]')
 		self.newdata = self.ebdata.copy()
 		self.newdata['data']=self.Rvariables['eset_sub']
+		if 'classes' in self.ebdata:
+			self.newdata['classes'] = self.ebdata['classes']
 		self.send("Expression Subset", self.newdata)
+		
+
 		
 				
 class MyTable(QTableWidget):
