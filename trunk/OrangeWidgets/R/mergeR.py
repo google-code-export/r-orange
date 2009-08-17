@@ -42,26 +42,39 @@ class mergeR(OWRpy):
         
         runbox = OWGUI.widgetBox(self.controlArea, "Run")
         OWGUI.button(runbox, self, "Run", callback = self.run)
-        #self.infoa = OWGUI.widgetLabel(runbox, "output")
+        print self.colAsel, self.colBsel
         
         
     def processA(self, data):
         if data:
             self.dataA = str(data['data'])
-            self.run()
             colsA = self.rsession('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
+            if type(colsA) is str:
+                colsA = [colsA]
+            self.colA.clear()
             for v in colsA:
                 self.colA.addItem(v)
+                if v == self.colAsel:
+                    self.colA.setCurrentRow((self.colA.count()-1))
+            
+            self.run()
         else: return
             #self.sendNothing
 
     def processB(self, data):
         if data:
             self.dataB = str(data['data'])
-            self.run()
             colsB = self.rsession('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
+            if type(colsB) is str:
+                colsB = [colsB]
+            self.colB.clear()
             for v in colsB:
                 self.colB.addItem(v)
+                if v == self.colBsel:
+                    self.colB.setCurrentRow((self.colB.count()-1))
+                    
+            #self.colB.setCurrentRow(self.colB.row(QListWidgetItem(self.colBsel)))
+            self.run()
         else: return
             #self.sendNothing
             
@@ -70,12 +83,15 @@ class mergeR(OWRpy):
             if self.colAsel == '' and self.colBsel == '': 
                 h = self.rsession('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
                 if len(h) == 1: 
+                    self.colA.setCurrentRow(self.rsession('which('+self.dataA+' == "' + h + '")'-1))
+                    self.colB.setCurrentRow(self.rsession('which('+self.dataB+' == "' + h + '")'-1))
                     self.rsession(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+',all.x=T)')
                     self.rsession(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+',all.y=T)')
                     self.send("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
                     self.send("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
                     
             elif self.colAsel != '' and self.colBsel != '':
+                
                 self.rsession(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
                 self.rsession(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
                 self.send("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
@@ -84,8 +100,12 @@ class mergeR(OWRpy):
             return 
     
     def setcolA(self):
-        self.colAsel = str(self.colA.selectedItems()[0].text())
-        self.run()
+        try:
+            self.colAsel = str(self.colA.selectedItems()[0].text())
+            
+        except: return
     def setcolB(self):
-        self.colBsel = str(self.colB.selectedItems()[0].text())
-        self.run()
+        try:
+            self.colBsel = str(self.colB.selectedItems()[0].text())
+            
+        except: return
