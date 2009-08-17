@@ -12,18 +12,15 @@ from OWRpy import *
 
 
 class diffExp(OWRpy):
-	settingsList = ['vs', 'Rvariables']
+	settingsList = ['variable_suffix']
 	def __init__(self, parent=None, signalManager=None):
 		#OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		
-		self.vs = self.variable_suffix
-		self.Rvariables = {'results':'results_'+self.vs, 'classes':'cla'+self.vs, 'subset':'diff_subset'+self.vs}
+		
 		self.loadSettings()
-
-		self.rsession('require("affy")')
-		self.rsession('require("gcrma")')
-		self.rsession('require("limma")')
+		self.setRvariableNames(['results','classes','subset'])
+		self.require_librarys(['affy','gcrma','limma'])
 
 		self.inputs = [("Expression Set", orange.Variable, self.process)]
 		self.outputs = [("eBayes fit", orange.Variable)]

@@ -8,7 +8,7 @@ from OWRpy import *
 import OWGUI
 
 class panpCalls(OWRpy):
-	settingsList = ['vs', 'senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset']
+	settingsList = ['variable_suffix', 'senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset']
 	def __init__(self, parent=None, signalManager=None):
 		#OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
@@ -16,17 +16,16 @@ class panpCalls(OWRpy):
 		self.senddata = {}
 		self.data = {}
 		self.eset = ''
-		self.vs = self.variable_suffix
+		
 		self.looseCut = '0.02'
 		self.tightCut = '0.01'
 		self.percentA = '20'
-		self.peset = 'peset'+str(self.vs)
+		
 		self.loadSettings()
 		
-		self.rsession('require(affy)')
-		self.rsession('require(gcrma)')
-		self.rsession('require(limma)')
-		self.rsession('require(panp)')
+		self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
+
+		self.require_librarys(['affy','gcrma','limma','panp'])
 		
 		self.inputs = [("Expression Set", orange.Variable, self.process)]
 		self.outputs = [("Present Gene Signal Matrix", orange.Variable)]
@@ -54,15 +53,15 @@ class panpCalls(OWRpy):
 			
 	def processEset(self):
 		self.infoa.setText("Processing Started!!!")
-		self.rsession('PA<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')')
+		self.rsession(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')',True)
 		self.infoa.setText('PA calls have been calculated')
-		self.rsession('PAcalls<-PA$Pcalls == "A"')
-		self.rsession('PAcalls_sum<-apply(PAcalls, 1, sum)')
-		self.rsession('Present<- PAcalls_sum/length(PAcalls[1,]) > '+self.percentA+'/100')
-		self.rsession(self.peset+'<-exprs('+self.eset+')[Present,]')
+		self.rsession(self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"',True)
+		self.rsession(self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)',True)
+		self.rsession(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+self.percentA+'/100',True)
+		self.rsession(self.Rvariables['peset']+'<-exprs('+self.eset+')[' + self.Rvariables['Present'] + ',]',True)
 		self.infoa.setText('Expression matrix with expression values for present genes has been created and sent!  You may now generate a fit using the Diff Exp widget')
 		self.senddata = self.data.copy()
-		self.senddata['data'] = self.peset
+		self.senddata['data'] = self.Rvariables['peset']
 		self.send('Present Gene Signal Matrix', self.senddata)
 
 

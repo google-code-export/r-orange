@@ -22,7 +22,7 @@ class plotAffy(OWRpy):
         self.require_librarys(['affy'])
 
         #set R variable names
-        #self.Rvariables = self.setRvariableNames()
+        #self.setRvariableNames()
 
         
         self.inputs = [("Affybatch", orange.Variable, self.init)]
