@@ -12,7 +12,6 @@ class ReadCEL(OWRpy):
     settingsList = ['variable_suffix','recentFiles']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
-        #OWRpy.__init__(self)
 
         #default values        
         self.recentFiles = ['(none)']

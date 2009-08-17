@@ -38,7 +38,7 @@ class rCommand(OWRpy):
 		sendbutton = OWGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
 		
 	def putrecieved(self):
-		self.command += str(self.data)
+		self.command = str(self.data)
 	def sendThis(self):
 		self.sendt = {'data':self.sendthis}
 		self.send('R object', self.sendt)
