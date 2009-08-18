@@ -9,4 +9,4 @@ import RvarClasses
 class MyRvarClass(RvarClasses.RVariable):
     pass
 
-By defining this at the headers of both the output and input widgets the two will be able to send and recieve signals from MyRvarClass.  One should note that any widget that can accept the parent class of RvarClasses.RVariable will also be able to connect to this widget.  To prevent this one can make a call directly to the orange.Variable class and make their class a child of orange.Variable.
+By defining this and importing into both the output and input widgets the two will be able to send and recieve signals from MyRvarClass.  One should note that any widget that can accept the parent class of RvarClasses.RVariable will also be able to connect to this widget.  To prevent this one can make a call directly to the orange.Variable class and make their class a child of orange.Variable.
