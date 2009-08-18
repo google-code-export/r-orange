@@ -9,18 +9,22 @@ from OWRpy import *
 import OWGUI
 
 class diffExp(OWRpy):
-	settingsList = ['variable_suffix']
+	settingsList = ['variable_suffix', 'samplenames', 'sampleA', 'sampleB']
 	def __init__(self, parent=None, signalManager=None):
 		#OWWidget.__init__(self, parent, signalManager, "Sample Data")
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		
 		
+		self.samplenames = []
+		self.sampleA = []
+		self.sampleB = []
 		self.loadSettings()
+		self.Rreload()
 		self.setRvariableNames(['results','classes','subset'])
 		self.require_librarys(['affy','gcrma','limma'])
 
-		self.inputs = [("Expression Set", orange.Variable, self.process)]
-		self.outputs = [("eBayes fit", orange.Variable)]
+		self.inputs = [("Expression Set", RvarClasses.RVariable, self.process)]
+		self.outputs = [("eBayes fit", RvarClasses.RVariable)]
 		
 		self.samplenames = None #names of the samples (as a python object) to be used for generating the differential expression matrix
 		self.classA = True #a container to maintain which list to add the arrays to
@@ -53,9 +57,11 @@ class diffExp(OWRpy):
 	
 	def clearA(self):
 		self.selectedArrays.clear()
+		self.sampleA = []
 		
 	def clearB(self):
 		self.selectedArraysB.clear()
+		self.sampleB = []
 		
 	def switchClass(self):
 		if self.classA == True:
@@ -78,9 +84,11 @@ class diffExp(OWRpy):
 		h=''
 		for j in xrange(self.selectedArrays.count()): #loop that makes r objects named holder_1,2,... that will be used to make the final vector
 			h += '"'+str(self.selectedArrays.item(int(j)).text())+'",'
+			self.sampleA.append(str(self.selectedArrays.item(int(j)).text()))
 		i = ''
 		for j in xrange(self.selectedArraysB.count()):
 			i += '"'+str(self.selectedArraysB.item(int(j)).text())+'",'
+			self.sampleB.append(str(self.selectedArraysB.item(int(j)).text()))
 		#self.infoa.setText(h)
 		
 		self.rsession(self.Rvariables['subset']+'<-'+self.data+'[,c('+h+i[:len(i)-1]+')]')
@@ -113,3 +121,10 @@ class diffExp(OWRpy):
 				#self.arrays.selectedItems.clear()
 			else: 
 				self.infoa.setText("No arrays selected")
+	
+	def Rreload(self):
+		for v in self.sampleA:
+			self.selectedArrays.addItem(v)
+		for v in self.sampleB:
+			self.selectedArraysB.addItem(v)
+		

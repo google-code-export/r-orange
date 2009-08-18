@@ -9,12 +9,13 @@ from OWRpy import *
 import OWGUI
 import random
 
+
 class Heatmap(OWRpy):
 	#This widget has no settings list
 	def __init__(self, parent=None, signalManager=None):
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		
-		self.inputs = [("Expression Matrix", orange.Variable, self.processMatrix)]
+		self.inputs = [("Expression Matrix", RvarClasses.RVariable, self.processMatrix)]
 		self.outputs = None
 		
 		self.rowvChoice = None

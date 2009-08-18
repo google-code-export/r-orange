@@ -31,8 +31,8 @@ class limmaDecide(OWRpy):
 		
 		#self.sendMe()
 		
-		self.inputs = [("eBayes fit", orange.Variable, self.process), ('NormalizedAffybatch',orange.Variable, self.processeset)]
-		self.outputs = [("Gene Change Matrix", orange.Variable), ("Expression Subset", orange.Variable)]
+		self.inputs = [("eBayes fit", orange.Variable, self.process), ('NormalizedAffybatch', RvarClasses.RDataFrame, self.processeset)]
+		self.outputs = [("Gene Change Matrix", RvarClasses.RDataFrame), ("Expression Subset", RvarClasses.RDataFrame)]
 		
 		#GUI
 		#want to have an options part, a data viewing part and a run part

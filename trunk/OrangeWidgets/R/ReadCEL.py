@@ -26,7 +26,7 @@ class ReadCEL(OWRpy):
         
         #signals
         self.inputs = None 
-        self.outputs = [("Affybatch Expression Matrix", orange.Variable)]
+        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RVariable)]
 
 
         #GUI

@@ -34,8 +34,8 @@ class affyRMA(OWRpy):
         self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals		
-        self.inputs = [("Affybatch Expression Matrix", orange.Variable, self.process)]
-        self.outputs = [("Normalized eSet", orange.Variable)]
+        self.inputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame, self.process)]
+        self.outputs = [("Normalized eSet", RvarClasses.RDataFrame)]
 
         
         #the GUI

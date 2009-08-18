@@ -38,6 +38,12 @@ class rCommand(OWRpy):
 		self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
 		self.infov = OWGUI.widgetLabel(self.dataBox, "No Input")
 		
+		self.metadataBox = OWGUI.widgetBox(self.controlArea, "Metadata")
+		self.infoM = OWGUI.widgetLabel(self.metadataBox, "No Meta Data")
+		self.metadataLB = OWGUI.listBox(self.metadataBox, self, callback = self.insertMetaDataVar)
+		
+		
+		# splice canvas for the right hand side of the canvas
 		self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
 		self.mainArea.layout().addWidget(self.splitCanvas)
 		
@@ -58,6 +64,11 @@ class rCommand(OWRpy):
 		
 	def putrecieved(self):
 		self.command = str(self.data)
+		
+	def insertMetaDataVar(self):
+		tmp = str(self.olddata[str(self.metadataLB.selectedItems()[0].text())])
+		self.infoM.setText(tmp)
+		self.command = tmp
 	def sendThis(self):
 		self.sendt = {'data':self.sendthis}
 		thisdata = self.sendt['data']
@@ -77,18 +88,20 @@ class rCommand(OWRpy):
 				self.send('R List', self.sendt)
 			else:    # the data is of a non-normal type send anyway as generic
 				self.send('R.object', self.sendt)
-			
-		self.send('R.object', self.sendt)
+		else:
+			self.send('R.object', self.sendt)
 	def runR(self):
 		self.rsession('txt<-capture.output('+self.command+')')
-		
 		pasted = self.rsession('paste(txt, collapse = " \n")')
-		
-		self.thistext.setHtml('<pre>'+pasted+'<\pre>')
+		self.thistext.insertPlainText('>>>'+self.command+'##Done')
+		self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
 		
 	def process(self, data):
 		if data:
 			self.data = str(data['data'])
+			self.olddata = data
+			for key in self.olddata.keys():
+				self.metadataLB.addItem(key)
 			self.infob.setText(self.data)
 			# logic to handle assignment of the data elements
 			thisclass = self.rsession('class('+self.data+')')
@@ -137,9 +150,11 @@ class rCommand(OWRpy):
 	def isMatrix(self):
 		self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.rsession('length('+self.data+')')), str(self.rsession('length('+self.data+'[1,])'))))
 		colnames = self.rsession('colnames('+self.data+')')
-		if colnames != 'NULL':
+		if colnames != 'NULL' and colnames != '' and colnames != 'None':
 			self.dfselected = OWGUI.listBox(self.dataBox, self)
 			for e in colnames:
 				self.dfselected.addItem(e)
 	def isList(self):
 		self.infov.setText("List object connected with %s elements" % str(self.rsession('length('+self.data+')')))
+		
+		
