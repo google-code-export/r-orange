@@ -44,13 +44,19 @@ class diffExp(OWRpy):
 		selecteda = OWGUI.widgetBox(self.controlArea, "Selected Arrays")
 		grid.addWidget(selecteda, 0,0)
 		self.selectedArrays = OWGUI.listBox(selecteda, self)
-		clearaButton = OWGUI.button(selecteda, self, "Clear",callback = self.selectedArrays.clear(), width = 200)
+		clearaButton = OWGUI.button(selecteda, self, "Clear",callback = self.clearA, width = 200)
 		
 		selectedb = OWGUI.widgetBox(self.controlArea, "Selected Arrays")
 		grid.addWidget(selectedb, 0,2)
 		self.selectedArraysB = OWGUI.listBox(selectedb, self)
-		clearbButton = OWGUI.button(selectedb, self, "Clear", callback = self.selectedArraysB.clear(), width = 200)
+		clearbButton = OWGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
 	
+	def clearA(self):
+		self.selectedArrays.clear()
+		
+	def clearB(self):
+		self.selectedArraysB.clear()
+		
 	def switchClass(self):
 		if self.classA == True:
 			self.classA = False

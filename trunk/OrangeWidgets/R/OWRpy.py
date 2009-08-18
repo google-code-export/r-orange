@@ -9,6 +9,7 @@ from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
 import time
+import RvarClasses
 
 class OWRpy(OWWidget):
     #a class variable which is incremented every time OWRpy is instantiated.

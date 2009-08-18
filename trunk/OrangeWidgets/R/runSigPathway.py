@@ -8,6 +8,9 @@
 import os, glob
 import OWGUI
 from OWRpy import *
+from rpy_options import set_options
+set_options(RHOME=os.environ['RPATH'])
+import rpy
 
 class runSigPathway(OWRpy):
 	settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
@@ -37,11 +40,9 @@ class runSigPathway(OWRpy):
 		self.subtable = ''
 		self.loadSettings()
 		
-		self.rsession('require(affy)')
-		self.rsession('require(gcrma)')
-		self.rsession('require(limma)')
-		self.rsession('require(panp)')
-		self.rsession('require(sigPathway)')
+		self.usedb = 1
+		
+		self.require_librarys(['sigPathway'])
 		
 		self.sendMe()
 		#GUI
@@ -59,6 +60,7 @@ class runSigPathway(OWRpy):
 		OWGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
 		OWGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
 		OWGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
+		OWGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
 
 		
 		
@@ -74,13 +76,17 @@ class runSigPathway(OWRpy):
 			self.data = data['data']
 			self.pAnnotlist.setEnabled(True)
 			self.infoa.setText("Data connected")
+			self.chiptype = ''
 			if 'eset' in data:
 				self.affy = data['eset']
 				self.chiptype = self.rsession('annotation('+self.affy+')')
-				
+				self.getChiptype()
 			elif 'affy' in data:
 				self.affy = data['affy']
 				self.chiptype = self.rsession('annotation('+self.affy+')')
+				self.getChiptype()
+			else:
+				self.infob.setText("No Chip Type Info Available")
 			if self.chiptype != '':
 				self.infob.setText('Your chip type is '+self.chiptype)
 			if 'classes' in self.olddata:
@@ -98,12 +104,29 @@ class runSigPathway(OWRpy):
 			self.wdline.setEnabled(True)
 			self.wdfilebutton.setEnabled(True)
 	def getChiptype(self):
-		if self.usedbfile.checked == True:
+		if self.usedb == 1:
 			try:
-				self.rsession('require("'+self.chiptype+'.db")')
-				self.dboptions = ',annotpkg = "'+self.chiptype+'.db"'
+				# mestmpvar = ''
+				# self.infob.setText("Made it to the first hurdle")
+				self.require_librarys([self.chiptype])
+				# r('require("'+self.chiptype+'")')
+				# r('tmp<-ls("package:'+self.chiptype+'")[1]')
+				# mestmpvar = r('tmp')
+				# self.infob.setText("Made it past the first hurdle")
+				# if mestmpvar == '':
+					# self.noDbFile() #It baffles me that I must do this
+				#self.infoa.setText(mestmpvar)
+				#r('require("'+self.chiptype+'.db")')
+				#r('tmp<-ls("package:'+self.chiptype+'.db")[1]')
+				#mestmpvar = r('tmp')
+				#self.infoa.setText(mestmpvar)
+				self.dboptions = ',annotpkg = "'+self.chiptype+'"'
+				self.infob.setText("Chip type loaded")
+				#if mestmpvar == '':
+				#	self.noDbFile() #It baffles me that I must do this
 			except:	
-				self.noDbFile #try to get the db file
+				self.infob.setText("There was an exception")
+				self.noDbFile() #try to get the db file
 		else: return
 	
 	def noFile(self):
@@ -127,9 +150,13 @@ class runSigPathway(OWRpy):
 	def noDbFile(self):
 		try:
 			self.rsession('source("http://bioconductor.org/biocLite.R")')
+			self.rsession('biocLite("'+self.chiptype+'")')
 			self.rsession('biocLite("'+self.chiptype+'.db")')
-			self.rsession('require("'+self.chiptype+'.db")')
-			self.dboptions = ',annotpkg = "'+self.chiptype+'.db"'
+			self.require_librarys([self.chiptype])
+			#r('require("'+self.chiptype+'")')
+			#r('require("'+self.chiptype+'.db")')
+			self.infob.setText("Chip type downloaded and loaded")
+			self.dboptions = ',annotpkg = "'+self.chiptype+'"'
 		except: 
 			self.infoa.setText("Unable to include the .db file, please check that you are connected to the internet and that your .db file is available.")
 			self.infob.setText("Your chip type appears to be "+self.chiptype+".")
@@ -165,15 +192,23 @@ class runSigPathway(OWRpy):
 	
 		
 	def cellClicked(self, item):
-		clickedRow = int(item.row())+1
-		self.subtable = {'data':'sigpath_'+self.rand+'$list.gPS[['+str(clickedRow)+']]'}
+		self.clickedRow = int(item.row())+1
+		self.subtable = {'data':'sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']]'}
 		self.sendMe()
 		try: self.table2
 		except: pass
 		else: self.table2.hide()
 		self.table2 = MyTable(self.subtable['data'])
-		self.table2.setMinimumSize(400, 400)
+		
 		self.table2.show()
+		self.table2.setMinimumSize(400, 400)
+		self.connect(self.table2, SIGNAL("itemClicked(QTableWidgetItem*)"), self.geneClicked)
+	
+	def geneClicked(self, item):
+		clickedGene = int(item.row())+1
+		genenumber = self.rsession('sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']]['+clickedGene+',3]')
+		self.rsession('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
+		
 	def phenotypeConnected(self, data):
 		if data:
 			self.phenotype = data['data']
@@ -182,6 +217,7 @@ class runSigPathway(OWRpy):
 	def sendMe(self):
 		self.send("Pathway Analysis File", self.newdata)
 		self.send("Pathway List", self.subtable)
+		
 				
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])

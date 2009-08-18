@@ -7,6 +7,10 @@
 
 from OWRpy import *
 import OWGUI
+from rpy_options import set_options
+set_options(RHOME=os.environ['RPATH'])
+from rpy import *
+
 
 class rCommand(OWRpy):
 	settingsList = ['command', 'sendthis', 'sendt']
@@ -20,22 +24,25 @@ class rCommand(OWRpy):
 		self.loadSettings()
 		self.sendMe()
 		
-		self.inputs = [('R object', orange.Variable, self.process)]
-		self.outputs = [('R object', orange.Variable)]
+		self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
+		self.outputs = [('R.object', RvarClasses.RVariable)]
 		
 		
 		
 		#GUI
-		box = OWGUI.widgetBox(self.controlArea, "R Commander")
-		self.infob = OWGUI.widgetLabel(box, "")
-		OWGUI.lineEdit(box, self, "command", "R Command", orientation = 'horizontal')
-		processbutton = OWGUI.button(box, self, "Run", callback = self.runR, width=150)
-		varbutton = OWGUI.button(box, self, "Recieved", callback = self.putrecieved, width = 150)
-		self.infoa = OWGUI.widgetLabel(box, "")
+		self.box = OWGUI.widgetBox(self.controlArea, "R Commander")
+		self.infob = OWGUI.widgetLabel(self.box, "")
+		OWGUI.lineEdit(self.box, self, "command", "R Command", orientation = 'horizontal')
+		processbutton = OWGUI.button(self.box, self, "Run", callback = self.runR, width=150)
+		varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
+		self.infoa = OWGUI.widgetLabel(self.box, "")
+		self.thistext = QTextEdit(self)
+		self.box.layout().addWidget(self.thistext)
 		
 		sendbox = OWGUI.widgetBox(self.controlArea, "Send Box")
 		OWGUI.lineEdit(sendbox, self, "sendthis", "Send", orientation = 'horizontal')
 		sendbutton = OWGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
+		self.resize(800,600)
 		
 	def putrecieved(self):
 		self.command = str(self.data)
@@ -44,13 +51,10 @@ class rCommand(OWRpy):
 		self.send('R object', self.sendt)
 	def runR(self):
 		self.rsession('txt<-capture.output('+self.command+')')
-		self.rsession('require(tcltk)')
-		self.rsession('tt<-tktoplevel()')
-		self.rsession('txtWidget <- tktext(tt)')
-		self.rsession('tkpack(txtWidget)')
-		self.rsession('tkinsert(txtWidget, "end", paste(txt, collapse="\n"))')
-		#self.infoa.setText(str(r(self.command)))
 		
+		pasted = self.rsession('paste(txt, collapse = " \n")')
+		
+		self.thistext.setHtml('<pre>'+pasted+'<\pre>')
 		
 	def process(self, data):
 		if data:

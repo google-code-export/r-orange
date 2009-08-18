@@ -22,6 +22,7 @@ class panpCalls(OWRpy):
 		self.percentA = '20'
 		
 		self.loadSettings()
+		self.sendMe()
 		
 		self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
 
@@ -63,6 +64,8 @@ class panpCalls(OWRpy):
 		self.senddata = self.data.copy()
 		self.senddata['data'] = self.Rvariables['peset']
 		self.send('Present Gene Signal Matrix', self.senddata)
-
+	
+	def sendMe(self):
+		self.send('Present Gene Signal Matrix', self.senddata)
 
 		
