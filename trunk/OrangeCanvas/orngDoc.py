@@ -72,6 +72,7 @@ class SchemaDoc(QWidget):
     # save a temp document whenever anything changes. this doc is deleted on closeEvent
     # in case that Orange crashes, Canvas on the next start offers an option to reload the crashed schema with links frozen
     def saveTempDoc(self):
+        return
         if self.widgets != []:
             tempName = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
             self.save(tempName,True)

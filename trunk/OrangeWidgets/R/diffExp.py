@@ -5,11 +5,8 @@
 <priority>70</priority>
 """
 
-from OWWidget import *
-import OWGUI
 from OWRpy import *
-
-
+import OWGUI
 
 class diffExp(OWRpy):
 	settingsList = ['variable_suffix']

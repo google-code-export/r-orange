@@ -7,8 +7,8 @@
 
 from OWRpy import *
 import OWGUI
-import textwrap
 import re
+import textwrap
 
 class readFile(OWRpy):
     settingsList = ['recentFiles', 'variable_suffix']
@@ -42,8 +42,8 @@ class readFile(OWRpy):
         #self.recentFiles=filter(os.path.exists, self.recentFiles)
         self.setFileList()
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-        if self.rsession('exists("' + self.Rvariables['dataframe'] + '")'):
-            self.loadFile(False)
+        # if self.rsession('exists("' + self.Rvariables['dataframe'] + '")'):
+            # self.loadFile(False)
 
     def setFileList(self):
         self.filecombo.clear()
