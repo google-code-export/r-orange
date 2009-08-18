@@ -11,7 +11,6 @@ from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 from rpy import *
 
-
 class rCommand(OWRpy):
 	settingsList = ['command', 'sendthis', 'sendt']
 	def __init__(self, parent=None, signalManager=None):
@@ -22,22 +21,35 @@ class rCommand(OWRpy):
 		self.sendthis = ''
 		self.sendt = {}
 		self.loadSettings()
-		self.sendMe()
 		
 		self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
-		self.outputs = [('R.object', RvarClasses.RVariable)]
+		self.outputs = [('R.object', RvarClasses.RVariable), ('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector)]
 		
 		
 		
 		#GUI
 		self.box = OWGUI.widgetBox(self.controlArea, "R Commander")
 		self.infob = OWGUI.widgetLabel(self.box, "")
-		OWGUI.lineEdit(self.box, self, "command", "R Command", orientation = 'horizontal')
-		processbutton = OWGUI.button(self.box, self, "Run", callback = self.runR, width=150)
+		
+		
 		varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
 		self.infoa = OWGUI.widgetLabel(self.box, "")
+		
+		self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
+		self.infov = OWGUI.widgetLabel(self.dataBox, "No Input")
+		
+		self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
+		self.mainArea.layout().addWidget(self.splitCanvas)
+		
+		runbox = OWGUI.widgetBox(self, "Commander")
+		self.splitCanvas.addWidget(runbox)
+		OWGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
+		processbutton = OWGUI.button(runbox, self, "Run", callback = self.runR, width=150)
+		
 		self.thistext = QTextEdit(self)
-		self.box.layout().addWidget(self.thistext)
+		self.splitCanvas.addWidget(self.thistext)
+		
+		
 		
 		sendbox = OWGUI.widgetBox(self.controlArea, "Send Box")
 		OWGUI.lineEdit(sendbox, self, "sendthis", "Send", orientation = 'horizontal')
@@ -48,7 +60,25 @@ class rCommand(OWRpy):
 		self.command = str(self.data)
 	def sendThis(self):
 		self.sendt = {'data':self.sendthis}
-		self.send('R object', self.sendt)
+		thisdata = self.sendt['data']
+		thisdataclass = self.rsession('class('+thisdata+')')
+		if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
+			self.send('R.object', self.sendt)
+		elif thisdataclass.__class__.__name__ == 'str':
+			if thisdataclass == 'numeric': # we have a numeric vector as the object
+				self.send('R Vector', self.sendt)
+			elif thisdataclass == 'character': #we have a character vector as the object
+				self.send('R Vector', self.sendt)
+			elif thisdataclass == 'data.frame': # the object is a data.frame
+				self.send('R Data Frame', self.sendt)
+			elif thisdataclass == 'matrix': # the object is a matrix
+				self.send('R Data Frame', self.sendt)
+			elif thisdataclass == 'list': # the object is a list
+				self.send('R List', self.sendt)
+			else:    # the data is of a non-normal type send anyway as generic
+				self.send('R.object', self.sendt)
+			
+		self.send('R.object', self.sendt)
 	def runR(self):
 		self.rsession('txt<-capture.output('+self.command+')')
 		
@@ -60,7 +90,56 @@ class rCommand(OWRpy):
 		if data:
 			self.data = str(data['data'])
 			self.infob.setText(self.data)
+			# logic to handle assignment of the data elements
+			thisclass = self.rsession('class('+self.data+')')
+			#are there multipe classes for this object?
+			if thisclass.__class__.__name__ == 'str': #there is only one class for this object in R
+				if thisclass == 'numeric': # we have a numeric vector as the object
+					self.isNumeric()
+				elif thisclass == 'character': #we have a character vector as the object
+					self.isCharacter()
+				elif thisclass == 'data.frame': # the object is a data.frame
+					self.isDataFrame()
+				elif thisclass == 'matrix': # the object is a matrix
+					self.isMatrix()
+				elif thisclass == 'list': # the object is a list
+					self.isList()
+				else:
+					self.infov.setText("R object is of non-standard type.")
+			if thisclass.__class__.__name__ == 'list': # we need to handle multible classes 
+				for item in thisclass:
+					if item == 'numeric': # we have a numeric vector as the object
+						self.isNumeric()
+					elif item == 'character': #we have a character vector as the object
+						self.isCharacter()
+					elif item == 'data.frame': # the object is a data.frame
+						self.isDataFrame()
+					elif item == 'matrix': # the object is a matrix
+						self.isMatrix()
+					elif item == 'list': # the object is a list
+						self.isList()
+					else:
+						self.infov.setText("R object is of non-standard type.")
+					
 		else: return
 	
-	def sendMe(self):
-		self.send('R Object', self.sendt)
+	def isNumeric(self):
+		self.infov.setText("Numeric Vector Connected of length %s" % str(self.rsession('length('+self.data+')')))
+	def isCharacter(self):
+		self.infov.setText("Character Vector Connected of length %s" % str(self.rsession('length('+self.data+')')))
+	def isDataFrame(self):
+		self.infov.setText("Data Frame Connected with %s columns" % str(self.rsession('length('+self.data+')')))
+		colnames = self.rsession('colnames('+self.data+')')
+		if colnames != 'NULL':
+			self.dfselected = OWGUI.listBox(self.dataBox, self)
+			for e in colnames:
+				self.dfselected.addItem(e)
+	def isMatrix(self):
+		self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.rsession('length('+self.data+')')), str(self.rsession('length('+self.data+'[1,])'))))
+		colnames = self.rsession('colnames('+self.data+')')
+		if colnames != 'NULL':
+			self.dfselected = OWGUI.listBox(self.dataBox, self)
+			for e in colnames:
+				self.dfselected.addItem(e)
+	def isList(self):
+		self.infov.setText("List object connected with %s elements" % str(self.rsession('length('+self.data+')')))
