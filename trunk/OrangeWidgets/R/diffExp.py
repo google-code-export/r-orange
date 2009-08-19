@@ -23,8 +23,8 @@ class diffExp(OWRpy):
 		self.setRvariableNames(['results','classes','subset'])
 		self.require_librarys(['affy','gcrma','limma'])
 
-		self.inputs = [("Expression Set", RvarClasses.RVariable, self.process)]
-		self.outputs = [("eBayes fit", RvarClasses.RVariable)]
+		self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process)]
+		self.outputs = [("eBayes fit", RvarClasses.RList)]
 		
 		self.samplenames = None #names of the samples (as a python object) to be used for generating the differential expression matrix
 		self.classA = True #a container to maintain which list to add the arrays to

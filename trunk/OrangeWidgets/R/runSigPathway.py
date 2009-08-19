@@ -15,13 +15,13 @@ import rpy
 class runSigPathway(OWRpy):
 	settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 1, resizingEnabled = 1)
 		
-		self.inputs = [("Expression Set", orange.Variable, self.process), ("Pathway Annotation List", orange.Variable, self.processPathAnnot), ('Phenotype Vector', orange.Variable, self.phenotypeConnected)]
-		self.outputs = [("Pathway Analysis File", orange.Variable), ("Pathway Annotation List", orange.Variable), ("Pathway List", orange.Variable)]
+		self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Pathway Annotation List", RvarClasses.RDataFrame, self.processPathAnnot), ('Phenotype Vector', RvarClasses.RVector, self.phenotypeConnected)]
+		self.outputs = [("Pathway Analysis File", RvarClasses.RDataFrame), ("Pathway Annotation List", RvarClasses.RDataFrame), ("Pathway List", RvarClasses.RDataFrame)]
 		
 		self.vs = self.variable_suffix
-		self.Rvariables = {'data':'', 'affy':'', 'pAnnots':'', 'chiptype':'', 'sublist':'', 'wd':'', 'minNPS':str(20), 'maxNPS':str(500), 'phenotype':'', 'weightType':'constant'}
+		self.setRvariableNames(['data', 'affy', 'pAnnots', 'chiptype', 'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType'])
 		self.Rpannot = None
 		self.data = ''
 		self.affy = ''
@@ -61,12 +61,25 @@ class runSigPathway(OWRpy):
 		OWGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
 		OWGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
 		OWGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
+		
+		#split the canvas into two halves
+		self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
+		self.mainArea.layout().addWidget(self.splitCanvas)
+		
+		self.pathtable = OWGUI.widgetBox(self, "Pathway Info")
+		self.splitCanvas.addWidget(self.pathtable)
+		self.table1 = QTableWidget() # change the table while processing
+		self.table2 = QTableWidget() #change the table while processing
+		self.splitCanvas.addWidget(self.table1)
+		self.splitCanvas.addWidget(self.table2)
+		
 
 		
 		
 	def loadpAnnot(self):
 		self.rsession('load(choose.files())')
 		self.pAnnots = 'G'
+		# ## give some output as to what file the annotations are comming from
 	def setFileFolder(self):
 		self.wd = self.rsession('choose.dir()')
 	
@@ -91,9 +104,9 @@ class runSigPathway(OWRpy):
 				self.infob.setText('Your chip type is '+self.chiptype)
 			if 'classes' in self.olddata:
 				self.phenotype = self.olddata['classes']
-			else:
-				self.rsession('data.entry(colnames('+self.data+'), cla'+self.vs+'=NULL)')
-				self.phenotype = 'cla'+self.vs
+			else: return
+				#self.rsession('data.entry(colnames('+self.data+'), cla'+self.vs+'=NULL)')
+				#self.phenotype = 'cla'+self.vs
 		else: return
 	def processPathAnnot(self, data): #connect a processed annotation file if removed, re-enable the choose file function
 		if data:
@@ -106,24 +119,9 @@ class runSigPathway(OWRpy):
 	def getChiptype(self):
 		if self.usedb == 1:
 			try:
-				# mestmpvar = ''
-				# self.infob.setText("Made it to the first hurdle")
 				self.require_librarys([self.chiptype])
-				# r('require("'+self.chiptype+'")')
-				# r('tmp<-ls("package:'+self.chiptype+'")[1]')
-				# mestmpvar = r('tmp')
-				# self.infob.setText("Made it past the first hurdle")
-				# if mestmpvar == '':
-					# self.noDbFile() #It baffles me that I must do this
-				#self.infoa.setText(mestmpvar)
-				#r('require("'+self.chiptype+'.db")')
-				#r('tmp<-ls("package:'+self.chiptype+'.db")[1]')
-				#mestmpvar = r('tmp')
-				#self.infoa.setText(mestmpvar)
 				self.dboptions = ',annotpkg = "'+self.chiptype+'"'
 				self.infob.setText("Chip type loaded")
-				#if mestmpvar == '':
-				#	self.noDbFile() #It baffles me that I must do this
 			except:	
 				self.infob.setText("There was an exception")
 				self.noDbFile() #try to get the db file
@@ -172,9 +170,24 @@ class runSigPathway(OWRpy):
 		self.send("Pathway Analysis File", self.newdata)
 		
 		#make the table to show the results, should be interactive and send an object containing the subset to the pathway list
-		self.tstruct = self.newdata['data']
-		self.createTable()
-	
+		# self.tstruct = self.newdata['data']
+		# self.createTable()
+		headers = r('colnames('+self.newdata['data']+')')
+		#self.headers = r('colnames('+self.dataframename+')')
+		dataframe = r(self.newdata['data'])
+		self.table1.setColumnCount(len(headers))
+		self.table1.setRowCount(len(dataframe[headers[0]]))
+		n=0
+		for key in headers:
+			m=0
+			for item in dataframe[key]:
+				newitem = QTableWidgetItem(str(item))
+				self.table1.setItem(m,n,newitem)
+				m += 1
+			n += 1
+		self.table1.setHorizontalHeaderLabels(headers)
+		self.connect(self.table1, SIGNAL("itemClicked(QTableWidgetItem*)"), self.cellClicked)
+		
 	def createTable(self):
 		try: self.table
 		except: pass
@@ -197,17 +210,31 @@ class runSigPathway(OWRpy):
 		self.sendMe()
 		try: self.table2
 		except: pass
-		else: self.table2.hide()
-		self.table2 = MyTable(self.subtable['data'])
+		else: self.table2.clear()
+		#self.table2 = MyTable(self.subtable['data'])
 		
-		self.table2.show()
-		self.table2.setMinimumSize(400, 400)
+		headers = r('colnames('+self.subtable['data']+')')
+		#self.headers = r('colnames('+self.dataframename+')')
+		dataframe = r(self.subtable['data'])
+		self.table2.setColumnCount(len(headers))
+		self.table2.setRowCount(len(dataframe[headers[0]]))
+		n=0
+		for key in headers:
+			m=0
+			for item in dataframe[key]:
+				newitem = QTableWidgetItem(str(item))
+				self.table2.setItem(m,n,newitem)
+				m += 1
+			n += 1
+		self.table2.setHorizontalHeaderLabels(headers)
 		self.connect(self.table2, SIGNAL("itemClicked(QTableWidgetItem*)"), self.geneClicked)
 	
 	def geneClicked(self, item):
+		
 		clickedGene = int(item.row())+1
-		genenumber = self.rsession('sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']]['+clickedGene+',3]')
-		self.rsession('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
+		if 'GeneID' in self.rsession('colnames(sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']])'):
+			genenumber = self.rsession('sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']]['+str(clickedGene)+',3]')
+			self.rsession('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
 		
 	def phenotypeConnected(self, data):
 		if data:

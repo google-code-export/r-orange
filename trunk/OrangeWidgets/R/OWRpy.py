@@ -30,6 +30,7 @@ class OWRpy(OWWidget):
         
     
     def rsession(self,query,processing_notice=False):
+        qApp.setOverrideCursor(Qt.WaitCursor)
         if processing_notice:
             self.progressBarInit()
             self.progressBarSet(30)
@@ -38,6 +39,7 @@ class OWRpy(OWWidget):
         # OWRpy.processing = False
         if processing_notice:
             self.progressBarFinished()
+        qApp.restoreOverrideCursor()
         return output
         # print 'in rssion:' + str(OWRpy.processing)
         # while True:
@@ -52,6 +54,7 @@ class OWRpy(OWWidget):
                 # return
                 # print 'asdf'
                 # OWRpy.processing = False
+
                 
             
     def require_librarys(self,librarys):

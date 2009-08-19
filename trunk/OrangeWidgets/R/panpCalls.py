@@ -28,8 +28,9 @@ class panpCalls(OWRpy):
 
 		self.require_librarys(['affy','gcrma','limma','panp'])
 		
-		self.inputs = [("Expression Set", orange.Variable, self.process)]
-		self.outputs = [("Present Gene Signal Matrix", orange.Variable)]
+		self.inputs = [("Expression Set", RvarClasses.RVariable, self.process)]
+		self.inputs = [("Expression Set", RvarClasses.RVariable, self.process)]
+		self.outputs = [("Present Gene Signal Matrix", RvarClasses.RDataFrame)]
 		
 		
 		#GUI

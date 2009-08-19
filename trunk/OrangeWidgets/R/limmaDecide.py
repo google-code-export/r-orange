@@ -26,6 +26,7 @@ class limmaDecide(OWRpy):
 		self.data = ''
 		self.ebdata = ''
 		self.Rvariables = {'gcm':'siggenes_'+self.vs, 'eset_sub':'esetsubset_'+self.vs}
+		self.eset = None
 		self.sending = None
 		self.loadSettings()
 		
