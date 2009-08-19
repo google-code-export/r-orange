@@ -1,7 +1,7 @@
 """
 <name>Diff Exp</name>
 <description>Calculates differential expression of genes from an eSet object</description>
-<icon>icons/readcel.png</icons>
+<icon>icons/DiffExp.png</icon>
 <priority>70</priority>
 """
 

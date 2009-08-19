@@ -1,7 +1,7 @@
 """
 <name>Read Files</name>
 <description>Read files</description>
-<icon>icons/readcel.png</icons>
+<icon>icons/ReadFile.png</icon>
 <priority>10</priority>
 """
 
