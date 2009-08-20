@@ -1,12 +1,13 @@
 """
 <name>Plot Affy Image</name>
 <description>Obtains an affybatch and plots the images of the files</description>
-<icon>icons/readcel.png</icons>
+<icon>icons/plotAffy.png</icon>
 <priority>70</priority>
 """
 
 from OWRpy import *
 import OWGUI
+import RAffyClasses
 
 class plotAffy(OWRpy):
     def __init__(self, parent=None, signalManager=None):
@@ -25,7 +26,7 @@ class plotAffy(OWRpy):
         #self.setRvariableNames()
 
         
-        self.inputs = [("Affybatch", orange.Variable, self.init)]
+        self.inputs = [("Affybatch", RAffyClasses.RAffyBatch, self.init)]
         self.outputs = None
         
         self.testLineEdit = ""

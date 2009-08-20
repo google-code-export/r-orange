@@ -7,6 +7,7 @@
 
 from OWRpy import *
 import OWGUI
+import RAffyClasses
 
 class ReadCEL(OWRpy):
     settingsList = ['variable_suffix','recentFiles']
@@ -26,7 +27,7 @@ class ReadCEL(OWRpy):
         
         #signals
         self.inputs = None 
-        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame)]
+        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame), ("AffyBatch", RAffyClasses.RAffyBatch)]
 
 
         #GUI
@@ -91,3 +92,4 @@ class ReadCEL(OWRpy):
         self.infoa.setText("Your data has been processed.")
     
         self.send("Affybatch Expression Matrix", self.out)
+        self.send("AffyBatch", self.out)
