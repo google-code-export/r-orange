@@ -1,19 +1,18 @@
 """
 <name>Read CEL Files</name>
 <description>Allows the user to pick CEL files either individually or through a .txt file and outputs the eSet as an R.object</description>
-<icon>icons/ReadCel.png</icon>
+<icon>icons/readcel.png</icons>
 <priority>10</priority>
 """
 
 from OWRpy import *
 import OWGUI
-import RAffyClasses
 
 class ReadCEL(OWRpy):
-    settingsList = ['variable_suffix','recentFiles']
+    
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
-
+        self.setStateVariables(['recentFiles'])
         #default values        
         self.recentFiles = ['(none)']
         self.loadSettings()
@@ -27,7 +26,7 @@ class ReadCEL(OWRpy):
         
         #signals
         self.inputs = None 
-        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame), ("AffyBatch", RAffyClasses.RAffyBatch)]
+        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame)]
 
 
         #GUI
@@ -45,9 +44,11 @@ class ReadCEL(OWRpy):
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
 
         
-        #initialize previous sessions
-        if self.rsession('exists("' + self.Rvariables['eset'] + '")'):
-            self.procesS(False)
+        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
+            self.loadSavedSession = True
+            self.procesS()
+        
+        
 
     def setFileList(self):
         self.filecombo.clear()
@@ -71,7 +72,7 @@ class ReadCEL(OWRpy):
         if len(self.recentFiles) > 0:
             self.setFileList()
         self.rsession(self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"')
-        self.procesS(True)
+        self.procesS()
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
@@ -80,16 +81,15 @@ class ReadCEL(OWRpy):
             if folder in self.recentFiles: self.recentFiles.remove(folder)
             self.recentFiles.insert(0, folder)
             self.setFileList()
-            self.procesS(True)
+            self.procesS()
         
-    def procesS(self,load):
-        
+    def procesS(self):
         self.infoa.setText("Your data is processing")
-        if load:
+        if not self.loadSavedSession:
             self.rsession(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
-        
-        self.out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
         self.infoa.setText("Your data has been processed.")
+        self.out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
+        self.rSend("Affybatch Expression Matrix", self.out)
+
+        
     
-        self.send("Affybatch Expression Matrix", self.out)
-        self.send("AffyBatch", self.out)

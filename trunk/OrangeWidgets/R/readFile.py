@@ -11,21 +11,22 @@ import re
 import textwrap
 
 class readFile(OWRpy):
-    settingsList = ['recentFiles', 'variable_suffix']
+    
     
     def __init__(self, parent=None, signalManager=None):
         #OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        
+        self.setStateVariables(['recentFiles'])
         self.recentFiles=["(none)"]
         self.loadSettings()
+        
         
         #set R variable names        
         self.setRvariableNames(['dataframe','filename'])
         
         #signals
         self.inputs = None
-        self.outputs = [("data.frame", orange.Variable)]
+        self.outputs = [("data.frame", RvarClasses.RDataFrame)]
         
         #GUI
         box = OWGUI.widgetBox(self.controlArea, "Data File", addSpace = True, orientation=0)
@@ -42,9 +43,14 @@ class readFile(OWRpy):
         #self.recentFiles=filter(os.path.exists, self.recentFiles)
         self.setFileList()
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-        # if self.rsession('exists("' + self.Rvariables['dataframe'] + '")'):
-            # self.loadFile(False)
-
+        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
+            self.loadSavedSession = True
+            self.loadFile()
+            
+        
+    def onLoadSession(self):
+        self.updateGUI()
+        
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:
@@ -63,28 +69,27 @@ class readFile(OWRpy):
             self.recentFiles.insert(0, name)
         elif n:
             self.browseFile(1)
-
         if len(self.recentFiles) > 0:
             self.setFileList()
         self.rsession(self.Rvariables['filename'] + ' = "' + self.recentFiles[0].replace('\\', '/') + '"')
-        self.loadFile(True)
+        self.loadFile()
     
-    def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        #something to handle the conversion
-        
+    def browseFile(self): 
         fn = self.rsession(self.Rvariables['filename'] + ' <- choose.files()')
         if self.rsession('length(' + self.Rvariables['filename'] +')') != 0:
             if fn in self.recentFiles: self.recentFiles.remove(fn)
             self.recentFiles.insert(0, fn)
             self.setFileList()
-            self.loadFile(True)
+            self.loadFile()
 
-    def loadFile(self,load):
+    def loadFile(self):
+        if not self.loadSavedSession:
+            self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')',True)
+        self.updateGUI()
+        self.rSend("data.frame", {'data':self.Rvariables['dataframe']})
         
-        if load:
-            data = self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')',True)
-        else:
-            data = self.rsession(self.Rvariables['dataframe'])
+        
+    def updateGUI(self):
         col_names = self.rsession('colnames(' + self.Rvariables['dataframe'] + ')')
         self.infoa.setText("data loaded")
         self.infob.setText(self.rsession(self.Rvariables['filename']))
@@ -95,7 +100,6 @@ class readFile(OWRpy):
             l.append(i + ': ' + v)
         self.infod.setText("\n".join(l))
         
-        self.send("data.frame", {'data':self.Rvariables['dataframe']})
         
         
         

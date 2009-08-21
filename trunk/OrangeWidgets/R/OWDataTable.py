@@ -22,12 +22,13 @@ from orngDataCaching import *
 OrangeValueRole = Qt.UserRole + 1
 
 class OWDataTable(OWRpy):
-    settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels"]
+    #settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels"]
 
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, parent, signalManager, "Data Table")
         #OWRpy.__init__(self)
-        self.inputs = [("Examples", orange.Variable, self.dataset, Multiple + Default)]
+        self.setStateVariables(["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels"])
+        self.inputs = [("Examples", RvarClasses.RDataFrame, self.dataset, Multiple + Default)]
         self.outputs = []
 
         self.data = {}          # key: id, value: ExampleTable

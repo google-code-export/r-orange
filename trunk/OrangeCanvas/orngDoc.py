@@ -72,7 +72,7 @@ class SchemaDoc(QWidget):
     # save a temp document whenever anything changes. this doc is deleted on closeEvent
     # in case that Orange crashes, Canvas on the next start offers an option to reload the crashed schema with links frozen
     def saveTempDoc(self):
-        return
+        #return
         if self.widgets != []:
             tempName = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
             self.save(tempName,True)
@@ -417,7 +417,7 @@ class SchemaDoc(QWidget):
         schema.appendChild(settings)
         settingsDict = {}
 
-		
+        import rpy
         #save widgets
         for widget in self.widgets:
             temp = doc.createElement("widget")
@@ -425,6 +425,9 @@ class SchemaDoc(QWidget):
             temp.setAttribute("yPos", str(int(widget.y())) )
             temp.setAttribute("caption", widget.caption)
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
+            s = widget.instance.getSettings()
+            #print s
+            rpy.r('loadSavedSession' + s['variable_suffix'] + '=TRUE')
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
             widgets.appendChild(temp)
 
@@ -445,7 +448,7 @@ class SchemaDoc(QWidget):
             file.write(xmlText)
             file.close()
             doc.unlink()
-            import rpy
+            
             rpy.r('save.image("tmp.RData")')
             zout = zipfile.ZipFile(filename, "w")
             for fname in ['schema.tmp','tmp.RData']:
