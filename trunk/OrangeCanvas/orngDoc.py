@@ -448,14 +448,15 @@ class SchemaDoc(QWidget):
             file.write(xmlText)
             file.close()
             doc.unlink()
-            
+            print 'saving image...'
             rpy.r('save.image("tmp.RData")')
             zout = zipfile.ZipFile(filename, "w")
             for fname in ['schema.tmp','tmp.RData']:
                 zout.write(fname)
             zout.close()
-            # os.remove('tmp.RData')
-            # os.remove('schema.tmp')
+            os.remove('tmp.RData')
+            os.remove('schema.tmp')
+            print 'image saved'
         else :
             file = open(filename, "wt")
             file.write(xmlText)

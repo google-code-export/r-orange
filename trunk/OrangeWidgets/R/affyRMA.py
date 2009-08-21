@@ -15,7 +15,7 @@ class affyRMA(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Normalization")
         
         #OWRpy.__init__(self)
-        self.setStateVariables(['data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'])
+        self.setStateVariables(['enableMethBox','data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'])
         #default values        
         self.normmeth = 'quantiles'
         self.normoptions = ''
@@ -26,6 +26,7 @@ class affyRMA(OWRpy):
         self.norm = ['quantiles']
         self.selectMethod = 3
         self.data = ''
+        self.enableMethBox = False
         self.loadSettings()
         
         #required librarys
@@ -45,7 +46,7 @@ class affyRMA(OWRpy):
         self.infoa = OWGUI.widgetLabel(status, 'No data loaded.')
         normrad = OWGUI.widgetBox(self.controlArea, "Normalization Methods")
         self.selMethBox = OWGUI.radioButtonsInBox(normrad, self, 'selectMethod', ["RMA", "MAS5", "Custom"], callback=self.selectMethodChanged)
-        self.selMethBox.setEnabled(False)
+        self.selMethBox.setEnabled(self.enableMethBox)
         info = OWGUI.widgetBox(self.controlArea, "Normalization Options")
         
         #drop list box
@@ -97,6 +98,7 @@ class affyRMA(OWRpy):
     def process(self, dataset):
         if self.loadSavedSession:
             self.selectMethodChanged()
+            
             self.normalize()
             return
 

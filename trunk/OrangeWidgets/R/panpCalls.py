@@ -42,7 +42,10 @@ class panpCalls(OWRpy):
         OWGUI.lineEdit(box, self, "percentA", "Percent Absent", orientation = "horizontal")
         processbutton = OWGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
         self.infoa = OWGUI.widgetLabel(box, "Processing not begun")
-        
+        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
+            self.loadSavedSession = True
+            self.processEset()
+
         
     def process(self, dataset):
         if dataset:
@@ -55,17 +58,19 @@ class panpCalls(OWRpy):
             return
             
     def processEset(self):
-        self.infoa.setText("Processing Started!!!")
-        self.rsession(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')',True)
-        self.infoa.setText('PA calls have been calculated')
-        self.rsession(self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"',True)
-        self.rsession(self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)',True)
-        self.rsession(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+self.percentA+'/100',True)
-        self.rsession(self.Rvariables['peset']+'<-exprs('+self.eset+')[' + self.Rvariables['Present'] + ',]',True)
+        
+        if not self.loadSavedSession:
+            self.infoa.setText("Processing Started!!!")
+            self.rsession(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')',True)
+            self.infoa.setText('PA calls have been calculated')
+            self.rsession(self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"',True)
+            self.rsession(self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)',True)
+            self.rsession(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+self.percentA+'/100',True)
+            self.rsession(self.Rvariables['peset']+'<-as.data.frame(exprs('+self.eset+')[' + self.Rvariables['Present'] + ',])',True)
         self.infoa.setText('Processed')
         self.senddata = self.data.copy()
         self.senddata['data'] = self.Rvariables['peset']
-        self.send('Present Gene Signal Matrix', self.senddata)
+        self.rSend('Present Gene Signal Matrix', self.senddata)
     
 
     

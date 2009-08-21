@@ -94,8 +94,10 @@ class OWRpy(OWWidget):
     
     def convertDataframeToExampleTable(self, dataFrame_name):
         #set_default_mode(CLASS_CONVERSION)
+        
 
-        dataFrame = self.rsession(dataFrame_name)	
+
+        #dataFrame = self.rsession(dataFrame_name)	
         
         col_names = self.rsession('colnames(' + dataFrame_name + ')')
         if type(col_names) is str:
@@ -120,9 +122,13 @@ class OWRpy(OWWidget):
             else:
                 colClasses.append(orange.StringVariable(i))
                 
-        self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name)
-        self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(' + dataFrame_name + ')] <- "?"')
-
+        if self.rsession('nrow(' + dataFrame_name + ')') > 1000:
+            self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name + '[1:1000,]')
+        else:
+            self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name + '')
+            
+        self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(exampleTable_data' + self.variable_suffix + ')] <- "?"')
+        
         d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
         domain = orange.Domain(colClasses)
         data = orange.ExampleTable(domain, d)
