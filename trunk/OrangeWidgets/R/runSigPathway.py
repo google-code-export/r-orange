@@ -13,7 +13,7 @@ set_options(RHOME=os.environ['RPATH'])
 import rpy
 
 class runSigPathway(OWRpy):
-	settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
+	settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots', 'table1', 'table2']
 	def __init__(self, parent=None, signalManager=None):
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 1, resizingEnabled = 1)
 		
@@ -38,13 +38,15 @@ class runSigPathway(OWRpy):
 		self.newdata = ''
 		self.dboptions = ''
 		self.subtable = ''
+        self.table1 = QTableWidget() # change the table while processing
+		self.table2 = QTableWidget() #change the table while processing
 		self.loadSettings()
 		
 		self.usedb = 1
 		
 		self.require_librarys(['sigPathway'])
 		
-		self.sendMe()
+		#self.sendMe()
 		#GUI
 		info = OWGUI.widgetBox(self.controlArea, "Info")
 		
@@ -68,8 +70,7 @@ class runSigPathway(OWRpy):
 		
 		self.pathtable = OWGUI.widgetBox(self, "Pathway Info")
 		self.splitCanvas.addWidget(self.pathtable)
-		self.table1 = QTableWidget() # change the table while processing
-		self.table2 = QTableWidget() #change the table while processing
+		
 		self.splitCanvas.addWidget(self.table1)
 		self.splitCanvas.addWidget(self.table2)
 		
@@ -198,8 +199,8 @@ class runSigPathway(OWRpy):
 	
 	def tableShow(self):
 		try:
-			self.table.show()
-			self.table.setMinimumSize(500, 500)
+			self.table1.show()
+			#self.table.setMinimumSize(500, 500)
 			self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), self.cellClicked)
 		except: return
 	
@@ -246,27 +247,27 @@ class runSigPathway(OWRpy):
 		self.send("Pathway List", self.subtable)
 		
 				
-from rpy_options import set_options
-set_options(RHOME=os.environ['RPATH'])
-from rpy import *
-from OWWidget import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+# from rpy_options import set_options
+# set_options(RHOME=os.environ['RPATH'])
+# from rpy import *
+# from OWWidget import *
+# from PyQt4.QtCore import *
+# from PyQt4.QtGui import *
 
-class MyTable(QTableWidget):
-	def __init__(self, dataframe, *args):
-		QTableWidget.__init__(self, *args)
-		self.dataframename = dataframe
-		self.headers = r('colnames('+self.dataframename+')')
-		self.dataframe = r(self.dataframename)
-		self.setColumnCount(len(self.headers))
-		self.setRowCount(len(self.dataframe[self.headers[0]]))
-		n=0
-		for key in self.headers:
-			m=0
-			for item in self.dataframe[key]:
-				newitem = QTableWidgetItem(str(item))
-				self.setItem(m,n,newitem)
-				m += 1
-			n += 1
-		self.setHorizontalHeaderLabels(self.headers)
+# class MyTable(QTableWidget):
+	# def __init__(self, dataframe, *args):
+		# QTableWidget.__init__(self, *args)
+		# self.dataframename = dataframe
+		# self.headers = r('colnames('+self.dataframename+')')
+		# self.dataframe = r(self.dataframename)
+		# self.setColumnCount(len(self.headers))
+		# self.setRowCount(len(self.dataframe[self.headers[0]]))
+		# n=0
+		# for key in self.headers:
+			# m=0
+			# for item in self.dataframe[key]:
+				# newitem = QTableWidgetItem(str(item))
+				# self.setItem(m,n,newitem)
+				# m += 1
+			# n += 1
+		# self.setHorizontalHeaderLabels(self.headers)

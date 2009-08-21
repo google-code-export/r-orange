@@ -19,7 +19,7 @@ class diffExp(OWRpy):
         self.sampleA = []
         self.sampleB = []
         self.loadSettings()
-        self.Rreload()
+        
         self.setRvariableNames(['results','classes','subset'])
         self.require_librarys(['affy','gcrma','limma'])
 
@@ -54,6 +54,8 @@ class diffExp(OWRpy):
         grid.addWidget(selectedb, 0,2)
         self.selectedArraysB = OWGUI.listBox(selectedb, self)
         clearbButton = OWGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
+        
+        self.Rreload() #Important to be at the end of the __init__
 
     def clearA(self):
         self.selectedArrays.clear()
@@ -127,7 +129,7 @@ class diffExp(OWRpy):
 
     def Rreload(self):
         for v in self.sampleA:
-            self.selectedArrays.addItem(v)
+            self.selectedArrays.addItem(str(v))
         for v in self.sampleB:
-            self.selectedArraysB.addItem(v)
+            self.selectedArraysB.addItem(str(v))
         

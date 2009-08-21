@@ -1,12 +1,13 @@
 """
 <name>Read CEL Files</name>
 <description>Allows the user to pick CEL files either individually or through a .txt file and outputs the eSet as an R.object</description>
-<icon>icons/readcel.png</icons>
+<icon>icons/ReadCel.png</icon>
 <priority>10</priority>
 """
 
 from OWRpy import *
 import OWGUI
+import RAffyClasses
 
 class ReadCEL(OWRpy):
     
@@ -17,8 +18,7 @@ class ReadCEL(OWRpy):
         self.recentFiles = ['(none)']
         self.loadSettings()
         
-        #required librarys
-        self.require_librarys(['affy'])
+        
         
         
         #set R variable names
@@ -26,7 +26,7 @@ class ReadCEL(OWRpy):
         
         #signals
         self.inputs = None 
-        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame)]
+        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame), ("AffyBatch", RAffyClasses.RAffyBatch)]
 
 
         #GUI
@@ -44,6 +44,7 @@ class ReadCEL(OWRpy):
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
 
         
+        #initialize previous sessions
         if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
             self.loadSavedSession = True
             self.procesS()
@@ -85,6 +86,8 @@ class ReadCEL(OWRpy):
         
     def procesS(self):
         self.infoa.setText("Your data is processing")
+        #required librarys
+        self.require_librarys(['affy'])
         if not self.loadSavedSession:
             self.rsession(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
         self.infoa.setText("Your data has been processed.")

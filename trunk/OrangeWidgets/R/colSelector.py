@@ -16,8 +16,8 @@ class colSelector(OWRpy):
 		self.vs = self.variable_suffix
 		self.Rvariable = {'data':'', 'result':'ssresult'+self.vs}
 		self.collist = '' # a container for the names of columns that will be picked from the selector.
-		self.inputs = [("R DataFrame", orange.Variable, self.process)]
-		self.outputs = [("R DataFrame", orange.Variable)]
+		self.inputs = [("R DataFrame", RvarClasses.RDataFrame, self.process)]
+		self.outputs = [("R DataFrame", RvarClasses.RDataFrame)]
 		
 		# ###  GUI ###
 		layk = QWidget(self)

@@ -10,12 +10,16 @@ set_options(RHOME=os.environ['RPATH'])
 import rpy
 import time
 import RvarClasses
+import threading
+
 
 class OWRpy(OWWidget):
     #a class variable which is incremented every time OWRpy is instantiated.
     # processing  = False
     num_widgets = 0
-    
+    lock = threading.Lock()
+    rsem = threading.Semaphore(value = 1)
+    occupied = 0
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):	
         OWWidget.__init__(self, parent, signalManager, title, **args)
         
@@ -36,6 +40,9 @@ class OWRpy(OWWidget):
         
     def rsession(self,query,processing_notice=False):
         qApp.setOverrideCursor(Qt.WaitCursor)
+        OWRpy.rsem.acquire()
+        OWRpy.lock.acquire()
+        OWRpy.occupied = 1
         if processing_notice:
             self.progressBarInit()
             self.progressBarSet(30)
@@ -50,6 +57,10 @@ class OWRpy(OWWidget):
         # OWRpy.processing = False
         if processing_notice:
             self.progressBarFinished()
+        
+        OWRpy.occupied = 0
+        OWRpy.lock.release()
+        OWRpy.rsem.release()
         qApp.restoreOverrideCursor()
         return output
         # print 'in rssion:' + str(OWRpy.processing)

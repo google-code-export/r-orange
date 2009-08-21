@@ -7,8 +7,6 @@
 
 from OWRpy import *
 import OWGUI
-import random
-
 
 class Heatmap(OWRpy):
     #This widget has no settings list
