@@ -42,8 +42,7 @@ class panpCalls(OWRpy):
         OWGUI.lineEdit(box, self, "percentA", "Percent Absent", orientation = "horizontal")
         processbutton = OWGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
         self.infoa = OWGUI.widgetLabel(box, "Processing not begun")
-        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
-            self.loadSavedSession = True
+        if self.loadingSavedSession:
             self.processEset()
 
         
@@ -59,7 +58,7 @@ class panpCalls(OWRpy):
             
     def processEset(self):
         
-        if not self.loadSavedSession:
+        if not self.loadingSavedSession:
             self.infoa.setText("Processing Started!!!")
             self.rsession(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')',True)
             self.infoa.setText('PA calls have been calculated')

@@ -30,12 +30,13 @@ class OWRpy(OWWidget):
         self.variable_suffix = '_' + str(OWRpy.num_widgets)
         #keep all R variable name in this dict
         self.Rvariables = {}
-        self.settingsList = ['variable_suffix']
-        self.loadSavedSession = False
+        self.loadingSavedSession = False
+        self.settingsList = ['variable_suffix','loadingSavedSession']
+        
         
     def rSend(self,name, variable):
-        self.rsession('rm(' + self.Rvariables['loadSavedSession'] + ')')
-        self.loadSavedSession = False
+        print 'send'
+        self.loadingSavedSession = False
         self.send(name, variable)
         
     def rsession(self,query,processing_notice=False):
@@ -50,8 +51,10 @@ class OWRpy(OWWidget):
         try:
             output  = rpy.r(query)
         except rpy.RPyRException, inst:
+            OWRpy.occupied = 0
+            OWRpy.lock.release()
+            OWRpy.rsem.release()
             qApp.restoreOverrideCursor()
-            self.progressBarFinished()
             print inst.message
             return inst
         # OWRpy.processing = False
@@ -63,20 +66,6 @@ class OWRpy(OWWidget):
         OWRpy.rsem.release()
         qApp.restoreOverrideCursor()
         return output
-        # print 'in rssion:' + str(OWRpy.processing)
-        # while True:
-            # if not OWRpy.processing:
-                # OWRpy.processing = True
-                # print query
-                # output  = rpy.r(query)
-                # OWRpy.processing = False
-                # print 'done'
-                # return output
-            # else:
-                # return
-                # print 'asdf'
-                # OWRpy.processing = False
-
                 
             
     def require_librarys(self,librarys):
@@ -96,7 +85,7 @@ class OWRpy(OWWidget):
                 
     def setRvariableNames(self,names):
         
-        names.append('loadSavedSession')
+        #names.append('loadSavedSession')
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
         
@@ -151,7 +140,9 @@ class OWRpy(OWWidget):
             print self.Rvariables[k]
             self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
             
-
+    def onSaveSession(self):
+        print 'save session'
+        self.loadingSavedSession = True;
         
         
 

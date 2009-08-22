@@ -16,7 +16,7 @@ class mergeR(OWRpy):
         self.setStateVariables(['dataA','dataB','colAsel', 'colBsel'])
         
         self.inputs = [("RExampleTable A", RvarClasses.RDataFrame, self.processA), ("RExampleTable B", RvarClasses.RDataFrame, self.processB)]
-        self.outputs = [("Merged Examples A+B", RvarClasses.RDataFrame), ("Merged Examples B+A", RvarClasses.RDataFrame)]
+        self.outputs = [("Merged Examples All", RvarClasses.RDataFrame),("Merged Examples A+B", RvarClasses.RDataFrame), ("Merged Examples B+A", RvarClasses.RDataFrame)]
 
         #default values        
         self.colAsel = ''
@@ -24,7 +24,7 @@ class mergeR(OWRpy):
         self.loadSettings()
         
         #set R variable names
-        self.setRvariableNames(['merged_dataAB','merged_dataBA'])
+        self.setRvariableNames(['merged_dataAB','merged_dataBA','merged_dataAll'])
                 
         #GUI
         layk = QWidget(self)
@@ -45,10 +45,10 @@ class mergeR(OWRpy):
         runbox = OWGUI.widgetBox(self.controlArea, "Run")
         OWGUI.button(runbox, self, "Run", callback = self.run)
         #print self.colAsel, self.colBsel
-        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
-            self.loadSavedSession = True
-            self.processA({'data': self.dataA})
-            self.processB({'data': self.dataB})
+        # if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
+            # self.loadSavedSession = True
+            # self.processA({'data': self.dataA})
+            # self.processB({'data': self.dataB})
 
         
         
@@ -86,25 +86,31 @@ class mergeR(OWRpy):
             #self.sendNothing
             
     def run(self):
-        print self.loadSavedSession
+        print self.loadingSavedSession
         try:
             if self.colAsel == '' and self.colBsel == '': 
                 h = self.rsession('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
                 if type(h) is str: 
                     self.colA.setCurrentRow(self.rsession('which('+self.dataA+' == "' + h + '")'-1))
                     self.colB.setCurrentRow(self.rsession('which('+self.dataB+' == "' + h + '")'-1))
-                    if not self.loadSavedSession:
+                    if not self.loadingSavedSession:
                         self.rsession(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+',all.x=T)')
-                        self.rsession(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+',all.y=T)')
-                    self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
-                    self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
-                    
-            elif self.colAsel != '' and self.colBsel != '':
-                if not self.loadSavedSession:
+                        self.rsession(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+',all.y=T)')                    
+                        self.rsession(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+')')                    
+            else:
+                if self.loadingSavedSession:
+                    self.colA.setCurrentRow(self.rsession('which('+self.dataA+' == "' + h + '")'-1))
+                    self.colB.setCurrentRow(self.rsession('which('+self.dataB+' == "' + h + '")'-1))
+                else:
                     self.rsession(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
                     self.rsession(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
+                    self.rsession(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
+            if self.rsession('exists("' + self.Rvariables['merged_dataAB'] + '")'):
                 self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
                 self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
+                self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
+            else:
+                self.loadingSavedSession = False
         except: 
             return 
     

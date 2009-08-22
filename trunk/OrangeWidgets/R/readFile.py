@@ -43,14 +43,12 @@ class readFile(OWRpy):
         #self.recentFiles=filter(os.path.exists, self.recentFiles)
         self.setFileList()
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
-            self.loadSavedSession = True
+        print 'on init :' + str(self.loadingSavedSession)
+        if self.loadingSavedSession:
+            print 'onloading save :' + str(self.loadingSavedSession)
             self.loadFile()
             
-        
-    def onLoadSession(self):
-        self.updateGUI()
-        
+                
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:
@@ -83,7 +81,9 @@ class readFile(OWRpy):
             self.loadFile()
 
     def loadFile(self):
-        if not self.loadSavedSession:
+        print 'on load :' + str(self.loadingSavedSession)
+        if not self.loadingSavedSession:
+            print 'read file'
             self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')',True)
         self.updateGUI()
         self.rSend("data.frame", {'data':self.Rvariables['dataframe']})

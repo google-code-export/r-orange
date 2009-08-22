@@ -68,13 +68,11 @@ class affyRMA(OWRpy):
         #self.infob = OWGUI.widgetLabel(run, 'Procedure not run yet')
         runbutton = OWGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
         #OWGUI.button(run, self, 'test', callback = self.checkRCode, width=200)
-        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
-            self.loadSavedSession = True
         
         
     def normalize(self):
         self.infoa.setText('Processing')
-        if not self.loadSavedSession:
+        if not self.loadingSavedSession:
             if self.selectMethod == 0:
                 self.rsession(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
             if self.selectMethod == 1:
@@ -96,7 +94,7 @@ class affyRMA(OWRpy):
             self.normoptions = ',method='+self.normmeth
     
     def process(self, dataset):
-        if self.loadSavedSession:
+        if self.loadingSavedSession:
             self.selectMethodChanged()
             
             self.normalize()

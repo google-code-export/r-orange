@@ -19,8 +19,6 @@ class ReadCEL(OWRpy):
         self.loadSettings()
         
         
-        
-        
         #set R variable names
         self.setRvariableNames(['eset','folder'])
         
@@ -45,8 +43,7 @@ class ReadCEL(OWRpy):
 
         
         #initialize previous sessions
-        if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
-            self.loadSavedSession = True
+        if self.loadingSavedSession:
             self.procesS()
         
         
@@ -88,7 +85,7 @@ class ReadCEL(OWRpy):
         self.infoa.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
-        if not self.loadSavedSession:
+        if not self.loadingSavedSession:
             self.rsession(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
         self.infoa.setText("Your data has been processed.")
         self.out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}

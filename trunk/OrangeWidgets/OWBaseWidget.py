@@ -443,6 +443,9 @@ class OWBaseWidget(QDialog):
         settings = self.getSettings()
         return cPickle.dumps(settings)
 
+    def onSaveSession(self):
+        pass
+        
     def onDeleteWidget(self):
         pass
             
