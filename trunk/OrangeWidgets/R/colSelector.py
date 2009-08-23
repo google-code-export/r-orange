@@ -76,6 +76,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         # self.subsetList.addItem(str(self.columns.selectedItems()[0].text()))
         
     def process(self, data):
+        self.require_librarys(['fields'])
         try:
             #self.columnsorrows.clear()
             self.Rvariable['data'] = data['data']
@@ -131,7 +132,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             if self.rowcolselect == 1:
                 colnames = str(self.columnsorrows.selectedItems()[0].text())
                 self.rsession('tmp<-as.vector('+self.Rvariable['data']+'[,"'+colnames+'"])')
-            self.rsession('txt<-paste(capture.output(t(summary(tmp))), collapse = "\n")')
+            self.rsession('txt<-paste(capture.output(stats(tmp)), collapse = "\n")')
             Rsummary = self.rsession('paste("<pre>", txt, "</pre>")')
             self.criteriaOutput.setHtml(Rsummary)
         except: return
