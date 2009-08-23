@@ -122,7 +122,6 @@ class LinearRegressionLearner(object):
                  'model' : {'estCoeff' : beta, 'stdErrorEstimation': errCoeff},
                  'model summary': {'TotalVar' : SST, 'ExplVar' : SSE, 'ResVar' : SSR, 'R' : R, 'RAdjusted' : RAdjusted,
                                    'F' : F, 't' : t, 'sig': significance}}
- 
         return LinearRegression(statistics = model, domain = data.domain, name = self.name, beta0 = self.beta0, imputer=imputer)
 
 class LinearRegression(orange.Classifier):
@@ -177,7 +176,7 @@ def get_sig(m1, m2, n):
         return 1.0
     p1, p2 = len(m1.domain.attributes), len(m2.domain.attributes)
     RSS1, RSS2 = m1.statistics["model summary"]["ExplVar"], m2.statistics["model summary"]["ExplVar"]
-    if RSS1<=RSS2 or p2<=p1 or n<=p2:
+    if RSS1<=RSS2 or p2<=p1 or n<=p2 or RSS2 <= 0:
         return 1.0
     F = ((RSS1 - RSS2)/(p2-p1))/(RSS2/(n-p2))
     return statc.fprob(int(p2-p1),int(n-p2),F)

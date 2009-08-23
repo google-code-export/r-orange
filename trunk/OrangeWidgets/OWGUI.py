@@ -214,9 +214,9 @@ def spin(widget, master, value, min, max, step=1,
 class DoubleSpinBoxWFocusOut(QDoubleSpinBox):
     def __init__(self, min, max, step, bi):
         QDoubleSpinBox.__init__(self, bi)
+        self.setDecimals(math.ceil(-math.log10(step)))
         self.setRange(min, max)
         self.setSingleStep(step)
-        self.setDecimals(math.ceil(-math.log10(step)))
         self.inSetValue = False
         self.enterButton = None
 
@@ -520,12 +520,12 @@ def listBox(widget, master, value = None, labels = None, box = None, tooltip = N
         lb.setToolTip(tooltip)
 
     connectControl(lb, master, value, callback, "itemSelectionChanged()", CallFrontListBox(lb), CallBackListBox(lb, master))
-    if value != None:
-        setattr(master, value, getdeepattr(master, value))
     if hasattr(master, "controlledAttributes") and labels != None:
         master.controlledAttributes[labels] = CallFrontListBoxLabels(lb)
     if labels != None:
         setattr(master, labels, getdeepattr(master, labels))
+    if value != None:
+        setattr(master, value, getdeepattr(master, value))
     if debuggingEnabled and hasattr(master, "_guiElements"):
         master._guiElements = getattr(master, "_guiElements", []) + [("listBox", lb, value, callback)]
     return lb

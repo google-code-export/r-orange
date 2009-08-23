@@ -7,7 +7,7 @@
 
 from OWRpy import *
 import OWGUI
-import RAffyClasses
+
 
 class ReadCEL(OWRpy):
     
@@ -24,7 +24,7 @@ class ReadCEL(OWRpy):
         
         #signals
         self.inputs = None 
-        self.outputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame), ("AffyBatch", RAffyClasses.RAffyBatch)]
+        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RvarClasses.Eset)]
 
 
         #GUI
@@ -88,8 +88,9 @@ class ReadCEL(OWRpy):
         if not self.loadingSavedSession:
             self.rsession(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
         self.infoa.setText("Your data has been processed.")
-        self.out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
-        self.rSend("Affybatch Expression Matrix", self.out)
+        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
+        self.rSend("Expression Matrix", out)
+        self.rSend("Eset", {'data':self.Rvariables['eset']})
 
         
     

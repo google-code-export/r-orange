@@ -7,7 +7,7 @@
 
 from OWRpy import *
 import OWGUI
-import RAffyClasses
+
 
 class plotAffy(OWRpy):
     def __init__(self, parent=None, signalManager=None):
@@ -26,7 +26,7 @@ class plotAffy(OWRpy):
         #self.setRvariableNames()
 
         
-        self.inputs = [("Affybatch", RAffyClasses.RAffyBatch, self.init)]
+        self.inputs = [("Eset", RvarClasses.Eset, self.init)]
         self.outputs = None
         
         self.testLineEdit = ""
@@ -49,9 +49,9 @@ class plotAffy(OWRpy):
         
     
     def init(self, dataset):
-        if dataset:
-            self.data = dataset['eset']
-        else:
+        try:
+            self.data = dataset['data']
+        except:
             return
     
     def process(self):

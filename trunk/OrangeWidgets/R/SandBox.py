@@ -1,7 +1,6 @@
 """
-<name>Plot Affy Image</name>
-<description>Obtains an affybatch and plots the images of the files</description>
-<icon>icons/plotAffy.png</icon>
+<name>SandBox</name>
+<description></description>
 <priority>9010</priority>
 """
 

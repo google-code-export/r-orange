@@ -1309,8 +1309,7 @@ def AUC_single(res, classIndex = -1, useWeights = True):
     if res.numberOfIterations > 1:
         return AUC_iterations(AUC_i, splitByIterations(res), (classIndex, useWeights, res, res.numberOfIterations))
     else:
-        return AUC_i([res], classIndex, useWeights)
-
+        return AUC_i( res, classIndex, useWeights)[0]
 
 # Computes AUC for a pair of classes (as if there were no other classes)
 # Results over folds are averages; if some folds have examples from one class only, the folds are merged
@@ -1714,9 +1713,9 @@ def compute_friedman(avranks, N):
     im = iman(f, N, k)
     fdistdof = (k-1, (k-1)*(N-1))
 
-    return (f, k-1), im, fdistdof
+    return (f, k-1), (im, fdistdof)
 
-def compute_CD(avranks, N, p="0.05", type="nemenyi"):
+def compute_CD(avranks, N, alpha="0.05", type="nemenyi"):
     """
     if type == "nemenyi":
         critical difference for Nemenyi two tailed test.
@@ -1725,13 +1724,7 @@ def compute_CD(avranks, N, p="0.05", type="nemenyi"):
     """
 
     k = len(avranks)
-
-
-
-    #f = friedman(N, k, avranks)
-    #print "friedman", f
-    #print "iman", iman(f, N, k), "F dist DOF", k-1, (k-1)*(N-1)
-    
+   
     d = {}
 
     d[("nemenyi", "0.05")] = [0, 0, 1.960, 2.343, 2.568, 2.728, 2.850, 2.949, 3.031, 3.102, 3.164 ]
@@ -1739,7 +1732,7 @@ def compute_CD(avranks, N, p="0.05", type="nemenyi"):
     d[("bonferroni-dunn", "0.05")] =  [0, 0, 1.960, 2.241, 2.394, 2.498, 2.576, 2.638, 2.690, 2.724, 2.773 ]
     d[("bonferroni-dunn", "0.1")] = [0, 0, 1.645, 1.960, 2.128, 2.241, 2.326, 2.394, 2.450, 2.498, 2.539 ]
 
-    q = d[(type, p)]
+    q = d[(type, alpha)]
 
     cd = q[k]*(k*(k+1)/(6.0*N))**0.5
 

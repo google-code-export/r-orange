@@ -10,9 +10,6 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
-# from OWRpy import OWRpy
-# r = OWRpy()
-
 
 class SchemaDoc(QWidget):
     def __init__(self, canvasDlg, *args):
@@ -318,6 +315,7 @@ class SchemaDoc(QWidget):
             return
         while widget.inLines != []: self.removeLine1(widget.inLines[0])
         while widget.outLines != []:  self.removeLine1(widget.outLines[0])
+
         self.signalManager.removeWidget(widget.instance)
         self.widgets.remove(widget)
         widget.remove()
@@ -440,6 +438,7 @@ class SchemaDoc(QWidget):
             lines.appendChild(temp)
 
         settings.setAttribute("settingsDictionary", str(settingsDict))      
+
         xmlText = doc.toprettyxml()
 		
         if not tmp:

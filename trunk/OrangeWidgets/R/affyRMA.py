@@ -37,8 +37,8 @@ class affyRMA(OWRpy):
         self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals		
-        self.inputs = [("Affybatch Expression Matrix", RvarClasses.RDataFrame, self.process)]
-        self.outputs = [("Normalized eSet", RvarClasses.RDataFrame)]
+        self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.process)]
+        self.outputs = [("Normalized DataFrame", RvarClasses.RDataFrame),("Normalized AffyBatch", RvarClasses.RAffyBatch)]
 
         
         #the GUI
@@ -83,7 +83,8 @@ class affyRMA(OWRpy):
         self.infoa.setText('Processed')
         neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch'], 'normmethod':'rma'}
         
-        self.rSend("Normalized eSet", neset)
+        self.rSend("Normalized DataFrame", neset)
+        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
         
     def collectOptions(self):
         if self.normmeth == None: self.normoptions = ""
@@ -96,7 +97,7 @@ class affyRMA(OWRpy):
     def process(self, dataset):
         if self.loadingSavedSession:
             self.selectMethodChanged()
-            
+            self.selMethBox.setEnabled(True)
             self.normalize()
             return
 

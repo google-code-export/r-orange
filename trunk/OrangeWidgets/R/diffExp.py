@@ -9,11 +9,10 @@ from OWRpy import *
 import OWGUI
 
 class diffExp(OWRpy):
-    settingsList = ['variable_suffix', 'samplenames', 'sampleA', 'sampleB']
+    #settingsList = ['variable_suffix', 'samplenames', 'sampleA', 'sampleB']
     def __init__(self, parent=None, signalManager=None):
-        #OWWidget.__init__(self, parent, signalManager, "Sample Data")
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        
+        self.setStateVariables(['samplenames', 'sampleA', 'sampleB'])        
         
         self.samplenames = []
         self.sampleA = []
@@ -21,7 +20,7 @@ class diffExp(OWRpy):
         self.loadSettings()
         
         self.setRvariableNames(['results','classes','subset'])
-        self.require_librarys(['affy','gcrma','limma'])
+        
 
         self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process)]
         self.outputs = [("eBayes fit", RvarClasses.RList)]
@@ -76,10 +75,13 @@ class diffExp(OWRpy):
             self.classA = True
             self.infob.setText("Setting Class A")
     def process(self, data):
+        self.require_librarys(['affy','gcrma','limma'])
         if data:
             self.data = data['data']
             self.olddata = data.copy()
             self.samplenames = self.rsession('colnames('+self.data+')') #collect the sample names to make the differential matrix
+            if self.samplenames is str:
+                self.samplenames = [self.samplenames]
             for v in self.samplenames:
                 self.arrays.addItem(v)
         else: return

@@ -27,10 +27,8 @@ class panpCalls(OWRpy):
         
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
 
-        self.require_librarys(['affy','gcrma','limma','panp'])
         
-        self.inputs = [("Expression Set", RvarClasses.RVariable, self.process)]
-        self.inputs = [("Expression Set", RvarClasses.RVariable, self.process)]
+        self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.process)]
         self.outputs = [("Present Gene Signal Matrix", RvarClasses.RDataFrame)]
         
         
@@ -47,6 +45,7 @@ class panpCalls(OWRpy):
 
         
     def process(self, dataset):
+        self.require_librarys(['affy','gcrma','limma','panp'])
         if dataset:
             self.data = dataset
             if 'eset' in self.data:

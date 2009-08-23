@@ -360,9 +360,9 @@ class OWBaseWidget(QDialog):
 
     def getSettingsFile(self, file):
         if file==None:
-            # if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
-                # file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
-            # else:
+            if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
+                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+            else:
                 return
         if type(file) == str:
             if os.path.exists(file):
@@ -374,15 +374,15 @@ class OWBaseWidget(QDialog):
     # Loads settings from the widget's .ini file
     def loadSettings(self, file = None):
         file = self.getSettingsFile(file)
-        # if file:
-            # try:
-                # settings = cPickle.load(file)
-            # except:
-                # settings = None
-        settings = None
-        if hasattr(self, "_settingsFromSchema"):
-            if settings: settings.update(self._settingsFromSchema)
-            else:        settings = self._settingsFromSchema
+        if file:
+            try:
+                settings = cPickle.load(file)
+            except:
+                settings = None
+
+            if hasattr(self, "_settingsFromSchema"):
+                if settings: settings.update(self._settingsFromSchema)
+                else:        settings = self._settingsFromSchema
 
             # can't close everything into one big try-except since this would mask all errors in the below code
             if settings:
@@ -448,7 +448,6 @@ class OWBaseWidget(QDialog):
         
     def onDeleteWidget(self):
         pass
-            
 
     # this function is only intended for derived classes to send appropriate signals when all settings are loaded
     def activateLoadedSettings(self):
