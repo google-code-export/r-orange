@@ -494,6 +494,8 @@ class SchemaDoc(QWidget):
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.basename(name), 'wb').write(zfile.read(name))
+            from rpy_options import set_options
+            set_options(RHOME=os.environ['RPATH'])
             print 'loading R session ...'
             import rpy
             rpy.r('load("tmp.RData")')

@@ -158,6 +158,20 @@ class OWRpy(OWWidget):
         for k in self.Rvariables:
             print self.Rvariables[k]
             self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+        try:
+            if self.device: #  if this is true then this widget made an R device and we would like to shut it down
+                self.rsession('dev.set('+self.device+')')
+                self.rsession('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets)) 
+        except: return
+            
+    def Rplot(self, query):
+        # check that a device is currently used by this widget
+        try: # if this returns true then a device is attached to this widget and should be set to the focus
+            self.rsession('dev.set('+self.device+')')
+        except:
+            self.rsession('dev.set(1) # start a new device for '+ str(OWRpy.num_widgets)) # starts a new device 
+            self.device = str(self.rsession('dev.cur()'))  # record the device for later use
+        self.rsession(query)
             
     def onSaveSession(self):
         print 'save session'

@@ -91,6 +91,7 @@ class ReadCEL(OWRpy):
         out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
         self.rSend("Expression Matrix", out)
         self.rSend("Eset", {'data':self.Rvariables['eset']})
+        self.rSend("AffyBatch", self.out)
 
         
     
