@@ -8,11 +8,11 @@ from OWRpy import *
 import OWGUI
 
 class panpCalls(OWRpy):
-    #settingsList = ['variable_suffix', 'senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset']
+    settingsList = ['senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset']
     def __init__(self, parent=None, signalManager=None):
         #OWWidget.__init__(self, parent, signalManager, "Sample Data")
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.setStateVariables(['senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset'])
+        #self.setStateVariables(['senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset'])
 
         self.senddata = {}
         self.data = {}

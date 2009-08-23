@@ -10,12 +10,12 @@ from OWRpy import *
 import OWGUI
 
 class affyRMA(OWRpy):
-    #settingsList = ['variable_suffix', 'data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
+    settingsList = ['enableMethBox', 'data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Normalization")
         
         #OWRpy.__init__(self)
-        self.setStateVariables(['enableMethBox','data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'])
+        #self.setStateVariables(['enableMethBox','data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'])
         #default values        
         self.normmeth = 'quantiles'
         self.normoptions = ''

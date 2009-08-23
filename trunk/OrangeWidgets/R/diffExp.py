@@ -9,10 +9,10 @@ from OWRpy import *
 import OWGUI
 
 class diffExp(OWRpy):
-    #settingsList = ['variable_suffix', 'samplenames', 'sampleA', 'sampleB']
+    settingsList = [ 'samplenames', 'sampleA', 'sampleB']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.setStateVariables(['samplenames', 'sampleA', 'sampleB'])        
+        #self.setStateVariables(['samplenames', 'sampleA', 'sampleB'])        
         
         self.samplenames = []
         self.sampleA = []

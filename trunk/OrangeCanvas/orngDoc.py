@@ -45,7 +45,8 @@ class SchemaDoc(QWidget):
 
         if self.canvasDlg.settings["dontAskBeforeClose"]:
             if newSettings and self.schemaName != "":
-                self.save(True)
+                pass
+                #self.save(True)
             self.clear()
             self.removeTempDoc()
             ce.accept()
@@ -489,10 +490,11 @@ class SchemaDoc(QWidget):
 
         try:
             #load the data ...
-            #os.chdir('G:/Python25/Lib/site-packages/orange/OrangeWidgets/R')
+            
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.basename(name), 'wb').write(zfile.read(name))
+            print 'loading R session ...'
             import rpy
             rpy.r('load("tmp.RData")')
             doc = parse('schema.tmp')

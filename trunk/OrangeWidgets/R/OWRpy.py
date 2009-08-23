@@ -16,10 +16,12 @@ import threading
 class OWRpy(OWWidget):
     #a class variable which is incremented every time OWRpy is instantiated.
     # processing  = False
+    
     num_widgets = 0
     lock = threading.Lock()
     rsem = threading.Semaphore(value = 1)
     occupied = 0
+    
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):	
         OWWidget.__init__(self, parent, signalManager, title, **args)
         
@@ -31,8 +33,28 @@ class OWRpy(OWWidget):
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.loadingSavedSession = False
-        self.settingsList = ['variable_suffix','loadingSavedSession']
+        #self.settingsList = ['variable_suffix','loadingSavedSession']
         
+
+    def getSettings(self, alsoContexts = True):
+        settings = {}
+        if hasattr(self, "settingsList"):
+            self.settingsList.extend(['variable_suffix','loadingSavedSession'])
+            for name in self.settingsList:
+                try:
+                    settings[name] =  self.getdeepattr(name)
+                except:
+                    #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+                    pass
+        
+        if alsoContexts:
+            contextHandlers = getattr(self, "contextHandlers", {})
+            for contextHandler in contextHandlers.values():
+                contextHandler.mergeBack(self)
+                settings[contextHandler.localContextName] = contextHandler.globalContexts
+                settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
+            
+        return settings
         
     def rSend(self,name, variable):
         print 'send'
@@ -89,15 +111,12 @@ class OWRpy(OWWidget):
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
         
-    def setStateVariables(self,names):
-        self.settingsList.extend(names)
+    
+    # def setStateVariables(self,names):
+        # self.settingsList.extend(names)
     
     def convertDataframeToExampleTable(self, dataFrame_name):
         #set_default_mode(CLASS_CONVERSION)
-        
-
-
-        #dataFrame = self.rsession(dataFrame_name)	
         
         col_names = self.rsession('colnames(' + dataFrame_name + ')')
         if type(col_names) is str:

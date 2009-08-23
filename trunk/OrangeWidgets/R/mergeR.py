@@ -10,10 +10,10 @@ import OWGUI
 
 
 class mergeR(OWRpy):
-    #settingsList = ['variable_suffix','colAsel', 'colBsel']
+    settingsList = ['dataA','dataB','colAsel', 'colBsel']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Merge Data")
-        self.setStateVariables(['dataA','dataB','colAsel', 'colBsel'])
+        #self.setStateVariables(['dataA','dataB','colAsel', 'colBsel'])
         
         self.inputs = [("RExampleTable A", RvarClasses.RDataFrame, self.processA), ("RExampleTable B", RvarClasses.RDataFrame, self.processB)]
         self.outputs = [("Merged Examples All", RvarClasses.RDataFrame),("Merged Examples A+B", RvarClasses.RDataFrame), ("Merged Examples B+A", RvarClasses.RDataFrame)]
@@ -99,8 +99,8 @@ class mergeR(OWRpy):
                         self.rsession(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+')')                    
             else:
                 if self.loadingSavedSession:
-                    self.colA.setCurrentRow(self.rsession('which('+self.dataA+' == "' + h + '")'-1))
-                    self.colB.setCurrentRow(self.rsession('which('+self.dataB+' == "' + h + '")'-1))
+                    self.colA.setCurrentRow(self.rsession('which('+self.dataA+' == "' + self.colAsel + '")'-1))
+                    self.colB.setCurrentRow(self.rsession('which('+self.dataB+' == "' + self.colBsel + '")'-1))
                 else:
                     self.rsession(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
                     self.rsession(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')

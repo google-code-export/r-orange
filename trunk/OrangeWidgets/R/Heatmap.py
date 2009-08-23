@@ -39,7 +39,7 @@ class Heatmap(OWRpy):
 
     def makePlot(self):
         self.infoa.setText("You are plotting "+self.plotdata)
-        self.rsession('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', ColSideColors=rgb(t(col2rgb('+self.classes+'+2)), maxColorValue=255), col="bwr")')
+        self.rsession('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', ColSideColors=rgb(t(col2rgb('+self.classes+'+2)), maxColorValue=255))')
         
     def rowvChoiceprocess(self):
         if self.plotdata:

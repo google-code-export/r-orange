@@ -10,10 +10,10 @@ import OWGUI
 
 
 class ReadCEL(OWRpy):
-    
+    settingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
-        self.setStateVariables(['recentFiles'])
+        #self.setStateVariables(['recentFiles'])
         #default values        
         self.recentFiles = ['(none)']
         self.loadSettings()

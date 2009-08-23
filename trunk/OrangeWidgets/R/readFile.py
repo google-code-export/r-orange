@@ -12,11 +12,11 @@ import textwrap
 
 class readFile(OWRpy):
     
-    
+    settingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
         #OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.setStateVariables(['recentFiles'])
+        #self.setStateVariables(['recentFiles'])
         self.recentFiles=["(none)"]
         self.loadSettings()
         
