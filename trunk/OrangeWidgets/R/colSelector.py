@@ -22,6 +22,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.colselectionCriteria = 0 
         self.rowactiveCriteria = [] # lists showing the active critera for subsetting the rows and cols
         self.colactiveCriteria = []
+        self.RowColNamesExist = 1
         
         
         
@@ -43,6 +44,10 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         options = OWGUI.widgetBox(self.controlArea, "Options")
         grid.addWidget(options, 0,0)
         self.rowcol = OWGUI.radioButtonsInBox(options, self, "rowcolselect", ["Rows", "Columns"], callback = self.changeRowCol)
+        self.tableinfoa = OWGUI.widgetLabel(options, "No Data Connected")
+        self.tableinfob = OWGUI.widgetLabel(options, "")
+        self.tableinfoc = OWGUI.widgetLabel(options, "")
+        self.tableinfod = OWGUI.widgetLabel(options, "")
         
         # a names box that shows the names of either the columns or the rows as well as the colnames or rownames
         namesBox = OWGUI.widgetBox(self.controlArea, "Factor Names")
@@ -68,22 +73,28 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.SubSlider = QSlider()
         self.SubSlider.setOrientation(Qt.Horizontal)
         self.connect(self.SubSlider, SIGNAL('valueChanged(int)'), self.SubSliderValueChanged)
-        
         boxVal.layout().addWidget(self.SubSlider)
         self.numericInfo = OWGUI.widgetLabel(boxVal, "")
         greaterLessRadio = OWGUI.radioButtonsInBox(boxVal, self, 'GorL', ['Greater Than', 'Less Than'])
-        
-        
+        OWGUI.button(boxVal, self, "Select Criteria", callback = self.selectCriteria)
         self.valuesStack.addWidget(boxVal)
-        
         
         # valuesStack 2: factor data
         boxVal = OWGUI.widgetBox(self, "Values", addToLayout = 0)
         self.boxIndices[2] = boxVal
         self.FactorTable = QTableWidget()
         boxVal.layout().addWidget(self.FactorTable)
+        OWGUI.button(boxVal, self, "Select Criteria", callback = self.selectCriteria)
         self.valuesStack.addWidget(boxVal)
+        self.connect(self.FactorTable, SIGNAL("itemClicked(QTableWidgetItem*)"), self.selectCriteria)
         
+        # values Stack 3: row/col names
+        boxVal = OWGUI.widgetBox(self, "Values", addToLayout = 0)
+        self.boxIndices[3] = boxVal
+        self.namesList = OWGUI.listBox(boxVal, self)
+        self.namesList.setSelectionMode(QAbstractItemView.MultiSelection)
+        OWGUI.button(boxVal, self, "Select Criteria", callback = self.rowcolNamesSelect)
+        self.valuesStack.addWidget(boxVal)
         
         # self.summaryBox = OWGUI.widgetBox(self.controlArea, "Summary")
         # grid.addWidget(self.summaryBox, 0, 2)
@@ -92,36 +103,21 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         
         
         # A box that lists the criteria for the selected attributes.
-        criteriaBox = OWGUI.widgetBox(self.controlArea, "Criteria")
-        grid.addWidget(criteriaBox, 1, 0)
+        #criteriaBox = OWGUI.widgetBox(self.controlArea, "Criteria")
         self.criteriaTable = QTableWidget()
+        self.controlArea.layout().addWidget(self.criteriaTable)
         self.criteriaTable.setColumnCount(2)
-        criteriaBox.layout().addWidget(self.criteriaTable)
+        self.criteriaTable.setHorizontalHeaderLabels(['Active', 'Criteria'])
+        #criteriaBox.layout().addWidget(self.criteriaTable)
         
-        #self.criteriaBox.layout().addWidget(self.criteriaOutput)
+        # tableInfoBox = OWGUI.widgetBox(self, "Table Info")
+        # grid.addWidget(tableInfoBox, 1,1)
         
         
         # a box that provides functionality for processing the criteria such as a run button and others
-        functionBox = OWGUI.widgetBox(self.controlArea, "Functions")
-        grid.addWidget(functionBox, 2, 0)
-        OWGUI.button(functionBox, self, "Select Criteria", callback = self.selectCriteria)
-        #OWGUI.button(functionBox, self, "Send Committed", callback = self.sendCommitted)
-        
-        
-        
-        # subsettingBox = OWGUI.widgetBox(self.controlArea, "Selected Columns")
-        # grid.addWidget(subsettingBox, 1, 0)
-        # self.subsetList = OWGUI.listBox(subsettingBox, self)
-        # OWGUI.button(subsettingBox, self, "Clear", callback = self.subsetList.clear())
-        
-        # toolsBox = OWGUI.widgetBox(self.controlArea, "Tools") #some tools for aiding in the processing
-        # grid.addWidget(toolsBox, 0, 1)
-        # OWGUI.button(toolsBox, self, "Send", callback = self.subset) #starts the processing based on selected items
-        # OWGUI.button(toolsBox, self, "View data.frame", callback = self.viewdf)
-        
-    # def subListAdd(self):
-        # self.subsetList.addItem(str(self.columns.selectedItems()[0].text()))
-        
+        # functionBox = OWGUI.widgetBox(self.controlArea, "Functions")
+        # grid.addWidget(functionBox, 2, 0)
+
     def process(self, data):
         self.require_librarys(['fields'])
         try:
@@ -131,8 +127,17 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.changeRowCol()
             # for v in self.rsession('colnames('+self.Rvariable['data']+')'):
                 # self.columnsorrows.addItem(v)
+            rows = self.rsession('length('+self.Rvariable['data']+'[,1])')
+            cols = self.rsession('length('+self.Rvariable['data']+'[1,])')
+            self.infoa.setText("Data Connected")
+            self.tableinfoa.setText("Data Connected with:")
+            self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
         except:
             self.infoa.setText("Signal not of appropriate type.")
+            self.tableinfoa.setText("No Data Connected")
+            self.tableinfob.setText("")
+            self.tableinfoc.setText("")
+            self.tableinfod.setText("")
     
     def subset(self):
         h = ''
@@ -153,18 +158,22 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         if self.Rvariable['data'] != '': # this checks if data is still the default
             if self.rowcolselect == 0: # we are selecting columns based on row criteria so we need to show the row infoa
                 try: # want to see if there are rownames so that we can select on them, if they don't exist 
+                    self.columnsorrows.addItem("Column Names")
                     for item in self.rsession('rownames('+self.Rvariable['data']+')'):
                         self.columnsorrows.addItem(item)
                 except:
                     self.infoa.setText("Rownames do not exist, showing the row numbers")
+                    self.RowColNamesExist = 0
                     for l in xrange(int(self.rsession('length('+self.Rvariable['data']+'[,1])'))):
                         self.columnsorrows.addItem(str(l+1))
             if self.rowcolselect == 1: # we are selecting on rows based on columns so we need to show the columns for criteris 
-                try: # want to see if there are colnames for selection  
+                try: # want to see if there are colnames for selection 
+                    self.columnsorrows.addItem("Row Names")
                     for item in self.rsession('colnames('+self.Rvariable['data']+')'):
                         self.columnsorrows.addItem(item)
                 except:
                     self.infoa.setText("Column names do not exist, showing the row numbers")
+                    self.RowColNamesExist = 0
                     for l in xrange(int(self.rsession('length('+self.Rvariable['data']+'[1,])'))):
                         self.columnsorrows.addItem(str(l+1))
         else:
@@ -173,16 +182,42 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
     def subListAdd(self): #want to show the summary of the factor that was selected, should account for the type of data that we are seeing
         # first get a tmp variable for the data that we are subsetting 
         try: 
-            self.columnsorrows.selectedItems()[0].text()
+            querytext = self.columnsorrows.selectedItems()[0].text()
         except: 
             return # nothing selected
         #try: #this fails if there is nothing selected in the col selector
+        
+        # Did we pick the names of Column Names or Row Names?
+        if querytext == "Column Names": # pick the column names and populate the list
+            self.valuesStack.setCurrentWidget(self.boxIndices[3])  
+            self.namesList.clear()
+            try:
+                for names in self.rsession('colnames('+self.Rvariable['data']+')'):
+                    self.namesList.addItem(names)
+            except: # there is some problem with the colnames
+                for i in xrange(self.rsession('length('+self.Rvariable['data']+'[1,])')):
+                    self.namesList.addItem(str(i))
+        if querytext == "Row Names":
+            self.valuesStack.setCurrentWidget(self.boxIndices[3]) 
+            self.namesList.clear()
+            try:
+                for names in self.rsession('rownames('+self.Rvariable['data']+')'):
+                    self.namesList.addItem(names)
+            except:
+                for i in xrange(self.rsession('length('+self.Rvariable['data']+'[,1])')):
+                    self.namesList.addItem(str(i))
         if self.rowcolselect == 0: # we are selecting columns based on row criteria so we need to show the row infoa
-            self.rownumber = str(self.columnsorrows.selectedItems()[0].text())
-            self.rsession('tmp<-'+self.Rvariable['data']+'["'+self.rownumber+'",]')
+            self.rownumber = str(querytext)
+            if self.RowColNamesExist:
+                self.rsession('tmp<-'+self.Rvariable['data']+'["'+self.rownumber+'",]')
+            else:
+                self.rsession('tmp<-'+self.Rvariable['data']+'['+self.rownumber+',]')
         if self.rowcolselect == 1:
-            self.colnames = str(self.columnsorrows.selectedItems()[0].text())
-            self.rsession('tmp<-'+self.Rvariable['data']+'[,"'+self.colnames+'"]')
+            self.colnames = str(querytext)
+            if self.RowColNamesExist:
+                self.rsession('tmp<-'+self.Rvariable['data']+'[,"'+self.colnames+'"]')
+            else:
+                self.rsession('tmp<-'+self.Rvariable['data']+'[,'+self.colnames+']')
         self.type = self.rsession('class(tmp)')
         # start logic for what type of vector tmp is
         if self.type == 'numeric':
@@ -207,7 +242,6 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
                 self.StatTable.setItem(n, 1, newitem)
                 n += 1
 
-        
         if self.type == 'factor':
             self.FactorTable.setHorizontalHeaderLabels(['Factor', 'Count'])
             self.valuesStack.setCurrentWidget(self.boxIndices[2])
@@ -222,81 +256,102 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
                 self.FactorTable.setItem(n, 1, val)
                 n += 1
             
-        # self.rsession('txt<-paste(capture.output(stats(tmp)), collapse = "\n")')
-        # Rsummary = self.rsession('paste("<pre>", txt, "</pre>")')
-        # self.criteriaOutput.setHtml(Rsummary)
-        # except: 
-            # self.infoa.setText("Problem Prosessing Data")
-            
     def SubSliderValueChanged(self, slidervalue):
         self.currentNum = str(self.rankedVals[slidervalue-1])
         self.numericInfo.setText('Sample Number: '+str(slidervalue)+'   Value'+self.currentNum) # the value of the slider reflects the rank value of the sample, can convert to an actual value if needed.
     
-    def selectCriteria(self):
+    def rowcolNamesSelect(self):
+        self.criteriaTable.setRowCount(self.colselectionCriteria+self.rowselectionCriteria+1)
+        rowcolHolder = ''
+        for item in self.namesList.selectedItems(): # got the items that were selected in the names list for row col selection by names
+            rowcolHolder += str(item.text())+'","'
+        rowcolHolderP = rowcolHolder[:len(rowcolHolder)-3]
+        if self.rowcolselect == 0:
+            self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-colnames('+self.Rvariable['data']+') %in% c("'+rowcolHolderP+'")')
+            
+            self.updatecolCriteriaList(str('Column Names equal to "'+rowcolHolderP+'"')+'. Row Criteria '+str(self.rowselectionCriteria))
+            self.rowselectionCriteria += 1
+        if self.rowcolselect == 1:
+            self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-rownames('+self.Rvariable['data']+') %in% c("'+rowcolHolderP+'")')
+            
+            self.updaterowCriteriaList(str('Row Names equal to "'+rowcolHolderP+'"')+'. Column Criteria '+str(self.colselectionCriteria))
+            self.colselectionCriteria += 1
+        
+            
+    def selectCriteria(self, item=None):
         self.criteriaTable.setRowCount(self.colselectionCriteria+self.rowselectionCriteria+1)
         if self.rowcolselect == 0:
             if self.type == 'numeric':
                 if self.GorL == 0:
                     self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-tmp > '+self.currentNum)
-                    newitem = QTableWidgetItem(str(self.colnames+' > '+self.currentNum))
-                    self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
-                    cw = QCheckBox()
-                    cw.setCheckState(2)
-#                cw.setChecked(cond.enabled)
-                    self.connect(cw, SIGNAL("toggled(bool)"), self.rowcriteriaActiveChange(selCri))
-            
+                    self.updatecolCriteriaList(str(self.colnames)+' > '+str(self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
+                if self.GorL == 1:
+                    self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-tmp < '+self.currentNum)
+                    self.updatecolCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
+            if self.type == 'factor':
+                self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-tmp == "'+str(item.text())+'"')
+                self.updatecolCriteriaList(str(self.colnames)+' Equal To '+item.text()+'. Row Criteria '+str(self.rowselectionCriteria))
             self.rowselectionCriteria += 1
         if self.rowcolselect == 1:
             if self.type == 'numeric':
                 if self.GorL == 0:
                     self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-tmp > '+self.currentNum)
-                    newitem = QTableWidgetItem(str(self.colnames+' > '+self.currentNum))
-                    self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
-                    cw = QCheckBox()
-                    
-#                cw.setChecked(cond.enabled)
-                    self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.colselectionCriteria): self.rowcriteriaActiveChange(val, selCri))
-                    
-                    cw.setChecked(True)
-                    self.criteriaTable.setCellWidget(self.rowselectionCriteria + self.colselectionCriteria, 0, cw)
+                    self.updaterowCriteriaList(str(self.colnames+' > '+self.currentNum)+'. Column Criteria '+str(self.colselectionCriteria))
                 if self.GorL == 1:
                     self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-tmp < '+self.currentNum)
-                    newitem = QTableWidgetItem(str(self.colnames+' < '+self.currentNum))
-                    self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
-                    cw = QCheckBox()
-#                cw.setChecked(cond.enabled)
-                    
-                    self.criteriaTable.setCellWidget(self.rowselectionCriteria + self.colselectionCriteria, 0, cw)
-                    
-                    self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.colselectionCriteria): self.rowcriteriaActiveChange(val, selCri))
-                    cw.setChecked(True)
-            
+                    self.updaterowCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Column Criteria '+str(self.colselectionCriteria))
+            if self.type == 'factor':
+                self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-tmp == "'+str(item.text())+'"')
+                self.updaterowCriteriaList(str(self.colnames+' Equal To '+item.text())+'. Column Criteria '+str(self.colselectionCriteria))
             self.colselectionCriteria += 1
-        self.applySubsetting()
+        #self.applySubsetting()
         
     def rowcriteriaActiveChange(self, checkbox, selCri):
-        try:
-            self.numericInfo.setText(str(selCri)+str(checkbox))
+        if selCri < len(self.rowactiveCriteria)-1 or selCri == len(self.rowactiveCriteria)-1:
+            self.infob.setText('Selection Criteria '+str(selCri)+' changed to '+str(checkbox))
             self.rowactiveCriteria[selCri] = checkbox
-        except:
+        else:
             self.rowactiveCriteria.insert(selCri, checkbox)
         self.applySubsetting()
         
     def colcriteriaActiveChange(self, checkbox, selCri):
-        try:
-            self.numericInfo.setText(str(selCri)+str(checkbox))
+        if selCri < len(self.colactiveCriteria)-1 or selCri == len(self.colactiveCriteria)-1:
+            self.infob.setText('Selection Criteria '+str(selCri)+' changed to '+str(checkbox))
             self.colactiveCriteria[selCri] = checkbox
-        except: 
+        else: 
             self.colactiveCriteria.insert(selCri, checkbox)
         self.applySubsetting()
     
+    def updaterowCriteriaList(self, text):
+        newitem = QTableWidgetItem(text)
+        self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
+        cw = QCheckBox()
+        self.criteriaTable.setCellWidget(self.rowselectionCriteria + self.colselectionCriteria, 0, cw)
+        self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.colselectionCriteria): self.rowcriteriaActiveChange(val, selCri))
+        cw.setChecked(True)
+        selCri=int(self.colselectionCriteria)
+        self.rowcriteriaActiveChange(True, selCri)
+        self.criteriaTable.resizeColumnsToContents()
+        self.criteriaTable.resizeRowsToContents()
+    
+    def updatecolCriteriaList(self, text):
+        newitem = QTableWidgetItem(text)
+        self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
+        cw = QCheckBox()
+        self.criteriaTable.setCellWidget(self.rowselectionCriteria + self.colselectionCriteria, 0, cw)
+        self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.rowselectionCriteria): self.colcriteriaActiveChange(val, selCri))
+        cw.setChecked(True)
+        selCri=int(self.rowselectionCriteria)
+        self.colcriteriaActiveChange(True, selCri)
+        self.criteriaTable.resizeColumnsToContents()
+        self.criteriaTable.resizeRowsToContents()
+        
     def applySubsetting(self):
         # make the row subsetting criteria
         rcr = ''
         ccr = ''
         self.rsession('rows'+self.vs+'<-TRUE')
         self.rsession('cols'+self.vs+'<-TRUE')
-        self.infob.setText(str(self.colactiveCriteria)+str(self.rowactiveCriteria))
         if sum(self.rowactiveCriteria) == 0: #there aren't any active criteria  
             pass
         else:
@@ -307,7 +362,6 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
                 rci += 1
             rcrr = rcr[:len(rcr)-1]
             self.rsession('rows'+self.vs+'<-'+rcrr)
-            self.infoa.setText(str(rcrr))
             #self.numericInfo.setText(str(self.rowactiveCriteria))
         if sum(self.colactiveCriteria) == 0:
             pass
@@ -320,7 +374,19 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             ccrr = ccr[:len(ccr)-1]
             self.rsession('cols'+self.vs+'<-'+ccrr)
         self.rsession(self.Rvariable['result']+'<-'+self.Rvariable['data']+'[rows'+self.vs+',cols'+self.vs+']')
-        self.rSend("R DataFrame" ,{'data':self.Rvariable['result']})
+        resultclass = self.rsession('class('+self.Rvariable['result']+')')
+        if resultclass == 'data.frame':
+            self.rSend("R DataFrame" ,{'data':self.Rvariable['result']})
+            self.tableinfoc.setText("Data Frame sent with:")
+            cols = self.rsession('length('+self.Rvariable['result']+'[1,])')
+            rows = self.rsession('length('+self.Rvariable['result']+'[,1])')
+            self.tableinfod.setText("%s columns and %s rows." % (str(cols), str(rows)))
+        elif resultclass == 'numeric' or resultclass == 'factor':
+            self.rSend("Classified Vector Subset", {'data':self.Rvariable['result']})
+        else:
+            self.infoa.setText("Send failed because of incompatable type")
                     
-        
+    # def testme(self, item=None):
+        # self.infoa.setText(item.text())
+        # self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-tmp == "'+str(item.text())+'"')
         # make the column subsetting criteria

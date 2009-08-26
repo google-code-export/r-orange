@@ -21,6 +21,7 @@ class mergeR(OWRpy):
         #default values        
         self.colAsel = ''
         self.colBsel = ''
+        self.forceMergeAll = 0 #checkbox value for forcing merger on all data, default is to remove instances from the rows or cols.
         self.loadSettings()
         
         #set R variable names
@@ -42,8 +43,17 @@ class mergeR(OWRpy):
         grid.addWidget(pickB, 0,1)
         self.colB = OWGUI.listBox(pickB, self, callback = self.setcolB)
         
+        infoBox = OWGUI.widgetBox(self.controlArea, "Info")
+        self.infoa = OWGUI.widgetLabel(infoBox, "No Data Loaded")
+        
         runbox = OWGUI.widgetBox(self.controlArea, "Run")
         OWGUI.button(runbox, self, "Run", callback = self.run)
+        
+        # ## Other options
+        otherBox = OWGUI.widgetBox(self.controlArea, "Binding")
+        OWGUI.checkBox(otherBox, self, "forceMergeAll", "Force Merger")
+        OWGUI.button(otherBox, self, "Bind By Columns", callback = self.colBind)
+        OWGUI.button(otherBox, self, "Bind By Rows", callback = self.rowBind)
         #print self.colAsel, self.colBsel
         # if self.rsession('exists("' + self.Rvariables['loadSavedSession'] + '")'):
             # self.loadSavedSession = True
@@ -124,3 +134,28 @@ class mergeR(OWRpy):
             self.colBsel = str(self.colB.selectedItems()[0].text())
             
         except: return
+    
+    def rowBind(self):
+        try:
+            if self.forceMergeAll == 0:
+                self.rsession('tmp<-colnames('+self.dataB+') %in% colnames('+self.dataA+')')
+                self.rsession('tmp2<-'+self.dataB+'[,!tmp]')
+                self.rsession(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', tmp2)')
+                self.rsession('rm(tmp); rm(tmp2)')
+            else:
+                self.rsession(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', '+self.dataB+')')
+            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
+        except:
+            self.infoa.setText("Merger Failed. Be sure data is connected")
+    def colBind(self):
+        try:
+            if self.forceMergeAll == 0:
+                self.rsession('tmp<-rownames('+self.dataB+') %in% rownames('+self.dataA+')')
+                self.rsession('tmp2<-'+self.dataB+'[!tmp,]')
+                self.rsession(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', tmp2)')
+                self.rsession('rm(tmp); rm(tmp2)')
+            else:
+                self.rsession(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', '+self.dataB+')')
+            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
+        except:
+            self.infoa.setText("Merger Failed. Be sure data is connected")
