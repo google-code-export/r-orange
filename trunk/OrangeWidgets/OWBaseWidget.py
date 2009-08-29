@@ -360,10 +360,11 @@ class OWBaseWidget(QDialog):
 
     def getSettingsFile(self, file):
         if file==None:
-            if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
-                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
-            else:
-                return
+            return
+            # if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
+                # file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+            # else:
+                # return
         if type(file) == str:
             if os.path.exists(file):
                 return open(file, "r")
@@ -410,6 +411,8 @@ class OWBaseWidget(QDialog):
 
 
     def saveSettings(self, file = None):
+        if file == None:
+            return
         settings = self.getSettings()
         if settings:
             if file==None:

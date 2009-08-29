@@ -10,6 +10,7 @@ set_options(RHOME=os.environ['RPATH'])
 import rpy
 import time
 import RvarClasses
+import RAffyClasses
 import threading
 
 
@@ -34,8 +35,13 @@ class OWRpy(OWWidget):
         self.Rvariables = {}
         self.loadingSavedSession = False
         #self.settingsList = ['variable_suffix','loadingSavedSession']
-        
+        #self.outputs = [('KILL',orange.Variable)]
+        #self.rSend('KILL', {'kill':True})
 
+    # def setOutputs (self,outputs):
+        # self.outputs.extend(outputs)
+        # self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]
+        
     def getSettings(self, alsoContexts = True):
         settings = {}
         if hasattr(self, "settingsList"):
@@ -61,11 +67,12 @@ class OWRpy(OWWidget):
         self.loadingSavedSession = False
         self.send(name, variable)
         
-    def rsession(self,query,processing_notice=False):
+    def rsession(self, query,processing_notice=False):
         qApp.setOverrideCursor(Qt.WaitCursor)
         OWRpy.rsem.acquire()
         OWRpy.lock.acquire()
         OWRpy.occupied = 1
+        output = None
         if processing_notice:
             self.progressBarInit()
             self.progressBarSet(30)
@@ -77,6 +84,7 @@ class OWRpy(OWWidget):
             OWRpy.lock.release()
             OWRpy.rsem.release()
             qApp.restoreOverrideCursor()
+            self.progressBarFinished()
             print inst.message
             return inst
         # OWRpy.processing = False
@@ -89,15 +97,48 @@ class OWRpy(OWWidget):
         qApp.restoreOverrideCursor()
         return output
                 
-            
+    def R(self,type, query,processing_notice=False):
+        qApp.setOverrideCursor(Qt.WaitCursor)
+        OWRpy.rsem.acquire()
+        OWRpy.lock.acquire()
+        OWRpy.occupied = 1
+        output = None
+        if processing_notice:
+            self.progressBarInit()
+            self.progressBarSet(30)
+        print query
+        try:
+            if type == 'getRData':
+                output  = rpy.r(query)
+            elif type == 'setRData' and not self.loadingSavedSession:
+                rpy.r(query)
+
+        except rpy.RPyRException, inst:
+            OWRpy.occupied = 0
+            OWRpy.lock.release()
+            OWRpy.rsem.release()
+            qApp.restoreOverrideCursor()
+            self.progressBarFinished()
+            print inst.message
+            return inst
+        # OWRpy.processing = False
+        if processing_notice:
+            self.progressBarFinished()
+        
+        OWRpy.occupied = 0
+        OWRpy.lock.release()
+        OWRpy.rsem.release()
+        qApp.restoreOverrideCursor()
+        return output
+                         
     def require_librarys(self,librarys):
         for library in librarys:
-            if not self.rsession("library('"+ library +"',logical.return=T)"): 
-                self.rsession('setRepositories(ind=1:7)')
-                self.rsession('chooseCRANmirror()')
-                self.rsession('install.packages("' + library + '")')
+            if not self.R('getRData',"require('"+ library +"')"): 
+                self.R('getRData','setRepositories(ind=1:7)')
+                self.R('getRData','chooseCRANmirror()')
+                self.R('getRData','install.packages("' + library + '")')
             try:
-                self.rsession('require('  + library + ')')
+                self.R('getRData','require('  + library + ')')
             except rpy.RPyRException, inst:
                 print 'asdf'
                 m = re.search("'(.*)'",inst.message)
@@ -157,23 +198,23 @@ class OWRpy(OWWidget):
     def onDeleteWidget(self):
         for k in self.Rvariables:
             print self.Rvariables[k]
-            self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+            self.R('setRData','if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
             if self.device: #  if this is true then this widget made an R device and we would like to shut it down
                 key = self.device.keys()[0]
-                self.rsession('dev.set('+self.device[key]+')')
-                self.rsession('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets)) 
+                self.R('setRData','dev.set('+self.device[key]+')')
+                self.R('setRData','dev.off() # shut down device for widget '+ str(OWRpy.num_widgets)) 
         except: return
             
     def Rplot(self, query, dwidth=2, dheight=2):
         # check that a device is currently used by this widget
         try: # if this returns true then a device is attached to this widget and should be set to the focus
             key = self.device.keys()
-            self.rsession('dev.set('+self.device[key[0]]+')')
+            self.R('setRData','dev.set('+self.device[key[0]]+')')
         except:
-            self.rsession('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets)) # starts a new device 
-            self.device = self.rsession('dev.cur()')  # record the device for later use this records as a dict, though now we only make use of the first element.
-        self.rsession(query)
+            self.R('setRData','x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets)) # starts a new device 
+            self.device = self.R('dev.cur()')  # record the device for later use this records as a dict, though now we only make use of the first element.
+        self.R('setRData',query)
             
     def onSaveSession(self):
         print 'save session'

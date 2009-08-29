@@ -7,6 +7,7 @@
 
 from OWRpy import *
 import OWGUI
+import RAffyClasses
 
 
 class ReadCEL(OWRpy):
@@ -24,7 +25,8 @@ class ReadCEL(OWRpy):
         
         #signals
         self.inputs = None 
-        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RvarClasses.Eset)]
+        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]
+        
 
 
         #GUI
@@ -69,13 +71,14 @@ class ReadCEL(OWRpy):
 
         if len(self.recentFiles) > 0:
             self.setFileList()
-        self.rsession(self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"')
+        self.R('setRData',self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"')
         self.procesS()
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        folder = self.rsession(self.Rvariables['folder'] +'<-choose.dir()')
-        if not self.rsession('is.na(' + self.Rvariables['folder'] +')'):
+        self.R('setRData',self.Rvariables['folder'] +'<-choose.dir()')
+        if not self.R('getRData','is.na(' + self.Rvariables['folder'] +')'):
+            folder = self.R('getRData', self.Rvariables['folder'])
             if folder in self.recentFiles: self.recentFiles.remove(folder)
             self.recentFiles.insert(0, folder)
             self.setFileList()
@@ -85,13 +88,12 @@ class ReadCEL(OWRpy):
         self.infoa.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
-        if not self.loadingSavedSession:
-            self.rsession(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
+        self.R('setRData',self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
         self.infoa.setText("Your data has been processed.")
         out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
         self.rSend("Expression Matrix", out)
         self.rSend("Eset", {'data':self.Rvariables['eset']})
-        self.rSend("AffyBatch", self.out)
+        
 
         
     

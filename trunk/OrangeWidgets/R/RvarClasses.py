@@ -11,9 +11,3 @@ class RVector(RVariable):
 
 class RList(RVariable):
 	pass
-
-class RAffyBatch(RVariable):
-	pass
-class Eset(RVariable):
-	pass
-    

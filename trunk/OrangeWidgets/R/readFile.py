@@ -14,9 +14,9 @@ class readFile(OWRpy):
     
     settingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
-        #OWWidget.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+
         OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        #self.setStateVariables(['recentFiles'])
+
         self.recentFiles=["(none)"]
         self.loadSettings()
         
@@ -43,7 +43,7 @@ class readFile(OWRpy):
         #self.recentFiles=filter(os.path.exists, self.recentFiles)
         self.setFileList()
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-        print 'on init :' + str(self.loadingSavedSession)
+        #print 'on init :' + str(self.loadingSavedSession)
         if self.loadingSavedSession:
             print 'onloading save :' + str(self.loadingSavedSession)
             self.loadFile()
@@ -69,12 +69,12 @@ class readFile(OWRpy):
             self.browseFile(1)
         if len(self.recentFiles) > 0:
             self.setFileList()
-        self.rsession(self.Rvariables['filename'] + ' = "' + self.recentFiles[0].replace('\\', '/') + '"')
+        self.R('setRData',self.Rvariables['filename'] + ' = "' + self.recentFiles[0].replace('\\', '/') + '"')
         self.loadFile()
     
     def browseFile(self): 
-        fn = self.rsession(self.Rvariables['filename'] + ' <- choose.files()')
-        if self.rsession('length(' + self.Rvariables['filename'] +')') != 0:
+        fn = self.R('getRData',self.Rvariables['filename'] + ' <- choose.files()')
+        if self.R('getRData','length(' + self.Rvariables['filename'] +')') != 0:
             if fn in self.recentFiles: self.recentFiles.remove(fn)
             self.recentFiles.insert(0, fn)
             self.setFileList()
@@ -84,17 +84,17 @@ class readFile(OWRpy):
         print 'on load :' + str(self.loadingSavedSession)
         if not self.loadingSavedSession:
             print 'read file'
-            self.rsession(self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')',True)
+            self.R('setRData',self.Rvariables['dataframe'] + '= read.delim(' + self.Rvariables['filename'] + ')',True)
         self.updateGUI()
         self.rSend("data.frame", {'data':self.Rvariables['dataframe']})
         
         
     def updateGUI(self):
-        col_names = self.rsession('colnames(' + self.Rvariables['dataframe'] + ')')
+        col_names = self.R('getRData','colnames(' + self.Rvariables['dataframe'] + ')')
         self.infoa.setText("data loaded")
-        self.infob.setText(self.rsession(self.Rvariables['filename']))
-        self.infoc.setText("Number of rows: " + str(self.rsession('nrow(' + self.Rvariables['dataframe'] + ')')))
-        col_def = self.rsession('sapply(' + self.Rvariables['dataframe'] + ',class)')
+        self.infob.setText(self.R('getRData',self.Rvariables['filename']))
+        self.infoc.setText("Number of rows: " + str(self.R('getRData','nrow(' + self.Rvariables['dataframe'] + ')')))
+        col_def = self.R('getRData','sapply(' + self.Rvariables['dataframe'] + ',class)')
         l = []
         for i,v in col_def.iteritems():
             l.append(i + ': ' + v)

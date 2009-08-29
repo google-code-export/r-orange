@@ -19,7 +19,7 @@ class plotAffy(OWRpy):
         #set R variable names
         #self.setRvariableNames()
 
-        self.inputs = [("Affybatch", RAffyClasses.RAffyBatch, self.init)]
+        self.inputs = [("Affybatch", RAffyClasses.Eset, self.init)]
         self.outputs = None
         
         self.testLineEdit = ""

@@ -8,14 +8,12 @@
 
 from OWRpy import *
 import OWGUI
-
+import RAffyClasses
 class affyRMA(OWRpy):
     settingsList = ['enableMethBox', 'data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Normalization")
         
-        #OWRpy.__init__(self)
-        #self.setStateVariables(['enableMethBox','data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'])
         #default values        
         self.normmeth = 'quantiles'
         self.normoptions = ''
@@ -38,7 +36,7 @@ class affyRMA(OWRpy):
         
         #signals		
         self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.process)]
-        self.outputs = [("Normalized DataFrame", RvarClasses.RDataFrame),("Normalized AffyBatch", RvarClasses.RAffyBatch)]
+        self.outputs = [("Normalized DataFrame", RvarClasses.RDataFrame),("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
 
         
         #the GUI
@@ -56,11 +54,11 @@ class affyRMA(OWRpy):
         self.normselector.setEnabled(False)
         self.bgcorrectselector = OWGUI.comboBox(info, self, 'bgcorrect', label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
         self.bgcorrectselector.setEnabled(False)
-        self.bgcmethselector = OWGUI.comboBox(info, self, 'bgcorrectmeth', label="Background Correct Methods", items=self.rsession('bgcorrect.methods'), orientation=0)
+        self.bgcmethselector = OWGUI.comboBox(info, self, 'bgcorrectmeth', label="Background Correct Methods", items=self.R('getRData','bgcorrect.methods'), orientation=0)
         self.bgcmethselector.setEnabled(False)
-        self.pmcorrectselector = OWGUI.comboBox(info, self, 'pmcorrect', label="Perfect Match Correct Methods", items=self.rsession('pmcorrect.methods'), orientation=0)
+        self.pmcorrectselector = OWGUI.comboBox(info, self, 'pmcorrect', label="Perfect Match Correct Methods", items=self.R('getRData','pmcorrect.methods'), orientation=0)
         self.pmcorrectselector.setEnabled(False)
-        self.summethselector = OWGUI.comboBox(info, self, 'summarymeth', label="Summary Methods", items=self.rsession('express.summary.stat.methods'), orientation=0)
+        self.summethselector = OWGUI.comboBox(info, self, 'summarymeth', label="Summary Methods", items=self.R('getRData','express.summary.stat.methods'), orientation=0)
         self.summethselector.setEnabled(False)
         
         
@@ -72,13 +70,12 @@ class affyRMA(OWRpy):
         
     def normalize(self):
         self.infoa.setText('Processing')
-        if not self.loadingSavedSession:
-            if self.selectMethod == 0:
-                self.rsession(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
-            if self.selectMethod == 1:
-                self.rsession(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
-            if self.selectMethod == 2:
-                self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
+        if self.selectMethod == 0:
+            self.R('setRData',self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
+        if self.selectMethod == 1:
+            self.R('setRData',self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
+        if self.selectMethod == 2:
+            self.R('setRData',self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
 
         self.infoa.setText('Processed')
         neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch'], 'normmethod':'rma'}
@@ -105,7 +102,7 @@ class affyRMA(OWRpy):
             print str(dataset['eset'])
             self.data = str(dataset['eset'])
             
-            if self.rsession('length(exprs('+self.data+')[1,])') > 10:
+            if self.R('getRData','length(exprs('+self.data+')[1,])') > 10:
                 self.selectMethod = 2
                 self.selectMethodChanged()
                 
@@ -145,7 +142,7 @@ class affyRMA(OWRpy):
             self.summethselector.setEnabled(True)
             self.norm = ['quantiles']
             self.normselector.clear()
-            self.normselector.addItems(self.rsession('normalize.methods('+self.data+')'))
+            self.normselector.addItems(self.R('getRData','normalize.methods('+self.data+')'))
             self.normselector.setCurrentIndex(self.normselector.findText('invariantset'))
             self.normselector.setEnabled(True)
         
