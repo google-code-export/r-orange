@@ -23,7 +23,7 @@ class OWRpy(OWWidget):
     rsem = threading.Semaphore(value = 1)
     occupied = 0
     
-    def __init__(self,parent=None, signalManager=None, title="R Widget",**args):	
+    def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
         OWWidget.__init__(self, parent, signalManager, title, **args)
         
         
@@ -96,7 +96,7 @@ class OWRpy(OWWidget):
         qApp.restoreOverrideCursor()
         return output
                 
-    def R(self,type, query,processing_notice=False):
+    def R(self, query, type = 'getRData' ,processing_notice=False):
         qApp.setOverrideCursor(Qt.WaitCursor)
         OWRpy.rsem.acquire()
         OWRpy.lock.acquire()
@@ -133,18 +133,18 @@ class OWRpy(OWWidget):
     def require_librarys(self,librarys):
         if self.packagesLoaded == 0:
             for library in librarys:
-            	if not self.R('getRData',"require('"+ library +"')"): 
-                	self.R('getRData','setRepositories(ind=1:7)')
-                	self.R('getRData','chooseCRANmirror()')
-                	self.R('getRData','install.packages("' + library + '")')
-            	try:
-                	self.R('getRData','require('  + library + ')')
-            	except rpy.RPyRException, inst:
-                	print 'asdf'
-                	m = re.search("'(.*)'",inst.message)
-                	self.require_librarys([m.group(1)])
-            	except:
-                	print 'aaa'
+                if not self.R("require('"+ library +"')"): 
+                    self.R('setRepositories(ind=1:7)')
+                    self.R('chooseCRANmirror()')
+                    self.R('install.packages("' + library + '")')
+                try:
+                    self.R('require('  + library + ')')
+                except rpy.RPyRException, inst:
+                    print 'asdf'
+                    m = re.search("'(.*)'",inst.message)
+                    self.require_librarys([m.group(1)])
+                except:
+                    print 'aaa'
             self.packagesLoaded = 1
         else:
             print 'Packages Loaded'
@@ -201,7 +201,7 @@ class OWRpy(OWWidget):
     def onDeleteWidget(self, supress = 0):
         for k in self.Rvariables:
             print self.Rvariables[k]
-            self.R('setRData','if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', 'setRData')
         try:
             if supress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
                 return
@@ -212,19 +212,19 @@ class OWRpy(OWWidget):
             try:
                 if self.device: #  if this is true then this widget made an R device and we would like to shut it down
                     key = self.device.keys()[0]
-                	self.R('setRData','dev.set('+self.device[key]+')')
-                	self.R('setRData','dev.off() # shut down device for widget '+ str(OWRpy.num_widgets)) 
+                    self.R('dev.set('+self.device[key]+')', 'setRData')
+                    self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
             except: return
 
     def Rplot(self, query, dwidth=2, dheight=2):
         # check that a device is currently used by this widget
         try: # if this returns true then a device is attached to this widget and should be set to the focus
             key = self.device.keys()
-            self.R('setRData','dev.set('+self.device[key[0]]+')')
+            self.R('dev.set('+self.device[key[0]]+')', 'setRData')
         except:
-            self.R('setRData','x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets)) # starts a new device 
+            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
             self.device = self.R('dev.cur()')  # record the device for later use this records as a dict, though now we only make use of the first element.
-        self.R('setRData',query)
+        self.R(query, 'setRData')
             
     def onSaveSession(self):
         print 'save session'

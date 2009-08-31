@@ -45,8 +45,17 @@ class ReadCEL(OWRpy):
 
         
         #initialize previous sessions
-        if self.loadingSavedSession:
-            self.procesS()
+        try:
+            varexists = self.R('getRData', 'exists("'+self.Rvariables['eset']+'")') #should trigger an exception if it doesn't exist
+            self.infod.setText(str(varexists))
+            if varexists:
+                self.sendMe(kill = False)
+            else:
+                return
+        except:
+            pass
+        # if self.loadingSavedSession:
+            # self.procesS()
         
         
 
@@ -90,13 +99,9 @@ class ReadCEL(OWRpy):
         self.require_librarys(['affy'])
         self.R('setRData',self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
         self.infoa.setText("Your data has been processed.")
-        if not self.loadingSavedSession:
-            out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':True}
-        elif self.loadingSavedSession:
-            out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':False}
+        self.sendMe()
+        
+    def sendMe(self, kill = True):
+        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':kill}
         self.rSend("Expression Matrix", out)
-        self.rSend("Eset", {'data':self.Rvariables['eset']})
-        
-
-        
-    
+        self.rSend("Eset", {'data':self.Rvariables['eset'], 'kill':kill})

@@ -123,9 +123,9 @@ class affyNormalize(OWRpy):
                 
             self.selMethBox.setEnabled(True)
             self.infoa.setText('Data Loaded')
-                if dataset['kill'] == True:
-                    self.rSend("Normalized DataFrame", {'kill':True, 'data':''})
-                    self.rSend("Normalized AffyBatch", {'kill':True, 'data':''})
+            if dataset['kill'] == True:
+                self.rSend("Normalized DataFrame", {'kill':True, 'data':''})
+                self.rSend("Normalized AffyBatch", {'kill':True, 'data':''})
         except: 
             print 'error'
 

@@ -98,8 +98,18 @@ class diffExp(OWRpy):
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
         
         #self.Rreload() #Important to be at the end of the __init__
-        if self.loadingSavedSession:
-            self.processEset()
+        try:
+            varexists1 = self.R('getRData', 'exists("'+self.Rvariables['classes']+'")') #should trigger an exception if it doesn't exist
+            varexists2 = self.R('getRData', 'exists("'+self.Rvariables['results']+'")')
+            self.infod.setText(str(varexists))
+            if varexists1 and varexists2:
+                self.processEset(reload = True)
+            else:
+                return
+        except:
+            pass
+        # if self.loadingSavedSession:
+            # self.processEset()
 
     def clearA(self):
         self.selectedArrays.clear()
@@ -143,6 +153,9 @@ class diffExp(OWRpy):
                     self.data = ''
                     self.olddata = {}
                     return
+            except:
+                pass
+                
             self.data = data['data']
             self.olddata = data.copy()
             self.samplenames = self.rsession('colnames('+self.data+')') #collect the sample names to make the differential matrix
@@ -191,8 +204,8 @@ class diffExp(OWRpy):
         self.starButton.setEnabled(False)
         self.processEsetButton.setEnabled(False)
         self.modelText.setText("Model: " + self.modelFormula)
-    def processEset(self): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
-        if not self.loadingSavedSession: # we really need to process this block
+    def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
+        if not reload: # we really need to process this block
             if self.phenoData == '':
                 #first we need to construct the design
                 h=''

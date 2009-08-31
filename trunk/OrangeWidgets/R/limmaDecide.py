@@ -84,7 +84,7 @@ class limmaDecide(OWRpy):
         self.send("Gene Change Matrix", self.sending)
         
         self.rsession(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
-        self.rsession(self.Rvariables['gcm']+'[geneissig,] ->'+self.Rvariables['dfsg'])
+        self.rsession(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
         self.modelProcessed = 1
         
         self.sendesetsubset()
@@ -99,7 +99,8 @@ class limmaDecide(OWRpy):
 
     def sendesetsubset(self):
         if self.eset != None and self.modelProcessed == 1:
-            self.rsession(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames(dfsg),]')
+            self.rsession(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
+            self.newdata = self.olddata.copy()
             self.newdata['data']=self.Rvariables['eset_sub']
             if 'classes' in self.ebdata:
                 self.newdata['classes'] = self.ebdata['classes']

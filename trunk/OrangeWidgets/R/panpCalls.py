@@ -56,6 +56,8 @@ class panpCalls(OWRpy):
             try:
                 if dataset['kill'] == True:
                     self.rSend("Present Gene Signal Matrix", {'kill':True})
+            except:
+                pass
             self.data = dataset
             if 'data' in self.data:
                 self.eset = self.data['data']
@@ -67,13 +69,13 @@ class panpCalls(OWRpy):
             
     def processEset(self):
         if not self.loadingSavedSession:
-        	self.infoa.setText("Processing Started!!!")
-        	self.R('setRData',self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')',True)
-        	self.infoa.setText('PA calls have been calculated')
-        	self.R('setRData',self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"',True)
-        	self.R('setRData',self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)',True)
-        	self.R('setRData',self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+self.percentA+'/100',True)
-        	self.R('setRData',self.Rvariables['peset']+'<-as.data.frame(exprs('+self.eset+')[' + self.Rvariables['Present'] + ',])',True)
+            self.infoa.setText("Processing Started!!!")
+            self.R('setRData',self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')',True)
+            self.infoa.setText('PA calls have been calculated')
+            self.R('setRData',self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"',True)
+            self.R('setRData',self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)',True)
+            self.R('setRData',self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+self.percentA+'/100',True)
+            self.R('setRData',self.Rvariables['peset']+'<-as.data.frame(exprs('+self.eset+')[' + self.Rvariables['Present'] + ',])',True)
             self.panpinfo = 'Processed with loose cut off = '+self.looseCut+', tight cut off ='+self.tightCut+', and percent absent = '+self.percentA
         self.infoa.setText('Processed')
         self.senddata = self.data.copy()
