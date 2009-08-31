@@ -35,13 +35,12 @@ class OWRpy(OWWidget):
         self.Rvariables = {}
         self.loadingSavedSession = False
         #self.settingsList = ['variable_suffix','loadingSavedSession']
-        #self.outputs = [('KILL',orange.Variable)]
-        #self.rSend('KILL', {'kill':True})
-
+        self.packagesLoaded = 0
+        
     # def setOutputs (self,outputs):
         # self.outputs.extend(outputs)
         # self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]
-        
+
     def getSettings(self, alsoContexts = True):
         settings = {}
         if hasattr(self, "settingsList"):
@@ -132,19 +131,23 @@ class OWRpy(OWWidget):
         return output
                          
     def require_librarys(self,librarys):
-        for library in librarys:
-            if not self.R('getRData',"require('"+ library +"')"): 
-                self.R('getRData','setRepositories(ind=1:7)')
-                self.R('getRData','chooseCRANmirror()')
-                self.R('getRData','install.packages("' + library + '")')
-            try:
-                self.R('getRData','require('  + library + ')')
-            except rpy.RPyRException, inst:
-                print 'asdf'
-                m = re.search("'(.*)'",inst.message)
-                self.require_librarys([m.group(1)])
-            except:
-                print 'aaa'
+        if self.packagesLoaded == 0:
+            for library in librarys:
+            	if not self.R('getRData',"require('"+ library +"')"): 
+                	self.R('getRData','setRepositories(ind=1:7)')
+                	self.R('getRData','chooseCRANmirror()')
+                	self.R('getRData','install.packages("' + library + '")')
+            	try:
+                	self.R('getRData','require('  + library + ')')
+            	except rpy.RPyRException, inst:
+                	print 'asdf'
+                	m = re.search("'(.*)'",inst.message)
+                	self.require_librarys([m.group(1)])
+            	except:
+                	print 'aaa'
+            self.packagesLoaded = 1
+        else:
+            print 'Packages Loaded'
                 
     def setRvariableNames(self,names):
         
@@ -195,17 +198,24 @@ class OWRpy(OWWidget):
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
         
-    def onDeleteWidget(self):
+    def onDeleteWidget(self, supress = 0):
         for k in self.Rvariables:
             print self.Rvariables[k]
             self.R('setRData','if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
-            if self.device: #  if this is true then this widget made an R device and we would like to shut it down
-                key = self.device.keys()[0]
-                self.R('setRData','dev.set('+self.device[key]+')')
-                self.R('setRData','dev.off() # shut down device for widget '+ str(OWRpy.num_widgets)) 
-        except: return
-            
+            if supress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
+                return
+        except:
+            for k in self.Rvariables:
+                print self.Rvariables[k]
+                self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+            try:
+                if self.device: #  if this is true then this widget made an R device and we would like to shut it down
+                    key = self.device.keys()[0]
+                	self.R('setRData','dev.set('+self.device[key]+')')
+                	self.R('setRData','dev.off() # shut down device for widget '+ str(OWRpy.num_widgets)) 
+            except: return
+
     def Rplot(self, query, dwidth=2, dheight=2):
         # check that a device is currently used by this widget
         try: # if this returns true then a device is attached to this widget and should be set to the focus
@@ -219,13 +229,4 @@ class OWRpy(OWWidget):
     def onSaveSession(self):
         print 'save session'
         self.loadingSavedSession = True;
-        
-        
-
-        
-        
-        
-
-        
-#
 

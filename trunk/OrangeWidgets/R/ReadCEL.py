@@ -90,7 +90,10 @@ class ReadCEL(OWRpy):
         self.require_librarys(['affy'])
         self.R('setRData',self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
         self.infoa.setText("Your data has been processed.")
-        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
+        if not self.loadingSavedSession:
+            out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':True}
+        elif self.loadingSavedSession:
+            out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':False}
         self.rSend("Expression Matrix", out)
         self.rSend("Eset", {'data':self.Rvariables['eset']})
         

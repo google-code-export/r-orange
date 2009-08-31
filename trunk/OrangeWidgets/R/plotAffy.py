@@ -10,10 +10,15 @@ import OWGUI
 import RAffyClasses
 
 class plotAffy(OWRpy):
+    settingsList = ['irows', 'icols', 'qcsProcessed']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "plotAffy")
         
         #default values        
+        self.irows = 1 #this sets the variable for the rows
+        self.icols = 1 #this sets the variable for the cols
+        self.setRvariableNames(['qcs'])
+        self.qcsProcessed = 0
         self.loadSettings()
 
         #set R variable names
@@ -23,14 +28,14 @@ class plotAffy(OWRpy):
         self.outputs = None
         
         self.testLineEdit = ""
-        self.irows = 1 #this sets the global variable for the rows
-        self.icols = 1 #this sets the global variable for the cols
+
         
         #the GUI
         info = OWGUI.widgetBox(self.controlArea, "Info")
         self.infoa = OWGUI.widgetLabel(info, 'No data loaded.')
-        plotbutton = OWGUI.button(info, self, "Show Image", callback = self.process, width = 200)
-        boxplotbutton = OWGUI.button(info, self, "Show Boxplot", callback = self.myboxplot, width = 200)
+        OWGUI.button(info, self, "Show Image", callback = self.process, width = 200)
+        OWGUI.button(info, self, "Show Boxplot", callback = self.myboxplot, width = 200)
+        OWGUI.button(info, self, "Pocess and Show QC", callback = self.RAffyQC, width = 200)
         
         optionsa = OWGUI.widgetBox(self.controlArea, "Options")
         self.infob = OWGUI.widgetLabel(optionsa, 'Button not pressed')
@@ -42,11 +47,12 @@ class plotAffy(OWRpy):
         
     
     def init(self, dataset):
-        if dataset:
-            self.data = dataset['eset']
+        if dataset and 'data' in dataset:
+            self.data = dataset['data']
             self.infoa.setText("Data Connected")
+            self.qcsProcessed == 0
         else:
-            self.infoa.setText("No data loaded.")
+            self.infoa.setText("No data loaded or not of appropriate type.")
     
     def process(self):
         #required librarys
@@ -64,3 +70,11 @@ class plotAffy(OWRpy):
         self.Rplot('boxplot('+self.data+')')
         #except:     
         #    self.infob.setText("Data not able to be processed")
+        
+    def RAffyQC(self):
+        if self.qcsProcessed == 0:
+            self.require_librarys(['simpleaffy'])
+            self.rsession(self.Rvariables['qcs']+'<-qc('+self.data+')')
+        self.Rplot('plot('+self.Rvariables['qcs']+')')
+        self.qcsProcessed = 1
+        
