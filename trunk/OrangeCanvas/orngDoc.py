@@ -31,6 +31,7 @@ class SchemaDoc(QWidget):
         self.layout().addWidget(self.canvasView)
         self.layout().setMargin(0)
         self.schemaID = orngHistory.logNewSchema()
+        self.RVariableRemoveSupress = 0
 
 
     # we are about to close document
@@ -63,7 +64,7 @@ class SchemaDoc(QWidget):
             else:
                 ce.ignore()     # we pressed cancel - we don't want to close the document
                 return
-        
+        self.RVariableRemoveSupress = 1
         QWidget.closeEvent(self, ce)
         orngHistory.logCloseSchema(self.schemaID)
         
@@ -167,7 +168,7 @@ class SchemaDoc(QWidget):
 
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
-    def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1):
+    def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1):
         #print "<extra>orngDoc - addLink() - ", outWidget, inWidget, outSignalName, inSignalName
         # in case there already exists link to inSignalName in inWidget that is single, we first delete it
         widgetInstance = inWidget.instance.removeExistingSingleLink(inSignalName)
@@ -319,7 +320,10 @@ class SchemaDoc(QWidget):
 
         self.signalManager.removeWidget(widget.instance)
         self.widgets.remove(widget)
-        widget.remove()
+        if self.RVariableRemoveSupress == 1:
+            widget.remove(supress = 1)
+        else:
+            widget.remove()
         if saveTempDoc:
             self.saveTempDoc()
         

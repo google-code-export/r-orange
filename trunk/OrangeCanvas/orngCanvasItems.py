@@ -222,7 +222,7 @@ class CanvasWidget(QGraphicsRectItem):
                 if outSignal not in signals: signals.append(outSignal)
         return signals
 
-    def remove(self):
+    def remove(self, supress = 0):
         self.hide()
         self.errorIcon.hide()
         self.warningIcon.hide()
@@ -240,7 +240,7 @@ class CanvasWidget(QGraphicsRectItem):
             self.instance.close()
             self.instance.linksOut.clear()      # this helps python to more quickly delete the unused objects
             self.instance.linksIn.clear()
-            self.instance.onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
+            self.instance.onDeleteWidget(supress = supress)      # this is a cleanup function that can take care of deleting some unused objects
             try:
                 import sip
                 sip.delete(self.instance)

@@ -8,12 +8,9 @@
 import os, glob
 import OWGUI
 from OWRpy import *
-from rpy_options import set_options
-set_options(RHOME=os.environ['RPATH'])
-import rpy
 
 class runSigPathway(OWRpy):
-    settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots', 'table1', 'table2']
+    settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 1, resizingEnabled = 1)
         
@@ -29,7 +26,6 @@ class runSigPathway(OWRpy):
         self.chiptype = ''
         self.sublist = ''
         self.wd = ''
-        self.rand = 'test'
         self.availablePaths = []
         self.minNPS = str(20)
         self.maxNPS = str(500)
@@ -56,6 +52,8 @@ class runSigPathway(OWRpy):
         
         
         sigPathOptions = OWGUI.widgetBox(self.controlArea, "Options")
+        OWGUI.lineEdit(sigPathOptions, self, 'minNPS', 'Min Genes in Pathway:')
+        OWGUI.lineEdit(sigPathOptions, self, 'maxNPS', 'Max Genes in Pathway:')
         self.pAnnotlist = OWGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
         self.pAnnotlist.setEnabled(False)
         self.getNewAnnotButton = OWGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
@@ -69,6 +67,7 @@ class runSigPathway(OWRpy):
         self.mainArea.layout().addWidget(self.splitCanvas)
         
         self.pathtable = OWGUI.widgetBox(self, "Pathway Info")
+        self.pathinfoA = OWGUI.widgetLabel(self.pathtable, "")
         self.splitCanvas.addWidget(self.pathtable)
         
         self.splitCanvas.addWidget(self.table1)
@@ -164,18 +163,18 @@ class runSigPathway(OWRpy):
 
         
     def runPath(self):
-        self.rsession('sigpath_'+self.rand+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'"'+self.dboptions+')')
+        try:
+            self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'"'+self.dboptions+')')
+        except:
+            self.pathinfoA.setText("Error occured in processing.  Change parameters and repeat.")
         self.newdata = self.olddata.copy()
-        self.newdata['data'] = 'sigpath_'+self.rand+'$df.pathways'
-        self.newdata['sigPathObj'] = 'sigpath_'+self.rand
+        self.newdata['data'] = 'sigpath_'+self.vs+'$df.pathways'
+        self.newdata['sigPathObj'] = 'sigpath_'+self.vs
         self.send("Pathway Analysis File", self.newdata)
-        
-        #make the table to show the results, should be interactive and send an object containing the subset to the pathway list
-        # self.tstruct = self.newdata['data']
-        # self.createTable()
-        headers = r('colnames('+self.newdata['data']+')')
+
+        headers = self.rsession('colnames('+self.newdata['data']+')')
         #self.headers = r('colnames('+self.dataframename+')')
-        dataframe = r(self.newdata['data'])
+        dataframe = self.rsession(self.newdata['data'])
         self.table1.setColumnCount(len(headers))
         self.table1.setRowCount(len(dataframe[headers[0]]))
         n=0
@@ -207,16 +206,16 @@ class runSigPathway(OWRpy):
         
     def cellClicked(self, item):
         self.clickedRow = int(item.row())+1
-        self.subtable = {'data':'sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']]'}
+        self.subtable = {'data':'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]'}
         self.sendMe()
         try: self.table2
         except: pass
         else: self.table2.clear()
         #self.table2 = MyTable(self.subtable['data'])
         
-        headers = r('colnames('+self.subtable['data']+')')
+        headers = self.rsession('colnames('+self.subtable['data']+')')
         #self.headers = r('colnames('+self.dataframename+')')
-        dataframe = r(self.subtable['data'])
+        dataframe = self.rsession(self.subtable['data'])
         self.table2.setColumnCount(len(headers))
         self.table2.setRowCount(len(dataframe[headers[0]]))
         n=0
@@ -233,8 +232,8 @@ class runSigPathway(OWRpy):
     def geneClicked(self, item):
         
         clickedGene = int(item.row())+1
-        if 'GeneID' in self.rsession('colnames(sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']])'):
-            genenumber = self.rsession('sigpath_'+self.rand+'$list.gPS[['+str(self.clickedRow)+']]['+str(clickedGene)+',3]')
+        if 'GeneID' in self.rsession('colnames(sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']])'):
+            genenumber = self.rsession('sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]['+str(clickedGene)+',3]')
             self.rsession('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
         
     def phenotypeConnected(self, data):
@@ -245,29 +244,3 @@ class runSigPathway(OWRpy):
     def sendMe(self):
         self.send("Pathway Analysis File", self.newdata)
         self.send("Pathway List", self.subtable)
-        
-                
-# from rpy_options import set_options
-# set_options(RHOME=os.environ['RPATH'])
-# from rpy import *
-# from OWWidget import *
-# from PyQt4.QtCore import *
-# from PyQt4.QtGui import *
-
-# class MyTable(QTableWidget):
-    # def __init__(self, dataframe, *args):
-        # QTableWidget.__init__(self, *args)
-        # self.dataframename = dataframe
-        # self.headers = r('colnames('+self.dataframename+')')
-        # self.dataframe = r(self.dataframename)
-        # self.setColumnCount(len(self.headers))
-        # self.setRowCount(len(self.dataframe[self.headers[0]]))
-        # n=0
-        # for key in self.headers:
-            # m=0
-            # for item in self.dataframe[key]:
-                # newitem = QTableWidgetItem(str(item))
-                # self.setItem(m,n,newitem)
-                # m += 1
-            # n += 1
-        # self.setHorizontalHeaderLabels(self.headers)
