@@ -152,6 +152,7 @@ class CanvasWidget(QGraphicsRectItem):
         self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName], _owInfo = canvasDlg.settings["owInfo"], _owWarning = canvasDlg.settings["owWarning"], _owError = canvasDlg.settings["owError"], _owShowStatus = canvasDlg.settings["owShow"], _useContexts = canvasDlg.settings["useContexts"], _category = widgetInfo.category, _settingsFromSchema = widgetSettings)
         self.instance.__init__(signalManager=signalManager)
         self.isProcessing = 0   # is this widget currently processing signals
+        self.needsProcessing = 0 # is this widget in need of processing data
         self.progressBarShown = 0
         self.progressBarValue = -1
         self.widgetSize = QSizeF(0, 0)
@@ -164,6 +165,7 @@ class CanvasWidget(QGraphicsRectItem):
                 
         self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
         self.instance.setProcessingHandler(view.processingHandler)
+        self.instance.setNeedsProcessingHandler(view.needsProcessingHandler)
         self.instance.setWidgetStateHandler(self.updateWidgetState)
         self.instance.setEventHandler(canvasDlg.output.widgetEvents)
         self.instance.setWidgetIcon(canvasDlg.getFullWidgetIconName(widgetInfo))
@@ -390,8 +392,10 @@ class CanvasWidget(QGraphicsRectItem):
             if (self.view.findItemTypeCount(self.canvas.collidingItems(self), CanvasWidget) > 0):       # the position is invalid if it is already occupied by a widget 
                 color = Qt.red
             else:                    color = self.canvasDlg.widgetSelectedColor
+        if self.needsProcessing == True:
+            color = Qt.red
 
-        if self.isProcessing or self.selected:
+        if self.isProcessing or self.selected or self.needsProcessing:
             painter.setPen(QPen(color))
             painter.drawRect(-3, -3, self.widgetSize.width()+6, self.widgetSize.height()+6)
 
@@ -479,6 +483,13 @@ class CanvasWidget(QGraphicsRectItem):
         self.progressBarValue = value
         if value < 0 or value > 100:
             self.updateWidgetState()
+        self.canvas.update()
+        
+    def setNeedsProcessing(self, value):
+        if value == True:
+            self.needsProcessing = True
+        elif value == False:
+            self.needsProcessing = False
         self.canvas.update()
 
     def setProcessing(self, value):

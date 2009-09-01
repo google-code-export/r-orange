@@ -46,7 +46,7 @@ class ReadCEL(OWRpy):
         
         #initialize previous sessions
         try:
-            varexists = self.R('getRData', 'exists("'+self.Rvariables['eset']+'")') #should trigger an exception if it doesn't exist
+            varexists = self.R('exists("'+self.Rvariables['eset']+'")') #should trigger an exception if it doesn't exist
             self.infod.setText(str(varexists))
             if varexists:
                 self.sendMe(kill = False)
@@ -80,14 +80,14 @@ class ReadCEL(OWRpy):
 
         if len(self.recentFiles) > 0:
             self.setFileList()
-        self.R('setRData',self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"')
+        self.R(self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"', 'setRData')
         self.procesS()
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        self.R('setRData',self.Rvariables['folder'] +'<-choose.dir()')
-        if not self.R('getRData','is.na(' + self.Rvariables['folder'] +')'):
-            folder = self.R('getRData', self.Rvariables['folder'])
+        self.R(self.Rvariables['folder'] +'<-choose.dir()', 'setRData')
+        if not self.R('is.na(' + self.Rvariables['folder'] +')'):
+            folder = self.R(self.Rvariables['folder'])
             if folder in self.recentFiles: self.recentFiles.remove(folder)
             self.recentFiles.insert(0, folder)
             self.setFileList()
@@ -97,7 +97,7 @@ class ReadCEL(OWRpy):
         self.infoa.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
-        self.R('setRData',self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')',True)
+        self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')','setRData',True)
         self.infoa.setText("Your data has been processed.")
         self.sendMe()
         

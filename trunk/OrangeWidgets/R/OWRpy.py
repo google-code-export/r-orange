@@ -64,7 +64,11 @@ class OWRpy(OWWidget):
     def rSend(self,name, variable):
         print 'send'
         self.loadingSavedSession = False
-        self.send(name, variable)
+        try:
+            self.send(name, variable)
+            self.needsProcessingHandler(self, 0)
+        except:
+            self.needsProcessingHandler(self, 0)
         
     def rsession(self, query,processing_notice=False):
         qApp.setOverrideCursor(Qt.WaitCursor)

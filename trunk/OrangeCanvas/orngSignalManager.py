@@ -253,6 +253,7 @@ class SignalManager:
         if enabled:
             for key in widgetFrom.linksOut[signalNameFrom].keys():
                 widgetTo.updateNewSignalData(widgetFrom, signalNameTo, widgetFrom.linksOut[signalNameFrom][key], key, signalNameFrom)
+                widgetTo.needsProcessingHandler(widgetTo, 1)
 
         # reorder widgets if necessary
         if self.widgets.index(widgetFrom) > self.widgets.index(widgetTo):
@@ -338,6 +339,7 @@ class SignalManager:
             if signalFrom == signalNameFrom and enabled == 1:
                 #print "signal from ", widgetFrom, " to ", widgetTo, " signal: ", signalNameFrom, " value: ", value, " id: ", id
                 widgetTo.updateNewSignalData(widgetFrom, signalTo, value, id, signalNameFrom)
+                widgetTo.needsProcessingHandler(widgetTo, 1)
 
 
         if not self.freezing and not self.signalProcessingInProgress:

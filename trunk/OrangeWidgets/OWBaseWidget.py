@@ -650,6 +650,9 @@ class OWBaseWidget(QDialog):
 
     def setProcessingHandler(self, handler):
         self.processingHandler = handler
+        
+    def setNeedsProcessingHandler(self, handler):
+        self.needsProcessingHandler = handler
 
     def setEventHandler(self, handler):
         self.eventHandler = handler

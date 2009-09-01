@@ -30,6 +30,7 @@ class affyNormalize(OWRpy):
         self.enableMethBox = False
         self.norminfo = ''
         self.loadSettings()
+        self.require_librarys(['affy'])
         
         
         
@@ -38,7 +39,7 @@ class affyNormalize(OWRpy):
         self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals		
-        self.inputs = [("Expression Matrix", RAffyClasses.RAffyBatch, self.process)]
+        self.inputs = [("Expression Matrix", RAffyClasses.Eset, self.process)]
         self.outputs = [("Normalized DataFrame", RvarClasses.RDataFrame),("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
 
         
@@ -103,6 +104,7 @@ class affyNormalize(OWRpy):
     def process(self, dataset):
         #required librarys
         self.require_librarys(['affy'])
+        #self.needsProcessingHandler(self, 1)
         if self.loadingSavedSession:
             self.selectMethodChanged()
             self.selMethBox.setEnabled(True)
