@@ -38,12 +38,12 @@ When a previously saved session is loading this widget should:
  # Send processed data downstream
 
 
-=Visualize=
-These widgets present transformed data for meaningful interpretation.
+=Output=
+These widgets present transformed data for meaningful interpretation. Or export data to other formats. 
 ===Input===
 they take as input data from other widgets
 ===Output===
-These widget terminate the workflow
+this widget terminates the workflow
 ===GUI===
  # present a GUI for user selection of visualization parameters
   * this maybe automatically done using some defaults, but must be visualized indicated 
@@ -53,8 +53,6 @@ When a widget upstream makes a change this widget should indicate that its data 
 ===On Session Load ===
 When a previously saved session is loading this widget should:
  # Update GUI to previous state 
-
-
 
 
 
