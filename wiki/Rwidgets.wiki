@@ -1,119 +1,49 @@
 #summary Specifications for a R widgets.
 
 = Introduction =
+Rwidgets are children of OWRpy class. These widgets bring the functionality of R to Orange. 
+Each widget performs an independent task and there are 3 types of tasks in the workflow:
 
-Add your content here.
-
-
-=Example=
-
-{{{
-"""
-<name>Read CEL Files</name>
-<description>Allows the user to pick CEL files either individually or through a .txt file and outputs the eSet as an R.object</description>
-<icon>icons/ReadCel.png</icon>
-<priority>10</priority>
-"""
-
-from OWRpy import *
-import OWGUI
-import RAffyClasses
+==Import==
+These widgets are the start of any workflow.
+===Input===
+No widgets connect upstream. 
+===Output===
+Bring data into the ROrange environment and send it downstream.
+===GUI===
+ # present a GUI for user selection of the input data
+ # Give a visual cue of the data being loaded
+ # Show some summary of what has been loading and sent downstream
 
 
-class ReadCEL(OWRpy):
-    settingsList = ['recentFiles']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
-        #self.setStateVariables(['recentFiles'])
-        #default values        
-        self.recentFiles = ['(none)']
-        self.loadSettings()
-        
-        
-        #set R variable names
-        self.setRvariableNames(['eset','folder'])
-        
-        #signals
-        self.inputs = None 
-        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]
-        
+
+==Process==
+These widgets connect together in a logical workflow to manipulate and transform data. 
+===Input===
+they take as input data from other widgets
+===Output===
+send downstream transformed data
+===GUI===
+ # present a GUI for user selection of transformation parameters
+  * this maybe automatically done using some intuitive logic, but must be visualized indicated 
+ # Give a visual cue of the data being processed
+ # Indicate the processing in complete and data has bee sent downstream
+===On Upstream Change===
+When a widget upstream makes a change this widget should indicate that its data is obsolete. 
+===On Session Load ===
+When a previously saved session is loading this widget should:
+ # check if on save the processing was successfully completed
+  * Else load in default state
+ # Update GUI to previous state 
+ # Send processed data downstream
 
 
-        #GUI
-        box = OWGUI.widgetBox(self.controlArea, "Select Folder", addSpace = True, orientation=0)
-        self.filecombo = QComboBox(box)
-        self.filecombo.setMinimumWidth(150)
-        box.layout().addWidget(self.filecombo)
-        button = OWGUI.button(box, self, '...', callback = self.browseFile, width = 25, disabled=0)
-        box = OWGUI.widgetBox(self.controlArea, "Info", addSpace = True)
-        self.infoa = OWGUI.widgetLabel(box, 'No data loaded.')
-        self.infob = OWGUI.widgetLabel(box, '')
-        self.infoc = OWGUI.widgetLabel(box, '')
-        self.infod = OWGUI.widgetLabel(box, '')
-        self.setFileList()
-        self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-
-        
-        #initialize previous sessions
-        try:
-            varexists = self.R('exists("'+self.Rvariables['eset']+'")') #should trigger an exception if it doesn't exist
-            self.infod.setText(str(varexists))
-            if varexists:
-                self.sendMe(kill = False)
-            else:
-                return
-        except:
-            pass
-        # if self.loadingSavedSession:
-            # self.procesS()
-        
-        
-
-    def setFileList(self):
-        self.filecombo.clear()
-        if not self.recentFiles:
-            self.filecombo.addItem("(none)")
-        for file in self.recentFiles:
-            if file == "(none)":
-                self.filecombo.addItem("(none)")
-            else:
-                self.filecombo.addItem(file)
-        
-
-    def selectFile(self, n):
-        if n < len(self.recentFiles) :
-            name = self.recentFiles[n]
-            self.recentFiles.remove(name)
-            self.recentFiles.insert(0, name)
-        elif n:
-            self.browseFile(1)
-
-        if len(self.recentFiles) > 0:
-            self.setFileList()
-        self.R(self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"', 'setRData')
-        self.procesS()
-        
-        
-    def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        self.R(self.Rvariables['folder'] +'<-choose.dir()', 'setRData')
-        if not self.R('is.na(' + self.Rvariables['folder'] +')'):
-            folder = self.R(self.Rvariables['folder'])
-            if folder in self.recentFiles: self.recentFiles.remove(folder)
-            self.recentFiles.insert(0, folder)
-            self.setFileList()
-            self.procesS()
-        
-    def procesS(self):
-        self.infoa.setText("Your data is processing")
-        #required librarys
-        self.require_librarys(['affy'])
-        self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')','setRData',True)
-        self.infoa.setText("Your data has been processed.")
-        self.sendMe()
-        
-    def sendMe(self, kill = True):
-        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':kill}
-        self.rSend("Expression Matrix", out)
-        self.rSend("Eset", {'data':self.Rvariables['eset'], 'kill':kill})
-
-}}}
+==Visualize==
+These widgets present transformed data for meaningful interpretation.
+===Input===
+they take as input data from other widgets
+===Output===
+These widget terminate the workflow
+===GUI===
+ # present a GUI for user selection of visualization parameters
+  * this maybe automatically done using some defaults, but must be visualized indicated 
