@@ -1,0 +1,25 @@
+#summary OWRpy: The parent class of R widgets
+
+=OWRpy=
+OWRpy is the parent class for every widget that wants access to the R session. It initiates a R session using the rpy class. 
+
+ * Initializes the R session
+  *RPATH environment variable must be set to the home directory of R 
+  *ideally done by the r-orange installer, coming later. 
+ * Provides the interface between orange and the R session.
+ * Manges R variables
+ * Manges R Graphics
+ * Manges and installs needed R libraries 
+ * Cleans up R session on widget delete
+
+== Class Methods == 
+ * R: the wrapper around rpy class used to communicate with the R session
+  * Wraps a progress bar around each R session call
+  * outputs every call to R
+  * Deals with R exceptions
+  *...
+ * require_librarys: use this class to load R packages
+  * will install if does not exist
+ * setRvariableNames: takes a list of variables names in creates unique R variable names
+ * convertDataframeToExampleTable: convert a data frame into an orange exampleTable.
+ * Rplot ...
