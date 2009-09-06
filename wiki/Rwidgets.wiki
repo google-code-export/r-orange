@@ -4,7 +4,7 @@
 Rwidgets are children of OWRpy class. These widgets bring the functionality of R to Orange. 
 Each widget performs an independent task and there are 3 types of tasks in the workflow:
 
-==Import==
+=Import=
 These widgets are the start of any workflow.
 ===Input===
 No widgets connect upstream. 
@@ -17,7 +17,7 @@ Bring data into the ROrange environment and send it downstream.
 
 
 
-==Process==
+=Process=
 These widgets connect together in a logical workflow to manipulate and transform data. 
 ===Input===
 they take as input data from other widgets
@@ -38,7 +38,7 @@ When a previously saved session is loading this widget should:
  # Send processed data downstream
 
 
-==Visualize==
+=Visualize=
 These widgets present transformed data for meaningful interpretation.
 ===Input===
 they take as input data from other widgets
@@ -47,3 +47,20 @@ These widget terminate the workflow
 ===GUI===
  # present a GUI for user selection of visualization parameters
   * this maybe automatically done using some defaults, but must be visualized indicated 
+
+===On Upstream Change===
+When a widget upstream makes a change this widget should indicate that its data is obsolete. And visualize the new data if possible without user input. 
+===On Session Load ===
+When a previously saved session is loading this widget should:
+ # Update GUI to previous state 
+
+
+
+
+
+
+
+
+
+
+
