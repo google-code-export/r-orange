@@ -149,6 +149,7 @@ class OWDataTable(OWRpy):
             self.progressBarInit()
             self.setTable(table, data)
             self.progressBarFinished()
+            self.needsProcessingHandler(self, 0)
             self.tabs.setCurrentIndex(self.tabs.indexOf(table))
             self.setInfo(data)
             self.cbShowMeta.setEnabled(len(self.showMetas[id][1])>0)        # enable showMetas checkbox only if metas exist

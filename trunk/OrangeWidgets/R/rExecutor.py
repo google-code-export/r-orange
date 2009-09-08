@@ -34,6 +34,7 @@ class rExecutor(OWRpy):
         
         
         varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
+        history = OWGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
         self.infoa = OWGUI.widgetLabel(self.box, "")
         
         self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
@@ -75,28 +76,31 @@ class rExecutor(OWRpy):
         thisdata = self.sendt['data']
         thisdataclass = self.rsession('class('+thisdata+')')
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
-            self.send('R.object', self.sendt)
+            self.rSend('R.object', self.sendt)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass == 'numeric': # we have a numeric vector as the object
-                self.send('R Vector', self.sendt)
+                self.rSend('R Vector', self.sendt)
             elif thisdataclass == 'character': #we have a character vector as the object
-                self.send('R Vector', self.sendt)
+                self.rSend('R Vector', self.sendt)
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                self.send('R Data Frame', self.sendt)
+                self.rSend('R Data Frame', self.sendt)
             elif thisdataclass == 'matrix': # the object is a matrix
-                self.send('R Data Frame', self.sendt)
+                self.rSend('R Data Frame', self.sendt)
             elif thisdataclass == 'list': # the object is a list
-                self.send('R List', self.sendt)
+                self.rSend('R List', self.sendt)
             else:    # the data is of a non-normal type send anyway as generic
-                self.send('R.object', self.sendt)
+                self.rSend('R.object', self.sendt)
         else:
-            self.send('R.object', self.sendt)
+            self.rSend('R.object', self.sendt)
     def runR(self):
         self.rsession('txt<-capture.output('+self.command+')')
         pasted = self.rsession('paste(txt, collapse = " \n")')
         self.thistext.insertPlainText('>>>'+self.command+'##Done')
         self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
-        
+    
+    def putRHistory(self):
+        self.thistext.clear()
+        self.thistext.insertHtml(OWRpy.Rhistory)
     def process(self, data):
         if data:
             self.data = str(data['data'])

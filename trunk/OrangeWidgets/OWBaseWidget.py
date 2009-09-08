@@ -609,6 +609,7 @@ class OWBaseWidget(QDialog):
                     if not found:
                         self.linksIn[signalName][i] = (1, widget, handler, self.linksIn[signalName][i][3] + [(value, id, signalNameFrom)])
         self.needProcessing = 1
+        self.needsProcessingHandler(self, 1)
 
 
     # ############################################
@@ -651,7 +652,7 @@ class OWBaseWidget(QDialog):
     def setProcessingHandler(self, handler):
         self.processingHandler = handler
         
-    def setNeedsProcessingHandler(self, handler):
+    def setNeedsProcessingHandler(self, handler): # added by KRC
         self.needsProcessingHandler = handler
 
     def setEventHandler(self, handler):

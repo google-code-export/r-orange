@@ -70,11 +70,20 @@ class affyNormalize(OWRpy):
         #self.infob = OWGUI.widgetLabel(run, 'Procedure not run yet')
         runbutton = OWGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
         #OWGUI.button(run, self, 'test', callback = self.checkRCode, width=200)
+        try:
+            varexists1 = self.R('exists("'+self.Rvariables['normalized_affybatch']+'")') #should trigger an exception if it doesn't exist
+           
+            if varexists1:
+                self.normalize(reload = True)
+            else:
+                return
+        except:
+            pass
         if self.loadingSavedSession:
             self.normalize()
         
         
-    def normalize(self):
+    def normalize(self, reload = False):
         self.infoa.setText('Processing')
         if not self.loadingSavedSession:
             if self.selectMethod == 0:
@@ -86,9 +95,12 @@ class affyNormalize(OWRpy):
             if self.selectMethod == 2:
                 self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
                 self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrect+', Method:'+self.bgcorrectmeth+', Perfect Match Correct Method: '+self.pmcorrect+', Summary Method: '+self.summarymeth
-
-        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch'], 'normmethod':'rma'}
         
+        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
+        if reload:
+            neset['kill'] = False
+        else:
+            neset['kill'] = True
         self.rSend("Normalized DataFrame", neset)
         self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
         self.infoa.setText(self.norminfo)

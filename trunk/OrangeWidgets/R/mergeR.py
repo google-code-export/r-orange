@@ -55,7 +55,7 @@ class mergeR(OWRpy):
         OWGUI.button(otherBox, self, "Bind By Columns", callback = self.colBind)
         OWGUI.button(otherBox, self, "Bind By Rows", callback = self.rowBind)
         #print self.colAsel, self.colBsel
-        # if self.R('getRData','exists("' + self.Rvariables['loadSavedSession'] + '")'):
+        # if self.R('exists("' + self.Rvariables['loadSavedSession'] + '")'):
             # self.loadSavedSession = True
             # self.processA({'data': self.dataA})
             # self.processB({'data': self.dataB})
@@ -65,7 +65,7 @@ class mergeR(OWRpy):
     def processA(self, data):
         if data:
             self.dataA = str(data['data'])
-            colsA = self.R('getRData','colnames('+self.dataA+')') #collect the sample names to make the differential matrix
+            colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
             if type(colsA) is str:
                 colsA = [colsA]
             self.colA.clear()
@@ -81,7 +81,7 @@ class mergeR(OWRpy):
     def processB(self, data):
         if data:
             self.dataB = str(data['data'])
-            colsB = self.R('getRData','colnames('+self.dataB+')') #collect the sample names to make the differential matrix
+            colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
             if type(colsB) is str:
                 colsB = [colsB]
             self.colB.clear()
@@ -98,22 +98,22 @@ class mergeR(OWRpy):
     def run(self):
         try:
             if self.colAsel == '' and self.colBsel == '': 
-                h = self.R('getRData','intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
+                h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
                 if type(h) is str: 
-                    self.colA.setCurrentRow(self.R('getRData','which('+self.dataA+' == "' + h + '")'-1))
-                    self.colB.setCurrentRow(self.R('getRData','which('+self.dataB+' == "' + h + '")'-1))
-                    self.R('getRData',self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+',all.x=T)')
-                    self.R('getRData',self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+',all.y=T)')                    
-                    self.R('getRData',self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+')')                    
+                    self.colA.setCurrentRow(self.R('which('+self.dataA+' == "' + h + '")'-1))
+                    self.colB.setCurrentRow(self.R('which('+self.dataB+' == "' + h + '")'-1))
+                    self.R(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+',all.x=T)')
+                    self.R(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+',all.y=T)')                    
+                    self.R(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+')')                    
             else:
                 if self.loadingSavedSession:
-                    self.colA.setCurrentRow(self.R('getRData','which('+self.dataA+' == "' + self.colAsel + '")'-1))
-                    self.colB.setCurrentRow(self.R('getRData','which('+self.dataB+' == "' + self.colBsel + '")'-1))
+                    self.colA.setCurrentRow(self.R('which('+self.dataA+' == "' + self.colAsel + '")'-1))
+                    self.colB.setCurrentRow(self.R('which('+self.dataB+' == "' + self.colBsel + '")'-1))
                 else:
-                    self.R('setRData',self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
-                    self.R('setRData',self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
-                    self.R('setRData',self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
-            if self.R('getRData','exists("' + self.Rvariables['merged_dataAB'] + '")'):
+                    self.R(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
+                    self.R(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
+                    self.R(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
+            if self.R('exists("' + self.Rvariables['merged_dataAB'] + '")'):
                 self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
                 self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
                 self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
@@ -136,24 +136,24 @@ class mergeR(OWRpy):
     def rowBind(self):
         try:
             if self.forceMergeAll == 0:
-                self.R('setRData','tmp<-colnames('+self.dataB+') %in% colnames('+self.dataA+')')
-                self.R('setRData','tmp2<-'+self.dataB+'[,!tmp]')
-                self.R('setRData',self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', tmp2)')
-                self.R('setRData','rm(tmp); rm(tmp2)')
+                self.R('tmp<-colnames('+self.dataB+') %in% colnames('+self.dataA+')')
+                self.R('tmp2<-'+self.dataB+'[,!tmp]')
+                self.R(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', tmp2)')
+                self.R('rm(tmp); rm(tmp2)')
             else:
-                self.R('setRData',self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', '+self.dataB+')')
+                self.R(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', '+self.dataB+')')
             self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
         except:
             self.infoa.setText("Merger Failed. Be sure data is connected")
     def colBind(self):
         try:
             if self.forceMergeAll == 0:
-                self.R('setRData','tmp<-rownames('+self.dataB+') %in% rownames('+self.dataA+')')
-                self.R('setRData','tmp2<-'+self.dataB+'[!tmp,]')
-                self.R('setRData',self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', tmp2)')
-                self.R('setRData','rm(tmp); rm(tmp2)')
+                self.R('tmp<-rownames('+self.dataB+') %in% rownames('+self.dataA+')')
+                self.R('tmp2<-'+self.dataB+'[!tmp,]')
+                self.R(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', tmp2)')
+                self.R('rm(tmp); rm(tmp2)')
             else:
-                self.R('setRData',self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', '+self.dataB+')')
+                self.R(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', '+self.dataB+')')
             self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
         except:
             self.infoa.setText("Merger Failed. Be sure data is connected")

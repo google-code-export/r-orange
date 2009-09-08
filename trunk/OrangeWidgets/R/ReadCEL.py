@@ -17,6 +17,7 @@ class ReadCEL(OWRpy):
         #self.setStateVariables(['recentFiles'])
         #default values        
         self.recentFiles = ['(none)']
+        self.methodcombo = 0
         self.loadSettings()
         
         
@@ -31,6 +32,7 @@ class ReadCEL(OWRpy):
 
         #GUI
         box = OWGUI.widgetBox(self.controlArea, "Select Folder", addSpace = True, orientation=0)
+        OWGUI.comboBox(box, self, 'methodcombo', label = 'Number of arrays', items = ['Less than 40', 'More than 40'], orientation = 0)
         self.filecombo = QComboBox(box)
         self.filecombo.setMinimumWidth(150)
         box.layout().addWidget(self.filecombo)
@@ -47,9 +49,10 @@ class ReadCEL(OWRpy):
         #initialize previous sessions
         try:
             varexists = self.R('exists("'+self.Rvariables['eset']+'")') #should trigger an exception if it doesn't exist
-            self.infod.setText(str(varexists))
             if varexists:
                 self.sendMe(kill = False)
+                self.infoc.setText("Data reloaded from saved session.")
+                self.infod.setText("You may want to use a data viewer to check the data.")
             else:
                 return
         except:
@@ -97,10 +100,16 @@ class ReadCEL(OWRpy):
         self.infoa.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
-        self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')','setRData',True)
+        if self.methodcombo == 0:
+            self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')','setRData',True)
+        if self.methodcombo == 1:
+            self.infob.setText("This may take several minutes")
+            self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
+            self.infoc.setText("Data preprocessed with RMA normalization")
         self.infoa.setText("Your data has been processed.")
         self.sendMe()
         
+    
     def sendMe(self, kill = True):
         out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':kill}
         self.rSend("Expression Matrix", out)

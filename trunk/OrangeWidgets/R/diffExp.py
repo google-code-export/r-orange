@@ -99,8 +99,8 @@ class diffExp(OWRpy):
         
         #self.Rreload() #Important to be at the end of the __init__
         try:
-            varexists1 = self.R('getRData', 'exists("'+self.Rvariables['classes']+'")') #should trigger an exception if it doesn't exist
-            varexists2 = self.R('getRData', 'exists("'+self.Rvariables['results']+'")')
+            varexists1 = self.R('exists("'+self.Rvariables['classes']+'")') #should trigger an exception if it doesn't exist
+            varexists2 = self.R('exists("'+self.Rvariables['results']+'")')
             self.infod.setText(str(varexists))
             if varexists1 and varexists2:
                 self.processEset(reload = True)
@@ -230,8 +230,12 @@ class diffExp(OWRpy):
             self.rsession('fit<-lmFit('+self.Rvariables['subset']+', design)')
             self.rsession(self.Rvariables['results']+'<-eBayes(fit)')
             self.newdata = self.olddata.copy()
-            self.newdata['data']=self.Rvariables['results']
-            self.newdata['classes'] = self.Rvariables['classes']
+        self.newdata['data']=self.Rvariables['results']
+        self.newdata['classes'] = self.Rvariables['classes']
+        if reload:
+            self.newdata['kill'] = False
+        else:
+            self.newdata['kill'] = True
         self.send('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1

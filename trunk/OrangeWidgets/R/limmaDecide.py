@@ -58,6 +58,17 @@ class limmaDecide(OWRpy):
         grid.addWidget(computebox, 1,0)
         self.infoa = OWGUI.widgetLabel(computebox, "Data not yet connected")
         runbutton = OWGUI.button(computebox, self, "Run Analysis", callback = self.runAnalysis, width=200)
+        
+        try:
+            varexists1 = self.R('exists("'+self.Rvariables['normalized_affybatch']+'")') #should trigger an exception if it doesn't exist
+           
+            if varexists1:
+                self.normalize(reload = True)
+            else:
+                return
+        except:
+            pass
+        
         if self.loadingSavedSession:
             self.runAnalysis()
         
@@ -78,13 +89,13 @@ class limmaDecide(OWRpy):
         self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
         if not self.loadingSavedSession:
             #run the analysis using the parameters selected or input
-            self.rsession(self.Rvariables['gcm']+'<-decideTests('+str(self.data)+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
+            self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
             self.infoa.setText("Gene Matrix Processed and sent!")
             self.sending = {'data':self.Rvariables['gcm']}
         self.send("Gene Change Matrix", self.sending)
         
-        self.rsession(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
-        self.rsession(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
+        self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
+        self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
         self.modelProcessed = 1
         
         self.sendesetsubset()

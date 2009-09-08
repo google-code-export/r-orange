@@ -9,7 +9,7 @@ from OWRpy import *
 import OWGUI
 
 class colSelector(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
-    settingsList = ['vs', 'rowcolselect']
+    settingsList = ['vs', 'rowcolselect', 'newdata']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
@@ -24,6 +24,8 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.colactiveCriteria = []
         self.RowColNamesExist = 1
         self.searchLineEdit = ''
+        self.newdata = {}
+        self.sentalready = 0
         
         
         
@@ -125,6 +127,16 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         # a box that provides functionality for processing the criteria such as a run button and others
         # functionBox = OWGUI.widgetBox(self.controlArea, "Functions")
         # grid.addWidget(functionBox, 2, 0)
+        
+        try:
+            varexists1 = self.R('exists("'+self.Rvariables['result']+'")') #should trigger an exception if it doesn't exist
+           
+            if varexists1:
+                self.normalize(reload = True)
+            else:
+                return
+        except:
+            pass
 
     def process(self, data):
         self.require_librarys(['fields'])
@@ -438,6 +450,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.rowcriteriaActiveChange(True, selCri)
         self.criteriaTable.resizeColumnsToContents()
         self.criteriaTable.resizeRowsToContents()
+        self.sentalready = 0
     
     def updatecolCriteriaList(self, text):
         newitem = QTableWidgetItem(text)
@@ -450,38 +463,42 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.colcriteriaActiveChange(True, selCri)
         self.criteriaTable.resizeColumnsToContents()
         self.criteriaTable.resizeRowsToContents()
+        self.sentalready = 0
         
-    def applySubsetting(self):
-        # make the row subsetting criteria
-        rcr = ''
-        ccr = ''
-        self.rsession('rows'+self.vs+'<-TRUE')
-        self.rsession('cols'+self.vs+'<-TRUE')
-        if sum(self.rowactiveCriteria) == 0: #there aren't any active criteria  
-            pass
+    def applySubsetting(self, reload = False):
+        if not reload and not self.sentalready: # make the row subsetting criteria
+            rcr = ''
+            ccr = ''
+            self.rsession('rows'+self.vs+'<-TRUE')
+            self.rsession('cols'+self.vs+'<-TRUE')
+            if sum(self.rowactiveCriteria) == 0: #there aren't any active criteria  
+                pass
+            else:
+                rci = 0
+                for rc in self.rowactiveCriteria:
+                    if rc: #check to see if active
+                        self.Rvariables['criteria'+self.vs+'colCri'+str(rci)] = 'criteria'+self.vs+'colCri'+str(rci)
+                        rcr += 'criteria'+self.vs+'colCri'+str(rci)+'&'
+                    rci += 1
+                rcrr = rcr[:len(rcr)-1]
+                self.rsession('rows'+self.vs+'<-'+rcrr)
+                #self.numericInfo.setText(str(self.rowactiveCriteria))
+            if sum(self.colactiveCriteria) == 0:
+                pass
+            else:
+                cci = 0
+                for cc in self.colactiveCriteria:
+                    if cc:
+                        self.Rvariables['criteria'+self.vs+'rowCri'+str(cci)] = 'criteria'+self.vs+'rowCri'+str(cci)
+                        ccr += 'criteria'+self.vs+'rowCri'+str(cci)+'&'
+                    cci += 1
+                ccrr = ccr[:len(ccr)-1]
+                self.rsession('cols'+self.vs+'<-'+ccrr)
+            self.rsession(self.Rvariables['result']+'<-'+self.Rvariables['data']+'[rows'+self.vs+',cols'+self.vs+']')
+            self.newdata = self.olddata.copy()
+            self.newdata['kill'] = True
         else:
-            rci = 0
-            for rc in self.rowactiveCriteria:
-                if rc: #check to see if active
-                    self.Rvariables['criteria'+self.vs+'colCri'+str(rci)] = 'criteria'+self.vs+'colCri'+str(rci)
-                    rcr += 'criteria'+self.vs+'colCri'+str(rci)+'&'
-                rci += 1
-            rcrr = rcr[:len(rcr)-1]
-            self.rsession('rows'+self.vs+'<-'+rcrr)
-            #self.numericInfo.setText(str(self.rowactiveCriteria))
-        if sum(self.colactiveCriteria) == 0:
-            pass
-        else:
-            cci = 0
-            for cc in self.colactiveCriteria:
-                if cc:
-                    self.Rvariables['criteria'+self.vs+'rowCri'+str(cci)] = 'criteria'+self.vs+'rowCri'+str(cci)
-                    ccr += 'criteria'+self.vs+'rowCri'+str(cci)+'&'
-                cci += 1
-            ccrr = ccr[:len(ccr)-1]
-            self.rsession('cols'+self.vs+'<-'+ccrr)
-        self.rsession(self.Rvariables['result']+'<-'+self.Rvariables['data']+'[rows'+self.vs+',cols'+self.vs+']')
-        self.newdata = self.olddata.copy()
+            self.newdata['kill'] = False
         self.newdata['data'] = self.Rvariables['result']
         resultclass = self.rsession('class('+self.Rvariables['result']+')')
         if resultclass == 'data.frame':
@@ -495,6 +512,8 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.rSend("Classified Vector Subset", self.newdata)
         else:
             self.infoa.setText("Send failed because of incompatable type")
+            
+        self.sentalready = 1
                     
     # def testme(self, item=None):
         # self.infoa.setText(item.text())

@@ -424,6 +424,9 @@ class CanvasWidget(QGraphicsRectItem):
             painter.setBrush(QBrush(QColor(0,128,255)))
             painter.drawRect(QRectF(0, yPos, self.widgetSize.width()*self.progressBarValue/100., 16))
             painter.drawText(rect, Qt.AlignCenter, "%d %%" % (self.progressBarValue))
+        
+        # if self.isProcessing:
+            # self.setNeedsProcessing(1)
 
 
     def addOutLine(self, line):

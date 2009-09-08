@@ -38,7 +38,7 @@ class SchemaDoc(QWidget):
     # ask the user if he is sure
     def closeEvent(self,ce):
         newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
-
+        self.RVariableRemoveSupress = 1
         self.synchronizeContexts()
         #if self.canvasDlg.settings["autoSaveSchemasOnClose"] and self.widgets != []:
         if self.widgets != []:
@@ -64,7 +64,7 @@ class SchemaDoc(QWidget):
             else:
                 ce.ignore()     # we pressed cancel - we don't want to close the document
                 return
-        self.RVariableRemoveSupress = 1
+
         QWidget.closeEvent(self, ce)
         orngHistory.logCloseSchema(self.schemaID)
         

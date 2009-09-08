@@ -10,7 +10,7 @@ import OWGUI
 from OWRpy import *
 
 class runSigPathway(OWRpy):
-    settingsList = ['vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
+    settingsList = ['clickedRow', 'vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 1, resizingEnabled = 1)
         
@@ -20,6 +20,7 @@ class runSigPathway(OWRpy):
         self.vs = self.variable_suffix
         self.setRvariableNames(['data', 'affy', 'pAnnots', 'chiptype', 'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType'])
         self.Rpannot = None
+        self.clickedRow = None
         self.data = ''
         self.affy = ''
         self.pAnnots = ''
@@ -31,9 +32,10 @@ class runSigPathway(OWRpy):
         self.maxNPS = str(500)
         self.phenotype = ''
         self.weightType = 'constant'
-        self.newdata = ''
+        self.newdata = {}
         self.dboptions = ''
-        self.subtable = ''
+        self.npath = 25
+        self.subtable = {}
         self.table1 = QTableWidget() # change the table while processing
         self.table2 = QTableWidget() #change the table while processing
         self.loadSettings()
@@ -55,6 +57,8 @@ class runSigPathway(OWRpy):
         OWGUI.lineEdit(sigPathOptions, self, 'minNPS', 'Min Genes in Pathway:')
         OWGUI.lineEdit(sigPathOptions, self, 'maxNPS', 'Max Genes in Pathway:')
         self.pAnnotlist = OWGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
+        OWGUI.lineEdit(sigPathOptions, self, 'chiptype', label = "Chiptype")
+        OWGUI.lineEdit(sigPathOptions, self, 'npath', label = 'Number of Pathways')
         self.pAnnotlist.setEnabled(False)
         self.getNewAnnotButton = OWGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
         OWGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
@@ -73,6 +77,18 @@ class runSigPathway(OWRpy):
         self.splitCanvas.addWidget(self.table1)
         self.splitCanvas.addWidget(self.table2)
         
+        
+        try:
+            varexists1 = self.R('exists("'+'sigpath_'+self.vs+'$df.pathways'+'")')
+            varexists2 = self.R('exists("'+'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]'+'")') #should trigger an exception if it doesn't exist
+            if varexists1:
+                self.sendMe(palist = False)
+            else:
+                return
+            if varexists2:
+                self.sendMe(pafile = False)
+        except:
+            pass
 
         
         
@@ -89,7 +105,6 @@ class runSigPathway(OWRpy):
             self.data = data['data']
             self.pAnnotlist.setEnabled(True)
             self.infoa.setText("Data connected")
-            self.chiptype = ''
             if 'eset' in data:
                 self.affy = data['eset']
                 self.chiptype = self.rsession('annotation('+self.affy+')')
@@ -99,7 +114,7 @@ class runSigPathway(OWRpy):
                 self.chiptype = self.rsession('annotation('+self.affy+')')
                 self.getChiptype()
             else:
-                self.infob.setText("No Chip Type Info Available")
+                self.infob.setText("No Chip Type Info Available. \n Please input.")
             if self.chiptype != '':
                 self.infob.setText('Your chip type is '+self.chiptype)
             if 'classes' in self.olddata:
@@ -163,10 +178,13 @@ class runSigPathway(OWRpy):
 
         
     def runPath(self):
+        self.getChiptype()
+        self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
         try:
-            self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'"'+self.dboptions+')')
+            self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath)+self.dboptions+')')
         except:
             self.pathinfoA.setText("Error occured in processing.  Change parameters and repeat.")
+            return
         self.newdata = self.olddata.copy()
         self.newdata['data'] = 'sigpath_'+self.vs+'$df.pathways'
         self.newdata['sigPathObj'] = 'sigpath_'+self.vs
@@ -241,6 +259,8 @@ class runSigPathway(OWRpy):
             self.phenotype = data['data']
         else: return
     
-    def sendMe(self):
-        self.send("Pathway Analysis File", self.newdata)
-        self.send("Pathway List", self.subtable)
+    def sendMe(self, pafile = True, palist = True):
+        if pafile:
+            self.rSend("Pathway Analysis File", self.newdata)
+        if palist:
+            self.rSend("Pathway List", self.subtable)

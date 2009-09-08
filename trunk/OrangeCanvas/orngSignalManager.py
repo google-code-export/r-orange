@@ -339,7 +339,7 @@ class SignalManager:
             if signalFrom == signalNameFrom and enabled == 1:
                 #print "signal from ", widgetFrom, " to ", widgetTo, " signal: ", signalNameFrom, " value: ", value, " id: ", id
                 widgetTo.updateNewSignalData(widgetFrom, signalTo, value, id, signalNameFrom)
-                widgetTo.needsProcessingHandler(widgetTo, 1)
+                
 
 
         if not self.freezing and not self.signalProcessingInProgress:
