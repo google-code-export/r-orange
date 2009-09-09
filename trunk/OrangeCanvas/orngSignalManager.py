@@ -71,11 +71,12 @@ class SignalManager:
     links = {}      # dicionary. keys: widgetFrom, values: (widgetTo1, signalNameFrom1, signalNameTo1, enabled1), (widgetTo2, signalNameFrom2, signalNameTo2, enabled2)
     freezing = 0            # do we want to process new signal immediately
     signalProcessingInProgress = 0 # this is set to 1 when manager is propagating new signal values
-
+    loadSavedSession = False
     def __init__(self, *args):
         self.debugFile = None
         self.verbosity = orngDebugging.orngVerbosity
         self.stderr = sys.stderr
+        
         self._seenExceptions = {}
         #self.stdout = sys.stdout
         if orngDebugging.orngDebuggingEnabled:
@@ -370,7 +371,13 @@ class SignalManager:
         for i in range(index, len(self.widgets)):
             if self.widgets[i].needProcessing:
                 try:
-                    self.widgets[i].processSignals()
+                    if self.loadSavedSession:
+                        print ' signal manager load session'
+                        self.widgets[i].processSignals(processHandler = False)
+                        
+                    else:
+                        self.widgets[i].processSignals(processHandler = True)
+                    
                 except:
                     type, val, traceback = sys.exc_info()
                     sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas

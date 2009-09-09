@@ -114,11 +114,14 @@ class OWDataTable(OWRpy):
             minW = table.sizeHintForColumn(col)
             table.setColumnWidth(col, max(w - 10, minW))
 
-
+    def onLoadSavedSession(self):
+        print 'on load data table'
+        self.processSignals()
     def dataset(self, data, id=None):
         """Generates a new table and adds it to a new tab when new data arrives;
         or hides the table and removes a tab when data==None;
         or replaces the table when new data arrives together with already existing id."""
+        
         if data != None:  # can be an empty table!
             data = self.convertDataframeToExampleTable(data['data'])
             

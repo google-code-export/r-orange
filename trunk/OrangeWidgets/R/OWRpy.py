@@ -35,7 +35,9 @@ class OWRpy(OWWidget):
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.device = []
+        self.loadSavedSession = False
         self.loadingSavedSession = False
+        #print 'set load ssaved '
         #self.settingsList = ['variable_suffix','loadingSavedSession']
         self.packagesLoaded = 0
         
@@ -215,16 +217,16 @@ class OWRpy(OWWidget):
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
         
-    def onDeleteWidget(self, supress = 0):
+    def onDeleteWidget(self, suppress = 0):
         # for k in self.Rvariables:
             # print self.Rvariables[k]
             # self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', 'setRData')     #### I don't know why this block was added again up here.
 
-        if supress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
+        if suppress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
             return
 
         for k in self.Rvariables:
-            print self.Rvariables[k]
+            #print self.Rvariables[k]
             self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
             if self.device: #  if this is true then this widget made an R device and we would like to shut it down
@@ -243,8 +245,10 @@ class OWRpy(OWWidget):
             self.device.append(self.R('dev.cur()'))
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
-            
+    def onLoadSavedSession(self):
+        print 'load'
+    
     def onSaveSession(self):
         print 'save session'
-        self.loadingSavedSession = True;
+        self.loadSavedSession = value;
 

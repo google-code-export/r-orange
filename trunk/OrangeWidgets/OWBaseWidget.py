@@ -360,11 +360,10 @@ class OWBaseWidget(QDialog):
 
     def getSettingsFile(self, file):
         if file==None:
-            return
-            # if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
-                # file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
-            # else:
-                # return
+            if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
+                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+            else:
+                return
         if type(file) == str:
             if os.path.exists(file):
                 return open(file, "r")
@@ -393,7 +392,7 @@ class OWBaseWidget(QDialog):
                 contextHandlers = getattr(self, "contextHandlers", {})
                 for contextHandler in contextHandlers.values():
                     localName = contextHandler.localContextName
-
+                    print 'localname'  + localName + '\n'
                     structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
                     if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
                        and settings.has_key(localName):
@@ -449,7 +448,7 @@ class OWBaseWidget(QDialog):
     def onSaveSession(self):
         pass
         
-    def onDeleteWidget(self):
+    def onDeleteWidget(self, suppress = 0):
         pass
 
     # this function is only intended for derived classes to send appropriate signals when all settings are loaded
@@ -555,7 +554,7 @@ class OWBaseWidget(QDialog):
         pass
 
     # signal manager calls this function when all input signals have updated the data
-    def processSignals(self):
+    def processSignals(self,processHandler = True):
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
 
@@ -565,24 +564,29 @@ class OWBaseWidget(QDialog):
             if self.linksIn.has_key(key):
                 for i in range(len(self.linksIn[key])):
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
+                    print dirty,widgetFrom,handler, signalData
+                    print 'processHandler: ' + str(processHandler)
                     if not (handler and dirty): continue
+                    print 'do the work'
                     newSignal = 1
-
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
                         for (value, id, nameFrom) in signalData:
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
-                                handler(value)
+                                if processHandler:
+                                    handler(value)
                             else:
                                 self.printEvent("ProcessSignals: Calling %s with %s (%s, %s)" % (handler, value, nameFrom, id), eventVerbosity = 2)
-                                handler(value, (widgetFrom, nameFrom, id))
+                                if processHandler:
+                                    handler(value, (widgetFrom, nameFrom, id))
                     except:
                         type, val, traceback = sys.exc_info()
                         sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 
-                    self.linksIn[key][i] = (0, widgetFrom, handler, []) # clear the dirty flag
+                    if processHandler:
+                        self.linksIn[key][i] = (0, widgetFrom, handler, []) # clear the dirty flag
 
         if newSignal == 1:
             self.handleNewSignals()

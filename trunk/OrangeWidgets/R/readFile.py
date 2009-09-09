@@ -59,20 +59,23 @@ class readFile(OWRpy):
         self.controlArea.layout().addWidget(self.scanarea)
         
         
-        try:
-            varexists = self.R('exists("'+self.Rvariables['dataframe']+'")')
-            #var2exists = self.R('exists("'+self.Rvariables['filename']+'")')
-            if varexists:
-                self.sendMe(kill = False)
-                self.infoa.setText("Data loaded from previous session.")
-                self.infob.setText("Check data with data viewer.")
-        except:
-            pass
-        if self.loadingSavedSession:
-            print 'onloading save :' + str(self.loadingSavedSession)
-            self.loadFile()
+        # try:
+            # varexists = self.R('exists("'+self.Rvariables['dataframe']+'")')
+            # var2exists = self.R('exists("'+self.Rvariables['filename']+'")')
+            # if varexists:
+                # self.sendMe(kill = False)
+                # self.infoa.setText("Data loaded from previous session.")
+                # self.infob.setText("Check data with data viewer.")
+        # except:
+            # pass
+        # if self.loadingSavedSession:
+            # print 'onloading save :' + str(self.loadingSavedSession)
+            # self.loadFile()
             
-                
+    def onLoadSavedSession(self):
+        self.updateGUI()
+        self.sendMe()
+        
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:
@@ -118,23 +121,23 @@ class readFile(OWRpy):
         
             
     def loadFile(self):
-        print 'on load :' + str(self.loadingSavedSession)
-        if not self.loadingSavedSession:
-            print 'read file'
-            if self.delim == 0: #'tab'
-                sep = '\t'
-            elif self.delim == 1:
-                sep = ' '
-            elif self.delim == 2:
-                sep = ','
-            if self.useheader == 0:
-                header = 'FALSE'
-            elif self.useheader == 1:
-                header = 'TRUE'
-            if self.userowNames != '':
-                rownames = self.userowNames
-            else:
-                rownames = 'NULL' #force numbering
+        #print 'on load :' + str(self.loadingSavedSession)
+        #if not self.loadingSavedSession:
+        print 'read file'
+        if self.delim == 0: #'tab'
+            sep = '\t'
+        elif self.delim == 1:
+            sep = ' '
+        elif self.delim == 2:
+            sep = ','
+        if self.useheader == 0:
+            header = 'FALSE'
+        elif self.useheader == 1:
+            header = 'TRUE'
+        if self.userowNames != '':
+            rownames = self.userowNames
+        else:
+            rownames = 'NULL' #force numbering
             self.R(self.Rvariables['dataframe'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header+', sep = "'+sep+'", row.names = '+rownames+', fill = T)','setRData',True)
         self.updateGUI()
         self.sendMe()
@@ -155,7 +158,7 @@ class readFile(OWRpy):
             self.infod.addItem(str(i + ': ' + v))
         
     def sendMe(self, kill = True):
-        sendData = {'data':self.Rvariables['dataframe'], 'kill':kill}
+        sendData = {'data':self.Rvariables['dataframe']}
         self.rSend("data.frame", sendData)
         
         

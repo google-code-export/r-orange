@@ -42,7 +42,8 @@ class Heatmap(OWRpy):
             self.rowvChoiceprocess()
             if self.plotOnConnect:
                 self.makePlot()
-        else: return
+        else: 
+            self.Rplot('par(mfrow=c(1,1))')
 
     def makePlot(self):
         #self.require_libraries([heatmap.plus])

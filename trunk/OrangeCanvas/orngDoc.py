@@ -321,7 +321,7 @@ class SchemaDoc(QWidget):
         self.signalManager.removeWidget(widget.instance)
         self.widgets.remove(widget)
         if self.RVariableRemoveSupress == 1:
-            widget.remove(supress = 1)
+            widget.remove(suppress = 1)
         else:
             widget.remove()
         if saveTempDoc:
@@ -428,8 +428,8 @@ class SchemaDoc(QWidget):
             temp.setAttribute("yPos", str(int(widget.y())) )
             temp.setAttribute("caption", widget.caption)
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
-            if not tmp:
-                widget.instance.onSaveSession()
+            # if not tmp:
+                # widget.instance.onSaveSession()
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
             widgets.appendChild(temp)
 
@@ -524,6 +524,7 @@ class SchemaDoc(QWidget):
                     loadedOk = 0
                 qApp.processEvents()
 
+            
             #read lines
             lineList = lines.getElementsByTagName("channel")
             for line in lineList:
@@ -554,16 +555,25 @@ class SchemaDoc(QWidget):
         if not loadedOk:
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
 
+        print 'process new signal'
         if self.widgets:
             self.signalManager.processNewSignals(self.widgets[0].instance)
+        print 'finish process'
+        print 'start onload'
+        for widget in self.widgets:
+            print 'for widget'
+            SignalManager.loadSavedSession = True
+            widget.instance.onLoadSavedSession()
+            SignalManager.loadSavedSession = False
+
+        print 'done on load'
 
         # do we want to restore last position and size of the widget
         if self.canvasDlg.settings["saveWidgetsPosition"]:
             for widget in self.widgets:
                 widget.instance.restoreWidgetStatus()
             
-        
-
+            
     # save document as application
     def saveDocumentAsApp(self, asTabs = 1):
         # get filename
