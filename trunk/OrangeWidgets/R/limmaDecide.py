@@ -15,10 +15,6 @@ class limmaDecide(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
         self.vs = self.variable_suffix
-        self.rsession("require('affy')")
-        self.rsession("require('gcrma')")
-        self.rsession("require('limma')")
-        self.rsession("require('panp')")
         self.dmethod = "separate"
         self.adjmethods = "BH"
         self.foldchange = "0"
@@ -73,17 +69,20 @@ class limmaDecide(OWRpy):
             self.runAnalysis()
         
     def process(self, dataset):
-        if dataset and 'data' in dataset:
-            if 'kill' in dataset and dataset['kill'] == True:
-                self.rSend("Gene Change Matrix", {'kill':True})
-                self.rSend("Expression Subset", {'kill':True})
-                return
+        self.require_librarys(['affy', 'limma'])
+        self.data = '' # protect from using obsolete data
+        
+        for output in self.outputs:
+            self.rSend(output[0], None, 0) #start the killing cascade for all outputs
+        if dataset == None:
+            self.infoa.setText("Blank data recieved")
+            return
+        if 'data' in dataset:
             self.data = dataset['data']
             self.ebdata = dataset
             self.infoa.setText("Data connected")
-        else: 
-            self.rSend("Gene Change Matrix", {'kill':True})
-            self.rSend("Expression Subset", {'kill':True})
+        else:   
+            self.infoa.setText("No data element in recieved data")
         
     def runAnalysis(self):
         self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
@@ -101,6 +100,9 @@ class limmaDecide(OWRpy):
         self.sendesetsubset()
 
     def processeset(self, data):
+        self.eset = None
+        if data == None:
+            self.rSend("Expression Subset", None, 0)
         if data:
             self.eset = data['data'] #this is data from an expression matrix or data.frame
             self.olddata = data.copy()
@@ -115,6 +117,6 @@ class limmaDecide(OWRpy):
             self.newdata['data']=self.Rvariables['eset_sub']
             if 'classes' in self.ebdata:
                 self.newdata['classes'] = self.ebdata['classes']
-            self.send("Expression Subset", self.newdata)
+            self.rSend("Expression Subset", self.newdata)
         else:
             return 

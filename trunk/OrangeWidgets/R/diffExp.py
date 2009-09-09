@@ -146,16 +146,11 @@ class diffExp(OWRpy):
         self.arrays.clear()
         self.selectedArrays.clear()
         self.selectedArraysB.clear()
+        self.data = '' #clear the data
+        self.olddata = {'data':''} # clear the send signal
+        for output in self.outputs:
+            self.rSend(output[0], None, 0) #start the killing cascade.
         if data:
-            try:
-                if data['kill'] == True:
-                    self.rSend("eBayes fit", {'kill':True})
-                    self.data = ''
-                    self.olddata = {}
-                    return
-            except:
-                pass
-                
             self.data = data['data']
             self.olddata = data.copy()
             self.samplenames = self.rsession('colnames('+self.data+')') #collect the sample names to make the differential matrix
@@ -165,8 +160,6 @@ class diffExp(OWRpy):
             for v in self.samplenames:
                 self.arrays.addItem(v)
             
-        else: 
-            self.rSend("eBayes fit", {'kill':True})
 
     def phenoVarListBoxItemClicked(self):
         if self.processingComplete == 1:

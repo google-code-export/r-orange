@@ -63,6 +63,10 @@ class panpCalls(OWRpy):
         
     def process(self, dataset):
         self.require_librarys(['affy','gcrma','limma','panp'])
+        for output in self.outputs:
+            self.rSend(output[0], None, 0)
+        if dataset == None: 
+            self.infoa.setText("Blank data recieved")
         if dataset:
             try:
                 if dataset['kill'] == True:

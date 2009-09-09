@@ -140,6 +140,9 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
 
     def process(self, data):
         self.require_librarys(['fields'])
+        
+        if data == None:
+            self.columnsorrows.clear() #clear the window for the new data
         try:
             #self.columnsorrows.clear()
             self.Rvariables['data'] = data['data']
@@ -147,7 +150,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.changeRowCol()
             # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
                 # self.columnsorrows.addItem(v)
-            rows = self.rsession('length('+self.Rvariables['data']+'[,1])')
+            rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
             cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
             self.infoa.setText("Data Connected")
             self.tableinfoa.setText("Data Connected with:")

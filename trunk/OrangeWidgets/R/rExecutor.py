@@ -103,7 +103,7 @@ class rExecutor(OWRpy):
         self.thistext.insertHtml(OWRpy.Rhistory)
     def process(self, data):
         for output in self.outputs:
-            self.rSend(output[0], None)
+            self.rSend(output[0], None, 0)
         self.data = ''
         if data:
             self.data = str(data['data'])

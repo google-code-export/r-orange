@@ -118,7 +118,7 @@ class affyNormalize(OWRpy):
         self.require_librarys(['affy'])
         #self.needsProcessingHandler(self, 1)
         
-        self.rSend("Expression Matrix", None) #start the killing cascade because normalization is required
+        self.rSend("Expression Matrix", None, 0) #start the killing cascade because normalization is required
                 
         if self.loadingSavedSession:
             self.selectMethodChanged()

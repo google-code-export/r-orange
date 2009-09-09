@@ -56,9 +56,9 @@ class SchemaDoc(QWidget):
             if res == QMessageBox.Yes:
                 self.saveDocument()
                 ce.accept()
-                self.clear()
+                #self.clear()
             elif res == QMessageBox.No:
-                self.clear()
+                #self.clear()
                 self.removeTempDoc()
                 ce.accept()
             else:
@@ -324,6 +324,8 @@ class SchemaDoc(QWidget):
             widget.remove(suppress = 1)
         else:
             widget.remove()
+        if self.RVariableRemoveSupress == 1:
+            return
         if saveTempDoc:
             self.saveTempDoc()
         
