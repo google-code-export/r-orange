@@ -117,12 +117,15 @@ class affyNormalize(OWRpy):
         #required librarys
         self.require_librarys(['affy'])
         #self.needsProcessingHandler(self, 1)
+        
+        self.rSend("Expression Matrix", None) #start the killing cascade because normalization is required
+                
         if self.loadingSavedSession:
             self.selectMethodChanged()
             self.selMethBox.setEnabled(True)
             self.normalize()
             return
-
+            
         try: 
             print str(dataset['data'])
             self.data = str(dataset['data'])
@@ -137,9 +140,9 @@ class affyNormalize(OWRpy):
                 
             self.selMethBox.setEnabled(True)
             self.infoa.setText('Data Loaded')
-            if dataset['kill'] == True:
-                self.rSend("Normalized DataFrame", {'kill':True, 'data':''})
-                self.rSend("Normalized AffyBatch", {'kill':True, 'data':''})
+            # if dataset['kill'] == True:
+                # self.rSend("Normalized DataFrame", {'kill':True, 'data':''})
+                # self.rSend("Normalized AffyBatch", {'kill':True, 'data':''})
         except: 
             print 'error'
 

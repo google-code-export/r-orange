@@ -576,10 +576,14 @@ class OWBaseWidget(QDialog):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
                                 if processHandler:
                                     handler(value)
+                                
                             else:
                                 self.printEvent("ProcessSignals: Calling %s with %s (%s, %s)" % (handler, value, nameFrom, id), eventVerbosity = 2)
                                 if processHandler:
                                     handler(value, (widgetFrom, nameFrom, id))
+                            if value == None:
+                                for output in self.outputs:
+                                    self.send(output[0], None)
                     except:
                         type, val, traceback = sys.exc_info()
                         sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
