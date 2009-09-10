@@ -48,7 +48,7 @@ class SchemaDoc(QWidget):
             if newSettings and self.schemaName != "":
                 pass
                 #self.save(True)
-            self.clear()  # commented out to provide for a smoother close
+            self.clear(close = True)  
             self.removeTempDoc()
             ce.accept()
         else:
@@ -56,9 +56,9 @@ class SchemaDoc(QWidget):
             if res == QMessageBox.Yes:
                 self.saveDocument()
                 ce.accept()
-                #self.clear()
+                self.clear(close = True)
             elif res == QMessageBox.No:
-                #self.clear()
+                self.clear(close = True)
                 self.removeTempDoc()
                 ce.accept()
             else:
@@ -225,9 +225,10 @@ class SchemaDoc(QWidget):
 
 
     # remove line line
-    def removeLine1(self, line):
+    def removeLine1(self, line, close = False):
+        #print 'removing a line from' + str(outName) +'to' +str(inName)
         for (outName, inName) in line.getSignals():
-            self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
+            self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName, close = close)   # update SignalManager
 
         self.lines.remove(line)
         line.inWidget.removeLine(line)
@@ -312,15 +313,16 @@ class SchemaDoc(QWidget):
         return newwidget
 
     # remove widget
-    def removeWidget(self, widget, saveTempDoc = True):
+    def removeWidget(self, widget, saveTempDoc = True, close = False):
         if not widget:
             return
-        while widget.inLines != []: self.removeLine1(widget.inLines[0])
-        while widget.outLines != []:  self.removeLine1(widget.outLines[0])
+        widget.closing = close
+        while widget.inLines != []: self.removeLine1(widget.inLines[0], close = True)
+        while widget.outLines != []:  self.removeLine1(widget.outLines[0], close = True)
 
-        self.signalManager.removeWidget(widget.instance)
+        self.signalManager.removeWidget(widget.instance) # sending occurs before this point
         self.widgets.remove(widget)
-        if self.RVariableRemoveSupress == 1:
+        if self.RVariableRemoveSupress == 1: #send occurs before this point
             widget.remove(suppress = 1)
         else:
             widget.remove()
@@ -331,10 +333,10 @@ class SchemaDoc(QWidget):
         
         orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
 
-    def clear(self):
+    def clear(self, close = False):
         self.canvasDlg.setCaption()
         for widget in self.widgets[::-1]:   
-            self.removeWidget(widget, saveTempDoc = False)   # remove widgets from last to first
+            self.removeWidget(widget, saveTempDoc = False, close = close)   # remove widgets from last to first
         self.canvas.update()
         self.saveTempDoc()
 
