@@ -153,6 +153,7 @@ class OWBaseWidget(QDialog):
         self.eventHandler = None
         self.callbackDeposit = []
         self.startTime = time.time()    # used in progressbar
+        self.closing = False # is the widget closing, if so don't process any signals
 
         self.widgetStateHandler = None
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
@@ -555,9 +556,11 @@ class OWBaseWidget(QDialog):
 
     # signal manager calls this function when all input signals have updated the data
     def processSignals(self,processHandler = True):
+        if self.closing == True:
+            return
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
-
+        
         # we define only a way to handle signals that have defined a handler function
         for signal in self.inputs:        # we go from the first to the last defined input
             key = signal[0]

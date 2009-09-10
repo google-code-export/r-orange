@@ -188,6 +188,7 @@ class SignalManager:
     def removeWidget(self, widget):
         if self.verbosity >= 2:
             self.addEvent("remove widget " + widget.captionTitle, eventVerbosity = 2)
+        print "remove widget " + widget.captionTitle
         self.widgets.remove(widget)
 
 
@@ -290,18 +291,22 @@ class SignalManager:
                 return enabled
         return 0
 
-    def removeLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo):
+    def removeLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo, close = False):
         if self.verbosity >= 2:
             self.addEvent("remove link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle, eventVerbosity = 2)
-
+        print "remove link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle
         # no need to update topology, just remove the link
+        
         if self.links.has_key(widgetFrom):
             for (widget, signalFrom, signalTo, enabled) in self.links[widgetFrom]:
                 if widget == widgetTo and signalFrom == signalNameFrom and signalTo == signalNameTo:
                     for key in widgetFrom.linksOut[signalFrom].keys():
                         widgetTo.updateNewSignalData(widgetFrom, signalNameTo, None, key, signalNameFrom)
+                        print 'updating signal data'
                     self.links[widgetFrom].remove((widget, signalFrom, signalTo, enabled))
-                    if not self.freezing and not self.signalProcessingInProgress: self.processNewSignals(widgetFrom)
+                    if not self.freezing and not self.signalProcessingInProgress and not close: 
+                        self.processNewSignals(widgetFrom)
+                        print 'processing signals'
         widgetTo.removeInputConnection(widgetFrom, signalNameTo)
 
 
