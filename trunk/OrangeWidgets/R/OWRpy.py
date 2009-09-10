@@ -35,8 +35,8 @@ class OWRpy(OWWidget):
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.device = []
-        self.loadSavedSession = False
-        self.loadingSavedSession = False
+        #self.loadSavedSession = False
+        #self.loadingSavedSession = False
         #print 'set load ssaved '
         #self.settingsList = ['variable_suffix','loadingSavedSession']
         self.packagesLoaded = 0
@@ -48,7 +48,7 @@ class OWRpy(OWWidget):
     def getSettings(self, alsoContexts = True):
         settings = {}
         if hasattr(self, "settingsList"):
-            self.settingsList.extend(['variable_suffix','loadingSavedSession'])
+            self.settingsList.extend(['variable_suffix'])
             for name in self.settingsList:
                 try:
                     settings[name] =  self.getdeepattr(name)
@@ -67,7 +67,7 @@ class OWRpy(OWWidget):
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send'
-        self.loadingSavedSession = False
+        
         try:
             self.send(name, variable)
             if updateSignalProcessingManager:
@@ -76,6 +76,7 @@ class OWRpy(OWWidget):
             self.needsProcessingHandler(self, 1)
 
         
+    #depreciated
     def rsession(self, query,processing_notice=False):
         qApp.setOverrideCursor(Qt.WaitCursor)
         OWRpy.rsem.acquire()
@@ -123,7 +124,7 @@ class OWRpy(OWWidget):
         try:
             if type == 'getRData':
                 output  = rpy.r(query)
-            elif type == 'setRData' and not self.loadingSavedSession:
+            elif type == 'setRData':
                 rpy.r(query)
             elif type == 'getRSummary':
                 rpy.r('tmp<-('+query+')')
@@ -214,6 +215,10 @@ class OWRpy(OWWidget):
         self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(exampleTable_data' + self.variable_suffix + ')] <- "?"')
         
         d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
+        if self.R('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
+            d = [d]
+        print d
+        type(d)
         domain = orange.Domain(colClasses)
         data = orange.ExampleTable(domain, d)
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')

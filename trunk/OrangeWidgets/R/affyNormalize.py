@@ -83,20 +83,25 @@ class affyNormalize(OWRpy):
             # self.normalize()
         
     def onLoadSavedSession(self):
-        self.normalize(reload = True)
+        self.selectMethodChanged()
+        self.selMethBox.setEnabled(True)
+        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
+        self.rSend("Normalized DataFrame", neset)
+        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
+        self.infoa.setText(self.norminfo)
+
         
-    def normalize(self, reload = False):
+    def normalize(self):
         self.infoa.setText('Processing')
-        if not reload:
-            if self.selectMethod == 0:
-                self.rsession(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
-                self.norminfo = 'Normalized with RMA'
-            if self.selectMethod == 1:
-                self.rsession(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
-                self.norminfo = 'Normalized with MAS5'
-            if self.selectMethod == 2:
-                self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
-                self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrect+', Method:'+self.bgcorrectmeth+', Perfect Match Correct Method: '+self.pmcorrect+', Summary Method: '+self.summarymeth
+        if self.selectMethod == 0:
+            self.rsession(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
+            self.norminfo = 'Normalized with RMA'
+        if self.selectMethod == 1:
+            self.rsession(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
+            self.norminfo = 'Normalized with MAS5'
+        if self.selectMethod == 2:
+            self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
+            self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrect+', Method:'+self.bgcorrectmeth+', Perfect Match Correct Method: '+self.pmcorrect+', Summary Method: '+self.summarymeth
         
         neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
         self.rSend("Normalized DataFrame", neset)
@@ -116,14 +121,9 @@ class affyNormalize(OWRpy):
         self.require_librarys(['affy'])
         #self.needsProcessingHandler(self, 1)
         
-        self.rSend("Expression Matrix", None, 0) #start the killing cascade because normalization is required
+        self.rSend("Normalized DataFrame", None) #start the killing cascade because normalization is required
+        self.rSend("Normalized AffyBatch", None) #start the killing cascade because normalization is required
                 
-        if self.loadingSavedSession:
-            self.selectMethodChanged()
-            self.selMethBox.setEnabled(True)
-            self.normalize()
-            return
-            
         try: 
             print str(dataset['data'])
             self.data = str(dataset['data'])

@@ -19,8 +19,8 @@ class mergeR(OWRpy):
         self.outputs = [("Merged Examples All", RvarClasses.RDataFrame),("Merged Examples A+B", RvarClasses.RDataFrame), ("Merged Examples B+A", RvarClasses.RDataFrame)]
 
         #default values        
-        self.colAsel = ''
-        self.colBsel = ''
+        self.colAsel = None
+        self.colBsel = None
         self.forceMergeAll = 0 #checkbox value for forcing merger on all data, default is to remove instances from the rows or cols.
         print 'init merge and load settings'
         self.loadSettings()
@@ -47,30 +47,24 @@ class mergeR(OWRpy):
         infoBox = OWGUI.widgetBox(self.controlArea, "Info")
         self.infoa = OWGUI.widgetLabel(infoBox, "No Data Loaded")
         
-        runbox = OWGUI.widgetBox(self.controlArea, "Run")
-        OWGUI.button(runbox, self, "Run", callback = self.run)
+        #runbox = OWGUI.widgetBox(self.controlArea, "Run")
+        #OWGUI.button(runbox, self, "Run", callback = self.run)
         
         # ## Other options
         otherBox = OWGUI.widgetBox(self.controlArea, "Binding")
         OWGUI.checkBox(otherBox, self, "forceMergeAll", "Force Merger")
         OWGUI.button(otherBox, self, "Bind By Columns", callback = self.colBind)
         OWGUI.button(otherBox, self, "Bind By Rows", callback = self.rowBind)
-        #print self.colAsel, self.colBsel
-        # if self.R('exists("' + self.Rvariables['loadSavedSession'] + '")'):
-            # self.loadSavedSession = True
-            # self.processA({'data': self.dataA})
-            # self.processB({'data': self.dataB})
 
         
     def onLoadSavedSession(self):
         self.processSignals()
-        # print self.R('which('+self.dataA+' == "' + self.colAsel + '")-1')
-        # print self.R('which('+self.dataB+' == "' + self.colBsel + '")-1')
-        # self.colA.setCurrentRow(int(self.R('which(colnames('+self.dataA+') == "' + self.colAsel + '")-1')))
-        # self.colB.setCurrentRow(int(self.R('which(colnames('+self.dataB+') == "' + self.colBsel + '")-1')))
+        self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + self.colAsel + '")-1'))
+        self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + self.colBsel + '")-1'))
         self.sendMe()
 
     def processA(self, data):
+        print 'processA'
         if data:
             self.dataA = str(data['data'])
             colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
@@ -87,6 +81,7 @@ class mergeR(OWRpy):
             #self.sendNothing
 
     def processB(self, data):
+        print 'processB'
         if data:
             self.dataB = str(data['data'])
             colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
@@ -106,34 +101,41 @@ class mergeR(OWRpy):
     def run(self):
         try:
             h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
-            if self.colAsel == '' and self.colBsel == '' and type(h) is str: 
-                self.colA.setCurrentRow(self.R('which('+self.dataA+' == "' + h + '")'-1))
-                self.colB.setCurrentRow(self.R('which('+self.dataB+' == "' + h + '")'-1))
+            if self.colAsel == None and self.colBsel == None and type(h) is str: 
+                self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + h + '")-1'))
+                self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + h + '")-1'))
                 self.R(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+',all.x=T)')
                 self.R(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+',all.y=T)')                    
                 self.R(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+')')                    
-            else:
+            elif self.colAsel and self.colBsel:
                 self.R(self.Rvariables['merged_dataAB']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
                 self.R(self.Rvariables['merged_dataBA']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
                 self.R(self.Rvariables['merged_dataAll']+'<-merge('+self.dataA+', '+self.dataB+', by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
             
             self.sendMe()
         except: 
+            print 'merge error'
+            self.sendMe(kill=True)
             return 
-    def sendMe(self):
-        self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
-        self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
-        self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
+    def sendMe(self,kill=False):
+        if kill:
+            self.rSend("Merged Examples A+B", None)
+            self.rSend("Merged Examples B+A", None)
+            self.rSend("Merged Examples All", None)
+        else:
+            self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
+            self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
+            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
     
     def setcolA(self):
         try:
             self.colAsel = str(self.colA.selectedItems()[0].text())
-            
+            self.run()
         except: return
     def setcolB(self):
         try:
             self.colBsel = str(self.colB.selectedItems()[0].text())
-            
+            self.run()
         except: return
     
     def rowBind(self):

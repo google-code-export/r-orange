@@ -48,7 +48,7 @@ class SchemaDoc(QWidget):
             if newSettings and self.schemaName != "":
                 pass
                 #self.save(True)
-            #self.clear()  # commented out to provide for a smoother close
+            self.clear()  # commented out to provide for a smoother close
             self.removeTempDoc()
             ce.accept()
         else:

@@ -379,7 +379,7 @@ class OWBaseWidget(QDialog):
                 settings = cPickle.load(file)
             except:
                 settings = None
-
+            settings = None # do not load ini file
             if hasattr(self, "_settingsFromSchema"):
                 if settings: settings.update(self._settingsFromSchema)
                 else:        settings = self._settingsFromSchema
@@ -564,14 +564,17 @@ class OWBaseWidget(QDialog):
             if self.linksIn.has_key(key):
                 for i in range(len(self.linksIn[key])):
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
-                    print dirty,widgetFrom,handler, signalData
+                    #print dirty,widgetFrom,handler, signalData
                     print 'processHandler: ' + str(processHandler)
                     if not (handler and dirty): continue
                     print 'do the work'
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
+                        print 'in try'
                         for (value, id, nameFrom) in signalData:
+                            print 'data:' 
+                            print signalData
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
                                 if processHandler:

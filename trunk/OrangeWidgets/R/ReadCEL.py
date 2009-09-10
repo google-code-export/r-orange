@@ -44,24 +44,12 @@ class ReadCEL(OWRpy):
         self.infod = OWGUI.widgetLabel(box, '')
         self.setFileList()
         self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-
-        
-        #initialize previous sessions
-        try:
-            varexists = self.R('exists("'+self.Rvariables['eset']+'")') #should trigger an exception if it doesn't exist
-            if varexists:
-                self.sendMe(kill = False)
-                self.infoc.setText("Data reloaded from saved session.")
-                self.infod.setText("You may want to use a data viewer to check the data.")
-            else:
-                return
-        except:
-            pass
-        # if self.loadingSavedSession:
-            # self.procesS()
         
         
-
+    def onLoadSavedSession(self):
+        self.infoc.setText("Data reloaded from saved session.")
+        self.infod.setText("You may want to use a data viewer to check the data.")
+        self.sendMe()        
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:
@@ -84,7 +72,7 @@ class ReadCEL(OWRpy):
         if len(self.recentFiles) > 0:
             self.setFileList()
         self.R(self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"', 'setRData')
-        self.procesS()
+        self.process()
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
@@ -94,9 +82,9 @@ class ReadCEL(OWRpy):
             if folder in self.recentFiles: self.recentFiles.remove(folder)
             self.recentFiles.insert(0, folder)
             self.setFileList()
-            self.procesS()
+            self.process()
         
-    def procesS(self):
+    def process(self):
         self.infoa.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
@@ -110,7 +98,7 @@ class ReadCEL(OWRpy):
         self.sendMe()
         
     
-    def sendMe(self, kill = True):
-        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'kill':kill}
+    def sendMe(self):
+        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
         self.rSend("Expression Matrix", out)
-        self.rSend("Eset", {'data':self.Rvariables['eset'], 'kill':kill})
+        self.rSend("Eset", {'data':self.Rvariables['eset']})

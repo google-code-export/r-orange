@@ -121,7 +121,8 @@ class OWDataTable(OWRpy):
         """Generates a new table and adds it to a new tab when new data arrives;
         or hides the table and removes a tab when data==None;
         or replaces the table when new data arrives together with already existing id."""
-        
+        print 'got data'
+        print data
         if data != None:  # can be an empty table!
             data = self.convertDataframeToExampleTable(data['data'])
             
