@@ -98,19 +98,21 @@ class diffExp(OWRpy):
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
         
         #self.Rreload() #Important to be at the end of the __init__
-        try:
-            varexists1 = self.R('exists("'+self.Rvariables['classes']+'")') #should trigger an exception if it doesn't exist
-            varexists2 = self.R('exists("'+self.Rvariables['results']+'")')
-            self.infod.setText(str(varexists))
-            if varexists1 and varexists2:
-                self.processEset(reload = True)
-            else:
-                return
-        except:
-            pass
+        # try:
+            # varexists1 = self.R('exists("'+self.Rvariables['classes']+'")') #should trigger an exception if it doesn't exist
+            # varexists2 = self.R('exists("'+self.Rvariables['results']+'")')
+            # self.infod.setText(str(varexists))
+            # if varexists1 and varexists2:
+                # self.processEset(reload = True)
+            # else:
+                # return
+        # except:
+            # pass
         # if self.loadingSavedSession:
             # self.processEset()
-
+    def onLoadSavedSession(self):
+        self.Rreload()
+        self.processEset(reload = 1)
     def clearA(self):
         self.selectedArrays.clear()
         self.sampleA = []
@@ -229,7 +231,7 @@ class diffExp(OWRpy):
             self.newdata['kill'] = False
         else:
             self.newdata['kill'] = True
-        self.send('eBayes fit', self.newdata)
+        self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1
 
@@ -256,5 +258,7 @@ class diffExp(OWRpy):
             self.selectedArrays.addItem(str(v))
         for v in self.sampleB:
             self.selectedArraysB.addItem(str(v))
+        self.arrays.addItems(self.sampleA)
+        self.arrays.addItems(self.sampleB)
         self.modelText.setText("Model: " + self.modelFormula)
         

@@ -47,20 +47,10 @@ class panpCalls(OWRpy):
         processbutton = OWGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
         self.infoa = OWGUI.widgetLabel(box, "Processing not begun")
         
-        try:
-            varexists = self.R('exists("'+self.Rvariables['peset']+'")')
-            if varexists:
-                self.senddata['data'] = self.Rvariables['peset']
-                self.senddata['kill'] = False
-                self.rSend("Present Gene Signal Matrix", self.senddata)
-                self.infoa.setText("Data loaded from previous session.")
-                
-        except:
-            pass
-        if self.loadingSavedSession:
-            self.processEset()
 
-        
+    def onLoadSavedSession(self):
+        # may want to check if the Rvariable exists
+        self.processEset(supress = 1) # send the data bu supress computation
     def process(self, dataset):
         self.require_librarys(['affy','gcrma','limma','panp'])
         for output in self.outputs:
@@ -68,22 +58,16 @@ class panpCalls(OWRpy):
         if dataset == None: 
             self.infoa.setText("Blank data recieved")
         if dataset:
-            try:
-                if dataset['kill'] == True:
-                    self.rSend("Present Gene Signal Matrix", {'data':'', 'kill':True})
-            except:
-                pass
             self.data = dataset
             if 'data' in self.data:
                 self.eset = self.data['data']
             else:
                 self.infoa.setText("Processing imposible, not of eset or affybatch type")
-                self.rSend("Present Gene Signal Matrix", {'data':'', 'kill':True})
         else:
-            self.rSend("Present Gene Signal Matrix", {'data':'', 'kill':True})
+            self.infoa.setText("Processing imposible, not of eset or affybatch type")
             
-    def processEset(self):
-        if not self.loadingSavedSession:
+    def processEset(self, supress = 0):
+        if supress == 0:
             self.infoa.setText("Processing Started!!!")
             self.R(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+self.looseCut+', tightCutoff='+self.tightCut+')','setRData', True)
             self.infoa.setText('PA calls have been calculated')
