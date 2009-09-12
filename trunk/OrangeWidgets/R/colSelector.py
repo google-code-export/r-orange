@@ -138,7 +138,13 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         except:
             pass
 
+    def onLoadSavedSession(self):
+        print 'load colselector'
+        self.processSignals()
     def process(self, data):
+        for output in self.outputs:
+            self.rSend(output[0], None, 0)
+
         self.require_librarys(['fields'])
         
         if data == None:
@@ -150,8 +156,9 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.changeRowCol()
             # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
                 # self.columnsorrows.addItem(v)
-            rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
-            cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
+            (rows,cols) = self.R('dim('+self.Rvariables['data']+')')
+            #rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
+            #cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
             self.infoa.setText("Data Connected")
             self.tableinfoa.setText("Data Connected with:")
             self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
@@ -189,8 +196,12 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             if self.rowcolselect == 0: # we are selecting columns based on row criteria so we need to show the row infoa
                 try: # want to see if there are rownames so that we can select on them, if they don't exist 
                     self.columnsorrows.addItem("Column Names")
-                    for item in self.rsession('rownames('+self.Rvariables['data']+')'):
-                        self.columnsorrows.addItem(item)
+                    rownames = self.rsession('rownames('+self.Rvariables['data']+')')
+                    if type(rownames) is str:
+                        self.columnsorrows.addItem(rownames)
+                    else:
+                        for item in rownames:
+                            self.columnsorrows.addItem(item)
                 except:
                     self.infoa.setText("Rownames do not exist, showing the row numbers")
                     self.RowColNamesExist = 0
@@ -199,8 +210,12 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             if self.rowcolselect == 1: # we are selecting on rows based on columns so we need to show the columns for criteris 
                 try: # want to see if there are colnames for selection 
                     self.columnsorrows.addItem("Row Names")
-                    for item in self.rsession('colnames('+self.Rvariables['data']+')'):
-                        self.columnsorrows.addItem(item)
+                    colnames = self.rsession('colnames('+self.Rvariables['data']+')')
+                    if type(colnames) is str:
+                        self.columnsorrows.addItem(colnames)
+                    else:
+                        for item in colnames:
+                            self.columnsorrows.addItem(item)
                 except:
                     self.infoa.setText("Column names do not exist, showing the row numbers")
                     self.RowColNamesExist = 0
@@ -317,12 +332,12 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
     
     def subOnAttached(self):
         tmpitem = self.rsession(self.ssv) #get the items to subset with
-        if type(tmpitem) == type(''): #it's a string!!!!!!!
+        if type(tmpitem) is str: #it's a string!!!!!!!
             items = []
             items.append(tmpitem)
-        elif type(tmpitem) == type([]): #it's a list
+        elif type(tmpitem) is list: #it's a list
             items = tmpitem
-        elif type(tmpitem) == type({}): #it's a dict
+        elif type(tmpitem) is dict: #it's a dict
             items = []
             for key in tmpitem.keys():
                 items.append(tmpitem['key'])

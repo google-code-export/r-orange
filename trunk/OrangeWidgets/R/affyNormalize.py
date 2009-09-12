@@ -39,8 +39,8 @@ class affyNormalize(OWRpy):
         self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals		
-        self.inputs = [("Expression Matrix", RAffyClasses.Eset, self.process)]
-        self.outputs = [("Normalized DataFrame", RvarClasses.RDataFrame),("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
+        self.inputs = [("Eset", RAffyClasses.Eset, self.process)]
+        self.outputs = [("Normalized Expression Matrix", RvarClasses.RDataFrame),("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
 
         
         #the GUI
@@ -66,28 +66,13 @@ class affyNormalize(OWRpy):
         self.summethselector.setEnabled(False)
         
         
-        #run = OWGUI.widgetBox(self.controlArea, "Run the Normalization")
-        #self.infob = OWGUI.widgetLabel(run, 'Procedure not run yet')
         runbutton = OWGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
-        #OWGUI.button(run, self, 'test', callback = self.checkRCode, width=200)
-        # try:
-            # varexists1 = self.R('exists("'+self.Rvariables['normalized_affybatch']+'")') #should trigger an exception if it doesn't exist
-           
-            # if varexists1:
-                # self.normalize(reload = True)
-            # else:
-                # return
-        # except:
-            # pass
-        # if self.loadingSavedSession:
-            # self.normalize()
         
     def onLoadSavedSession(self):
+        
         self.selectMethodChanged()
         self.selMethBox.setEnabled(True)
-        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
-        self.rSend("Normalized DataFrame", neset)
-        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
+        self.toSend()
         self.infoa.setText(self.norminfo)
 
         
@@ -102,10 +87,7 @@ class affyNormalize(OWRpy):
         if self.selectMethod == 2:
             self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
             self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrect+', Method:'+self.bgcorrectmeth+', Perfect Match Correct Method: '+self.pmcorrect+', Summary Method: '+self.summarymeth
-        
-        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
-        self.rSend("Normalized DataFrame", neset)
-        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
+        self.toSend()
         self.infoa.setText(self.norminfo)
         
     def collectOptions(self):
@@ -127,6 +109,7 @@ class affyNormalize(OWRpy):
         try: 
             print str(dataset['data'])
             self.data = str(dataset['data'])
+            
             
             if self.rsession('length(exprs('+self.data+')[1,])') > 10:
                 self.selectMethod = 2
@@ -183,4 +166,8 @@ class affyNormalize(OWRpy):
         
         #self.infoa.setText('Ready to Normalize')
 
-            
+    def toSend(self):
+        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
+        self.rSend("Normalized Expression Matrix", neset,0)
+        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']},0)
+    

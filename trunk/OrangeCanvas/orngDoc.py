@@ -451,19 +451,21 @@ class SchemaDoc(QWidget):
         xmlText = doc.toprettyxml()
 		
         if not tmp:
-            file = open('schema.tmp', "wt")
+            tempschema = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
+            tempR = os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/')
+            file = open(tempschema, "wt")
             file.write(xmlText)
             file.close()
             doc.unlink()
             print 'saving image...'
             import rpy
-            rpy.r('save.image("tmp.RData")')
+            rpy.r('save.image("' + tempR + '")')
             zout = zipfile.ZipFile(filename, "w")
-            for fname in ['schema.tmp','tmp.RData']:
+            for fname in [tempschema,tempR]:
                 zout.write(fname)
             zout.close()
-            os.remove('tmp.RData')
-            os.remove('schema.tmp')
+            os.remove(tempR)
+            os.remove(tempschema)
             print 'image saved'
         else :
             file = open(filename, "wt")
@@ -498,18 +500,22 @@ class SchemaDoc(QWidget):
 
         try:
             #load the data ...
+            from rpy_options import set_options
+            set_options(RHOME=os.environ['RPATH'])
+            import rpy
+            import re
             
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
-                file(os.path.basename(name), 'wb').write(zfile.read(name))
-            from rpy_options import set_options
-            set_options(RHOME=os.environ['RPATH'])
-            print 'loading R session ...'
-            import rpy
-            rpy.r('load("tmp.RData")')
-            doc = parse('schema.tmp')
+                file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
+                if re.search('tempSchema.tmp',os.path.basename(name)):
+                    doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
+                else:
+                    print 'loading R session ...'
+                    rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
+
+                    
             schema = doc.firstChild
-            
             widgets = schema.getElementsByTagName("widgets")[0]
             lines = schema.getElementsByTagName("channels")[0]
             settings = schema.getElementsByTagName("settings")

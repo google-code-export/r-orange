@@ -11,7 +11,7 @@ import rpy
 import time
 import RvarClasses
 import RAffyClasses
-import threading
+import threading, sys
 
 
 class OWRpy(OWWidget):
@@ -140,8 +140,11 @@ class OWRpy(OWWidget):
             qApp.restoreOverrideCursor()
             self.progressBarFinished()
             print inst.message
-            raise rpy.RPyException('Unable to process')
-            return 
+            QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
+            #sys.exit()
+            
+            #raise rpy.RPyException('Unable to process')
+
         # OWRpy.processing = False
         if processing_notice:
             self.progressBarFinished()
@@ -153,14 +156,17 @@ class OWRpy(OWWidget):
         return output
                          
     def require_librarys(self,librarys):
+        import orngEnviron
+        #lib = os.path.join(os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"]), "Rpackages").replace("\\", "/")
+        #self.R('.libPaths("' + lib  +'")')
+        
         if self.packagesLoaded == 0:
             for library in librarys:
-                if not self.R("require('"+ library +"')"): 
-                    self.R('setRepositories(ind=1:7)')
-                    self.R('chooseCRANmirror()')
-                    self.R('install.packages("' + library + '")')
                 try:
-                    self.R('require('  + library + ')')
+                    if not self.R("require('"+ library +"')"): 
+                        self.R('setRepositories(ind=1:7)')
+                        self.R('chooseCRANmirror()')
+                        self.R('install.packages("' + library + '")')
                 except rpy.RPyRException, inst:
                     print 'asdf'
                     m = re.search("'(.*)'",inst.message)
@@ -217,8 +223,8 @@ class OWRpy(OWWidget):
         d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
         if self.R('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
             d = [d]
-        print d
-        type(d)
+        #print d
+        #type(d)
         domain = orange.Domain(colClasses)
         data = orange.ExampleTable(domain, d)
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
@@ -253,7 +259,7 @@ class OWRpy(OWWidget):
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
-        print 'load'
+        print 'calling load saved session in OWRpy... should have been overwritten in the widget'
     
     def onSaveSession(self):
         print 'save session'

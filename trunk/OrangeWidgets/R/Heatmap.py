@@ -30,6 +30,10 @@ class Heatmap(OWRpy):
         self.infoa = OWGUI.widgetLabel(infobox, "Nothing to report")
         
         
+    def onLoadSavedSession(self):
+        print 'load heatmap'
+        self.processSignals()
+
     def processMatrix(self, data):
         if data:
             self.plotdata = data['data']

@@ -73,8 +73,9 @@ class readFile(OWRpy):
             # self.loadFile()
             
     def onLoadSavedSession(self):
-        self.updateGUI()
-        self.sendMe()
+        if self.R('exists("'+self.Rvariables['dataframe']+'")'):
+            self.updateGUI()
+            self.sendMe()
         
     def setFileList(self):
         self.filecombo.clear()

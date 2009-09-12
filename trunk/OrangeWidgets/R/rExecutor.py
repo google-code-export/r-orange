@@ -31,8 +31,15 @@ class rExecutor(OWRpy):
         #GUI
         self.box = OWGUI.widgetBox(self.controlArea, "R Commander")
         self.infob = OWGUI.widgetLabel(self.box, "")
-        
-        
+        # splice canvas for the right hand side of the canvas
+        self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
+        self.mainArea.layout().addWidget(self.splitCanvas)
+
+        runbox = OWGUI.widgetBox(self, "Commander")
+        self.splitCanvas.addWidget(runbox)
+        OWGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
+        processbutton = OWGUI.button(runbox, self, "Run", callback = self.runR, width=150)
+
         varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
         history = OWGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
         self.infoa = OWGUI.widgetLabel(self.box, "")
@@ -45,14 +52,7 @@ class rExecutor(OWRpy):
         self.metadataLB = OWGUI.listBox(self.metadataBox, self, callback = self.insertMetaDataVar)
         
         
-        # splice canvas for the right hand side of the canvas
-        self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
-        self.mainArea.layout().addWidget(self.splitCanvas)
         
-        runbox = OWGUI.widgetBox(self, "Commander")
-        self.splitCanvas.addWidget(runbox)
-        OWGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
-        processbutton = OWGUI.button(runbox, self, "Run", callback = self.runR, width=150)
         
         self.thistext = QTextEdit(self)
         self.splitCanvas.addWidget(self.thistext)
