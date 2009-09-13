@@ -51,6 +51,7 @@ class widgetMaker(OWRpy):
         OWGUI.checkBox(box, self, 'functionAllowOutput', 'Allow Output')
         
         OWGUI.button(box, self, 'Generate Code', callback = self.generateCode)
+        OWGUI.button(box, self, 'Launch Widget', callback = self.launch)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
@@ -62,6 +63,24 @@ class widgetMaker(OWRpy):
         codebox.layout().addWidget(self.codeArea)
         
 
+    def launch(self):
+        import orngEnviron, orngRegistry,orngCanvas 
+        widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
+        #print 'dir:' + widgetDirName
+        path = widgetDirName +  "/Prototypes/" + self.functionName + ".py"
+        #print 'path:' + path
+        file = open(path, "wt")
+        file.write(self.headerCode+self.initCode+self.guiCode+self.processSignals+self.commitFunction)
+        file.close()
+        
+        #reload all the widgets including those in the prototype dir we just created 
+        orngRegistry.readCategories()
+        
+        # need to work out how to update the widget icons in the tabs to show the new widget
+        #or create a new button that will launch the new widget
+        # self.createWidgetsToolbar()
+        
+        
         
     def loadRPackage(self):
         
@@ -156,8 +175,8 @@ class widgetMaker(OWRpy):
         
     def makeHeader(self):
         self.headerCode = '"""\n'
-        self.headerCode += '&lt;name&gt;'+self.functionName+'&lt;/name&gt;\n'
-        self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
+        self.headerCode += '<name>'+self.functionName+'</name>\n'
+        self.headerCode += '<author>Generated using Widget Maker written by Kyle R. Covington</author>\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
         self.headerCode += 'import OWGUI \n'

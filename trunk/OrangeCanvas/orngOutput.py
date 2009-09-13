@@ -93,6 +93,8 @@ class OutputWindow(QDialog):
 
     # simple printing of text called by print calls
     def write(self, text):
+        # print text
+        # return
         Text = self.getSafeString(text)
         Text = Text.replace("\n", "<br>\n")   # replace new line characters with <br> otherwise they don't get shown correctly in html output
         #text = "<nobr>" + text + "</nobr>"
@@ -104,13 +106,15 @@ class OutputWindow(QDialog):
             #self.logFile.write(str(text) + "<br>\n")
             self.logFile.write(Text)
 
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)                             # existing text
-        if text == " ": self.textOutput.insertHtml("&nbsp;")
-        else:           self.textOutput.insertHtml(Text)                                  # then append the text
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
-        self.textOutput.setTextCursor(cursor)
+        # QTextCursor runs very slow with lots of text!!!!!!!!!!
+        
+        # cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        # self.textOutput.setTextCursor(cursor)                             # existing text
+        # if text == " ": self.textOutput.insertHtml("&nbsp;")
+        # else:           self.textOutput.insertHtml(Text)                                  # then append the text
+        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
+        # self.textOutput.setTextCursor(cursor)
 
         if Text[-1:] == "\n":
             if self.canvasDlg.settings["printOutputInStatusBar"]:

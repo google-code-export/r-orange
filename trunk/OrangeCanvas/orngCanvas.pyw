@@ -29,6 +29,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.outputPix = os.path.join(canvasPicsDir, "output.png")
         self.file_open = os.path.join(canvasPicsDir, "open.png")
         self.file_save = os.path.join(canvasPicsDir, "save.png")
+        self.reload_pic = os.path.join(canvasPicsDir, "update1.png")
         self.text_icon = os.path.join(canvasPicsDir, "text.png")
         self.file_print= os.path.join(canvasPicsDir, "print.png")
         self.file_exit = os.path.join(canvasPicsDir, "exit.png")
@@ -91,6 +92,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
+        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
@@ -299,7 +301,8 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuItemSave(self):
         self.schema.saveDocument()
-        
+    def reloadWidgets(self):
+        self.widgetRegistry = orngRegistry.readCategories()
     def menuItemSaveAs(self):
         self.schema.saveDocumentAs()
 
