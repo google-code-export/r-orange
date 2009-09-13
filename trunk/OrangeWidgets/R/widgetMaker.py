@@ -70,7 +70,12 @@ class widgetMaker(OWRpy):
         path = widgetDirName +  "/Prototypes/" + self.functionName + ".py"
         #print 'path:' + path
         file = open(path, "wt")
-        file.write(self.headerCode+self.initCode+self.guiCode+self.processSignals+self.commitFunction)
+        tmpCode = self.completeCode
+        tmpCode.replace('<pre>', '')
+        tmpCode.replace('</pre>', '')
+        tmpCode.replace('&lt;', '<')
+        tmpCode.replace('&gt;', '>')
+        file.write(tmpCode)
         file.close()
         
         #reload all the widgets including those in the prototype dir we just created 
@@ -175,8 +180,8 @@ class widgetMaker(OWRpy):
         
     def makeHeader(self):
         self.headerCode = '"""\n'
-        self.headerCode += '<name>'+self.functionName+'</name>\n'
-        self.headerCode += '<author>Generated using Widget Maker written by Kyle R. Covington</author>\n'
+        self.headerCode += '&lt;name&gt;'+self.functionName+'&lt;/name&gt;\n'
+        self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
         self.headerCode += 'import OWGUI \n'
@@ -187,6 +192,8 @@ class widgetMaker(OWRpy):
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
         self.initCode += '\t\tsettingsList = []\n'
         self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
+        if self.functionAllowOutput:
+            self.initCode += '\t\tself.setRvariableNames(["'+self.functionName+'"])\n'
         for element in self.fieldList.keys():
             if element == '...':
                 pass
@@ -198,6 +205,8 @@ class widgetMaker(OWRpy):
                 else:
                     self.initCode += '\t\tself.'+element+' = "'+str(self.fieldList[element])+'"\n'
         if len(self.functionInputs.keys()) > 0:
+            for inputName in self.functionInputs.keys():
+                self.initCode += "\t\tself."+inputName+" = ''\n"
             self.initCode += '\t\tself.inputs = ['
             for element in self.functionInputs.keys():
                 self.initCode += '("'+element+'", RvarClasses.RVariable, self.process'+element+'),'
@@ -232,7 +241,12 @@ class widgetMaker(OWRpy):
     def makeCommitFunction(self):
         self.commitFunction = ''
         self.commitFunction += '\tdef commitFunction(self):\n'
-        self.commitFunction += "\t\tself.R(self.Rvariables['"+self.functionName+"']+'&lt;-"+self.functionName+"("
+        for inputName in self.functionInputs.keys():
+            self.commitFunction += "\t\tif self."+inputName+" == '': return\n"
+        if self.functionAllowOutput:
+            self.commitFunction += "\t\tself.R(self.Rvariables['"+self.functionName+"']+'&lt;-"+self.functionName+"("
+        else:
+            self.commitFunction += "\t\tself.R("+self.functionName+"("
         for element in self.functionInputs.keys():
             self.commitFunction += element+"='+str(self."+element+")+',"
         for element in self.fieldList.keys():
