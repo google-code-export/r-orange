@@ -77,10 +77,11 @@ class runSigPathway(OWRpy):
         self.splitCanvas.addWidget(self.table1)
         self.splitCanvas.addWidget(self.table2)
         
-        
+    def onLoadSavedSession(self):
         try:
-            varexists1 = self.R('exists("'+'sigpath_'+self.vs+'$df.pathways'+'")')
-            varexists2 = self.R('exists("'+'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]'+'")') #should trigger an exception if it doesn't exist
+            varexists1 = self.R('exists("'+'sigpath_'+self.vs+'")')
+            if self.clickedRow != None:
+                varexists2 = self.R('exists("'+'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]'+'")') #should trigger an exception if it doesn't exist
             if varexists1:
                 self.runPath(reload = 1)
                 self.sendMe(palist = False)
