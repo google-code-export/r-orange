@@ -1,5 +1,5 @@
 """
-<name>Subset</name>
+<name>Column Selection</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
 <icon>icons/Subset.png</icon>
 <priority>3020</priority>
@@ -27,8 +27,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.newdata = {}
         self.sentalready = 0
         
-        
-        
+
         self.inputs = [("R DataFrame", RvarClasses.RDataFrame, self.process), ("Subsetting Vector", RvarClasses.RVector, self.ssvAttached)]
         self.outputs = [("R DataFrame", RvarClasses.RDataFrame), ("Classified Vector Subset", RvarClasses.RVector)]
         
@@ -46,7 +45,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         # first implement a widget that allows for selection of options
         options = OWGUI.widgetBox(self.controlArea, "Options")
         grid.addWidget(options, 0,0)
-        self.rowcol = OWGUI.radioButtonsInBox(options, self, "rowcolselect", ["Rows", "Columns"], callback = self.changeRowCol)
+        #self.rowcol = OWGUI.radioButtonsInBox(options, self, "rowcolselect", ["Rows", "Columns"], callback = self.changeRowCol)
         self.subOnAttachedButton = OWGUI.button(options, self, "Subset on Attached List", callback = self.subOnAttached)
         self.subOnAttachedButton.setEnabled(False)
         self.tableinfoa = OWGUI.widgetLabel(options, "No Data Connected")
@@ -142,23 +141,23 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         print 'load colselector'
         self.processSignals()
     def process(self, data):
-        for output in self.outputs:
-            self.rSend(output[0], None, 0)
-
         self.require_librarys(['fields'])
         
         if data == None:
             self.columnsorrows.clear() #clear the window for the new data
+            self.selectCriteria.clear()
+            self.olddata = ''
+            self.infoa.setText('None Type Recieved')
         try:
             #self.columnsorrows.clear()
             self.Rvariables['data'] = data['data']
             self.olddata = data
-            self.changeRowCol()
+            #self.changeRowCol()
             # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
                 # self.columnsorrows.addItem(v)
-            (rows,cols) = self.R('dim('+self.Rvariables['data']+')')
-            #rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
-            #cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
+            #(rows,cols) = self.R('dim('+self.Rvariables['data']+')')
+            rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
+            cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
             self.infoa.setText("Data Connected")
             self.tableinfoa.setText("Data Connected with:")
             self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
@@ -168,7 +167,25 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.tableinfob.setText("")
             self.tableinfoc.setText("")
             self.tableinfod.setText("")
-    
+            return
+            
+        self.columnsorrows.clear() #clear the window for the new data
+        if self.Rvariables['data'] != '': # this checks if data is still the default
+            try: # want to see if there are rownames so that we can select on them, if they don't exist 
+                self.columnsorrows.addItem("Column Names")
+                rownames = self.rsession('rownames('+self.Rvariables['data']+')')
+                if type(rownames) is str:
+                    self.columnsorrows.addItem(rownames)
+                else:
+                    for item in rownames:
+                        self.columnsorrows.addItem(item)
+            except:
+                self.infoa.setText("Rownames do not exist, showing the row numbers")
+                self.RowColNamesExist = 0
+                for l in xrange(int(self.rsession('length('+self.Rvariables['data']+'[,1])'))):
+                    self.columnsorrows.addItem(str(l+1))
+        else:
+            self.infoa.setText("Data not connected.")
     def ssvAttached(self, data):
         if 'data' in data:
             self.subOnAttachedButton.setEnabled(True)
@@ -190,39 +207,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.table = MyTable(self.Rvariables['data'])
         self.table.show()
 
-    def changeRowCol(self): # there has been a change to the RowCol selection and we need to now populate the Row or col 
-        self.columnsorrows.clear() #clear the window for the new data
-        if self.Rvariables['data'] != '': # this checks if data is still the default
-            if self.rowcolselect == 0: # we are selecting columns based on row criteria so we need to show the row infoa
-                try: # want to see if there are rownames so that we can select on them, if they don't exist 
-                    self.columnsorrows.addItem("Column Names")
-                    rownames = self.rsession('rownames('+self.Rvariables['data']+')')
-                    if type(rownames) is str:
-                        self.columnsorrows.addItem(rownames)
-                    else:
-                        for item in rownames:
-                            self.columnsorrows.addItem(item)
-                except:
-                    self.infoa.setText("Rownames do not exist, showing the row numbers")
-                    self.RowColNamesExist = 0
-                    for l in xrange(int(self.rsession('length('+self.Rvariables['data']+'[,1])'))):
-                        self.columnsorrows.addItem(str(l+1))
-            if self.rowcolselect == 1: # we are selecting on rows based on columns so we need to show the columns for criteris 
-                try: # want to see if there are colnames for selection 
-                    self.columnsorrows.addItem("Row Names")
-                    colnames = self.rsession('colnames('+self.Rvariables['data']+')')
-                    if type(colnames) is str:
-                        self.columnsorrows.addItem(colnames)
-                    else:
-                        for item in colnames:
-                            self.columnsorrows.addItem(item)
-                except:
-                    self.infoa.setText("Column names do not exist, showing the row numbers")
-                    self.RowColNamesExist = 0
-                    for l in xrange(int(self.rsession('length('+self.Rvariables['data']+'[1,])'))):
-                        self.columnsorrows.addItem(str(l+1))
-        else:
-            self.infoa.setText("Data not connected.")
+ 
     
     def highlightItems(self, text=''):
         if text == '':
@@ -379,76 +364,45 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
                 self.namesList.scrollToItem(self.namesList.selectedItems()[0])
                 self.infoa.setText("%i of your items from a list of %i were selected." % (len(self.namesList.selectedItems()) , len(items) ))
         
+
     def rowcolNamesSelect(self):
         self.criteriaTable.setRowCount(self.colselectionCriteria+self.rowselectionCriteria+1)
         rowcolHolder = ''
         for item in self.namesList.selectedItems(): # got the items that were selected in the names list for row col selection by names
             rowcolHolder += str(item.text())+'","'
         rowcolHolderP = rowcolHolder[:len(rowcolHolder)-3]
-        if self.rowcolselect == 0:
-            self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-colnames('+self.Rvariables['data']+') %in% c("'+rowcolHolderP+'")')
-            
-            self.updatecolCriteriaList(str('Column Names equal to "'+rowcolHolderP+'"')+'. Row Criteria '+str(self.rowselectionCriteria))
-            self.rowselectionCriteria += 1
-        if self.rowcolselect == 1:
-            self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-rownames('+self.Rvariables['data']+') %in% c("'+rowcolHolderP+'")')
-            
-            self.updaterowCriteriaList(str('Row Names equal to "'+rowcolHolderP+'"')+'. Column Criteria '+str(self.colselectionCriteria))
-            self.colselectionCriteria += 1
+
+        self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-colnames('+self.Rvariables['data']+') %in% c("'+rowcolHolderP+'")')
+        
+        self.updatecolCriteriaList(str('Column Names equal to "'+rowcolHolderP+'"')+'. Row Criteria '+str(self.rowselectionCriteria))
+        self.rowselectionCriteria += 1
         
             
     def selectCriteria(self, item=None):
-        self.criteriaTable.setRowCount(self.colselectionCriteria+self.rowselectionCriteria+1)
-        if self.rowcolselect == 0:
-            if self.type == 'numeric':
-                if self.GorL == 0:
-                    self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' > '+self.currentNum)
-                    self.updatecolCriteriaList(str(self.colnames)+' > '+str(self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
-                if self.GorL == 1:
-                    self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' < '+self.currentNum)
-                    self.updatecolCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
-            if self.type == 'factor':
-                if item != None:
-                    self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' == "'+str(item.text())+'"')
-                    self.updatecolCriteriaList(str(self.colnames)+' Equal To '+item.text()+'. Row Criteria '+str(self.rowselectionCriteria))
-                elif item == None and len(self.FactorList.selectedItems()) != 0:
-                    tmpitems = ''
-                    for item in self.FactorList.selectedItems():
-                        tmpitems += str(item.text())+'","'
-                    tmpitems2 = tmpitems[:len(tmpitems)-3]
-                    self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' %in% c("'+tmpitems2+'")')
-                    self.updatecolCriteriaList(str(self.colnames)+' Equal To "'+tmpitems2+'". Row Criteria '+str(self.rowselectionCriteria))    
-            self.rowselectionCriteria += 1
-        if self.rowcolselect == 1:
-            if self.type == 'numeric':
-                if self.GorL == 0:
-                    self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' > '+self.currentNum)
-                    self.updaterowCriteriaList(str(self.colnames+' > '+self.currentNum)+'. Column Criteria '+str(self.colselectionCriteria))
-                if self.GorL == 1:
-                    self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' < '+self.currentNum)
-                    self.updaterowCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Column Criteria '+str(self.colselectionCriteria))
-            if self.type == 'factor':
-                if item != None:
-                    self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' == "'+str(item.text())+'"')
-                    self.updaterowCriteriaList(str(self.colnames+' Equal To '+item.text())+'. Column Criteria '+str(self.colselectionCriteria))
-                elif item == None and len(self.FactorList.selectedItems()) != 0:
-                    tmpitems = ''
-                    for item in self.FactorList.selectedItems():
-                        tmpitems += str(item.text())+'","'
-                    tmpitems2 = tmpitems[:len(tmpitems)-3]
-                    self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' %in% c("'+tmpitems2+'")')
-                    self.updaterowCriteriaList(str(self.colnames+' Equal To "'+tmpitems2+'". Column Criteria '+str(self.colselectionCriteria)))
-            self.colselectionCriteria += 1
+        self.criteriaTable.setRowCount(self.rowselectionCriteria+1)
+        if self.type == 'numeric':
+            if self.GorL == 0:
+                self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' > '+self.currentNum)
+                self.updatecolCriteriaList(str(self.colnames)+' > '+str(self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
+            if self.GorL == 1:
+                self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' < '+self.currentNum)
+                self.updatecolCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
+        if self.type == 'factor':
+            if item != None:
+                self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' == "'+str(item.text())+'"')
+                self.updatecolCriteriaList(str(self.colnames)+' Equal To '+item.text()+'. Row Criteria '+str(self.rowselectionCriteria))
+            elif item == None and len(self.FactorList.selectedItems()) != 0:
+                tmpitems = ''
+                for item in self.FactorList.selectedItems():
+                    tmpitems += str(item.text())+'","'
+                tmpitems2 = tmpitems[:len(tmpitems)-3]
+                self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' %in% c("'+tmpitems2+'")')
+                self.updatecolCriteriaList(str(self.colnames)+' Equal To "'+tmpitems2+'". Row Criteria '+str(self.rowselectionCriteria))    
+        self.rowselectionCriteria += 1
+        
         #self.applySubsetting()
         
-    def rowcriteriaActiveChange(self, checkbox, selCri):
-        if selCri < len(self.rowactiveCriteria)-1 or selCri == len(self.rowactiveCriteria)-1:
-            self.infob.setText('Selection Criteria '+str(selCri)+' changed to '+str(checkbox))
-            self.rowactiveCriteria[selCri] = checkbox
-        else:
-            self.rowactiveCriteria.insert(selCri, checkbox)
-        self.applySubsetting()
-        
+
     def colcriteriaActiveChange(self, checkbox, selCri):
         if selCri < len(self.colactiveCriteria)-1 or selCri == len(self.colactiveCriteria)-1:
             self.infob.setText('Selection Criteria '+str(selCri)+' changed to '+str(checkbox))
@@ -456,25 +410,12 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         else: 
             self.colactiveCriteria.insert(selCri, checkbox)
         self.applySubsetting()
-    
-    def updaterowCriteriaList(self, text):
-        newitem = QTableWidgetItem(text)
-        self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
-        cw = QCheckBox()
-        self.criteriaTable.setCellWidget(self.rowselectionCriteria + self.colselectionCriteria, 0, cw)
-        self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.colselectionCriteria): self.rowcriteriaActiveChange(val, selCri))
-        cw.setChecked(True)
-        selCri=int(self.colselectionCriteria)
-        self.rowcriteriaActiveChange(True, selCri)
-        self.criteriaTable.resizeColumnsToContents()
-        self.criteriaTable.resizeRowsToContents()
-        self.sentalready = 0
-    
+            
     def updatecolCriteriaList(self, text):
         newitem = QTableWidgetItem(text)
-        self.criteriaTable.setItem(self.rowselectionCriteria + self.colselectionCriteria, 1, newitem)
+        self.criteriaTable.setItem(self.rowselectionCriteria, 1, newitem)
         cw = QCheckBox()
-        self.criteriaTable.setCellWidget(self.rowselectionCriteria + self.colselectionCriteria, 0, cw)
+        self.criteriaTable.setCellWidget(self.rowselectionCriteria, 0, cw)
         self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.rowselectionCriteria): self.colcriteriaActiveChange(val, selCri))
         cw.setChecked(True)
         selCri=int(self.rowselectionCriteria)
@@ -483,24 +424,14 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.criteriaTable.resizeRowsToContents()
         self.sentalready = 0
         
+
+    
+        
     def applySubsetting(self, reload = False):
         if not reload and not self.sentalready: # make the row subsetting criteria
             rcr = ''
             ccr = ''
-            self.rsession('rows'+self.vs+'<-TRUE')
             self.rsession('cols'+self.vs+'<-TRUE')
-            if sum(self.rowactiveCriteria) == 0: #there aren't any active criteria  
-                pass
-            else:
-                rci = 0
-                for rc in self.rowactiveCriteria:
-                    if rc: #check to see if active
-                        self.Rvariables['criteria'+self.vs+'colCri'+str(rci)] = 'criteria'+self.vs+'colCri'+str(rci)
-                        rcr += 'criteria'+self.vs+'colCri'+str(rci)+'&'
-                    rci += 1
-                rcrr = rcr[:len(rcr)-1]
-                self.rsession('rows'+self.vs+'<-'+rcrr)
-                #self.numericInfo.setText(str(self.rowactiveCriteria))
             if sum(self.colactiveCriteria) == 0:
                 pass
             else:
@@ -512,11 +443,8 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
                     cci += 1
                 ccrr = ccr[:len(ccr)-1]
                 self.rsession('cols'+self.vs+'<-'+ccrr)
-            self.rsession(self.Rvariables['result']+'<-'+self.Rvariables['data']+'[rows'+self.vs+',cols'+self.vs+']')
+            self.rsession(self.Rvariables['result']+'<-'+self.Rvariables['data']+'[,cols'+self.vs+']')
             self.newdata = self.olddata.copy()
-            self.newdata['kill'] = True
-        else:
-            self.newdata['kill'] = False
         self.newdata['data'] = self.Rvariables['result']
         resultclass = self.rsession('class('+self.Rvariables['result']+')')
         if resultclass == 'data.frame':
@@ -532,8 +460,3 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.infoa.setText("Send failed because of incompatable type")
             
         self.sentalready = 1
-                    
-    # def testme(self, item=None):
-        # self.infoa.setText(item.text())
-        # self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-tmp == "'+str(item.text())+'"')
-        # make the column subsetting criteria
