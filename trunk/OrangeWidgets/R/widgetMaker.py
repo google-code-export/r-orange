@@ -64,22 +64,25 @@ class widgetMaker(OWRpy):
         
 
     def launch(self):
-        import orngEnviron, orngRegistry,orngCanvas 
+        import orngEnviron, orngRegistry, orngCanvas
         widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
         path = widgetDirName +  "/Prototypes/" + self.functionName + ".py"
         #print 'path:' + path
         file = open(path, "wt")
         tmpCode = self.completeCode
-        tmpCode.replace('<pre>', '')
-        tmpCode.replace('</pre>', '')
-        tmpCode.replace('&lt;', '<')
-        tmpCode.replace('&gt;', '>')
+        tmpCode = tmpCode.replace('<pre>', '')
+        tmpCode = tmpCode.replace('</pre>', '')
+        tmpCode = tmpCode.replace('&lt;', '<')
+        tmpCode = tmpCode.replace('&gt;', '>')
         file.write(tmpCode)
         file.close()
         
         #reload all the widgets including those in the prototype dir we just created 
-        orngRegistry.readCategories()
+        #orngCanvas.OrangeCanvasDlg.reloadWidgets()
+        
+        #orngRegistry.readCategories()
+        qApp.canvasDlg.reloadWidgets()  # yay!!! it works
         
         # need to work out how to update the widget icons in the tabs to show the new widget
         #or create a new button that will launch the new widget
@@ -117,10 +120,13 @@ class widgetMaker(OWRpy):
         tmp = tmp.split(',')
         for el in tmp:
             tmp2 = el.split('=')
-            if len(tmp2) > 1:
-                self.args[tmp2[0]] = tmp2[1]
-            else:
-                self.args[tmp2[0]] = ''
+            tmp2[0] = tmp2[0].replace('.', '_')
+            if tmp2[0] != '___': # don't pay attention to optional params
+                if len(tmp2) > 1:
+                    
+                    self.args[tmp2[0]] = tmp2[1]
+                else:
+                    self.args[tmp2[0]] = ''
             
         for arg in self.args.keys():
             if self.args[arg][0:2] == 'c(':
@@ -142,6 +148,7 @@ class widgetMaker(OWRpy):
         self.inputArea.setHorizontalHeaderLabels(['Name', 'Class', 'Function'])
         n=0
         for arg in self.args.keys():
+            arg = arg.replace('.', '_') # python uses points for class refference
             itemname = QTableWidgetItem(str(arg))
             #itemClass = QTableWidgetItem
             self.inputArea.setItem(n,0,itemname)
@@ -163,6 +170,7 @@ class widgetMaker(OWRpy):
         print self.fieldList
         print self.functionInputs
         for item in self.fieldList.keys():
+            item = item.replace('.', '_')
             self.fieldList[item] = self.args[item]
             
     def inputcellClicked(self, item):
@@ -195,7 +203,7 @@ class widgetMaker(OWRpy):
         if self.functionAllowOutput:
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName+'"])\n'
         for element in self.fieldList.keys():
-            if element == '...':
+            if element == '___':
                 pass
             else:
                 if self.fieldList[element] == '' or self.fieldList[element] == "":
@@ -203,6 +211,8 @@ class widgetMaker(OWRpy):
                 elif type(self.fieldList[element]) == type([]): #the fieldList is a list
                     self.initCode += '\t\tself.'+element+' = 0\n' #set the item to the first one
                 else:
+                    self.fieldList[element] = self.fieldList[element].replace('"', '')
+                    self.fieldList[element] = self.fieldList[element].replace("'", "")
                     self.initCode += '\t\tself.'+element+' = "'+str(self.fieldList[element])+'"\n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
@@ -220,7 +230,7 @@ class widgetMaker(OWRpy):
         self.guiCode = ''
         self.guiCode += '\t\tbox = OWGUI.widgetBox(self.controlArea, "Widget Box")\n'
         for element in self.fieldList.keys():
-            if element == '...':
+            if element == '___':
                 pass
             else:
                 if type(self.fieldList[element]) == type(''):
@@ -246,9 +256,11 @@ class widgetMaker(OWRpy):
         if self.functionAllowOutput:
             self.commitFunction += "\t\tself.R(self.Rvariables['"+self.functionName+"']+'&lt;-"+self.functionName+"("
         else:
-            self.commitFunction += "\t\tself.R("+self.functionName+"("
+            self.commitFunction += "\t\tself.R('"+self.functionName+"("
         for element in self.functionInputs.keys():
-            self.commitFunction += element+"='+str(self."+element+")+',"
+            if element != '___':
+                element = element.replace('_', '.')
+                self.commitFunction += element+"='+str(self."+element+")+',"
         for element in self.fieldList.keys():
             if element == '...':
                 pass

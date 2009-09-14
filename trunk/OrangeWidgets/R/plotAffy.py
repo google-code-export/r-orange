@@ -19,6 +19,7 @@ class plotAffy(OWRpy):
         self.icols = 1 #this sets the variable for the cols
         self.setRvariableNames(['qcs'])
         self.qcsProcessed = 0
+        self.data = ''
         self.loadSettings()
 
         #set R variable names
@@ -53,13 +54,18 @@ class plotAffy(OWRpy):
             self.qcsProcessed == 0
         else:
             self.infoa.setText("No data loaded or not of appropriate type.")
+            self.data = ''
     
     def process(self):
         #required librarys
-        self.require_librarys(['affy'])
-        #try: 
-        self.rsession('par(mfrow=c('+str(self.irows)+','+str(self.icols)+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
-        self.Rplot('image('+self.data+')')
+        if self.data != '':
+            self.require_librarys(['affy'])
+            #try: 
+            self.Rplot('') # make a false call to the plot window just to initialize
+            self.rsession('par(mfrow=c('+str(self.irows)+','+str(self.icols)+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
+            self.R('image('+self.data+')')
+        else:
+            self.infoa.setText("No data connected.")
         #except: 
         #    self.infob.setText("Data not able to be processed")
     
