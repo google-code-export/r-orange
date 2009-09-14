@@ -82,11 +82,10 @@ class runSigPathway(OWRpy):
             varexists1 = self.R('exists("'+'sigpath_'+self.vs+'$df.pathways'+'")')
             varexists2 = self.R('exists("'+'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]'+'")') #should trigger an exception if it doesn't exist
             if varexists1:
+                self.runPath(reload = 1)
                 self.sendMe(palist = False)
             else:
                 return
-            if varexists2:
-                self.sendMe(pafile = False)
         except:
             pass
 
@@ -177,15 +176,16 @@ class runSigPathway(OWRpy):
             
 
         
-    def runPath(self):
-        self.getChiptype()
-        self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
-        try:
-            self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath)+self.dboptions+')')
-        except:
-            self.pathinfoA.setText("Error occured in processing.  Change parameters and repeat.")
-            return
-        self.newdata = self.olddata.copy()
+    def runPath(self, reload = 0):
+        if not reload:
+            self.getChiptype()
+            self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
+            try:
+                self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath)+self.dboptions+')')
+            except:
+                self.pathinfoA.setText("Error occured in processing.  Change parameters and repeat.")
+                return
+            self.newdata = self.olddata.copy()
         self.newdata['data'] = 'sigpath_'+self.vs+'$df.pathways'
         self.newdata['sigPathObj'] = 'sigpath_'+self.vs
         self.send("Pathway Analysis File", self.newdata)
