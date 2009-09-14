@@ -21,6 +21,7 @@ class widgetMaker(OWRpy):
         self.widgetInputsFunction = []
         self.numberInputs = 0
         self.numberOutputs = 0
+        self.captureROutput = 0
         
         self.fieldList = {}
         self.functionInputs = {}
@@ -49,6 +50,7 @@ class widgetMaker(OWRpy):
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
         OWGUI.button(box, self, 'Accept Inputs', callback = self.acceptInputs)
         OWGUI.checkBox(box, self, 'functionAllowOutput', 'Allow Output')
+        OWGUI.checkBox(box, self, 'captureROutput', 'Show Output')
         
         OWGUI.button(box, self, 'Generate Code', callback = self.generateCode)
         OWGUI.button(box, self, 'Launch Widget', callback = self.launch)
@@ -197,8 +199,9 @@ class widgetMaker(OWRpy):
     def makeInitHeader(self):
         self.initCode = ''
         self.initCode += 'class '+self.functionName+'(OWRpy): \n'
+        self.initCode += '\tsettingsList = []\n'
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
-        self.initCode += '\t\tsettingsList = []\n'
+
         self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
         if self.functionAllowOutput:
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName+'"])\n'
@@ -209,14 +212,14 @@ class widgetMaker(OWRpy):
                 if self.fieldList[element] == '' or self.fieldList[element] == "":
                     self.initCode += '\t\tself.'+element+' = ""\n'
                 elif type(self.fieldList[element]) == type([]): #the fieldList is a list
-                    self.initCode += '\t\tself.'+element+' = 0\n' #set the item to the first one
+                    self.initCode += '\t\tself.RFunctionParam_'+element+' = 0\n' #set the item to the first one
                 else:
                     self.fieldList[element] = self.fieldList[element].replace('"', '')
                     self.fieldList[element] = self.fieldList[element].replace("'", "")
-                    self.initCode += '\t\tself.'+element+' = "'+str(self.fieldList[element])+'"\n'
+                    self.initCode += '\t\tself.RFunctionParam_'+element+' = "'+str(self.fieldList[element])+'"\n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
-                self.initCode += "\t\tself."+inputName+" = ''\n"
+                self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
             self.initCode += '\t\tself.inputs = ['
             for element in self.functionInputs.keys():
                 self.initCode += '("'+element+'", RvarClasses.RVariable, self.process'+element+'),'
@@ -234,17 +237,20 @@ class widgetMaker(OWRpy):
                 pass
             else:
                 if type(self.fieldList[element]) == type(''):
-                    self.guiCode += '\t\tOWGUI.lineEdit(box, self, "'+element+'", label = "'+element+':")\n'
+                    self.guiCode += '\t\tOWGUI.lineEdit(box, self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
                 elif type(self.fieldList[element]) == type([]):
-                    self.guiCode += '\t\tOWGUI.comboBox(box, self, "'+element+'", label = "'+element+':", items = '+str(self.fieldList[element])+')\n'
+                    self.guiCode += '\t\tOWGUI.comboBox(box, self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element])+')\n'
         self.guiCode += '\t\tOWGUI.button(box, self, "Commit", callback = self.commitFunction)\n'
+        if self.captureROutput:
+            self.guiCode += '\t\tself.RoutputWindow = QTextEdit()\n'
+            self.guiCode += '\t\tbox.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):
         self.processSignals = ''
         for inputName in self.functionInputs.keys():
             self.processSignals += '\tdef process'+inputName+'(self, data):\n'
             self.processSignals += '\t\tif data:\n'
-            self.processSignals += '\t\t\tself.'+inputName+'=data["data"]\n'
+            self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data["data"]\n'
             if self.processOnConnect:
                 self.processSignals += '\t\t\tself.commitFunction()\n'
                 
@@ -253,20 +259,37 @@ class widgetMaker(OWRpy):
         self.commitFunction += '\tdef commitFunction(self):\n'
         for inputName in self.functionInputs.keys():
             self.commitFunction += "\t\tif self."+inputName+" == '': return\n"
+        self.commitFunction += "\t\tself.R("
+        if self.captureROutput:
+            self.commitFunction += "'txt&lt;-capture.output('"
         if self.functionAllowOutput:
-            self.commitFunction += "\t\tself.R(self.Rvariables['"+self.functionName+"']+'&lt;-"+self.functionName+"("
+            self.commitFunction += "+self.Rvariables['"+self.functionName+"']+'&lt;-"+self.functionName+"("
         else:
-            self.commitFunction += "\t\tself.R('"+self.functionName+"("
+            self.commitFunction += "+"+self.functionName+"("
         for element in self.functionInputs.keys():
             if element != '___':
                 element = element.replace('_', '.')
-                self.commitFunction += element+"='+str(self."+element+")+',"
+                self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
+        #self.commitFunction = self.commitFunction[:-2] #remove the last element
         for element in self.fieldList.keys():
             if element == '...':
                 pass
             else:
-                self.commitFunction += element+"='+str(self."+element+")+',"
+                self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
+        self.commitFunction = self.commitFunction[:-1]
+        if self.captureROutput:
+            self.commitFunction += ')'
         self.commitFunction += ")')\n"
+        if self.captureROutput:
+            self.commitFunction += "\t\tself.RoutputWindow.clear()\n"
+            self.commitFunction += "\t\ttmp = self.R('paste(txt, collapse =\x22\x5cn\x22)')\n"
+            self.commitFunction += "\t\tself.RoutputWindow.insertHtml('&lt;br&gt;&lt;pre&gt;'+tmp+'&lt;/pre&gt;')\n"
+            
+                    # pasted = self.rsession('paste(txt, collapse = " \n")')
+        # self.thistext.insertPlainText('>>>'+self.command+'##Done')
+        # self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
+        
+        
         if self.functionAllowOutput:
             self.commitFunction += '\t\tself.rSend("'+self.functionName+' Output", {"data":self.Rvariables["'+self.functionName+'"]})\n'
     
