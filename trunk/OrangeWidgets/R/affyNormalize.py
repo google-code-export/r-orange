@@ -72,8 +72,9 @@ class affyNormalize(OWRpy):
         print 'load affy norm'
         self.selectMethodChanged()
         self.selMethBox.setEnabled(True)
-        self.toSend()
-        self.infoa.setText(self.norminfo)
+        if self.Rvariables['affy'] in self.R('ls()'):
+            self.toSend()
+            self.infoa.setText(self.norminfo)
 
         
     def normalize(self):
