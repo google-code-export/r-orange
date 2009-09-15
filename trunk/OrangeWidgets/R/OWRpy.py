@@ -167,6 +167,7 @@ class OWRpy(OWWidget):
                         self.R('setRepositories(ind=1:7)')
                         self.R('chooseCRANmirror()')
                         self.R('install.packages("' + library + '")')
+                        self.R('require(' + library + ')')
                 except rpy.RPyRException, inst:
                     print 'asdf'
                     m = re.search("'(.*)'",inst.message)

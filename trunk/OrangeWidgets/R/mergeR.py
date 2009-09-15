@@ -58,11 +58,15 @@ class mergeR(OWRpy):
 
         
     def onLoadSavedSession(self):
+        
         self.processSignals()
-        self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + self.colAsel + '")-1'))
-        self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + self.colBsel + '")-1'))
-        self.sendMe()
+        try:
 
+            self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + self.colAsel + '")-1'))
+            self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + self.colBsel + '")-1'))
+            self.sendMe()
+        except:
+            self.sendMe(kill=True)
     def processA(self, data):
         print 'processA'
         if data:

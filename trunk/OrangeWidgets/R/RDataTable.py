@@ -21,7 +21,7 @@ from orngDataCaching import *
 
 OrangeValueRole = Qt.UserRole + 1
 
-class OWDataTable(OWRpy):
+class RDataTable(OWRpy):
     settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels"]
 
     def __init__(self, parent=None, signalManager = None):

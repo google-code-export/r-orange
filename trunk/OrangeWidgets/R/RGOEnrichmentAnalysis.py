@@ -64,7 +64,7 @@ class GOTreeWidget(QTreeWidget):
 
         
     
-class OWGOEnrichmentAnalysis(OWRpy):
+class RGOEnrichmentAnalysis(OWRpy):
     settingsList=["annotationIndex", "useReferenceDataset", "aspectIndex", "geneAttrIndex",
                     "filterByNumOfInstances", "minNumOfInstances", "filterByPValue", "maxPValue", "selectionDirectAnnotation", "selectionDisjoint", "selectionType",
                     "selectionAddTermAsClass", "useAttrNames", "probFunc", "useFDR"]

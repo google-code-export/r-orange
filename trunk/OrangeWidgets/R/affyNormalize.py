@@ -69,7 +69,7 @@ class affyNormalize(OWRpy):
         runbutton = OWGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
         
     def onLoadSavedSession(self):
-        
+        print 'load affy norm'
         self.selectMethodChanged()
         self.selMethBox.setEnabled(True)
         self.toSend()

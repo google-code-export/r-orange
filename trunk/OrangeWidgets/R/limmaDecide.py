@@ -10,7 +10,7 @@ from OWRpy import *
 
 
 class limmaDecide(OWRpy):
-    settingsList = ['modelProcessed', 'vs', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
+    settingsList = ['modelProcessed', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
@@ -21,6 +21,8 @@ class limmaDecide(OWRpy):
         self.pval = "0.05"
         self.data = ''
         self.ebdata = ''
+        self.olddata = None
+        self.newdata = None
         
         self.eset = None
         self.sending = None
@@ -86,11 +88,11 @@ class limmaDecide(OWRpy):
         
     def runAnalysis(self):
         self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
-        if not self.loadingSavedSession:
-            #run the analysis using the parameters selected or input
-            self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
-            self.infoa.setText("Gene Matrix Processed and sent!")
-            self.sending = {'data':self.Rvariables['gcm']}
+
+        #run the analysis using the parameters selected or input
+        self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
+        self.infoa.setText("Gene Matrix Processed and sent!")
+        self.sending = {'data':self.Rvariables['gcm']}
         self.send("Gene Change Matrix", self.sending)
         
         self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
@@ -98,6 +100,18 @@ class limmaDecide(OWRpy):
         self.modelProcessed = 1
         
         self.sendesetsubset()
+        
+    def onLoadSeavedSession(self):
+        if self.R('exists("'+self.Rvariables['gcm']+'")'):
+            self.infoa.setText("Gene Matrix Processed and sent!")
+            self.sending = {'data':self.Rvariables['gcm']}
+            self.send("Gene Change Matrix", self.sending)
+        else:
+            self.send("Gene Change Matrix",None)
+        if self.R('exists("'+self.Rvariables['eset_sub']+'")'):
+            self.rSend("Expression Subset", self.newdata)
+        else:
+            self.rSend("Expression Subset", None)
 
     def processeset(self, data):
         self.eset = None
