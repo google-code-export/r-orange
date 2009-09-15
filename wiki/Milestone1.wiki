@@ -1,0 +1,20 @@
+#summary Objectives for milestone 1
+#labels Phase-Requirements,Phase-Implementation
+
+= Introduction =
+
+In milestone 1 we wish to have a functional pipeline for bioinformatics with respect to bioconductor Affy functions and pathway analysis.  In this release we will have the ability to read in Cel files, normalize, select present genes, perform differential expression and visualize differentially expressed genes in a pathway viewer.
+
+Furthermore, we wish to have functionality for basic table manipulation including reading, subsetting, merging, and plotting, generally of affy data.  
+
+This release is primarily to publish the Raspberry functionality of widget creation, linking, data sending, saving, loading, and widget repopulation which will provide the basis of all future releases of Raspberry.  Once these are complete a release can be made.
+
+
+= Details =
+
+* Bioinformatics widgets finalized, tested, and documented.
+* Saving and loading functionality incorporated into each widget, tested, and documented.
+* Signal Manager interaction finalized, tested, and documented.
+* RHistory collector finalized.
+* WidgetMaker finalized and generating functional code.
+* Windows installer finalized and tested.
