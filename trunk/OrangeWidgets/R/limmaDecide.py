@@ -67,9 +67,9 @@ class limmaDecide(OWRpy):
         except:
             pass
         
-        if self.loadingSavedSession:
-            self.runAnalysis()
-        
+        # if self.loadingSavedSession:
+            # self.runAnalysis()
+
     def process(self, dataset):
         self.require_librarys(['affy', 'limma'])
         self.data = '' # protect from using obsolete data
@@ -93,7 +93,7 @@ class limmaDecide(OWRpy):
         self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
         self.infoa.setText("Gene Matrix Processed and sent!")
         self.sending = {'data':self.Rvariables['gcm']}
-        self.send("Gene Change Matrix", self.sending)
+        self.rSend("Gene Change Matrix", self.sending)
         
         self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
         self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
@@ -113,6 +113,8 @@ class limmaDecide(OWRpy):
         else:
             self.rSend("Expression Subset", None)
 
+            
+            
     def processeset(self, data):
         self.eset = None
         if data == None:

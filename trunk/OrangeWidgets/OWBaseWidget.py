@@ -380,34 +380,36 @@ class OWBaseWidget(QDialog):
                 settings = cPickle.load(file)
             except:
                 settings = None
-            settings = None # do not load ini file
-            if hasattr(self, "_settingsFromSchema"):
-                if settings: settings.update(self._settingsFromSchema)
-                else:        settings = self._settingsFromSchema
+        settings = None # do not load ini file
+        if hasattr(self, "_settingsFromSchema"):
+            if settings: settings.update(self._settingsFromSchema)
+            else:        settings = self._settingsFromSchema
 
-            # can't close everything into one big try-except since this would mask all errors in the below code
-            if settings:
-                if hasattr(self, "settingsList"):
-                    self.setSettings(settings)
+        print 'start loading local variables'
+        print settings
+        # can't close everything into one big try-except since this would mask all errors in the below code
+        if settings:
+            if hasattr(self, "settingsList"):
+                self.setSettings(settings)
 
-                contextHandlers = getattr(self, "contextHandlers", {})
-                for contextHandler in contextHandlers.values():
-                    localName = contextHandler.localContextName
-                    print 'localname'  + localName + '\n'
-                    structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                    if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
-                       and settings.has_key(localName):
-                        del settings[localName]
-                        delattr(self, localName)
-                        contextHandler.initLocalContext(self)
+            contextHandlers = getattr(self, "contextHandlers", {})
+            for contextHandler in contextHandlers.values():
+                localName = contextHandler.localContextName
+                print 'localname'  + localName + '\n'
+                structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
+                if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
+                   and settings.has_key(localName):
+                    del settings[localName]
+                    delattr(self, localName)
+                    contextHandler.initLocalContext(self)
 
-                    if not getattr(contextHandler, "globalContexts", False): # don't have it or empty
-                        contexts = settings.get(localName, False)
-                        if contexts != False:
-                            contextHandler.globalContexts = contexts
-                    else:
-                        if contextHandler.syncWithGlobal:
-                            setattr(self, localName, contextHandler.globalContexts)
+                if not getattr(contextHandler, "globalContexts", False): # don't have it or empty
+                    contexts = settings.get(localName, False)
+                    if contexts != False:
+                        contextHandler.globalContexts = contexts
+                else:
+                    if contextHandler.syncWithGlobal:
+                        setattr(self, localName, contextHandler.globalContexts)
 
 
     def saveSettings(self, file = None):

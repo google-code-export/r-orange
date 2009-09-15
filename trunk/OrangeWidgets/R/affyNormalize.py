@@ -30,8 +30,8 @@ class affyNormalize(OWRpy):
         self.enableMethBox = False
         self.norminfo = ''
         self.loadSettings()
-        self.require_librarys(['affy'])
         
+        self.require_librarys(['affy'])
         
         
         
@@ -100,7 +100,7 @@ class affyNormalize(OWRpy):
     
     def process(self, dataset):
         #required librarys
-        self.require_librarys(['affy'])
+        
         #self.needsProcessingHandler(self, 1)
         
         self.rSend("Normalized DataFrame", None) #start the killing cascade because normalization is required
@@ -168,6 +168,6 @@ class affyNormalize(OWRpy):
 
     def toSend(self):
         neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
-        self.rSend("Normalized Expression Matrix", neset,0)
-        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']},0)
+        self.rSend("Normalized Expression Matrix", neset)
+        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
     

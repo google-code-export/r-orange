@@ -48,6 +48,7 @@ class ReportWindow(QWidget):
             pass
 
     def checkExtLibrary(self):
+        return
         if os.path.exists(os.path.join(reportsDir, "ext-2.2")):
             return True
         resp = QMessageBox("Additional library download", "Your version of Orange supports creating reports, but it needs to download the Ext library (~330 kB) for JavaScript. Proceed?\n\nIf you answer no, it will ask again next time you run Orange; sorry for the inconvenience ;)", QMessageBox.Question, QMessageBox.Yes|QMessageBox.Default, QMessageBox.No|QMessageBox.Escape, QMessageBox.NoButton).exec_()
