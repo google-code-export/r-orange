@@ -1,0 +1,12 @@
+#labels Phase-Requirements
+# How we envision the furture
+
+= Milestone 1.0 =
+ * Stable framework
+ * Installer
+= Milestone 2.0 =
+ * Move loading sessions to canvas
+  * Rewrite OWGUI
+ * Better package manager and visualizer
+= Milestone 3.0 =
+ * Graphics
