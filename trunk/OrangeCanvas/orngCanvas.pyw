@@ -139,7 +139,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         # did Orange crash the last time we used it? If yes, you will find a temSchema.tmp file
         if os.path.exists(os.path.join(self.canvasSettingsDir, "tempSchema.tmp")):
-            mb = QMessageBox('Orange Canvas', "Your previous Orange Canvas session was not closed successfully.\nYou can choose to reload your unsaved work or start a new session.\n\nIf you choose 'Reload', the links will be disabled to prevent reoccurence of the crash.\nYou can enable them by clicking Options/Enable all links.", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+            mb = QMessageBox('Raspberry Canvas', "Your previous Raspberry Canvas session was not closed successfully.\nYou can choose to reload your unsaved work or start a new session.\n\nIf you choose 'Reload', the links will be disabled to prevent reoccurence of the crash.\nYou can enable them by clicking Options/Enable all links.", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
             mb.setButtonText(QMessageBox.Ok, "Reload")
             mb.setButtonText(QMessageBox.Cancel, "New schema")
             if mb.exec_() == QMessageBox.Ok:
@@ -154,7 +154,7 @@ class OrangeCanvasDlg(QMainWindow):
         try:
             import numpy
         except:
-            if QMessageBox.warning(self,'Orange Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
+            if QMessageBox.warning(self,'Raspberry Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
                 import webbrowser
                 webbrowser.open("http://sourceforge.net/projects/numpy/")
 
@@ -251,7 +251,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuHelp = QMenu("&Help", self)
         if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")) or os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")):
             if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")): self.menuHelp.addAction("Orange Help", self.menuOpenLocalOrangeHelp)
-            if os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")): self.menuHelp.addAction("Orange Canvas Help", self.menuOpenLocalCanvasHelp)
+            if os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")): self.menuHelp.addAction("Raspberry Canvas Help", self.menuOpenLocalCanvasHelp)
 
         self.menuHelp.addAction("Orange Online Help", self.menuOpenOnlineOrangeHelp)
         #self.menuHelp.addAction("Orange Canvas Online Help", self.menuOpenOnlineCanvasHelp)
@@ -429,7 +429,7 @@ class OrangeCanvasDlg(QMainWindow):
                 shf.write("%s: %s\n" % (k, (widgetInfo.category, widgetInfo.name)))
 
     def menuItemDeleteWidgetSettings(self):
-        if QMessageBox.warning(self,'Orange Canvas','If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
+        if QMessageBox.warning(self,'Raspberry Canvas','If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
             if os.path.exists(self.widgetSettingsDir):
                 for f in os.listdir(self.widgetSettingsDir):
                     if os.path.splitext(f)[1].lower() == ".ini":
@@ -639,9 +639,9 @@ class OrangeCanvasDlg(QMainWindow):
     def setCaption(self, caption = ""):
         if caption:
             caption = caption.split(".")[0]
-            self.setWindowTitle(caption + " - Orange Canvas")
+            self.setWindowTitle(caption + " - Raspberry Canvas")
         else:
-            self.setWindowTitle("Orange Canvas")
+            self.setWindowTitle("Raspberry Canvas")
     
     def getWidgetIcon(self, widgetInfo):
         if self.iconNameToIcon.has_key(widgetInfo.icon):
