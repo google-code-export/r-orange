@@ -90,11 +90,12 @@ class limmaDecide(OWRpy):
         
         self.sendesetsubset()
         
-    def onLoadSeavedSession(self):
+    def onLoadSavedSession(self):
         if self.R('exists("'+self.Rvariables['gcm']+'")'):
             self.infoa.setText("Gene Matrix Processed and sent!")
             self.sending = {'data':self.Rvariables['gcm']}
-            self.send("Gene Change Matrix", self.sending)
+            self.modelProcessed = 1
+            self.sendesetsubset()
         else:
             self.send("Gene Change Matrix",None)
         if self.R('exists("'+self.Rvariables['eset_sub']+'")'):
