@@ -49,7 +49,8 @@ class ReadCEL(OWRpy):
     def onLoadSavedSession(self):
         self.infoc.setText("Data reloaded from saved session.")
         self.infod.setText("You may want to use a data viewer to check the data.")
-        self.sendMe()        
+        if self.Rvariables['eset'] in self.R('ls()'):
+            self.sendMe()        
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:

@@ -117,6 +117,9 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
             # return
         # except:
             # pass
+    def onLoadSavedSession(self):
+        if self.Rvariables['result'] in self.R('ls()'):
+            self.applySubsetting(reload = True)
     def subOnAttached(self):
         tmpitem = self.rsession(self.ssv) #get the items to subset with
         if type(tmpitem) is str: #it's a string!!!!!!!

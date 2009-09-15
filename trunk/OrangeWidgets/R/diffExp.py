@@ -111,8 +111,9 @@ class diffExp(OWRpy):
         # if self.loadingSavedSession:
             # self.processEset()
     def onLoadSavedSession(self):
-        self.Rreload()
-        self.processEset(reload = 1)
+        if self.Rvariables['results'] in self.R('ls()'):
+            self.Rreload()
+            self.processEset(reload = 1)
     def clearA(self):
         self.selectedArrays.clear()
         self.sampleA = []

@@ -57,18 +57,7 @@ class limmaDecide(OWRpy):
         self.infoa = OWGUI.widgetLabel(computebox, "Data not yet connected")
         runbutton = OWGUI.button(computebox, self, "Run Analysis", callback = self.runAnalysis, width=200)
         
-        try:
-            varexists1 = self.R('exists("'+self.Rvariables['normalized_affybatch']+'")') #should trigger an exception if it doesn't exist
-           
-            if varexists1:
-                self.normalize(reload = True)
-            else:
-                return
-        except:
-            pass
-        
-        # if self.loadingSavedSession:
-            # self.runAnalysis()
+
 
     def process(self, dataset):
         self.require_librarys(['affy', 'limma'])
