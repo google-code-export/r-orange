@@ -12,9 +12,9 @@ This release is primarily to publish the Raspberry functionality of widget creat
 
 = Details =
 
-* Bioinformatics widgets finalized, tested, and documented.
-* Saving and loading functionality incorporated into each widget, tested, and documented.
-* Signal Manager interaction finalized, tested, and documented.
-* RHistory collector finalized.
-* WidgetMaker finalized and generating functional code.
-* Windows installer finalized and tested.
+ * Bioinformatics widgets finalized, tested, and documented.
+ * Saving and loading functionality incorporated into each widget, tested, and documented.
+ * Signal Manager interaction finalized, tested, and documented.
+ * RHistory collector finalized.
+ * WidgetMaker finalized and generating functional code.
+ * Windows installer finalized and tested.
