@@ -1,7 +1,6 @@
-#summary One-sentence summary of this page.
+#summary WidgetMaker documentation.
 #labels Phase-Design,Featured
 
 = Introduction =
 
 The widgetMaker widget is actually not a widget in the strictest sense of Raspberry in that it has no inputs or outputs and does not process R data for the purposes of transforming it or displaying it.  Instead widgetMaker makes code for widget generation based on an R function.  This will accept any R function and make a best guess as to what the correct parameters for that part of the R function should be.  The code generated is quite limited, linear, consists only of hooks into the underlying R function, and contains  no logic to guide the user.  However, widgetMaker generates functional python code which can provide the basis for further widget development.
-
