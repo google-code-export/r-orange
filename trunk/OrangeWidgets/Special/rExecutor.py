@@ -162,10 +162,13 @@ class rExecutor(OWRpy):
     def isMatrix(self):
         self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.rsession('length('+self.data+')')), str(self.rsession('length('+self.data+'[1,])'))))
         colnames = self.rsession('colnames('+self.data+')')
-        if colnames != 'NULL' and colnames != '' and colnames != 'None':
+        if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = OWGUI.listBox(self.dataBox, self)
-            for e in colnames:
-                self.dfselected.addItem(e)
+            try:
+                for e in colnames:
+                    self.dfselected.addItem(e)
+            except:
+                print 'Error with colnames, may not exist.'
     def isList(self):
         self.infov.setText("List object connected with %s elements" % str(self.rsession('length('+self.data+')')))
         
