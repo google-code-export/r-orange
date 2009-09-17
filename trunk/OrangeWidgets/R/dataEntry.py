@@ -12,7 +12,7 @@ from OWRpy import *
 class dataEntry(OWRpy):
     settingsList = ['modelProcessed', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 0, resizingEnabled = 1)
         
         self.rowCount = 2 #Counters for the number of rows and cols so that new ones can be added as the last rows and cols are entered
         self.colCount = 1
@@ -30,7 +30,7 @@ class dataEntry(OWRpy):
         self.dataClassTable = QTableWidget()
         box.layout().addWidget(self.dataClassTable)
         self.dataClassTable.setColumnCount(self.colCount+1)
-        self.dataClassTable.setRowCount(2)
+        self.dataClassTable.setRowCount(3)
         # rowatt = QTableWidgetItem()
         # rowatt.setText('Data Type')
         # self.dataClassTable.setVerticalHeaderItem(0, rowatt)
@@ -39,9 +39,18 @@ class dataEntry(OWRpy):
         self.dataClassTable.setVerticalHeaderItem(1, classatt)
         for i in xrange(self.colCount+1):
             cw = QComboBox()
+            tb = QTableWidget()
+            tb.setColumnCount(1)
+            tb.setRowCount(1)
+            # vh = tb.verticalHeader()
+            # vh.setSectionHidden(0, True)
+            # hh = tb.horizontalHeader()
+            # hh.setSectionHidden(0, True)
             cw.addItems(['Numeric', 'Text'])
             self.dataClassTable.setCellWidget(0,i,cw)
+            self.dataClassTable.setCellWidget(2, i, tb)
         self.dataClassTable.show()
+        #self.dataClassTable.resize()
         self.dataTable = QTableWidget()
         box.layout().addWidget(self.dataTable)
         self.dataTable.setColumnCount(self.colCount+1)
