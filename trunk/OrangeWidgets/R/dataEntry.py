@@ -2,6 +2,7 @@
 <name>Data Entry</name>
 <description>A table input data entry into a data.frame.</description>
 <icon>icons/readcel.png</icons>
+<priority>20</priority>
 """
 
 import OWGUI
@@ -26,31 +27,38 @@ class dataEntry(OWRpy):
         
         
         box = OWGUI.widgetBox(self.controlArea, "Table")
+        self.dataClassTable = QTableWidget()
+        box.layout().addWidget(self.dataClassTable)
+        self.dataClassTable.setColumnCount(self.colCount+1)
+        self.dataClassTable.setRowCount(2)
+        # rowatt = QTableWidgetItem()
+        # rowatt.setText('Data Type')
+        # self.dataClassTable.setVerticalHeaderItem(0, rowatt)
+        classatt = QTableWidgetItem()
+        classatt.setText('Label')
+        self.dataClassTable.setVerticalHeaderItem(1, classatt)
+        for i in xrange(self.colCount+1):
+            cw = QComboBox()
+            cw.addItems(['Numeric', 'Text'])
+            self.dataClassTable.setCellWidget(0,i,cw)
+        self.dataClassTable.show()
         self.dataTable = QTableWidget()
         box.layout().addWidget(self.dataTable)
         self.dataTable.setColumnCount(self.colCount+1)
         self.dataTable.setRowCount(self.rowCount+1)
-        rowatt = QTableWidgetItem()
-        rowatt.setText('Data Type')
-        self.dataTable.setVerticalHeaderItem(0, rowatt)
-        classatt = QTableWidgetItem()
-        classatt.setText('Label')
-        self.dataTable.setVerticalHeaderItem(1, classatt)
-        for i in xrange(self.colCount+1):
-            cw = QComboBox()
-            cw.addItems(['Numeric', 'Text'])
-            self.dataTable.setCellWidget(0,i,cw)
         self.dataTable.show()
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         #self.connect(self.dataTable, SIGNAL("cellEntered(int, int)"), self.itemEntered)
         
+        
     def addColumn(self):
         self.dataTable.insertColumn(self.colCount+1)
+        self.dataClassTable.insertColumn(self.colCount+1)
         self.colCount += 1
         cw = QComboBox()
         cw.addItems(['Numeric', 'Text'])
-        self.dataTable.setCellWidget(0,self.colCount,cw)
+        self.dataClassTable.setCellWidget(0,self.colCount,cw)
     def cellClicked(self, row, col):
         # currentRow = item.row()
         # currentCol = item.column()
@@ -85,12 +93,12 @@ class dataEntry(OWRpy):
         print self.colCount
         
         for i in range(0, self.colCount+1): # move across the columns
-            combo = self.dataTable.cellWidget(0, i)
+            combo = self.dataClassTable.cellWidget(0, i)
             
-            rinsertion += str(self.dataTable.item(1, i).text())
+            rinsertion += str(self.dataClassTable.item(1, i).text())
             rinsertion += '=c('
             print self.rowCount
-            for j in range(2, self.rowCount):
+            for j in range(0, self.rowCount):
                 print 'j'+str(j)
                 if combo.currentText() == 'Text':
                     rinsertion += '"'+str(self.dataTable.item(j,i).text())+'"'
