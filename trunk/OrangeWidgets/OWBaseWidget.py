@@ -385,8 +385,8 @@ class OWBaseWidget(QDialog):
             if settings: settings.update(self._settingsFromSchema)
             else:        settings = self._settingsFromSchema
 
-        print 'start loading local variables'
-        print settings
+        #print 'start loading local variables'
+        #print settings
         # can't close everything into one big try-except since this would mask all errors in the below code
         if settings:
             if hasattr(self, "settingsList"):
@@ -571,15 +571,16 @@ class OWBaseWidget(QDialog):
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
                     #print dirty,widgetFrom,handler, signalData
                     print 'processHandler: ' + str(processHandler)
+                    print 'data being passed: ' 
+                    print signalData
                     if not (handler and dirty): continue
                     print 'do the work'
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
-                        print 'in try'
+                        
                         for (value, id, nameFrom) in signalData:
-                            print 'data:' 
-                            print signalData
+                            
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
                                 if processHandler:

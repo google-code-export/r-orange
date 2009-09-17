@@ -46,7 +46,10 @@ class plotAffy(OWRpy):
         #testlineButton = OWGUI.button(optionsa, self, "test line edit", callback = self.test, width = 200)
         
         
-    
+    def onLoadSavedSession(self):
+        print 'load affy plot'
+        self.processSignals()
+        
     def init(self, dataset):
         if dataset and 'data' in dataset:
             self.data = dataset['data']

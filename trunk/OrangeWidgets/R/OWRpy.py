@@ -249,7 +249,7 @@ class OWRpy(OWWidget):
                 self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
         except: return
 
-    def Rplot(self, query, dwidth=2, dheight=2, devNumber = 0):
+    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
         try: # if this returns true then a device is attached to this widget and should be set to the focus
             key = self.device[devNumber].keys()

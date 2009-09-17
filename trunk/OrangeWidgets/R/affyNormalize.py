@@ -104,7 +104,7 @@ class affyNormalize(OWRpy):
         
         #self.needsProcessingHandler(self, 1)
         
-        self.rSend("Normalized DataFrame", None) #start the killing cascade because normalization is required
+        self.rSend("Normalized Expression Matrix", None) #start the killing cascade because normalization is required
         self.rSend("Normalized AffyBatch", None) #start the killing cascade because normalization is required
                 
         try: 
