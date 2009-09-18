@@ -1,0 +1,12 @@
+#summary Specific of each milestone
+#labels Phase-Design,Phase-Requirements
+
+
+
+= Milestone 2.0 =
+ * Move loading sessions to canvas
+  * Rewrite OWGUI
+ * Better package manager and visualizer
+ * Installer for Mac and linux
+= Milestone 3.0 =
+ * Graphics
