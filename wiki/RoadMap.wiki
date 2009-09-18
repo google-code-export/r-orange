@@ -1,13 +1,5 @@
 #summary How we envision the furture
-#labels Phase-Requirements
+#labels Phase-Requirements,Featured
 
 = Milestone 1.0 =
- * Stable framework
- * Installer
-= Milestone 2.0 =
- * Move loading sessions to canvas
-  * Rewrite OWGUI
- * Better package manager and visualizer
- * Installer for Mac and linux
-= Milestone 3.0 =
- * Graphics
+Milestone 1 is a proof-of-concept with a functional framework. The release has widgets for basic table manipulation including reading, subsetting, merging, and plotting. Furthermore  this release showcases a functional pipeline for Affymetrix microarray chip analysis using the Bioconductor R package. This release includes widgets with the ability to read in Cel files, normalize, select present genes, perform differential expression and visualize differentially expressed genes in a pathway viewer.
