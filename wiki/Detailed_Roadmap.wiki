@@ -10,7 +10,7 @@ Furthermore, we wish to have functionality for basic table manipulation includin
 This release is primarily to publish the Raspberry functionality of widget creation, linking, data sending, saving, loading, and widget repopulation which will provide the basis of all future releases of Raspberry.  Once these are complete a release can be made.
 
 
-= Details =
+== Details ==
 
  * Bioinformatics widgets finalized, tested, and documented.
  * Saving and loading functionality incorporated into each widget, tested, and documented.
