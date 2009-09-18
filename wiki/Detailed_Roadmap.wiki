@@ -24,5 +24,6 @@ This release is primarily to publish the Raspberry functionality of widget creat
   * Rewrite OWGUI
  * Better package manager and visualizer
  * Installer for Mac and linux
+ * Project website
 = Milestone 3.0 =
  * Graphics
