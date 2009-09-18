@@ -1,5 +1,4 @@
 #summary A brief description of the structure of our widgets and what they do.
-#labels Featured
 
 = Introduction =
 
