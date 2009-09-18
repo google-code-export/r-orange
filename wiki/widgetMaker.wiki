@@ -1,5 +1,5 @@
 #summary WidgetMaker documentation.
-#labels Phase-Design,Featured
+#labels Phase-Design
 
 = Introduction =
 
