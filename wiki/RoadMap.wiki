@@ -3,6 +3,7 @@
 
 = Milestone 1 =
 Milestone 1 is a proof-of-concept with a functional framework. The release has widgets for basic table manipulation including reading, subsetting, merging, and plotting. Furthermore  this release showcases a functional pipeline for Affymetrix microarray chip analysis using the Bioconductor R package. This release includes widgets with the ability to read in Cel files, normalize, select present genes, perform differential expression and visualize differentially expressed genes in a pathway viewer.
+ * User feedback
 
 =Milestone 2 =
 Milestone 2 will build upon the framework of Milestone 1. The two key goals of this milestone:
@@ -11,6 +12,7 @@ Milestone 2 will build upon the framework of Milestone 1. The two key goals of t
  * Dramatically increase the number of R libraries available
   * Improve widgetMaker: a sophisticated tool for parsing R functions and creating Red widgets without any python expertise. 
  * Design a widget manager for installer, updating and searching library of widgets. 
+ * How to discover new widgets
  * Develop interactive graphics in QT
 =Milestone 3=
 Can we really think that far ahead?! We can at least dream...
