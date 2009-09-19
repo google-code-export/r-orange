@@ -126,7 +126,7 @@ class mergeR(OWRpy):
             self.rSend("Merged Examples A+B", None)
             self.rSend("Merged Examples B+A", None)
             self.rSend("Merged Examples All", None)
-        else:
+        elif self.R('exists("'+self.Rvariables['merged_dataAll']+'")'):
             self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB']})
             self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA']})
             self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
