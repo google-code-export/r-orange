@@ -76,7 +76,7 @@ class limmaDecide(OWRpy):
             self.infoa.setText("No data element in recieved data")
         
     def runAnalysis(self):
-        self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
+        #self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
 
         #run the analysis using the parameters selected or input
         self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')

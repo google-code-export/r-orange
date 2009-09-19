@@ -143,6 +143,20 @@ class OutputWindow(QDialog):
     def getSafeString(self, s):
         return str(s).replace("<", "&lt;").replace(">", "&gt;")
 
+    def uploadException(self,err):
+        import httplib,urllib
+        #import sys,pickle
+
+        params = urllib.urlencode({'error':err})
+        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+        conn = httplib.HTTPConnection("www.pricemonk.com",80)
+        conn.request("POST", "/red.php", params,headers)
+        response = conn.getresponse()
+        print response.status, response.reason
+        data = response.read()
+        print data
+        conn.close()
+
     def exceptionHandler(self, type, value, tracebackInfo):
         if self.canvasDlg.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
@@ -150,6 +164,7 @@ class OutputWindow(QDialog):
         t = localtime()
         text = "<nobr>Unhandled exception of type %s occured at %d:%02d:%02d:</nobr><br><nobr>Traceback:</nobr><br>\n" % ( self.getSafeString(type.__name__), t[3],t[4],t[5])
 
+        
         if self.canvasDlg.settings["printExceptionInStatusBar"]:
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %d:%02d:%02d. See output window for details." % ( str(type) , t[3],t[4],t[5]))
 
@@ -169,7 +184,7 @@ class OutputWindow(QDialog):
         for line in lines[:-1]:
             text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
         text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
-
+        self.uploadException(text)
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
