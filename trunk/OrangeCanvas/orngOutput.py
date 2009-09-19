@@ -184,7 +184,10 @@ class OutputWindow(QDialog):
         for line in lines[:-1]:
             text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
         text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
-        self.uploadException(text)
+        try:
+            self.uploadException(text)
+        except:
+            pass
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
