@@ -9,7 +9,7 @@ from OWRpy import *
 import OWGUI
 
 class colSelector(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
-    settingsList = ['vs', 'rowcolselect', 'newdata']
+    settingsList = ['vs', 'rowcolselect', 'newdata', 'olddata', 'rowselectionCriteria', 'colselectionCriteria', 'rowactiveCriteria', 'colactiveCriteria']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
@@ -25,7 +25,9 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.RowColNamesExist = 1
         self.searchLineEdit = ''
         self.newdata = {}
+        self.olddata = {}
         self.sentalready = 0
+        self.loadSettings()
         
 
         self.inputs = [("R DataFrame", RvarClasses.RDataFrame, self.process), ("Subsetting Vector", RvarClasses.RVector, self.ssvAttached)]
@@ -48,6 +50,10 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         #self.rowcol = OWGUI.radioButtonsInBox(options, self, "rowcolselect", ["Rows", "Columns"], callback = self.changeRowCol)
         self.subOnAttachedButton = OWGUI.button(options, self, "Subset on Attached List", callback = self.subOnAttached)
         self.subOnAttachedButton.setEnabled(False)
+        self.cycleUpButton = OWGUI.button(options, self, "Cycle Up", callback = self.cycleUp)
+        self.cycleDownButton = OWGUI.button(options, self, "Cycle Down", callback = self.cycleDown)
+        self.cycleDownButton.setEnabled(False)
+        self.cycleUpButton.setEnabled(False)
         self.tableinfoa = OWGUI.widgetLabel(options, "No Data Connected")
         self.tableinfob = OWGUI.widgetLabel(options, "")
         self.tableinfoc = OWGUI.widgetLabel(options, "")
@@ -139,14 +145,16 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
 
     def onLoadSavedSession(self):
         print 'load colselector'
-        self.processSignals()
+        #self.processSignals()
+        
     def process(self, data):
         self.require_librarys(['fields'])
         
         if data == None:
             self.columnsorrows.clear() #clear the window for the new data
             self.selectCriteria.clear()
-            self.olddata = ''
+            self.olddata = {} #clear the old data
+            self.newdata = {} #clear just in case processing fails
             self.infoa.setText('None Type Recieved')
         try:
             #self.columnsorrows.clear()
@@ -156,12 +164,14 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
                 # self.columnsorrows.addItem(v)
             #(rows,cols) = self.R('dim('+self.Rvariables['data']+')')
-            rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
+            self.rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
             cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
             self.infoa.setText("Data Connected")
             self.tableinfoa.setText("Data Connected with:")
-            self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
+            self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(self.rows)))
         except:
+            self.olddata = {}
+            self.newdata = {}
             self.infoa.setText("Signal not of appropriate type.")
             self.tableinfoa.setText("No Data Connected")
             self.tableinfob.setText("")
@@ -170,10 +180,17 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             return
             
         self.columnsorrows.clear() #clear the window for the new data
+        if self.rows > 500:
+            self.tableinfoc.setText("More than 500 rows, showing only first 500")
         if self.Rvariables['data'] != '': # this checks if data is still the default
             try: # want to see if there are rownames so that we can select on them, if they don't exist 
                 self.columnsorrows.addItem("Column Names")
-                rownames = self.rsession('rownames('+self.Rvariables['data']+')')
+                if self.rows > 500:
+                    rownames = self.rsession('rownames('+self.Rvariables['data']+'[1:500,])')
+                    self.cycleUpButton.setEnabled(True)
+                    #self.cycleDownButton.setEnabled(True)
+                else:
+                    rownames = self.rsession('rownames('+self.Rvariables['data']+')')
                 if type(rownames) is str:
                     self.columnsorrows.addItem(rownames)
                 else:
@@ -186,6 +203,36 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
                     self.columnsorrows.addItem(str(l+1))
         else:
             self.infoa.setText("Data not connected.")
+    
+    def cycleUp(self):
+        self.cycle += 1
+        self.columnsorrows.clear()
+        if 500*(self.cycle+1) > self.rows:
+            self.cycleUpButton.setEnabled(False)
+            rownames = self.rsession('rownames('+self.Rvariables['data']+'['+str((500*self.cycle)+1)+':'+str(self.rows)+',])')
+        else:
+            rownames = self.rsession('rownames('+self.Rvariables['data']+'['+str((500*self.cycle)+1)+':'+str(500*(self.cycle+1))+',])')
+        
+        
+        if type(rownames) is str:
+            self.columnsorrows.addItem(rownames)
+        else:
+            for item in rownames:
+                self.columnsorrows.addItem(item)
+    
+    def cycleDown(self):
+        self.cycle -= 1
+        if self.cycle == 0:
+            self.cycleDownButton.setEnabled(False) #prevents going below 0
+        self.cycleUpButton.setEnabled(True) #restore cycle up if deactivated
+        
+        rownames = self.rsession('rownames('+self.Rvariables['data']+'['+str((500*self.cycle)+1)+':'+str(500*(self.cycle+1))+',])')
+    
+        if type(rownames) is str:
+            self.columnsorrows.addItem(rownames)
+        else:
+            for item in rownames:
+                self.columnsorrows.addItem(item)
     def ssvAttached(self, data):
         if 'data' in data:
             self.subOnAttachedButton.setEnabled(True)

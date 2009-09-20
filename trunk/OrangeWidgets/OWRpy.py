@@ -8,6 +8,9 @@ from OWWidget import *
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
+
+
+
 import time
 import RvarClasses
 import RAffyClasses
@@ -27,6 +30,11 @@ class OWRpy(OWWidget):
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
         OWWidget.__init__(self, parent, signalManager, title, **args)
         
+        print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
+            ISBN 3-900051-07-0\n \
+            R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
+            You are welcome to redistribute it under certain conditions.\n \
+            Type 'license()' or 'licence()' for distribution details."
         
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
@@ -243,17 +251,19 @@ class OWRpy(OWWidget):
             #print self.Rvariables[k]
             self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
-            if self.device: #  if this is true then this widget made an R device and we would like to shut it down
-                key = self.device.keys()[0]
-                self.R('dev.set('+self.device[key]+')', 'setRData')
-                self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
+            if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
+                for device in self.device:
+                    key = device.keys()[0]
+                    self.R('dev.set('+str(device[key])+')', 'setRData')
+                    self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
         except: return
 
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
         try: # if this returns true then a device is attached to this widget and should be set to the focus
             key = self.device[devNumber].keys()
-            self.R('dev.set('+self.device[devNumber][key[0]]+')', 'setRData')
+            print 'key = '+str(key)
+            self.R('dev.set('+str(self.device[devNumber][key][0])+')', 'setRData')
         except:
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
             self.device.append(self.R('dev.cur()'))

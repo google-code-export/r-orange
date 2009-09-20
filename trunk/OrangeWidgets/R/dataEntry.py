@@ -109,10 +109,15 @@ class dataEntry(OWRpy):
             print self.rowCount
             for j in range(0, self.rowCount):
                 print 'j'+str(j)
+                tableItem = self.dataTable.item(j,i)
+                if tableItem == None:
+                    text = 'NA'
+                else:
+                    text = tableItem.text()
                 if combo.currentText() == 'Text':
-                    rinsertion += '"'+str(self.dataTable.item(j,i).text())+'"'
+                    rinsertion += '"'+str(text)+'"'
                 elif combo.currentText() == 'Numeric':  
-                    rinsertion += str(self.dataTable.item(j,i).text())
+                    rinsertion += str(text)
                 rinsertion += ','
             rinsertion = rinsertion[:-1]
             rinsertion += '),'

@@ -261,11 +261,11 @@ class widgetMaker(OWRpy):
             self.commitFunction += "\t\tif self."+inputName+" == '': return\n"
         self.commitFunction += "\t\tself.R("
         if self.captureROutput:
-            self.commitFunction += "'txt&lt;-capture.output(+'"
+            self.commitFunction += "'txt&lt;-capture.output('+"
         if self.functionAllowOutput:
             self.commitFunction += "self.Rvariables['"+self.functionName+"']+'&lt;-"+self.functionName+"("
         else:
-            self.commitFunction += "+"+self.functionName+"("
+            self.commitFunction += "'"+self.functionName+"("
         for element in self.functionInputs.keys():
             if element != '___':
                 element = element.replace('_', '.')
