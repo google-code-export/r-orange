@@ -16,7 +16,7 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         self.vs = self.variable_suffix
         self.setRvariableNames(['data', 'result'])
         self.collist = '' # a container for the names of columns that will be picked from the selector.
-        self.rowcolselect = 1
+        self.rowcolselect = 0
         self.GorL = 0
         self.rowselectionCriteria = 0 # Counters for the criteria of selecting Rows and Cols
         self.rowactiveCriteria = [] # lists showing the active critera for subsetting the rows and cols
@@ -256,7 +256,92 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         self.criteriaTable.resizeColumnsToContents()
         self.criteriaTable.resizeRowsToContents()
         self.sentalready = 0
-    
+    def subListAdd(self): #want to show the summary of the factor that was selected, should account for the type of data that we are seeing
+        # first get a tmp variable for the data that we are subsetting 
+        try: 
+            querytext = self.columnsorrows.selectedItems()[0].text()
+        except: 
+            return # nothing selected
+        #try: #this fails if there is nothing selected in the col selector
+        
+        # Did we pick the names of Column Names or Row Names?
+        if querytext == "Column Names": # pick the column names and populate the list
+            self.valuesStack.setCurrentWidget(self.boxIndices[3])  
+            self.namesList.clear()
+            try:
+                for names in self.rsession('colnames('+self.Rvariables['data']+')'):
+                    self.namesList.addItem(names)
+            except: # there is some problem with the colnames
+                for i in xrange(self.rsession('length('+self.Rvariables['data']+'[1,])')):
+                    self.namesList.addItem(str(i))
+            self.type = 'Col Names'
+            return
+            
+        if querytext == "Row Names":
+            self.valuesStack.setCurrentWidget(self.boxIndices[3]) 
+            self.namesList.clear()
+            try:
+                for names in self.rsession('rownames('+self.Rvariables['data']+')'):
+                    self.namesList.addItem(names)
+            except:
+                for i in xrange(self.rsession('length('+self.Rvariables['data']+'[,1])')):
+                    self.namesList.addItem(str(i))
+            self.type = 'Row Names'
+            return
+            
+        # ## if we've gotten this far then the selection wasn't one of the special types
+        self.setRvariableNames(['tmp'])
+        if self.rowcolselect == 0: # we are selecting columns based on row criteria so we need to show the row infoa
+            self.rownumber = str(querytext)
+            if self.RowColNamesExist:
+                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'["'+self.rownumber+'",]')
+            else:
+                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'['+self.rownumber+',]')
+        if self.rowcolselect == 1:
+            self.colnames = str(querytext)
+            if self.RowColNamesExist:
+                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'[,"'+self.colnames+'"]')
+            else:
+                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'[,'+self.colnames+']')
+        self.type = self.rsession('class('+self.Rvariables['tmp']+')')
+        # start logic for what type of vector tmp is
+        if self.type == 'numeric':
+            self.Rplot('hist('+self.Rvariables['tmp']+')')
+            self.valuesStack.setCurrentWidget(self.boxIndices[1]) #sets the correct box
+            self.RstatsOutput = self.rsession('stats('+self.Rvariables['tmp']+')') #captures the output of stats
+            self.rankedVals = self.rsession('sort('+self.Rvariables['tmp']+')')
+            #   Use the ranks of the values to set the slider, works better than continuous data as the slider 
+            self.SubSlider.setMinimum(1) 
+            self.SubSlider.setMaximum(self.RstatsOutput[0][0]) # the lagging [0] is nessisary because of the subsetting of RstatsOutput
+            #self.SubSlider.setTickPosition(2)
+            self.StatTable.setColumnCount(2)
+            self.StatTable.setRowCount(9)
+            n = 0
+            for item in ['Number', 'Mean', 'Stdev', 'Min', '1st Quartile', 'Median', '3rd Quartile', 'Max', 'Missing']:
+                newitem = QTableWidgetItem(str(item))
+                self.StatTable.setItem(n, 0, newitem)
+                n += 1
+            n = 0
+            for k in self.RstatsOutput:
+                newitem = QTableWidgetItem(str(k[0]))
+                self.StatTable.setItem(n, 1, newitem)
+                n += 1
+
+        if self.type == 'factor':
+            self.FactorTable.setHorizontalHeaderLabels(['Factor', 'Count'])
+            self.valuesStack.setCurrentWidget(self.boxIndices[2])
+            self.factorOutput = self.rsession('summary('+self.Rvariables['tmp']+')')
+            self.FactorTable.setColumnCount(2)
+            self.FactorTable.setRowCount(len(self.factorOutput))
+            self.FactorList.clear()
+            n = 0
+            for k in self.factorOutput.keys():
+                newitem = QTableWidgetItem(str(k))
+                self.FactorTable.setItem(n, 0, newitem)
+                val = QTableWidgetItem(str(self.factorOutput[k]))
+                self.FactorTable.setItem(n, 1, val)
+                self.FactorList.addItem(k)
+                n += 1
     def selectCriteria(self, item=None):
         self.criteriaTable.setRowCount(self.colselectionCriteria+self.rowselectionCriteria+1)
 

@@ -39,16 +39,16 @@ class dataEntry(OWRpy):
         self.dataClassTable.setVerticalHeaderItem(1, classatt)
         for i in xrange(self.colCount+1):
             cw = QComboBox()
-            tb = QTableWidget()
-            tb.setColumnCount(1)
-            tb.setRowCount(1)
+            #tb = QTableWidget()
+            #tb.setColumnCount(1)
+            #tb.setRowCount(1)
             # vh = tb.verticalHeader()
             # vh.setSectionHidden(0, True)
             # hh = tb.horizontalHeader()
             # hh.setSectionHidden(0, True)
             cw.addItems(['Numeric', 'Text'])
             self.dataClassTable.setCellWidget(0,i,cw)
-            self.dataClassTable.setCellWidget(2, i, tb)
+            #self.dataClassTable.setCellWidget(2, i, tb)
         self.dataClassTable.show()
         #self.dataClassTable.resize()
         self.dataTable = QTableWidget()
@@ -126,6 +126,7 @@ class dataEntry(OWRpy):
         self.R(self.Rvariables['table']+'<-data.frame('+rinsertion+')')
         self.rSend('Data Table', {'data':self.Rvariables['table']})
         
-    def reloadTable(self):
-        # reload the table from the table input data likely in R
-        pass
+    def onLoadSavedSession(self):
+        if self.R('exists("'+self.Rvariables['table']+'")'):
+            self.rSend('Data Table', {'data':self.Rvariables['table']})
+            
