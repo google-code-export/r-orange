@@ -128,6 +128,7 @@ class OWRpy(OWWidget):
         histquery = query
         histquery = histquery.replace('<', '&lt;') #convert for html
         histquery = histquery.replace('>', '&gt;')
+        histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
         OWRpy.Rhistory += histquery + '</code><br><code>'
         try:
             if type == 'getRData':
