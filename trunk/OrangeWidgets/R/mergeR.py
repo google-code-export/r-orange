@@ -2,7 +2,7 @@
 <name>Merge RExampleTables</name>
 <description>Merges or subsets two RExampleTables depending on options.</description>
 <icon>icons/Merge.png</icon>
-<priority>3010</priority>
+<priority>2030</priority>
 """
 
 from OWRpy import *

@@ -97,7 +97,7 @@ class OutputWindow(QDialog):
         # print text
         # return
         self.numberofLines += 1
-        if self.numberofLines > 500:
+        if self.numberofLines > 50:
             self.textOutput.clear()
             self.numberofLines = 0
         Text = self.getSafeString(text)
@@ -113,13 +113,13 @@ class OutputWindow(QDialog):
 
         # QTextCursor runs very slow with lots of text!!!!!!!!!!
         
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)                             # existing text
+        #cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        #self.textOutput.setTextCursor(cursor)                             # existing text
         if text == " ": self.textOutput.insertHtml("&nbsp;")
         else:           self.textOutput.insertHtml(Text)                                  # then append the text
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
-        self.textOutput.setTextCursor(cursor)
+        #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
+        #self.textOutput.setTextCursor(cursor)
 
         if Text[-1:] == "\n":
             if self.canvasDlg.settings["printOutputInStatusBar"]:
@@ -134,7 +134,7 @@ class OutputWindow(QDialog):
         for line in lines:
             self.numberofLines += 1
             self.write(line)
-            if self.numberofLines > 500:
+            if self.numberofLines > 50:
                 self.textOutput.clear()
 
     def flush(self):

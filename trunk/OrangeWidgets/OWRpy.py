@@ -254,20 +254,21 @@ class OWRpy(OWWidget):
         try:
             if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
                 for device in self.device:
-                    key = device.keys()[0]
-                    self.R('dev.set('+str(device[key])+')', 'setRData')
+                    #key = device.keys()[0]
+                    self.R('dev.set('+str(device)+')', 'setRData')
                     self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
         except: return
 
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
         try: # if this returns true then a device is attached to this widget and should be set to the focus
-            key = self.device[devNumber].keys()
-            print 'key = '+str(key)
-            self.R('dev.set('+str(self.device[devNumber][key][0])+')', 'setRData')
+            #key = self.device[devNumber].keys()
+            #print 'key = '+str(key)
+            self.R('dev.set('+str(self.device[devNumber])+')', 'setRData')
+            
         except:
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
-            self.device.append(self.R('dev.cur()'))
+            self.device.append(self.R('as.numeric(capture.output(dev.cur())[2])'))
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):

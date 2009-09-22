@@ -2,7 +2,7 @@
 <name>Column Selection</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
 <icon>icons/Subset.png</icon>
-<priority>3020</priority>
+<priority>2020</priority>
 """
 
 from OWRpy import *
@@ -292,36 +292,20 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.type = 'Col Names'
             return
             
-        if querytext == "Row Names":
-            self.valuesStack.setCurrentWidget(self.boxIndices[3]) 
-            self.namesList.clear()
-            try:
-                for names in self.rsession('rownames('+self.Rvariables['data']+')'):
-                    self.namesList.addItem(names)
-            except:
-                for i in xrange(self.rsession('length('+self.Rvariables['data']+'[,1])')):
-                    self.namesList.addItem(str(i))
-            self.type = 'Row Names'
-            return
             
         # ## if we've gotten this far then the selection wasn't one of the special types
         self.setRvariableNames(['tmp'])
-        if self.rowcolselect == 0: # we are selecting columns based on row criteria so we need to show the row infoa
-            self.rownumber = str(querytext)
-            if self.RowColNamesExist:
-                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'["'+self.rownumber+'",]')
-            else:
-                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'['+self.rownumber+',]')
-        if self.rowcolselect == 1:
-            self.colnames = str(querytext)
-            if self.RowColNamesExist:
-                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'[,"'+self.colnames+'"]')
-            else:
-                self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'[,'+self.colnames+']')
+        # we are selecting columns based on row criteria so we need to show the row infoa
+        self.rownumber = str(querytext)
+        if self.RowColNamesExist:
+            self.rsession(self.Rvariables['tmp']+'<-as.vector(t('+self.Rvariables['data']+'["'+self.rownumber+'",]))')
+        else:
+            self.rsession(self.Rvariables['tmp']+'<-as.vector(t('+self.Rvariables['data']+'['+self.rownumber+',]))')
+        
         self.type = self.rsession('class('+self.Rvariables['tmp']+')')
         # start logic for what type of vector tmp is
         if self.type == 'numeric':
-            self.Rplot('hist('+self.Rvariables['tmp']+')')
+            self.Rplot('hist('+self.Rvariables['tmp']+')',3,3)
             self.valuesStack.setCurrentWidget(self.boxIndices[1]) #sets the correct box
             self.RstatsOutput = self.rsession('stats('+self.Rvariables['tmp']+')') #captures the output of stats
             self.rankedVals = self.rsession('sort('+self.Rvariables['tmp']+')')
@@ -430,21 +414,21 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         if self.type == 'numeric':
             if self.GorL == 0:
                 self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' > '+self.currentNum)
-                self.updatecolCriteriaList(str(self.colnames)+' > '+str(self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
+                self.updatecolCriteriaList(str(self.rownumber)+' > '+str(self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
             if self.GorL == 1:
                 self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' < '+self.currentNum)
-                self.updatecolCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
+                self.updatecolCriteriaList(str(self.rownumber+' < '+self.currentNum)+'. Row Criteria '+str(self.rowselectionCriteria))
         if self.type == 'factor':
             if item != None:
                 self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' == "'+str(item.text())+'"')
-                self.updatecolCriteriaList(str(self.colnames)+' Equal To '+item.text()+'. Row Criteria '+str(self.rowselectionCriteria))
+                self.updatecolCriteriaList(str(self.rownumber)+' Equal To '+item.text()+'. Row Criteria '+str(self.rowselectionCriteria))
             elif item == None and len(self.FactorList.selectedItems()) != 0:
                 tmpitems = ''
                 for item in self.FactorList.selectedItems():
                     tmpitems += str(item.text())+'","'
                 tmpitems2 = tmpitems[:len(tmpitems)-3]
                 self.rsession('criteria'+self.vs+'rowCri'+str(self.rowselectionCriteria)+'<-'+self.Rvariables['tmp']+' %in% c("'+tmpitems2+'")')
-                self.updatecolCriteriaList(str(self.colnames)+' Equal To "'+tmpitems2+'". Row Criteria '+str(self.rowselectionCriteria))    
+                self.updatecolCriteriaList(str(self.rownumber)+' Equal To "'+tmpitems2+'". Row Criteria '+str(self.rowselectionCriteria))    
         self.rowselectionCriteria += 1
         
         #self.applySubsetting()
