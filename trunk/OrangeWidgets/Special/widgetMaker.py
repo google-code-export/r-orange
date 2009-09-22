@@ -69,7 +69,7 @@ class widgetMaker(OWRpy):
         import orngEnviron, orngRegistry, orngCanvas
         widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
-        path = widgetDirName +  "/Prototypes/" + self.functionName + ".py"
+        path = widgetDirName +  "/Prototypes/" + self.functionName.replace('.', '_') + ".py"
         #print 'path:' + path
         file = open(path, "wt")
         tmpCode = self.completeCode
@@ -198,7 +198,7 @@ class widgetMaker(OWRpy):
         
     def makeInitHeader(self):
         self.initCode = ''
-        self.initCode += 'class '+self.functionName+'(OWRpy): \n'
+        self.initCode += 'class '+self.functionName.replace('.', '_')+'(OWRpy): \n'
         self.initCode += '\tsettingsList = []\n'
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
 
@@ -210,7 +210,7 @@ class widgetMaker(OWRpy):
                 pass
             else:
                 if self.fieldList[element] == '' or self.fieldList[element] == "":
-                    self.initCode += '\t\tself.'+element+' = ""\n'
+                    self.initCode += '\t\tself.RFunctionParam_'+element+' = ""\n'
                 elif type(self.fieldList[element]) == type([]): #the fieldList is a list
                     self.initCode += '\t\tself.RFunctionParam_'+element+' = 0\n' #set the item to the first one
                 else:

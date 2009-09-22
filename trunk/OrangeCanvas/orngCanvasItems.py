@@ -388,12 +388,13 @@ class CanvasWidget(QGraphicsRectItem):
     def paint(self, painter, option, widget = None):
         if self.isProcessing:
             color = self.canvasDlg.widgetActiveColor
+        elif self.needsProcessing == True:
+            color = Qt.red
         elif self.selected:
             if (self.view.findItemTypeCount(self.canvas.collidingItems(self), CanvasWidget) > 0):       # the position is invalid if it is already occupied by a widget 
                 color = Qt.red
             else:                    color = self.canvasDlg.widgetSelectedColor
-        if self.needsProcessing == True:
-            color = Qt.red
+        
 
         if self.isProcessing or self.selected or self.needsProcessing:
             painter.setPen(QPen(color))

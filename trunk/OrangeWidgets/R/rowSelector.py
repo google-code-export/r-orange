@@ -19,6 +19,7 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         self.rowcolselect = 0
         self.GorL = 0
         self.rowselectionCriteria = 0 # Counters for the criteria of selecting Rows and Cols
+        self.colselectionCriteria = 0 
         self.rowactiveCriteria = [] # lists showing the active critera for subsetting the rows and cols
         self.RowColNamesExist = 1
         self.searchLineEdit = ''
@@ -342,6 +343,24 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
                 self.FactorTable.setItem(n, 1, val)
                 self.FactorList.addItem(k)
                 n += 1
+    def highlightItems(self, text=''):
+        if text == '':
+            for item in self.FactorList.selectedItems():
+                self.FactorList.setItemSelected(item, False)
+        else:
+            for item in self.FactorList.selectedItems():
+                self.FactorList.setItemSelected(item, False)
+            trueItems = self.FactorList.findItems(text, Qt.MatchContains) # a tableWidgetItem list
+            for item in trueItems:
+                self.FactorList.setItemSelected(item, True) 
+            if len(self.FactorList.selectedItems()) > 0:
+                self.FactorList.scrollToItem(self.FactorList.selectedItems()[0])
+            else:
+                self.infoa.setText("Item does not exist")
+    
+    def SubSliderValueChanged(self, slidervalue):
+        self.currentNum = str(self.rankedVals[slidervalue-1])
+        self.numericInfo.setText('Sample Number: '+str(slidervalue)+'   Value'+self.currentNum) # the value of the slider reflects the rank value of the sample, can convert to an actual value if needed.
     def selectCriteria(self, item=None):
         self.criteriaTable.setRowCount(self.colselectionCriteria+self.rowselectionCriteria+1)
 
