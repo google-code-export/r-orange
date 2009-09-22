@@ -11,12 +11,13 @@ Milestone 2 will build upon the framework of Milestone 1. The two key goals of t
   * Including all data and GUI 
  * Dramatically increase the number of R libraries available
   * Improve widgetMaker: a sophisticated tool for parsing R functions and creating Red widgets without any python expertise. 
+Other goals include:
  * Design a widget manager for installer, updating and searching library of widgets. 
  * How to discover new widgets
  * Develop interactive graphics in QT
  * Load pipelines into pipelines
  * Condense pipelines into widgets 
- * Pathway tracer 'replay' pathway analysis
+ * Pathway tracer to 'replay' pipeline analysis
  * Ghost widgets to show potential pipelines that may be of interest
 
 =Milestone 3=
