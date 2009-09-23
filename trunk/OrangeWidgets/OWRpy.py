@@ -42,7 +42,7 @@ class OWRpy(OWWidget):
         self.variable_suffix = '_' + str(OWRpy.num_widgets)
         #keep all R variable name in this dict
         self.Rvariables = {}
-        self.device = []
+        self.device = {}
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
         #print 'set load ssaved '
@@ -252,23 +252,29 @@ class OWRpy(OWWidget):
             #print self.Rvariables[k]
             self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
-            if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
-                for device in self.device:
-                    #key = device.keys()[0]
-                    self.R('dev.set('+str(device)+')', 'setRData')
-                    self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
+            #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
+            for device in self.device.keys():
+                dev = self.device[device]
+                #key = device.keys()[0]
+                self.R('dev.set('+str(dev)+')', 'setRData')
+                self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
         except: return
 
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
-        try: # if this returns true then a device is attached to this widget and should be set to the focus
-            #key = self.device[devNumber].keys()
-            #print 'key = '+str(key)
-            self.R('dev.set('+str(self.device[devNumber])+')', 'setRData')
-            
-        except:
+        print 'the devNumber is'+str(devNumber)
+        if str(devNumber) in self.device:
+            print 'dev exists'
+            actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
+            if actdev != self.device[str(devNumber)]:
+                print 'dev not in R'
+                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+                print str(self.device)
+        else:
+            print 'make new dev for this'
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
-            self.device.append(self.R('as.numeric(capture.output(dev.cur())[2])'))
+            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):

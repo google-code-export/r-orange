@@ -1,6 +1,6 @@
 """
 <name>Heatmap</name>
-<description>Calculates differential expression of genes from an eSet object</description>
+<description>Makes heatmaps of data.</description>
 <icon>icons/HeatMap.png</icon>
 <priority>2040</priority>
 """
@@ -17,7 +17,7 @@ class Heatmap(OWRpy):
         self.plotOnConnect = 0
         
         self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.processMatrix)]
-        self.outputs = [("Cluster Subset", RvarClasses.RList)]
+        self.outputs = [("Cluster Subset List", RvarClasses.RList)]
         
         self.rowvChoice = None
         
@@ -42,7 +42,7 @@ class Heatmap(OWRpy):
             else:
                 self.classes = 'rep(0, length('+self.plotdata+'[1,]))'
             if self.rsession('class('+self.plotdata+')') == "data.frame":
-                self.plotdata = 'as.matrix('+self.plotdata+')'
+                self.plotdata = 'data.matrix('+self.plotdata+')'
             self.rowvChoiceprocess()
             if self.plotOnConnect:
                 self.makePlot()
@@ -65,5 +65,5 @@ class Heatmap(OWRpy):
     def identify(self, kill = True):
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
         self.Rplot('plot('+self.Rvariables['hclust']+')', devNumber = 1)
-        self.R(self.Rvariables['heatsubset']+'<-identify('+self.Rvariables['hclust']+')')
-        self.rSend("Cluster Subset", {'data':self.Rvariables['heatsubset'], 'kill':kill, 'cluster':self.Rvariables['hclust']})
+        self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')
+        self.rSend("Cluster Subset List", {'data':self.Rvariables['heatsubset'], 'kill':kill, 'cluster':self.Rvariables['hclust']})
