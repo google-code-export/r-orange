@@ -93,10 +93,11 @@ class rExecutor(OWRpy):
         else:
             self.rSend('R.object', self.sendt)
     def runR(self):
-        self.rsession('txt<-capture.output('+self.command+')')
+        self.rsession('txt<-capture.output('+self.command+')', supress = True)
         pasted = self.rsession('paste(txt, collapse = " \n")')
         self.thistext.insertPlainText('>>>'+self.command+'##Done')
         self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
+        self.thistext.setAlignment(Qt.AlignBottom)
     
     def putRHistory(self):
         self.thistext.clear()
