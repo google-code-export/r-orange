@@ -19,4 +19,4 @@ class boxplot(OWRpy):
             self.commitFunction()
     def commitFunction(self):
         if self.x == '': return
-        self.Rplot('boxplot(x=as.list('+str(self.RFunctionParam_x)+'))')
+        self.Rplot('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')

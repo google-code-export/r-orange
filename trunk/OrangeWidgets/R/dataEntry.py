@@ -12,118 +12,192 @@ from OWRpy import *
 class dataEntry(OWRpy):
     settingsList = ['modelProcessed', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 0, resizingEnabled = 1)
-        
-        self.rowCount = 2 #Counters for the number of rows and cols so that new ones can be added as the last rows and cols are entered
-        self.colCount = 1
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 1, resizingEnabled = 1)
+
+        self.rowCount = 10
+        self.colCount = 10
+        self.maxRow = 0 # sets the most extreme row and cols
+        self.maxCol = 0
+        self.rowHeaders = False
+        self.colHeaders = False
         self.setRvariableNames(['table'])
         
+        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
         self.outputs = [('Data Table', RvarClasses.RDataFrame)]
         #GUI.
         
         box = OWGUI.widgetBox(self.controlArea, "Options")
         OWGUI.button(box, self, 'Commit', self.commitTable)
-        OWGUI.button(box, self, 'Add Column', self.addColumn)
+        OWGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
+        OWGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
+        #OWGUI.button(box, self, 'Add Column', self.addColumn)
         
+        self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
+        self.mainArea.layout().addWidget(self.splitCanvas)
+
         
         box = OWGUI.widgetBox(self.controlArea, "Table")
-        self.dataClassTable = QTableWidget()
-        box.layout().addWidget(self.dataClassTable)
-        self.dataClassTable.setColumnCount(self.colCount+1)
-        self.dataClassTable.setRowCount(3)
-        # rowatt = QTableWidgetItem()
-        # rowatt.setText('Data Type')
-        # self.dataClassTable.setVerticalHeaderItem(0, rowatt)
-        classatt = QTableWidgetItem()
-        classatt.setText('Label')
-        self.dataClassTable.setVerticalHeaderItem(1, classatt)
-        for i in xrange(self.colCount+1):
-            cw = QComboBox()
-            #tb = QTableWidget()
-            #tb.setColumnCount(1)
-            #tb.setRowCount(1)
-            # vh = tb.verticalHeader()
-            # vh.setSectionHidden(0, True)
-            # hh = tb.horizontalHeader()
-            # hh.setSectionHidden(0, True)
-            cw.addItems(['Numeric', 'Text'])
-            self.dataClassTable.setCellWidget(0,i,cw)
-            #self.dataClassTable.setCellWidget(2, i, tb)
-        self.dataClassTable.show()
-        #self.dataClassTable.resize()
+        self.splitCanvas.addWidget(box)
         self.dataTable = QTableWidget()
         box.layout().addWidget(self.dataTable)
         self.dataTable.setColumnCount(self.colCount+1)
         self.dataTable.setRowCount(self.rowCount+1)
         self.dataTable.show()
+        # self.setRownamesColor()
+        # self.setColnamesColor()
+        upcell = QTableWidgetItem()
+        upcell.setBackgroundColor(Qt.gray)
+        upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
+        self.dataTable.setItem(0,0,upcell)
+        # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
+        self.resize(800,600)
+        
+        #OWGUI.button(box, self, 'add row', callback = self.addRow)
         #self.connect(self.dataTable, SIGNAL("cellEntered(int, int)"), self.itemEntered)
-        
-        
-    def addColumn(self):
-        self.dataTable.insertColumn(self.colCount+1)
-        self.dataClassTable.insertColumn(self.colCount+1)
-        self.colCount += 1
-        cw = QComboBox()
-        cw.addItems(['Numeric', 'Text'])
-        self.dataClassTable.setCellWidget(0,self.colCount,cw)
-    def cellClicked(self, row, col):
-        # currentRow = item.row()
-        # currentCol = item.column()
-        self.onCellFocus(row, col)
-    
-    # def itemEntered(self, row, col):
-        # currentRow = item.row()
-        # currentCol = item.column()
-        # print col
-        # print row
-        # self.onCellFocus(row, col)
-    def onCellFocus(self, currentRow, currentCol):
-        item = self.dataTable.item(currentRow, currentCol)
-        self.dataTable.editItem(item)
-    def itemChanged(self, row, col):
-        print row
-        print self.rowCount
-        if row == self.rowCount:
-            self.dataTable.insertRow(self.rowCount+1)
-            self.rowCount += 1
+    # def setRownamesColor(self):
+        # for i in range(1, self.dataTable.columnCount()):
+            # self.dataTable.item(i,0).setBackgroundColor(Qt.blue)
             
+    # def setColnamesColor(self):
+        # for j in range(1, self.dataTable.rowCount()):
+            # self.dataTable.item(0,j).setBackgroundColor(Qt.blue)
+            
+    def processDF(self, data):
+        if data:
+            self.data = data['data']
+            self.populateTable()
+        else:
+            return
+    def populateTable(self):
+        self.dataTable.clear()
+        rownames = self.R('rownames('+self.data+')')
+        rlen = self.R('length('+self.data+'[,1])')
+        self.dataTable.setRowCount(rlen+1)
+        self.rowCount = rlen+1
+        
+        print str(rownames)
+        if rownames != 'NULL':
+            row = 1
+            for name in rownames:
+                newitem = QTableWidgetItem(str(name))
+                self.dataTable.setItem(row,0,newitem)
+                row += 1
+        clen = self.R('length('+self.data+'[1,])')
+        self.colCount = clen+1
+        self.dataTable.setColumnCount(clen+1)
+        colnames = self.R('colnames('+self.data+')')
+        if type(colnames) == type(''):
+            colnames = [colnames]
+        if colnames != 'NULL':  
+            col = 1
+            for name in colnames:
+                newitem = QTableWidgetItem(str(name))
+                self.dataTable.setItem(0, col, newitem)
+                col += 1
+        data = self.R(self.data)
+        col = 1
+        for name in colnames:
+           
+            for i in range(1, rlen+1):
+                newitem = QTableWidgetItem(str(data[name][i-1]))
+                self.dataTable.setItem(i, col, newitem)
+            col += 1
+    def cellClicked(self, row, col):
+        pass
+
+    def onCellFocus(self, currentRow, currentCol, tb):
+        if len(tb) == 0: return
+        print 'cell on focus'
+        item = tb.item(currentRow, currentCol)
+        tb.editItem(item)
+    
+    def itemChanged(self, row, col):
+        if row > self.rowCount-3: #bump up the number of cells to keep up with the needs of the table
+            self.dataTable.setRowCount(self.rowCount+3)
+            self.rowCount += 3
+        if col > self.colCount-3:
+            self.dataTable.setColumnCount(self.colCount+3)
+            self.colCount += 3
+        if row > self.maxRow: self.maxRow = row #update the extremes of the row and cols
+        if col > self.maxCol: self.maxCol = col
         self.dataTable.setCurrentCell(row+1, col)
-        item = self.dataTable.item(row+1, col)
-        self.onCellFocus(row+1, col)
-        self.dataTable.editItem(item)
 
 
         
     def commitTable(self):
         #run through the table and make the output
-        rinsertion = ''
-        print self.colCount
-        
-        for i in range(0, self.colCount+1): # move across the columns
-            combo = self.dataClassTable.cellWidget(0, i)
+        trange = self.dataTable.selectedRanges()[0]
+        if trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow():
+            rowi = range(0, self.maxRow+1)
+            coli = range(0, self.maxCol+1)
+        else:
+
+            rowi = range(trange.topRow(), trange.bottomRow()+1)
+            coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
-            rinsertion += str(self.dataClassTable.item(1, i).text())
-            rinsertion += '=c('
-            print self.rowCount
-            for j in range(0, self.rowCount):
-                print 'j'+str(j)
-                tableItem = self.dataTable.item(j,i)
+        if self.dataTable.item(rowi[0], coli[0]) == None: 
+
+            self.rowHeaders = True
+            self.colHeaders = True
+        rownames = {}  
+        colnames = {}        
+        if self.rowHeaders == True:
+            
+            for i in rowi[1:]:
+
+                rownames[str(i)] = (str(self.dataTable.item(i, coli[0]).text()))
+            coli = coli[1:] #index up the cols
+
+        if self.colHeaders == True:
+            for j in coli:
+
+                colnames[str(j)] = (str(self.dataTable.item(rowi[0], j).text()))
+            rowi = rowi[1:] #index up the row count
+
+        rinsertion = []
+        
+        for j in coli:
+            element = ''
+            if colnames:
+                element += colnames[str(j)]+'='
+            element += 'c('
+            inserts = []
+            for i in rowi:
+
+                tableItem = self.dataTable.item(i,j)
                 if tableItem == None:
-                    text = 'NA'
+                    inserts.append('NA')
                 else:
-                    text = tableItem.text()
-                if combo.currentText() == 'Text':
-                    rinsertion += '"'+str(text)+'"'
-                elif combo.currentText() == 'Numeric':  
-                    rinsertion += str(text)
-                rinsertion += ','
-            rinsertion = rinsertion[:-1]
-            rinsertion += '),'
-        rinsertion = rinsertion[:-1]
-        print rinsertion
-        self.R(self.Rvariables['table']+'<-data.frame('+rinsertion+')')
+                    try: #catch if the element can be coerced to numeric in the table
+                        float(tableItem.text()) #will fail if can't be coerced to int 
+                        inserts.append(str(tableItem.text()))
+                    except:
+                        if tableItem.text() == 'NA': 
+                            inserts.append(str(tableItem.text()))
+                            print 'set NA'
+                        elif tableItem.text() == '1.#QNAN': 
+                            inserts.append('NA') #if we read in some data
+                            print 'set QNAN to NA'
+                        else: 
+                            inserts.append('"'+str(tableItem.text())+'"')
+                            print str(tableItem.text())+' set as text'
+
+            insert = ','.join(inserts)
+            element += insert+')'
+            rinsertion.append(element)
+            
+        rinsert = ','.join(rinsertion)
+
+        if len(rownames) > 0:
+            rname = []
+            for i in rowi:
+                rname.append(rownames[str(i)])
+            rnf = '","'.join(rname)
+            rinsert += ', row.names =c("'+rnf+'")' 
+        self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
+
         self.rSend('Data Table', {'data':self.Rvariables['table']})
         
     def onLoadSavedSession(self):
