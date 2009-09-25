@@ -6,7 +6,7 @@
 from OWRpy import * 
 import OWGUI 
 class Melt_DF(OWRpy): 
-    settingsList = []
+    settingsList = ['RFunctionParam_data']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["melt.data.frame"])
@@ -15,6 +15,7 @@ class Melt_DF(OWRpy):
         self.RFunctionParam_variable_name = "variable"
         self.RFunctionParam_id_var = ""
         self.RFunctionParam_data = ''
+        self.loadSettings()
         self.inputs = [("data", RvarClasses.RDataFrame, self.processdata)]
         self.outputs = [("melt.data.frame Output", RvarClasses.RDataFrame)]
         
@@ -24,6 +25,8 @@ class Melt_DF(OWRpy):
         OWGUI.lineEdit(box, self, "RFunctionParam_variable_name", label = "variable_name:") 
         OWGUI.lineEdit(box, self, "RFunctionParam_id_var", label = "id_var:")
         OWGUI.button(box, self, "Commit", callback = self.commitFunction)
+    def onLoadSavedSession(self):
+        self.commitFunction()
     def processdata(self, data):
         if data:
             self.require_librarys(['reshape'])

@@ -258,7 +258,7 @@ class widgetMaker(OWRpy):
         self.commitFunction = ''
         self.commitFunction += '\tdef commitFunction(self):\n'
         for inputName in self.functionInputs.keys():
-            self.commitFunction += "\t\tif self."+inputName+" == '': return\n"
+            self.commitFunction += "\t\tif self.RFunctionParam_"+inputName+" == '': return\n"
         self.commitFunction += "\t\tself.R("
         if self.captureROutput:
             self.commitFunction += "'txt&lt;-capture.output('+"
