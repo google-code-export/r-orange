@@ -530,7 +530,8 @@ class SchemaDoc(QWidget):
                 tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                 if not tempWidget:
                     #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
-                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr> loading a dummy widget in its place.<br>' %(name)
+                    tempWidget = self.addWidgetByFileName('dummy', int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                     loadedOk = 0
                 qApp.processEvents()
 

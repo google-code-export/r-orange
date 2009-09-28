@@ -10,15 +10,19 @@ from OWRpy import *
 import OWGUI
 
 class rowSelector(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
-    settingsList = ['vs', 'rowcolselect', 'newdata']
+    settingsList = ['rowcolselect', 'newdata', 'rowactiveCriteria', 'rowselectionCriteria', 'cTableTexts', 'olddata', 'ssvdata', 'data', 'test', 'saveData']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
-        self.vs = self.variable_suffix
-        self.setRvariableNames(['data', 'result'])
+
+        
         self.collist = '' # a container for the names of columns that will be picked from the selector.
         self.rowcolselect = 0
+        self.test = ''
+        self.saveData = None
         self.GorL = 0
+        self.data = ''
+        self.ssvdata = {}
         self.rowselectionCriteria = 0 # Counters for the criteria of selecting Rows and Cols
         self.colselectionCriteria = 0 
         self.rowactiveCriteria = [] # lists showing the active critera for subsetting the rows and cols
@@ -26,6 +30,11 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         self.searchLineEdit = ''
         self.newdata = {}
         self.sentalready = 0
+        self.cTableTexts = []
+        self.olddata = {}
+        self.loadSettings()
+        
+        self.setRvariableNames(['data', 'result', 'criteria', 'rows'])
         
         self.inputs = [("R DataFrame", RvarClasses.RDataFrame, self.process), ("Subsetting Vector", RvarClasses.RVector, self.ssvAttached)]
         self.outputs = [("R DataFrame", RvarClasses.RDataFrame), ("Classified Vector Subset", RvarClasses.RVector)]
@@ -122,6 +131,22 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
     def onLoadSavedSession(self):
         if self.Rvariables['result'] in self.R('ls()'):
             self.applySubsetting(reload = True)
+        i = 0
+        self.criteriaTable.setRowCount(len(self.cTableTexts))
+        for text in self.cTableTexts:
+            newitem = QTableWidgetItem(text)
+            self.criteriaTable.setItem(i + self.colselectionCriteria, 1, newitem)
+            cw = QCheckBox()
+            self.criteriaTable.setCellWidget(i + self.colselectionCriteria, 0, cw)
+            self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.colselectionCriteria): self.rowcriteriaActiveChange(val, selCri))
+            cw.setChecked(self.rowactiveCriteria[i])
+            i += 1
+        self.criteriaTable.resizeColumnsToContents()
+        self.criteriaTable.resizeRowsToContents()
+        
+        self.process(data = self.saveData)
+        self.ssvAttached(data = self.ssvdata)
+            
     def subOnAttached(self):
         tmpitem = self.rsession(self.ssv) #get the items to subset with
         if type(tmpitem) is str: #it's a string!!!!!!!
@@ -140,9 +165,9 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
             for k in self.factorOutput.keys():
                 choices.append(k)
         elif self.type == 'Col Names':
-            choices = self.rsession('colnames('+self.Rvariables['data']+')')
+            choices = self.rsession('colnames('+self.data+')')
         elif self.type == 'Row Names':# row or col name selected
-            choices = self.rsession('rownames('+self.Rvariables['data']+')')
+            choices = self.rsession('rownames('+self.data+')')
                 
         #self.infob.setText(str(choices))
         trues = []
@@ -173,25 +198,35 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         
     def process(self, data):
         self.require_librarys(['fields'])
-        
+        print str(data)
+        print 'test is ' + self.test
         if data == None:
             self.columnsorrows.clear() #clear the window for the new data
-            self.selectCriteria.clear()
-            self.olddata = ''
+            #self.selectCriteria.clear()
+            self.olddata = {}
+            print 'None data recieved'
+            print 'test is '+self.test
         try:
             #self.columnsorrows.clear()
-            self.Rvariables['data'] = data['data']
+            self.data = data['data']
             self.olddata = data
+            self.saveData = data
+            self.test = 'test OK'
+            
+            print 'old data ok'
             #self.changeRowCol()
-            # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
+            # for v in self.rsession('colnames('+self.data+')'):
                 # self.columnsorrows.addItem(v)
-            #(rows,cols) = self.R('dim('+self.Rvariables['data']+')')
-            rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
-            cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
+            #(rows,cols) = self.R('dim('+self.data+')')
+            rows = self.rsession('length('+self.data+'[,1])') #one day replace with a more susinct data query
+            print 'rows ok'
+            cols = self.rsession('length('+self.data+'[1,])')
+            print 'cols ok'
             self.infoa.setText("Data Connected")
             self.tableinfoa.setText("Data Connected with:")
             self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
         except:
+            print 'exception occured'
             self.infoa.setText("Signal not of appropriate type.")
             self.tableinfoa.setText("No Data Connected")
             self.tableinfob.setText("")
@@ -202,10 +237,10 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
     
         # section for loading the data to be subset
         self.columnsorrows.clear() #clear the window for the new data
-        if self.Rvariables['data'] != '': # this checks if data is still the default
+        if self.data != '': # this checks if data is still the default
             try: # want to see if there are colnames for selection 
                 self.columnsorrows.addItem("Row Names")
-                colnames = self.rsession('colnames('+self.Rvariables['data']+')')
+                colnames = self.rsession('colnames('+self.data+')')
                 if type(colnames) is str:
                     self.columnsorrows.addItem(colnames)
                 else:
@@ -214,7 +249,7 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
             except:
                 self.infoa.setText("Column names do not exist, showing the row numbers")
                 self.RowColNamesExist = 0
-                for l in xrange(int(self.rsession('length('+self.Rvariables['data']+'[1,])'))):
+                for l in xrange(int(self.rsession('length('+self.data+'[1,])'))):
                     self.columnsorrows.addItem(str(l+1))
         else:
             self.infoa.setText("Data not connected.")
@@ -223,6 +258,7 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         if 'data' in data:
             self.subOnAttachedButton.setEnabled(True)
             self.ssv = data['data']
+            self.ssvdata = data
         else:
             return
 
@@ -241,7 +277,7 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
             rowcolHolder += str(item.text())+'","'
         rowcolHolderP = rowcolHolder[:len(rowcolHolder)-3]
 
-        self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-rownames('+self.Rvariables['data']+') %in% c("'+rowcolHolderP+'")')
+        self.rsession(self.Rvariables['criteria']+'colCri'+str(self.colselectionCriteria)+'<-rownames('+self.data+') %in% c("'+rowcolHolderP+'")')
         
         self.updaterowCriteriaList(str('Row Names equal to "'+rowcolHolderP+'"')+'. Column Criteria '+str(self.colselectionCriteria))
         self.colselectionCriteria += 1
@@ -257,6 +293,7 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         self.rowcriteriaActiveChange(True, selCri)
         self.criteriaTable.resizeColumnsToContents()
         self.criteriaTable.resizeRowsToContents()
+        self.cTableTexts.append(text)
         self.sentalready = 0
     def subListAdd(self): #want to show the summary of the factor that was selected, should account for the type of data that we are seeing
         # first get a tmp variable for the data that we are subsetting 
@@ -272,10 +309,10 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
             self.valuesStack.setCurrentWidget(self.boxIndices[3]) 
             self.namesList.clear()
             try:
-                for names in self.rsession('rownames('+self.Rvariables['data']+')'):
+                for names in self.rsession('rownames('+self.data+')'):
                     self.namesList.addItem(names)
             except:
-                for i in xrange(self.rsession('length('+self.Rvariables['data']+'[,1])')):
+                for i in xrange(self.rsession('length('+self.data+'[,1])')):
                     self.namesList.addItem(str(i))
             self.type = 'Row Names'
             return
@@ -286,9 +323,9 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         
         self.colnames = str(querytext)
         if self.RowColNamesExist:
-            self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'[,"'+self.colnames+'"]')
+            self.rsession(self.Rvariables['tmp']+'<-'+self.data+'[,"'+self.colnames+'"]')
         else:
-            self.rsession(self.Rvariables['tmp']+'<-'+self.Rvariables['data']+'[,'+self.colnames+']')
+            self.rsession(self.Rvariables['tmp']+'<-'+self.data+'[,'+self.colnames+']')
         self.type = self.rsession('class('+self.Rvariables['tmp']+')')
         # start logic for what type of vector tmp is
         if self.type == 'numeric':
@@ -351,21 +388,21 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
 
         if self.type == 'numeric':
             if self.GorL == 0:
-                self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' > '+self.currentNum)
+                self.rsession(self.Rvariables['criteria']+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' > '+self.currentNum)
                 self.updaterowCriteriaList(str(self.colnames+' > '+self.currentNum)+'. Column Criteria '+str(self.colselectionCriteria))
             if self.GorL == 1:
-                self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' < '+self.currentNum)
+                self.rsession(self.Rvariables['criteria']+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' < '+self.currentNum)
                 self.updaterowCriteriaList(str(self.colnames+' < '+self.currentNum)+'. Column Criteria '+str(self.colselectionCriteria))
         if self.type == 'factor':
             if item != None:
-                self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' == "'+str(item.text())+'"')
+                self.rsession(self.Rvariables['criteria']+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' == "'+str(item.text())+'"')
                 self.updaterowCriteriaList(str(self.colnames+' Equal To '+item.text())+'. Column Criteria '+str(self.colselectionCriteria))
             elif item == None and len(self.FactorList.selectedItems()) != 0:
                 tmpitems = ''
                 for item in self.FactorList.selectedItems():
                     tmpitems += str(item.text())+'","'
                 tmpitems2 = tmpitems[:len(tmpitems)-3]
-                self.rsession('criteria'+self.vs+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' %in% c("'+tmpitems2+'")')
+                self.rsession(self.Rvariables['criteria']+'colCri'+str(self.colselectionCriteria)+'<-'+self.Rvariables['tmp']+' %in% c("'+tmpitems2+'")')
                 self.updaterowCriteriaList(str(self.colnames+' Equal To "'+tmpitems2+'". Column Criteria '+str(self.colselectionCriteria)))
         self.colselectionCriteria += 1
         #self.applySubsetting()
@@ -374,21 +411,21 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         if not reload and not self.sentalready: # make the row subsetting criteria
             rcr = ''
             ccr = ''
-            self.rsession('rows'+self.vs+'<-TRUE')
+            self.rsession(self.Rvariables['rows']+'<-TRUE')
             if sum(self.rowactiveCriteria) == 0: #there aren't any active criteria  
                 pass
             else:
                 rci = 0
                 for rc in self.rowactiveCriteria:
                     if rc: #check to see if active
-                        self.Rvariables['criteria'+self.vs+'colCri'+str(rci)] = 'criteria'+self.vs+'colCri'+str(rci)
-                        rcr += 'criteria'+self.vs+'colCri'+str(rci)+'&'
+                        self.Rvariables[self.Rvariables['criteria']+'colCri'+str(rci)] = self.Rvariables['criteria']+'colCri'+str(rci)
+                        rcr += self.Rvariables['criteria']+'colCri'+str(rci)+'&'
                     rci += 1
                 rcrr = rcr[:len(rcr)-1]
-                self.rsession('rows'+self.vs+'<-'+rcrr)
+                self.rsession(self.Rvariables['rows']+'<-'+rcrr)
                 #self.numericInfo.setText(str(self.rowactiveCriteria))
             
-            self.rsession(self.Rvariables['result']+'<-'+self.Rvariables['data']+'[rows'+self.vs+',]')
+            self.rsession(self.Rvariables['result']+'<-'+self.data+'['+self.Rvariables['rows']+',]')
             self.newdata = self.olddata.copy()
         if self.R('rownames('+self.Rvariables['result']+')') == 'character(0)':
             self.infoa.setText('All items excluded, sending None')

@@ -10,7 +10,7 @@ from OWRpy import *
 
 
 class dataEntry(OWRpy):
-    settingsList = ['modelProcessed', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
+    settingsList = ['modelProcessed', 'savedData', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 1, resizingEnabled = 1)
 
@@ -18,9 +18,11 @@ class dataEntry(OWRpy):
         self.colCount = 10
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
-        self.rowHeaders = False
-        self.colHeaders = False
+        self.rowHeaders = True
+        self.colHeaders = True
         self.setRvariableNames(['table'])
+        self.savedData = None
+        self.loadSettings()
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
         self.outputs = [('Data Table', RvarClasses.RDataFrame)]
@@ -63,10 +65,10 @@ class dataEntry(OWRpy):
     # def setColnamesColor(self):
         # for j in range(1, self.dataTable.rowCount()):
             # self.dataTable.item(0,j).setBackgroundColor(Qt.blue)
-            
     def processDF(self, data):
         if data:
             self.data = data['data']
+            self.savedData = data
             self.populateTable()
         else:
             return
@@ -84,6 +86,7 @@ class dataEntry(OWRpy):
                 newitem = QTableWidgetItem(str(name))
                 self.dataTable.setItem(row,0,newitem)
                 row += 1
+            self.rowHeaders = True
         clen = self.R('length('+self.data+'[1,])')
         self.colCount = clen+1
         self.dataTable.setColumnCount(clen+1)
@@ -96,6 +99,7 @@ class dataEntry(OWRpy):
                 newitem = QTableWidgetItem(str(name))
                 self.dataTable.setItem(0, col, newitem)
                 col += 1
+            self.colHeaders = True
         data = self.R(self.data)
         col = 1
         for name in colnames:
@@ -104,6 +108,13 @@ class dataEntry(OWRpy):
                 newitem = QTableWidgetItem(str(data[name][i-1]))
                 self.dataTable.setItem(i, col, newitem)
             col += 1
+        upcell = QTableWidgetItem()
+        upcell.setBackgroundColor(Qt.gray)
+        upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
+        self.dataTable.setItem(0,0,upcell)
+        # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
+        self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
+        self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
     def cellClicked(self, row, col):
         pass
 
@@ -146,14 +157,25 @@ class dataEntry(OWRpy):
         if self.rowHeaders == True:
             
             for i in rowi[1:]:
-
-                rownames[str(i)] = (str(self.dataTable.item(i, coli[0]).text()))
+                item = self.dataTable.item(i, coli[0])
+                if item != None:
+                    thisText = item.text()
+                else: thisText = str(i)
+                if thisText == None or thisText == '':
+                    thisText = str(i)
+                    
+                rownames[str(i)] = (str(thisText))
             coli = coli[1:] #index up the cols
 
         if self.colHeaders == True:
             for j in coli:
-
-                colnames[str(j)] = (str(self.dataTable.item(rowi[0], j).text()))
+                item = self.dataTable.item(rowi[0], j)
+                if item != None:
+                    thisText = item.text()
+                else: thisText = '"'+str(j)+'"'
+                if thisText == None or thisText == '':
+                    thisText = '"'+str(j)+'"'
+                colnames[str(j)] = (str(thisText))
             rowi = rowi[1:] #index up the row count
 
         rinsertion = []
@@ -199,8 +221,9 @@ class dataEntry(OWRpy):
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
 
         self.rSend('Data Table', {'data':self.Rvariables['table']})
-        
+        self.savedData = {'data':self.Rvariables['table']}
     def onLoadSavedSession(self):
         if self.R('exists("'+self.Rvariables['table']+'")'):
             self.rSend('Data Table', {'data':self.Rvariables['table']})
+        self.processDF(self.savedData)
             

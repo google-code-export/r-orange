@@ -9,11 +9,12 @@ from OWRpy import *
 import OWGUI
 
 class colSelector(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
-    settingsList = ['vs', 'rowcolselect', 'newdata', 'olddata', 'rowselectionCriteria', 'colselectionCriteria', 'rowactiveCriteria', 'colactiveCriteria']
+    settingsList = ['vs', 'saveData', 'rowcolselect', 'newdata', 'olddata', 'rowselectionCriteria', 'colselectionCriteria', 'cTableTexts', 'rowactiveCriteria', 'colactiveCriteria']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
         self.vs = self.variable_suffix
+        self.saveData = None
         self.setRvariableNames(['data', 'result'])
         self.collist = '' # a container for the names of columns that will be picked from the selector.
         self.rowcolselect = 1
@@ -27,6 +28,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.newdata = {}
         self.olddata = {}
         self.sentalready = 0
+        self.cTableTexts = []
         self.loadSettings()
         
 
@@ -133,19 +135,33 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         # functionBox = OWGUI.widgetBox(self.controlArea, "Functions")
         # grid.addWidget(functionBox, 2, 0)
         
-        try:
-            varexists1 = self.R('exists("'+self.Rvariables['result']+'")') #should trigger an exception if it doesn't exist
+        # try:
+            # varexists1 = self.R('exists("'+self.Rvariables['result']+'")') #should trigger an exception if it doesn't exist
            
-            if varexists1:
-                self.normalize(reload = True)
-            else:
-                return
-        except:
-            pass
+            # if varexists1:
+                # self.normalize(reload = True)
+            # else:
+                # return
+        # except:
+            # pass
 
     def onLoadSavedSession(self):
-        print 'load colselector'
-        #self.processSignals()
+        if self.Rvariables['result'] in self.R('ls()'):
+            self.applySubsetting(reload = True)
+        i = 0
+        for text in self.cTableTexts:
+            newitem = QTableWidgetItem(text)
+            self.criteriaTable
+            cw = QCheckBox()
+            self.criteriaTable.setCellWidget(i, 0, cw)
+            self.connect(cw, SIGNAL("toggled(bool)"), lambda val, selCri=int(self.rowselectionCriteria): self.colcriteriaActiveChange(val, selCri))
+            cw.setChecked(self.rowactiveCriteria[i])
+            i += 1
+        self.criteriaTable.resizeColumnsToContents()
+        self.criteriaTable.resizeRowsToContents()
+        
+        self.process(data = self.saveData)
+        self.ssvAttached(data = self.ssvdata)
         
     def process(self, data):
         self.require_librarys(['fields'])
@@ -160,6 +176,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             #self.columnsorrows.clear()
             self.Rvariables['data'] = data['data']
             self.olddata = data
+            self.saveData = data
             #self.changeRowCol()
             # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
                 # self.columnsorrows.addItem(v)
@@ -454,6 +471,7 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.criteriaTable.resizeColumnsToContents()
         self.criteriaTable.resizeRowsToContents()
         self.sentalready = 0
+        self.cTableTexts.append(text)
         
 
     

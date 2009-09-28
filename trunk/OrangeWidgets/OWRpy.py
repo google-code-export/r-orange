@@ -28,6 +28,7 @@ class OWRpy(OWWidget):
     Rhistory = '<code>'
     
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
+        
         OWWidget.__init__(self, parent, signalManager, title, **args)
         
         print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
@@ -38,6 +39,7 @@ class OWRpy(OWWidget):
         
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
+        
         #this should be appended to every R variable
         self.variable_suffix = '_' + str(OWRpy.num_widgets)
         #keep all R variable name in this dict
@@ -48,6 +50,10 @@ class OWRpy(OWWidget):
         #print 'set load ssaved '
         #self.settingsList = ['variable_suffix','loadingSavedSession']
         self.packagesLoaded = 0
+        
+        #collect the sent items
+        self.sentItems = []
+        
         
     # def setOutputs (self,outputs):
         # self.outputs.extend(outputs)
@@ -82,6 +88,7 @@ class OWRpy(OWWidget):
                 self.needsProcessingHandler(self, 0)
         except:
             self.needsProcessingHandler(self, 1)
+        self.sentItems.append((name, variable))
 
         
     #depreciated
@@ -279,6 +286,8 @@ class OWRpy(OWWidget):
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
         print 'calling load saved session in OWRpy... should have been overwritten in the widget'
+        for (name, data) in self.sentItems:
+            self.send(name, data)
     
     def onSaveSession(self):
         print 'save session'

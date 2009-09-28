@@ -22,7 +22,7 @@ from orngDataCaching import *
 OrangeValueRole = Qt.UserRole + 1
 
 class RDataTable(OWRpy):
-    settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels"]
+    settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
 
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, parent, signalManager, "Data Table")
@@ -39,7 +39,13 @@ class RDataTable(OWRpy):
         self.distColorRgb = (220,220,220, 255)
         self.distColor = QColor(*self.distColorRgb)
         self.locale = QLocale()
-
+        
+        #R modifications
+        
+        self.fileName = ''
+        self.delim = 0
+        self.currentData = ''
+        self.dataTableIndex = {}
         self.loadSettings()
 
         # info box
@@ -51,6 +57,14 @@ class RDataTable(OWRpy):
         self.infoMeta = OWGUI.widgetLabel(infoBox, ' ')
         OWGUI.widgetLabel(infoBox, ' ')
         self.infoClass = OWGUI.widgetLabel(infoBox, ' ')
+        
+        #save box
+        infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        OWGUI.widgetLabel(infoBox, "Saves the current table to a file.")
+        OWGUI.button(infoBox, self, "Choose Directory", callback = self.chooseDirectory)
+        OWGUI.lineEdit(infoBox, self, 'fileName', label = "File:", width = 50)
+        OWGUI.comboBox(infoBox, self, 'delim', label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
+        OWGUI.button(infoBox, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         infoBox.setMinimumWidth(200)
         OWGUI.separator(self.controlArea)
 
@@ -83,7 +97,17 @@ class RDataTable(OWRpy):
         self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
 
         self.updateColor()
-
+        
+    def chooseDirectory(self):
+        self.R('setwd(choose.dir())')
+    def writeFile(self):
+        if self.delim == 0: #'tab'
+            sep = '\t'
+        elif self.delim == 1:
+            sep = ' '
+        elif self.delim == 2:
+            sep = ','
+        self.R('write.table('+self.currentData+',file="'+self.fileName+'", quote = FALSE, sep="'+sep+'")')
     def changeColor(self):
         color = QColorDialog.getColor(self.distColor, self)
         if color.isValid():
@@ -117,15 +141,22 @@ class RDataTable(OWRpy):
     def onLoadSavedSession(self):
         print 'on load data table'
         self.processSignals()
-    def dataset(self, data, id=None):
+    def dataset(self, dataset, id=None):
         """Generates a new table and adds it to a new tab when new data arrives;
         or hides the table and removes a tab when data==None;
         or replaces the table when new data arrives together with already existing id."""
         #print 'got data'
         #print data
-        if data != None:  # can be an empty table!
-            data = self.convertDataframeToExampleTable(data['data'])
-            
+        if dataset != None:  # can be an empty table!
+            if 'link' in dataset:
+                linkData = dataset['link']
+                print 'setting link as '+str(linkData)
+                tableData = dataset['data']
+            else: 
+                linkData = None
+                print 'no link data detected'
+            data = self.convertDataframeToExampleTable(dataset['data'])
+
             if self.data.has_key(id):
                 # remove existing table
                 self.data.pop(id)
@@ -135,8 +166,11 @@ class RDataTable(OWRpy):
                 self.table2id.pop(self.id2table.pop(id))
             self.data[id] = data
             self.showMetas[id] = (True, [])
-
+            self.dataTableIndex[id] = dataset
+            self.currentData = dataset['data']
             table = OWGUI.table(None, 0,0)
+            if linkData != None: #start the block for assignment of link data attributes
+                self.connect(table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, info=linkData, tableData = tableData: self.itemClicked(val, info, tableData))
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
             self.id2table[id] = table
@@ -171,7 +205,17 @@ class RDataTable(OWRpy):
         if len(self.data) == 0:
             self.cbShowMeta.setEnabled(False)
 
+            
+    def itemClicked(self, val, info, table):
+        print 'item clicked'
+        
+        RclickedRow = int(val.row())+1
+        
+        cellVal = self.R(table+'['+str(RclickedRow)+','+str(info[2])+']')
+        
+        self.rsession('shell.exec("'+info[0]+str(cellVal)+info[1]+'")')
     # Writes data into table, adjusts the column width.
+    
     def setTable(self, table, data):
         if data==None:
             return
@@ -274,6 +318,9 @@ class RDataTable(OWRpy):
         """Updates the info box and showMetas checkbox when a tab is clicked.
         """
         id = self.table2id.get(qTableInstance,None)
+        dataset = self.dataTableIndex[id]
+        self.currentData = dataset['data']
+        print str(id)
         self.setInfo(self.data.get(id,None))
         show_col = self.showMetas.get(id,None)
         if show_col:
