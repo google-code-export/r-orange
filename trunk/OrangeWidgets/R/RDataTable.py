@@ -46,6 +46,7 @@ class RDataTable(OWRpy):
         self.delim = 0
         self.currentData = ''
         self.dataTableIndex = {}
+        self.supressTabClick = False
         self.loadSettings()
 
         # info box
@@ -147,6 +148,7 @@ class RDataTable(OWRpy):
         or replaces the table when new data arrives together with already existing id."""
         #print 'got data'
         #print data
+        self.supressTabClick = True
         if dataset != None:  # can be an empty table!
             if 'link' in dataset:
                 linkData = dataset['link']
@@ -159,11 +161,13 @@ class RDataTable(OWRpy):
 
             if self.data.has_key(id):
                 # remove existing table
+                table = self.id2table[id]
                 self.data.pop(id)
                 self.showMetas.pop(id)
-                self.id2table[id].hide()
-                self.tabs.removeTab(self.tabs.indexOf(self.id2table[id]))
+                table.hide()
+                self.tabs.removeTab(self.tabs.indexOf(table))
                 self.table2id.pop(self.id2table.pop(id))
+                self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
             self.data[id] = data
             self.showMetas[id] = (True, [])
             self.dataTableIndex[id] = dataset
@@ -204,7 +208,8 @@ class RDataTable(OWRpy):
         # disable showMetas checkbox if there is no data on input
         if len(self.data) == 0:
             self.cbShowMeta.setEnabled(False)
-
+        
+        self.supressTabClick = False
             
     def itemClicked(self, val, info, table):
         print 'item clicked'
@@ -317,15 +322,16 @@ class RDataTable(OWRpy):
     def tabClicked(self, qTableInstance):
         """Updates the info box and showMetas checkbox when a tab is clicked.
         """
-        id = self.table2id.get(qTableInstance,None)
-        dataset = self.dataTableIndex[id]
-        self.currentData = dataset['data']
-        print str(id)
-        self.setInfo(self.data.get(id,None))
-        show_col = self.showMetas.get(id,None)
-        if show_col:
-            self.cbShowMeta.setChecked(show_col[0])
-            self.cbShowMeta.setEnabled(len(show_col[1])>0)
+        if not self.supressTabClick:
+            id = self.table2id.get(qTableInstance,None)
+            dataset = self.dataTableIndex[id]
+            self.currentData = dataset['data']
+            print str(id)
+            self.setInfo(self.data.get(id,None))
+            show_col = self.showMetas.get(id,None)
+            if show_col:
+                self.cbShowMeta.setChecked(show_col[0])
+                self.cbShowMeta.setEnabled(len(show_col[1])>0)
 
     def cbShowMetaClicked(self):
         table = self.tabs.currentWidget()
