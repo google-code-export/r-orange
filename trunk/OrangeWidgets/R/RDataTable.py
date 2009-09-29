@@ -22,7 +22,7 @@ from orngDataCaching import *
 OrangeValueRole = Qt.UserRole + 1
 
 class RDataTable(OWRpy):
-    settingsList = ["showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
+    settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
 
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, parent, signalManager, "Data Table")
@@ -47,6 +47,8 @@ class RDataTable(OWRpy):
         self.currentData = ''
         self.dataTableIndex = {}
         self.supressTabClick = False
+        self.mylink = ''
+        self.link = {}
         self.loadSettings()
 
         # info box
@@ -58,6 +60,9 @@ class RDataTable(OWRpy):
         self.infoMeta = OWGUI.widgetLabel(infoBox, ' ')
         OWGUI.widgetLabel(infoBox, ' ')
         self.infoClass = OWGUI.widgetLabel(infoBox, ' ')
+        OWGUI.widgetLabel(infoBox, "Links:")
+        self.linkListBox = OWGUI.listBox(infoBox, self)
+        OWGUI.lineEdit(infoBox, self, 'mylink', label = 'Custom Link:')
         
         #save box
         infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
@@ -150,13 +155,7 @@ class RDataTable(OWRpy):
         #print data
         self.supressTabClick = True
         if dataset != None:  # can be an empty table!
-            if 'link' in dataset:
-                linkData = dataset['link']
-                print 'setting link as '+str(linkData)
-                tableData = dataset['data']
-            else: 
-                linkData = None
-                print 'no link data detected'
+            
             data = self.convertDataframeToExampleTable(dataset['data'])
 
             if self.data.has_key(id):
@@ -169,12 +168,20 @@ class RDataTable(OWRpy):
                 self.table2id.pop(self.id2table.pop(id))
                 self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
             self.data[id] = data
+            tableData = dataset['data']
+            if 'link' in dataset:
+                self.link[id] = dataset['link']
+                print 'setting link as '+str(self.link[id])
+            
+            else: 
+                linkData = None
+                print 'no link data detected'
             self.showMetas[id] = (True, [])
             self.dataTableIndex[id] = dataset
             self.currentData = dataset['data']
             table = OWGUI.table(None, 0,0)
-            if linkData != None: #start the block for assignment of link data attributes
-                self.connect(table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, info=linkData, tableData = tableData: self.itemClicked(val, info, tableData))
+            #if id in self.link: #start the block for assignment of link data attributes
+            self.connect(table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
             self.id2table[id] = table
@@ -211,14 +218,23 @@ class RDataTable(OWRpy):
         
         self.supressTabClick = False
             
-    def itemClicked(self, val, info, table):
+    def itemClicked(self, val, table):
         print 'item clicked'
         
         RclickedRow = int(val.row())+1
         
-        cellVal = self.R(table+'['+str(RclickedRow)+','+str(info[2])+']')
+        for item in self.linkListBox.selectedItems():
+            text = self.currentLinks[item.text()]
+            col = text[text.find('{')+1:text.find('}')]
+            cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
+            self.rsession('shell.exec("'+text.replace('{'+col+'}', str(cellVal))+'")')
         
-        self.rsession('shell.exec("'+info[0]+str(cellVal)+info[1]+'")')
+        
+        if self.mylink != '': #the user put in a link
+            col = self.mylink[self.mylink.find('{')+1:self.mylink.find('}')]
+            cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
+            self.rsession('shell.exec("'+self.mylink.replace('{'+col+'}', str(cellVal))+'")')
+            pass
     # Writes data into table, adjusts the column width.
     
     def setTable(self, table, data):
@@ -332,7 +348,10 @@ class RDataTable(OWRpy):
             if show_col:
                 self.cbShowMeta.setChecked(show_col[0])
                 self.cbShowMeta.setEnabled(len(show_col[1])>0)
-
+            self.linkListBox.clear()
+            for key in self.link[id].keys():
+                self.linkListBox.addItem(key)
+            self.currentLinks = self.link[id]
     def cbShowMetaClicked(self):
         table = self.tabs.currentWidget()
         id = self.table2id.get(table, None)

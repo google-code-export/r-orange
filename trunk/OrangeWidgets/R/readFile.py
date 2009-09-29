@@ -110,6 +110,8 @@ class readFile(OWRpy):
 
     def scanfile(self):
         self.scanarea.clear()
+        if self.R('length(' + self.Rvariables['filename'] +')') == 0: self.browseFile
+        if self.R('length(' + self.Rvariables['filename'] +')') == 0: return
         if self.delim == 0: #'tab'
             sep = '\t'
         elif self.delim == 1:
