@@ -41,7 +41,7 @@ class OWRpy(OWWidget):
         OWRpy.num_widgets += 1
         
         #this should be appended to every R variable
-        self.variable_suffix = '_' + str(OWRpy.num_widgets)
+        self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + str(time.time())
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.device = {}
