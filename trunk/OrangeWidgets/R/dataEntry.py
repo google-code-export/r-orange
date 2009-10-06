@@ -226,4 +226,5 @@ class dataEntry(OWRpy):
         if self.R('exists("'+self.Rvariables['table']+'")'):
             self.rSend('Data Table', {'data':self.Rvariables['table']})
         self.processDF(self.savedData)
+       
             
