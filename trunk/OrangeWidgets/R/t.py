@@ -17,7 +17,7 @@ class t(OWRpy):
         self.inputs = [("x", RvarClasses.RDataFrame, self.processx)]
         self.outputs = [("t Output", RvarClasses.RDataFrame)]
         
-        box = RRGUI.widgetBox(self.controlArea, None, "Widget Box")
+        box = RRGUI.widgetBox(self.controlArea, None, None, "Widget Box")
         RRGUI.button(box, None, self, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
