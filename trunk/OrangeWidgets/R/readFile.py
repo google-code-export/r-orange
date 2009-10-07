@@ -74,6 +74,7 @@ class readFile(OWRpy):
             
     def onLoadSavedSession(self):
         if self.R('exists("'+self.Rvariables['dataframe']+'")'):
+            print 'Old data found.'
             self.updateGUI()
             self.sendMe()
         

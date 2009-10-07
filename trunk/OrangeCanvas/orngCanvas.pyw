@@ -282,7 +282,7 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
         if name.isEmpty():
             return
-        self.schema.clear()
+        #self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 0)
         self.addToRecentMenu(str(name))
 

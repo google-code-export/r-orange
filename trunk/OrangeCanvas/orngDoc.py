@@ -334,6 +334,7 @@ class SchemaDoc(QWidget):
         orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
 
     def clear(self, close = False):
+        print 'clear called'
         self.canvasDlg.setCaption()
         for widget in self.widgets[::-1]:   
             self.removeWidget(widget, saveTempDoc = False, close = close)   # remove widgets from last to first
@@ -449,7 +450,7 @@ class SchemaDoc(QWidget):
         settings.setAttribute("settingsDictionary", str(settingsDict))      
 
         xmlText = doc.toprettyxml()
-		
+
         if not tmp:
             tempschema = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
             tempR = os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/')
@@ -483,7 +484,8 @@ class SchemaDoc(QWidget):
 
     # load a scheme with name "filename"
     def loadDocument(self, filename, caption = None, freeze = 0):
-        self.clear()
+        print 'document load called'
+        #self.clear()
         
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
@@ -514,7 +516,10 @@ class SchemaDoc(QWidget):
                     print 'loading R session ...'
                     rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
 
-                    
+            for widget in self.widgets:
+                widget.caption += 'A'
+            
+            
             schema = doc.firstChild
             widgets = schema.getElementsByTagName("widgets")[0]
             lines = schema.getElementsByTagName("channels")[0]
@@ -530,8 +535,7 @@ class SchemaDoc(QWidget):
                 tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                 if not tempWidget:
                     #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
-                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr> loading a dummy widget in its place.<br>' %(name)
-                    tempWidget = self.addWidgetByFileName('dummy', int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                     loadedOk = 0
                 qApp.processEvents()
 

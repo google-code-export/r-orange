@@ -170,8 +170,8 @@ class RDataTable(OWRpy):
             self.data[id] = data
             tableData = dataset['data']
             if 'link' in dataset:
-                self.link[id] = dataset['link']
-                print 'setting link as '+str(self.link[id])
+                self.link[str(id)] = dataset['link']
+                print 'setting link as '+str(self.link[str(id)])
             
             else: 
                 linkData = None
@@ -349,9 +349,10 @@ class RDataTable(OWRpy):
                 self.cbShowMeta.setChecked(show_col[0])
                 self.cbShowMeta.setEnabled(len(show_col[1])>0)
             self.linkListBox.clear()
-            for key in self.link[id].keys():
-                self.linkListBox.addItem(key)
-            self.currentLinks = self.link[id]
+            if str(id) in self.link:
+                for key in self.link[str(id)].keys():
+                    self.linkListBox.addItem(key)
+                self.currentLinks = self.link[str(id)]
     def cbShowMetaClicked(self):
         table = self.tabs.currentWidget()
         id = self.table2id.get(table, None)

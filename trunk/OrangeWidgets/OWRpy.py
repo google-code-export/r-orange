@@ -45,7 +45,10 @@ class OWRpy(OWWidget):
         self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + ctime
         #keep all R variable name in this dict
         self.Rvariables = {}
+        
         self.device = {}
+        
+        self.RGUIelements = [] #make a blank one to start with which will be filled as the widget is created.
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
         #print 'set load ssaved '

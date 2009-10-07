@@ -20,9 +20,10 @@ class dataEntry(OWRpy):
         self.maxCol = 0
         self.rowHeaders = True
         self.colHeaders = True
-        self.setRvariableNames(['table'])
+
         self.savedData = None
         self.loadSettings()
+        self.setRvariableNames(['table'])
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
         self.outputs = [('Data Table', RvarClasses.RDataFrame)]

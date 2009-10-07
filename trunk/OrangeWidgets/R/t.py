@@ -6,6 +6,7 @@
 """
 from OWRpy import * 
 import OWGUI 
+import RRGUI
 class t(OWRpy): 
     settingsList = ['sentItems']
     def __init__(self, parent=None, signalManager=None):
@@ -16,8 +17,8 @@ class t(OWRpy):
         self.inputs = [("x", RvarClasses.RDataFrame, self.processx)]
         self.outputs = [("t Output", RvarClasses.RDataFrame)]
         
-        box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        OWGUI.button(box, self, "Commit", callback = self.commitFunction)
+        box = RRGUI.widgetBox(self.controlArea, None, "Widget Box")
+        RRGUI.button(box, None, self, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
