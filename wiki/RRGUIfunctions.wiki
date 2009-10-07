@@ -1,0 +1,30 @@
+#summary Introduction to the RRGUI functions
+#labels Phase-Design,Phase-Implementation
+
+= Introduction =
+
+QT widget classes can not be saved as they are instances of an object, however, their attributes may be saved and reloaded using QT functionality.  This document discribes the basic classes of objects that can be 'naturally' saved in RedR.  All QT objects are 'legal' for the widget maker however methods for loading and saving of these classes will have to be writen manually and is not recomended.
+
+= Details =
+
+GUI elements should be called through the RRGUI classes of functions so that RedR saving and loading funcitonality will apply to those GUI elements.  Behind the scenes, these functions instantiate either QT or OWGUI (children of QT) widgets with the addition of a widgetattr.  The widget call should be of the form:
+
+self.myWidget = RRGUI.widget(widget, 'myWidget', master, ...)
+
+This will add 'myWidget' to a list of deep attributes for the loading and saving funcitonality of RedR to handle.
+
+Supplying a None in plase of 'myWidget' will exempt this widget from the saving and loading functionality.  This is desirable if the widget should be called but not assigned to a variable for manipulation.  Ideally these widgets will not be modified during the session (for example, buttons and widget boxes). 
+
+Currently, the following widgets are available for inclusion in the RRGUI class:
+* widget Boxes
+* widget Labels
+* check Boxes
+* line Edits
+* buttons
+* list boxes
+* radio buttons in box
+* comboBoxes
+* combo box with caption
+* tab widgets
+* tab widget pages
+* tables
