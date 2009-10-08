@@ -48,7 +48,8 @@ class OWRpy(OWWidget):
         
         self.device = {}
         
-        self.RGUIelements = [] #make a blank one to start with which will be filled as the widget is created.
+        self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
+        self.RGUIElementsSettings = {}
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
         #print 'set load ssaved '
@@ -66,14 +67,104 @@ class OWRpy(OWWidget):
     def getSettings(self, alsoContexts = True):
         settings = {}
         if hasattr(self, "settingsList"):
-            self.settingsList.extend(['variable_suffix'])
+            self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings'])
             for name in self.settingsList:
                 try:
                     settings[name] =  self.getdeepattr(name)
                 except:
                     #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
                     pass
-        
+        for element in self.RGUIElements:
+            print element
+            GUIsetting = {}
+            elementClass = element[1]
+            elementName = element[0]
+            if elementClass == 'widgetBox':
+                GUIsetting['class'] = 'widgetBox'
+            elif elementClass == 'widgetLabel':
+                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['class'] = 'widgetLabel'
+            elif elementClass == 'checkBox':
+                GUIsetting['checked'] = getattr(self, elementName).isChecked()
+                GUIsetting['class'] = 'checkBox'
+            elif elementClass == 'lineEdit':
+                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['class'] = 'lineEdit'
+            elif elementClass == 'button':
+                GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
+                GUIsetting['class'] = 'button'
+            elif elementClass == 'listBox':
+                GUIsetting['items'] = getattr(self, elementName).items()
+                GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
+                GUIsetting['class'] = 'listBox'
+            elif elementClass == 'radioButtonsInBox':
+                GUIsetting['class'] = 'radioButtonsInBox'
+            elif elementClass == 'comboBox':
+                text = []
+                cb = getattr(self, elementName)
+                for i in range(cb.count()):
+                    text.append(cb.itemText(i))
+                GUIsetting['itemText'] = text
+                GUIsetting['class'] = 'comboBox'
+            elif elementClass == 'comboBoxWithCaption':
+                text = []
+                cb = getattr(self, elementName)
+                for i in range(cb.count()):
+                    text.append(cb.itemText(i))
+                GUIsetting['itemText'] = text
+                GUIsetting['class'] = 'comboBoxWithCaption'
+            elif elementClass == 'tabWidget':
+                text = []
+                enabled = []
+                tab = getattr(self, elementName)
+                for i in range(tab.count()):
+                    text.append(tab.tabText(i))
+                    enabled.append(tab.isEnabled(i))
+                GUIsetting['itemText'] = text
+                GUIsetting['itemEnabled'] = enabled
+                GUIsetting['class'] = 'tabWidget'
+            elif elementClass == 'createTabPage':
+                GUIsetting['class'] = 'createTabPage'
+            elif elementClass == 'table':
+                table = getattr(self, elementName)
+                #GUIsetting['selectedRanges'] = table.selectedRanges()
+                row = table.rowCount()
+                col = table.columnCount()
+                rowNames = []
+                for i in range(row):
+                    try:
+                        rowNames.append(table.verticalHeaderItem(i).text())
+                    except:
+                        rowNames.append(None)
+                GUIsetting['rowNames'] = rowNames
+                
+                colNames = []
+                for j in range(col):
+                    try:
+                        colNames.append(table.horizontalHeaderItem(j).text())
+                    except:
+                        colNames.append(None)
+                GUIsetting['colNames'] = colNames
+                
+                tableItems = []
+                tableItemsSelected = []
+                for i in range(row):
+                    for j in range(col):
+                        try:
+                            tableItems.append((i,j,table.item(i,j).text()))
+                            #tableItemsSelected.append((i,j,table.item(i,j)
+                        except: pass
+                GUIsetting['tableItems'] = tableItems
+                GUIsetting['class'] = 'table'
+            elif elementClass == 'textEdit':
+                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['class'] = 'textEdit'
+            
+            self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting
+            # if hasattr(self, "settingsList"):
+                # self.settingsList.extend([str('GUIelement_'+elementName)])
+                # settings[str('GUIelement_'+elementName)] = GUIsetting
+            
         if alsoContexts:
             contextHandlers = getattr(self, "contextHandlers", {})
             for contextHandler in contextHandlers.values():
@@ -289,11 +380,77 @@ class OWRpy(OWWidget):
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
-        print 'calling load saved session in OWRpy... should have been overwritten in the widget'
+        print str(self.RGUIElementsSettings)
         for (name, data) in self.sentItems:
             self.send(name, data)
+        for key in self.RGUIElementsSettings.keys():
+            elementName = key.replace('GUIelement_', '')
+            info = self.RGUIElementsSettings[key]
+            self.updateWidget(elementName, info)
     
     def onSaveSession(self):
         print 'save session'
         self.loadSavedSession = value;
+        
+    def updateWidget(self, name, value):
+        print 'update widget called'
+        print str(value)
+        elementClass = value['class']
+        if elementClass == 'widgetBox':
+            pass
+        elif elementClass == 'widgetLabel':
+            getattr(self, name).setText(value['text'])
+        elif elementClass == 'checkBox':
+            getattr(self, name).setChecked(value['checked'])
+        elif elementClass == 'lineEdit':
+            getattr(self, name).setText(value['text'])
+        elif elementClass == 'button':
+            getattr(self, name).setEnabled(value['enabled'])
+        elif elementClass == 'listBox':
+            getattr(self, name).clear()
+            getattr(self, name).insertItems(0, value['items'])
+        elif elementClass == 'radioButtonsInBox':
+            pass
+        elif elementClass == 'comboBox':
+            getattr(self, name).clear()
+            for i in range(len(value['itemText'])):
+                getattr(self, name).setItemText(i, value['itemText'][i])
+        elif elementClass == 'comboBoxWithCaption':
+            getattr(self, name).clear()
+            for i in range(len(value['itemText'])):
+                getattr(self, name).setItemText(i, value['itemText'][i])
+        elif elementClass == 'tabWidget':
+        
+            tab = getattr(self, name)
+            tab.clear()
+            
+            for i in range(len(value['itemText'])):
+                tab.addTab()
+                tab.setTabText(value['itemText'][i])
+                tab.setTabEnabled(value['itemEnabled'])
+        elif elementClass == 'createTabPage':
+            pass
+        elif elementClass == 'table':
+            table = getattr(self, name)
+            row = len(value['rowNames'])
+            col = len(value['colNames'])
+            table.setColumnCount(col)
+            table.setRowCount(row)
+            vheaders = value['rowNames']
+            hheaders = value['colNames']
+            for i in range(len(vheaders)):
+                if vheaders[i] != None:
+                    table.setVerticalHeaderLabel(i, vheaders[i])
+            for j in range(len(hheaders)):
+                if hheaders[j] != None:
+                    table.setHorizontalHeaderLables(j, hheaders[j])
+            for item in value['tableItems']:
+                ti = QTableWidgetItem(item[2])
+                table.setItem(item[0], item[1], ti)
+                
+            # for srange in value['selectedRanges']:
+                # table.setRangeSelected(srange, 1)
+                
+        elif elementClass == 'textEdit':
+            getattr(self, elementName).setText(value['text'])
 

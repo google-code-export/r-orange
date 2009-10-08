@@ -6,35 +6,35 @@
 
 from OWRpy import *
 import OWGUI
+import RRGUI
 import RAffyClasses
 
 class SandBox(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "plotAffy")
-        
+        self.lineEditText = ''
+        self.loadSettings()
         self.inputs = None
         self.outputs = None
         
-        self.image = QPixmap()
-        self.image.load("C:\\Python25\\Lib\\site-packages\\orange\\OrangeWidgets\\icons\\plotAffy.png")
+        # self.image = QPixmap()
+        # self.image.load("C:\\Python25\\Lib\\site-packages\\orange\\OrangeWidgets\\icons\\plotAffy.png")
         
-        self.label = QLabel("click to see picture")
-        self.label.setGeometry(50,50,300,300)
+        # self.label = QLabel("click to see picture")
+        # self.label.setGeometry(50,50,300,300)
         #GUI
         
         self.box = OWGUI.widgetBox(self.controlArea, "Box")
-        OWGUI.button(self.box, self, "Show", callback = self.showMe)
+        self.mytable = RRGUI.table(self.box, 'mytable', self)
+        self.mylineEdit = RRGUI.lineEdit(self.box, 'mylineEdit', self, 'lineEditText')
+        RRGUI.button(self.box, None, self, 'Add Row', callback = self.AddRow)
+        RRGUI.button(self.box, None, self, 'Add Col', callback = self.AddCol)
         
-        self.thistext = QTextEdit(self)
-        self.mainArea.layout().addWidget(self.thistext)
-        self.require_librarys(['simpleaffy'])
-        self.rsession('png(file="result.png", bg="transparent")')
-        self.rsession('plot(rnorm(10), rnorm(10))')
-        self.rsession('dev.off()')
+    def AddCol(self):   
+        self.mytable.setColumnCount(self.mytable.columnCount()+1)
         
-        pictureHtml = '<img src="result.png"/>'
-        
-        self.thistext.setHtml(pictureHtml)
+    def AddRow(self):
+        self.mytable.setRowCount(self.mytable.rowCount()+1)
         #self.picture = OWGUI.widgetLabel(self.box)
         #self.picture.setPixmap(OWGUI.QPixmap("C:\\Python25\\Lib\\site-packages\\orange\\OrangeWidgets\\icons\\plotAffy.png"))
     def showMe(self):

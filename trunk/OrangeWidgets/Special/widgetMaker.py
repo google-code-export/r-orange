@@ -195,6 +195,7 @@ class widgetMaker(OWRpy):
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
         self.headerCode += 'import OWGUI \n'
+        self.headerCode += 'import RRGUI \n'
         
     def makeInitHeader(self):
         self.initCode = ''
@@ -217,6 +218,7 @@ class widgetMaker(OWRpy):
                     self.fieldList[element] = self.fieldList[element].replace('"', '')
                     self.fieldList[element] = self.fieldList[element].replace("'", "")
                     self.initCode += '\t\tself.RFunctionParam_'+element+' = "'+str(self.fieldList[element])+'"\n'
+        self.initCode += '\t\tself.loadSettings() \n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
@@ -237,18 +239,20 @@ class widgetMaker(OWRpy):
                 pass
             else:
                 if type(self.fieldList[element]) == type(''):
-                    self.guiCode += '\t\tOWGUI.lineEdit(box, self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
+                    self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  RRGUI.lineEdit(box, "RFUnctionParam'+ element + '_lineEdit", self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
                 elif type(self.fieldList[element]) == type([]):
-                    self.guiCode += '\t\tOWGUI.comboBox(box, self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element])+')\n'
+                    self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = RRGUI.comboBox(box, "RFunctionParam'+ element + '_comboBox", self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element])+')\n'
         self.guiCode += '\t\tOWGUI.button(box, self, "Commit", callback = self.commitFunction)\n'
         if self.captureROutput:
-            self.guiCode += '\t\tself.RoutputWindow = QTextEdit()\n'
+            self.guiCode += '\t\tself.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)\n'
             self.guiCode += '\t\tbox.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):
         self.processSignals = ''
         for inputName in self.functionInputs.keys():
             self.processSignals += '\tdef process'+inputName+'(self, data):\n'
+            if self.packageName != '':
+                self.processSignals += '\t\tself.require_librarys(["'+self.packageName+'"]) \n'
             self.processSignals += '\t\tif data:\n'
             self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data["data"]\n'
             if self.processOnConnect:

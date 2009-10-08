@@ -82,3 +82,9 @@ def table(widget, widgetattr, master, rows = 0, columns = 0, selectionMode = -1,
     master.RGUIElements.append((widgetattr, 'table'))
     return ta
     
+def textEdit(widgetattr, master):
+    te = QTextEdit()
+    master.RGUIElements.append((widgetattr, 'textEdit'))
+    return te
+    
+    

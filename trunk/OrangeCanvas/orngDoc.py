@@ -435,6 +435,7 @@ class SchemaDoc(QWidget):
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
             # if not tmp:
                 # widget.instance.onSaveSession()
+            print 'looking for settingsstr'
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
             widgets.appendChild(temp)
 
@@ -532,6 +533,7 @@ class SchemaDoc(QWidget):
             for widget in widgets.getElementsByTagName("widget"):
                 name = widget.getAttribute("widgetName")
                 settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
+                print 'widget settings are' + str(settings)
                 tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                 if not tempWidget:
                     #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)

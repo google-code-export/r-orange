@@ -22,6 +22,13 @@ TRUE=1
 FALSE=0
 
 def unisetattr(self, name, value, grandparent):
+    # print 'unisetattr called'
+    # print name
+    # if 'GUIelement_' in name: #the name has a GUIelement_ distinction so we need to reset the widget to the desired settings
+        # name = name.replace('GUIelement_', '')
+        # self.updateWidget(name, value)
+        # return
+        
     if "." in name:
         names = name.split(".")
         lastname = names.pop()
@@ -74,6 +81,7 @@ def unisetattr(self, name, value, grandparent):
     if hasattr(self, "contextHandlers") and hasattr(self, "currentContexts"):
         for contextName, contextHandler in self.contextHandlers.items():
             contextHandler.fastSave(self.currentContexts.get(contextName), self, name, value)
+
 
 
 
@@ -334,12 +342,14 @@ class OWBaseWidget(QDialog):
     # settings - the map with the settings
     def setSettings(self,settings):
         for key in settings:
+            print key
             self.__setattr__(key, settings[key])
         #self.__dict__.update(settings)
 
     # Get all settings
     # returns map with all settings
     def getSettings(self, alsoContexts = True):
+        print 'get settings called'
         settings = {}
         if hasattr(self, "settingsList"):
             for name in self.settingsList:
@@ -348,6 +358,89 @@ class OWBaseWidget(QDialog):
                 except:
                     #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
                     pass
+                    
+            #instert logic for saving the gui settings
+        for element in self.RGUIElements:
+            #print element
+            GUIsetting = {}
+            elementClass = element[1]
+            elementName = element[0]
+            if elementClass == 'widgetBox':
+                GUIsetting['class'] = 'widgetBox'
+            elif elementClass == 'widgetLabel':
+                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['class'] = 'widgetLabel'
+            elif elementClass == 'checkBox':
+                GUIsetting['checked'] = getattr(self, elementName).isChecked()
+                GUIsetting['class'] = 'checkBox'
+            elif elementClass == 'lineEdit':
+                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['class'] = 'lineEdit'
+            elif elementClass == 'button':
+                GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
+                GUIsetting['class'] = 'button'
+            elif elementClass == 'listBox':
+                GUIsetting['items'] = getattr(self, elementName).items()
+                GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
+                GUIsetting['class'] = 'listBox'
+            elif elementClass == 'radioButtonsInBox':
+                GUIsetting['class'] = 'radioButtonsInBox'
+            elif elementClass == 'comboBox':
+                text = []
+                cb = getattr(self, elementName)
+                for i in range(cb.count()):
+                    text.append(cb.itemText(i))
+                GUIsetting['itemText'] = text
+                GUIsetting['class'] = 'comboBox'
+            elif elementClass == 'comboBoxWithCaption':
+                text = []
+                cb = getattr(self, elementName)
+                for i in range(cb.count()):
+                    text.append(cb.itemText(i))
+                GUIsetting['itemText'] = text
+                GUIsetting['class'] = 'comboBoxWithCaption'
+            elif elementClass == 'tabWidget':
+                text = []
+                enabled = []
+                tab = getattr(self, elementName)
+                for i in range(tab.count()):
+                    text.append(tab.tabText(i))
+                    enabled.append(tab.isEnabled(i))
+                GUIsetting['itemText'] = text
+                GUIsetting['itemEnabled'] = enabled
+                GUIsetting['class'] = 'tabWidget'
+            elif elementClass == 'createTabPage':
+                GUIsetting['class'] = 'createTabPage'
+            elif elementClass == 'table':
+                table = getattr(self, elementName)
+                GUIsetting['selectedRanges'] = table.selectedRanges()
+                row = table.rowCount()
+                col = table.columnCount()
+                rowNames = []
+                for i in range(row):
+                    rowNames.append(table.verticalHeaderItem(i).text())
+                GUIsetting['rowNames'] = rowNames
+                
+                colNames = []
+                for j in range(col):
+                    colNames.append(table.horizontalHeaderItem(j).text())
+                GUIsetting['colNames'] = colNames
+                
+                tableItems = []
+                for i in range(row):
+                    for j in range(col):
+                        try:
+                            tableItems.append((i,j,table.item(i,j).text()))
+                        except: pass
+                GUIsetting['tableItems'] = tableItems
+                GUIsetting['class'] = 'table'
+            elif elementClass == 'textEdit':
+                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['class'] = 'textEdit'
+                
+                
+            settings[str('GUIelement_'+elementName)] = GUIsetting
+        
         
         if alsoContexts:
             contextHandlers = getattr(self, "contextHandlers", {})
@@ -445,7 +538,10 @@ class OWBaseWidget(QDialog):
 
     # return settings in string format compatible with cPickle
     def saveSettingsStr(self):
+        print 'saveSettingsStr called'
         settings = self.getSettings()
+        print settings
+        print str(self.RGUIElements)
         return cPickle.dumps(settings)
 
     def onSaveSession(self):
