@@ -23,7 +23,11 @@ class hist(OWRpy):
             #self.commitFunction()
             myclass = self.R('class('+self.RFunctionParam_x+')')
             if myclass == 'matrix' or myclass == 'data.frame':
-                self.columnPicker.addItems(self.R('colnames('+self.RFunctionParam_x+')'))
+                colnames = self.R('colnames('+self.RFunctionParam_x+')')
+                if type(colnames) == type(''):
+                    colnames = [colnames]
+                    
+                self.columnPicker.addItems(colnames)
                 self.needsColumns = 1
             else:
                 self.commitFunction()

@@ -131,7 +131,7 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
                              inputClasses = inputClasses, outputClasses = outputClasses
                              )
     
-            for attr, deflt in (("contact>", "") , ("icon>", "icons/Unknown.png"), ("priority>", "5000"), ("description>", "")):
+            for attr, deflt in (("contact>", "") , ("icon>", "icons/Unknown.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 

@@ -1,6 +1,7 @@
 """
 <name>lm</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<tags>Stats</tags>
 """
 from OWRpy import * 
 import OWGUI 

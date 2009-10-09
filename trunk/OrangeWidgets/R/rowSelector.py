@@ -198,33 +198,30 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
         
     def process(self, data):
         self.require_librarys(['fields'])
-        print str(data)
-        print 'test is ' + self.test
         if data == None:
             self.columnsorrows.clear() #clear the window for the new data
             #self.selectCriteria.clear()
             self.olddata = {}
-            print 'None data recieved'
-            print 'test is '+self.test
         try:
             #self.columnsorrows.clear()
-            self.data = data['data']
-            self.olddata = data
-            self.saveData = data
-            self.test = 'test OK'
-            
-            print 'old data ok'
-            #self.changeRowCol()
-            # for v in self.rsession('colnames('+self.data+')'):
-                # self.columnsorrows.addItem(v)
-            #(rows,cols) = self.R('dim('+self.data+')')
-            rows = self.rsession('length('+self.data+'[,1])') #one day replace with a more susinct data query
-            print 'rows ok'
-            cols = self.rsession('length('+self.data+'[1,])')
-            print 'cols ok'
-            self.infoa.setText("Data Connected")
-            self.tableinfoa.setText("Data Connected with:")
-            self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
+            if self.data != data['data']:
+                self.data = data['data']
+                self.olddata = data
+                self.saveData = data
+                self.test = 'test OK'
+                
+
+                rows = self.rsession('length('+self.data+'[,1])') #one day replace with a more susinct data query
+
+                cols = self.rsession('length('+self.data+'[1,])')
+
+                self.infoa.setText("Data Connected")
+                self.tableinfoa.setText("Data Connected with:")
+                self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(rows)))
+                self.columnsorrows.clear()
+            else:
+                self.applySubsetting()
+                return
         except:
             print 'exception occured'
             self.infoa.setText("Signal not of appropriate type.")
@@ -232,11 +229,11 @@ class rowSelector(OWRpy): # a simple widget that actually will become quite comp
             self.tableinfob.setText("")
             self.tableinfoc.setText("")
             self.tableinfod.setText("")
+            self.columnsorrows.clear()
             return
     
     
         # section for loading the data to be subset
-        self.columnsorrows.clear() #clear the window for the new data
         if self.data != '': # this checks if data is still the default
             try: # want to see if there are colnames for selection 
                 self.columnsorrows.addItem("Row Names")

@@ -157,7 +157,7 @@ class OWRpy(OWWidget):
                 GUIsetting['tableItems'] = tableItems
                 GUIsetting['class'] = 'table'
             elif elementClass == 'textEdit':
-                GUIsetting['text'] = getattr(self, elementName).text()
+                GUIsetting['text'] = getattr(self, elementName).toHtml()
                 GUIsetting['class'] = 'textEdit'
             
             self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting

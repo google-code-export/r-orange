@@ -174,18 +174,22 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.infoa.setText('None Type Recieved')
         try:
             #self.columnsorrows.clear()
-            self.Rvariables['data'] = data['data']
-            self.olddata = data
-            self.saveData = data
-            #self.changeRowCol()
-            # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
-                # self.columnsorrows.addItem(v)
-            #(rows,cols) = self.R('dim('+self.Rvariables['data']+')')
-            self.rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
-            cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
-            self.infoa.setText("Data Connected")
-            self.tableinfoa.setText("Data Connected with:")
-            self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(self.rows)))
+            if self.Rvariables['data'] != data['data']:
+                self.Rvariables['data'] = data['data']
+                self.olddata = data
+                self.saveData = data
+                #self.changeRowCol()
+                # for v in self.rsession('colnames('+self.Rvariables['data']+')'):
+                    # self.columnsorrows.addItem(v)
+                #(rows,cols) = self.R('dim('+self.Rvariables['data']+')')
+                self.rows = self.rsession('length('+self.Rvariables['data']+'[,1])') #one day replace with a more susinct data query
+                cols = self.rsession('length('+self.Rvariables['data']+'[1,])')
+                self.infoa.setText("Data Connected")
+                self.tableinfoa.setText("Data Connected with:")
+                self.tableinfob.setText("%s columns and %s rows." % (str(cols), str(self.rows)))
+                self.columnsorrows.clear() #clear the window for the new data
+            else: # we connected data from the same object.  Subset again.
+                self.applySubsetting()
         except:
             self.olddata = {}
             self.newdata = {}
@@ -194,9 +198,10 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             self.tableinfob.setText("")
             self.tableinfoc.setText("")
             self.tableinfod.setText("")
+            self.columnsorrows.clear()
             return
             
-        self.columnsorrows.clear() #clear the window for the new data
+
         if self.rows > 500:
             self.tableinfoc.setText("More than 500 rows, showing only first 500")
         if self.Rvariables['data'] != '': # this checks if data is still the default

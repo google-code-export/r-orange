@@ -44,7 +44,7 @@ class widgetMaker(OWRpy):
         box = OWGUI.widgetBox(self.controlArea, "Inputs and Outputs")
         self.inputArea = QTableWidget()
         box.layout().addWidget(self.inputArea)
-        self.inputArea.setColumnCount(3)
+        self.inputArea.setColumnCount(4)
         
         self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
@@ -147,7 +147,7 @@ class widgetMaker(OWRpy):
         self.inputArea.setRowCount(int(len(self.args.keys())))
 
         self.inputArea.show()
-        self.inputArea.setHorizontalHeaderLabels(['Name', 'Class', 'Function'])
+        self.inputArea.setHorizontalHeaderLabels(['Name', 'Class', 'Status', 'Required'])
         n=0
         for arg in self.args.keys():
             arg = arg.replace('.', '_') # python uses points for class refference
@@ -157,23 +157,32 @@ class widgetMaker(OWRpy):
             cw = QComboBox()
             cw.addItems(['Widget Input', 'Connection Input'])
             self.inputArea.setCellWidget(n,1,cw)
+            ad = QComboBox()
+            ad.addItems(['Standard', 'Advanced'])
+            self.inputArea.setCellWidget(n,2,ad)
+            re = QComboBox()
+            re.addItems(['Optional', 'Required'])
+            self.inputArea.setCellWidget(n,3,re)
             n += 1
         
     def acceptInputs(self): #accept the criteria in the input Area
         for i in xrange(self.inputArea.rowCount()):
-            print 'i:'+str(i)
+            #print 'i:'+str(i)
             combo = self.inputArea.cellWidget(i, 1)
-            print combo
+            #print combo
             if combo.currentText() == 'Widget Input':
-                print str(self.inputArea.item(i ,0).text())
-                self.fieldList[str(self.inputArea.item(i, 0).text())] = ''
+                adcombo = self.inputArea.cellWidget(i, 2)
+                recombo = self.inputArea.cellWidget(i, 3)
+
+                #print str(self.inputArea.item(i ,0).text())
+                self.fieldList[str(self.inputArea.item(i, 0).text())] = ['', adcombo.currentText(), recombo.currentText()]
             else:
                 self.functionInputs[str(self.inputArea.item(i,0).text())] = ''
         print self.fieldList
         print self.functionInputs
         for item in self.fieldList.keys():
             item = item.replace('.', '_')
-            self.fieldList[item] = self.args[item]
+            self.fieldList[item][0] = self.args[item]
             
     def inputcellClicked(self, item):
         self.inputArea.editItem(item)
@@ -210,14 +219,14 @@ class widgetMaker(OWRpy):
             if element == '___':
                 pass
             else:
-                if self.fieldList[element] == '' or self.fieldList[element] == "":
+                if self.fieldList[element][0] == '' or self.fieldList[element][0] == "":
                     self.initCode += '\t\tself.RFunctionParam_'+element+' = ""\n'
-                elif type(self.fieldList[element]) == type([]): #the fieldList is a list
+                elif type(self.fieldList[element][0]) == type([]): #the fieldList is a list
                     self.initCode += '\t\tself.RFunctionParam_'+element+' = 0\n' #set the item to the first one
                 else:
-                    self.fieldList[element] = self.fieldList[element].replace('"', '')
-                    self.fieldList[element] = self.fieldList[element].replace("'", "")
-                    self.initCode += '\t\tself.RFunctionParam_'+element+' = "'+str(self.fieldList[element])+'"\n'
+                    self.fieldList[element][0] = self.fieldList[element][0].replace('"', '')
+                    self.fieldList[element][0] = self.fieldList[element][0].replace("'", "")
+                    self.initCode += '\t\tself.RFunctionParam_'+element+' = "'+str(self.fieldList[element][0])+'"\n'
         self.initCode += '\t\tself.loadSettings() \n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
@@ -233,19 +242,27 @@ class widgetMaker(OWRpy):
         
     def makeGUI(self):
         self.guiCode = ''
-        self.guiCode += '\t\tbox = OWGUI.widgetBox(self.controlArea, "Widget Box")\n'
+        self.guiCode += '\t\tbox = RRGUI.tabWidget(self.controlArea, None, self)\n'
+        self.guiCode += '\t\tself.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")\n'
+        self.guiCode += '\t\tself.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")\n'
         for element in self.fieldList.keys():
             if element == '___':
                 pass
             else:
-                if type(self.fieldList[element]) == type(''):
-                    self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  RRGUI.lineEdit(box, "RFUnctionParam'+ element + '_lineEdit", self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
-                elif type(self.fieldList[element]) == type([]):
-                    self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = RRGUI.comboBox(box, "RFunctionParam'+ element + '_comboBox", self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element])+')\n'
-        self.guiCode += '\t\tOWGUI.button(box, self, "Commit", callback = self.commitFunction)\n'
+                if type(self.fieldList[element][0]) == type(''):
+                    if self.fieldList[element][1] == 'Standard':
+                        self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParam'+ element + '_lineEdit", self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
+                    elif self.fieldList[element][1] == 'Advanced':
+                        self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParam'+ element + '_lineEdit", self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
+                elif type(self.fieldList[element][0]) == type([]):
+                    if self.fieldList[element][1] == 'Standard':
+                        self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = RRGUI.comboBox(self.standardTab, "RFunctionParam'+ element + '_comboBox", self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
+                    elif self.fieldList[element][1] == 'Advanced':
+                        self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = RRGUI.comboBox(self.advancedTab, "RFunctionParam'+ element + '_comboBox", self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
+        self.guiCode += '\t\tOWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)\n'
         if self.captureROutput:
             self.guiCode += '\t\tself.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)\n'
-            self.guiCode += '\t\tbox.layout().addWidget(self.RoutputWindow)\n'
+            self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):
         self.processSignals = ''
@@ -263,6 +280,15 @@ class widgetMaker(OWRpy):
         self.commitFunction += '\tdef commitFunction(self):\n'
         for inputName in self.functionInputs.keys():
             self.commitFunction += "\t\tif self.RFunctionParam_"+inputName+" == '': return\n"
+        for element in self.fieldList.keys():
+            if self.fieldList[element][2] == 'Required':
+                self.commitFunction += "\t\tif self.RFunctionParam_"+element+" == '': return\n"
+        self.commitFunction += "\t\tinjection = []\n"
+        for element in self.fieldList.keys():
+            self.commitFunction += "\t\tif self.RFunctionParam_"+element+" != '':\n"
+            self.commitFunction += "\t\t\tstring = '"+element+"='+str(self.RFunctionParam_"+element+")\n"
+            self.commitFunction += "\t\t\tinjection.append(string)\n"
+        self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("
         if self.captureROutput:
             self.commitFunction += "'txt&lt;-capture.output('+"
@@ -275,12 +301,13 @@ class widgetMaker(OWRpy):
                 element = element.replace('_', '.')
                 self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
         #self.commitFunction = self.commitFunction[:-2] #remove the last element
-        for element in self.fieldList.keys():
-            if element == '...':
-                pass
-            else:
-                self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
-        self.commitFunction = self.commitFunction[:-1]
+        # for element in self.fieldList.keys():
+            # if element == '...':
+                # pass
+            # else:
+                # self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
+        # self.commitFunction = self.commitFunction[:-1]
+        self.commitFunction += "'+inj+'"
         if self.captureROutput:
             self.commitFunction += ')'
         self.commitFunction += ")')\n"
