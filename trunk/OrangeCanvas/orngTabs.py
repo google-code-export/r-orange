@@ -311,26 +311,26 @@ class WidgetListBase:
             self.insertWidgets(itab, tab, widgetRegistry)
 
         # first insert the default tab names
-        for (tabName, show) in widgetTabList + extraTabs:
-            if not show or not widgetRegistry.has_key(tabName): continue
-            tab = self.insertWidgetTab(tabName, show)
+        # for (tabName, show) in widgetTabList + extraTabs:
+            # if not show or not widgetRegistry.has_key(tabName): continue
+            # tab = self.insertWidgetTab(tabName, show)
             
-            directory = widgetRegistry[tabName].directory
-            widgets = [(int(widgetInfo.priority), name, widgetInfo) for (name, widgetInfo) in widgetRegistry[tabName].items()]
-            widgets.sort()
-            exIndex = 0
-            for (priority, name, widgetInfo) in widgets:
-                if isinstance(self, WidgetTree):
-                    button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
-                else:
-                    button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
-                    #self.widgetInfo[strCategory + " - " + nameList[i]] = {"fileName": fileNameList[i], "iconName": iconNameList[i], "author" : authorList[i], "description":descriptionList[i], "priority":priorityList, "inputs": inputList[i], "outputs" : outputList[i], "button": button, "directory": directory}
-                    for k in range(priority/1000 - exIndex):
-                        tab.layout().addSpacing(10)
-                    exIndex = priority / 1000
-                    tab.layout().addWidget(button)
-                tab.widgets.append(button)
-                self.allWidgets.append(button)
+            # directory = widgetRegistry[tabName].directory
+            # widgets = [(int(widgetInfo.priority), name, widgetInfo) for (name, widgetInfo) in widgetRegistry[tabName].items()]
+            # widgets.sort()
+            # exIndex = 0
+            # for (priority, name, widgetInfo) in widgets:
+                # if isinstance(self, WidgetTree):
+                    # button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
+                # else:
+                    # button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
+                    ### self.widgetInfo[strCategory + " - " + nameList[i]] = {"fileName": fileNameList[i], "iconName": iconNameList[i], "author" : authorList[i], "description":descriptionList[i], "priority":priorityList, "inputs": inputList[i], "outputs" : outputList[i], "button": button, "directory": directory}
+                    # for k in range(priority/1000 - exIndex):
+                        # tab.layout().addSpacing(10)
+                    # exIndex = priority / 1000
+                    # tab.layout().addWidget(button)
+                # tab.widgets.append(button)
+                # self.allWidgets.append(button)
 
             if hasattr(tab, "adjustSize"):
                 tab.adjustSize()
@@ -365,12 +365,14 @@ class WidgetListBase:
             
             for wName in widgetRegistry[tabName].keys():
                 awidgets = {}
-                try:
+                try: 
                     print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
                     wtags = widgetRegistry[tabName][wName].tags
                     wtags = wtags.replace(' ', '')
                     wtags = wtags.split(',')
-                    print str(itab.replace(' ', '')) + ' is the same is '+str(wtags)
+                except: 
+                    wtags = 'Prototypes'
+                try:
                     if itab.replace(' ', '') in wtags:
                         if tabName not in awidgets.keys(): awidgets[tabName] = {}
                         awidgets[tabName][wName] = widgetRegistry[tabName][wName]
