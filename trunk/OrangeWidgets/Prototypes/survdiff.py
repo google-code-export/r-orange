@@ -1,6 +1,7 @@
 """
 <name>survdiff</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<tags>Survival</tags>
 """
 from OWRpy import * 
 import OWGUI 

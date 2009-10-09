@@ -299,6 +299,16 @@ class WidgetListBase:
         
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
+        tfile = 'C:\\Python25\\Lib\\site-packages\\orange\\tagsSystem\\tabsList.txt'
+        f = open(tfile, 'r')
+        mainTabs = f.read().split('\n')
+        f.close()
+        
+        for itab in mainTabs:
+            tab = self.insertWidgetTab(itab, 1) # a QTreeWidgetItem
+            print 'inserted tab '+itab
+            self.insertChildTabs(itab, tab, tfile, widgetRegistry)
+            self.insertWidgets(itab, tab, widgetRegistry)
 
         # first insert the default tab names
         for (tabName, show) in widgetTabList + extraTabs:
@@ -327,7 +337,85 @@ class WidgetListBase:
         
         # return the list of tabs and their status (shown/hidden)
         return widgetTabList + extraTabs
-                   
+        
+    def insertChildTabs(self, itab, tab, tfile, widgetRegistry):
+        
+        
+        try:
+            subfile = tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt'
+            print 'checking file '+subfile+' for more tabs'
+            f = open(subfile, 'r')
+            subTabs = f.read().split('\n')
+            print 'found subtabs '+str(subTabs)
+            f.close()
+        except: #subtabs don't exist
+            return
+        
+        for ttab in subTabs:
+            child = WidgetTreeFolder(tab, ttab)
+            child.widgets = []
+            child.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
+            self.insertChildTabs(ttab, child, subTabs, widgetRegistry)
+            self.insertWidgets(ttab, child, widgetRegistry)
+        
+    def insertWidgets(self, itab, tab, widgetRegistry):
+        
+        widgets = None
+        for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
+            
+            for wName in widgetRegistry[tabName].keys():
+                awidgets = {}
+                try:
+                    print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+                    wtags = widgetRegistry[tabName][wName].tags
+                    wtags = wtags.replace(' ', '')
+                    wtags = wtags.split(',')
+                    print str(itab.replace(' ', '')) + ' is the same is '+str(wtags)
+                    if itab.replace(' ', '') in wtags:
+                        if tabName not in awidgets.keys(): awidgets[tabName] = {}
+                        awidgets[tabName][wName] = widgetRegistry[tabName][wName]
+                        print 'made it past the awidgets stage'
+                        print str(awidgets[tabName].items())
+                        (name, widgetInfo) = awidgets[tabName].items()[0]
+                        (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
+                        print str((priority, name, widgetInfo)) + 'made it to 7894'
+                        if isinstance(self, WidgetTree):
+                            print 'trying to add a button'
+                            button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
+                            
+                        else:
+                            button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
+                            for k in range(priority/1000 - exIndex):
+                                tab.layout().addSpacing(10)
+                            exIndex = priority / 1000
+                            tab.layout().addWidget(button)
+                        if button not in tab.widgets:
+                            tab.widgets.append(button)
+                        self.allWidgets.append(button)
+                        
+                except: pass
+            # for stabName in awidgets.keys():
+                # widgets = [(int(widgetInfo.priority), name, widgetInfo) for (name, widgetInfo) in awidgets[stabName].items()]
+            # if not widgets: return
+            # widgets.sort()
+            # exIndex = 0
+            # for (priority, name, widgetInfo) in widgets:
+            
+                # print str((priority, name, widgetInfo))+ ' attempting to be added'
+                # if isinstance(self, WidgetTree):
+                    # print 'trying to add a button'
+                    # button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
+                    
+                # else:
+                    # button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
+                    
+                    # for k in range(priority/1000 - exIndex):
+                        # tab.layout().addSpacing(10)
+                    # exIndex = priority / 1000
+                    # tab.layout().addWidget(button)
+                # if button not in tab.widgets:
+                    # tab.widgets.append(button)
+                # self.allWidgets.append(button)
 
 
 

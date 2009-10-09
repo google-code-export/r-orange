@@ -1,8 +1,10 @@
 """
 <name>Data Entry</name>
 <description>A table input data entry into a data.frame.</description>
+<tags>Data Entry</tags>
 <icon>icons/readcel.png</icons>
 <priority>20</priority>
+
 """
 
 import OWGUI

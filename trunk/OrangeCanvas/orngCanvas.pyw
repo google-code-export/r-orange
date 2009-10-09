@@ -73,7 +73,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.setStatusBar(MyStatusBar(self))
                 
         self.widgetRegistry = orngRegistry.readCategories() #yeilds a dict with folder names, filenames and orngRegistriy discription instances
-        #QMessageBox.information(self, 'Orange Canvas',str(self.widgetRegistry['Stats']['lm'].tags),  QMessageBox.Ok + QMessageBox.Default)        # for learning about the widgetRegistry
+        #QMessageBox.information(self, 'Orange Canvas',str(self.widgetRegistry['Stats']['lm']),  QMessageBox.Ok + QMessageBox.Default)        # for learning about the widgetRegistry
         self.updateStyle()
         
         # create toolbar
