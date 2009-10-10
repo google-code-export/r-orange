@@ -173,7 +173,9 @@ class OrangeCanvasDlg(QMainWindow):
                 self.removeDockWidget(self.widgetsToolBar)
 
         if self.settings["widgetListType"] == 0:
-            self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
+            # self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
+            # self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
+            self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
             self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         elif self.settings["widgetListType"] == 1:
             self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
