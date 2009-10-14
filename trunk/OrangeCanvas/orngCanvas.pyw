@@ -12,8 +12,6 @@ class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags = 0):
         QMainWindow.__init__(self, parent)
         
-        updateRedR.start()
-        
         self.debugMode = 1        # print extra output for debuging
         self.setWindowTitle("Red Canvas")
         self.windows = []    # list of id for windows in Window menu
@@ -42,10 +40,15 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowIcon(QIcon(canvasIconName))
             
         self.settings = {}
+        self.settings['svnSettings'] = {}
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
 
         self.loadSettings()
+        
+        self.settings['svnSettings'] = updateRedR.start(self.settings['svnSettings'])
+        
+        
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
         self.widgetActiveColor   = QColor(*self.settings["widgetActiveColor"])
         self.lineColor           = QColor(*self.settings["lineColor"])
@@ -76,8 +79,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.setStatusBar(MyStatusBar(self))
                 
-        self.widgetRegistry = orngRegistry.readCategories() #yeilds a dict with folder names, filenames and orngRegistriy discription instances
-        #QMessageBox.information(self, 'Orange Canvas',str(self.widgetRegistry['Stats']['lm']),  QMessageBox.Ok + QMessageBox.Default)        # for learning about the widgetRegistry
+        self.widgetRegistry = orngRegistry.readCategories()
         self.updateStyle()
         
         # create toolbar
@@ -177,9 +179,7 @@ class OrangeCanvasDlg(QMainWindow):
                 self.removeDockWidget(self.widgetsToolBar)
 
         if self.settings["widgetListType"] == 0:
-            # self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
-            # self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
-            self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
+            self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
             self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         elif self.settings["widgetListType"] == 1:
             self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
@@ -289,7 +289,7 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
         if name.isEmpty():
             return
-        #self.schema.clear()
+        self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 0)
         self.addToRecentMenu(str(name))
 
@@ -568,6 +568,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings.setdefault("dontAskBeforeClose", 1)
         #self.settings.setdefault("autoSaveSchemasOnClose", 0)
         self.settings.setdefault("saveWidgetsPosition", 1)
+        self.settings.setdefault("svnSettings", None)
 ##        self.settings.setdefault("autoLoadSchemasOnStart", 0)
 
         self.settings.setdefault("widgetSelectedColor", (0, 255, 0))
