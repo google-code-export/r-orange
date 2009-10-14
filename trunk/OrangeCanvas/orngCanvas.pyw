@@ -41,12 +41,13 @@ class OrangeCanvasDlg(QMainWindow):
             
         self.settings = {}
         self.settings['svnSettings'] = {}
+        self.settings['versionNumber'] = 'Version1.0'
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
 
         self.loadSettings()
         
-        self.settings['svnSettings'] = updateRedR.start(self.settings['svnSettings'])
+        self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'])
         
         
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
@@ -569,6 +570,7 @@ class OrangeCanvasDlg(QMainWindow):
         #self.settings.setdefault("autoSaveSchemasOnClose", 0)
         self.settings.setdefault("saveWidgetsPosition", 1)
         self.settings.setdefault("svnSettings", None)
+        self.settings.setdefault("versionNumber", 'Version0')
 ##        self.settings.setdefault("autoLoadSchemasOnStart", 0)
 
         self.settings.setdefault("widgetSelectedColor", (0, 255, 0))

@@ -12,19 +12,55 @@ import orngEnviron
 #QMessageBox.question(None, 'RedR Update','Do you wish to update RedR?', QMessageBox.Yes, QMessageBox.No)
 
 #class RedRUpdate():
-def start(lastRevproplist):
+def start(lastRevproplist, versionNumber):
 
     
-    
-    versionNumber = 'Version1.5'
-
+    #versionNumber = 'Version0'
+    #versionNumber = 'Version1.5'
+    QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
     svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
     
     try:
         client = pysvn.Client()
+        
+        if 'trunk' not in svnLoc:
+            lists = client.ls('http://r-orange.googlecode.com/svn/branches/')
+            vnum = versionNumber[versionNumber.find('Version'):]
+            vnum = vnum.replace('Version', '')
+            vnum = float(vnum)
+            newVersionDetected = 0
+            aversList = []
+            for item in lists:
+                avers = item['name']
+                avers = avers[avers.find('Version'):]
+                aversList.append(avers)
+                avers2 = avers.replace('Version', '')
+                avers2 = float(avers2)
+                if avers2 > vnum:
+                    newVersionDetected = 1
+                    maxVer = avers
+                    vnum = avers2
+                    
+            if newVersionDetected == 1:
+                #make the widget to select the versions
+                # versionBox = QWidget()
+                # QLabel('New Versions Detected!\nIf you would like to update\nselect the desired version and click Update.', versionBox)
+                # vListBox = QListWidget(versionBox)
+                # vListBox.addItems(aversList)
+                # OkButton = QAbstractButton(versionBox)
+                # OkButton.setText('Update')
+                # NoButton = QAbstractButton(versionBox)
+                # NoButton.setText('Cancel')
+                updateMe = QMessageBox.information(None, 'RedRUpdate', 'Newer version detected, would you like to update?', QMessageBox.Yes, QMessageBox.No)
+                if updateMe == QMessageBox.Yes:
+                    versionNumber = maxVer
+            svnLoc = svnLoc + versionNumber
+                
+                    
+            
         newRevproplist = client.revproplist(svnLoc)[1]
     except:
-        return lastRevproplist
+        return lastRevproplist, versionNumber
 
     
     canvasDirName = os.path.realpath(orngEnviron.directoryNames["canvasDir"])
@@ -37,13 +73,13 @@ def start(lastRevproplist):
 
         if res == QMessageBox.Yes:
             #trySVNUpdate(svnLoc, os.path.realpath(orngEnviron.directoryNames["orangeDir"]))
-            CanvasSuccess = trySVNUpdate(svnLoc + 'OrangeCanvas/', canvasDirName)
+            CanvasSuccess = trySVNUpdate(svnLoc + '/OrangeCanvas/', canvasDirName)
         else:
             res3 = QMessageBox.question(None, 'RedR Update', 'Do you wish to apply these updates in the future?', QMessageBox.Yes, QMessageBox.No)
             if res3 == QMessageBox.No:
-                return newRevproplist
+                return newRevproplist, versionNumber
             else:
-                return lastRevproplist
+                return lastRevproplist, versionNumber
             
 
 
@@ -53,7 +89,7 @@ def start(lastRevproplist):
             movie = MoviePlayer()
             movie.start()
             client = pysvn.Client()
-            client.export(svnLoc+'OrangeWidgets/', widgetDirName, force = True, recurse = False)
+            client.export(svnLoc+'/OrangeWidgets/', widgetDirName, force = True, recurse = False)
             failed = []
             somethingFailed = 0
             for package in os.listdir(widgetDirName):
@@ -74,8 +110,8 @@ def start(lastRevproplist):
                 return newRevproplist
                 
             else:
-                return lastRevproplist
-    return newRevproplist
+                return lastRevproplist, versionNumber
+    return newRevproplist, versionNumber
 
 def trySVNUpdate(loc, canDir, useSubdir = False):
     movie = MoviePlayer()
