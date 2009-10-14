@@ -16,12 +16,15 @@ def start(lastRevproplist):
 
     
     
-    versionNumber = 'Version1.0'
+    versionNumber = 'Version1.5'
 
     svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
-
-    client = pysvn.Client()
-    newRevproplist = client.revproplist(svnLoc)[1]
+    
+    try:
+        client = pysvn.Client()
+        newRevproplist = client.revproplist(svnLoc)[1]
+    except:
+        return lastRevproplist
 
     
     canvasDirName = os.path.realpath(orngEnviron.directoryNames["canvasDir"])
@@ -29,12 +32,18 @@ def start(lastRevproplist):
     
     
     if lastRevproplist != newRevproplist:
-        res = QMessageBox.question(None, 'RedR Update','Do you wish to update RedR?', QMessageBox.Yes, QMessageBox.No)
+        res = QMessageBox.question(None, 'RedR Update','New updates are available.\nDo you wish to update RedR?', QMessageBox.Yes, QMessageBox.No)
     
 
         if res == QMessageBox.Yes:
             #trySVNUpdate(svnLoc, os.path.realpath(orngEnviron.directoryNames["orangeDir"]))
             CanvasSuccess = trySVNUpdate(svnLoc + 'OrangeCanvas/', canvasDirName)
+        else:
+            res3 = QMessageBox.question(None, 'RedR Update', 'Do you wish to apply these updates in the future?', QMessageBox.Yes, QMessageBox.No)
+            if res3 == QMessageBox.No:
+                return newRevproplist
+            else:
+                return lastRevproplist
             
 
 
@@ -59,7 +68,13 @@ def start(lastRevproplist):
             if somethingFailed == 1:
                 QMessageBox.information(None, 'RedR Update', 'The following widgets or packages failed: \n%s' % '\n  '.join(failed), QMessageBox.Ok + QMessageBox.Default)
                         
-        #else: return
+        else: 
+            res3 = QMessageBox.question(None, 'RedR Update', 'Do you wish to apply these updates in the future?', QMessageBox.Yes, QMessageBox.No)
+            if res3 == QMessageBox.No:
+                return newRevproplist
+                
+            else:
+                return lastRevproplist
     return newRevproplist
 
 def trySVNUpdate(loc, canDir, useSubdir = False):
@@ -71,11 +86,11 @@ def trySVNUpdate(loc, canDir, useSubdir = False):
         return 1
     except:
         movie.stop()
-        res = QMessageBox.question(None, 'RedR Update', 'There was a problem connecting to the server,\n please check that you have a working internet connection and can connect to\n %s. \n\n Would you like to try again?' % loc, QMessageBox.Yes, QMessageBox.No)
+        # res = QMessageBox.question(None, 'RedR Update', 'There was a problem connecting to the server,\n please check that you have a working internet connection and can connect to\n %s. \n\n Would you like to try again?' % loc, QMessageBox.Yes, QMessageBox.No)
         
-        if res == QMessageBox.Yes:
-            trySNVUpdate(loc, canDir)
-        else: return
+        # if res == QMessageBox.Yes:
+            # trySNVUpdate(loc, canDir)
+        # else: return
     movie.stop()
     
 
