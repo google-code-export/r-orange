@@ -6,10 +6,14 @@ from PyQt4.QtGui import *
 import sys, os, cPickle, orngRegistry, orngEnviron, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import orange, user, orngMisc
+import updateRedR
 
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags = 0):
         QMainWindow.__init__(self, parent)
+        
+        updateRedR.start()
+        
         self.debugMode = 1        # print extra output for debuging
         self.setWindowTitle("Red Canvas")
         self.windows = []    # list of id for windows in Window menu
