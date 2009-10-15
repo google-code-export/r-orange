@@ -17,9 +17,13 @@ def start(lastRevproplist, versionNumber):
     
     #versionNumber = 'Version0'
     #versionNumber = 'Version1.5'
-
-    svnLoc = 'http://r-orange.googlecode.com/svn/branches/'
-
+    # movie = MoviePlayer()
+    # movie.show()
+    # movie.start()
+    # QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
+    # movie.stop()
+    # movie.hide()
+    svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
     
     try:
         client = pysvn.Client()
