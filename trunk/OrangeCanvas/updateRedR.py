@@ -102,7 +102,7 @@ def start(lastRevproplist, versionNumber):
                 if '.py' in package or '.svn' in package: pass
                 else:
                     try:
-                        client.export(svnLoc+'/OrangeWidgets/%s' % package, widgetDirName+'\%s' % package, force = True)
+                        client.export(svnLoc+'OrangeWidgets/%s' % package, widgetDirName+'\%s' % package, force = True)
                     except:
                         failed.append(package)
                         somethingFailed = 1
