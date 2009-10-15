@@ -36,8 +36,8 @@ class plotAffy(OWRpy):
         info = OWGUI.widgetBox(self.controlArea, "Info")
         self.infoa = OWGUI.widgetLabel(info, 'No data loaded.')
         OWGUI.button(info, self, "Show Image", callback = self.process, width = 200)
-        OWGUI.button(info, self, "Show Boxplot", callback = self.myboxplot, width = 200)
-        OWGUI.button(info, self, "Pocess and Show QC", callback = self.RAffyQC, width = 200)
+        OWGUI.button(info, self, "Show Box plot", callback = self.myboxplot, width = 200)
+        OWGUI.button(info, self, "Process and Show QC", callback = self.RAffyQC, width = 200)
         
         optionsa = OWGUI.widgetBox(self.controlArea, "Options")
         self.infob = OWGUI.widgetLabel(optionsa, 'Button not pressed')
