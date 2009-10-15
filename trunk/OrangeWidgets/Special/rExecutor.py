@@ -1,6 +1,7 @@
 """
 <name>R Executor</name>
 <description>Accepts and sends R objects as well as performing R commands</description>
+<tags>Special, R</tags>
 <icon>icons/RExecutor.PNG</icon>
 <priority>80</priority>
 """

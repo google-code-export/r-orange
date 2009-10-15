@@ -2,7 +2,8 @@
 <name>Dummy</name>
 <discription>A dummy widget to act as a placeholder if widget load fails</discription>
 <author>Kyle R. Covington</author>
-<icon>icons/Dummy.png</icon>
+<tags>Special</tags>
+<icon>icons/RExecutor.PNG</icon>
 <priority>4010</priority>
 """
 from OWRpy import * 

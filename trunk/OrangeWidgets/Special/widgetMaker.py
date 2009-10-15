@@ -1,7 +1,8 @@
 """
 <name>Widget Maker</name>
 <description>A widget for making the initial framework of a functional widget given an R package and function.</description>
-<icon>icons/widgetMaker.png</icon>
+<tags>Special</tags>
+<icon>icons/RExecutor.png</icon>
 <author>Kyle R. Covington</author>
 """
 

@@ -365,10 +365,13 @@ class OWRpy(OWWidget):
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
         print 'the devNumber is'+str(devNumber)
+        print str(self.device)
         if str(devNumber) in self.device:
             print 'dev exists'
             actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
-            if actdev != self.device[str(devNumber)]:
+            if actdev == 1: #there were no decives present and a new one has been created.
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+            if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
                 print 'dev not in R'
                 self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
                 self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')

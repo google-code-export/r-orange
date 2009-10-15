@@ -1,7 +1,9 @@
 """
-<name>lm</name>
+<name>Linear Model</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Makes a linear model given a data table and a formula.  The data table should be in a 'melted' form (Melt DF should help with this).  This model can viewed using ANOVA-LM</description>
 <tags>Stats, Parametric</tags>
+<icon>icons/stats.PNG</icon>
 """
 from OWRpy import * 
 import OWGUI 

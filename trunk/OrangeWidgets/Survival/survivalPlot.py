@@ -1,6 +1,8 @@
 """
 <name>Survival Plot</name>
 <author>Based on Plot which was Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Plots a survival object, usually from Survival Fit</description>
+<icon>icons/survival.png</icon>
 <tags>Survival</tags>
 """
 from OWRpy import * 
@@ -49,4 +51,4 @@ class survivalPlot(OWRpy):
             injection.append('cex.axis = '+str(mag))
         inj = ','.join(injection)
         
-        self.Rplot('plot('+str(self.RFunctionParam_x)+','+inj+', yscale = 100)', 5, 5)
+        self.Rplot('plot('+str(self.RFunctionParam_x)+','+inj+', yscale = 100, lty=c(1,2,3))', 5, 5)

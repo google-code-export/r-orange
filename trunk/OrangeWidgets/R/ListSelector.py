@@ -1,7 +1,8 @@
 """
 <name>List Selector</name>
 <description>Allows viewing of a list and picks parts of a list and sends them.</description>
-<icon>icons/ListSelector.png</icon>
+<tags>Data Subsetting and Merging</tags>
+<icon>icons/RExecutor.png</icon>
 <author>Kyle R. Covington</author>
 <priority>3010</priority>
 """

@@ -343,10 +343,10 @@ class WidgetListBase:
         
         try:
             subfile = tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt'
-            print 'checking file '+subfile+' for more tabs'
+            #print 'checking file '+subfile+' for more tabs'
             f = open(subfile, 'r')
             subTabs = f.read().split('\n')
-            print 'found subtabs '+str(subTabs)
+            #print 'found subtabs '+str(subTabs)
             f.close()
         except: #subtabs don't exist
             return
@@ -366,7 +366,7 @@ class WidgetListBase:
             for wName in widgetRegistry[tabName].keys():
                 awidgets = {}
                 try: 
-                    print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+                    #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
                     wtags = widgetRegistry[tabName][wName].tags
                     wtags = wtags.replace(' ', '')
                     wtags = wtags.split(',')
@@ -376,13 +376,13 @@ class WidgetListBase:
                     if itab.replace(' ', '') in wtags:
                         if tabName not in awidgets.keys(): awidgets[tabName] = {}
                         awidgets[tabName][wName] = widgetRegistry[tabName][wName]
-                        print 'made it past the awidgets stage'
-                        print str(awidgets[tabName].items())
+                        #print 'made it past the awidgets stage'
+                        #print str(awidgets[tabName].items())
                         (name, widgetInfo) = awidgets[tabName].items()[0]
                         (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
-                        print str((priority, name, widgetInfo)) + 'made it to 7894'
+                        #print str((priority, name, widgetInfo)) + 'made it to 7894'
                         if isinstance(self, WidgetTree):
-                            print 'trying to add a button'
+                            #print 'trying to add a button'
                             button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
                             
                         else:

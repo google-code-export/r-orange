@@ -1,6 +1,7 @@
 """
 <name>Heatmap</name>
-<description>Makes heatmaps of data.</description>
+<description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.</description>
+<tags>Bioconductor, Plotting</tags>
 <icon>icons/HeatMap.png</icon>
 <priority>2040</priority>
 """

@@ -1,3 +1,7 @@
 R
+Plotting
 Stats
+Bioconductor
+Finance
+Special
 Prototypes

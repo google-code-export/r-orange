@@ -1,6 +1,8 @@
 """
 <name>Melt DF</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<tags>Data Manipulation</tags>
+<icon>icons/RExecutor.png</icon>
 <priority>2060</priority>
 """
 from OWRpy import * 

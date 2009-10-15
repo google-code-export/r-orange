@@ -1,6 +1,10 @@
 """
-<name>plot</name>
+<name>Generic Plot</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Generic plot is the basis of most RedR plotting.  This accepts fits, data tables, or other RedR outputs and attempts to plot them.  However, there is no guarantee that your data will plot correctly.</description>
+<tags>Plotting</tags>
+<icon>icons/plot.PNG</icon>
+
 """
 from OWRpy import * 
 import OWGUI 
@@ -42,6 +46,10 @@ class plot(OWRpy):
             mag = float(self.RFunctionParam_cex)/100
             injection.append('cex.lab = '+str(mag))
             injection.append('cex.axis = '+str(mag))
-        inj = ','.join(injection)
-        
-        self.Rplot('plot('+str(self.RFunctionParam_x)+','+inj+')')
+        if injection != []:
+            inj = ','+','.join(injection)
+        else: inj = ''
+        #try:
+        self.Rplot('plot('+str(self.RFunctionParam_x)+inj+', col=c(1,2))')
+        # except:
+            # QMessageBox.information(None, 'Plotting Error', 'Your plot failed, this may not be a supported plot type.', QMessageBox.Ok)

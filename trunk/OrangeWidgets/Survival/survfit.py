@@ -1,6 +1,8 @@
 """
-<name>survfit</name>
+<name>Survival Fit</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Generates a survival fit object</description>
+<icon>icons/survival.png</icon>
 <tags>Survival</tags>
 """
 from OWRpy import * 

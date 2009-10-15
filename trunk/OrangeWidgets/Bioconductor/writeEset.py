@@ -1,7 +1,8 @@
 """
 <name>Write eSet</name>
 <description>Writes an eSet to a tab delimited file.</description>
-<icon>icons/rma.png</icons>
+<tags>Bioconductor</tags>
+<icon>icons/ReadCel.png</icon>
 <priority>80</priority>
 """
 

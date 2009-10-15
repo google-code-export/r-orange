@@ -1,6 +1,9 @@
 """
-<name>getSymbols</name>
+<name>Get Symbol</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Still a bit of an experimental widget, this widget gets symbol data and brings it into RedR.  Data can be plotted using the barChart widget.</description>
+<tags>Finance</tags>
+<icon>icons/Finance.PNG</icon>
 """
 from OWRpy import * 
 import OWGUI 

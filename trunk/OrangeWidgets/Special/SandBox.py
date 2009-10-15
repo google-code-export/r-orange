@@ -1,6 +1,7 @@
 """
 <name>SandBox</name>
 <description></description>
+<tags>Prototypes</tags>
 <priority>9010</priority>
 """
 

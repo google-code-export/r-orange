@@ -2,6 +2,8 @@
 <name>Transpose</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Transposes a data table and sends.</description>
+<tags>Data Manipulation</tags>
+<icon>icons/RExecutor.png</icon>
 <priority>2040</priority>
 """
 from OWRpy import * 

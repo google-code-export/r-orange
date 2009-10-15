@@ -1,6 +1,7 @@
 """
 <name>Merge RExampleTables</name>
 <description>Merges or subsets two RExampleTables depending on options.</description>
+<tags>Data Subsetting and Merging</tags>
 <icon>icons/Merge.png</icon>
 <priority>2030</priority>
 """

@@ -1,6 +1,7 @@
 """
 <name>Read CEL Files</name>
 <description>Allows the user to pick CEL files either individually or through a .txt file and outputs the eSet as an R.object</description>
+<tags>Bioconductor</tags>
 <icon>icons/ReadCel.png</icon>
 <priority>10</priority>
 """

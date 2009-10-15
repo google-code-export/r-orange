@@ -1,6 +1,8 @@
 """
-<name>survdiff</name>
+<name>Survival Difference</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Performs survival difference analysis.  This is similar to the Cox widget.</description>
+<icon>icons/survival.png</icon>
 <tags>Survival</tags>
 """
 from OWRpy import * 

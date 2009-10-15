@@ -1,6 +1,9 @@
 """
 <name>barChart</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Still a bit of an experimental widget, this widget plots data from the Get Symbol widget.</description>
+<tags>Finance</tags>
+<icon>icons/Finance.PNG</icon>
 """
 from OWRpy import * 
 import OWGUI 

@@ -1,7 +1,8 @@
 """
 <name>Sig Pathway</name>
 <description>Performs Pathway Analysis on a genelist or subset (must specify gene list as either a full list or a subset on connecting)</description>
-<icon>icons/readcel.png</icons>
+<tags>Bioconductor</tags>
+<icon>icons/ReadCel.png</icon>
 <priority>2030</priority>
 """
 

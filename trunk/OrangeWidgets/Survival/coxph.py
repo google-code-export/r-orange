@@ -1,6 +1,8 @@
 """
-<name>coxph</name>
+<name>Cox</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Performs Cox proportional hazards analysis and generates a Cox model.  The Cox model can be used to validate the proportional hazards of the data.</description>
+<icon>icons/survival.png</icon>
 <tags>Survival</tags>
 """
 from OWRpy import * 

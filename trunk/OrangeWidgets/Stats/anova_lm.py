@@ -1,6 +1,9 @@
 """
-<name>anova.lm</name>
+<name>ANOVA-LM</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Performs ANOVA on a linear model, usually made using the LM widget.  Returns an output of the ANOV comparison.</description>
+<tags>Parametric, Stats</tags>
+<icon>icons/stats.PNG</icon>
 """
 from OWRpy import * 
 import OWGUI 

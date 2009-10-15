@@ -1,6 +1,7 @@
 """
 <name>Normalize</name>
 <description>Processes an Affybatch to an eset using RMA</description>
+<tags>Bioconductor</tags>
 <icon>icons/Normalize.png</icon>
 <priority>1010</priority>
 """

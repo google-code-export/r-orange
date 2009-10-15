@@ -16,9 +16,14 @@ def start(lastRevproplist, versionNumber):
 
     
     #versionNumber = 'Version0'
-    #versionNumber = 'Version1.5'
-    QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
-    svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
+    versionNumber = 'Version1.5'
+    # movie = MoviePlayer()
+    # movie.show()
+    # movie.start()
+    # QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
+    # movie.stop()
+    # movie.hide()
+    svnLoc = 'http://r-orange.googlecode.com/svn/branches/'
     
     try:
         client = pysvn.Client()
@@ -87,6 +92,7 @@ def start(lastRevproplist, versionNumber):
         if res2 == QMessageBox.Yes:
             #define the package folders
             movie = MoviePlayer()
+            movie.show()
             movie.start()
             client = pysvn.Client()
             client.export(svnLoc+'/OrangeWidgets/', widgetDirName, force = True, recurse = False)
@@ -101,13 +107,14 @@ def start(lastRevproplist, versionNumber):
                         failed.append(package)
                         somethingFailed = 1
             movie.stop()
+            movie.hide()
             if somethingFailed == 1:
                 QMessageBox.information(None, 'RedR Update', 'The following widgets or packages failed: \n%s' % '\n  '.join(failed), QMessageBox.Ok + QMessageBox.Default)
                         
         else: 
             res3 = QMessageBox.question(None, 'RedR Update', 'Do you wish to apply these updates in the future?', QMessageBox.Yes, QMessageBox.No)
             if res3 == QMessageBox.No:
-                return newRevproplist
+                return newRevproplist, versionNumber
                 
             else:
                 return lastRevproplist, versionNumber
@@ -115,6 +122,7 @@ def start(lastRevproplist, versionNumber):
 
 def trySVNUpdate(loc, canDir, useSubdir = False):
     movie = MoviePlayer()
+    movie.show()
     movie.start()
     try:
         client = pysvn.Client()
@@ -122,13 +130,14 @@ def trySVNUpdate(loc, canDir, useSubdir = False):
         return 1
     except:
         movie.stop()
+        movie.hide()
         # res = QMessageBox.question(None, 'RedR Update', 'There was a problem connecting to the server,\n please check that you have a working internet connection and can connect to\n %s. \n\n Would you like to try again?' % loc, QMessageBox.Yes, QMessageBox.No)
         
         # if res == QMessageBox.Yes:
             # trySNVUpdate(loc, canDir)
         # else: return
     movie.stop()
-    
+    movie.hide()
 
 
 
@@ -136,8 +145,8 @@ class MoviePlayer(QWidget):
     def __init__(self, parent=None): 
         QWidget.__init__(self, parent) 
         # setGeometry(x_pos, y_pos, width, height)
-        self.setGeometry(200, 200, 400, 400)
-        self.setWindowTitle("QMovie to show animated gif")
+        self.setGeometry(20, 20, 20, 20)
+        self.setWindowTitle("Please wait while RedR processes.")
         
         # set up the movie screen on a label
         self.movie_screen = QLabel()
@@ -152,13 +161,13 @@ class MoviePlayer(QWidget):
                 
         # use an animated gif file you have in the working folder
         # or give the full file path
-        movie = QMovie("C:\\Python25\\Lib\\site-packages\\orange\\OrangeCanvas\\ajax-loader.gif", QByteArray(), self)
-        label = QLabel()
-        label.setMovie(movie)
+        #movie = QMovie("C:\\Python25\\Lib\\site-packages\\orange\\OrangeCanvas\\ajax-loader.gif", QByteArray(), self)
+        #label = QLabel()
+        #label.setMovie(movie)
         #QMessageBox.information(None, 'RedR', , QMessageBox.Ok)
         self.movie = QMovie("C:\\Python25\\Lib\\site-packages\\orange\\OrangeCanvas\\ajax-loader.gif", QByteArray(), self) 
         self.movie.setCacheMode(QMovie.CacheAll) 
-        self.movie.setSpeed(100) 
+        self.movie.setSpeed(150) 
         self.movie_screen.setMovie(self.movie) 
         self.movie.start()
         

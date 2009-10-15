@@ -1,7 +1,8 @@
 """
 <name>Limma Decide</name>
 <description>Calculates differential expression of genes from an eSet object</description>
-<icon>icons/readcel.png</icons>
+<tags>Bioconductor</tags>
+<icon>icons/ReadCel.png</icon>
 <priority>2030</priority>
 """
 

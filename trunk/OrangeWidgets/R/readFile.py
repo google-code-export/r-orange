@@ -1,6 +1,7 @@
 """
 <name>Read Files</name>
-<description>Read files</description>
+<description>Reads files from a text file and brings them into RedR.  These files should be like a table and should have values that are separated either by a tab, space, or comma.  You can use the scan feature to scan a small part of your data and make sure that it is in the correct format.  You can also set a column to represent the row names of your data.  This is encouraged if you have row names as some widgets rely on row names to help them function.</description>
+<tags>Data Entry</tags>
 <icon>icons/ReadFile.png</icon>
 <priority>10</priority>
 """

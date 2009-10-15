@@ -1,6 +1,7 @@
 """
 <name>Column Selection</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
+<tags>Data Subsetting and Merging</tags>
 <icon>icons/Subset.png</icon>
 <priority>2020</priority>
 """

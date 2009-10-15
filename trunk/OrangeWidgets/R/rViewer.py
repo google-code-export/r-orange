@@ -2,9 +2,9 @@
 <name>R viewer</name>
 <author>Kyle R. Covington</author>
 <description>Shows the output of an R variable, equivalent to typing the variable name in the R Executor</description>
-<tags>Data, All</tags>
-<icon>icons/Rviewer.png</icon>
-<priority></priority>
+<tags>R, Data Manipulation</tags>
+<icon>icons/RExecutor.PNG</icon>
+<priority>10</priority>
 """
 from OWRpy import * 
 import OWGUI 
