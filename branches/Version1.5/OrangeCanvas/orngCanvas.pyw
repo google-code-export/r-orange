@@ -461,8 +461,9 @@ class OrangeCanvasDlg(QMainWindow):
         webbrowser.open("http://www.ailab.si/orange")
 
     def menuCheckForUpdates(self):
-        import updateOrange
-        self.updateDlg = updateOrange.updateOrangeDlg(None, "", Qt.WDestructiveClose)
+        # import updateOrange
+        # self.updateDlg = updateOrange.updateOrangeDlg(None, "", Qt.WDestructiveClose)
+        self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'], silent = False)
 
     def menuItemAboutOrange(self):
         dlg = orngDlgs.AboutDlg()

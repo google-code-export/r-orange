@@ -12,7 +12,7 @@ import orngEnviron
 #QMessageBox.question(None, 'RedR Update','Do you wish to update RedR?', QMessageBox.Yes, QMessageBox.No)
 
 #class RedRUpdate():
-def start(lastRevproplist, versionNumber):
+def start(lastRevproplist, versionNumber, silent = True):
 
     
     #versionNumber = 'Version0'
@@ -23,7 +23,7 @@ def start(lastRevproplist, versionNumber):
     # QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
     # movie.stop()
     # movie.hide()
-    svnLoc = 'http://r-orange.googlecode.com/svn/branches/'
+    svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
     
     try:
         client = pysvn.Client()
@@ -118,6 +118,9 @@ def start(lastRevproplist, versionNumber):
                 
             else:
                 return lastRevproplist, versionNumber
+    else:
+        if not silent:
+            QMessageBox.information(None, 'RedR Update', 'No updates are available since your last update.', QMessageBox.Ok)
     return newRevproplist, versionNumber
 
 def trySVNUpdate(loc, canDir, useSubdir = False):
