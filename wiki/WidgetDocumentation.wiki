@@ -1,0 +1,25 @@
+#summary This is the navigation page for all widget documentation.
+
+= Introduction =
+
+RedR has the potential to grow to hundreds of widgets including functionality for anything from actuarial sciences to zoology.  However, all good programs need documentation.  We intend to provide that documentation largely in the form of screen-casts.  These will be accompanied by brief text descriptions of the functions and possibly additional screen-casts for very advanced functionality.
+
+The outline below will first introduce you to the basics of RedR, then specific widget descriptions for packages will follow, finally some demonstrations of how to make your own widgets and some preliminaries on RedR widget code.
+
+Please contact us if you have some questions about RedR.
+
+
+= Details =
+
+Basic Usage and Getting Started:
+  *
+
+Package Specific Widgets:
+  * Survival
+  * Biocondunctor
+
+RedR Functionality and Making Your Own Widgets:
+  * RedR widget specification and descriptions
+    * [Rwidgets]
+  * Making your own widgets
+    * [widgetMaker]
