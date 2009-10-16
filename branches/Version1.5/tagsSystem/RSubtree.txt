@@ -1,3 +1,0 @@
-Data Entry
-Data Manipulation
-Data Subsetting and Merging
