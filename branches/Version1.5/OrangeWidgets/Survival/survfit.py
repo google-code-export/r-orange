@@ -72,6 +72,9 @@ class survfit(OWRpy):
             self.RFunctionParam_data=data["data"]
             
             names = self.R('colnames('+self.RFunctionParam_data+')')
+            self.RFunctionParam_timeBox.clear()
+            self.RFunctionParam_eventBox.clear()
+            self.phenoVarListBox.clear()    
             for name in names:
                 self.RFunctionParam_timeBox.addItem(name)
                 self.RFunctionParam_eventBox.addItem(name)

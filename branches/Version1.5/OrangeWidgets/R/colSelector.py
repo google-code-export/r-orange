@@ -147,8 +147,8 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             # pass
 
     def onLoadSavedSession(self):
-        if self.Rvariables['result'] in self.R('ls()'):
-            self.applySubsetting(reload = True)
+        self.processSignals()
+
         i = 0
         for text in self.cTableTexts:
             newitem = QTableWidgetItem(text)
@@ -163,13 +163,14 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         
         self.process(data = self.saveData)
         self.ssvAttached(data = self.ssvdata)
-        
+        if self.Rvariables['result'] in self.R('ls()'):
+            self.applySubsetting(reload = True)
     def process(self, data):
         self.require_librarys(['fields'])
         
         if data == None:
             self.columnsorrows.clear() #clear the window for the new data
-            self.selectCriteria.clear()
+            #self.selectCriteria.clear()
             self.olddata = {} #clear the old data
             self.newdata = {} #clear just in case processing fails
             self.infoa.setText('None Type Recieved')
