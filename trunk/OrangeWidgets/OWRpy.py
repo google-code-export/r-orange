@@ -50,6 +50,8 @@ class OWRpy(OWWidget):
         
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
+        
+        self.RPackages = []
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
         #print 'set load ssaved '
@@ -66,8 +68,19 @@ class OWRpy(OWWidget):
 
     def getSettings(self, alsoContexts = True):
         settings = {}
+        allAtts = dir(self)
+        
+                
         if hasattr(self, "settingsList"):
-            self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings'])
+            self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings', 'RPackages'])
+
+            for att in allAtts:
+                if type(getattr(self, att)) == type('') or type(getattr(self, att)) == type(1): # if they are strings we don't need to worry much
+                    self.settingsList.extend([att])
+                elif type(getattr(self, att)) == type({}) or type(getattr(self, att)) == type([]): #we need to chech these types to see if they contain any instances or other things that we can't pickle.
+                    # print att
+                    # self.settingsList.extend([att])
+                    pass
             for name in self.settingsList:
                 try:
                     settings[name] =  self.getdeepattr(name)
@@ -94,8 +107,12 @@ class OWRpy(OWWidget):
                 GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
                 GUIsetting['class'] = 'button'
             elif elementClass == 'listBox':
-                GUIsetting['items'] = getattr(self, elementName).items()
-                GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
+                GUIsetting['items'] = []
+                for i in range(getattr(self, elementName).count()):
+                    GUIsetting['items'].append(getattr(self, elementName).item(i).text())
+                GUIsetting['selectedItems'] = []
+                for item in getattr(self, elementName).selectedItems():
+                    GUIsetting['selectedItems'].append(item.text())
                 GUIsetting['class'] = 'listBox'
             elif elementClass == 'radioButtonsInBox':
                 GUIsetting['class'] = 'radioButtonsInBox'
@@ -105,6 +122,7 @@ class OWRpy(OWWidget):
                 for i in range(cb.count()):
                     text.append(cb.itemText(i))
                 GUIsetting['itemText'] = text
+                GUIsetting['selectedIndex'] = getattr(self, elementName).currentIndex()
                 GUIsetting['class'] = 'comboBox'
             elif elementClass == 'comboBoxWithCaption':
                 text = []
@@ -279,6 +297,7 @@ class OWRpy(OWWidget):
                         self.R('chooseCRANmirror()')
                         self.R('install.packages("' + library + '")')
                         self.R('require(' + library + ')')
+                    self.RPackages.append(library)
                 except rpy.RPyRException, inst:
                     print 'asdf'
                     m = re.search("'(.*)'",inst.message)
@@ -288,7 +307,8 @@ class OWRpy(OWWidget):
             self.packagesLoaded = 1
         else:
             print 'Packages Loaded'
-                
+        #add the librarys to a list so that they are loaded when R is loaded.
+        
     def setRvariableNames(self,names):
         
         #names.append('loadSavedSession')
@@ -393,7 +413,7 @@ class OWRpy(OWWidget):
     
     def onSaveSession(self):
         print 'save session'
-        self.loadSavedSession = value;
+        #self.loadSavedSession = value
         
     def updateWidget(self, name, value):
         print 'update widget called'
@@ -412,12 +432,18 @@ class OWRpy(OWWidget):
         elif elementClass == 'listBox':
             getattr(self, name).clear()
             getattr(self, name).insertItems(0, value['items'])
+            for item in value['selectedItems']:
+                thisItem = getattr(self, name).findItems(item, Qt.MatchExactly)
+                #print str(thisItem)
+                if thisItem:
+                    getattr(self, name).setItemSelected(thisItem[0], 1)
         elif elementClass == 'radioButtonsInBox':
             pass
         elif elementClass == 'comboBox':
             getattr(self, name).clear()
-            for i in range(len(value['itemText'])):
-                getattr(self, name).setItemText(i, value['itemText'][i])
+            getattr(self, name).addItems(value['itemText'])
+            
+            getattr(self, name).setCurrentIndex(value['selectedIndex'])
         elif elementClass == 'comboBoxWithCaption':
             getattr(self, name).clear()
             for i in range(len(value['itemText'])):

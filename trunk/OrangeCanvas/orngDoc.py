@@ -507,7 +507,7 @@ class SchemaDoc(QWidget):
             set_options(RHOME=os.environ['RPATH'])
             import rpy
             import re
-            
+
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
@@ -515,6 +515,8 @@ class SchemaDoc(QWidget):
                     doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
                 else:
                     print 'loading R session ...'
+                    # insert function to load all R packages that were loaded in the previous session
+                    #self.settings
                     rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
 
             for widget in self.widgets:
@@ -534,6 +536,10 @@ class SchemaDoc(QWidget):
                 name = widget.getAttribute("widgetName")
                 settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                 print 'widget settings are' + str(settings)
+                try:
+                    for library in settings['RPackages']:
+                        rpy.r('require('+library+')')
+                except: pass #there must not be a setting like that one in the dict, must be an orange widget.
                 tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                 if not tempWidget:
                     #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
@@ -578,11 +584,13 @@ class SchemaDoc(QWidget):
         print 'finish process'
         print 'start onload'
         for widget in self.widgets:
-            print 'for widget'
-            SignalManager.loadSavedSession = True
-            widget.instance.onLoadSavedSession()
-            SignalManager.loadSavedSession = False
-
+            try: # important to have this or else failures in load saved settings will result in no links able to connect.
+                #print 'for widget'
+                SignalManager.loadSavedSession = True
+                widget.instance.onLoadSavedSession()
+                SignalManager.loadSavedSession = False
+            except: pass
+        SignalManager.loadSavedSession = False
         print 'done on load'
 
         # do we want to restore last position and size of the widget

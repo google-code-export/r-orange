@@ -105,15 +105,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
         self.toolbar.addSeparator()
-        w = QWidget()
-        w.setLayout(QHBoxLayout())
+        # w = QWidget()
+        # w.setLayout(QHBoxLayout())
         
-        items = ["Tool box", "Tree view", "Tabs without labels", "Tabs with labels"]
-        ind = max(len(items)-1, self.settings["widgetListType"])
-        OWGUI.comboBox(w, self.settings, "widgetListType", label = "Style:", orientation = "horizontal", items = items, callback = self.createWidgetsToolbar, debuggingEnabled = 0)
-        self.toolbar.addWidget(w)
+        # items = ["Tool box", "Tree view", "Tabs without labels", "Tabs with labels"]
+        # ind = max(len(items)-1, self.settings["widgetListType"])
+        # OWGUI.comboBox(w, self.settings, "widgetListType", label = "Style:", orientation = "horizontal", items = items, callback = self.createWidgetsToolbar, debuggingEnabled = 0)
+        # self.toolbar.addWidget(w)
         
-        self.toolbar.addSeparator()
+        # self.toolbar.addSeparator()
 
         w = QWidget()
         w.setLayout(QHBoxLayout())

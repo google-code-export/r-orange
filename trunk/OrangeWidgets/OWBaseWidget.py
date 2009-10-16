@@ -538,10 +538,10 @@ class OWBaseWidget(QDialog):
 
     # return settings in string format compatible with cPickle
     def saveSettingsStr(self):
-        print 'saveSettingsStr called'
+        #print 'saveSettingsStr called'
         settings = self.getSettings()
-        print settings
-        print str(self.RGUIElements)
+        #print settings
+        #print str(self.RGUIElements)
         return cPickle.dumps(settings)
 
     def onSaveSession(self):
