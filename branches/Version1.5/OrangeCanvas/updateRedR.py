@@ -23,7 +23,7 @@ def start(lastRevproplist, versionNumber, silent = True):
     # QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
     # movie.stop()
     # movie.hide()
-    svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
+    svnLoc = 'http://r-orange.googlecode.com/svn/branches/'
     
     try:
         client = pysvn.Client()

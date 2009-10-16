@@ -339,6 +339,8 @@ class SignalManager:
         # if not freezed -> process dirty widgets
         if self.verbosity >= 2:
             self.addEvent("send data from " + widgetFrom.captionTitle + ". Signal = " + signalNameFrom, value, eventVerbosity = 2)
+        print str("send data from " + widgetFrom.captionTitle + ". Signal = " + signalNameFrom)
+        print 'Load saved session is set to '+str(self.loadSavedSession)
 
         if not self.links.has_key(widgetFrom): return
         for (widgetTo, signalFrom, signalTo, enabled) in self.links[widgetFrom]:
