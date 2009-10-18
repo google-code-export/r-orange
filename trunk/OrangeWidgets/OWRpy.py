@@ -60,6 +60,7 @@ class OWRpy(OWWidget):
         
         #collect the sent items
         self.sentItems = []
+        self.blackList = ['canvasSettingsDir', '__module__', 'canvasDir', 'widgetXPosition', 'widgetYPosition', 'orangeDir', '_owError', 'bufferDir', 'widgetWidth', 'occupied', 'widgetSettingsDir', 'widgetHeight', '_category', 'reposDir', 'picsDir', 'addOnsDir', 'widgetShown', 'captionTitle', 'widgetDir']
         
         
     # def setOutputs (self,outputs):
@@ -76,7 +77,9 @@ class OWRpy(OWWidget):
 
             for att in allAtts:
                 if type(getattr(self, att)) == type('') or type(getattr(self, att)) == type(1): # if they are strings we don't need to worry much
-                    self.settingsList.extend([att])
+                    if att in self.blackList: pass  # allows us to make a blackList so that everything isn't saved, these things can be saved with special calls to settingsList.extend, but they won't be saved normally.
+                    else:
+                        self.settingsList.extend([att])
                 elif type(getattr(self, att)) == type({}) or type(getattr(self, att)) == type([]): #we need to chech these types to see if they contain any instances or other things that we can't pickle.
                     # print att
                     # self.settingsList.extend([att])
@@ -410,6 +413,10 @@ class OWRpy(OWWidget):
             elementName = key.replace('GUIelement_', '')
             info = self.RGUIElementsSettings[key]
             self.updateWidget(elementName, info)
+        try:
+            self.processSignals()
+            self.RWidgetReload()
+        except: pass
     
     def onSaveSession(self):
         print 'save session'
