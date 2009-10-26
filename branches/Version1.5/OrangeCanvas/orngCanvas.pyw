@@ -146,12 +146,12 @@ class OrangeCanvasDlg(QMainWindow):
         self.show()
 
         # did Orange crash the last time we used it? If yes, you will find a temSchema.tmp file
-        if os.path.exists(os.path.join(self.canvasSettingsDir, "tempSchema.tmp")):
-            mb = QMessageBox('Red Canvas', "Your previous Red Canvas session was not closed successfully.\nYou can choose to reload your unsaved work or start a new session.\n\nIf you choose 'Reload', the links will be disabled to prevent reoccurence of the crash.\nYou can enable them by clicking Options/Enable all links.", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
-            mb.setButtonText(QMessageBox.Ok, "Reload")
-            mb.setButtonText(QMessageBox.Cancel, "New schema")
-            if mb.exec_() == QMessageBox.Ok:
-                self.schema.loadDocument(os.path.join(self.canvasSettingsDir, "tempSchema.tmp"), freeze = 1)
+        # if os.path.exists(os.path.join(self.canvasSettingsDir, "tempSchema.tmp")):
+            # mb = QMessageBox('RedR Canvas', "Your previous RedR Canvas session was not closed successfully.\nYou can choose to reload your unsaved work or start a new session.\n\nIf you choose 'Reload', the links will be disabled to prevent reoccurence of the crash.\nYou can enable them by clicking Options/Enable all links.", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+            # mb.setButtonText(QMessageBox.Ok, "Reload")
+            # mb.setButtonText(QMessageBox.Cancel, "New schema")
+            # if mb.exec_() == QMessageBox.Ok:
+                # self.schema.loadDocument(os.path.join(self.canvasSettingsDir, "tempSchema.tmp"), freeze = 1)
         
         
         if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".ows":
@@ -179,17 +179,17 @@ class OrangeCanvasDlg(QMainWindow):
                 self.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
                 self.removeDockWidget(self.widgetsToolBar)
 
-        if self.settings["widgetListType"] == 0:
-            self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
-            self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
-        elif self.settings["widgetListType"] == 1:
-            self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
-            self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
-        else:
-            self.widgetsToolBar = self.addToolBar("Widgets")
-            self.insertToolBarBreak(self.widgetsToolBar)
-            self.tabs = orngTabs.WidgetTabs(self, self.widgetRegistry, self.widgetsToolBar)
-            self.widgetsToolBar.addWidget(self.tabs)
+        # if self.settings["widgetListType"] == 0:
+            # self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
+            # self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
+        # elif self.settings["widgetListType"] == 1:
+        self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
+        # else:
+            # self.widgetsToolBar = self.addToolBar("Widgets")
+            # self.insertToolBarBreak(self.widgetsToolBar)
+            # self.tabs = orngTabs.WidgetTabs(self, self.widgetRegistry, self.widgetsToolBar)
+            # self.widgetsToolBar.addWidget(self.tabs)
 
         # find widgets and create tab with buttons
         self.settings["WidgetTabs"] = self.tabs.createWidgetTabs(self.settings["WidgetTabs"], self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
