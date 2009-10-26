@@ -14,7 +14,7 @@
 # all sorts of preprocessing (including discretization) on the table,
 # output a new table and export it in variety of formats.
 from OWRpy import *
-import OWGUI
+import OWGUI, RRGUI
 import math
 from orngDataCaching import *
 
@@ -61,17 +61,27 @@ class RDataTable(OWRpy):
         self.infoMeta = OWGUI.widgetLabel(infoBox, ' ')
         OWGUI.widgetLabel(infoBox, ' ')
         self.infoClass = OWGUI.widgetLabel(infoBox, ' ')
-        OWGUI.widgetLabel(infoBox, "Links:")
-        self.linkListBox = OWGUI.listBox(infoBox, self)
-        OWGUI.lineEdit(infoBox, self, 'mylink', label = 'Custom Link:')
+        
+        
+        #tabs
+        tabWidgeta = RRGUI.tabWidget(self.controlArea, None, self)
+        
+        
+        #links:
+        linksTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Link Data:')
+                #OWGUI.widgetLabel(infoBox, "Links:")
+        self.linkListBox = OWGUI.listBox(linksTab, self)
+        OWGUI.lineEdit(linksTab, self, 'mylink', label = 'Custom Link:')
         
         #save box
-        infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
-        OWGUI.widgetLabel(infoBox, "Saves the current table to a file.")
-        OWGUI.button(infoBox, self, "Choose Directory", callback = self.chooseDirectory)
-        OWGUI.lineEdit(infoBox, self, 'fileName', label = "File:", width = 50)
-        OWGUI.comboBox(infoBox, self, 'delim', label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
-        OWGUI.button(infoBox, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
+        
+                #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        saveTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Save Data:')
+        OWGUI.widgetLabel(saveTab, "Saves the current table to a file.")
+        OWGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
+        OWGUI.lineEdit(saveTab, self, 'fileName', label = "File:", width = 50)
+        OWGUI.comboBox(saveTab, self, 'delim', label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
+        OWGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         infoBox.setMinimumWidth(200)
         OWGUI.separator(self.controlArea)
 
@@ -278,6 +288,10 @@ class RDataTable(OWRpy):
 
         # set the header (attribute names)
         table.setHorizontalHeaderLabels(table.variableNames)
+        if self.currentData:
+            rowNames = self.R('rownames('+self.currentData+')')
+            if rowNames != 'NULL':
+                table.setVerticalHeaderLabels(rowNames)
         if self.showAttributeLabels:
             labelnames = set()
             for a in data.domain:
