@@ -237,7 +237,10 @@ class RDataTable(OWRpy):
         for item in self.linkListBox.selectedItems():
             text = self.currentLinks[item.text()]
             col = text[text.find('{')+1:text.find('}')]
-            cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
+            if col == 0 or col == 'row': #special cases for looking into rownames
+                cellVal = self.R('rownames('+table+')['+str(RclickedRow)+']')
+            else:
+                cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
             self.rsession('shell.exec("'+text.replace('{'+col+'}', str(cellVal))+'")')
         
         
