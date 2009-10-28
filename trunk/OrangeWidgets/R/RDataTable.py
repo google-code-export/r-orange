@@ -438,8 +438,8 @@ class RDataTable(OWRpy):
             self.infoEx.setText("%s example%s," % sp(data))
             missData = orange.Preprocessor_takeMissing(data)
             self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
-            self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
-            self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
+            #self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
+            #self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
             if data.domain.classVar:
                 if data.domain.classVar.varType == orange.VarTypes.Discrete:
                     self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))
