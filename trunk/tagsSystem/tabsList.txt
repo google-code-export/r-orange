@@ -2,6 +2,7 @@ R
 Plotting
 Stats
 Bioconductor
+Dose Response
 Finance
 Special
 Prototypes
