@@ -9,6 +9,7 @@ from string import strip, count, replace
 import orngDoc, orngOutput, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx
+import orngEnviron
 
 WB_TOOLBOX = 0
 WB_TREEVIEW = 1
@@ -299,8 +300,9 @@ class WidgetListBase:
         
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
-        tfile = 'C:\\Python25\\Lib\\site-packages\\orange\\tagsSystem\\tabsList.txt'
+        tfile = orngEnviron.directoryNames['orangeDir'] + '\\tagsSystem\\tabsList.txt'
         f = open(tfile, 'r')
+        
         mainTabs = f.read().split('\n')
         f.close()
         
