@@ -1,0 +1,15 @@
+#summary Overview of the common methods of entering data into the RedR session.
+
+= Introduction =
+
+Getting data into RedR is essential for data processing and manipulation.  Here we show examples of how to use the DataEntry and ReadFiles widgets.
+
+= Screen-Cast =
+
+The ReadFiles widget is used to read data into RedR from a tab-delimited file.
+
+<wiki:video url="http://www.youtube.com/watch?v=u55EQSOUZj4"/>
+
+The DataEntry widget is used to enter data manually into the RedR session.  This widget can also be used to modify data that was previously read into RedR.
+
+<wiki:vedio url="http://www.youtube.com/watch?v=W3BMmaraI0c"/>
