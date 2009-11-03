@@ -1,0 +1,11 @@
+#summary A small tutorial showing data loading and display in a table.
+
+= Introduction =
+
+RedR is a visual programming environment where 'widgets' are loaded and connected in a graphical environment for ease of understanding and use.  Widgets are loaded from the widget tool bar, a tree structure where widgets can be accessed.  Once on the canvas widgets can be opened by double-clicking on the widget icon.  Once a widget is open functionality is accessed by the widget GUI.  To send the product of one widget to another connections are made from the right side of the sending widget to the left side of the receiving widget.
+
+The following screen-cast shows widgets being loaded, opened, manipulated, and connected.
+
+<wiki:video url="http://www.youtube.com/watch?v=XNHb_q5JvuE"/>
+
+
