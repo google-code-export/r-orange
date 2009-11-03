@@ -11,11 +11,3 @@ The !ReadFiles GUI is divided into four sections; Data File at the top allows fo
 The following screen-cast shows reading a file into RedR.
 
 <wiki:video url="http://www.youtube.com/watch?v=u55EQSOUZj4"/>
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
