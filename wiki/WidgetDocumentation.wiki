@@ -13,7 +13,7 @@ Please contact us if you have some questions about RedR.
 = Table of Contents =
 
 Basic Usage and Getting Started:
-  * My first RedR schema
+  * [MyFirstSchema My first RedR schema]
   * Updates
   * What is data anyway?
   * Where does data come from?
