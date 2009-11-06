@@ -392,8 +392,8 @@ class OWRpy(OWWidget):
 
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
-        print 'the devNumber is'+str(devNumber)
-        print str(self.device)
+        # print 'the devNumber is'+str(devNumber)
+        # print str(self.device)
         if str(devNumber) in self.device:
             print 'dev exists'
             actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')

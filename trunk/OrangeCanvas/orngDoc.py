@@ -1,4 +1,4 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si)
+# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington and Anup Parikh
 # Description:
 #    document class - main operations (save, load, ...)
 #
@@ -484,7 +484,7 @@ class SchemaDoc(QWidget):
 
 
     # load a scheme with name "filename"
-    def loadDocument(self, filename, caption = None, freeze = 0):
+    def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         print 'document load called'
         #self.clear()
         
@@ -500,75 +500,145 @@ class SchemaDoc(QWidget):
         if os.path.splitext(filename)[1].lower() == ".ows":
             self.schemaPath, self.schemaName = os.path.split(filename)
             self.canvasDlg.setCaption(caption or self.schemaName)
+        if not importBlank:
+            try:
+                #load the data ...
+                from rpy_options import set_options
+                set_options(RHOME=os.environ['RPATH'])
+                import rpy
+                import re
 
-        try:
-            #load the data ...
-            from rpy_options import set_options
-            set_options(RHOME=os.environ['RPATH'])
-            import rpy
-            import re
+                zfile = zipfile.ZipFile( str(filename), "r" )
+                for name in zfile.namelist():
+                    file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
+                    if re.search('tempSchema.tmp',os.path.basename(name)):
+                        doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
+                    else:
+                        print 'loading R session ...'
+                        # insert function to load all R packages that were loaded in the previous session
+                        #self.settings
+                        rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
 
-            zfile = zipfile.ZipFile( str(filename), "r" )
-            for name in zfile.namelist():
-                file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
-                if re.search('tempSchema.tmp',os.path.basename(name)):
-                    doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
-                else:
-                    print 'loading R session ...'
-                    # insert function to load all R packages that were loaded in the previous session
-                    #self.settings
-                    rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
+                for widget in self.widgets:
+                    widget.caption += 'A'
+                
+                
+                schema = doc.firstChild
+                widgets = schema.getElementsByTagName("widgets")[0]
+                lines = schema.getElementsByTagName("channels")[0]
+                settings = schema.getElementsByTagName("settings")
+                settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+                self.loadedSettingsDict = settingsDict
+                  
+                # read widgets
+                loadedOk = 1
+                for widget in widgets.getElementsByTagName("widget"):
+                    name = widget.getAttribute("widgetName")
+                    settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
+                    print 'widget settings are' + str(settings)
+                    try:
+                        for library in settings['RPackages']:
+                            rpy.r('require('+library+')')
+                    except: pass #there must not be a setting like that one in the dict, must be an orange widget.
+                    tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                    if not tempWidget:
+                        #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
+                        failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                        loadedOk = 0
+                    qApp.processEvents()
 
-            for widget in self.widgets:
-                widget.caption += 'A'
-            
-            
-            schema = doc.firstChild
-            widgets = schema.getElementsByTagName("widgets")[0]
-            lines = schema.getElementsByTagName("channels")[0]
-            settings = schema.getElementsByTagName("settings")
-            settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
-            self.loadedSettingsDict = settingsDict
-              
-            # read widgets
-            loadedOk = 1
-            for widget in widgets.getElementsByTagName("widget"):
-                name = widget.getAttribute("widgetName")
-                settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                print 'widget settings are' + str(settings)
-                try:
-                    for library in settings['RPackages']:
-                        rpy.r('require('+library+')')
-                except: pass #there must not be a setting like that one in the dict, must be an orange widget.
-                tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
-                if not tempWidget:
-                    #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
-                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
-                    loadedOk = 0
-                qApp.processEvents()
+                
+                #read lines
+                lineList = lines.getElementsByTagName("channel")
+                for line in lineList:
+                    inCaption = line.getAttribute("inWidgetCaption")
+                    outCaption = line.getAttribute("outWidgetCaption")
+                    if freeze: enabled = 0
+                    else:      enabled = int(line.getAttribute("enabled"))
+                    signals = line.getAttribute("signals")
+                    inWidget = self.getWidgetByCaption(inCaption)
+                    outWidget = self.getWidgetByCaption(outCaption)
+                    if inWidget == None or outWidget == None:
+                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
+                        loadedOk = 0
+                        continue
 
-            
-            #read lines
-            lineList = lines.getElementsByTagName("channel")
-            for line in lineList:
-                inCaption = line.getAttribute("inWidgetCaption")
-                outCaption = line.getAttribute("outWidgetCaption")
-                if freeze: enabled = 0
-                else:      enabled = int(line.getAttribute("enabled"))
-                signals = line.getAttribute("signals")
-                inWidget = self.getWidgetByCaption(inCaption)
-                outWidget = self.getWidgetByCaption(outCaption)
-                if inWidget == None or outWidget == None:
-                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
-                    loadedOk = 0
-                    continue
+                    signalList = eval(signals)
+                    for (outName, inName) in signalList:
+                        self.addLink(outWidget, inWidget, outName, inName, enabled)
+                    #qApp.processEvents()
+            finally:
+                qApp.restoreOverrideCursor()
+        else:
+            self.schemaName = ""
+            try:
+                # removed the section for loading the RData, this should be a blank schema
+                import re
+                from rpy_options import set_options
+                set_options(RHOME=os.environ['RPATH'])
+                import rpy
+                
+                for widget in self.widgets:
+                    widget.caption += 'A'
+                
+                zfile = zipfile.ZipFile( str(filename), "r" )
+                for name in zfile.namelist():
+                    file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
+                    if re.search('tempSchema.tmp',os.path.basename(name)):
+                        doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
+                    else:
+                        pass
+                        #print 'loading R session ...'
+                        # insert function to load all R packages that were loaded in the previous session
+                        #self.settings
+                        #rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
+                
+                schema = doc.firstChild
+                widgets = schema.getElementsByTagName("widgets")[0]
+                lines = schema.getElementsByTagName("channels")[0]
+                settings = schema.getElementsByTagName("settings")
+                settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+                self.loadedSettingsDict = settingsDict
+                  
+                # read widgets
+                loadedOk = 1
+                for widget in widgets.getElementsByTagName("widget"):
+                    name = widget.getAttribute("widgetName")
+                    settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
+                    #print 'widget settings are' + str(settings)
+                    try:
+                        for library in settings['RPackages']:
+                            rpy.r('require('+library+')')
+                    except: pass #there must not be a setting like that one in the dict, must be an orange widget.
+                    tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                    if not tempWidget:
+                        #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
+                        failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                        loadedOk = 0
+                    qApp.processEvents()
 
-                signalList = eval(signals)
-                for (outName, inName) in signalList:
-                    self.addLink(outWidget, inWidget, outName, inName, enabled)
-                #qApp.processEvents()
-        finally:
-            qApp.restoreOverrideCursor()
+                
+                #read lines
+                lineList = lines.getElementsByTagName("channel")
+                for line in lineList:
+                    inCaption = line.getAttribute("inWidgetCaption")
+                    outCaption = line.getAttribute("outWidgetCaption")
+                    if freeze: enabled = 0
+                    else:      enabled = int(line.getAttribute("enabled"))
+                    signals = line.getAttribute("signals")
+                    inWidget = self.getWidgetByCaption(inCaption)
+                    outWidget = self.getWidgetByCaption(outCaption)
+                    if inWidget == None or outWidget == None:
+                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
+                        loadedOk = 0
+                        continue
+
+                    signalList = eval(signals)
+                    for (outName, inName) in signalList:
+                        self.addLink(outWidget, inWidget, outName, inName, enabled)
+                    qApp.processEvents()
+            finally:
+                qApp.restoreOverrideCursor()
 
         for widget in self.widgets: widget.updateTooltip()
         self.canvas.update()
@@ -578,11 +648,11 @@ class SchemaDoc(QWidget):
         if not loadedOk:
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
 
-        print 'process new signal'
-        if self.widgets:
-            self.signalManager.processNewSignals(self.widgets[0].instance)
-        print 'finish process'
-        print 'start onload'
+        # print 'process new signal'  # removed so that signals aren't processed, this isn't needed when we import a scema
+        # if self.widgets:
+            # self.signalManager.processNewSignals(self.widgets[0].instance)  
+        #print 'finish process'
+        print 'start onload' # we do want to reload the settings of the widgets
         for widget in self.widgets:
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
                 #print 'for widget'

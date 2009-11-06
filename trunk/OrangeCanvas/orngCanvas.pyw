@@ -210,14 +210,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuFile.addAction( "New Scheme",  self.menuItemNewScheme, QKeySequence.New)
         self.menuFile.addAction(QIcon(self.file_open), "&Open...", self.menuItemOpen, QKeySequence.Open )
         self.menuFile.addAction(QIcon(self.file_open), "&Open and Freeze...", self.menuItemOpenFreeze)
+        self.menuFile.addAction("Import Schema", self.importSchema)
         if os.path.exists(os.path.join(self.canvasSettingsDir, "lastSchema.tmp")):
             self.menuFile.addAction("Reload Last Schema", self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
         #self.menuFile.addAction( "&Clear", self.menuItemClear)
         self.menuFile.addSeparator()
         self.menuSaveID = self.menuFile.addAction(QIcon(self.file_save), "&Save", self.menuItemSave, QKeySequence.Save )
         self.menuSaveAsID = self.menuFile.addAction( "Save &As...", self.menuItemSaveAs)
-        self.menuFile.addAction( "&Save as Application (Tabs)...", self.menuItemSaveAsAppTabs)
-        self.menuFile.addAction( "&Save as Application (Buttons)...", self.menuItemSaveAsAppButtons)
+        #self.menuFile.addAction( "&Save as Application (Tabs)...", self.menuItemSaveAsAppTabs)
+        #self.menuFile.addAction( "&Save as Application (Buttons)...", self.menuItemSaveAsAppButtons)
         self.menuFile.addSeparator()
         self.menuFile.addAction(QIcon(self.file_print), "&Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
         self.menuFile.addSeparator()
@@ -275,7 +276,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
-
+    
+    def importSchema(self):
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
+        if name.isEmpty():
+            return
+        self.schema.clear()
+        self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
+        self.addToRecentMenu(str(name))
+        
     def menuItemOpen(self):
         name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
         if name.isEmpty():
