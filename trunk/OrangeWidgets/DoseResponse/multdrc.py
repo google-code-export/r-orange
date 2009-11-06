@@ -1,5 +1,5 @@
 """
-<name>multdrc</name>
+<name>Multi Dose Response</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <tags>Dose Response</tags>
 <icon>icons/drc.PNG</icon>
@@ -19,7 +19,7 @@ class multdrc(OWRpy):
         self.RFunctionParam_cm = "NULL"
         self.RFunctionParam_fctList = "NULL"
         self.RFunctionParam_bcAdd = "0"
-        self.RFunctionParam_curve = ""
+        self.curve = 0
         self.RFunctionParam_boxcox = "FALSE"
         self.RFunctionParam_varPower = "FALSE"
         self.RFunctionParam_formula = ""
@@ -29,11 +29,12 @@ class multdrc(OWRpy):
         self.RFunctionParam_robust = "mean"
         self.RFunctionParam_type = "continuous"
         self.RFunctionParam_logDose = "NULL"
-        self.response = ''
-        self.dose = ''
-        
-        self.loadSettings() 
+        self.response = 0
+        self.dose = 0
+        self.colNames = []
         self.RFunctionParam_data = ''
+        self.loadSettings() 
+
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         self.outputs = [("multdrc Output", RvarClasses.RVariable)]
         
@@ -47,7 +48,7 @@ class multdrc(OWRpy):
         self.RFUnctionParamcm_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamcm_lineEdit", self, "RFunctionParam_cm", label = "cm:")
         self.RFUnctionParamfctList_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamfctList_lineEdit", self, "RFunctionParam_fctList", label = "fctList:")
         self.RFUnctionParambcAdd_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParambcAdd_lineEdit", self, "RFunctionParam_bcAdd", label = "bcAdd:")
-        self.RFUnctionParamcurve_comboBox =  RRGUI.comboBox(self.standardTab, "RFUnctionParamcurve_comboBox", self, "RFunctionParam_curve", label = "Curves:")
+        self.curveComboBox =  RRGUI.comboBox(self.standardTab, "curveComboBox", self, "curve", label = "Curves:")
         self.RFUnctionParamboxcox_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamboxcox_lineEdit", self, "RFunctionParam_boxcox", label = "boxcox:")
         self.RFUnctionParamvarPower_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamvarPower_lineEdit", self, "RFunctionParam_varPower", label = "varPower:")
         #self.RFUnctionParamformula_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamformula_lineEdit", self, "RFunctionParam_formula", label = "formula:")
@@ -66,16 +67,25 @@ class multdrc(OWRpy):
         self.require_librarys(["drc"]) 
         if data:
             self.RFunctionParam_data=data["data"]
-            colNames = self.R('colnames('+data['data']+')')
-            self.responseComboBox.addItems(colNames)
-            self.doseComboBox.addItems(colNames)
-            self.RFUnctionParamcurve_comboBox.addItems(colNames)
-            self.commitFunction()
+            
+
+            if self.colNames == self.R('colnames('+data['data']+')'):
+                self.commitFunction()
+                return
+            else:
+                self.colNames = self.R('colnames('+data['data']+')')
+                self.responseComboBox.clear()
+                self.doseComboBox.clear()
+                self.curveComboBox.clear()
+            self.responseComboBox.addItems(self.colNames)
+            self.doseComboBox.addItems(self.colNames)
+            self.curveComboBox.addItems(self.colNames)
+            #self.commitFunction()
             self.anovaTextArea.clear()
     def commitFunction(self):
         if self.RFunctionParam_data == '': return
-        #if self.RFunctionParam_curve == '': return
-        if self.RFUnctionParamcurve_comboBox.currentText() == self.doseComboBox.currentText() or self.RFUnctionParamcurve_comboBox.currentText() == self.responseComboBox.currentText():
+        #if self.curve == '': return
+        if self.curveComboBox.currentText() == self.doseComboBox.currentText() or self.curveComboBox.currentText() == self.responseComboBox.currentText():
             print "Comparison not possible"
             return
         if self.doseComboBox.currentText() == self.responseComboBox.currentText():
@@ -106,8 +116,8 @@ class multdrc(OWRpy):
         if self.RFunctionParam_bcAdd != '':
             string = 'bcAdd='+str(self.RFunctionParam_bcAdd)
             injection.append(string)
-        if self.RFUnctionParamcurve_comboBox.currentText() != '':
-            string = 'curve='+str(self.RFUnctionParamcurve_comboBox.currentText())
+        if self.curveComboBox.currentText() != '':
+            string = 'curve='+str(self.curveComboBox.currentText())
             injection.append(string)
         if self.RFunctionParam_boxcox != '':
             string = 'boxcox='+str(self.RFunctionParam_boxcox)
@@ -137,7 +147,7 @@ class multdrc(OWRpy):
             string = 'logDose='+str(self.RFunctionParam_logDose)
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['multdrc']+'<-multdrc(data='+str(self.RFunctionParam_data)+','+inj+')')
+        self.R(self.Rvariables['multdrc']+'<-multdrc(data='+str(self.RFunctionParam_data)+','+inj+') # I made a dose response object')
         self.rSend("multdrc Output", {"data":self.Rvariables["multdrc"]})
         self.anovaTextArea.clear()
         self.R('txt<-capture.output(anova('+self.Rvariables["multdrc"]+'))')

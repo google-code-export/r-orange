@@ -62,10 +62,13 @@ class OWRpy(OWWidget):
         self.sentItems = []
         self.blackList = ['canvasSettingsDir', '__module__', 'canvasDir', 'widgetXPosition', 'widgetYPosition', 'orangeDir', '_owError', 'bufferDir', 'widgetWidth', 'occupied', 'widgetSettingsDir', 'widgetHeight', '_category', 'reposDir', 'picsDir', 'addOnsDir', 'widgetShown', 'captionTitle', 'widgetDir']
         
+        self.widgetToolBar = QMenuBar(self)
+        notesMenu = self.widgetToolBar.addMenu('Notes')
+        self.notesAction = ToolBarTextEdit(self)
+        notesMenu.addAction(self.notesAction)
         
-    # def setOutputs (self,outputs):
-        # self.outputs.extend(outputs)
-        # self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]
+        self.controlArea.layout().addWidget(self.widgetToolBar)
+
 
     def getSettings(self, alsoContexts = True):
         settings = {}
@@ -182,6 +185,8 @@ class OWRpy(OWWidget):
                 GUIsetting['class'] = 'textEdit'
             
             self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting
+            
+        self.RGUIElementsSettings['widgetNotes'] = {'text':self.notesAction.textEdit.document().toHtml(), 'class': 'widgetNotes'}
             # if hasattr(self, "settingsList"):
                 # self.settingsList.extend([str('GUIelement_'+elementName)])
                 # settings[str('GUIelement_'+elementName)] = GUIsetting
@@ -396,6 +401,7 @@ class OWRpy(OWWidget):
                 self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
             if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
                 print 'dev not in R'
+                self.R('dev.off()')
                 self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
                 self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
                 print str(self.device)
@@ -403,16 +409,26 @@ class OWRpy(OWWidget):
             print 'make new dev for this'
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
             self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+        #self.require_librarys(['playwith', 'RGtk2'])
+        
+        #self.R('playwith('+query+')', 'setRData')
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
         print str(self.RGUIElementsSettings)
+        
         for (name, data) in self.sentItems:
             self.send(name, data)
+        print str(self.RGUIElementsSettings.keys())
         for key in self.RGUIElementsSettings.keys():
+            print key
             elementName = key.replace('GUIelement_', '')
             info = self.RGUIElementsSettings[key]
-            self.updateWidget(elementName, info)
+            try:
+                self.updateWidget(elementName, info)
+                print key + ' complete'
+            except:
+                print 'loading '+key+' failed'
         try:
             self.processSignals()
             self.RWidgetReload()
@@ -424,6 +440,7 @@ class OWRpy(OWWidget):
         
     def updateWidget(self, name, value):
         print 'update widget called'
+        print name
         print str(value)
         elementClass = value['class']
         if elementClass == 'widgetBox':
@@ -449,8 +466,11 @@ class OWRpy(OWWidget):
         elif elementClass == 'comboBox':
             getattr(self, name).clear()
             getattr(self, name).addItems(value['itemText'])
-            
-            getattr(self, name).setCurrentIndex(value['selectedIndex'])
+            print value['itemText'] + ' inserted into '+ name
+            try:
+                getattr(self, name).setCurrentIndex(value['selectedIndex'])
+            except:
+                print 'setting index failed'
         elif elementClass == 'comboBoxWithCaption':
             getattr(self, name).clear()
             for i in range(len(value['itemText'])):
@@ -489,4 +509,15 @@ class OWRpy(OWWidget):
                 
         elif elementClass == 'textEdit':
             getattr(self, elementName).setText(value['text'])
+        elif elementClass == 'widgetNotes':
+            print elementClass
+            print str(value['text'])
+            self.notesAction.textEdit.setHtml(value['text'])
+            
+class ToolBarTextEdit(QWidgetAction):
+    def __init__(self,parent=None):
+        QWidgetAction.__init__(self, parent)
+        self.textEdit = QTextEdit()
+        self.setDefaultWidget(self.textEdit)
+        
 

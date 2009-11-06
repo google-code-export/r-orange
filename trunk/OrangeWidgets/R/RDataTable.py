@@ -67,15 +67,8 @@ class RDataTable(OWRpy):
         tabWidgeta = RRGUI.tabWidget(self.controlArea, None, self)
         
         
-        #links:
-        linksTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Link Data:')
-                #OWGUI.widgetLabel(infoBox, "Links:")
-        self.linkListBox = OWGUI.listBox(linksTab, self)
-        OWGUI.lineEdit(linksTab, self, 'mylink', label = 'Custom Link:')
         
-        #save box
-        
-                #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+                        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
         saveTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Save Data:')
         OWGUI.widgetLabel(saveTab, "Saves the current table to a file.")
         OWGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
@@ -84,6 +77,18 @@ class RDataTable(OWRpy):
         OWGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         infoBox.setMinimumWidth(200)
         OWGUI.separator(self.controlArea)
+        
+        #links:
+        linksTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Link Data:')
+                #OWGUI.widgetLabel(infoBox, "Links:")
+                
+        self.linkListBox = OWGUI.listBox(linksTab, self)
+        self.linkListBox.setSelectionMode(QAbstractItemView.MultiSelection)
+        OWGUI.lineEdit(linksTab, self, 'mylink', label = 'Custom Link:')
+        
+        #save box
+        
+
 
         # settings box
         boxSettings = OWGUI.widgetBox(self.controlArea, "Settings")
@@ -183,6 +188,11 @@ class RDataTable(OWRpy):
             if 'link' in dataset:
                 self.link[str(id)] = dataset['link']
                 print 'setting link as '+str(self.link[str(id)])
+                self.linkListBox.clear()
+                if str(id) in self.link:
+                    for key in self.link[str(id)].keys():
+                        self.linkListBox.addItem(key)
+                    self.currentLinks = self.link[str(id)]
             
             else: 
                 linkData = None
@@ -235,7 +245,9 @@ class RDataTable(OWRpy):
         RclickedRow = int(val.row())+1
         
         for item in self.linkListBox.selectedItems():
-            text = self.currentLinks[item.text()]
+            print item.text()
+            print str(self.currentLinks)
+            text = self.currentLinks[str(item.text())]
             col = text[text.find('{')+1:text.find('}')]
             if col == 0 or col == 'row': #special cases for looking into rownames
                 cellVal = self.R('rownames('+table+')['+str(RclickedRow)+']')

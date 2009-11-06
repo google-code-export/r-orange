@@ -226,7 +226,7 @@ class runSigPathway(OWRpy):
         
     def cellClicked(self, item):
         self.clickedRow = int(item.row())+1
-        self.subtable = {'data':'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':['http://www.ncbi.nlm.nih.gov/gene/','']}
+        self.subtable = {'data':'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':{'IHOP':'http://www.ihop-net.org/UniPub/iHOP/?search={4}', 'Entrez Gene': 'http://www.ncbi.nih.gov/gene/{3}'}}
         self.sendMe()
         try: self.table2
         except: pass

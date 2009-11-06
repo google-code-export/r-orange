@@ -1,5 +1,5 @@
 """
-<name>ED</name>
+<name>ED, EC, ID</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <tags>Dose Response</tags>
 <icon>icons/drc.PNG</icon>
@@ -39,7 +39,7 @@ class ED(OWRpy):
         self.RFUnctionParambound_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParambound_lineEdit", self, "RFunctionParam_bound", label = "bound:")
         
         
-        self.RFUnctionParamrespLev_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamrespLev_lineEdit", self, "RFunctionParam_respLev", label = "respLev:")
+        self.RFUnctionParamrespLev_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamrespLev_lineEdit", self, "RFunctionParam_respLev", label = "Levels:")
         self.RFunctionParamtype_comboBox = RRGUI.comboBox(self.standardTab, "RFunctionParamtype_comboBox", self, "RFunctionParam_type", label = "type:", items = ['relative', 'absolute'])
         self.RFUnctionParamdisplay_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamdisplay_lineEdit", self, "RFunctionParam_display", label = "display:")
         OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)

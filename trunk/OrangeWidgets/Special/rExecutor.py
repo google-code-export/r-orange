@@ -43,6 +43,7 @@ class rExecutor(OWRpy):
 
         varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
         history = OWGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
+        OWGUI.button(self.box, self, "Clear Output", callback = self.clearOutput)
         self.infoa = OWGUI.widgetLabel(self.box, "")
         
         self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
@@ -65,6 +66,8 @@ class rExecutor(OWRpy):
         sendbutton = OWGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
         self.resize(800,600)
         
+    def clearOutput(self):
+        self.thistext.clear()
     def putrecieved(self):
         self.command = str(self.data)
         
@@ -94,8 +97,12 @@ class rExecutor(OWRpy):
         else:
             self.rSend('R.object', self.sendt)
     def runR(self):
+        self.rsession('txt<-"R error occured" #Benign error in case a real error occurs')
         self.rsession('txt<-capture.output('+self.command+')')
+
         pasted = self.rsession('paste(txt, collapse = " \n")')
+        # if type(pasted) != type(''):
+            # pasted = 'Error occured with evaluation, please chech output for error.'
         self.thistext.insertPlainText('>>>'+self.command+'##Done')
         self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
         self.thistext.setAlignment(Qt.AlignBottom)
