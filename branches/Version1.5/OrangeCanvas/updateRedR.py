@@ -23,7 +23,7 @@ def start(lastRevproplist, versionNumber, silent = True):
     # QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
     # movie.stop()
     # movie.hide()
-    svnLoc = 'http://r-orange.googlecode.com/svn/branches/'
+    svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
     
     try:
         client = pysvn.Client()
@@ -110,7 +110,6 @@ def start(lastRevproplist, versionNumber, silent = True):
             movie.hide()
             if somethingFailed == 1:
                 QMessageBox.information(None, 'RedR Update', 'The following widgets or packages failed: \n%s' % '\n  '.join(failed), QMessageBox.Ok + QMessageBox.Default)
-                return lastRevproplist, versionNumber
                         
         else: 
             res3 = QMessageBox.question(None, 'RedR Update', 'Do you wish to apply these updates in the future?', QMessageBox.Yes, QMessageBox.No)

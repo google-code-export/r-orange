@@ -9,6 +9,7 @@ from string import strip, count, replace
 import orngDoc, orngOutput, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx
+import orngEnviron
 
 WB_TOOLBOX = 0
 WB_TREEVIEW = 1
@@ -299,14 +300,14 @@ class WidgetListBase:
         
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
-        tfile = 'C:\\Python25\\Lib\\site-packages\\orange\\tagsSystem\\tabsList.txt'
+        tfile = orngEnviron.directoryNames['orangeDir'] + '\\tagsSystem\\tabsList.txt'
         f = open(tfile, 'r')
         mainTabs = f.read().split('\n')
         f.close()
         
         for itab in mainTabs:
             tab = self.insertWidgetTab(itab, 1) # a QTreeWidgetItem
-            print 'inserted tab '+itab
+            #print 'inserted tab '+itab
             self.insertChildTabs(itab, tab, tfile, widgetRegistry)
             self.insertWidgets(itab, tab, widgetRegistry)
 
@@ -359,7 +360,7 @@ class WidgetListBase:
             self.insertWidgets(ttab, child, widgetRegistry)
         
     def insertWidgets(self, itab, tab, widgetRegistry):
-        
+        #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
         widgets = None
         for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
             
@@ -381,6 +382,7 @@ class WidgetListBase:
                         (name, widgetInfo) = awidgets[tabName].items()[0]
                         (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
                         #print str((priority, name, widgetInfo)) + 'made it to 7894'
+                        #print str(widgetInfo)
                         if isinstance(self, WidgetTree):
                             #print 'trying to add a button'
                             button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
@@ -462,13 +464,30 @@ class WidgetTree(WidgetListBase, QDockWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
         QDockWidget.__init__(self, "Widgets")
+        self.actions = categoriesPopup.allActions
         self.treeWidget = MyTreeWidget(canvasDlg, self)
         self.treeWidget.setFocusPolicy(Qt.ClickFocus)    # this is needed otherwise the document window will sometimes strangely lose focus and the output window will be focused
-        self.setWidget(self.treeWidget)
+        
+        
+        # must make a widget container to hold the search area and the widget tree
+        self.containerWidget = QWidget()
+        tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
+        self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
+        self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
+        #tmpBoxLayout.insertWidget(0, CanvasPopup)
+        tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
+        tmpBoxLayout.insertWidget(1, self.treeWidget)
+        
+        self.setWidget(self.containerWidget)
+        
+        #self.setWidget(self.treeWidget)
+        
+        #self.setWidget(self.containerWidget)
         iconSize = self.canvasDlg.toolbarIconSizeList[self.canvasDlg.settings["toolbarIconSize"]]
         self.treeWidget.setIconSize(QSize(iconSize, iconSize))
 #        self.treeWidget.setRootIsDecorated(0) 
-                
+        #self.setWidget(OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1))
+        
 
     def insertWidgetTab(self, name, show = 1):
         if self.tabDict.has_key(name):
@@ -488,6 +507,18 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.tabs.append((name, 2*int(show), item))
 
         return item
+        
+    def callback(self):
+        text = str(self.widgetSuggestEdit.text())
+        for action in self.actions:
+            if action.widgetInfo.name == text:
+                self.widgetInfo = action.widgetInfo
+                #self.parent.setActiveAction(self)
+                #self.activate(QAction.Trigger)
+                #QApplication.sendEvent(self.widgetSuggestEdit, QKeyEvent(QEvent.KeyPress, Qt.Key_Enter, Qt.NoModifier))
+                self.canvasDlg.schema.addWidget(action.widgetInfo)
+                self.widgetSuggestEdit.clear()
+                return
 
 class WidgetTreeFolder(QTreeWidgetItem):
     def __init__(self, parent, name):
@@ -564,8 +595,9 @@ class CanvasWidgetAction(QWidgetAction):
         QWidgetAction.__init__(self, parent)
         self.parent = parent
         self.actions = actions
+        
         self.widgetSuggestEdit = OWGUIEx.lineEditHint(self.parent, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, callback = self.callback, autoSizeListWidget = 1)
-        self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in actions])
+        self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in actions]) # sets the icon and the names of the widgets that are available when we start to type.  In this case actions are the widgets
         self.widgetSuggestEdit.setStyleSheet(""" QLineEdit { background: #fffff0; border: 1px solid orange} """)
         self.widgetSuggestEdit.listWidget.setStyleSheet(""" QListView { background: #fffff0; } QListView::item {padding: 3px 0px 3px 0px} QListView::item:selected { color: white; background: blue;} """)
         self.widgetSuggestEdit.listWidget.setIconSize(QSize(16,16)) 

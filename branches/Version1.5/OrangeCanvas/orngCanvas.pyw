@@ -179,19 +179,9 @@ class OrangeCanvasDlg(QMainWindow):
                 self.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
                 self.removeDockWidget(self.widgetsToolBar)
 
-        # if self.settings["widgetListType"] == 0:
-            # self.tabs = self.widgetsToolBar = orngTabs.WidgetToolBox(self, self.widgetRegistry)
-            # self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
-        # elif self.settings["widgetListType"] == 1:
         self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
-        # else:
-            # self.widgetsToolBar = self.addToolBar("Widgets")
-            # self.insertToolBarBreak(self.widgetsToolBar)
-            # self.tabs = orngTabs.WidgetTabs(self, self.widgetRegistry, self.widgetsToolBar)
-            # self.widgetsToolBar.addWidget(self.tabs)
 
-        # find widgets and create tab with buttons
         self.settings["WidgetTabs"] = self.tabs.createWidgetTabs(self.settings["WidgetTabs"], self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
         if not self.settings.get("showWidgetToolbar", True): 
             self.widgetsToolBar.hide()
