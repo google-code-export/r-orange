@@ -1,6 +1,8 @@
 # OWGraph.py
 # extension for the base graph class that is used in all visualization widgets
 #from OWGraph import *
+
+# modifications by Kyle R Covington and Anup Parikh
 import sys, math
 import orange
 import numpy

@@ -1,3 +1,4 @@
+# modifications by Kyle R Covington and Anup Parikh
 from orngScaleData import *
 
 class orngScaleScatterPlotData(orngScaleData):

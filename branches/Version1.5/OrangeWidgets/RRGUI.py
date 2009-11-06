@@ -1,4 +1,4 @@
-#RRGUI class refference 
+#RRGUI class refference  modifications by Kyle R Covington and Anup Parikh
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math
