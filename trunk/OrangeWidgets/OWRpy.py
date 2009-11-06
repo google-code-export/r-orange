@@ -415,11 +415,11 @@ class OWRpy(OWWidget):
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
-        print str(self.RGUIElementsSettings)
+        #print str(self.RGUIElementsSettings)
         
         for (name, data) in self.sentItems:
             self.send(name, data)
-        print str(self.RGUIElementsSettings.keys())
+        #print str(self.RGUIElementsSettings.keys())
         for key in self.RGUIElementsSettings.keys():
             print key
             elementName = key.replace('GUIelement_', '')

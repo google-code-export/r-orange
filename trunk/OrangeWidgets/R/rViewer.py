@@ -13,7 +13,8 @@ class rViewer(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-
+        
+        self.loadSettings()
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         
         OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)

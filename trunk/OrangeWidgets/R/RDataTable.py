@@ -160,7 +160,7 @@ class RDataTable(OWRpy):
             minW = table.sizeHintForColumn(col)
             table.setColumnWidth(col, max(w - 10, minW))
 
-    def onLoadSavedSession(self):
+    def RWidgetReload(self):
         print 'on load data table'
         self.processSignals()
     def dataset(self, dataset, id=None):
