@@ -14,7 +14,7 @@
 # all sorts of preprocessing (including discretization) on the table,
 # output a new table and export it in variety of formats.
 from OWRpy import *
-import OWGUI
+import OWGUI, RRGUI
 import math
 from orngDataCaching import *
 
@@ -61,19 +61,34 @@ class RDataTable(OWRpy):
         self.infoMeta = OWGUI.widgetLabel(infoBox, ' ')
         OWGUI.widgetLabel(infoBox, ' ')
         self.infoClass = OWGUI.widgetLabel(infoBox, ' ')
-        OWGUI.widgetLabel(infoBox, "Links:")
-        self.linkListBox = OWGUI.listBox(infoBox, self)
-        OWGUI.lineEdit(infoBox, self, 'mylink', label = 'Custom Link:')
         
-        #save box
-        infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
-        OWGUI.widgetLabel(infoBox, "Saves the current table to a file.")
-        OWGUI.button(infoBox, self, "Choose Directory", callback = self.chooseDirectory)
-        OWGUI.lineEdit(infoBox, self, 'fileName', label = "File:", width = 50)
-        OWGUI.comboBox(infoBox, self, 'delim', label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
-        OWGUI.button(infoBox, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
+        
+        #tabs
+        tabWidgeta = RRGUI.tabWidget(self.controlArea, None, self)
+        
+        
+        
+                        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        saveTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Save Data:')
+        OWGUI.widgetLabel(saveTab, "Saves the current table to a file.")
+        OWGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
+        OWGUI.lineEdit(saveTab, self, 'fileName', label = "File:", width = 50)
+        OWGUI.comboBox(saveTab, self, 'delim', label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
+        OWGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         infoBox.setMinimumWidth(200)
         OWGUI.separator(self.controlArea)
+        
+        #links:
+        linksTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Link Data:')
+                #OWGUI.widgetLabel(infoBox, "Links:")
+                
+        self.linkListBox = OWGUI.listBox(linksTab, self)
+        self.linkListBox.setSelectionMode(QAbstractItemView.MultiSelection)
+        OWGUI.lineEdit(linksTab, self, 'mylink', label = 'Custom Link:')
+        
+        #save box
+        
+
 
         # settings box
         boxSettings = OWGUI.widgetBox(self.controlArea, "Settings")
@@ -145,7 +160,7 @@ class RDataTable(OWRpy):
             minW = table.sizeHintForColumn(col)
             table.setColumnWidth(col, max(w - 10, minW))
 
-    def onLoadSavedSession(self):
+    def RWidgetReload(self):
         print 'on load data table'
         self.processSignals()
     def dataset(self, dataset, id=None):
@@ -173,6 +188,11 @@ class RDataTable(OWRpy):
             if 'link' in dataset:
                 self.link[str(id)] = dataset['link']
                 print 'setting link as '+str(self.link[str(id)])
+                self.linkListBox.clear()
+                if str(id) in self.link:
+                    for key in self.link[str(id)].keys():
+                        self.linkListBox.addItem(key)
+                    self.currentLinks = self.link[str(id)]
             
             else: 
                 linkData = None
@@ -225,9 +245,14 @@ class RDataTable(OWRpy):
         RclickedRow = int(val.row())+1
         
         for item in self.linkListBox.selectedItems():
-            text = self.currentLinks[item.text()]
+            print item.text()
+            print str(self.currentLinks)
+            text = self.currentLinks[str(item.text())]
             col = text[text.find('{')+1:text.find('}')]
-            cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
+            if col == 0 or col == 'row': #special cases for looking into rownames
+                cellVal = self.R('rownames('+table+')['+str(RclickedRow)+']')
+            else:
+                cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
             self.rsession('shell.exec("'+text.replace('{'+col+'}', str(cellVal))+'")')
         
         
@@ -278,6 +303,10 @@ class RDataTable(OWRpy):
 
         # set the header (attribute names)
         table.setHorizontalHeaderLabels(table.variableNames)
+        if self.currentData:
+            rowNames = self.R('rownames('+self.currentData+')')
+            if rowNames != 'NULL':
+                table.setVerticalHeaderLabels(rowNames)
         if self.showAttributeLabels:
             labelnames = set()
             for a in data.domain:
@@ -421,8 +450,8 @@ class RDataTable(OWRpy):
             self.infoEx.setText("%s example%s," % sp(data))
             missData = orange.Preprocessor_takeMissing(data)
             self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
-            self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
-            self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
+            #self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
+            #self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
             if data.domain.classVar:
                 if data.domain.classVar.varType == orange.VarTypes.Discrete:
                     self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))

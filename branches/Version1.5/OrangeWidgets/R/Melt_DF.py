@@ -27,7 +27,7 @@ class Melt_DF(OWRpy):
         OWGUI.lineEdit(box, self, "RFunctionParam_variable_name", label = "variable_name:") 
         OWGUI.lineEdit(box, self, "RFunctionParam_id_var", label = "id_var:")
         OWGUI.button(box, self, "Commit", callback = self.commitFunction)
-    def onLoadSavedSession(self):
+    def RWidgetReload(self):
         self.commitFunction()
     def processdata(self, data):
         if data:
