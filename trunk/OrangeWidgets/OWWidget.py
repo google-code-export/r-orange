@@ -1,4 +1,4 @@
-#
+# modifications by Kyle R Covington and Anup Parikh#
 # OWWidget.py
 # Orange Widget
 # A General Orange Widget, from which all the Orange Widgets are derived

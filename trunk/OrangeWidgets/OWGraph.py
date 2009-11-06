@@ -2,6 +2,7 @@
 # owGraph.py
 #
 # the base for all graphs
+# modifications by Kyle R Covington and Anup Parikh
 
 from PyQt4.Qwt5 import *
 from OWGraphTools import *      # user defined curves, ...

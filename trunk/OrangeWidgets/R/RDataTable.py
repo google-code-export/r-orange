@@ -4,7 +4,7 @@
 <tags>R</tags>
 <icon>icons/DataTable.png</icon>
 <priority>1010</priority>
-<contact>Peter Juvan (peter.juvan@fri.uni-lj.si)</contact>
+<contact>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</contact>
 """
 
 # OWDataTable.py
