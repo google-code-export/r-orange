@@ -9,6 +9,8 @@ After reading in data and forming an Expression set, generally done by using the
 
 Data is connected from the ReadCELFiles widget to the Normalization Widget on the canvas.  Once data is connected open the Normalize Widget.  The user has the option of three general types of normalization; RMA, [http://www.affymetrix.com/support/technical/whitepapers/sadd_whitepaper.pdf MAS5], or custom.  We have preset the custom method to mimic that of the [http://www.pnas.org/content/98/1/31.abstract Li Wong] method.  Pressing the 'Run Normalization' button begins the normalization process.  Once normalization is complete the user can continue the analysis either by using the normalized expression matrix or normalized Eset objects from the output of the Normalize Widget.
 
+A template of the array analysis that this widget fits into is located [http://code.google.com/p/r-orange/downloads/detail?name=ArrayAnalysisTemplate.ows here].
+
 = Screen Cast = 
 
 <wiki:video url="http://www.youtube.com/watch?v=fPRBfKak-f4"/>
