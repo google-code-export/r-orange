@@ -134,6 +134,7 @@ class diffExp(OWRpy):
             self.classA = True
             self.infob.setText("Setting Class A")
     def phenoProcess(self, data):
+        if not data: return
         if 'data' in data: # make sure that there is data there 
             self.phenoData = data['data']
             colnames = self.rsession('colnames('+self.phenoData+')')
