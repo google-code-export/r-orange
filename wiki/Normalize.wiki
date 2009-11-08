@@ -1,0 +1,14 @@
+#summary A demonstration of the Normalize Widget.
+
+= Introduction =
+
+After reading in data and forming an Expression set, generally done by using the ReadCELFiles Widget, it is often nessisary to normalize the data for further processing.  This can be achieved using the Normalize Widget which employs [http://www.bioconductor.org Bioconductor] functions from the [http://www.bioconductor.org/packages/release/bioc/html/affy.html affy] and [http://bioconductor.org/packages/2.5/data/experiment/html/affydata.html affydata] packages.
+
+
+= Details =
+
+Data is connected from the ReadCELFiles widget to the Normalization Widget on the canvas.  Once data is connected open the Normalize Widget.  The user has the option of three general types of normalization; RMA, [http://www.affymetrix.com/support/technical/whitepapers/sadd_whitepaper.pdf MAS5], or custom.  We have preset the custom method to mimic that of the [http://www.pnas.org/content/98/1/31.abstract Li Wong] method.  Pressing the 'Run Normalization' button begins the normalization process.  Once normalization is complete the user can continue the analysis either by using the normalized expression matrix or normalized Eset objects from the output of the Normalize Widget.
+
+= Screen Cast = 
+
+<wiki:video url="http://www.youtube.com/watch?v=fPRBfKak-f4"/>
