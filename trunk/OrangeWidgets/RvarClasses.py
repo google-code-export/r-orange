@@ -11,3 +11,6 @@ class RVector(RVariable):
 
 class RList(RVariable):
 	pass
+    
+class RSession(RVariable):
+    pass
