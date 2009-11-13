@@ -8,6 +8,8 @@
 from OWRpy import * 
 import OWGUI 
 import RRGUI 
+import SurvivalClasses
+
 class survfit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -26,7 +28,7 @@ class survfit(OWRpy):
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        self.outputs = [("survfit Output", RvarClasses.RVariable)]
+        self.outputs = [("survfit Output", SurvivalClasses.SurvFit)]
         
         tw = RRGUI.tabWidget(self.controlArea, None, self)
         self.standardPage = RRGUI.createTabPage(tw, "standardPage", self, "Standard")

@@ -243,7 +243,7 @@ class OWRpy(OWWidget):
         qApp.restoreOverrideCursor()
         return output
                 
-    def R(self, query, type = 'getRData', processing_notice=False):
+    def R(self, query, type = 'getRData', processing_notice=False, silentErrors = 0, errorMessage = ''):
         qApp.setOverrideCursor(Qt.WaitCursor)
         OWRpy.rsem.acquire()
         OWRpy.lock.acquire()
@@ -271,13 +271,17 @@ class OWRpy(OWWidget):
                 rpy.r(query) # run the query anyway even if the user put un a wierd value
 
         except rpy.RPyRException, inst:
+            
             OWRpy.occupied = 0
             OWRpy.lock.release()
             OWRpy.rsem.release()
             qApp.restoreOverrideCursor()
             self.progressBarFinished()
-            print inst.message
-            QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
+            if silentErrors == 1:
+                QMessageBox.information(self, 'Orange Canvas','R Error: '+ errorMessage,  QMessageBox.Ok + QMessageBox.Default)
+            else:
+                print inst.message
+                QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
             #sys.exit()
             
             #raise rpy.RPyException('Unable to process')

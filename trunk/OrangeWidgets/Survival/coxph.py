@@ -8,6 +8,8 @@
 from OWRpy import * 
 import OWGUI 
 import RRGUI 
+import SurvivalClasses
+
 class coxph(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -30,7 +32,7 @@ class coxph(OWRpy):
         self.ableToCommit = 0
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
+        self.inputs = [("data", SurvivalClasses.SurvFit, self.processdata)]
         self.outputs = [("coxph Output", RvarClasses.RVariable)]
         
         box = RRGUI.tabWidget(self.controlArea, None, self)

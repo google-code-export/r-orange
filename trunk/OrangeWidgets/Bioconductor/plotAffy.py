@@ -62,8 +62,9 @@ class plotAffy(OWRpy):
     
     def process(self):
         #required librarys
+        self.require_librarys(['affy'])
         if self.data != '':
-            self.require_librarys(['affy'])
+            
             #try: 
             self.Rplot('') # make a false call to the plot window just to initialize
             self.rsession('par(mfrow=c('+str(self.irows)+','+str(self.icols)+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
@@ -82,9 +83,9 @@ class plotAffy(OWRpy):
         #    self.infob.setText("Data not able to be processed")
         
     def RAffyQC(self):
+        self.require_librarys(['simpleaffy'])
         if self.qcsProcessed == 0:
-            self.require_librarys(['simpleaffy'])
             self.rsession(self.Rvariables['qcs']+'<-qc('+self.data+')')
-        self.Rplot('plot('+self.Rvariables['qcs']+')')
+        self.R('plot('+self.Rvariables['qcs']+')')
         self.qcsProcessed = 1
         

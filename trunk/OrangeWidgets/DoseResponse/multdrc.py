@@ -80,6 +80,7 @@ class multdrc(OWRpy):
             self.responseComboBox.addItems(self.colNames)
             self.doseComboBox.addItems(self.colNames)
             self.curveComboBox.addItems(self.colNames)
+            self.curveComboBox.addItem('None')
             #self.commitFunction()
             self.anovaTextArea.clear()
     def commitFunction(self):
@@ -116,7 +117,7 @@ class multdrc(OWRpy):
         if self.RFunctionParam_bcAdd != '':
             string = 'bcAdd='+str(self.RFunctionParam_bcAdd)
             injection.append(string)
-        if self.curveComboBox.currentText() != '':
+        if self.curveComboBox.currentText() != '' and self.curveComboBox.currentText() != 'None':
             string = 'curve='+str(self.curveComboBox.currentText())
             injection.append(string)
         if self.RFunctionParam_boxcox != '':
