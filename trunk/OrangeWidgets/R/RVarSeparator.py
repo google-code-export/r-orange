@@ -2,7 +2,7 @@
 <name>R Variable Separator</name>
 <author>Kyle R. Covington</author>
 <description>Separates variables from an environment and sends them.  Generally used with the R Loader Widget.</description>
-<tags>R</tags>
+<tags>Special</tags>
 <icon>icons/RExecutor.PNG</icon>
 <priority>10</priority>
 """
@@ -19,6 +19,8 @@ class RVarSeparator(OWRpy):
         self.envName = ''
         self.sendthis = {}
         
+        
+        self.help.setHtml('The R Variable Separator is used to separate variables from a loaded R session.  Connecting the R Loader widget to this widget will display a list of available variables in the local environment to which the session was loaded.  Clicking on an element in the list will send that element on to downstream widgets.  One should take note of the class of the element that is sent as this will specify the output connection of the data.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         self.varBox = RRGUI.listBox(self.controlArea, 'varBox', self, callback = self.separate)
         self.statusText = RRGUI.widgetLabel(self.controlArea, 'statusText', self, 'No data to parse')
     

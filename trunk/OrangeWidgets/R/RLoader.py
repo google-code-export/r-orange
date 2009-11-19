@@ -2,7 +2,7 @@
 <name>R Loader</name>
 <author>Kyle R. Covington</author>
 <description>Loads a previously saved Rdata session and allows the user to connect to a separator to send previously saved variables.  Should be used in conjunction with the R variable separator.</description>
-<tags>R</tags>
+<tags>Special</tags>
 <icon>icons/RExecutor.PNG</icon>
 <priority>10</priority>
 """

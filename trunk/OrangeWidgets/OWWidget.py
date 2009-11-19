@@ -23,6 +23,10 @@ class OWWidget(OWBaseWidget):
         self.layout().setMargin(2)
 
         self.topWidgetPart = OWGUI.widgetBox(self, orientation="horizontal", margin=0)
+        self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin = 2)
+        self.defaultLeftArea.setMaximumSize(200, 800)
+        self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
+        #self.defaultLeftArea.setPalette(QPalette.Base)
         self.leftWidgetPart = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=0)
         if wantMainArea:
             self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.MinimumExpanding))

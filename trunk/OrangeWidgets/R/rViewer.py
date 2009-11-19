@@ -14,6 +14,7 @@ class rViewer(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
+        self.RFunctionParam_data = None
         self.loadSettings()
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         
@@ -28,7 +29,8 @@ class rViewer(OWRpy):
 
     
     def commitFunction(self):
+        if not self.RFunctionParam_data: self.RoutputWindow.setHtml('No data connected to show.')
         self.R('txt<-capture.output('+self.RFunctionParam_data+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+        self.RoutputWindow.setHtml('<pre>'+tmp+'</pre>')

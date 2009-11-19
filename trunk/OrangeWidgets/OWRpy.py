@@ -5,6 +5,7 @@
 #
 
 from OWWidget import *
+from PyQt4 import QtWebKit
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
@@ -62,12 +63,58 @@ class OWRpy(OWWidget):
         self.sentItems = []
         self.blackList = ['canvasSettingsDir', '__module__', 'canvasDir', 'widgetXPosition', 'widgetYPosition', 'orangeDir', '_owError', 'bufferDir', 'widgetWidth', 'occupied', 'widgetSettingsDir', 'widgetHeight', '_category', 'reposDir', 'picsDir', 'addOnsDir', 'widgetShown', 'captionTitle', 'widgetDir']
         
-        self.widgetToolBar = QMenuBar(self)
-        notesMenu = self.widgetToolBar.addMenu('Notes')
-        self.notesAction = ToolBarTextEdit(self)
-        notesMenu.addAction(self.notesAction)
+        # self.widgetToolBar = QMenuBar(self)
+        # notesMenu = self.widgetToolBar.addMenu('Notes')
+        # self.notesAction = ToolBarTextEdit(self)
+        # notesMenu.addAction(self.notesAction)
+        self.notes = QTextEdit()
+        self.help = QtWebKit.QWebView(self)
+        self.processingBox = QtWebKit.QWebView(self)
+        webSize = QSize(200,100)
+        self.help.setMaximumSize(webSize)
+        # self.notes.setBaseSize(webSize)
+        # self.help.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        # self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #QtWebKit.QWebSettings.setAttribute(QtWebKit.QWebSettings.PluginsEnabled)
+        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
+        self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         
-        self.controlArea.layout().addWidget(self.widgetToolBar)
+        notesBox = OWGUI.widgetBox(self, "Notes")
+        helpBox = OWGUI.widgetBox(self, "Discription")
+        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
+        self.processingBox.setMaximumSize(webSize)
+        self.processingBox.setHtml('<center><img alt="Waiting GIF" src="file:///C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif" width="50" height="50" /></center>')
+        #self.processingBox.setUrl(QUrl("http://en.wikipedia.org/wiki/File:Rotating_earth_(small).gif"))
+        processingBoxBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        processingBoxBox.layout().addWidget(self.processingBox)
+        notesBox.setBaseSize(webSize)
+        helpBox.setBaseSize(webSize)
+        helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
+        notesBox.layout().addWidget(self.notes)
+        helpBox.layout().addWidget(self.help)
+        
+        #self.controlArea.layout().addWidget(self.widgetToolBar)
+        self.defaultLeftArea.layout().addWidget(helpBox)
+        #self.help.mainFrame().show()
+        self.defaultLeftArea.layout().addWidget(notesBox)
+        self.defaultLeftArea.layout().addWidget(processingBoxBox)
+        self.statusBar = QStatusBar()
+        self.layout().addWidget(self.statusBar)
+        # self.splitter = QSplitter(self.controlArea)
+        # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
+        # self.controlArea.layout().addWidget(self.splitter)
+        # self.splitter.addWidget(self.widgetMainArea)
+        #self.controlArea.setLayout(self.splitter)
+        self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
+        #self.statusIndicator.setBackgroundRole(QPalette.Dark)
+        
+        #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
+        self.statusBar.addWidget(self.statusIndicator)
+        #self.statusBar.addWidget(self.statusImage)
 
 
     def getSettings(self, alsoContexts = True):
@@ -186,7 +233,7 @@ class OWRpy(OWWidget):
             
             self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting
             
-        self.RGUIElementsSettings['widgetNotes'] = {'text':self.notesAction.textEdit.document().toHtml(), 'class': 'widgetNotes'}
+        self.RGUIElementsSettings['widgetNotes'] = {'text':self.notes.document().toHtml(), 'class': 'widgetNotes'}
             # if hasattr(self, "settingsList"):
                 # self.settingsList.extend([str('GUIelement_'+elementName)])
                 # settings[str('GUIelement_'+elementName)] = GUIsetting
@@ -210,6 +257,8 @@ class OWRpy(OWWidget):
         except:
             self.needsProcessingHandler(self, 1)
         self.sentItems.append((name, variable))
+        self.statusIndicator.setText("Data sent")
+        #self.statusIndicator.setBackgroundRole(Qt.yellow)
 
         
     #depreciated
@@ -517,6 +566,10 @@ class OWRpy(OWWidget):
             print elementClass
             print str(value['text'])
             self.notesAction.textEdit.setHtml(value['text'])
+            
+    def followLink(self, url):
+        self.rsession('shell.exec("'+str(url.toString())+'")')
+        self.notes.setHtml(str(url.toString()))
             
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):

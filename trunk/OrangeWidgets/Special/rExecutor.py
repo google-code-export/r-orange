@@ -27,19 +27,22 @@ class rExecutor(OWRpy):
         self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
         self.outputs = [('R.object', RvarClasses.RVariable), ('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector)]
         
-        
+        self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         
         #GUI
-        self.box = OWGUI.widgetBox(self.controlArea, "R Commander")
+        self.box = OWGUI.widgetBox(self.controlArea, "R Executor")
         self.infob = OWGUI.widgetLabel(self.box, "")
         # splice canvas for the right hand side of the canvas
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
-        runbox = OWGUI.widgetBox(self, "Commander")
+        runbox = OWGUI.widgetBox(self, "Command Line", orientation='horizontal')
         self.splitCanvas.addWidget(runbox)
         OWGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
         processbutton = OWGUI.button(runbox, self, "Run", callback = self.runR, width=150)
+        
+        
+        
 
         varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
         history = OWGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
