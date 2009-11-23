@@ -7,17 +7,18 @@
 """
 
 from OWRpy import *
-import OWGUI
+#import OWGUI
+import redRGUI 
 import RAffyClasses
 
 
 class ReadCEL(OWRpy):
-    settingsList = ['recentFiles']
+    globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
         #self.setStateVariables(['recentFiles'])
         #default values        
-        self.recentFiles = ['(none)']
+        self.recentFiles = []
         self.methodcombo = 0
         self.loadSettings()
         
@@ -32,26 +33,28 @@ class ReadCEL(OWRpy):
 
 
         #GUI
-        box = OWGUI.widgetBox(self.controlArea, "Select Folder", addSpace = True, orientation=0)
-        OWGUI.comboBox(box, self, 'methodcombo', label = 'Number of arrays', items = ['Less than 40', 'More than 40'], orientation = 0)
-        self.filecombo = QComboBox(box)
+        box = redRGUI.groupBox(self.controlArea, "Select Folder", addSpace = True, orientation='vertical')
+        self.numArrays = redRGUI.comboBox(box, label = 'Number of arrays', items = ['Less than 40', 'More than 40'])
+        self.filecombo = redRGUI.comboBox(box, items = self.recentFiles, callback=self.selectFile)
+        
+        #self.filecombo = QComboBox(box)
         self.filecombo.setMinimumWidth(150)
-        box.layout().addWidget(self.filecombo)
-        button = OWGUI.button(box, self, '...', callback = self.browseFile, width = 25, disabled=0)
-        box = OWGUI.widgetBox(self.controlArea, "Info", addSpace = True)
-        self.infoa = OWGUI.widgetLabel(box, 'No data loaded.')
-        self.infob = OWGUI.widgetLabel(box, '')
-        self.infoc = OWGUI.widgetLabel(box, '')
-        self.infod = OWGUI.widgetLabel(box, '')
+        # box.layout().addWidget(self.filecombo)
+        button = redRGUI.button(box, self, '...', callback = self.browseFile, width = 25, disabled=0)
+        box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
+        self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
+        self.infob = redRGUI.widgetLabel(box, '')
+        self.infoc = redRGUI.widgetLabel(box, '')
+        self.infod = redRGUI.widgetLabel(box, '')
         self.setFileList()
-        self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
+        # self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
         
         
-    def onLoadSavedSession(self):
-        self.infoc.setText("Data reloaded from saved session.")
-        self.infod.setText("You may want to use a data viewer to check the data.")
-        if self.Rvariables['eset'] in self.R('ls()'):
-            self.sendMe()        
+    # def onLoadSavedSession(self):
+        # self.infoc.setText("Data reloaded from saved session.")
+        # self.infod.setText("You may want to use a data viewer to check the data.")
+        # if self.Rvariables['eset'] in self.R('ls()'):
+            # self.sendMe()        
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:

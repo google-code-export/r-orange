@@ -342,14 +342,14 @@ class OWBaseWidget(QDialog):
     # settings - the map with the settings
     def setSettings(self,settings):
         for key in settings:
-            print key
+            # print key
             self.__setattr__(key, settings[key])
-        #self.__dict__.update(settings)
+        
 
     # Get all settings
     # returns map with all settings
     def getSettings(self, alsoContexts = True):
-        print 'get settings called'
+        print 'get settings in owbasewidget'
         settings = {}
         if hasattr(self, "settingsList"):
             for name in self.settingsList:
@@ -453,6 +453,7 @@ class OWBaseWidget(QDialog):
 
 
     def getSettingsFile(self, file):
+        print 'getSettingsFile in owbasewidget'
         if file==None:
             if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
                 file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
@@ -467,19 +468,21 @@ class OWBaseWidget(QDialog):
 
     # Loads settings from the widget's .ini file
     def loadSettings(self, file = None):
+        print 'loadSettings in owbasewidget'
         file = self.getSettingsFile(file)
+        settings = {}
         if file:
             try:
                 settings = cPickle.load(file)
             except:
                 settings = None
-        settings = None # do not load ini file
+        #settings = None # do not load ini file
         if hasattr(self, "_settingsFromSchema"):
             if settings: settings.update(self._settingsFromSchema)
             else:        settings = self._settingsFromSchema
 
         #print 'start loading local variables'
-        #print settings
+        # print settings
         # can't close everything into one big try-except since this would mask all errors in the below code
         if settings:
             if hasattr(self, "settingsList"):
@@ -488,7 +491,7 @@ class OWBaseWidget(QDialog):
             contextHandlers = getattr(self, "contextHandlers", {})
             for contextHandler in contextHandlers.values():
                 localName = contextHandler.localContextName
-                print 'localname'  + localName + '\n'
+                # print 'localname'  + localName + '\n'
                 structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
                 if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
                    and settings.has_key(localName):
@@ -544,8 +547,6 @@ class OWBaseWidget(QDialog):
         #print str(self.RGUIElements)
         return cPickle.dumps(settings)
 
-    def onSaveSession(self):
-        pass
         
     def onDeleteWidget(self, suppress = 0):
         pass

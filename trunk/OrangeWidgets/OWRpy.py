@@ -5,7 +5,6 @@
 #
 
 from OWWidget import *
-from PyQt4 import QtWebKit
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
@@ -31,13 +30,6 @@ class OWRpy(OWWidget):
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
-        
-        print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
-            ISBN 3-900051-07-0\n \
-            R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
-            You are welcome to redistribute it under certain conditions.\n \
-            Type 'license()' or 'licence()' for distribution details."
-        
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
         
@@ -61,87 +53,100 @@ class OWRpy(OWWidget):
         
         #collect the sent items
         self.sentItems = []
-        self.blackList = ['canvasSettingsDir', '__module__', 'canvasDir', 'widgetXPosition', 'widgetYPosition', 'orangeDir', '_owError', 'bufferDir', 'widgetWidth', 'occupied', 'widgetSettingsDir', 'widgetHeight', '_category', 'reposDir', 'picsDir', 'addOnsDir', 'widgetShown', 'captionTitle', 'widgetDir']
+        self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
+        self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table']
+        self.widgetToolBar = QMenuBar(self)
+        notesMenu = self.widgetToolBar.addMenu('Notes')
+        self.notesAction = ToolBarTextEdit(self)
+        notesMenu.addAction(self.notesAction)
         
-        # self.widgetToolBar = QMenuBar(self)
-        # notesMenu = self.widgetToolBar.addMenu('Notes')
-        # self.notesAction = ToolBarTextEdit(self)
-        # notesMenu.addAction(self.notesAction)
-        self.notes = QTextEdit()
-        self.help = QtWebKit.QWebView(self)
-        self.processingBox = QtWebKit.QWebView(self)
-        webSize = QSize(200,100)
-        self.help.setMaximumSize(webSize)
-        # self.notes.setBaseSize(webSize)
-        # self.help.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        # self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #QtWebKit.QWebSettings.setAttribute(QtWebKit.QWebSettings.PluginsEnabled)
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-        self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
-        self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
-        
-        notesBox = OWGUI.widgetBox(self, "Notes")
-        helpBox = OWGUI.widgetBox(self, "Discription")
-        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
-        self.processingBox.setMaximumSize(webSize)
-        self.processingBox.setHtml('<center><img alt="Waiting GIF" src="file:///C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif" width="50" height="50" /></center>')
-        #self.processingBox.setUrl(QUrl("http://en.wikipedia.org/wiki/File:Rotating_earth_(small).gif"))
-        processingBoxBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        processingBoxBox.layout().addWidget(self.processingBox)
-        notesBox.setBaseSize(webSize)
-        helpBox.setBaseSize(webSize)
-        helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        
-        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
-        notesBox.layout().addWidget(self.notes)
-        helpBox.layout().addWidget(self.help)
-        
-        #self.controlArea.layout().addWidget(self.widgetToolBar)
-        self.defaultLeftArea.layout().addWidget(helpBox)
-        #self.help.mainFrame().show()
-        self.defaultLeftArea.layout().addWidget(notesBox)
-        self.defaultLeftArea.layout().addWidget(processingBoxBox)
-        self.statusBar = QStatusBar()
-        self.layout().addWidget(self.statusBar)
-        # self.splitter = QSplitter(self.controlArea)
-        # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
-        # self.controlArea.layout().addWidget(self.splitter)
-        # self.splitter.addWidget(self.widgetMainArea)
-        #self.controlArea.setLayout(self.splitter)
-        self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
-        #self.statusIndicator.setBackgroundRole(QPalette.Dark)
-        
-        #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
-        self.statusBar.addWidget(self.statusIndicator)
-        #self.statusBar.addWidget(self.statusImage)
+        self.controlArea.layout().addWidget(self.widgetToolBar)
 
 
+    
     def getSettings(self, alsoContexts = True):
+        print '#########################start get settings'
         settings = {}
-        allAtts = dir(self)
-        
+        allAtts = self.__dict__#dir(self)
+        parentVaribles = OWWidget().__dict__.keys()
+        self.blackList.extend(parentVaribles)
+        #print self.blackList
+        for att in allAtts:
+            if att in self.blackList:
+                # print 'passed:' + att
+                continue
+            # print 'frist att: ' + att
+            if getattr(self, att).__class__.__name__ in self.GUIWidgets:
+                print 'getting gui settings for:' + att
+             
+                v = getattr(self, att).getSettings()
+                # print 'settings:' + str(v)
+                if not 'RGUIElementsSettings' in settings.keys():
+                    # print 'ba'
+                    settings['RGUIElementsSettings'] = {}
                 
-        if hasattr(self, "settingsList"):
-            self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings', 'RPackages'])
-
-            for att in allAtts:
-                if type(getattr(self, att)) == type('') or type(getattr(self, att)) == type(1): # if they are strings we don't need to worry much
-                    if att in self.blackList: pass  # allows us to make a blackList so that everything isn't saved, these things can be saved with special calls to settingsList.extend, but they won't be saved normally.
-                    else:
-                        self.settingsList.extend([att])
-                elif type(getattr(self, att)) == type({}) or type(getattr(self, att)) == type([]): #we need to chech these types to see if they contain any instances or other things that we can't pickle.
-                    # print att
-                    # self.settingsList.extend([att])
-                    pass
-            for name in self.settingsList:
+                settings['RGUIElementsSettings'][att] = v
+                # print settings['RGUIElementsSettings']
+                    
+            elif type(getattr(self, att)) in [str,int]:
+                settings[att] =  self.getdeepattr(att)
+            elif type(getattr(self, att)) in [list,dict,tuple]:
+                settings[att] =  self.getdeepattr(att)
+        
+        # print settings
+        return settings
+    def getGlobalSettings(self):
+        print 'get global settings'
+        settings = {}
+        if hasattr(self, "globalSettingsList"):
+            for name in self.globalSettingsList:
                 try:
                     settings[name] =  self.getdeepattr(name)
                 except:
-                    #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-                    pass
+                    print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+        return settings
+        
+    def saveSettings(self, file = None):
+        print 'save settings'
+        settings = self.getGlobalSettings()
+        if settings:
+            if file==None:
+                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+            if type(file) == str:
+                file = open(file, "w")
+            cPickle.dump(settings, file)
+
+    def getSettings2(self, alsoContexts = True):
+        settings = {}
+        allAtts = self.__dict__
+        
+                
+        # if hasattr(self, "settingsList"):
+            # self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings', 'RPackages'])
+
+        for att in allAtts:
+            print getattr(self, att).__class__
+            print getattr(self, att).__class__.__name__
+            if type(getattr(self, att)) == type('') or type(getattr(self, att)) == type(1): # if they are strings we don't need to worry much
+                if att in self.blackList: pass  # allows us to make a blackList so that everything isn't saved, these things can be saved with special calls to settingsList.extend, but they won't be saved normally.
+                else:
+                    self.settingsList.extend([att])
+            elif type(getattr(self, att)) == type({}) or type(getattr(self, att)) == type([]): #we need to chech these types to see if they contain any instances or other things that we can't pickle.
+                # print att
+                # self.settingsList.extend([att])
+                pass
+        for name in self.settingsList:
+            try:
+                settings[name] =  self.getdeepattr(name)
+            except:
+                #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+                pass
         for element in self.RGUIElements:
-            print element
+            # print element
+            #element.getSettings()
+            # element.__class__.__name__
+            continue
+            
             GUIsetting = {}
             elementClass = element[1]
             elementName = element[0]
@@ -233,7 +238,9 @@ class OWRpy(OWWidget):
             
             self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting
             
-        self.RGUIElementsSettings['widgetNotes'] = {'text':self.notes.document().toHtml(), 'class': 'widgetNotes'}
+        
+        
+        self.RGUIElementsSettings['widgetNotes'] = {'text':self.notesAction.textEdit.document().toHtml(), 'class': 'widgetNotes'}
             # if hasattr(self, "settingsList"):
                 # self.settingsList.extend([str('GUIelement_'+elementName)])
                 # settings[str('GUIelement_'+elementName)] = GUIsetting
@@ -257,8 +264,6 @@ class OWRpy(OWWidget):
         except:
             self.needsProcessingHandler(self, 1)
         self.sentItems.append((name, variable))
-        self.statusIndicator.setText("Data sent")
-        #self.statusIndicator.setBackgroundRole(Qt.yellow)
 
         
     #depreciated
@@ -292,7 +297,7 @@ class OWRpy(OWWidget):
         qApp.restoreOverrideCursor()
         return output
                 
-    def R(self, query, type = 'getRData', processing_notice=False, silentErrors = 0, errorMessage = ''):
+    def R(self, query, type = 'getRData', processing_notice=False):
         qApp.setOverrideCursor(Qt.WaitCursor)
         OWRpy.rsem.acquire()
         OWRpy.lock.acquire()
@@ -320,17 +325,13 @@ class OWRpy(OWWidget):
                 rpy.r(query) # run the query anyway even if the user put un a wierd value
 
         except rpy.RPyRException, inst:
-            
             OWRpy.occupied = 0
             OWRpy.lock.release()
             OWRpy.rsem.release()
             qApp.restoreOverrideCursor()
             self.progressBarFinished()
-            if silentErrors == 1:
-                QMessageBox.information(self, 'Orange Canvas','R Error: '+ errorMessage,  QMessageBox.Ok + QMessageBox.Default)
-            else:
-                print inst.message
-                QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
+            print inst.message
+            QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
             #sys.exit()
             
             #raise rpy.RPyException('Unable to process')
@@ -468,6 +469,26 @@ class OWRpy(OWWidget):
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
+        print 'in onLoadSavedSession'
+        #print self.RGUIElementsSettings['scanarea']
+        
+        for i in self.RGUIElementsSettings.keys():
+            try:            
+                print '**********************' + i
+                # print getattr(self, i).loadSettings
+                # print self.RGUIElementsSettings[i]
+                # print getattr(self, i).loadSettings
+                getattr(self, i).loadSettings(self.RGUIElementsSettings[i])
+            except:
+                print 'error:' + i
+                print "Unexpected error:", sys.exc_info()[0]
+                
+
+        for (name, data) in self.sentItems:
+            self.send(name, data)
+       
+    
+    def onLoadSavedSession2(self):
         #print str(self.RGUIElementsSettings)
         
         for (name, data) in self.sentItems:
@@ -566,10 +587,6 @@ class OWRpy(OWWidget):
             print elementClass
             print str(value['text'])
             self.notesAction.textEdit.setHtml(value['text'])
-            
-    def followLink(self, url):
-        self.rsession('shell.exec("'+str(url.toString())+'")')
-        self.notes.setHtml(str(url.toString()))
             
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):

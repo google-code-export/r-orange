@@ -146,7 +146,8 @@ class OutputWindow(QDialog):
     def uploadException(self,err):
         import httplib,urllib
         #import sys,pickle
-        res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
+        #res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
+        res = QMessageBox.No
         if res == QMessageBox.Yes:
             params = urllib.urlencode({'error':err})
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}

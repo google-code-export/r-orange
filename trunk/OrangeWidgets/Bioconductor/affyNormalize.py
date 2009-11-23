@@ -8,11 +8,13 @@
 
 
 from OWRpy import *
-import OWGUI
+# import OWGUI
 import RAffyClasses
+import redRGUI 
+
 
 class affyNormalize(OWRpy):
-    settingsList = ['norminfo', 'enableMethBox', 'data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
+    # settingsList = ['norminfo', 'enableMethBox', 'data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Normalization")
         
@@ -26,7 +28,6 @@ class affyNormalize(OWRpy):
         self.pmcorrect = 'pmonly'
         self.summarymeth = 'liwong'
         self.norm = ['quantiles']
-        self.selectMethod = 3
         self.data = ''
         self.enableMethBox = False
         self.norminfo = ''
@@ -45,37 +46,41 @@ class affyNormalize(OWRpy):
 
         
         #the GUI
-        status = OWGUI.widgetBox(self.controlArea, "Status")
-        self.infoa = OWGUI.widgetLabel(status, 'No data loaded.')
-        normrad = OWGUI.widgetBox(self.controlArea, "Normalization Methods")
-        self.selMethBox = OWGUI.radioButtonsInBox(normrad, self, 'selectMethod', ["RMA", "MAS5", "Custom"], callback=self.selectMethodChanged)
-        self.selMethBox.setEnabled(self.enableMethBox)
-        info = OWGUI.widgetBox(self.controlArea, "Normalization Options")
+        status = redRGUI.widgetBox(self.controlArea, "Status")
+        self.infoa = redRGUI.widgetLabel(status, 'No data loaded.')
+        #normrad = redRGUI.widgetBox(self.controlArea, "Normalization Methods")
+
+        self.selMethBox = redRGUI.radioButtons(self.controlArea, 'Normalization Method', ["RMA", "MAS5", "Custom"], callback=self.selectMethodChanged)
+        self.selMethBox.setChecked('RMA')
+        # QObject.connect(self.selMethBox.buttons, SIGNAL('buttonClicked(int)'), self.selectMethodChanged)
+        
+        # self.selMethBox.setEnabled(self.enableMethBox)
+        info = redRGUI.widgetBox(self.controlArea, "Normalization Options")
         
         #drop list box
         
         #insert a block to check what type of object is connected.  If nothing connected set the items of the normalize methods objects to 
-        self.normselector = OWGUI.comboBox(info, self, 'normmeth', label="Normalization Method  ", items=self.norm, orientation=0)
+        self.normselector = redRGUI.comboBox(info, label="Normalization Method", items=self.norm, orientation=0)
         self.normselector.setEnabled(False)
-        self.bgcorrectselector = OWGUI.comboBox(info, self, 'bgcorrect', label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
+        self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
         self.bgcorrectselector.setEnabled(False)
-        self.bgcmethselector = OWGUI.comboBox(info, self, 'bgcorrectmeth', label="Background Correct Methods", items=self.rsession('bgcorrect.methods'), orientation=0)
+        self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=self.rsession('bgcorrect.methods'), orientation=0)
         self.bgcmethselector.setEnabled(False)
-        self.pmcorrectselector = OWGUI.comboBox(info, self, 'pmcorrect', label="Perfect Match Correct Methods", items=self.rsession('pmcorrect.methods'), orientation=0)
+        self.pmcorrectselector = redRGUI.comboBox(info, label="Perfect Match Correct Methods", items=self.rsession('pmcorrect.methods'), orientation=0)
         self.pmcorrectselector.setEnabled(False)
-        self.summethselector = OWGUI.comboBox(info, self, 'summarymeth', label="Summary Methods", items=self.rsession('express.summary.stat.methods'), orientation=0)
+        self.summethselector = redRGUI.comboBox(info, label="Summary Methods", items=self.rsession('express.summary.stat.methods'), orientation=0)
         self.summethselector.setEnabled(False)
         
         
-        runbutton = OWGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
+        runbutton = redRGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
         
-    def onLoadSavedSession(self):
-        print 'load affy norm'
-        self.selectMethodChanged()
-        self.selMethBox.setEnabled(True)
-        if self.Rvariables['normalized_affybatch'] in self.R('ls()'):
-            self.toSend()
-            self.infoa.setText(self.norminfo)
+    # def onLoadSavedSession(self):
+        # print 'load affy norm'
+        # self.selectMethodChanged()
+        # self.selMethBox.setEnabled(True)
+        # if self.Rvariables['normalized_affybatch'] in self.R('ls()'):
+            # self.toSend()
+            # self.infoa.setText(self.norminfo)
 
         
     def normalize(self):
@@ -136,19 +141,26 @@ class affyNormalize(OWRpy):
         
     
     def selectMethodChanged(self):
-        if self.selectMethod == 0:
+        # print 'callback#################################'
+        # return
+        # print self.__dict__
+        # print ev.__dict__
+        # print 'asdfasdfasdf'
+        # if not 'selMethBox' in self.__dict__.keys(): return;
+        # return
+        if self.selMethBox.getChecked() == 'RMA':
             self.bgcorrectselector.setEnabled(False)
             self.bgcmethselector.setEnabled(False)
             self.pmcorrectselector.setEnabled(False)
             self.summethselector.setEnabled(False)
             self.normselector.setEnabled(False)
-        if self.selectMethod == 1:
+        elif self.selMethBox.getChecked() == 'MAS5':
             self.bgcorrectselector.setEnabled(False)
             self.bgcmethselector.setEnabled(False)
             self.pmcorrectselector.setEnabled(False)
             self.summethselector.setEnabled(False)
             self.normselector.setEnabled(False)
-        if self.selectMethod == 2:
+        elif self.selMethBox.getChecked() == 'Custom':
             self.bgcorrectselector.setCurrentIndex(self.bgcorrectselector.findText('FALSE'))
             self.bgcorrectselector.setEnabled(True)
             self.bgcorrectmeth = 'none'

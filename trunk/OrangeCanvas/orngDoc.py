@@ -535,7 +535,7 @@ class SchemaDoc(QWidget):
                 for widget in widgets.getElementsByTagName("widget"):
                     name = widget.getAttribute("widgetName")
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                    print 'widget settings are' + str(settings)
+                    #print 'widget settings are' + str(settings)
                     try:
                         for library in settings['RPackages']:
                             rpy.r('require('+library+')')
@@ -655,7 +655,7 @@ class SchemaDoc(QWidget):
         print 'start onload' # we do want to reload the settings of the widgets
         for widget in self.widgets:
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                #print 'for widget'
+                print 'for widget'
                 SignalManager.loadSavedSession = True
                 widget.instance.onLoadSavedSession()
                 SignalManager.loadSavedSession = False
