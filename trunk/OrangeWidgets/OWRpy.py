@@ -5,6 +5,7 @@
 #
 
 from OWWidget import *
+from PyQt4 import QtWebKit
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
@@ -30,6 +31,13 @@ class OWRpy(OWWidget):
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
+        
+        print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
+            ISBN 3-900051-07-0\n \
+            R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
+            You are welcome to redistribute it under certain conditions.\n \
+            Type 'license()' or 'licence()' for distribution details."
+        
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
         
@@ -60,10 +68,63 @@ class OWRpy(OWWidget):
         self.notesAction = ToolBarTextEdit(self)
         notesMenu.addAction(self.notesAction)
         
-        self.controlArea.layout().addWidget(self.widgetToolBar)
+        # self.widgetToolBar = QMenuBar(self)
+        # notesMenu = self.widgetToolBar.addMenu('Notes')
+        # self.notesAction = ToolBarTextEdit(self)
+        # notesMenu.addAction(self.notesAction)
+        self.notes = QTextEdit()
+        self.help = QtWebKit.QWebView(self)
+        self.processingBox = QtWebKit.QWebView(self)
+        webSize = QSize(200,100)
+        self.help.setMaximumSize(webSize)
+        # self.notes.setBaseSize(webSize)
+        # self.help.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        # self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #QtWebKit.QWebSettings.setAttribute(QtWebKit.QWebSettings.PluginsEnabled)
+        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
+        self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
+        
+        notesBox = OWGUI.widgetBox(self, "Notes")
+        helpBox = OWGUI.widgetBox(self, "Discription")
+        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
+        self.processingBox.setMaximumSize(webSize)
+        self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
+
+        #self.processingBox.setUrl(QUrl("http://en.wikipedia.org/wiki/File:Rotating_earth_(small).gif"))
+        processingBoxBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        processingBoxBox.layout().addWidget(self.processingBox)
+        notesBox.setBaseSize(webSize)
+        helpBox.setBaseSize(webSize)
+        helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
+        notesBox.layout().addWidget(self.notes)
+        helpBox.layout().addWidget(self.help)
+        
+        #self.controlArea.layout().addWidget(self.widgetToolBar)
+        self.defaultLeftArea.layout().addWidget(helpBox)
+        #self.help.mainFrame().show()
+        self.defaultLeftArea.layout().addWidget(notesBox)
+        self.defaultLeftArea.layout().addWidget(processingBoxBox)
+        self.statusBar = QStatusBar()
+        self.layout().addWidget(self.statusBar)
+        # self.splitter = QSplitter(self.controlArea)
+        # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
+        # self.controlArea.layout().addWidget(self.splitter)
+        # self.splitter.addWidget(self.widgetMainArea)
+        #self.controlArea.setLayout(self.splitter)
+        self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
+        #self.statusIndicator.setBackgroundRole(QPalette.Dark)
+        
+        #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
+        self.statusBar.addWidget(self.statusIndicator)
+        #self.statusBar.addWidget(self.statusImage)
+        #MoviePlayer().show()
 
 
-    
+
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
         settings = {}
@@ -238,8 +299,6 @@ class OWRpy(OWWidget):
             
             self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting
             
-        
-        
         self.RGUIElementsSettings['widgetNotes'] = {'text':self.notesAction.textEdit.document().toHtml(), 'class': 'widgetNotes'}
             # if hasattr(self, "settingsList"):
                 # self.settingsList.extend([str('GUIelement_'+elementName)])
@@ -264,6 +323,7 @@ class OWRpy(OWWidget):
         except:
             self.needsProcessingHandler(self, 1)
         self.sentItems.append((name, variable))
+        self.processingBox.setHtml('<center>Data sent.</center>')
 
         
     #depreciated
@@ -298,14 +358,20 @@ class OWRpy(OWWidget):
         return output
                 
     def R(self, query, type = 'getRData', processing_notice=False):
+        #RThread().start()
+        # rthread = RThread()
+        # rthread.start()
+        
+        
         qApp.setOverrideCursor(Qt.WaitCursor)
+        
         OWRpy.rsem.acquire()
-        OWRpy.lock.acquire()
         OWRpy.occupied = 1
         output = None
         if processing_notice:
-            self.progressBarInit()
-            self.progressBarSet(30)
+            self.processingBox.setHtml('<center>Processing Started.<br>Please wait for processing to finish.</center>')
+            # self.progressBarInit()
+            # self.progressBarSet(30)
         print query
         histquery = query
         histquery = histquery.replace('<', '&lt;') #convert for html
@@ -332,16 +398,16 @@ class OWRpy(OWWidget):
             self.progressBarFinished()
             print inst.message
             QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
-            #sys.exit()
-            
-            #raise rpy.RPyException('Unable to process')
+            self.processingBox.setHtml('<center>Error occured during processing please check data or <a href="http://red-r.org/">contact the developers.</a></center>')
 
-        # OWRpy.processing = False
+        OWRpy.processing = False
         if processing_notice:
-            self.progressBarFinished()
+            self.processingBox.setHtml('<center>Processing complete</center>')
+            #self.progressBarFinished()
+        
+        #rthread.threadBreaking = True
         
         OWRpy.occupied = 0
-        OWRpy.lock.release()
         OWRpy.rsem.release()
         qApp.restoreOverrideCursor()
         return output
@@ -588,10 +654,15 @@ class OWRpy(OWWidget):
             print str(value['text'])
             self.notesAction.textEdit.setHtml(value['text'])
             
+    def followLink(self, url):
+        self.rsession('shell.exec("'+str(url.toString())+'")')
+        self.notes.setHtml(str(url.toString()))
+            
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)
         self.textEdit = QTextEdit()
         self.setDefaultWidget(self.textEdit)
         
-
+        
+        
