@@ -64,11 +64,11 @@ class affyNormalize(OWRpy):
         self.normselector.setEnabled(False)
         self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
         self.bgcorrectselector.setEnabled(False)
-        self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=self.rsession('bgcorrect.methods'), orientation=0)
+        self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=self.R('bgcorrect.methods'), orientation=0)
         self.bgcmethselector.setEnabled(False)
-        self.pmcorrectselector = redRGUI.comboBox(info, label="Perfect Match Correct Methods", items=self.rsession('pmcorrect.methods'), orientation=0)
+        self.pmcorrectselector = redRGUI.comboBox(info, label="Perfect Match Correct Methods", items=self.R('pmcorrect.methods'), orientation=0)
         self.pmcorrectselector.setEnabled(False)
-        self.summethselector = redRGUI.comboBox(info, label="Summary Methods", items=self.rsession('express.summary.stat.methods'), orientation=0)
+        self.summethselector = redRGUI.comboBox(info, label="Summary Methods", items=self.R('express.summary.stat.methods'), orientation=0)
         self.summethselector.setEnabled(False)
         
         
@@ -86,13 +86,13 @@ class affyNormalize(OWRpy):
     def normalize(self):
         self.infoa.setText('Processing')
         if self.selectMethod == 0:
-            self.rsession(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
+            self.R(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
             self.norminfo = 'Normalized with RMA'
         if self.selectMethod == 1:
-            self.rsession(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
+            self.R(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
             self.norminfo = 'Normalized with MAS5'
         if self.selectMethod == 2:
-            self.rsession(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
+            self.R(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
             self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrect+', Method:'+self.bgcorrectmeth+', Perfect Match Correct Method: '+self.pmcorrect+', Summary Method: '+self.summarymeth
         self.toSend()
         self.infoa.setText(self.norminfo)
@@ -118,7 +118,7 @@ class affyNormalize(OWRpy):
             self.data = str(dataset['data'])
             
             
-            if self.rsession('length(exprs('+self.data+')[1,])') > 10:
+            if self.R('length(exprs('+self.data+')[1,])') > 10:
                 self.selectMethod = 2
                 self.selectMethodChanged()
                 
@@ -135,9 +135,9 @@ class affyNormalize(OWRpy):
             print 'error'
 
         
-        self.bgcmethselector.addItems(self.rsession('bgcorrect.methods'))
-        self.pmcorrectselector.addItems(self.rsession('pmcorrect.methods'))
-        self.summethselector.addItems(self.rsession('express.summary.stat.methods'))
+        self.bgcmethselector.addItems(self.R('bgcorrect.methods'))
+        self.pmcorrectselector.addItems(self.R('pmcorrect.methods'))
+        self.summethselector.addItems(self.R('express.summary.stat.methods'))
         
     
     def selectMethodChanged(self):
@@ -174,7 +174,7 @@ class affyNormalize(OWRpy):
             self.summethselector.setEnabled(True)
             self.norm = ['quantiles']
             self.normselector.clear()
-            self.normselector.addItems(self.rsession('normalize.methods('+self.data+')'))
+            self.normselector.addItems(self.R('normalize.methods('+self.data+')'))
             self.normselector.setCurrentIndex(self.normselector.findText('invariantset'))
             self.normselector.setEnabled(True)
         

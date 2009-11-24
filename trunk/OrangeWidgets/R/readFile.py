@@ -111,7 +111,7 @@ class readFile(OWRpy):
         elif self.delimiter.currentText() == 'Comma':
             sep = ','
         self.R('txt<-capture.output(read.table('+self.Rvariables['filename']+', nrows = 5, sep = "'+sep+'", fill = T))')
-        pasted = self.rsession('paste(txt, collapse = " \n")')
+        pasted = self.R('paste(txt, collapse = " \n")')
         self.scanarea.setText('If this table does not make sense, you may want to change the seperator.<br><pre>'+pasted+'<\pre>')
         
             
