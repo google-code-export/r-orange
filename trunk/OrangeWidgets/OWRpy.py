@@ -10,6 +10,7 @@ from PyQt4 import QtWebKit
 # set_options(RHOME=os.environ['RPATH'])
 # import rpy
 from RSession import *
+from numpy import *
 
 
 import time
@@ -54,10 +55,10 @@ class OWRpy(OWWidget,RSession):
         self.sentItems = []
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
         self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table']
-        self.widgetToolBar = QMenuBar(self)
-        notesMenu = self.widgetToolBar.addMenu('Notes')
-        self.notesAction = ToolBarTextEdit(self)
-        notesMenu.addAction(self.notesAction)
+        # self.widgetToolBar = QMenuBar(self)
+        # notesMenu = self.widgetToolBar.addMenu('Notes')
+        # self.notesAction = ToolBarTextEdit(self)
+        # notesMenu.addAction(self.notesAction)
         
         # self.widgetToolBar = QMenuBar(self)
         # notesMenu = self.widgetToolBar.addMenu('Notes')
@@ -66,6 +67,7 @@ class OWRpy(OWWidget,RSession):
         self.notes = QTextEdit()
         self.help = QtWebKit.QWebView(self)
         self.processingBox = QtWebKit.QWebView(self)
+        self.processingBox.moveToThread(QThread())
         webSize = QSize(200,100)
         self.help.setMaximumSize(webSize)
         # self.notes.setBaseSize(webSize)
@@ -81,6 +83,7 @@ class OWRpy(OWWidget,RSession):
         processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
         self.processingBox.setMaximumSize(webSize)
         self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
+        
 
         #self.processingBox.setUrl(QUrl("http://en.wikipedia.org/wiki/File:Rotating_earth_(small).gif"))
         processingBoxBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)

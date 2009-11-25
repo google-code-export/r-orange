@@ -1,6 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math
+from numpy import *
 #import sys, traceback
 
 YesNo = NoYes = ("No", "Yes")
@@ -17,6 +18,38 @@ class widgetState:
         self.setEnabled(data['enabled'])
         self.setHidden(data['hidden'])
 
+class table(QTableWidget, widgetState):
+    def __init__(self, widget, rows = 0, columns = 0, selectionMode = -1, data = None):
+        QTableWidget.__init__(self, rows, columns, widget)
+        if widget and widget.layout():
+            widget.layout().addWidget(self)
+        if selectionMode != -1:
+            try:
+                self.setSelectionMode(selectionMode)
+            except:
+                try:
+                    widget.processingBox.setHtml('Selection mode does not exist, this is a widget design problem and should be fixed by the developer.  Table items may not be selectable or may not select normally.')
+                except: pass
+        if data != None: #this should be in the form of a numpy array that will be added to the table
+            self.setTable(data)
+            
+    def setTable(self, data = None):
+        if 'matrix' in data:
+            self.clear() #should clear the table before we run into problems
+            (rows, columns) = data['matrix'].shape
+            self.setColumnCount(columns)
+            self.setRowCount(rows)
+            
+            for r in range(rows):
+                for c in range(columns):
+                    item = QTableWidgetItem(str(data['matrix'][r,c]))
+                    self.setItem(r,c,item)
+            
+            if 'rownames' in data and data['rownames'] != 'NULL':
+                self.setVerticalHeaderLabels(data['rownames'])
+            if 'colnames' in data and data['colnames'] != 'NULL':   
+                self.setHorizontalHeaderLabels(data['colnames'])
+            
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
         QTabWidget.__init__(self,widget)

@@ -48,7 +48,7 @@ class readFile(OWRpy):
         self.delimiter = redRGUI.comboBox(box, items = ['Tab', 'Space', 'Comma'])
         self.hasHeader = redRGUI.checkBox(box, buttons = ['header'])
         
-        self.header = redRGUI.lineEdit(box, label = 'Rowname Column:')
+        self.userowNames = redRGUI.lineEdit(box, label = 'Rowname Column:')
         redRGUI.button(box, self, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
         redRGUI.button(box, self, 'Load File', callback = self.loadFile)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
@@ -130,8 +130,8 @@ class readFile(OWRpy):
             header = 'FALSE'
         elif self.useheader == 1:
             header = 'TRUE'
-        if self.userowNames != '':
-            rownames = self.userowNames
+        if self.userowNames.text() != '':
+            rownames = str(self.userowNames.text())
         else:
             rownames = 'NULL' #force numbering
         self.R(self.Rvariables['dataframe'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header+', sep = "'+sep+'", row.names = '+rownames+', fill = T)','setRData',True)

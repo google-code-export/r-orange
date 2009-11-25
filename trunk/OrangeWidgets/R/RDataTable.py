@@ -17,6 +17,7 @@ from OWRpy import *
 import OWGUI, redRGUI
 import math
 from orngDataCaching import *
+import RRGUI
 
 ##############################################################################
 
@@ -170,7 +171,10 @@ class RDataTable(OWRpy):
         if dataset != None:  # can be an empty table!
             
             #data = self.convertDataframeToExampleTable(dataset['data'])
-            data = self.rsession('as.matrix(' + dataset['data'] + ')')
+            data = {}
+            data['matrix'] = array(self.rsession('as.matrix(' + dataset['data'] + ')'))
+            data['colnames'] = self.rsession('colnames(' + dataset['data'] + ')')
+            data['rownames'] = self.rsession('rownames(' + dataset['data'] + ')')
             if self.data.has_key(id):
                 # remove existing table
                 table = self.id2table[id]
@@ -197,15 +201,15 @@ class RDataTable(OWRpy):
             #self.showMetas[id] = (True, [])
             self.dataTableIndex[id] = dataset
             self.currentData = dataset['data']
-            table = redRGUI.table(None,data=data, 0,0)
+            table = redRGUI.table(None, 0,0, data=data)
             #if id in self.link: #start the block for assignment of link data attributes
             self.connect(table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
             self.id2table[id] = table
             self.table2id[table] = id
-            if data.name:
-                tabName = "%s " % data.name
+            if 'name' in dataset:
+                tabName = "%s " % dataset['name']
             else:
                 tabName = ""
             tabName += "(" + str(id[1]) + ")"
@@ -447,20 +451,21 @@ class RDataTable(OWRpy):
             self.infoMeta.setText('')
             self.infoClass.setText('')
         else:
-            self.infoEx.setText("%s example%s," % sp(data))
-            missData = orange.Preprocessor_takeMissing(data)
-            self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
-            #self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
-            #self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
-            if data.domain.classVar:
-                if data.domain.classVar.varType == orange.VarTypes.Discrete:
-                    self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))
-                elif data.domain.classVar.varType == orange.VarTypes.Continuous:
-                    self.infoClass.setText('Continuous class.')
-                else:
-                    self.infoClass.setText("Class is neither discrete nor continuous.")
-            else:
-                self.infoClass.setText('Classless domain.')
+            (row, col) = data['matrix'].shape
+            self.processingBox.setHtml('%i rows and %i columns.' % (row, col))
+            #missData = orange.Preprocessor_takeMissing(data)
+            # self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
+            # self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
+            # self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
+            # if data.domain.classVar:
+                # if data.domain.classVar.varType == orange.VarTypes.Discrete:
+                    # self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))
+                # elif data.domain.classVar.varType == orange.VarTypes.Continuous:
+                    # self.infoClass.setText('Continuous class.')
+                # else:
+                    # self.infoClass.setText("Class is neither discrete nor continuous.")
+            # else:
+                # self.infoClass.setText('Classless domain.')
                 
 
 class TableItemDelegate(QItemDelegate):
