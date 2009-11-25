@@ -138,7 +138,7 @@ class OrangeCanvasDlg(QMainWindow):
         deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
         h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
         w = max(0, deskW/2 - width/2)
-        self.move(w,h)
+        self.move(w,h+2)
 
         self.helpWindow = orngHelp.HelpWindow(self)
         self.reportWindow = OWReport.ReportWindow()
