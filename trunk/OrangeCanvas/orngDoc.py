@@ -436,7 +436,11 @@ class SchemaDoc(QWidget):
             # if not tmp:
                 # widget.instance.onSaveSession()
             print 'looking for settingsstr'
+            #try:
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
+            # except:
+                # settingsDict[widget.caption] = None
+                #sprint str(widget.caption) + 'failed to save some settings'
             widgets.appendChild(temp)
 
         #save connections
@@ -545,6 +549,8 @@ class SchemaDoc(QWidget):
                         #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
                         failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                         loadedOk = 0
+                        print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+
                     qApp.processEvents()
 
                 
