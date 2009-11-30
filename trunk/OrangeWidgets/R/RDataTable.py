@@ -100,21 +100,22 @@ class RDataTable(OWRpy):
         # self.colButton = redRGUI.toolButton(colBox, self, self.changeColor, width=20, height=20, debuggingEnabled = 0)
         # redRGUI.rubber(colBox)
 
-        resizeColsBox = redRGUI.widgetBox(boxSettings, orientation="horizontal")
-        redRGUI.widgetLabel(resizeColsBox, "Resize columns: ")
-        redRGUI.button(resizeColsBox, self, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
-        redRGUI.button(resizeColsBox, self, "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
-        redRGUI.rubber(resizeColsBox)
+        resizeColsBox = OWGUI.widgetBox(boxSettings, orientation="horizontal")
+        OWGUI.widgetLabel(resizeColsBox, "Resize columns: ")
+        OWGUI.button(resizeColsBox, self, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
+        OWGUI.button(resizeColsBox, self, "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
+        OWGUI.rubber(resizeColsBox)
 
-        self.btnResetSort = redRGUI.button(boxSettings, self, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
+        self.btnResetSort = OWGUI.button(boxSettings, self, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
         redRGUI.rubber(self.controlArea)
 
         # GUI with tabs
-        self.tabs = redRGUI.tabWidget(self.mainArea)
-        self.id2table = {}  # key: widget id, value: table
-        self.table2id = {}  # key: table, value: widget id
-        self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
+        # self.tabs = redRGUI.tabWidget(self.mainArea)
+        # self.id2table = {}  # key: widget id, value: table
+        # self.table2id = {}  # key: table, value: widget id
+        # self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
+        
 
         # self.updateColor()
         

@@ -509,6 +509,13 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
             cols = self.rsession('length('+self.Rvariables['result']+'[1,])')
             rows = self.rsession('length('+self.Rvariables['result']+'[,1])')
             self.tableinfod.setText("%s columns and %s rows." % (str(cols), str(rows)))
+        elif resultclass == 'matrix':
+            self.newdata['data'] = 'as.data.frame('+self.Rvariables['result']+')'
+            self.rSend("R DataFrame" , self.newdata)
+            self.tableinfoc.setText("Data Frame sent with:")
+            cols = self.rsession('length('+self.Rvariables['result']+'[1,])')
+            rows = self.rsession('length('+self.Rvariables['result']+'[,1])')
+            self.tableinfod.setText("%s columns and %s rows." % (str(cols), str(rows)))
         elif resultclass == 'numeric' or resultclass == 'factor':
             
             self.rSend("Classified Vector Subset", self.newdata)

@@ -361,93 +361,99 @@ class OWBaseWidget(QDialog):
                     
             #instert logic for saving the gui settings
         for element in self.RGUIElements:
-            #print element
-            GUIsetting = {}
-            elementClass = element[1]
-            elementName = element[0]
-            if elementClass == 'widgetBox':
-                GUIsetting['class'] = 'widgetBox'
-            elif elementClass == 'widgetLabel':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'widgetLabel'
-            elif elementClass == 'checkBox':
-                GUIsetting['checked'] = getattr(self, elementName).isChecked()
-                GUIsetting['class'] = 'checkBox'
-            elif elementClass == 'lineEdit':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'lineEdit'
-            elif elementClass == 'button':
-                GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
-                GUIsetting['class'] = 'button'
-            elif elementClass == 'listBox':
-                GUIsetting['items'] = getattr(self, elementName).items()
-                GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
-                GUIsetting['class'] = 'listBox'
-            elif elementClass == 'radioButtonsInBox':
-                GUIsetting['class'] = 'radioButtonsInBox'
-            elif elementClass == 'comboBox':
-                text = []
-                cb = getattr(self, elementName)
-                for i in range(cb.count()):
-                    text.append(cb.itemText(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['class'] = 'comboBox'
-            elif elementClass == 'comboBoxWithCaption':
-                text = []
-                cb = getattr(self, elementName)
-                for i in range(cb.count()):
-                    text.append(cb.itemText(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['class'] = 'comboBoxWithCaption'
-            elif elementClass == 'tabWidget':
-                text = []
-                enabled = []
-                tab = getattr(self, elementName)
-                for i in range(tab.count()):
-                    text.append(tab.tabText(i))
-                    enabled.append(tab.isEnabled(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['itemEnabled'] = enabled
-                GUIsetting['class'] = 'tabWidget'
-            elif elementClass == 'createTabPage':
-                GUIsetting['class'] = 'createTabPage'
-            elif elementClass == 'table':
-                table = getattr(self, elementName)
-                GUIsetting['selectedRanges'] = table.selectedRanges()
-                row = table.rowCount()
-                col = table.columnCount()
-                rowNames = []
-                for i in range(row):
-                    rowNames.append(table.verticalHeaderItem(i).text())
-                GUIsetting['rowNames'] = rowNames
-                
-                colNames = []
-                for j in range(col):
-                    colNames.append(table.horizontalHeaderItem(j).text())
-                GUIsetting['colNames'] = colNames
-                
-                tableItems = []
-                for i in range(row):
+            try:
+                #print element
+                GUIsetting = {}
+                elementClass = element[1]
+                elementName = element[0]
+                print elementClass
+                if elementClass == 'widgetBox':
+                    GUIsetting['class'] = 'widgetBox'
+                elif elementClass == 'widgetLabel':
+                    GUIsetting['text'] = str(getattr(self, elementName).text())
+                    GUIsetting['class'] = 'widgetLabel'
+                elif elementClass == 'checkBox':
+                    GUIsetting['checked'] = getattr(self, elementName).isChecked()
+                    GUIsetting['class'] = 'checkBox'
+                elif elementClass == 'lineEdit':
+                    GUIsetting['text'] = getattr(self, elementName).text()
+                    GUIsetting['class'] = 'lineEdit'
+                elif elementClass == 'button':
+                    GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
+                    GUIsetting['class'] = 'button'
+                elif elementClass == 'listBox':
+                    GUIsetting['items'] = getattr(self, elementName).items()
+                    GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
+                    GUIsetting['class'] = 'listBox'
+                elif elementClass == 'radioButtonsInBox':
+                    GUIsetting['class'] = 'radioButtonsInBox'
+                elif elementClass == 'comboBox':
+                    text = []
+                    cb = getattr(self, elementName)
+                    for i in range(cb.count()):
+                        text.append(str(cb.itemText(i)))
+                    GUIsetting['itemText'] = text
+                    GUIsetting['class'] = 'comboBox'
+                elif elementClass == 'comboBoxWithCaption':
+                    text = []
+                    cb = getattr(self, elementName)
+                    for i in range(cb.count()):
+                        text.append(str(cb.itemText(i)))
+                    GUIsetting['itemText'] = text
+                    GUIsetting['class'] = 'comboBoxWithCaption'
+                elif elementClass == 'tabWidget':
+                    text = []
+                    enabled = []
+                    tab = getattr(self, elementName)
+                    for i in range(tab.count()):
+                        text.append(str(tab.tabText(i)))
+                        enabled.append(tab.isEnabled(i))
+                    GUIsetting['itemText'] = text
+                    GUIsetting['itemEnabled'] = enabled
+                    GUIsetting['class'] = 'tabWidget'
+                elif elementClass == 'createTabPage':
+                    GUIsetting['class'] = 'createTabPage'
+                elif elementClass == 'table':
+                    table = getattr(self, elementName)
+                    GUIsetting['selectedRanges'] = table.selectedRanges()
+                    row = table.rowCount()
+                    col = table.columnCount()
+                    rowNames = []
+                    for i in range(row):
+                        rowNames.append(str(table.verticalHeaderItem(i).text()))
+                    GUIsetting['rowNames'] = rowNames
+                    
+                    colNames = []
                     for j in range(col):
-                        try:
-                            tableItems.append((i,j,table.item(i,j).text()))
-                        except: pass
-                GUIsetting['tableItems'] = tableItems
-                GUIsetting['class'] = 'table'
-            elif elementClass == 'textEdit':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'textEdit'
-                
-                
-            settings[str('GUIelement_'+elementName)] = GUIsetting
+                        colNames.append(str(table.horizontalHeaderItem(j).text()))
+                    GUIsetting['colNames'] = colNames
+                    
+                    tableItems = []
+                    for i in range(row):
+                        for j in range(col):
+                            try:
+                                tableItems.append((i,j,str(table.item(i,j).text())))
+                            except: pass
+                    GUIsetting['tableItems'] = tableItems
+                    GUIsetting['class'] = 'table'
+                elif elementClass == 'textEdit':
+                    GUIsetting['text'] = str(getattr(self, elementName).text())
+                    GUIsetting['class'] = 'textEdit'
+                    
+                    
+            
+                settings[str('GUIelement_'+elementName)] = GUIsetting
+            except:
+                print 'element' + elementName + 'failed to save, this should be corrected by the widget maker as soon as possible.'
         
-        
-        if alsoContexts:
-            contextHandlers = getattr(self, "contextHandlers", {})
-            for contextHandler in contextHandlers.values():
-                contextHandler.mergeBack(self)
-                settings[contextHandler.localContextName] = contextHandler.globalContexts
-                settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
+        try:
+            if alsoContexts:
+                contextHandlers = getattr(self, "contextHandlers", {})
+                for contextHandler in contextHandlers.values():
+                    contextHandler.mergeBack(self)
+                    settings[contextHandler.localContextName] = contextHandler.globalContexts
+                    settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
+        except: pass
             
         return settings
 
@@ -545,7 +551,10 @@ class OWBaseWidget(QDialog):
         settings = self.getSettings()
         #print settings
         #print str(self.RGUIElements)
-        return cPickle.dumps(settings)
+        try:
+            return cPickle.dumps(settings)
+        except:
+            print str(settings)
 
         
     def onDeleteWidget(self, suppress = 0):

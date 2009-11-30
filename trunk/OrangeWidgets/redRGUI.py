@@ -49,6 +49,12 @@ class table(QTableWidget, widgetState):
                 self.setVerticalHeaderLabels(data['rownames'])
             if 'colnames' in data and data['colnames'] != 'NULL':   
                 self.setHorizontalHeaderLabels(data['colnames'])
+                
+    def getSettings(self):
+        pass
+        
+    def loadSettings(self):
+        pass
             
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
