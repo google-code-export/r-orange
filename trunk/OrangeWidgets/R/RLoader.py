@@ -8,6 +8,7 @@
 """
 from OWRpy import * 
 import OWGUI 
+import redRGUI
 import RRGUI 
 class RLoader(OWRpy): 
     settingsList = []
@@ -24,3 +25,4 @@ class RLoader(OWRpy):
         
         # logic to handle exceptions to loading
         self.rSend('R Session', {'data':self.Rvariables['sessionEnviron']})
+        self.processingBox.setHtml('Session loaded from memory, please use the variable separator to parse the widget output.')

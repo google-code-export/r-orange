@@ -233,6 +233,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
         self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
+        self.menuOptions.addAction("Set to debug mode", self.setDebugMode)
 
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
@@ -276,7 +277,11 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
-    
+    def setDebugMode(self):
+        if self.output.debugMode:
+            self.output.debugMode = 0
+        else:
+            self.output.debugMode = 1
     def importSchema(self):
         name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
         if name.isEmpty():

@@ -114,18 +114,18 @@ class OWRpy(OWWidget):
         #self.help.mainFrame().show()
         self.defaultLeftArea.layout().addWidget(notesBox)
         self.defaultLeftArea.layout().addWidget(processingBoxBox)
-        self.statusBar = QStatusBar()
-        self.layout().addWidget(self.statusBar)
+        #self.statusBar = QStatusBar()
+        #self.layout().addWidget(self.statusBar)
         # self.splitter = QSplitter(self.controlArea)
         # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
         # self.controlArea.layout().addWidget(self.splitter)
         # self.splitter.addWidget(self.widgetMainArea)
         #self.controlArea.setLayout(self.splitter)
-        self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
+        #self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
         #self.statusIndicator.setBackgroundRole(QPalette.Dark)
         
         #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
-        self.statusBar.addWidget(self.statusIndicator)
+        #self.statusBar.addWidget(self.statusIndicator)
         #self.statusBar.addWidget(self.statusImage)
         #MoviePlayer().show()
 
@@ -155,13 +155,40 @@ class OWRpy(OWWidget):
                 settings['RGUIElementsSettings'][att] = v
                 # print settings['RGUIElementsSettings']
                     
-            elif type(getattr(self, att)) in [str,int]:
+            elif type(getattr(self, att)) in [str,int, float]:
                 settings[att] =  self.getdeepattr(att)
             elif type(getattr(self, att)) in [list,dict,tuple]:
-                settings[att] =  self.getdeepattr(att)
+                # if type(QObject) in getattr(self, att):
+                    # print str(att)+' has a QObject and can not be saved'
+                # else:
+                    # print str(self.getdeepattr(att))
+                    # settings[att] =  self.getdeepattr(att)
+                if self.checkForSipClasses(getattr(self, att)):
+                    settings[att] = self.getdeepattr(att)
         
         # print settings
         return settings
+        
+    def checkForSipClasses(self, object):
+        if type(object) in [list, tuple]:
+            for item in object:
+                if type(item) in [list, dict, tuple]:
+                    t = self.checkForSipClasses(item)
+                    if not t: return False
+                elif type(item) in [str, int, float]:
+                    return True
+                else:
+                    return False
+        elif type(object) == dict:
+            for key in object.keys():
+                if type(object[key]) in [list, dict, tuple]:
+                    t = self.checkForSipClasses(object[key])
+                    if not t: return False
+                elif type(object[key]) in [str, int, float]:
+                    return True
+                else:
+                    return False
+                    
     def getGlobalSettings(self):
         print 'get global settings'
         settings = {}

@@ -354,7 +354,20 @@ class OWBaseWidget(QDialog):
         if hasattr(self, "settingsList"):
             for name in self.settingsList:
                 try:
-                    settings[name] =  self.getdeepattr(name)
+                    if type(self.getdeepattr(name)) == type(''):
+                        settings[name] =  self.getdeepattr(name)
+                    elif type(self.getdeepattr(name)) == type({}): # if it's a dictionary, these are risky because they might contain instances of Qt objects so we need to watch out.
+                        # if QObject not in self.getdeepattr(name):
+                            # settings[name] = self.getdeepattr(name)
+                        # else:
+                            # print 'Qt object in '+str(name)+', unable to save'
+                        pass
+                    elif type(self.getdeepattr(name)) == type([]): #if it's a list
+                        # if QObject not in self.getdeepattr(name):
+                            # settings[name] = self.getdeepattr(name)
+                        # else:
+                            # print 'Qt object in '+str(name)+', unable to save'
+                        pass
                 except:
                     #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
                     pass
@@ -553,7 +566,7 @@ class OWBaseWidget(QDialog):
         #print str(self.RGUIElements)
         try:
             return cPickle.dumps(settings)
-        except:
+        except: 
             print str(settings)
 
         

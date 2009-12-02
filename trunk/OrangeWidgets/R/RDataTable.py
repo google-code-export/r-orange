@@ -33,7 +33,7 @@ class RDataTable(OWRpy):
         self.inputs = [("Examples", RvarClasses.RDataFrame, self.dataset, Multiple + Default)]
         self.outputs = []
 
-        self.data = {}          # key: id, value: ExampleTable
+        self.data = {}          # dict containing the table infromation
         self.showMetas = {}     # key: id, value: (True/False, columnList)
         self.showMeta = 1
         self.showAttributeLabels = 1
@@ -54,14 +54,14 @@ class RDataTable(OWRpy):
         self.loadSettings()
 
         # info box
-        infoBox = redRGUI.groupBox(self.controlArea, "Info")
-        self.infoEx = redRGUI.widgetLabel(infoBox, 'No data on input.')
-        self.infoMiss = redRGUI.widgetLabel(infoBox, ' ')
-        redRGUI.widgetLabel(infoBox, ' ')
-        self.infoAttr = redRGUI.widgetLabel(infoBox, ' ')
-        self.infoMeta = redRGUI.widgetLabel(infoBox, ' ')
-        redRGUI.widgetLabel(infoBox, ' ')
-        self.infoClass = redRGUI.widgetLabel(infoBox, ' ')
+        # infoBox = redRGUI.groupBox(self.controlArea, "Info")
+        # self.infoEx = redRGUI.widgetLabel(infoBox, 'No data on input.')
+        # self.infoMiss = redRGUI.widgetLabel(infoBox, ' ')
+        # redRGUI.widgetLabel(infoBox, ' ')
+        # self.infoAttr = redRGUI.widgetLabel(infoBox, ' ')
+        # self.infoMeta = redRGUI.widgetLabel(infoBox, ' ')
+        # redRGUI.widgetLabel(infoBox, ' ')
+        # self.infoClass = redRGUI.widgetLabel(infoBox, ' ')
         
         
         #tabs
@@ -116,6 +116,10 @@ class RDataTable(OWRpy):
         # self.table2id = {}  # key: table, value: widget id
         # self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
         
+        self.table = redRGUI.table(None, 0,0)
+        self.mainArea.layout().addWidget(self.table)
+        self.table.hide()
+        
 
         # self.updateColor()
         
@@ -147,13 +151,13 @@ class RDataTable(OWRpy):
         self.colButton.setIcon(QIcon(pixmap))
 
     def increaseColWidth(self):
-        table = self.tabs.currentWidget()
+        table = self.table
         for col in range(table.columnCount()):
             w = table.columnWidth(col)
             table.setColumnWidth(col, w + 10)
 
     def decreaseColWidth(self):
-        table = self.tabs.currentWidget()
+        table = self.table
         for col in range(table.columnCount()):
             w = table.columnWidth(col)
             minW = table.sizeHintForColumn(col)
@@ -163,32 +167,30 @@ class RDataTable(OWRpy):
         print 'on load data table'
         self.processSignals()
     def dataset(self, dataset, id=None):
-        """Generates a new table and adds it to a new tab when new data arrives;
-        or hides the table and removes a tab when data==None;
-        or replaces the table when new data arrives together with already existing id."""
+        """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         #print 'got data'
         #print data
         self.supressTabClick = True
         if dataset != None:  # can be an empty table!
-            
+            self.table.show()
             #data = self.convertDataframeToExampleTable(dataset['data'])
             data = {}
             data['matrix'] = array(self.rsession('as.matrix(' + dataset['data'] + ')'))
             data['colnames'] = self.rsession('colnames(' + dataset['data'] + ')')
             data['rownames'] = self.rsession('rownames(' + dataset['data'] + ')')
-            if self.data.has_key(id):
-                # remove existing table
-                table = self.id2table[id]
-                self.data.pop(id)
-                self.showMetas.pop(id)
-                table.hide()
-                self.tabs.removeTab(self.tabs.indexOf(table))
-                self.table2id.pop(self.id2table.pop(id))
-                self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
-            self.data[id] = data
+            # if self.data.has_key(id):
+                ## remove existing table
+                # table = self.id2table[id]
+                # self.data.pop(id)
+                # self.showMetas.pop(id)
+                # table.hide()
+                # self.tabs.removeTab(self.tabs.indexOf(table))
+                # self.table2id.pop(self.id2table.pop(id))
+                # self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
+            self.data = data
             tableData = dataset['data']
             if 'link' in dataset:
-                self.link[str(id)] = dataset['link']
+                #self.link[str(id)] = dataset['link']
                 print 'setting link as '+str(self.link[str(id)])
                 self.linkListBox.clear()
                 if str(id) in self.link:
@@ -200,41 +202,41 @@ class RDataTable(OWRpy):
                 linkData = None
                 print 'no link data detected'
             #self.showMetas[id] = (True, [])
-            self.dataTableIndex[id] = dataset
+            #self.dataTableIndex[id] = dataset
             self.currentData = dataset['data']
-            table = redRGUI.table(None, 0,0, data=data)
+
             #if id in self.link: #start the block for assignment of link data attributes
-            self.connect(table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
-            table.setSelectionBehavior(QAbstractItemView.SelectRows)
+            self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
+            self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-            self.id2table[id] = table
-            self.table2id[table] = id
-            if 'name' in dataset:
-                tabName = "%s " % dataset['name']
-            else:
-                tabName = ""
-            tabName += "(" + str(id[1]) + ")"
-            if id[2] != None:
-                tabName += " [" + str(id[2]) + "]"
-            self.tabs.addTab(table, tabName)
+            # self.id2table[id] = table
+            # self.table2id[table] = id
+            # if 'name' in dataset:
+                # tabName = "%s " % dataset['name']
+            # else:
+                # tabName = ""
+            # tabName += "(" + str(id[1]) + ")"
+            # if id[2] != None:
+                # tabName += " [" + str(id[2]) + "]"
+            # self.tabs.addTab(table, tabName)
 
-            self.progressBarInit()
+            #self.progressBarInit()
             #self.setTable(table, data)
-            table.setTable(data)
-            self.progressBarFinished()
+            self.table.setTable(data)
+            #self.progressBarFinished()
             self.needsProcessingHandler(self, 0)
-            self.tabs.setCurrentIndex(self.tabs.indexOf(table))
+            #self.tabs.setCurrentIndex(self.tabs.indexOf(table))
             self.setInfo(data)
             #self.cbShowMeta.setEnabled(len(self.showMetas[id][1])>0)        # enable showMetas checkbox only if metas exist
 
-        elif self.data.has_key(id):
-            table = self.id2table[id]
-            self.data.pop(id)
-            #self.showMetas.pop(id)
-            table.hide()
-            self.tabs.removeTab(self.tabs.indexOf(table))
-            self.table2id.pop(self.id2table.pop(id))
-            self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
+        # elif self.data.has_key(id):
+            # table = self.id2table[id]
+            # self.data.pop(id)
+            ##self.showMetas.pop(id)
+            # table.hide()
+            # self.tabs.removeTab(self.tabs.indexOf(table))
+            # self.table2id.pop(self.id2table.pop(id))
+            # self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
 
         # disable showMetas checkbox if there is no data on input
         # if len(self.data) == 0:
@@ -416,7 +418,7 @@ class RDataTable(OWRpy):
             # h = table.horizontalHeader().adjustSize()
 
     def cbShowDistributions(self):
-        table = self.tabs.currentWidget()
+        table = self.table
         # print self.tabs.currentWidget
         # print table
         table.reset()

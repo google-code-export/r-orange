@@ -31,7 +31,7 @@ class rExecutor(OWRpy):
         
         #GUI
         self.box = OWGUI.widgetBox(self.controlArea, "R Executor")
-        self.infob = OWGUI.widgetLabel(self.box, "")
+        self.infob = redRGUI.widgetLabel(self.box, "")
         # splice canvas for the right hand side of the canvas
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
@@ -53,13 +53,13 @@ class rExecutor(OWRpy):
         self.infov = OWGUI.widgetLabel(self.dataBox, "No Input")
         
         self.metadataBox = OWGUI.widgetBox(self.controlArea, "Metadata")
-        self.infoM = OWGUI.widgetLabel(self.metadataBox, "No Meta Data")
-        self.metadataLB = OWGUI.listBox(self.metadataBox, self, callback = self.insertMetaDataVar)
+        self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
+        self.metadataLB = redRGUI.listBox(self.metadataBox, self, callback = self.insertMetaDataVar)
         
         
         
         
-        self.thistext = QTextEdit(self)
+        self.thistext = redRGUI.textEdit(None)
         self.splitCanvas.addWidget(self.thistext)
         
         

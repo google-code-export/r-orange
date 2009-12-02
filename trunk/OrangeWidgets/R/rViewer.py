@@ -9,6 +9,7 @@
 from OWRpy import * 
 import OWGUI 
 import RRGUI 
+import redRGUI
 class rViewer(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,8 +20,7 @@ class rViewer(OWRpy):
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         
         OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)
-        self.controlArea.layout().addWidget(self.RoutputWindow)
+        self.RoutputWindow = redRGUI.textEdit(self.controlArea)
     
     def processdata(self, data):
         if data:

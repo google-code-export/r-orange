@@ -19,6 +19,7 @@ class OutputWindow(QDialog):
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
         self.numberofLines = 0
+        self.debugMode = 0
 
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.textOutput)
@@ -97,7 +98,7 @@ class OutputWindow(QDialog):
         # print text
         # return
         self.numberofLines += 1
-        if self.numberofLines > 100:
+        if self.numberofLines > 100 and not self.debugMode:
             self.textOutput.clear()
             self.numberofLines = 0
         Text = self.getSafeString(text)
@@ -134,7 +135,7 @@ class OutputWindow(QDialog):
         for line in lines:
             self.numberofLines += 1
             self.write(line)
-            if self.numberofLines > 100:
+            if self.numberofLines > 100 and not self.debugMode:
                 self.textOutput.clear()
 
     def flush(self):

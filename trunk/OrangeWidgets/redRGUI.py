@@ -21,6 +21,9 @@ class widgetState:
 class table(QTableWidget, widgetState):
     def __init__(self, widget, rows = 0, columns = 0, selectionMode = -1, data = None):
         QTableWidget.__init__(self, rows, columns, widget)
+        
+        self.data = None
+        
         if widget and widget.layout():
             widget.layout().addWidget(self)
         if selectionMode != -1:
@@ -32,9 +35,11 @@ class table(QTableWidget, widgetState):
                 except: pass
         if data != None: #this should be in the form of a numpy array that will be added to the table
             self.setTable(data)
-            
+        
     def setTable(self, data = None):
         if 'matrix' in data:
+            self.show()
+            self.data = data
             self.clear() #should clear the table before we run into problems
             (rows, columns) = data['matrix'].shape
             self.setColumnCount(columns)
@@ -42,6 +47,11 @@ class table(QTableWidget, widgetState):
             
             for r in range(rows):
                 for c in range(columns):
+                    ### may be able to coerse to a float for math putposes
+                    # try:
+                        # i = float(data['matrix'][r,c])
+                    # except:
+                        # i = str(data['matrix'][r,c])
                     item = QTableWidgetItem(str(data['matrix'][r,c]))
                     self.setItem(r,c,item)
             
@@ -51,10 +61,15 @@ class table(QTableWidget, widgetState):
                 self.setHorizontalHeaderLabels(data['colnames'])
                 
     def getSettings(self):
-        pass
+        if self.data != None:
+            r = self.data
+            return r
         
-    def loadSettings(self):
-        pass
+    def loadSettings(self, data):
+        try:
+            self.setTable(data)
+        except:
+            print "Tryed to load data for a table.  The data was " + str(data) +".  The widget creator should be notified to account for this type of data"
             
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
@@ -376,7 +391,8 @@ class widgetBox(QWidget):
         if widget.layout():
             widget.layout().addWidget(self)
         
-
+        # if type(box) in [str, unicode]:
+            # self.setTitle
         if isinstance(orientation, QLayout):
             self.setLayout(orientation)
         elif orientation == 'horizontal' or not orientation:

@@ -43,10 +43,7 @@ class dataEntry(OWRpy):
         
         box = OWGUI.widgetBox(self.controlArea, "Table")
         self.splitCanvas.addWidget(box)
-        self.dataTable = QTableWidget()
-        box.layout().addWidget(self.dataTable)
-        self.dataTable.setColumnCount(self.colCount+1)
-        self.dataTable.setRowCount(self.rowCount+1)
+        self.dataTable = redRGUI.table(box, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
         # self.setRownamesColor()
         # self.setColnamesColor()
