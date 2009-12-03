@@ -11,6 +11,7 @@ import OWGUI
 from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 from rpy import *
+import redRGUI
 
 class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
@@ -54,13 +55,12 @@ class rExecutor(OWRpy):
         
         self.metadataBox = OWGUI.widgetBox(self.controlArea, "Metadata")
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
-        self.metadataLB = redRGUI.listBox(self.metadataBox, self, callback = self.insertMetaDataVar)
+        self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
         
         
         
         
-        self.thistext = redRGUI.textEdit(None)
-        self.splitCanvas.addWidget(self.thistext)
+        self.thistext = redRGUI.textEdit(self.splitCanvas)
         
         
         

@@ -158,13 +158,16 @@ class comboBox(QComboBox,widgetState):
         
 class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None,orientation='vertical'):
-        QTextEdit.__init__(self,widget)
+        QTextEdit.__init__(self, widget)
         if label:
             hb = widgetBox(widget,orientation=orientation)
             widgetLabel(hb, label)
             hb.layout().addWidget(self)
         else:
-            widget.layout().addWidget(self)
+            try:
+                widget.layout().addWidget(self)
+            except:
+                widget.addWidget(self)
         self.insertHtml(html)
     def getSettings(self):
         # print 'in textEdit getSettings'
@@ -185,7 +188,7 @@ class textEdit(QTextEdit,widgetState):
         
         
 class listBox(QListWidget,widgetState):
-    def __init__(self, widget,label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, *args):
+    def __init__(self, widget,label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, listItems = None, callback = None, *args):
         self.widget = widget
         QListWidget.__init__(self, *args)
         if label:
@@ -194,7 +197,12 @@ class listBox(QListWidget,widgetState):
             hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
-
+        if listItems != None:
+            if type(listItems) == list:
+                self.addItems(listItems)
+            elif type(listItems) == str:
+                self.addItem(listItems)
+                
         self.enableDragDrop = enableDragDrop
         self.dragDopCallback = dragDropCallback
         self.dataValidityCallback = dataValidityCallback
@@ -208,6 +216,9 @@ class listBox(QListWidget,widgetState):
             self.setDropIndicatorShown(1)
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             self.dragStartPosition = 0
+            
+        if callback != None:
+            QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
 
     def sizeHint(self):
         return self.defaultSizeHint
@@ -504,8 +515,10 @@ class radioButtons(widgetBox,widgetState):
         for i in self.buttons.buttons():
             if i.text() == id: i.setChecked(True)
     def getChecked(self):
-          return self.buttons.checkedButton().text()
-      
+        try:
+            return self.buttons.checkedButton().text()
+        except:
+            return None
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}
