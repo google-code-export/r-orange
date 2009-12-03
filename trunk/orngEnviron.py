@@ -1,3 +1,4 @@
+""" Modified by Kyle R. Covington """
 import os, sys, user
 
 def __getDirectoryNames():
@@ -5,8 +6,9 @@ def __getDirectoryNames():
     try:
         orangeDir = os.path.split(os.path.abspath(__file__))[0]
     except:
-        import orange
-        orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]
+        # import orange
+        # orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]
+        pass
 
     try:
         orangeVer = orangeDir.split(os.path.sep)[-1]

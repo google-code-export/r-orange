@@ -76,7 +76,7 @@ class RDataTable(OWRpy):
         redRGUI.lineEdit(saveTab, label = "File:", width = 50)
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
         redRGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
-        infoBox.setMinimumWidth(200)
+        #infoBox.setMinimumWidth(200)
         redRGUI.separator(self.controlArea)
         
         #links:
