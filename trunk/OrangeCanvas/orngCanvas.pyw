@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, os, cPickle, orngRegistry, orngEnviron, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
-import orange, user, orngMisc
+import user, orngMisc
 import updateRedR
 
 class OrangeCanvasDlg(QMainWindow):

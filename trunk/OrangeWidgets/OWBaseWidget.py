@@ -7,9 +7,9 @@ import orngEnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from OWContexts import *
+#from OWContexts import *
 import sys, time, random, user, os, os.path, cPickle, copy, orngMisc
-import orange
+#import orange
 import orngDebugging
 from string import *
 from orngSignalManager import *
@@ -78,9 +78,10 @@ def unisetattr(self, name, value, grandparent):
 
 
     # if there are any context handlers, call the fastsave to write the value into the context
-    if hasattr(self, "contextHandlers") and hasattr(self, "currentContexts"):
-        for contextName, contextHandler in self.contextHandlers.items():
-            contextHandler.fastSave(self.currentContexts.get(contextName), self, name, value)
+    ## Context handler deprecated
+    # if hasattr(self, "contextHandlers") and hasattr(self, "currentContexts"):
+        # for contextName, contextHandler in self.contextHandlers.items():
+            # contextHandler.fastSave(self.currentContexts.get(contextName), self, name, value)
 
 
 
@@ -100,7 +101,7 @@ class ControlledAttributesDict(dict):
 
 ##################
 # this definitions are needed only to define ExampleTable as subclass of ExampleTableWithClass
-from orange import ExampleTable
+#from orange import ExampleTable
 
 class AttributeList(list):
     pass
@@ -166,9 +167,10 @@ class OWBaseWidget(QDialog):
         self.widgetStateHandler = None
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
 
-        if hasattr(self, "contextHandlers"):
-            for contextHandler in self.contextHandlers.values():
-                contextHandler.initLocalContext(self)
+        ## context handlers deprecated
+        # if hasattr(self, "contextHandlers"):
+            # for contextHandler in self.contextHandlers.values():
+                # contextHandler.initLocalContext(self)
 
 
     # uncomment this when you need to see which events occured
@@ -233,9 +235,9 @@ class OWBaseWidget(QDialog):
         if not data.domain.classVar:
             self.error(1234, "A data set with a class attribute is required.")
             return 0
-        if wantedVarType and data.domain.classVar.varType != wantedVarType:
-            self.error(1235, "Unable to handle %s class." % (data.domain.classVar.varType == orange.VarTypes.Discrete and "discrete" or "continuous"))
-            return 0
+        # if wantedVarType and data.domain.classVar.varType != wantedVarType:
+            # self.error(1235, "Unable to handle %s class." % (data.domain.classVar.varType == orange.VarTypes.Discrete and "discrete" or "continuous"))
+            # return 0
         return 1
 
     # call processEvents(), but first remember position and size of widget in case one of the events would be move or resize
@@ -459,14 +461,14 @@ class OWBaseWidget(QDialog):
             except:
                 print 'element' + elementName + 'failed to save, this should be corrected by the widget maker as soon as possible.'
         
-        try:
-            if alsoContexts:
-                contextHandlers = getattr(self, "contextHandlers", {})
-                for contextHandler in contextHandlers.values():
-                    contextHandler.mergeBack(self)
-                    settings[contextHandler.localContextName] = contextHandler.globalContexts
-                    settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
-        except: pass
+        # try:
+            # if alsoContexts:
+                # contextHandlers = getattr(self, "contextHandlers", {})
+                # for contextHandler in contextHandlers.values():
+                    # contextHandler.mergeBack(self)
+                    # settings[contextHandler.localContextName] = contextHandler.globalContexts
+                    # settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
+        # except: pass
             
         return settings
 
@@ -507,24 +509,24 @@ class OWBaseWidget(QDialog):
             if hasattr(self, "settingsList"):
                 self.setSettings(settings)
 
-            contextHandlers = getattr(self, "contextHandlers", {})
-            for contextHandler in contextHandlers.values():
-                localName = contextHandler.localContextName
-                # print 'localname'  + localName + '\n'
-                structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
-                   and settings.has_key(localName):
-                    del settings[localName]
-                    delattr(self, localName)
-                    contextHandler.initLocalContext(self)
+            # contextHandlers = getattr(self, "contextHandlers", {})
+            # for contextHandler in contextHandlers.values():
+                # localName = contextHandler.localContextName
+                ##print 'localname'  + localName + '\n'
+                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
+                # if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
+                   # and settings.has_key(localName):
+                    # del settings[localName]
+                    # delattr(self, localName)
+                    # contextHandler.initLocalContext(self)
 
-                if not getattr(contextHandler, "globalContexts", False): # don't have it or empty
-                    contexts = settings.get(localName, False)
-                    if contexts != False:
-                        contextHandler.globalContexts = contexts
-                else:
-                    if contextHandler.syncWithGlobal:
-                        setattr(self, localName, contextHandler.globalContexts)
+                # if not getattr(contextHandler, "globalContexts", False): # don't have it or empty
+                    # contexts = settings.get(localName, False)
+                    # if contexts != False:
+                        # contextHandler.globalContexts = contexts
+                # else:
+                    # if contextHandler.syncWithGlobal:
+                        # setattr(self, localName, contextHandler.globalContexts)
 
 
     def saveSettings(self, file = None):
@@ -546,17 +548,17 @@ class OWBaseWidget(QDialog):
         settings = cPickle.loads(str)
         self.setSettings(settings)
 
-        contextHandlers = getattr(self, "contextHandlers", {})
-        for contextHandler in contextHandlers.values():
-            localName = contextHandler.localContextName
-            if settings.has_key(localName):
-                structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
-                    del settings[localName]
-                    delattr(self, localName)
-                    contextHandler.initLocalContext(self)
-                else:
-                    setattr(self, localName, settings[localName])
+        # contextHandlers = getattr(self, "contextHandlers", {})
+        # for contextHandler in contextHandlers.values():
+            # localName = contextHandler.localContextName
+            # if settings.has_key(localName):
+                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
+                # if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
+                    # del settings[localName]
+                    # delattr(self, localName)
+                    # contextHandler.initLocalContext(self)
+                # else:
+                    # setattr(self, localName, settings[localName])
 
     # return settings in string format compatible with cPickle
     def saveSettingsStr(self):
@@ -888,28 +890,32 @@ class OWBaseWidget(QDialog):
         return changed
 
     def synchronizeContexts(self):
-        if hasattr(self, "contextHandlers"):
-            for contextName, handler in self.contextHandlers.items():
-                context = self.currentContexts.get(contextName, None)
-                if context:
-                    handler.settingsFromWidget(self, context)
+        # if hasattr(self, "contextHandlers"):
+            # for contextName, handler in self.contextHandlers.items():
+                # context = self.currentContexts.get(contextName, None)
+                # if context:
+                    # handler.settingsFromWidget(self, context)
+                    
+        pass
 
     def openContext(self, contextName="", *arg):
-        if not self._useContexts:
-            return
-        handler = self.contextHandlers[contextName]
-        context = handler.openContext(self, *arg)
-        if context:
-            self.currentContexts[contextName] = context
-
+        # if not self._useContexts:
+            # return
+        # handler = self.contextHandlers[contextName]
+        # context = handler.openContext(self, *arg)
+        # if context:
+            # self.currentContexts[contextName] = context
+        pass
 
     def closeContext(self, contextName=""):
-        if not self._useContexts:
-            return
-        curcontext = self.currentContexts.get(contextName)
-        if curcontext:
-            self.contextHandlers[contextName].closeContext(self, curcontext)
-            del self.currentContexts[contextName]
+        # if not self._useContexts:
+            # return
+        # curcontext = self.currentContexts.get(contextName)
+        # if curcontext:
+            # self.contextHandlers[contextName].closeContext(self, curcontext)
+            # del self.currentContexts[contextName]
+            
+        pass
 
     def settingsToWidgetCallback(self, handler, context):
         pass

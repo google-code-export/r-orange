@@ -4,7 +4,6 @@
 #
 
 import sys, time
-import orange
 import orngDebugging
 
 Single = 2
@@ -123,10 +122,10 @@ class SignalManager:
         if self.verbosity < eventVerbosity: return
 
         self.debugFile.write(str(strValue))
-        if isinstance(object, orange.ExampleTable):
-            name = " " + getattr(object, "name", "")
-            self.debugFile.write(". Token type = ExampleTable" + name + ". len = " + str(len(object)))
-        elif type(object) == list:
+        # if isinstance(object, orange.ExampleTable):
+            # name = " " + getattr(object, "name", "")
+            # self.debugFile.write(". Token type = ExampleTable" + name + ". len = " + str(len(object)))
+        if type(object) == list:
             self.debugFile.write(". Token type = %s. Value = %s" % (str(type(object)), str(object[:10])))
         elif object != None:
             self.debugFile.write(". Token type = %s. Value = %s" % (str(type(object)), str(object)[:100]))

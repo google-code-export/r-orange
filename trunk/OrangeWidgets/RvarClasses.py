@@ -1,6 +1,4 @@
-import orange
-
-class RVariable(orange.Variable):
+class RVariable:
 	pass
 	
 class RDataFrame(RVariable):
