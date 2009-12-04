@@ -658,11 +658,11 @@ class CanvasPopup(QMenu):
                 act.setEnabled(False)
 
     def updateWidgesByOutputs(self, widgetInfo):
-        self.selectActions("outputClasses", widgetInfo.inputClasses)
-        
+        #self.selectActions("outputClasses", widgetInfo.inputClasses)
+        pass
     def updateWidgetsByInputs(self, widgetInfo):
-        self.selectActions("inputClasses", widgetInfo.outputClasses)
-    
+        #self.selectActions("inputClasses", widgetInfo.outputClasses)
+        pass
     def updatePredictedWidgets(self, widgets, actClassesAttr, ioClasses=None):
         self.candidates = []
         for widget in widgets:
@@ -670,18 +670,19 @@ class CanvasPopup(QMenu):
                 self.candidates.append(widget)
             else:
                 # filter widgets by allowed signal 
-                added = False
-                for category, show in self.canvasDlg.settings["WidgetTabs"]:
-                    if not show or not self.canvasDlg.widgetRegistry.has_key(category):
-                        continue
+                # added = False
+                # for category, show in self.canvasDlg.settings["WidgetTabs"]:
+                    # if not show or not self.canvasDlg.widgetRegistry.has_key(category):
+                        # continue
     
-                    for candidate in self.canvasDlg.widgetRegistry[category]:
-                        if widget.strip().lower() == candidate.strip().lower():
-                            if getattr(self.canvasDlg.widgetRegistry[category][candidate], actClassesAttr) & ioClasses:
-                                self.candidates.append(candidate)
-                                added = True
-                    if added:
-                        break
+                    # for candidate in self.canvasDlg.widgetRegistry[category]:
+                        # if widget.strip().lower() == candidate.strip().lower():
+                            # if getattr(self.canvasDlg.widgetRegistry[category][candidate], actClassesAttr) & ioClasses:
+                                # self.candidates.append(candidate)
+                                # added = True
+                    # if added:
+                        # break
+                self.candidates.append(widget)
         self.candidates = self.candidates[:3]
         
     def updateMenu(self):

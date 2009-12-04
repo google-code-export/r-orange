@@ -10,7 +10,7 @@ from rpy_options import set_options
 set_options(RHOME=os.environ['RPATH'])
 import rpy
 from numpy import *
-
+import redRGUI
 
 
 import time
@@ -63,7 +63,8 @@ class OWRpy(OWWidget):
         #collect the sent items
         self.sentItems = []
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
-        self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table']
+        self.whiteList = []
+        self.GUIWidgets = ['tabWidget','lineEdit','comboBox','whiteList', 'listBox','textEdit','checkBox','widgetLabel','radioButtons','table']
         # self.widgetToolBar = QMenuBar(self)
         # notesMenu = self.widgetToolBar.addMenu('Notes')
         # self.notesAction = ToolBarTextEdit(self)
@@ -74,9 +75,19 @@ class OWRpy(OWWidget):
         # self.notesAction = ToolBarTextEdit(self)
         # notesMenu.addAction(self.notesAction)
         #sidebar = OWGUI.widgetHider(self.defaultLeftArea)
-        self.notes = QTextEdit()
+        
+                
+        notesBox = OWGUI.widgetBox(self, "Notes")
+        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
+        helpBox = OWGUI.widgetBox(self, "Discription")
+        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
+        
         self.help = QtWebKit.QWebView(self)
         self.processingBox = QtWebKit.QWebView(self)
+        
+        self.notes = redRGUI.textEdit(notesBox)
+
+
         self.processingBox.moveToThread(QThread())
         webSize = QSize(200,100)
         self.help.setMaximumSize(webSize)
@@ -87,10 +98,7 @@ class OWRpy(OWWidget):
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
-        
-        notesBox = OWGUI.widgetBox(self, "Notes")
-        helpBox = OWGUI.widgetBox(self, "Discription")
-        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
+
         self.processingBox.setMaximumSize(webSize)
         self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
         
@@ -103,8 +111,7 @@ class OWRpy(OWWidget):
         helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
-        notesBox.layout().addWidget(self.notes)
+
         helpBox.layout().addWidget(self.help)
         #sidebar.layout().addWidget(self.notes)
         #sidebar.layout().addWidget(self.help)
@@ -137,6 +144,7 @@ class OWRpy(OWWidget):
         allAtts = self.__dict__#dir(self)
         parentVaribles = OWWidget().__dict__.keys()
         self.blackList.extend(parentVaribles)
+        self.whiteList.extend(['sentItems'])
         #print self.blackList
         for att in allAtts:
             if att in self.blackList:
@@ -157,6 +165,8 @@ class OWRpy(OWWidget):
                     
             elif type(getattr(self, att)) in [str,int, float]:
                 settings[att] =  self.getdeepattr(att)
+            elif att in self.whiteList:
+                settings[att] = self.getdeepattr(att)
             elif type(getattr(self, att)) in [list,dict,tuple]:
                 # if type(QObject) in getattr(self, att):
                     # print str(att)+' has a QObject and can not be saved'
@@ -165,8 +175,7 @@ class OWRpy(OWWidget):
                     # settings[att] =  self.getdeepattr(att)
                 if self.checkForSipClasses(getattr(self, att)):
                     settings[att] = self.getdeepattr(att)
-        
-        # print settings
+
         return settings
         
     def checkForSipClasses(self, object):
@@ -346,7 +355,7 @@ class OWRpy(OWWidget):
             
         return settings
         
-    def rSend(self, name, variable, updateSignalProcessingManager = 1):
+    def rSend(self, name, variable, updateSignalProcessingManager = 1, appendThis = 1):
         print 'send'
         
         try:
@@ -355,7 +364,7 @@ class OWRpy(OWWidget):
                 self.needsProcessingHandler(self, 0)
         except:
             self.needsProcessingHandler(self, 1)
-        self.sentItems.append((name, variable))
+        if appendThis: self.sentItems.append((name, variable)) # should only be used during a session load otherwise the item should be appended.
         self.processingBox.setHtml('<center>Data sent.</center>')
 
         
@@ -571,6 +580,12 @@ class OWRpy(OWWidget):
         print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']
         
+        print str(self.sentItems)
+        items = self.sentItems # extra layer of protection to avoid infinite loops.
+        for (name, data) in items:
+            self.rSend(name, data, appendThis = 0)
+            
+        """
         for i in self.RGUIElementsSettings.keys():
             try:            
                 print '**********************' + i
@@ -582,9 +597,8 @@ class OWRpy(OWWidget):
                 print 'error:' + i
                 print "Unexpected error:", sys.exc_info()[0]
                 
+        """
 
-        for (name, data) in self.sentItems:
-            self.send(name, data)
        
     
     def onLoadSavedSession2(self):

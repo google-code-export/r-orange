@@ -16,7 +16,7 @@
 from OWRpy import *
 import OWGUI, redRGUI
 import math
-from orngDataCaching import *
+#from orngDataCaching import *
 import RRGUI
 
 ##############################################################################

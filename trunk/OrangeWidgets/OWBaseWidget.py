@@ -129,7 +129,7 @@ class OWBaseWidget(QDialog):
         return self
 
 
-    def __init__(self, parent = None, signalManager = None, title="Orange BaseWidget", modal=FALSE, savePosition = False, resizingEnabled = 1, **args):
+    def __init__(self, parent = None, signalManager = None, title="RedR BaseWidget", modal=FALSE, savePosition = False, resizingEnabled = 1, **args):
         # do we want to save widget position and restore it on next load
         self.savePosition = savePosition
         if savePosition:
@@ -350,6 +350,7 @@ class OWBaseWidget(QDialog):
 
     # Get all settings
     # returns map with all settings
+    # ## !!!!!!!!!!!!!!!!!!!!  getSettings is deprecated
     def getSettings(self, alsoContexts = True):
         print 'get settings in owbasewidget'
         settings = {}

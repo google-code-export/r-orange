@@ -51,18 +51,22 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
     def setWidget(self, data):
         if data:
             self.data = data['data']
+            r = self.R('rownames('+self.data+')')
+            c = self.R('colnames('+self.data+')')
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
-                t = self.R('colnames('+self.data+')')
-                if type(t) == list:
-                    self.attributes.addItems(t)
+                c = self.R('colnames('+self.data+')')
+                if type(c) == list:
+                    self.attributes.clear()
+                    self.attributes.addItems(c)
                     self.namesPresent = 1
                 else:
                     self.attributes.addItems([i for i in range(self.R('length('+self.data+'[1,])'))])
                     self.namesPresent = 0
             elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
-                t = self.R('rownames('+self.data+')')
-                if type(t) == list:
-                    self.attributes.addItems(t)
+                
+                if type(r) == list:
+                    self.attributes.clear()
+                    self.attributes.addItems(r)
                     self.namesPresent = 1
                 else:
                     self.attributes.addItems([i for i in range(self.R('length('+self.data+'[,1])'))])

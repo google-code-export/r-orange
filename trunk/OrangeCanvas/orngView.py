@@ -305,12 +305,12 @@ class SchemaView(QGraphicsView):
             else:
                 state = [self.doc.widgets[i].widgetInfo.name for i in range(min(len(self.doc.widgets), 5))]
                 predictedWidgets = orngHistory.predictWidgets(state, 20)
-                if start:
-                    orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'inputClasses', start.widgetInfo.outputClasses)
-                    orngTabs.categoriesPopup.updateWidgetsByInputs(start.widgetInfo)
-                else:
-                    orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'outputClasses', end.widgetInfo.inputClasses)
-                    orngTabs.categoriesPopup.updateWidgesByOutputs(end.widgetInfo)
+                # if start:
+                    # orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'inputClasses', start.widgetInfo.outputClasses)
+                    # orngTabs.categoriesPopup.updateWidgetsByInputs(start.widgetInfo)
+                # else:
+                    # orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'outputClasses', end.widgetInfo.inputClasses)
+                    # orngTabs.categoriesPopup.updateWidgesByOutputs(end.widgetInfo)
                     
                 newCoords = QPoint(ev.globalPos())
                 orngTabs.categoriesPopup.updateMenu()
