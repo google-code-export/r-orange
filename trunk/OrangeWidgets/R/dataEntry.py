@@ -8,11 +8,12 @@
 """
 
 import OWGUI
+import redRGUI
 from OWRpy import *
 
 
+
 class dataEntry(OWRpy):
-    settingsList = ['modelProcessed', 'savedData', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 1, resizingEnabled = 1)
 
@@ -24,11 +25,10 @@ class dataEntry(OWRpy):
         self.colHeaders = True
 
         self.savedData = None
-        self.loadSettings()
         self.setRvariableNames(['table'])
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame)]
+        self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
         #GUI.
         
         box = OWGUI.widgetBox(self.controlArea, "Options")
@@ -43,7 +43,7 @@ class dataEntry(OWRpy):
         
         box = OWGUI.widgetBox(self.controlArea, "Table")
         self.splitCanvas.addWidget(box)
-        self.dataTable = redRGUI.table(box, self.rowCount+1, self.colCount+1)
+        self.dataTable = OWGUI.table(box, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
         # self.setRownamesColor()
         # self.setColnamesColor()
@@ -56,15 +56,6 @@ class dataEntry(OWRpy):
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         self.resize(800,600)
         
-        #OWGUI.button(box, self, 'add row', callback = self.addRow)
-        #self.connect(self.dataTable, SIGNAL("cellEntered(int, int)"), self.itemEntered)
-    # def setRownamesColor(self):
-        # for i in range(1, self.dataTable.columnCount()):
-            # self.dataTable.item(i,0).setBackgroundColor(Qt.blue)
-            
-    # def setColnamesColor(self):
-        # for j in range(1, self.dataTable.rowCount()):
-            # self.dataTable.item(0,j).setBackgroundColor(Qt.blue)
     def processDF(self, data):
         if data:
             self.data = data['data']
