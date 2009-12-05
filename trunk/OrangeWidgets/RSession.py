@@ -11,9 +11,9 @@ from OWWidget import *
 
 
 class RSession():
-    lock = threading.Lock()
-    rsem = threading.Semaphore(value = 1)
-    occupied = 0
+    # lock = threading.Lock()
+    # rsem = threading.Semaphore(value = 1)
+    # occupied = 0
     Rhistory = '<code>'
     def __init__(self):
         # rpy.__init__(self)
@@ -26,37 +26,6 @@ class RSession():
         self.packagesLoaded = 0
 
 
-        
-    #depreciated
-    # def rsession(self, query,processing_notice=False):
-        # qApp.setOverrideCursor(Qt.WaitCursor)
-        # OWRpy.rsem.acquire()
-        # OWRpy.lock.acquire()
-        # OWRpy.occupied = 1
-        # output = None
-        # if processing_notice:
-            # self.progressBarInit()
-            # self.progressBarSet(30)
-        # print query
-        # try:
-            # output  = rpy.r(query)
-        # except rpy.RPyRException, inst:
-            # OWRpy.occupied = 0
-            # OWRpy.lock.release()
-            # OWRpy.rsem.release()
-            # qApp.restoreOverrideCursor()
-            # self.progressBarFinished()
-            # print inst.message
-            # return inst
-        # OWRpy.processing = False
-        # if processing_notice:
-            # self.progressBarFinished()
-        
-        # OWRpy.occupied = 0
-        # OWRpy.lock.release()
-        # OWRpy.rsem.release()
-        # qApp.restoreOverrideCursor()
-        # return output
                 
     def R(self, query, type = 'getRData', processing_notice=False):
         #RThread().start()
@@ -66,8 +35,8 @@ class RSession():
         
         qApp.setOverrideCursor(Qt.WaitCursor)
         
-        RSession.rsem.acquire()
-        RSession.occupied = 1
+        # RSession.rsem.acquire()
+        # RSession.occupied = 1
         output = None
         if processing_notice:
             self.processingBox.setHtml('<center>Processing Started.<br>Please wait for processing to finish.</center>')
@@ -92,9 +61,9 @@ class RSession():
                 rpy.r(query) # run the query anyway even if the user put un a wierd value
 
         except rpy.RPyRException, inst:
-            RSession.occupied = 0
-            RSession.lock.release()
-            RSession.rsem.release()
+            # RSession.occupied = 0
+            # RSession.lock.release()
+            # RSession.rsem.release()
             qApp.restoreOverrideCursor()
             self.progressBarFinished()
             print inst.message
@@ -108,8 +77,8 @@ class RSession():
         
         #rthread.threadBreaking = True
         
-        RSession.occupied = 0
-        RSession.rsem.release()
+        # RSession.occupied = 0
+        # RSession.rsem.release()
         qApp.restoreOverrideCursor()
         return output
                         
@@ -180,3 +149,4 @@ class RSession():
         data = orange.ExampleTable(domain, d)
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
+

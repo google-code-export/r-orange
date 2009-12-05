@@ -6,12 +6,7 @@
 
 from OWWidget import *
 from PyQt4 import QtWebKit
-from rpy_options import set_options
-set_options(RHOME=os.environ['RPATH'])
-import rpy
-from numpy import *
-import redRGUI
-
+from RSession import *
 
 import time
 import RvarClasses
@@ -19,7 +14,7 @@ import RAffyClasses
 import threading, sys
 
 
-class OWRpy(OWWidget):
+class OWRpy(OWWidget,RSession):
     #a class variable which is incremented every time OWRpy is instantiated.
     # processing  = False
     
@@ -32,7 +27,7 @@ class OWRpy(OWWidget):
     def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
-        
+        RSession.__init__(self)
         print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
             ISBN 3-900051-07-0\n \
             R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
@@ -41,30 +36,20 @@ class OWRpy(OWWidget):
         
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
-        
-        #this should be appended to every R variable
         ctime = str(time.time())
         self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + ctime
         #keep all R variable name in this dict
         self.Rvariables = {}
-        
-        self.device = {}
+
         
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
         
-        self.RPackages = []
-        #self.loadSavedSession = False
-        #self.loadingSavedSession = False
-        #print 'set load ssaved '
-        #self.settingsList = ['variable_suffix','loadingSavedSession']
-        self.packagesLoaded = 0
         
         #collect the sent items
         self.sentItems = []
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
-        self.whiteList = []
-        self.GUIWidgets = ['tabWidget','lineEdit','comboBox','whiteList', 'listBox','textEdit','checkBox','widgetLabel','radioButtons','table']
+        self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table','Rtable']
         # self.widgetToolBar = QMenuBar(self)
         # notesMenu = self.widgetToolBar.addMenu('Notes')
         # self.notesAction = ToolBarTextEdit(self)
@@ -74,21 +59,9 @@ class OWRpy(OWWidget):
         # notesMenu = self.widgetToolBar.addMenu('Notes')
         # self.notesAction = ToolBarTextEdit(self)
         # notesMenu.addAction(self.notesAction)
-        #sidebar = OWGUI.widgetHider(self.defaultLeftArea)
-        
-                
-        notesBox = OWGUI.widgetBox(self, "Notes")
-        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
-        helpBox = OWGUI.widgetBox(self, "Discription")
-        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
-        
+        self.notes = QTextEdit()
         self.help = QtWebKit.QWebView(self)
         self.processingBox = QtWebKit.QWebView(self)
-        
-        self.notes = redRGUI.textEdit(notesBox)
-
-
-        self.processingBox.moveToThread(QThread())
         webSize = QSize(200,100)
         self.help.setMaximumSize(webSize)
         # self.notes.setBaseSize(webSize)
@@ -98,10 +71,12 @@ class OWRpy(OWWidget):
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
-
+        
+        notesBox = OWGUI.widgetBox(self, "Notes")
+        helpBox = OWGUI.widgetBox(self, "Discription")
+        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
         self.processingBox.setMaximumSize(webSize)
         self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
-        
 
         #self.processingBox.setUrl(QUrl("http://en.wikipedia.org/wiki/File:Rotating_earth_(small).gif"))
         processingBoxBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -111,32 +86,52 @@ class OWRpy(OWWidget):
         helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-
+        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
+        notesBox.layout().addWidget(self.notes)
         helpBox.layout().addWidget(self.help)
-        #sidebar.layout().addWidget(self.notes)
-        #sidebar.layout().addWidget(self.help)
         
         #self.controlArea.layout().addWidget(self.widgetToolBar)
         self.defaultLeftArea.layout().addWidget(helpBox)
         #self.help.mainFrame().show()
         self.defaultLeftArea.layout().addWidget(notesBox)
         self.defaultLeftArea.layout().addWidget(processingBoxBox)
-        #self.statusBar = QStatusBar()
-        #self.layout().addWidget(self.statusBar)
+        self.statusBar = QStatusBar()
+        self.layout().addWidget(self.statusBar)
         # self.splitter = QSplitter(self.controlArea)
         # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
         # self.controlArea.layout().addWidget(self.splitter)
         # self.splitter.addWidget(self.widgetMainArea)
         #self.controlArea.setLayout(self.splitter)
-        #self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
+        self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
         #self.statusIndicator.setBackgroundRole(QPalette.Dark)
         
         #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
-        #self.statusBar.addWidget(self.statusIndicator)
+        self.statusBar.addWidget(self.statusIndicator)
         #self.statusBar.addWidget(self.statusImage)
         #MoviePlayer().show()
 
+    def setRvariableNames(self,names):
+        
+        #names.append('loadSavedSession')
+        for x in names:
+            self.Rvariables[x] = x + self.variable_suffix
+        
+    
+    # def setStateVariables(self,names):
+        # self.settingsList.extend(names)
+    
 
+    def rSend(self, name, variable, updateSignalProcessingManager = 1):
+        print 'send'
+        
+        try:
+            self.send(name, variable)
+            if updateSignalProcessingManager:
+                self.needsProcessingHandler(self, 0)
+        except:
+            self.needsProcessingHandler(self, 1)
+        self.sentItems.append((name, variable))
+        self.processingBox.setHtml('<center>Data sent.</center>')
 
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
@@ -144,7 +139,6 @@ class OWRpy(OWWidget):
         allAtts = self.__dict__#dir(self)
         parentVaribles = OWWidget().__dict__.keys()
         self.blackList.extend(parentVaribles)
-        self.whiteList.extend(['sentItems'])
         #print self.blackList
         for att in allAtts:
             if att in self.blackList:
@@ -163,41 +157,13 @@ class OWRpy(OWWidget):
                 settings['RGUIElementsSettings'][att] = v
                 # print settings['RGUIElementsSettings']
                     
-            elif type(getattr(self, att)) in [str,int, float]:
+            elif type(getattr(self, att)) in [str,int]:
                 settings[att] =  self.getdeepattr(att)
-            elif att in self.whiteList:
-                settings[att] = self.getdeepattr(att)
             elif type(getattr(self, att)) in [list,dict,tuple]:
-                # if type(QObject) in getattr(self, att):
-                    # print str(att)+' has a QObject and can not be saved'
-                # else:
-                    # print str(self.getdeepattr(att))
-                    # settings[att] =  self.getdeepattr(att)
-                if self.checkForSipClasses(getattr(self, att)):
-                    settings[att] = self.getdeepattr(att)
-
-        return settings
+                settings[att] =  self.getdeepattr(att)
         
-    def checkForSipClasses(self, object):
-        if type(object) in [list, tuple]:
-            for item in object:
-                if type(item) in [list, dict, tuple]:
-                    t = self.checkForSipClasses(item)
-                    if not t: return False
-                elif type(item) in [str, int, float]:
-                    return True
-                else:
-                    return False
-        elif type(object) == dict:
-            for key in object.keys():
-                if type(object[key]) in [list, dict, tuple]:
-                    t = self.checkForSipClasses(object[key])
-                    if not t: return False
-                elif type(object[key]) in [str, int, float]:
-                    return True
-                else:
-                    return False
-                    
+        # print settings
+        return settings
     def getGlobalSettings(self):
         print 'get global settings'
         settings = {}
@@ -355,183 +321,7 @@ class OWRpy(OWWidget):
             
         return settings
         
-    def rSend(self, name, variable, updateSignalProcessingManager = 1, appendThis = 1):
-        print 'send'
-        
-        try:
-            self.send(name, variable)
-            if updateSignalProcessingManager:
-                self.needsProcessingHandler(self, 0)
-        except:
-            self.needsProcessingHandler(self, 1)
-        if appendThis: self.sentItems.append((name, variable)) # should only be used during a session load otherwise the item should be appended.
-        self.processingBox.setHtml('<center>Data sent.</center>')
-
-        
-    #depreciated
-    def rsession(self, query,processing_notice=False):
-        qApp.setOverrideCursor(Qt.WaitCursor)
-        OWRpy.rsem.acquire()
-        OWRpy.lock.acquire()
-        OWRpy.occupied = 1
-        output = None
-        if processing_notice:
-            self.progressBarInit()
-            self.progressBarSet(30)
-        print query
-        try:
-            output  = rpy.r(query)
-        except rpy.RPyRException, inst:
-            OWRpy.occupied = 0
-            OWRpy.lock.release()
-            OWRpy.rsem.release()
-            qApp.restoreOverrideCursor()
-            self.progressBarFinished()
-            print inst.message
-            return inst
-        # OWRpy.processing = False
-        if processing_notice:
-            self.progressBarFinished()
-        
-        OWRpy.occupied = 0
-        OWRpy.lock.release()
-        OWRpy.rsem.release()
-        qApp.restoreOverrideCursor()
-        return output
-                
-    def R(self, query, type = 'getRData', processing_notice=False):
-        #RThread().start()
-        # rthread = RThread()
-        # rthread.start()
-        
-        self.processingBox.setHtml('<center><img src="C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif" /></center>')
-        qApp.setOverrideCursor(Qt.WaitCursor)
-        
-        OWRpy.rsem.acquire()
-        OWRpy.occupied = 1
-        output = None
-        if processing_notice:
-            self.processingBox.setHtml('<center>Processing Started.<br>Please wait for processing to finish.</center>')
-            # self.progressBarInit()
-            # self.progressBarSet(30)
-        print query
-        histquery = query
-        histquery = histquery.replace('<', '&lt;') #convert for html
-        histquery = histquery.replace('>', '&gt;')
-        histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
-        OWRpy.Rhistory += histquery + '</code><br><code>'
-        try:
-            if type == 'getRData':
-                output  = rpy.r(query)
-            elif type == 'setRData':
-                rpy.r(query)
-            elif type == 'getRSummary':
-                rpy.r('tmp<-('+query+')')
-                output = rpy.r('list(rowNames=rownames(tmp), colNames=colnames(tmp), Length=length(tmp), Class=class(tmp), Summary=summary(tmp))')
-                rpy.r('rm(tmp)')
-            else:
-                rpy.r(query) # run the query anyway even if the user put un a wierd value
-
-        except rpy.RPyRException, inst:
-            OWRpy.occupied = 0
-            #OWRpy.lock.release()
-            OWRpy.rsem.release()
-            qApp.restoreOverrideCursor()
-            self.progressBarFinished()
-            print inst.message
-            QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
-            self.processingBox.setHtml('<center>Error occured during processing please check data or <a href="http://red-r.org/">contact the developers.</a></center>')
-
-        OWRpy.processing = False
-        if processing_notice:
-            self.processingBox.setHtml('<center>Processing complete</center>')
-            #self.progressBarFinished()
-        
-        #rthread.threadBreaking = True
-        
-        OWRpy.occupied = 0
-        OWRpy.rsem.release()
-        qApp.restoreOverrideCursor()
-        return output
-                         
-    def require_librarys(self,librarys):
-        import orngEnviron
-        #lib = os.path.join(os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"]), "Rpackages").replace("\\", "/")
-        #self.R('.libPaths("' + lib  +'")')
-        
-        if self.packagesLoaded == 0:
-            for library in librarys:
-                try:
-                    if not self.R("require('"+ library +"')"): 
-                        self.R('setRepositories(ind=1:7)')
-                        self.R('chooseCRANmirror()')
-                        self.R('install.packages("' + library + '")')
-                        self.R('require(' + library + ')')
-                    self.RPackages.append(library)
-                except rpy.RPyRException, inst:
-                    print 'asdf'
-                    m = re.search("'(.*)'",inst.message)
-                    self.require_librarys([m.group(1)])
-                except:
-                    print 'aaa'
-            self.packagesLoaded = 1
-        else:
-            print 'Packages Loaded'
-        #add the librarys to a list so that they are loaded when R is loaded.
-        
-    def setRvariableNames(self,names):
-        
-        #names.append('loadSavedSession')
-        for x in names:
-            self.Rvariables[x] = x + self.variable_suffix
-        
-    
-    # def setStateVariables(self,names):
-        # self.settingsList.extend(names)
-    
-    def convertDataframeToExampleTable(self, dataFrame_name):
-        #set_default_mode(CLASS_CONVERSION)
-        dfsummary = self.R(dataFrame_name, 'getRSummary')
-        col_names = dfsummary['colNames']
-        if type(col_names) is str:
-            col_names = [col_names]
-        if dfsummary['Class'] == 'matrix':
-            col_def = self.rsession("apply(" + dataFrame_name + ",2,class)")
-        else:
-            col_def = self.rsession("sapply(" + dataFrame_name + ",class)")
-        if len(col_def) == 0:
-            col_names = [col_names]
-        
-        colClasses = []
-        for i in col_names:
-            if col_def[i] == 'numeric' or col_def[i] == 'integer':
-                colClasses.append(orange.FloatVariable(i))
-            elif col_def[i] == 'factor':
-                colClasses.append(orange.StringVariable(i))
-            elif col_def[i] == 'character':
-                colClasses.append(orange.StringVariable(i))
-            elif col_def[i] == 'logical':
-                colClasses.append(orange.StringVariable(i))
-            else:
-                colClasses.append(orange.StringVariable(i))
-                
-        if len(dfsummary['rowNames']) > 1000:
-            self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name + '[1:1000,]')
-        else:
-            self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name + '')
-            
-        self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(exampleTable_data' + self.variable_suffix + ')] <- "?"')
-        
-        d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
-        if self.R('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
-            d = [d]
-        #print d
-        #type(d)
-        domain = orange.Domain(colClasses)
-        data = orange.ExampleTable(domain, d)
-        self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
-        return data
-        
+      
     def onDeleteWidget(self, suppress = 0):
         # for k in self.Rvariables:
             # print self.Rvariables[k]
@@ -542,7 +332,7 @@ class OWRpy(OWWidget):
 
         for k in self.Rvariables:
             #print self.Rvariables[k]
-            self.rsession('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
             #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
             for device in self.device.keys():
@@ -552,40 +342,10 @@ class OWRpy(OWWidget):
                 self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
         except: return
 
-    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
-        # check that a device is currently used by this widget
-        # print 'the devNumber is'+str(devNumber)
-        # print str(self.device)
-        if str(devNumber) in self.device:
-            print 'dev exists'
-            actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
-            if actdev == 1: #there were no decives present and a new one has been created.
-                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-            if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
-                print 'dev not in R'
-                self.R('dev.off()')
-                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
-                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-                print str(self.device)
-        else:
-            print 'make new dev for this'
-            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
-            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-        #self.require_librarys(['playwith', 'RGtk2'])
-        
-        #self.R('playwith('+query+')', 'setRData')
-        self.R(query, 'setRData')
-        self.needsProcessingHandler(self, 0)
     def onLoadSavedSession(self):
         print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']
         
-        print str(self.sentItems)
-        items = self.sentItems # extra layer of protection to avoid infinite loops.
-        for (name, data) in items:
-            self.rSend(name, data, appendThis = 0)
-            
-        """
         for i in self.RGUIElementsSettings.keys():
             try:            
                 print '**********************' + i
@@ -597,8 +357,9 @@ class OWRpy(OWWidget):
                 print 'error:' + i
                 print "Unexpected error:", sys.exc_info()[0]
                 
-        """
 
+        for (name, data) in self.sentItems:
+            self.send(name, data)
        
     
     def onLoadSavedSession2(self):
@@ -704,6 +465,30 @@ class OWRpy(OWWidget):
     def followLink(self, url):
         self.rsession('shell.exec("'+str(url.toString())+'")')
         self.notes.setHtml(str(url.toString()))
+    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
+        # check that a device is currently used by this widget
+        # print 'the devNumber is'+str(devNumber)
+        # print str(self.device)
+        if str(devNumber) in self.device:
+            print 'dev exists'
+            actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
+            if actdev == 1: #there were no decives present and a new one has been created.
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+            if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
+                print 'dev not in R'
+                self.R('dev.off()')
+                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+                print str(self.device)
+        else:
+            print 'make new dev for this'
+            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.num_widgets), 'setRData') # starts a new device 
+            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+        #self.require_librarys(['playwith', 'RGtk2'])
+        
+        #self.R('playwith('+query+')', 'setRData')
+        self.R(query, 'setRData')
+        self.needsProcessingHandler(self, 0)
             
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
