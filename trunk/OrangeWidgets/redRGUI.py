@@ -27,11 +27,15 @@ def forname(modname, classname):
     classobj = getattr(module, classname)
     return classobj
 
+qtWidgets = []
+current_module = __import__(__name__)
 for filename in glob.iglob(os.path.join('G:/Python25/Lib/site-packages/orange/OrangeWidgets/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
-    current_module = __import__(__name__)
+    
+    
     guiClass = os.path.basename(filename).split('.')[0]
+    qtWidgets.append(guiClass)
     setattr(current_module, guiClass,forname(guiClass,guiClass))
 
     

@@ -7,6 +7,7 @@
 from OWWidget import *
 from PyQt4 import QtWebKit
 from RSession import *
+import redRGUI 
 
 import time
 import RvarClasses
@@ -49,7 +50,9 @@ class OWRpy(OWWidget,RSession):
         #collect the sent items
         self.sentItems = []
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
-        self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table','Rtable']
+        
+        # self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table','Rtable']
+        # self.GUIWidgets = redRGUI.qtWidgets
         # self.widgetToolBar = QMenuBar(self)
         # notesMenu = self.widgetToolBar.addMenu('Notes')
         # self.notesAction = ToolBarTextEdit(self)
@@ -59,7 +62,7 @@ class OWRpy(OWWidget,RSession):
         # notesMenu = self.widgetToolBar.addMenu('Notes')
         # self.notesAction = ToolBarTextEdit(self)
         # notesMenu.addAction(self.notesAction)
-        self.notes = QTextEdit()
+        
         self.help = QtWebKit.QWebView(self)
         self.processingBox = QtWebKit.QWebView(self)
         webSize = QSize(200,100)
@@ -72,9 +75,10 @@ class OWRpy(OWWidget,RSession):
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         
-        notesBox = OWGUI.widgetBox(self, "Notes")
-        helpBox = OWGUI.widgetBox(self, "Discription")
-        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
+        notesBox = redRGUI.widgetBox(self, "Notes")
+        self.notes = redRGUI.textEdit(notesBox)
+        helpBox = redRGUI.widgetBox(self, "Discription")
+        processingBoxBox = redRGUI.widgetBox(self, "Processing Status")
         self.processingBox.setMaximumSize(webSize)
         self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
 
@@ -86,8 +90,8 @@ class OWRpy(OWWidget,RSession):
         helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        notesText = OWGUI.widgetLabel(notesBox, "Please place notes in this area.")
-        notesBox.layout().addWidget(self.notes)
+        notesText = redRGUI.widgetLabel(notesBox, "Please place notes in this area.")
+        # notesBox.layout().addWidget(self.notes)
         helpBox.layout().addWidget(self.help)
         
         #self.controlArea.layout().addWidget(self.widgetToolBar)
@@ -145,7 +149,7 @@ class OWRpy(OWWidget,RSession):
                 # print 'passed:' + att
                 continue
             # print 'frist att: ' + att
-            if getattr(self, att).__class__.__name__ in self.GUIWidgets:
+            if getattr(self, att).__class__.__name__ in redRGUI.qtWidgets:
                 print 'getting gui settings for:' + att
              
                 v = getattr(self, att).getSettings()
@@ -463,7 +467,7 @@ class OWRpy(OWWidget,RSession):
             self.notesAction.textEdit.setHtml(value['text'])
             
     def followLink(self, url):
-        self.rsession('shell.exec("'+str(url.toString())+'")')
+        self.R('shell.exec("'+str(url.toString())+'")')
         self.notes.setHtml(str(url.toString()))
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
