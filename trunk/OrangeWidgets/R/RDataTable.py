@@ -17,7 +17,7 @@ from OWRpy import *
 import OWGUI, redRGUI
 import math
 #from orngDataCaching import *
-import RRGUI
+#import RRGUI
 
 ##############################################################################
 
@@ -69,7 +69,7 @@ class RDataTable(OWRpy):
         
         
         
-                        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
         saveTab = self.tabWidgeta.createTabPage('Save Data')
         redRGUI.widgetLabel(saveTab, "Saves the current table to a file.")
         redRGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
@@ -116,9 +116,9 @@ class RDataTable(OWRpy):
         # self.table2id = {}  # key: table, value: widget id
         # self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
         
-        self.table = redRGUI.table(None, 0,0)
-        self.mainArea.layout().addWidget(self.table)
-        self.table.hide()
+        self.table = redRGUI.Rtable(self.mainArea)
+        #self.mainArea.layout().addWidget(self.table)
+        #self.table.hide()
         
 
         # self.updateColor()
@@ -166,6 +166,8 @@ class RDataTable(OWRpy):
     def RWidgetReload(self):
         print 'on load data table'
         self.processSignals()
+   
+
     def dataset(self, dataset, id=None):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         #print 'got data'
@@ -175,9 +177,10 @@ class RDataTable(OWRpy):
             self.table.show()
             #data = self.convertDataframeToExampleTable(dataset['data'])
             data = {}
-            data['matrix'] = array(self.rsession('as.matrix(' + dataset['data'] + ')'))
-            data['colnames'] = self.rsession('colnames(' + dataset['data'] + ')')
-            data['rownames'] = self.rsession('rownames(' + dataset['data'] + ')')
+            #from array import array
+            # data['matrix'] = self.R('as.matrix(' + dataset['data'] + ')')
+            # data['colnames'] = self.R('colnames(' + dataset['data'] + ')')
+            # data['rownames'] = self.R('rownames(' + dataset['data'] + ')')
             # if self.data.has_key(id):
                 ## remove existing table
                 # table = self.id2table[id]
@@ -222,11 +225,11 @@ class RDataTable(OWRpy):
 
             #self.progressBarInit()
             #self.setTable(table, data)
-            self.table.setTable(data)
+            self.table.setRTable(dataset['data'])
             #self.progressBarFinished()
             self.needsProcessingHandler(self, 0)
             #self.tabs.setCurrentIndex(self.tabs.indexOf(table))
-            self.setInfo(data)
+            # self.setInfo(data)
             #self.cbShowMeta.setEnabled(len(self.showMetas[id][1])>0)        # enable showMetas checkbox only if metas exist
 
         # elif self.data.has_key(id):
@@ -454,7 +457,10 @@ class RDataTable(OWRpy):
             self.infoMeta.setText('')
             self.infoClass.setText('')
         else:
-            (row, col) = data['matrix'].shape
+            #(row, col) = data['matrix'].shape
+            row = len(data[data.keys()[0]])
+            col = len(data.keys())
+
             self.processingBox.setHtml('%i rows and %i columns.' % (row, col))
             #missData = orange.Preprocessor_takeMissing(data)
             # self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))

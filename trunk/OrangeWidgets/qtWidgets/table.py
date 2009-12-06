@@ -12,15 +12,16 @@ class table(QTableWidget,widgetState):
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)
         if data:
-            self.data = data
             self.setTable(data)
         if sortable:
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
         
     def setTable(self, data):
+        print 'in table set'
         if data==None:
             return
+        self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
         
@@ -57,13 +58,14 @@ class table(QTableWidget,widgetState):
         # print r
         return r
     def loadSettings(self,data):
+        # print data
         self.setTable(data['data'])
         # print 'start'
         # print data
         if 'sortIndex' in data.keys():
             # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
-        # print 'aaaaaaaaatable#########################'
+        print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             # print 'table#########################'
             for i in data['selection']:

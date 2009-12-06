@@ -3,16 +3,17 @@ from RSession import RSession
 
 class Rtable(table):
     def __init__(self,widget,Rdata=None, rows = 0, columns = 0,sortable=True, selectionMode = -1, addToLayout = 1):
-        self.Rdata = Rdata
         self.R = RSession()
-        
+        table.__init__(self,widget,sortable=sortable,selectionMode = selectionMode,addToLayout=addToLayout)
+
         if Rdata:
-            data = self.R.R('as.data.frame(' + Rdata + ')')
-        else:
-            data = None
-        
-        table.__init__(self,widget,data=data,sortable=True,selectionMode = -1,addToLayout=addToLayout)
+            self.setRTable(Rdata)
     
+    def setRTable(self,Rdata):
+        print 'in Rtable set'
+        data = self.R.R('as.data.frame(' + Rdata + ')')
+        self.Rdata = Rdata
+        table.setTable(self,data)
     def getSettings(self):
         r = table.getSettings(self)
         del r['data']
@@ -20,6 +21,7 @@ class Rtable(table):
         print r
         return r
     def loadSettings(self,data):
+        print data
         if data['Rdata']:
             d = self.R.R('as.data.frame(' + data['Rdata'] + ')')
         else:

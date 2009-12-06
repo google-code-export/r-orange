@@ -2,7 +2,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, glob
 from RSession import RSession
-
+import orngEnviron
 from numpy import *
 #import sys, traceback
 
@@ -29,7 +29,9 @@ def forname(modname, classname):
 
 qtWidgets = []
 current_module = __import__(__name__)
-for filename in glob.iglob(os.path.join('G:/Python25/Lib/site-packages/orange/OrangeWidgets/qtWidgets', "*.py")):
+
+
+for filename in glob.iglob(os.path.join(orngEnviron.directoryNames['widgetDir'] + '/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
     
