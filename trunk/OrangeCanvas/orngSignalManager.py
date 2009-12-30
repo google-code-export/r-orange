@@ -245,7 +245,7 @@ class SignalManager:
         self.links[widgetFrom] = self.links.get(widgetFrom, []) + [(widgetTo, signalNameFrom, signalNameTo, enabled)]
 
         widgetTo.addInputConnection(widgetFrom, signalNameTo)
-
+        widgetFrom.addOutputConnection(widgetTo, signalNameFrom)
         # if there is no key for the signalNameFrom, create it and set its id=None and data = None
         if not widgetFrom.linksOut.has_key(signalNameFrom):
             widgetFrom.linksOut[signalNameFrom] = {None:None}
@@ -268,6 +268,7 @@ class SignalManager:
 
     # fix position of descendants of widget so that the order of widgets in self.widgets is consistent with the schema
     def fixPositionOfDescendants(self, widget):
+
         for link in self.links.get(widget, []):
             widgetTo = link[0]
             self.widgets.remove(widgetTo)
@@ -339,13 +340,14 @@ class SignalManager:
         if self.verbosity >= 2:
             self.addEvent("send data from " + widgetFrom.captionTitle + ". Signal = " + signalNameFrom, value, eventVerbosity = 2)
         print str("send data from " + widgetFrom.captionTitle + ". Signal = " + signalNameFrom)
-        print 'Load saved session is set to '+str(self.loadSavedSession)
+        #print 'Load saved session is set to '+str(self.loadSavedSession)
 
         if not self.links.has_key(widgetFrom): return
         for (widgetTo, signalFrom, signalTo, enabled) in self.links[widgetFrom]:
             if signalFrom == signalNameFrom and enabled == 1:
                 #print "signal from ", widgetFrom, " to ", widgetTo, " signal: ", signalNameFrom, " value: ", value, " id: ", id
                 widgetTo.updateNewSignalData(widgetFrom, signalTo, value, id, signalNameFrom)
+                print 'freezing: %s, signal processing in progress:%s' % (self.freezing, self.signalProcessingInProgress)
                 
 
 

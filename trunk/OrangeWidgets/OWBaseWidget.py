@@ -150,6 +150,8 @@ class OWBaseWidget(QDialog):
         if not signalManager: self.signalManager = globalSignalManager        # use the global instance of signalManager  - not advised
         else:                 self.signalManager = signalManager              # use given instance of signal manager
 
+        self.working = 0     #used to monitor when the widget is working.  Other widgets can check this to supress functions or to check on up/down stream widgets.
+        self.linksOutWidgets = {}
         self.inputs = []     # signalName:(dataType, handler, onlySingleConnection)
         self.outputs = []    # signalName: dataType
         self.wrappers =[]    # stored wrappers for widget events
@@ -632,7 +634,14 @@ class OWBaseWidget(QDialog):
         for i in self.inputs:
             input = InputSignal(*i)
             if input.name == signalName: return input.single
-
+    
+    def addOutputConnection(self, widgetTo, signalName):
+        existing = []
+        if self.linksOutWidgets.has_key(signalName):
+            existing = self.linksOutWidgets[signalName]
+            existing.append(widgetTo)
+        else:
+            self.linksOutWidgets[signalName] = [widgetTo]
     def addInputConnection(self, widgetFrom, signalName):
         for i in range(len(self.inputs)):
             if self.inputs[i][0] == signalName:
@@ -648,6 +657,14 @@ class OWBaseWidget(QDialog):
         #if not self.linksIn.has_key(signalName): self.linksIn[signalName] = [(0, widgetFrom, handler, [])]    # (dirty, handler, signalData)
 
     # delete a link from widgetFrom and this widget with name signalName
+    
+    def removeOutputConnection(self, widgetTo, signalName):
+        if self.linksOutWidgets.has_key(signalName):
+            links = self.linksOutWidgets[signalName]
+            links.remove(widgetTo)
+            self.linksOutWidgets[signalName] = links
+            
+        
     def removeInputConnection(self, widgetFrom, signalName):
         if self.linksIn.has_key(signalName):
             links = self.linksIn[signalName]
@@ -680,11 +697,12 @@ class OWBaseWidget(QDialog):
 
     # signal manager calls this function when all input signals have updated the data
     def processSignals(self,processHandler = True):
+        print 'processing Signals'
         if self.closing == True:
             return
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
-        
+        self.working = 1
         # we define only a way to handle signals that have defined a handler function
         for signal in self.inputs:        # we go from the first to the last defined input
             key = signal[0]
@@ -728,10 +746,13 @@ class OWBaseWidget(QDialog):
 
         if self.processingHandler:
             self.processingHandler(self, 0)    # remove focus from this widget
+            
+        self.working = 0
         self.needProcessing = 0
 
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):
+        print 'updating new signal data'
         if not self.linksIn.has_key(signalName): return
         for i in range(len(self.linksIn[signalName])):
             (dirty, widget, handler, signalData) = self.linksIn[signalName][i]

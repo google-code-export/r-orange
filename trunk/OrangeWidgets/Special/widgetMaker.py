@@ -194,6 +194,7 @@ class widgetMaker(OWRpy):
         self.makeGUI()
         self.makeProcessSignals()
         self.makeCommitFunction()
+        self.makeReportFunction()
         #self.makeRsendFunction()
         
         self.combineCode()
@@ -253,15 +254,16 @@ class widgetMaker(OWRpy):
             else:
                 if type(self.fieldList[element][0]) == type(''):
                     if self.fieldList[element][1] == 'Standard':
-                        self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "'+element+':")\n'
+                        self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "'+element+':")\n'
                     elif self.fieldList[element][1] == 'Advanced':
-                        self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "'+element+':")\n'
+                        self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "'+element+':")\n'
                 elif type(self.fieldList[element][0]) == type([]):
                     if self.fieldList[element][1] == 'Standard':
                         self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = redRGUI.comboBox(self.standardTab, label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
                     elif self.fieldList[element][1] == 'Advanced':
                         self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = redRGUI.comboBox(self.advancedTab, label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
-        self.guiCode += '\t\tOWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '\t\tredRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '\t\tredRGUI.button(self.controlArea, self, "Report", callback = self.sendReport)\n'
         if self.captureROutput:
             self.guiCode += '\t\tself.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")\n'
             #self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
@@ -284,11 +286,11 @@ class widgetMaker(OWRpy):
             self.commitFunction += "\t\tif str(self.RFunctionParam_"+inputName+") == '': return\n"
         for element in self.fieldList.keys():
             if self.fieldList[element][2] == 'Required':
-                self.commitFunction += "\t\tif self.RFunctionParam_"+element+" == '': return\n"
+                self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) == '': return\n"
         self.commitFunction += "\t\tinjection = []\n"
         for element in self.fieldList.keys():
-            self.commitFunction += "\t\tif self.RFunctionParam_"+element+" != '':\n"
-            self.commitFunction += "\t\t\tstring = '"+element+"='+str(self.RFunctionParam_"+element+")\n"
+            self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
+            self.commitFunction += "\t\t\tstring = '"+element+"='+str(self.RFunctionParam"+ element +"_lineEdit.text())\n"
             self.commitFunction += "\t\t\tinjection.append(string)\n"
         self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("
@@ -325,9 +327,20 @@ class widgetMaker(OWRpy):
         
         if self.functionAllowOutput:
             self.commitFunction += '\t\tself.rSend("'+self.functionName+' Output", {"data":self.Rvariables["'+self.functionName+'"]})\n'
-    
+    def makeReportFunction(self):
+        self.reportFunction = ''
+        self.reportFunction += '\tdef compileReport(self):\n'
+        for inputName in self.functionInputs.keys():
+            self.reportFunction += '\t\tself.reportSettings("Input Settings",[("'+inputName+'", self.RFunctionParam_'+inputName+')])\n' # output the inputs of the function
+        for element in self.fieldList.keys():
+            self.reportFunction += "\t\tself.reportSettings('Function Settings', [('"+element+"',str(self.RFunctionParam_"+element+"))])\n"
+        if self.functionAllowOutput:
+            self.reportFunction += '\t\tself.reportRaw(self.Rvariables["'+self.functionName+'"])\n'
+            
+        self.reportFunction += '\tdef sendReport(self):\n\t\tself.compileReport()\n\t\tself.showReport()\n'
+
     def combineCode(self):
         self.completeCode = '<pre>'
-        self.completeCode += self.headerCode+self.initCode+self.guiCode+self.processSignals+self.commitFunction
+        self.completeCode += self.headerCode+self.initCode+self.guiCode+self.processSignals+self.commitFunction+self.reportFunction
         self.completeCode += '</pre>'
         self.codeArea.setHtml(self.completeCode)

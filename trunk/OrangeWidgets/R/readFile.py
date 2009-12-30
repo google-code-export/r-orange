@@ -42,6 +42,8 @@ class readFile(OWRpy):
         button = redRGUI.button(box, self, 'Browse', callback = self.browseFile, disabled=0)
         self.filecombo.setMinimumWidth(150)
         box.layout().addWidget(self.filecombo)
+        redRGUI.button(box, self, 'Report', callback = self.sendReport, disabled = 0)
+        
         
         box = redRGUI.groupBox(self.controlArea, label="File Options", addSpace = True, orientation ='horizontal')
         
@@ -67,6 +69,7 @@ class readFile(OWRpy):
         #self.controlArea.layout().addWidget(self.scanarea)
         
     def setFileList(self):
+        if self.recentFiles == None: self.recentFiles = []
         self.filecombo.clear()
         # if not self.recentFiles:
             # self.filecombo.addItem("(none)")
@@ -165,7 +168,16 @@ class readFile(OWRpy):
         sendData = {'data':self.Rvariables['dataframe']}
         self.rSend("data.frame", sendData)
         
+    def compileReport(self):
+        self.reportSettings("File Name", [(self.Rvariables['filename'], self.R(self.Rvariables['filename']))])
+        
+        self.reportRaw(self.fileInfo.toHtml())
+        #self.finishReport()
+        
+    def sendReport(self):
+        self.compileReport()
+        self.showReport()
         
         
-        
+    
         
