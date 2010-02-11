@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class listBox(QListWidget,widgetState):
-    def __init__(self, widget,label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, *args):
+    def __init__(self, widget, value=None, label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback=None, *args):
         self.widget = widget
         QListWidget.__init__(self, *args)
         if label:
@@ -29,7 +29,7 @@ class listBox(QListWidget,widgetState):
             self.setDropIndicatorShown(1)
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             self.dragStartPosition = 0
-
+        connectControl(self, self.widget, value, callback, 'itemSelectionChanged()', CallFrontListBox(self), CallBackListBox(self, self.widget))
     def sizeHint(self):
         return self.defaultSizeHint
     def startDrag(self, supportedActions):
@@ -149,5 +149,98 @@ class listBox(QListWidget,widgetState):
         #self.setEnabled(data['enabled'])
         self.setState(data)
         
+        
+def connectControlSignal(control, signal, f):
+    if type(signal) == tuple:
+        control, signal = signal
+    QObject.connect(control, SIGNAL(signal), f)
 
 
+def connectControl(control, master, value, f, signal, cfront, cback = None, cfunc = None, fvcb = None):
+    cback = cback or value and ValueCallback(master, value, fvcb)
+    if cback:
+        if signal:
+            connectControlSignal(control, signal, cback)
+        cback.opposite = cfront
+        if value and cfront and hasattr(master, "controlledAttributes"):
+            master.controlledAttributes[value] = cfront
+
+    cfunc = cfunc or f and FunctionCallback(master, f)
+    if cfunc:
+        if signal:
+            connectControlSignal(control, signal, cfunc)
+        cfront.opposite = cback, cfunc
+    else:
+        cfront.opposite = (cback,)
+
+    return cfront, cback, cfunc
+    
+class ControlledCallFront:
+    def __init__(self, control):
+        self.control = control
+        self.disabled = 0
+
+    def __call__(self, *args):
+        if not self.disabled:
+            opposite = getattr(self, "opposite", None)
+            if opposite:
+                try:
+                    for op in opposite:
+                        op.disabled += 1
+                    self.action(*args)
+                finally:
+                    for op in opposite:
+                        op.disabled -= 1
+            else:
+                self.action(*args)
+                
+class CallFrontListBox(ControlledCallFront):
+    def action(self, value):
+        if value is not None:
+            if not isinstance(value, ControlledList):
+                setattr(self.control.ogMaster, self.control.ogValue, ControlledList(value, self.control))
+            for i in range(self.control.count()):
+                shouldBe = i in value
+                if shouldBe != self.control.item(i).isSelected():
+                    self.control.item(i).setSelected(shouldBe)
+
+class CallBackListBox:
+    def __init__(self, control, widget):
+        self.control = control
+        self.widget = widget
+        self.disabled = 0
+
+    def __call__(self, *args): # triggered by selectionChange()
+        if not self.disabled and self.control.ogValue != None:
+            clist = getdeepattr(self.widget, self.control.ogValue)
+            list.__delslice__(clist, 0, len(clist))
+            control = self.control
+            for i in range(control.count()):
+                if control.item(i).isSelected():
+                    list.append(clist, i)
+            self.widget.__setattr__(self.control.ogValue, clist)
+            
+            
+class FunctionCallback:
+    def __init__(self, master, f, widget=None, id=None, getwidget=None):
+        self.master = master
+        self.widget = widget
+        self.f = f
+        self.id = id
+        self.getwidget = getwidget
+        if hasattr(master, "callbackDeposit"):
+            master.callbackDeposit.append(self)
+        self.disabled = 0
+
+    def __call__(self, *value):
+        if not self.disabled and value!=None:
+            kwds = {}
+            if self.id <> None:
+                kwds['id'] = self.id
+            if self.getwidget:
+                kwds['widget'] = self.widget
+            if isinstance(self.f, list):
+                for f in self.f:
+                    f(**kwds)
+            else:
+                self.f(**kwds)

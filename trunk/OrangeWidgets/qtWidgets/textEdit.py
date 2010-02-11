@@ -13,7 +13,10 @@ class textEdit(QTextEdit,widgetState):
             widgetLabel(hb, label)
             hb.layout().addWidget(self)
         else:
-            widget.layout().addWidget(self)
+            try:
+                widget.layout().addWidget(self)
+            except:
+                widget.addWidget(self)
         self.insertHtml(html)
     def getSettings(self):
         # print 'in textEdit getSettings'

@@ -81,7 +81,7 @@ class rExecutor(OWRpy):
     def sendThis(self):
         self.sendt = {'data':self.sendthis}
         thisdata = self.sendt['data']
-        thisdataclass = self.rsession('class('+thisdata+')')
+        thisdataclass = self.R('class('+thisdata+')')
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
             self.rSend('R.object', self.sendt)
         elif thisdataclass.__class__.__name__ == 'str':
@@ -100,10 +100,10 @@ class rExecutor(OWRpy):
         else:
             self.rSend('R.object', self.sendt)
     def runR(self):
-        self.rsession('txt<-"R error occured" #Benign error in case a real error occurs')
-        self.rsession('txt<-capture.output('+self.command+')')
+        self.R('txt<-"R error occured" #Benign error in case a real error occurs')
+        self.R('txt<-capture.output('+self.command+')')
 
-        pasted = self.rsession('paste(txt, collapse = " \n")')
+        pasted = self.R('paste(txt, collapse = " \n")')
         # if type(pasted) != type(''):
             # pasted = 'Error occured with evaluation, please chech output for error.'
         self.thistext.insertPlainText('>>>'+self.command+'##Done')
@@ -124,7 +124,7 @@ class rExecutor(OWRpy):
                 self.metadataLB.addItem(key)
             self.infob.setText(self.data)
             # logic to handle assignment of the data elements
-            thisclass = self.rsession('class('+self.data+')')
+            thisclass = self.R('class('+self.data+')')
             #are there multipe classes for this object?
             if thisclass.__class__.__name__ == 'str': #there is only one class for this object in R
                 if thisclass == 'numeric': # we have a numeric vector as the object
@@ -157,12 +157,12 @@ class rExecutor(OWRpy):
         else: return
     
     def isNumeric(self):
-        self.infov.setText("Numeric Vector Connected of length %s" % str(self.rsession('length('+self.data+')')))
+        self.infov.setText("Numeric Vector Connected of length %s" % str(self.R('length('+self.data+')')))
     def isCharacter(self):
-        self.infov.setText("Character Vector Connected of length %s" % str(self.rsession('length('+self.data+')')))
+        self.infov.setText("Character Vector Connected of length %s" % str(self.R('length('+self.data+')')))
     def isDataFrame(self):
-        self.infov.setText("Data Frame Connected with %s columns" % str(self.rsession('length('+self.data+')')))
-        colnames = self.rsession('colnames('+self.data+')')
+        self.infov.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
+        colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
             self.dfselected = OWGUI.listBox(self.dataBox, self)
             for e in colnames:
@@ -172,8 +172,8 @@ class rExecutor(OWRpy):
             for e in colnames:
                 self.dfselected.addItem(e)
     def isMatrix(self):
-        self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.rsession('length('+self.data+')')), str(self.rsession('length('+self.data+'[1,])'))))
-        colnames = self.rsession('colnames('+self.data+')')
+        self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
+        colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = OWGUI.listBox(self.dataBox, self)
             try:
@@ -182,6 +182,6 @@ class rExecutor(OWRpy):
             except:
                 print 'Error with colnames, may not exist.'
     def isList(self):
-        self.infov.setText("List object connected with %s elements" % str(self.rsession('length('+self.data+')')))
+        self.infov.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
         
         

@@ -8,7 +8,7 @@ from PyQt4.Qwt5 import *
 from OWGraphTools import *      # user defined curves, ...
 from OWColorPalette import *      # color palletes, ...
 from OWDlgs import OWChooseImageSizeDlg
-import orange, math, time
+import math, time
 from OWBaseWidget import unisetattr
 
 NOTHING = 0
