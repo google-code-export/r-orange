@@ -1,0 +1,47 @@
+#summary Describe the concept of the class manager and how it relates to RedR pipelines.
+
+= Introduction =
+
+RedR is meant to be an interactive and versatile data exploration platform.  Interactive data analysis means that we have the ability to subset and select "classes" of data and explore their parameters both visually and quantitatively.  While in RedR1.5 this was achieved by generating new variables in the R level and passing those forward, this can quickly exceed the memory limitations on R.  Furthermore, it becomes difficult to apply classifications across multiple plots and functions.
+
+Our plan for RedR1.8 is the implementation of a Class Manager, which I will discribe below.
+
+
+= Details =
+
+The Class Manager is a supplimental data frame used in conjunction with a parent data frame for subsetting and classification purposes.  Effectively, upon creation of a data.frame like object RedR will simultaneously create a 'cm' object for that data.frame.  The 'cm' will contain the same rownames as the parent data.frame.  As the data.frame moves through widgets during it's processing pipeline, additional columns will be added to the 'cm' object coresponding to widgets.
+
+== Example ==
+
+The parent table will be:
+
+|| ||a||b||c||
+||1||1||2||3||
+||2||1||1||4||
+||3||2||1||5||
+
+
+With a cm that is simply:
+
+|| ||
+||1||
+||2||
+||3||
+
+When the data.frame is passed to a subsetting widget that widget places a new column on cm:
+
+|| ||subset.1||
+||1|| ||
+||2|| ||
+||3|| ||
+
+Upon subsetting (in this case on a>1) the subset table is filled:
+
+|| ||subset.1||
+||1||0||
+||2||0||
+||3||1||
+
+The ouput of this widget would be equivalent to parent[cm[,'subset.1']==1,].  This logically works in R but is programatically inconvinient when scripting.  
+
+While the entire parent and cm objects are also passed to downstream widgets for processing.  In this way, all widgets 'know' about upstream data, even if it was removed using one of the widgets.
