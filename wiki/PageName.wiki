@@ -42,6 +42,26 @@ Upon subsetting (in this case on a>1) the subset table is filled:
 ||2||0||
 ||3||1||
 
-The ouput of this widget would be equivalent to parent[cm[,'subset.1']==1,].  This logically works in R but is programatically inconvinient when scripting.  
+The ouput of this widget would be equivalent to {{{parent[cm[,'subset.1']==1,]}}}.  This logically works in R but is programatically inconvinient when scripting.  
 
-While the entire parent and cm objects are also passed to downstream widgets for processing.  In this way, all widgets 'know' about upstream data, even if it was removed using one of the widgets.
+While the entire parent and cm objects are also passed to downstream widgets for processing.  In this way, all widgets 'know' about upstream data, even if it was subset using one of the widgets.
+
+Upon connection to another widget the data frame {{{parent[cm[,'subset.1']==1,]}}} would be passed along with the cm {{{cm}}}, and the parent {{{parent}}}.  Let's say that the next widget was a plotting widget.  That widget would have the native instructions to plot the first two columns of {{{parent[cm[,'subset.1']==1,]}}} as an X/Y graph.  But if that isn't what you wanted and instead you wanted to color all of the data based on the subsetting.  Setting the plot feature to parent as opposed to recieved would set the plot data to the parent data.frame.  Setting the color to {{{cm[,1]}}} would give the colors based on the classes of the subsetting that was performed earlier.
+
+But wait there's more.  Let's say that you wanted to only plot the recieved data.  Then you wanted to further classify points that seemed to be in a cluster.  Remember that upon linking to the plot widget R made an append to the cm variable making it look like this: 
+
+|| ||subset.1||plot.1||
+||1||0||0||
+||2||0||0||
+||3||1||0||
+
+So now we have something to modify in.  When you color points in plotting you assign values to the plot.1 column of the cm table.  Say you colored one of the points, that would change it's value in plot.1:
+
+|| ||subset.1||plot.1||
+||1||0||0||
+||2||0||0||
+||3||1||1||
+
+The plotting widget would also have a section specifying what data to pass forward.  In this case selecting the 1 group would send forward a data.frame similar to {{{parent[(cm[,'subset.1']==1) & (cm[,'plot.1'] == 1),]}}}.
+
+As the code for this becomes more complete we hope to expand on these ideas to make RedR run ever more smoothly.
