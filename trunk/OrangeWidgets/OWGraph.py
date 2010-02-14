@@ -79,7 +79,7 @@ class OWGraph(QwtPlot):
         self.enableWheelZoom = 0
         self.noneSymbol = QwtSymbol()
         self.noneSymbol.setStyle(QwtSymbol.NoSymbol)
-        self.tips = TooltipManager(self)
+        #self.tips = TooltipManager(self)
         self.statusBar = None
         self.canvas().setMouseTracking(1)
         self.setMouseTracking(1)
@@ -320,7 +320,7 @@ class OWGraph(QwtPlot):
         # clear all curves, markers, tips
         self.clear()
         self.removeAllSelections(0)  # clear all selections
-        self.tips.removeAll()
+        #self.tips.removeAll()
         self.zoomStack = []
 
     # ####################################################################
@@ -608,9 +608,9 @@ class OWGraph(QwtPlot):
         yFloat = self.invTransform(QwtPlot.yLeft, canvasPos.y())
 
         text = ""
-        if not self.mouseCurrentlyPressed:
-            (text, x, y) = self.tips.maybeTip(xFloat, yFloat)
-            if type(text) == int: text = self.buildTooltip(text)
+        # if not self.mouseCurrentlyPressed:
+            # (text, x, y) = self.tips.maybeTip(xFloat, yFloat)
+            # if type(text) == int: text = self.buildTooltip(text)
 
         if self.statusBar != None:
             self.statusBar.showMessage(text)
