@@ -19,20 +19,25 @@ class sbIII(OWRpy):
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        
-        self.inputs = [('x', RvarClasses.RVariable, self.gotX),('y', RvarClasses.RVariable, self.gotY)]
-        self.outputs = [('test output', RvarClasses.RVariable)]
+        self.setRvariableNames(['Plot'])
+        self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
+        self.outputs = [('test output', RvarClasses.RDataFrame)]
         self.data = None
         self.parent = None
         self.cm = None
-        
+
         self.X = redRGUI.widgetLabel(self.controlArea, '')
         self.Y = redRGUI.widgetLabel(self.controlArea, '')
         self.Z = redRGUI.widgetLabel(self.controlArea, '')
-        
-        self.xColumnSelector = redRGUI.comboBox(self.controlArea, items=[], callback = self.plot)
-        self.yColumnSelector = redRGUI.comboBox(self.controlArea, items=[], callback = self.plot)
-        self.subsetCMSelector = redRGUI.comboBox(self.controlArea, items=[' '], callback = self.plot)
+        self.tabWidgeta = redRGUI.tabWidget(self.controlArea)
+        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        plotTab = self.tabWidgeta.createTabPage('Plot')
+        self.xColumnSelector = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
+        self.yColumnSelector = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
+        self.subsetCMSelector = redRGUI.comboBox(plotTab, items=[' '], callback = self.populateCM)
+        self.subsetCMClass = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
+        paintTab = self.tabWidgeta.createTabPage('Paint')
+        self.paintCMSelector = redRGUI.comboBox(paintTab, items = [' '], callback = self.plot)
         plotarea = redRGUI.widgetBox(self.controlArea, "graph")
         
         self.graph = redRGUI.redRGraph(plotarea)
@@ -40,26 +45,82 @@ class sbIII(OWRpy):
         self.zoomSelectToolbarBox = redRGUI.widgetBox(self.controlArea, "Plot Tool Bar")
         self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self.zoomSelectToolbarBox, self, self.graph)
         redRGUI.button(self.controlArea, self, "selected", callback = self.showSelected)
+    def refresh(self):
         
+        self.paintCMSelector.clear()
+        self.paintCMSelector.addRItems(' ')
+        self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
     def showSelected(self):
-        self.Z.setText(str(self.graph.getSelectedPoints()))
+        # set the values in the cm to selected 
+        cmSelector = self.subsetCMSelector.currentText()
+        cmClass = self.subsetCMClass.currentText()
+        if cmSelector != ' ':
+            subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
+        else: subset = 'rownames('+self.data+')'
+        
+        selected, unselected = self.graph.getSelectedPoints()
+        self.R(self.cm+'['+subset+',"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
+        self.sendMe()
         
     def gotX(self, data):
         if data:
             self.data = data['data']
             self.parent = data['parent']
             self.cm = data['cm']
-            
+            self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'))')
+            self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
             # set some of the plot data
-            self.xColumnSelector.addItems(self.R('colnames('+self.data+')'))
-            self.yColumnSelector.addItems(self.R('colnames('+self.data+')'))
-            self.subsetCMSelector.addItems(self.R('colnames('+self.cm+')'))
+            self.xColumnSelector.clear()
+            self.yColumnSelector.clear()
+            self.subsetCMSelector.clear()
+            self.paintCMSelector.clear()
+            
+            self.subsetCMSelector.addRItems(' ')
+            self.paintCMSelector.addRItems(' ')
+            
+            self.xColumnSelector.addRItems(self.R('colnames('+self.data+')'))
+            self.yColumnSelector.addRItems(self.R('colnames('+self.data+')'))
+            self.subsetCMSelector.addRItems(self.R('colnames('+self.cm+')'))
+            self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
+            
             self.plot()
-
+    def populateCM(self):
+        cmSelector = self.subsetCMSelector.currentText()
+        self.subsetCMClass.clear()
+        if cmSelector != ' ':
+            command = "levels(as.factor("+self.cm+"[,"+str(self.subsetCMSelector.currentIndex())+"]))"
+            try:
+                self.R('tmp<-'+command) # must assign to a temp variable because otherwise R fails in the background.  This problem should be reported, and may be fixed in later Rpy releases.
+                self.subsetCMClass.addRItems(self.R('tmp'))
+            except:
+                self.X.setText('Failed')
+            #self.subsetCMClass.addItems(self.R('levels(as.factor('+self.cm+'[,"'+cmSelector+'"]))'))
     def plot(self):
-        self.graph.clear()
-        self.graph.points("MyData", xData = self.R(self.data + '['+self.subsetCMSelector.currentText()+','+self.xColumnSelector.currentText()+']'), yData = self.R(self.data + '['+self.subsetCMSelector.currentText()+','+self.yColumnSelector.currentText()+']'), brushColor = self.R('as.numeric('+self.data+'[,2] < 30)'), penColor=self.R('as.numeric('+self.data+'[,2] < 30)'), size=[])
-        #self.X.setText(str(self.R('as.numeric('+self.data+'[,2] < 30)')))
+        # populate the cm class columns
+        cmSelector = self.subsetCMSelector.currentText()
+        cmClass = self.subsetCMClass.currentText()
+        xCol = self.xColumnSelector.currentText()
+        yCol = self.yColumnSelector.currentText()
+        paintClass = self.paintCMSelector.currentText()
 
-    def showLinks(self):
-        self.Z.setText(str(self.linksOut))
+        if cmSelector != ' ':
+            subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
+        else: subset = ''
+        
+        if paintClass != ' ':
+            cm = self.R(self.cm)
+            paint = cm[str(paintClass)]
+        else: paint = []
+        # make the plot
+        if xCol == yCol: return
+        self.graph.clear()
+        XData = self.R(self.data + '['+subset+',"'+str(xCol)+'"]')
+        YData = self.R(self.data + '['+subset+',"'+str(yCol)+'"]')
+        self.subset = self.data + '['+subset+',]'
+        if XData == [] or YData == []: return
+        self.graph.points("MyData", xData = self.R('as.numeric('+self.data + '['+subset+',"'+str(xCol)+'"])'), yData = self.R('as.numeric('+self.data + '['+subset+',"'+str(yCol)+'"])'), brushColor = paint, penColor=paint, size=[])
+        #self.X.setText(str(paint))
+
+    def sendMe(self):
+        data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        self.rSend('test output', data)

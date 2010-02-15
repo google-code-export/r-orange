@@ -79,7 +79,8 @@ class rExecutor(OWRpy):
         self.infoM.setText(tmp)
         self.command = tmp
     def sendThis(self):
-        self.sendt = {'data':self.sendthis}
+        
+        self.sendt = {'data':self.sendthis, 'parent':self.sendthis}
         thisdata = self.sendt['data']
         thisdataclass = self.R('class('+thisdata+')')
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
@@ -90,6 +91,8 @@ class rExecutor(OWRpy):
             elif thisdataclass == 'character': #we have a character vector as the object
                 self.rSend('R Vector', self.sendt)
             elif thisdataclass == 'data.frame': # the object is a data.frame
+                self.R('cm_'+self.sendthis+'<-data.frame(row.names = rownames('+self.sendthis+'))')
+                self.sendt['cm'] = 'cm_'+self.sendthis
                 self.rSend('R Data Frame', self.sendt)
             elif thisdataclass == 'matrix': # the object is a matrix
                 self.rSend('R Data Frame', self.sendt)

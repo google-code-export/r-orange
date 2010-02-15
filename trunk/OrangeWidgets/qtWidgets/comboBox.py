@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class comboBox(QComboBox,widgetState):
-    def __init__(self,widget,label=None, items=None, orientation='vertical',callback = None, **args):
+    def __init__(self,widget,label=None, items=None, orientation='vertical',callback = None, callback2 = None, **args):
         
         QComboBox.__init__(self,widget)
         if label:
@@ -21,6 +21,9 @@ class comboBox(QComboBox,widgetState):
         if callback:
             # print callback
             QObject.connect(self, SIGNAL('activated(int)'), callback)
+            
+        if callback2: # more overload for other functions
+            QObject.connect(self, SIGNAL('activated(int)'), callback2)
 
     def getSettings(self):
         items = []
@@ -35,5 +38,12 @@ class comboBox(QComboBox,widgetState):
         self.addItems([unicode(i) for i in data['items']])
         self.setCurrentIndex(data['current'])
         self.setEnabled(data['enabled'])
-
         
+    def addRItems(self, items):
+        if items:
+            try:
+                self.addItems(items)
+            except:
+                self.addItems([items])
+
+    

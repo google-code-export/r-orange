@@ -138,6 +138,7 @@ class readFile(OWRpy):
         else:
             rownames = 'NULL' #force numbering
         self.R(self.Rvariables['dataframe'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header+', sep = "'+sep+'", row.names = '+rownames+', fill = T)','setRData',True)
+        self.R(self.Rvariables['cm'] + '<- data.frame(row.names = '+self.Rvariables['dataframe']+')')
         self.updateGUI()
         self.sendMe()
         
@@ -165,7 +166,7 @@ class readFile(OWRpy):
         self.fileInfo.setText('File Info:' + self.html_table(s))
         self.fileInfo.setHidden(False)
     def sendMe(self, kill = True):
-        sendData = {'data':self.Rvariables['dataframe']}
+        sendData = {'data':self.Rvariables['dataframe'], 'parent':self.Rvariables['dataframe'], 'cm':self.Rvariables['cm']}
         self.rSend("data.frame", sendData)
         
     def compileReport(self):
