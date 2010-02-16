@@ -137,7 +137,7 @@ class readFile(OWRpy):
         else:
             rownames = 'NULL' #force numbering
         self.R(self.Rvariables['dataframe'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header+', sep = "'+sep+'", row.names = '+rownames+', fill = T)','setRData',True)
-        self.R(self.Rvariables['cm'] + '<- data.frame(row.names = '+self.Rvariables['dataframe']+')')
+        self.R(self.Rvariables['cm'] + '<- data.frame(row.names = rownames('+self.Rvariables['dataframe']+'))')
         self.updateGUI()
         self.sendMe()
         

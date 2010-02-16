@@ -13,7 +13,7 @@ class tabWidget(QTabWidget,widgetState):
         print 'start: ' + name
         if widgetToAdd == None:
             print 'make widgetBox'
-            widgetToAdd = widgetBox(self, addToLayout = 0, margin = 4)
+            widgetToAdd = widgetBoxNoLabel(self, addToLayout = 0, margin = 4)
         if canScroll:
             scrollArea = QScrollArea() 
             self.addTab(scrollArea, name)

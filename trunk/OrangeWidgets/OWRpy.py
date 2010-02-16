@@ -41,7 +41,7 @@ class OWRpy(OWWidget,RSession):
         self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + ctime
         #keep all R variable name in this dict
         self.Rvariables = {}
-
+        self.setRvariableNames(['title'])
         
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
@@ -344,8 +344,11 @@ class OWRpy(OWWidget,RSession):
                 #key = device.keys()[0]
                 self.R('dev.set('+str(dev)+')', 'setRData')
                 self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
-        except: return
-
+                
+        except: pass
+        self.widgetDelete()
+    def widgetDelete(self):
+        pass #holder function for other widgets
     def onLoadSavedSession(self):
         print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']

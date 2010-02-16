@@ -52,13 +52,16 @@ class sbIII(OWRpy):
                 self.paintCMSelector.clear()
                 self.paintCMSelector.addRItems(' ')
                 self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
-                self.paintCMSelector.setCurrentIndex(self.paintCMSelector.findText(previous))
-                
+                try:
+                    self.paintCMSelector.setCurrentIndex(self.paintCMSelector.findText(previous))
+                except: pass
                 previous = self.subsetCMSelector.currentText()
                 self.subsetCMSelector.clear()
                 self.subsetCMSelector.addRItems(' ')
                 self.subsetCMSelector.addRItems(self.R('colnames('+self.cm+')'))
-                self.subsetCMSelector.setCurrentIndex(self.subsetCMSelector.findText(previous))
+                try:
+                    self.subsetCMSelector.setCurrentIndex(self.subsetCMSelector.findText(previous))
+                except: pass
             except:
                 pass
         
@@ -117,10 +120,13 @@ class sbIII(OWRpy):
 
         if cmSelector != ' ' and cmSelector != '' and int(self.subsetCMSelector.currentIndex()) != 0:
             subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
-        else: subset = ''
+            cmSubset = '[,"'+cmSelector+'"] == "' + cmClass+'"'
+        else: 
+            subset = ''
+            cmSubset = ''
         
         if paintClass != ' ':
-            cm = self.R(self.cm)
+            cm = self.R(self.cm+cmSubset)
             paint = cm[str(paintClass)]
         else: paint = []
         # make the plot
@@ -138,3 +144,6 @@ class sbIII(OWRpy):
         self.rSend('test output', data)
         self.sendRefresh()
         
+    def widgetDelete(self):
+        self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
+        self.sendRefresh()

@@ -33,10 +33,10 @@ class rExecutor(OWRpy):
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
-        runbox = redRGUI.widgetBox(self, "Command Line", orientation='horizontal')
+        runbox = redRGUI.widgetBox(self, "Command Line", orientation=QHBoxLayout())
         self.splitCanvas.addWidget(runbox)
-        redRGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
-        processbutton = redRGUI.button(runbox, self, "Run", callback = self.runR, width=150)
+        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
+        processbutton = redRGUI.button(runbox,self, "Run", callback = self.runR, width=150)
         
         
         
@@ -61,7 +61,7 @@ class rExecutor(OWRpy):
         
         
         sendbox = redRGUI.widgetBox(self.controlArea, "Send Box")
-        redRGUI.lineEdit(sendbox, self, "sendthis", "Send", orientation = 'horizontal')
+        self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
         sendbutton = redRGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
         self.resize(800,600)
         
@@ -76,7 +76,7 @@ class rExecutor(OWRpy):
         self.command = tmp
     def sendThis(self):
         
-        self.sendt = {'data':self.sendthis, 'parent':self.sendthis}
+        self.sendt = {'data':str(self.sendthis.text()), 'parent':str(self.sendthis.text())}
         thisdata = self.sendt['data']
         thisdataclass = self.R('class('+thisdata+')')
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
@@ -87,8 +87,8 @@ class rExecutor(OWRpy):
             elif thisdataclass == 'character': #we have a character vector as the object
                 self.rSend('R Vector', self.sendt)
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                self.R('cm_'+self.sendthis+'<-data.frame(row.names = rownames('+self.sendthis+'))')
-                self.sendt['cm'] = 'cm_'+self.sendthis
+                self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
+                self.sendt['cm'] = 'cm_'+self.sendt['data']
                 self.rSend('R Data Frame', self.sendt)
             elif thisdataclass == 'matrix': # the object is a matrix
                 self.rSend('R Data Frame', self.sendt)
@@ -100,12 +100,12 @@ class rExecutor(OWRpy):
             self.rSend('R.object', self.sendt)
     def runR(self):
         self.R('txt<-"R error occured" #Benign error in case a real error occurs')
-        self.R('txt<-capture.output('+self.command+')')
+        self.R('txt<-capture.output('+str(self.command.text())+')')
 
         pasted = self.R('paste(txt, collapse = " \n")')
         # if type(pasted) != type(''):
             # pasted = 'Error occured with evaluation, please chech output for error.'
-        self.thistext.insertPlainText('>>>'+self.command+'##Done')
+        self.thistext.insertPlainText('>>>'+str(self.command.text())+'##Done')
         self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
         self.thistext.setAlignment(Qt.AlignBottom)
     

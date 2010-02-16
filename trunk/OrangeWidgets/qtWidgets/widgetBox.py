@@ -1,22 +1,31 @@
-from redRGUI import widgetState
+from redRGUI import widgetState # the great irony is that this widget does not need a widget state
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
         
-class widgetBox(QWidget):
-    def __init__(self,widget, orientation='vertical', addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0, addToLayout = 1):
-        QWidget.__init__(self,widget)
-        
+class widgetBox(QGroupBox):
+    def __init__(self,widget, name = '', orientation=QVBoxLayout(), addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0, addToLayout = 1):
+        QGroupBox.__init__(self,widget)
+        if type(name) in (str, unicode): # if you pass 1 for box, there will be a box, but no text
+            self.setTitle(" "+name.strip()+" ")
+        if margin == -1: margin = 7
+        self.setFlat(flat)
         if widget.layout():
             widget.layout().addWidget(self)
         
-
-        if isinstance(orientation, QLayout):
-            self.setLayout(orientation)
-        elif orientation == 'horizontal' or not orientation:
-            self.setLayout(QHBoxLayout())
-        else:
+        try:
+            if isinstance(orientation, QLayout):
+                self.setLayout(orientation)
+            elif orientation == 'horizontal' or not orientation:
+                self.setLayout(QHBoxLayout())
+            else:
+                self.setLayout(QVBoxLayout())
+        except:
             self.setLayout(QVBoxLayout())
+            
+        if self.layout() == 0 or self.layout() == None:
+            self.setLayout(QVBoxLayout())
+        print 'layout '+ str(self.layout())
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
 

@@ -10,7 +10,7 @@ class comboBox(QComboBox,widgetState):
         
         QComboBox.__init__(self,widget)
         if label:
-            hb = widgetBox(widget,orientation=orientation)
+            hb = widgetBoxNoLabel(widget,orientation=orientation)
             widgetLabel(hb, label)
             hb.layout().addWidget(self)
         else:

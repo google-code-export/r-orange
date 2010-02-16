@@ -42,7 +42,7 @@ class dataEntry(OWRpy):
         
         box = redRGUI.widgetBox(self.controlArea, "Table")
         self.splitCanvas.addWidget(box)
-        self.dataTable = redRGUI.table(box, self.rowCount+1, self.colCount+1)
+        self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
         # self.setRownamesColor()
         # self.setColnamesColor()
@@ -95,7 +95,7 @@ class dataEntry(OWRpy):
         for name in colnames:
            
             for i in range(1, rlen+1):
-                newitem = QTableWidgetItem(str(data[name][i-1]))
+                newitem = QTableWidgetItem(str(data[name][i-1])) # must correct for the different indexis of R and python
                 self.dataTable.setItem(i, col, newitem)
             col += 1
         upcell = QTableWidgetItem()

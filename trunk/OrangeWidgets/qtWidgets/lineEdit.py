@@ -1,20 +1,20 @@
 from redRGUI import widgetState
-from widgetBox import widgetBox
+
+from widgetBoxNoLabel import widgetBoxNoLabel
 from widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='',label=None,orientation='vertical',**args):
+    def __init__(self,widget,text='', label=None,orientation='vertical', **args):
         QLineEdit.__init__(self,widget)
         if label:
-            hb = widgetBox(widget,orientation=orientation)
+            hb = widgetBoxNoLabel(widget,orientation=orientation)
             widgetLabel(hb, label)
             hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
-
         self.setText(text)
     def getSettings(self):
         #print 'in get settings' + self.text()

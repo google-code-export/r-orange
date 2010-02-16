@@ -44,7 +44,6 @@ class RDataTable(OWRpy):
         
         #R modifications
         
-        self.fileName = ''
         self.delim = 0
         self.currentData = ''
         self.dataTableIndex = {}
@@ -73,7 +72,7 @@ class RDataTable(OWRpy):
         saveTab = self.tabWidgeta.createTabPage('Save Data')
         redRGUI.widgetLabel(saveTab, "Saves the current table to a file.")
         redRGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
-        redRGUI.lineEdit(saveTab, label = "File:", width = 50)
+        self.fileName = redRGUI.lineEdit(saveTab, label = "File:", width = 50)
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
         redRGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         #infoBox.setMinimumWidth(200)
@@ -93,7 +92,7 @@ class RDataTable(OWRpy):
 
         # settings box
         boxSettings = redRGUI.widgetBox(self.controlArea, "Settings")
-        self.cbShowDistributions = redRGUI.checkBox(boxSettings, buttons=['Visualize continuous values'], callback = self.cbShowDistributions)
+        
 
         # colBox = redRGUI.indentedBox(boxSettings, orientation = "horizontal")
         # redRGUI.widgetLabel(colBox, "Color: ")
@@ -132,7 +131,7 @@ class RDataTable(OWRpy):
             sep = ' '
         elif self.delim == 2:
             sep = ','
-        self.R('write.table('+self.currentData+',file="'+self.fileName+'", quote = FALSE, sep="'+sep+'")')
+        self.R('write.table('+self.currentData+',file="'+str(self.fileName.text())+'", quote = FALSE, sep="'+sep+'")')
     def changeColor(self):
         color = QColorDialog.getColor(self.distColor, self)
         if color.isValid():
