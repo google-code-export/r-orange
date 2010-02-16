@@ -5,8 +5,8 @@
 <icon>icons/drc.PNG</icon>
 """
 from OWRpy import * 
-import OWGUI 
-import RRGUI 
+import redRGUI 
+
 class ED(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,6 +18,7 @@ class ED(OWRpy):
         self.RFunctionParam_ci = 2
         self.RFunctionParam_od = "FALSE"
         self.RFunctionParam_bound = "TRUE"
+        self.data = {}
         
         
         self.RFunctionParam_respLev = "50"
@@ -28,27 +29,28 @@ class ED(OWRpy):
         self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
         self.outputs = [("ED Output", RvarClasses.RDataFrame)]
         
-        box = RRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        self.RFUnctionParamlogBase_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamlogBase_lineEdit", self, "RFunctionParam_logBase", label = "logBase:")
-        self.RFunctionParamreference_comboBox = RRGUI.comboBox(self.advancedTab, "RFunctionParamreference_comboBox", self, "RFunctionParam_reference", label = "reference:", items = ['control', 'upper'])
-        self.RFUnctionParamlevel_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamlevel_lineEdit", self, "RFunctionParam_level", label = "level:")
-        self.RFunctionParamci_comboBox = RRGUI.comboBox(self.advancedTab, "RFunctionParamci_comboBox", self, "RFunctionParam_ci", label = "ci:", items = ['none', 'delta', 'fls', 'tfls'])
-        self.RFUnctionParamod_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamod_lineEdit", self, "RFunctionParam_od", label = "od:")
-        self.RFUnctionParambound_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParambound_lineEdit", self, "RFunctionParam_bound", label = "bound:")
+        box = redRGUI.tabWidget(self.controlArea, None, self)
+        self.standardTab = redRGUI.createTabPage(box, "standardTab", self, "Standard")
+        self.advancedTab = redRGUI.createTabPage(box, "advancedTab", self, "Advanced")
+        self.RFUnctionParamlogBase_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamlogBase_lineEdit", self, "RFunctionParam_logBase", label = "logBase:")
+        self.RFunctionParamreference_comboBox = redRGUI.comboBox(self.advancedTab, "RFunctionParamreference_comboBox", self, "RFunctionParam_reference", label = "reference:", items = ['control', 'upper'])
+        self.RFUnctionParamlevel_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamlevel_lineEdit", self, "RFunctionParam_level", label = "level:")
+        self.RFunctionParamci_comboBox = redRGUI.comboBox(self.advancedTab, "RFunctionParamci_comboBox", self, "RFunctionParam_ci", label = "ci:", items = ['none', 'delta', 'fls', 'tfls'])
+        self.RFUnctionParamod_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamod_lineEdit", self, "RFunctionParam_od", label = "od:")
+        self.RFUnctionParambound_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParambound_lineEdit", self, "RFunctionParam_bound", label = "bound:")
         
         
-        self.RFUnctionParamrespLev_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamrespLev_lineEdit", self, "RFunctionParam_respLev", label = "Levels:")
-        self.RFunctionParamtype_comboBox = RRGUI.comboBox(self.standardTab, "RFunctionParamtype_comboBox", self, "RFunctionParam_type", label = "type:", items = ['relative', 'absolute'])
-        self.RFUnctionParamdisplay_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamdisplay_lineEdit", self, "RFunctionParam_display", label = "display:")
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)
+        self.RFUnctionParamrespLev_lineEdit =  redRGUI.lineEdit(self.standardTab, "RFUnctionParamrespLev_lineEdit", self, "RFunctionParam_respLev", label = "Levels:")
+        self.RFunctionParamtype_comboBox = redRGUI.comboBox(self.standardTab, "RFunctionParamtype_comboBox", self, "RFunctionParam_type", label = "type:", items = ['relative', 'absolute'])
+        self.RFUnctionParamdisplay_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamdisplay_lineEdit", self, "RFunctionParam_display", label = "display:")
+        redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.textEdit("RoutputWindow", self)
         self.standardTab.layout().addWidget(self.RoutputWindow)
     def processobject(self, data):
         self.require_librarys(["drc"]) 
-        if data:
+        if data and 'data' in data:
             self.RFunctionParam_object=data["data"]
+            self.data = data.copy()
             self.commitFunction()
     def commitFunction(self):
         if self.RFunctionParam_object == '': return
@@ -86,4 +88,5 @@ class ED(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.rSend("ED Output", {"data":self.Rvariables["ED"]})
+        self.data['data'] = self.Rvariables["ED"]
+        self.rSend("ED Output", self.data)

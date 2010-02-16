@@ -5,8 +5,7 @@
 <icon>icons/drc.PNG</icon>
 """
 from OWRpy import * 
-import OWGUI 
-import RRGUI 
+import redRGUI
 class multdrc(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -30,6 +29,7 @@ class multdrc(OWRpy):
         self.RFunctionParam_type = "continuous"
         self.RFunctionParam_logDose = "NULL"
         self.response = 0
+        self.data = {}
         self.dose = 0
         self.colNames = []
         self.RFunctionParam_data = ''
@@ -38,36 +38,36 @@ class multdrc(OWRpy):
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         self.outputs = [("multdrc Output", RvarClasses.RVariable)]
         
-        box = RRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        self.RFUnctionParamhetvar_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamhetvar_lineEdit", self, "RFunctionParam_hetvar", label = "hetvar:")
-        self.RFUnctionParamna_action_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamna_action_lineEdit", self, "RFunctionParam_na_action", label = "na_action:")
-        self.RFUnctionParamfct_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamfct_lineEdit", self, "RFunctionParam_fct", label = "Model:")
-        self.RFUnctionParamcollapse_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamcollapse_lineEdit", self, "RFunctionParam_collapse", label = "collapse:")
-        self.RFUnctionParamcm_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamcm_lineEdit", self, "RFunctionParam_cm", label = "cm:")
-        self.RFUnctionParamfctList_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamfctList_lineEdit", self, "RFunctionParam_fctList", label = "fctList:")
-        self.RFUnctionParambcAdd_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParambcAdd_lineEdit", self, "RFunctionParam_bcAdd", label = "bcAdd:")
-        self.curveComboBox =  RRGUI.comboBox(self.standardTab, "curveComboBox", self, "curve", label = "Curves:")
-        self.RFUnctionParamboxcox_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamboxcox_lineEdit", self, "RFunctionParam_boxcox", label = "boxcox:")
-        self.RFUnctionParamvarPower_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamvarPower_lineEdit", self, "RFunctionParam_varPower", label = "varPower:")
-        #self.RFUnctionParamformula_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamformula_lineEdit", self, "RFunctionParam_formula", label = "formula:")
-        self.responseComboBox = RRGUI.comboBox(self.standardTab, "responseComboBox", self, "response", label = "Response Data:")
-        self.doseComboBox = RRGUI.comboBox(self.standardTab, "doseComboBox", self, "dose", label = "Dose Data:")
-        self.RFUnctionParamcontrol_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamcontrol_lineEdit", self, "RFunctionParam_control", label = "control:")
-        self.RFUnctionParamweights_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamweights_lineEdit", self, "RFunctionParam_weights", label = "weights:")
-        self.RFUnctionParamstartVal_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamstartVal_lineEdit", self, "RFunctionParam_startVal", label = "startVal:")
-        self.RFUnctionParamrobust_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamrobust_lineEdit", self, "RFunctionParam_robust", label = "robust:")
-        self.RFUnctionParamtype_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamtype_lineEdit", self, "RFunctionParam_type", label = "type:")
-        self.RFUnctionParamlogDose_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamlogDose_lineEdit", self, "RFunctionParam_logDose", label = "logDose:")
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.anovaTextArea = RRGUI.textEdit('anovaTextArea', self)
+        box = redRGUI.tabWidget(self.controlArea, None, self)
+        self.standardTab = redRGUI.createTabPage(box, "standardTab", self, "Standard")
+        self.advancedTab = redRGUI.createTabPage(box, "advancedTab", self, "Advanced")
+        self.RFUnctionParamhetvar_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamhetvar_lineEdit", self, "RFunctionParam_hetvar", label = "hetvar:")
+        self.RFUnctionParamna_action_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamna_action_lineEdit", self, "RFunctionParam_na_action", label = "na_action:")
+        self.RFUnctionParamfct_lineEdit =  redRGUI.lineEdit(self.standardTab, "RFUnctionParamfct_lineEdit", self, "RFunctionParam_fct", label = "Model:")
+        self.RFUnctionParamcollapse_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamcollapse_lineEdit", self, "RFunctionParam_collapse", label = "collapse:")
+        self.RFUnctionParamcm_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamcm_lineEdit", self, "RFunctionParam_cm", label = "cm:")
+        self.RFUnctionParamfctList_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamfctList_lineEdit", self, "RFunctionParam_fctList", label = "fctList:")
+        self.RFUnctionParambcAdd_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParambcAdd_lineEdit", self, "RFunctionParam_bcAdd", label = "bcAdd:")
+        self.curveComboBox =  redRGUI.comboBox(self.standardTab, "curveComboBox", self, "curve", label = "Curves:")
+        self.RFUnctionParamboxcox_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamboxcox_lineEdit", self, "RFunctionParam_boxcox", label = "boxcox:")
+        self.RFUnctionParamvarPower_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamvarPower_lineEdit", self, "RFunctionParam_varPower", label = "varPower:")
+        #self.RFUnctionParamformula_lineEdit =  redRGUI.lineEdit(self.standardTab, "RFUnctionParamformula_lineEdit", self, "RFunctionParam_formula", label = "formula:")
+        self.responseComboBox = redRGUI.comboBox(self.standardTab, "responseComboBox", self, "response", label = "Response Data:")
+        self.doseComboBox = redRGUI.comboBox(self.standardTab, "doseComboBox", self, "dose", label = "Dose Data:")
+        self.RFUnctionParamcontrol_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamcontrol_lineEdit", self, "RFunctionParam_control", label = "control:")
+        self.RFUnctionParamweights_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamweights_lineEdit", self, "RFunctionParam_weights", label = "weights:")
+        self.RFUnctionParamstartVal_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamstartVal_lineEdit", self, "RFunctionParam_startVal", label = "startVal:")
+        self.RFUnctionParamrobust_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamrobust_lineEdit", self, "RFunctionParam_robust", label = "robust:")
+        self.RFUnctionParamtype_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamtype_lineEdit", self, "RFunctionParam_type", label = "type:")
+        self.RFUnctionParamlogDose_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamlogDose_lineEdit", self, "RFunctionParam_logDose", label = "logDose:")
+        redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
+        self.anovaTextArea = redRGUI.textEdit('anovaTextArea', self)
         self.standardTab.layout().addWidget(self.anovaTextArea)
     def processdata(self, data):
         self.require_librarys(["drc"]) 
         if data:
             self.RFunctionParam_data=data["data"]
-            
+            self.data = data.copy()
 
             if self.colNames == self.R('colnames('+data['data']+')'):
                 self.commitFunction()
@@ -149,7 +149,8 @@ class multdrc(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['multdrc']+'<-multdrc(data='+str(self.RFunctionParam_data)+','+inj+') # I made a dose response object')
-        self.rSend("multdrc Output", {"data":self.Rvariables["multdrc"]})
+        self.data['data'] = self.Rvariables["multdrc"]
+        self.rSend("multdrc Output", self.data)
         self.anovaTextArea.clear()
         self.R('txt<-capture.output(anova('+self.Rvariables["multdrc"]+'))')
         tmp = self.R('paste(txt, collapse ="\n")')

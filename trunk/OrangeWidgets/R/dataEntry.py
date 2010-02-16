@@ -7,7 +7,6 @@
 
 """
 
-import OWGUI
 import redRGUI
 from OWRpy import *
 
@@ -31,19 +30,19 @@ class dataEntry(OWRpy):
         self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
         #GUI.
         
-        box = OWGUI.widgetBox(self.controlArea, "Options")
-        OWGUI.button(box, self, 'Commit', self.commitTable)
-        OWGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
-        OWGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
-        #OWGUI.button(box, self, 'Add Column', self.addColumn)
+        box = redRGUI.widgetBox(self.controlArea, "Options")
+        redRGUI.button(box, self, 'Commit', self.commitTable)
+        redRGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
+        redRGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
+        #redRGUI.button(box, self, 'Add Column', self.addColumn)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
         
-        box = OWGUI.widgetBox(self.controlArea, "Table")
+        box = redRGUI.widgetBox(self.controlArea, "Table")
         self.splitCanvas.addWidget(box)
-        self.dataTable = OWGUI.table(box, self.rowCount+1, self.colCount+1)
+        self.dataTable = redRGUI.table(box, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
         # self.setRownamesColor()
         # self.setColnamesColor()

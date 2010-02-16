@@ -8,7 +8,7 @@
 """
 
 from OWRpy import *
-import OWGUI
+import redRGUI
 
 class ListSelector(OWRpy):
     #This widget has no settings list
@@ -22,8 +22,8 @@ class ListSelector(OWRpy):
         self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList)]
         
         #GUI
-        box = OWGUI.widgetBox(self.controlArea, "List Data")
-        self.names = OWGUI.listBox(box, self, callback = self.sendSelection)
+        box = redRGUI.widgetBox(self.controlArea, "List Data")
+        self.names = redRGUI.listBox(box, self, callback = self.sendSelection)
         
     def process(self, data):
         self.data = None

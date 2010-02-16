@@ -104,6 +104,6 @@ class ReadCEL(OWRpy):
         
     
     def sendMe(self):
-        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset']}
+        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'cm':'cm_'+self.Rvariables['eset'], 'parent':'exprs('+self.Rvariables['eset']+')'}
         self.rSend("Expression Matrix", out)
         self.rSend("Eset", {'data':self.Rvariables['eset']})

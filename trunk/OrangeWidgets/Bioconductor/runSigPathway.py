@@ -7,7 +7,7 @@
 """
 
 import os, glob
-import OWGUI
+import redRGUI
 import redRGUI
 from OWRpy import *
 
@@ -45,32 +45,32 @@ class runSigPathway(OWRpy):
         
         #self.sendMe()
         #GUI
-        info = OWGUI.widgetBox(self.controlArea, "Info")
+        info = redRGUI.widgetBox(self.controlArea, "Info")
         
         self.infoa = redRGUI.widgetLabel(info, "No data connected yet.")
         self.infob = redRGUI.widgetLabel(info, '')
         self.infoc = redRGUI.widgetLabel(info, '')
         
         
-        sigPathOptions = OWGUI.widgetBox(self.controlArea, "Options")
+        sigPathOptions = redRGUI.widgetBox(self.controlArea, "Options")
         self.minNPS = redRGUI.lineEdit(sigPathOptions, '20', 'Min Genes in Pathway:')
         self.maxNPS = redRGUI.lineEdit(sigPathOptions, '500', 'Max Genes in Pathway:')
-        self.pAnnotlist = OWGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
+        self.pAnnotlist = redRGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
         self.chiptype = redRGUI.lineEdit(sigPathOptions, '', label = "Chiptype")
         self.npath = redRGUI.lineEdit(sigPathOptions, '25', label = 'Number of Pathways')
         self.pAnnotlist.setEnabled(False)
-        self.getNewAnnotButton = OWGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
-        OWGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
-        OWGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
-        OWGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
-        OWGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
+        self.getNewAnnotButton = redRGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
+        redRGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
+        redRGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
+        redRGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
+        redRGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
         
         #split the canvas into two halves
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
         
-        self.pathtable = OWGUI.widgetBox(self, "Pathway Info")
-        self.pathinfoA = OWGUI.widgetLabel(self.pathtable, "")
+        self.pathtable = redRGUI.widgetBox(self, "Pathway Info")
+        self.pathinfoA = redRGUI.widgetLabel(self.pathtable, "")
         self.splitCanvas.addWidget(self.pathtable)
         
         self.splitCanvas.addWidget(self.table1)

@@ -6,7 +6,7 @@
 <priority>2010</priority>
 """
 from OWRpy import *
-import OWGUI
+import redRGUI
 import RAffyClasses
 
 class panpCalls(OWRpy):
@@ -37,13 +37,13 @@ class panpCalls(OWRpy):
         
         
         #GUI
-        box = OWGUI.widgetBox(self.controlArea, "Options")
+        box = redRGUI.widgetBox(self.controlArea, "Options")
         
-        OWGUI.lineEdit(box, self, "looseCut", "Loose Cut", orientation = "horizontal")
-        OWGUI.lineEdit(box, self, "tightCut", "Tight Cut", orientation = "horizontal")
-        OWGUI.lineEdit(box, self, "percentA", "Percent Absent", orientation = "horizontal")
-        processbutton = OWGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
-        self.infoa = OWGUI.widgetLabel(box, "Widget Initialized")
+        redRGUI.lineEdit(box, self, "looseCut", "Loose Cut", orientation = "horizontal")
+        redRGUI.lineEdit(box, self, "tightCut", "Tight Cut", orientation = "horizontal")
+        redRGUI.lineEdit(box, self, "percentA", "Percent Absent", orientation = "horizontal")
+        processbutton = redRGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
+        self.infoa = redRGUI.widgetLabel(box, "Widget Initialized")
         
 
     def onLoadSavedSession(self):
@@ -64,7 +64,7 @@ class panpCalls(OWRpy):
         if dataset == None: 
             self.infoa.setText("Blank data recieved")
         if dataset:
-            self.data = dataset
+            self.data = dataset.copy()
             if 'data' in self.data:
                 self.eset = self.data['data']
                 self.infoa.setText("Data Received")

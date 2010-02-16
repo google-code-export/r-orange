@@ -7,7 +7,6 @@
 """
 
 from OWRpy import *
-import OWGUI
 import redRGUI 
 
 import re
@@ -28,7 +27,7 @@ class readFile(OWRpy):
         
         
         #set R variable names        
-        self.setRvariableNames(['dataframe','filename'])
+        self.setRvariableNames(['dataframe','filename', 'cm', 'parent'])
         
         #signals
         self.inputs = None

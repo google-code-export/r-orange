@@ -6,7 +6,7 @@
 <priority>2030</priority>
 """
 
-import OWGUI
+import redRGUI
 from OWRpy import *
 
 
@@ -46,17 +46,17 @@ class limmaDecide(OWRpy):
         grid.setMargin(0)
         layk.setLayout(grid)
         
-        optionsbox = OWGUI.widgetBox(self.controlArea, "Options")
+        optionsbox = redRGUI.widgetBox(self.controlArea, "Options")
         grid.addWidget(optionsbox, 0,0)
-        OWGUI.comboBox(optionsbox, self, "dmethod", label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
-        OWGUI.comboBox(optionsbox, self, "adjmethods", label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
-        OWGUI.lineEdit(optionsbox, self, "pval", label = "Minimum p-value change:", orientation = 0)
-        OWGUI.lineEdit(optionsbox, self, "foldchange", label = "Minimum fold change:", orientation = 0)
+        redRGUI.comboBox(optionsbox, self, "dmethod", label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
+        redRGUI.comboBox(optionsbox, self, "adjmethods", label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
+        redRGUI.lineEdit(optionsbox, self, "pval", label = "Minimum p-value change:", orientation = 0)
+        redRGUI.lineEdit(optionsbox, self, "foldchange", label = "Minimum fold change:", orientation = 0)
         
-        computebox = OWGUI.widgetBox(self.controlArea, "Compute")
+        computebox = redRGUI.widgetBox(self.controlArea, "Compute")
         grid.addWidget(computebox, 1,0)
-        self.infoa = OWGUI.widgetLabel(computebox, "Data not yet connected")
-        runbutton = OWGUI.button(computebox, self, "Run Analysis", callback = self.runAnalysis, width=200)
+        self.infoa = redRGUI.widgetLabel(computebox, "Data not yet connected")
+        runbutton = redRGUI.button(computebox, self, "Run Analysis", callback = self.runAnalysis, width=200)
         
 
 

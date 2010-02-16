@@ -7,10 +7,6 @@
 """
 
 from OWRpy import *
-import OWGUI
-from rpy_options import set_options
-set_options(RHOME=os.environ['RPATH'])
-from rpy import *
 import redRGUI
 
 class rExecutor(OWRpy):
@@ -31,29 +27,29 @@ class rExecutor(OWRpy):
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         
         #GUI
-        self.box = OWGUI.widgetBox(self.controlArea, "R Executor")
+        self.box = redRGUI.widgetBox(self.controlArea, "R Executor")
         self.infob = redRGUI.widgetLabel(self.box, "")
         # splice canvas for the right hand side of the canvas
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
-        runbox = OWGUI.widgetBox(self, "Command Line", orientation='horizontal')
+        runbox = redRGUI.widgetBox(self, "Command Line", orientation='horizontal')
         self.splitCanvas.addWidget(runbox)
-        OWGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
-        processbutton = OWGUI.button(runbox, self, "Run", callback = self.runR, width=150)
+        redRGUI.lineEdit(runbox, self, "command", "R Command", orientation = 'horizontal')
+        processbutton = redRGUI.button(runbox, self, "Run", callback = self.runR, width=150)
         
         
         
 
-        varbutton = OWGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
-        history = OWGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
-        OWGUI.button(self.box, self, "Clear Output", callback = self.clearOutput)
-        self.infoa = OWGUI.widgetLabel(self.box, "")
+        varbutton = redRGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
+        history = redRGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
+        redRGUI.button(self.box, self, "Clear Output", callback = self.clearOutput)
+        self.infoa = redRGUI.widgetLabel(self.box, "")
         
-        self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
-        self.infov = OWGUI.widgetLabel(self.dataBox, "No Input")
+        self.dataBox = redRGUI.widgetBox(self.controlArea, "Input Infromation")
+        self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
         
-        self.metadataBox = OWGUI.widgetBox(self.controlArea, "Metadata")
+        self.metadataBox = redRGUI.widgetBox(self.controlArea, "Metadata")
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
         
@@ -64,9 +60,9 @@ class rExecutor(OWRpy):
         
         
         
-        sendbox = OWGUI.widgetBox(self.controlArea, "Send Box")
-        OWGUI.lineEdit(sendbox, self, "sendthis", "Send", orientation = 'horizontal')
-        sendbutton = OWGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
+        sendbox = redRGUI.widgetBox(self.controlArea, "Send Box")
+        redRGUI.lineEdit(sendbox, self, "sendthis", "Send", orientation = 'horizontal')
+        sendbutton = redRGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
         self.resize(800,600)
         
     def clearOutput(self):
@@ -167,7 +163,7 @@ class rExecutor(OWRpy):
         self.infov.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
-            self.dfselected = OWGUI.listBox(self.dataBox, self)
+            self.dfselected = redRGUI.listBox(self.dataBox, self)
             for e in colnames:
                 self.dfselected.addItem(e)
         elif colnames != 'NULL' and self.dfselected != None:
@@ -178,7 +174,7 @@ class rExecutor(OWRpy):
         self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
-            self.dfselected = OWGUI.listBox(self.dataBox, self)
+            self.dfselected = redRGUI.listBox(self.dataBox, self)
             try:
                 for e in colnames:
                     self.dfselected.addItem(e)

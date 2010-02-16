@@ -7,7 +7,7 @@
 """
 
 from OWRpy import *
-import OWGUI
+import redRGUI
 
 class diffExp(OWRpy):
     settingsList = [ 'samplenames', 'sampleA', 'sampleB', 'phenoData', 'modelFormula', 'newdata']
@@ -39,7 +39,7 @@ class diffExp(OWRpy):
         self.valuesStack = QStackedWidget(self)
         self.controlArea.layout().addWidget(self.valuesStack)
         
-        boxVal = OWGUI.widgetBox(self.controlArea, "Set Classes")
+        boxVal = redRGUI.widgetBox(self.controlArea, "Set Classes")
         self.boxIndices[0] = boxVal
         layk = QWidget(self)
         boxVal.layout().addWidget(layk)
@@ -48,29 +48,29 @@ class diffExp(OWRpy):
         layk.setLayout(grid)
         
         # set as valstack 0
-        box = OWGUI.widgetBox(boxVal, "Process")
+        box = redRGUI.widgetBox(boxVal, "Process")
         grid.addWidget(box, 0,1)
-        processButton = OWGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
-        self.arrays = OWGUI.listBox(box, self, callback = self.printSelected)
-        setAbutton = OWGUI.button(box, self, "Switch Class", callback = self.switchClass, width = 200)
-        self.infoa = OWGUI.widgetLabel(box, "No arrays selected")
-        self.infob = OWGUI.widgetLabel(box, "Setting Class A")
+        processButton = redRGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
+        self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
+        setAbutton = redRGUI.button(box, self, "Switch Class", callback = self.switchClass, width = 200)
+        self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
+        self.infob = redRGUI.widgetLabel(box, "Setting Class A")
         
-        selecteda = OWGUI.widgetBox(self.controlArea, "Selected Arrays")
+        selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays")
         grid.addWidget(selecteda, 0,0)
-        self.selectedArrays = OWGUI.listBox(selecteda, self)
-        clearaButton = OWGUI.button(selecteda, self, "Clear",callback = self.clearA, width = 200)
+        self.selectedArrays = redRGUI.listBox(selecteda, self)
+        clearaButton = redRGUI.button(selecteda, self, "Clear",callback = self.clearA, width = 200)
         
-        selectedb = OWGUI.widgetBox(self.controlArea, "Selected Arrays")
+        selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays")
         grid.addWidget(selectedb, 0,2)
-        self.selectedArraysB = OWGUI.listBox(selectedb, self)
-        clearbButton = OWGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
+        self.selectedArraysB = redRGUI.listBox(selectedb, self)
+        clearbButton = redRGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
         self.valuesStack.addWidget(boxVal)
         # end valstack 0
         
         # valstack 1: phenodataConnected
         
-        boxVal = OWGUI.widgetBox(self.controlArea, "Set Classes")
+        boxVal = redRGUI.widgetBox(self.controlArea, "Set Classes")
         self.boxIndices[1] = boxVal
         layk2 = QWidget(self)
         boxVal.layout().addWidget(layk2)
@@ -79,21 +79,21 @@ class diffExp(OWRpy):
         layk2.setLayout(grid2)
         
         
-        box = OWGUI.widgetBox(self, "Phenotype Variables")
+        box = redRGUI.widgetBox(self, "Phenotype Variables")
         grid2.addWidget(box, 0, 0)
-        self.phenoVarListBox = OWGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
-        buttonsBox = OWGUI.widgetBox(self, "Commands")
+        self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
+        buttonsBox = redRGUI.widgetBox(self, "Commands")
         grid2.addWidget(buttonsBox, 0,1)
-        self.plusButton = OWGUI.button(buttonsBox, self, "And", callback = self.plusButtonClicked)
+        self.plusButton = redRGUI.button(buttonsBox, self, "And", callback = self.plusButtonClicked)
         self.plusButton.setEnabled(False)
-        self.colonButton = OWGUI.button(buttonsBox, self, "Interacting With", callback = self.colonButtonClicked)
+        self.colonButton = redRGUI.button(buttonsBox, self, "Interacting With", callback = self.colonButtonClicked)
         self.colonButton.setEnabled(False)
-        self.starButton = OWGUI.button(buttonsBox, self, "Together and Interacting", callback = self.starButtonClicked)
+        self.starButton = redRGUI.button(buttonsBox, self, "Together and Interacting", callback = self.starButtonClicked)
         self.starButton.setEnabled(False)
-        self.processEsetButton = OWGUI.button(buttonsBox, self, "Commit", callback = self.processEset)
+        self.processEsetButton = redRGUI.button(buttonsBox, self, "Commit", callback = self.processEset)
         self.processEsetButton.setEnabled(False)
         
-        self.modelText = OWGUI.widgetLabel(boxVal, "Model: ")
+        self.modelText = redRGUI.widgetLabel(boxVal, "Model: ")
         self.valuesStack.addWidget(boxVal)
         
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
@@ -230,10 +230,6 @@ class diffExp(OWRpy):
             self.newdata = self.olddata.copy()
         self.newdata['data']=self.Rvariables['results']
         self.newdata['classes'] = self.Rvariables['classes']
-        if reload:
-            self.newdata['kill'] = False
-        else:
-            self.newdata['kill'] = True
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1

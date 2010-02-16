@@ -29,6 +29,7 @@ class affyNormalize(OWRpy):
         self.summarymeth = 'liwong'
         self.norm = ['quantiles']
         self.data = ''
+        self.newdata = {}
         self.enableMethBox = False
         self.norminfo = ''
         self.loadSettings()
@@ -116,7 +117,7 @@ class affyNormalize(OWRpy):
         try: 
             print str(dataset['data'])
             self.data = str(dataset['data'])
-            
+            self.newdata = dataset.copy()
             
             if self.R('length(exprs('+self.data+')[1,])') > 10:
                 self.selectMethod = 2
@@ -181,7 +182,9 @@ class affyNormalize(OWRpy):
         #self.infoa.setText('Ready to Normalize')
 
     def toSend(self):
-        neset = {'data':'exprs('+self.Rvariables['normalized_affybatch']+')', 'eset':self.Rvariables['normalized_affybatch']}
-        self.rSend("Normalized Expression Matrix", neset)
-        self.rSend("Normalized AffyBatch", {'data':self.Rvariables['normalized_affybatch']})
+        self.newdata['data'] = 'exprs('+self.Rvariables['normalized_affybatch']+')'
+        self.newdata['eset'] = 'eset':self.Rvariables['normalized_affybatch']
+        self.rSend("Normalized Expression Matrix", self.newdata)
+        self.newdata['data'] = self.Rvariables['normalized_affybatch']
+        self.rSend("Normalized AffyBatch", self.newdata)
     

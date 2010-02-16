@@ -7,7 +7,7 @@
 """
 
 from OWRpy import *
-import OWGUI
+import redRGUI
 
 class widgetMaker(OWRpy):
     def __init__(self, parent=None, signalManager=None):
@@ -35,31 +35,31 @@ class widgetMaker(OWRpy):
         # GUI
         # several tabs with different parameters such as loading in a function, setting parameters, setting inputs and outputs
         
-        box = OWGUI.widgetBox(self.controlArea, "")
-        self.infoa = OWGUI.widgetLabel(box, '')
-        OWGUI.lineEdit(box, self, 'packageName', label = 'Package:', orientation = 1)
-        OWGUI.button(box, self, 'Load Package', callback = self.loadRPackage)
-        OWGUI.lineEdit(box, self, 'functionName', label = 'Function Name:', orientation = 1)
-        OWGUI.button(box, self, 'Parse Function', callback = self.parseFunction)
+        box = redRGUI.widgetBox(self.controlArea, "")
+        self.infoa = redRGUI.widgetLabel(box, '')
+        redRGUI.lineEdit(box, self, 'packageName', label = 'Package:', orientation = 1)
+        redRGUI.button(box, self, 'Load Package', callback = self.loadRPackage)
+        redRGUI.lineEdit(box, self, 'functionName', label = 'Function Name:', orientation = 1)
+        redRGUI.button(box, self, 'Parse Function', callback = self.parseFunction)
         
-        box = OWGUI.widgetBox(self.controlArea, "Inputs and Outputs")
+        box = redRGUI.widgetBox(self.controlArea, "Inputs and Outputs")
         self.inputArea = QTableWidget()
         box.layout().addWidget(self.inputArea)
         self.inputArea.setColumnCount(4)
         
         self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
-        OWGUI.button(box, self, 'Accept Inputs', callback = self.acceptInputs)
-        OWGUI.checkBox(box, self, 'functionAllowOutput', 'Allow Output')
-        OWGUI.checkBox(box, self, 'captureROutput', 'Show Output')
+        redRGUI.button(box, self, 'Accept Inputs', callback = self.acceptInputs)
+        redRGUI.checkBox(box, self, 'functionAllowOutput', 'Allow Output')
+        redRGUI.checkBox(box, self, 'captureROutput', 'Show Output')
         
-        OWGUI.button(box, self, 'Generate Code', callback = self.generateCode)
-        OWGUI.button(box, self, 'Launch Widget', callback = self.launch)
+        redRGUI.button(box, self, 'Generate Code', callback = self.generateCode)
+        redRGUI.button(box, self, 'Launch Widget', callback = self.launch)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
         
-        codebox = OWGUI.widgetBox(self, "Code Box")
+        codebox = redRGUI.widgetBox(self, "Code Box")
         self.splitCanvas.addWidget(codebox)
 
         self.codeArea = QTextEdit()
@@ -205,7 +205,6 @@ class widgetMaker(OWRpy):
         self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
-        self.headerCode += 'import OWGUI \n'
         self.headerCode += 'import redRGUI \n'
         
     def makeInitHeader(self):
@@ -217,6 +216,7 @@ class widgetMaker(OWRpy):
         self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
         if self.functionAllowOutput:
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName+'"])\n'
+            self.initCode += '\t\tself.data = {}\n'
         for element in self.fieldList.keys():
             if element == '___':
                 pass
@@ -276,6 +276,7 @@ class widgetMaker(OWRpy):
                 self.processSignals += '\t\tself.require_librarys(["'+self.packageName+'"]) \n'
             self.processSignals += '\t\tif data:\n'
             self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data["data"]\n'
+            self.processSignals += '\t\t\tself.data = data.copy()\n'
             if self.processOnConnect:
                 self.processSignals += '\t\t\tself.commitFunction()\n'
                 
@@ -326,7 +327,8 @@ class widgetMaker(OWRpy):
         
         
         if self.functionAllowOutput:
-            self.commitFunction += '\t\tself.rSend("'+self.functionName+' Output", {"data":self.Rvariables["'+self.functionName+'"]})\n'
+            self.commitFunction += '\t\tsele.data["data"] = self.Rvariables["'+self.functionName+'"]\n'
+            self.commitFunction += '\t\tself.rSend("'+self.functionName+' Output", self.data)\n'
     def makeReportFunction(self):
         self.reportFunction = ''
         self.reportFunction += '\tdef compileReport(self):\n'
