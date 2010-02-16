@@ -1,0 +1,11 @@
+#summary Discription of the refresh function.
+#labels Phase-Implementation
+
+= Introduction =
+
+Dynamic data analysis requires that data be updated as the analysis is taking place.  We have implemented a refresh function withing the signalManger that sends a refresh signal to all widgets.
+
+
+= Details =
+
+When a widget sends a refresh signal {{{self.sendRefresh()}}}, a signal is passed into the signalManager for that widget initiating a function named refresh which moves through all widgets and initiates the function refresh for that widget.  By default this function is set to pass.  Widget makers should consider overloading this function to make use of the refresh function.
