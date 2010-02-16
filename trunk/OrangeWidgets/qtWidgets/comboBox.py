@@ -1,6 +1,7 @@
 from redRGUI import widgetState
 from widgetBox import widgetBox
 from widgetLabel import widgetLabel
+from widgetBoxNoLabel import widgetBoxNoLabel
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
