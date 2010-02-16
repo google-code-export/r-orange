@@ -46,10 +46,22 @@ class sbIII(OWRpy):
         self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self.zoomSelectToolbarBox, self, self.graph)
         redRGUI.button(self.controlArea, self, "selected", callback = self.showSelected)
     def refresh(self):
+        if self.cm != None:
+            try:
+                previous = self.paintCMSelector.currentText()
+                self.paintCMSelector.clear()
+                self.paintCMSelector.addRItems(' ')
+                self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
+                self.paintCMSelector.setCurrentIndex(self.paintCMSelector.findText(previous))
+                
+                previous = self.subsetCMSelector.currentText()
+                self.subsetCMSelector.clear()
+                self.subsetCMSelector.addRItems(' ')
+                self.subsetCMSelector.addRItems(self.R('colnames('+self.cm+')'))
+                self.subsetCMSelector.setCurrentIndex(self.subsetCMSelector.findText(previous))
+            except:
+                pass
         
-        self.paintCMSelector.clear()
-        self.paintCMSelector.addRItems(' ')
-        self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
     def showSelected(self):
         # set the values in the cm to selected 
         cmSelector = self.subsetCMSelector.currentText()
@@ -103,7 +115,7 @@ class sbIII(OWRpy):
         yCol = self.yColumnSelector.currentText()
         paintClass = self.paintCMSelector.currentText()
 
-        if cmSelector != ' ':
+        if cmSelector != ' ' and cmSelector != '' and int(self.subsetCMSelector.currentIndex()) != 0:
             subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
         else: subset = ''
         
@@ -124,3 +136,5 @@ class sbIII(OWRpy):
     def sendMe(self):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('test output', data)
+        self.sendRefresh()
+        

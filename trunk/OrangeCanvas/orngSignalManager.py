@@ -407,7 +407,9 @@ class SignalManager:
 
         # there is no link...
         return 0
-
+    def refresh(self):
+        for widget in self.widgets:
+            widget.refresh()
 
 # create a global instance of signal manager
 globalSignalManager = SignalManager()

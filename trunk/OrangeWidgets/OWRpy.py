@@ -493,7 +493,13 @@ class OWRpy(OWWidget,RSession):
         #self.R('playwith('+query+')', 'setRData')
         self.R(query, 'setRData')
         self.needsProcessingHandler(self, 0)
+        
+    def sendRefresh(self):
+        self.signalManager.refresh()
             
+            
+    def refresh(self):
+        pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)
