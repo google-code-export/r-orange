@@ -17,7 +17,7 @@ class mergeR(OWRpy):
         #self.setStateVariables(['dataA','dataB','colAsel', 'colBsel'])
         
         self.dataParentA = {}
-        seld.dataParentB = {}
+        self.dataParentB = {}
         
         
         self.inputs = [("RExampleTable A", RvarClasses.RDataFrame, self.processA), ("RExampleTable B", RvarClasses.RDataFrame, self.processB)]

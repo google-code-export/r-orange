@@ -25,7 +25,6 @@ class widgetBox(QGroupBox):
             
         if self.layout() == 0 or self.layout() == None:
             self.setLayout(QVBoxLayout())
-        print 'layout '+ str(self.layout())
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
 

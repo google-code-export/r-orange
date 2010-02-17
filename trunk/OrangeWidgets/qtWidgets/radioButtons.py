@@ -25,8 +25,8 @@ class radioButtons(widgetBox,widgetState):
             w = QRadioButton(buttons[0])
             self.buttons.addButton(w)
             self.layout().addWidget(w)
-
         if callback:
+            
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
         # if label:
             # QGroupBox.__init__(self,title,widget)
@@ -50,7 +50,9 @@ class radioButtons(widgetBox,widgetState):
         for i in self.buttons.buttons():
             if i.text() == id: i.setChecked(True)
     def getChecked(self):
-          return self.buttons.checkedButton().text()
+        button = self.buttons.checkedButton()
+        if button == 0 or button == None: return 0
+        else: return button.text()
       
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
@@ -61,17 +63,5 @@ class radioButtons(widgetBox,widgetState):
         #print 'radioButtons loadSettings' + data
         self.setChecked(data['checked'])
         self.setState()
-        
-
-
-
-   
-
-
-   
-
- 
-
-
 
 

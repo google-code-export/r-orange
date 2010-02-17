@@ -174,21 +174,7 @@ class RDataTable(OWRpy):
         self.supressTabClick = True
         if dataset != None:  # can be an empty table!
             self.table.show()
-            #data = self.convertDataframeToExampleTable(dataset['data'])
             data = {}
-            #from array import array
-            # data['matrix'] = self.R('as.matrix(' + dataset['data'] + ')')
-            # data['colnames'] = self.R('colnames(' + dataset['data'] + ')')
-            # data['rownames'] = self.R('rownames(' + dataset['data'] + ')')
-            # if self.data.has_key(id):
-                ## remove existing table
-                # table = self.id2table[id]
-                # self.data.pop(id)
-                # self.showMetas.pop(id)
-                # table.hide()
-                # self.tabs.removeTab(self.tabs.indexOf(table))
-                # self.table2id.pop(self.id2table.pop(id))
-                # self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
             self.data = data
             tableData = dataset['data']
             if 'link' in dataset:

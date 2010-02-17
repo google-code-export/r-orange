@@ -13,7 +13,9 @@ class Rtable(table):
         print 'in Rtable set'
         data = self.R.R('as.data.frame(' + Rdata + ')')
         self.Rdata = Rdata
-        table.setTable(self,data)
+        self.setTable(data)
+        self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
+        self.setVerticalHeaderLabels(self.R.R('rownames(' +self.Rdata+')'))
     def getSettings(self):
         r = table.getSettings(self)
         del r['data']

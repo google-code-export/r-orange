@@ -68,12 +68,12 @@ class rExecutor(OWRpy):
     def clearOutput(self):
         self.thistext.clear()
     def putrecieved(self):
-        self.command = str(self.data)
+        self.command.setText(str(self.data))
         
     def insertMetaDataVar(self):
         tmp = str(self.olddata[str(self.metadataLB.selectedItems()[0].text())])
         self.infoM.setText(tmp)
-        self.command = tmp
+        self.command.setText(tmp)
     def sendThis(self):
         
         self.sendt = {'data':str(self.sendthis.text()), 'parent':str(self.sendthis.text())}

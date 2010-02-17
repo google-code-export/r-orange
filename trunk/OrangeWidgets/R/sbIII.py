@@ -145,5 +145,6 @@ class sbIII(OWRpy):
         self.sendRefresh()
         
     def widgetDelete(self):
-        self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
-        self.sendRefresh()
+        if self.cm:
+            self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
+            self.sendRefresh()
