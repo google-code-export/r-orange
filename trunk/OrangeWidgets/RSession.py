@@ -1,6 +1,8 @@
 import os
-from rpy_options import set_options
-set_options(RHOME=os.environ['RPATH'])
+try:
+    from rpy_options import set_options
+    set_options(RHOME=os.environ['RPATH'])
+except: pass # need this because linux doesn't need to use the RPATH
 import rpy
 import time
 import RvarClasses
