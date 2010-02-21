@@ -4,7 +4,7 @@
 #
 
 import sys, time
-import orngDebugging
+#import orngDebugging
 
 Single = 2
 Multiple = 4
@@ -73,15 +73,15 @@ class SignalManager:
     loadSavedSession = False
     def __init__(self, *args):
         self.debugFile = None
-        self.verbosity = orngDebugging.orngVerbosity
+        self.verbosity = 1 #orngDebugging.orngVerbosity
         self.stderr = sys.stderr
         
         self._seenExceptions = {}
         #self.stdout = sys.stdout
-        if orngDebugging.orngDebuggingEnabled:
-            self.debugFile = open(orngDebugging.orngDebuggingFileName, "wt")
-            sys.excepthook = self.exceptionHandler
-            sys.stderr = self.debugFile
+        #if orngDebugging.orngDebuggingEnabled:
+            #self.debugFile = open(orngDebugging.orngDebuggingFileName, "wt")
+            #sys.excepthook = self.exceptionHandler
+            #sys.stderr = self.debugFile
             #sys.stdout = self.debugFile
 
     def setDebugMode(self, debugMode = 0, debugFileName = "signalManagerOutput.txt", verbosity = 1):

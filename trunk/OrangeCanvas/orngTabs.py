@@ -623,7 +623,7 @@ class CanvasPopup(QMenu):
         self.candidates = []
         self.canvasDlg = canvasDlg
         cats = orngRegistry.readCategories()
-        self.suggestDict = dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])])
+        self.suggestDict = {} #dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])]) ## gives an error in linux
         self.suggestItems = [QListWidgetItem(self.canvasDlg.getWidgetIcon(widget), widget.name) for widget in self.suggestDict.values()]
         self.categoriesYOffset = 0
                 
