@@ -535,6 +535,7 @@ class OrangeCanvasDlg(QMainWindow):
 
     def updateStyle(self):
         QApplication.setStyle(QStyleFactory.create(self.settings["style"]))
+        #QApplication.setStyle(QStyle.QWindowsStyle)
         qApp.setStyleSheet(" QDialogButtonBox { button-layout: 0; }")       # we want buttons to go in the "windows" direction (Yes, No, Cancel)
         if self.settings["useDefaultPalette"]:
             QApplication.setPalette(qApp.style().standardPalette())
