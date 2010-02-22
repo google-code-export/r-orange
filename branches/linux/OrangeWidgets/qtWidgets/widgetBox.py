@@ -11,8 +11,7 @@ class widgetBox(QGroupBox):
         if margin == -1: margin = 7
         self.setFlat(flat)
         if widget.layout():
-            widget.layout().addWidget(self)
-        
+            widget.layout().addWidget(self) 
         try:
             if isinstance(orientation, QLayout):
                 self.setLayout(orientation)
@@ -30,6 +29,7 @@ class widgetBox(QGroupBox):
 
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)
+        print 'I have a layout' + str(self.layout)
         if margin != -1:
             self.layout().setMargin(margin)
 
@@ -37,3 +37,5 @@ class widgetBox(QGroupBox):
             separator(widget, 0, addSpace)
         elif addSpace:
             separator(widget)
+    def getSettings(self):
+        pass

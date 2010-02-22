@@ -12,7 +12,7 @@ class textEdit(QTextEdit,widgetState):
             hb = widgetBox(widget,orientation=orientation)
             widgetLabel(hb, label)
             hb.layout().addWidget(self)
-        else:
+        elif widget:
             try:
                 widget.layout().addWidget(self)
             except:

@@ -5,7 +5,11 @@ from PyQt4.QtGui import *
 class widgetLabel(QLabel,widgetState):
     def __init__(self,widget,text):
         QLabel.__init__(self,widget)
-        widget.layout().addWidget(self)
+        try:
+            print 'this widget has a layout' + str(widget.layout())
+            widget.layout().addWidget(self)
+        except:
+            widget.addWidget(self)
         self.setText(text)
     def getSettings(self):
         # print 'in widgetLabel getSettings'

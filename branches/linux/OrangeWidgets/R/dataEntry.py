@@ -32,8 +32,9 @@ class dataEntry(OWRpy):
         
         box = redRGUI.widgetBox(self.controlArea, "Options")
         redRGUI.button(box, self, 'Commit', self.commitTable)
-        redRGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
-        redRGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
+        self.rowcolHeaders = redRGUI.checkBox(box, 'Headers', buttons = ['Row Headers', 'Col Headers'])
+        #redRGUI.checkBox(box, 'rowHeaders', 'Use Row Headers:')
+        #redRGUI.checkBox(box, 'colHeaders', 'Use Column Headers:')
         #redRGUI.button(box, self, 'Add Column', self.addColumn)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)

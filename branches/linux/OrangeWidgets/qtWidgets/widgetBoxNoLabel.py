@@ -23,9 +23,10 @@ class widgetBoxNoLabel(QWidget):
             
         if self.layout() == 0 or self.layout() == None:
             self.setLayout(QVBoxLayout())
+            print 'my layout is ' + str(self.layout())
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
-
+        print 'my layout is ' + str(self.layout())
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)
         if margin != -1:

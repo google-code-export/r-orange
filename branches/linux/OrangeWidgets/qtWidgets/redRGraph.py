@@ -508,17 +508,10 @@ class redRGraph(QwtPlot):
         return 0
 
     def setNewZoom(self, newXMin, newXMax, newYMin, newYMax):
-        try:
-            oldXMin = self.axisScaleDiv(QwtPlot.xBottom).lBound()
-            oldXMax = self.axisScaleDiv(QwtPlot.xBottom).hBound()
-            oldYMin = self.axisScaleDiv(QwtPlot.yLeft).lBound()
-            oldYMax = self.axisScaleDiv(QwtPlot.yLeft).hBound()
-        except:
-            oldXMin = self.axisScaleDiv(QwtPlot.xBottom).lowerBound()
-            oldXMax = self.axisScaleDiv(QwtPlot.xBottom).upperBound()
-            oldYMin = self.axisScaleDiv(QwtPlot.yLeft).lowerBound()
-            oldYMax = self.axisScaleDiv(QwtPlot.yLeft).upperBound()
-
+        oldXMin = self.axisScaleDiv(QwtPlot.xBottom).lBound()
+        oldXMax = self.axisScaleDiv(QwtPlot.xBottom).hBound()
+        oldYMin = self.axisScaleDiv(QwtPlot.yLeft).lBound()
+        oldYMax = self.axisScaleDiv(QwtPlot.yLeft).hBound()
         stepX, stepY = self.axisStepSize(QwtPlot.xBottom), self.axisStepSize(QwtPlot.yLeft)
 
         steps = 10
@@ -600,12 +593,9 @@ class redRGraph(QwtPlot):
         # PANNING
         elif e.button() == Qt.LeftButton and self.state == PANNING:
             self.panPosition = e.globalX(), e.globalY()
-            try:
-                self.paniniX = self.axisScaleDiv(QwtPlot.xBottom).lBound(), self.axisScaleDiv(QwtPlot.xBottom).hBound()
-                self.paniniY = self.axisScaleDiv(QwtPlot.yLeft).lBound(), self.axisScaleDiv(QwtPlot.yLeft).hBound()
-            except:
-                self.paniniX = self.axisScaleDiv(QwtPlot.xBottom).lowerBound(), self.axisScaleDiv(QwtPlot.xBottom).upperBound()
-                self.paniniY = self.axisScaleDiv(QwtPlot.yLeft).lowerBound(), self.axisScaleDiv(QwtPlot.yLeft).upperBound()
+            self.paniniX = self.axisScaleDiv(QwtPlot.xBottom).lBound(), self.axisScaleDiv(QwtPlot.xBottom).hBound()
+            self.paniniY = self.axisScaleDiv(QwtPlot.yLeft).lBound(), self.axisScaleDiv(QwtPlot.yLeft).hBound()
+
         elif e.button() == Qt.LeftButton and 1 in onEdgeRects and self.tempSelectionCurve == None:
             self.resizingCurve = self.selectionCurveList[onEdgeRects.index(1)]
 
