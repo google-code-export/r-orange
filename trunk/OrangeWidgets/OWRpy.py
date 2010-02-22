@@ -51,34 +51,20 @@ class OWRpy(OWWidget,RSession):
         self.sentItems = []
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
         
-        # self.GUIWidgets = ['tabWidget','lineEdit','comboBox','listBox','textEdit','checkBox','widgetLabel','radioButtons','table','Rtable']
-        # self.GUIWidgets = redRGUI.qtWidgets
-        # self.widgetToolBar = QMenuBar(self)
-        # notesMenu = self.widgetToolBar.addMenu('Notes')
-        # self.notesAction = ToolBarTextEdit(self)
-        # notesMenu.addAction(self.notesAction)
-        
-        # self.widgetToolBar = QMenuBar(self)
-        # notesMenu = self.widgetToolBar.addMenu('Notes')
-        # self.notesAction = ToolBarTextEdit(self)
-        # notesMenu.addAction(self.notesAction)
-        
+
         self.help = QtWebKit.QWebView(self)
         self.processingBox = QtWebKit.QWebView(self)
         webSize = QSize(200,100)
         self.help.setMaximumSize(webSize)
-        # self.notes.setBaseSize(webSize)
-        # self.help.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        # self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #QtWebKit.QWebSettings.setAttribute(QtWebKit.QWebSettings.PluginsEnabled)
+ 
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         
-        notesBox = redRGUI.widgetBox(self, "Notes")
+        notesBox = OWGUI.widgetBox(self, "Notes")
         self.notes = redRGUI.textEdit(notesBox)
-        helpBox = redRGUI.widgetBox(self, "Discription")
-        processingBoxBox = redRGUI.widgetBox(self, "Processing Status")
+        helpBox = OWGUI.widgetBox(self, "Discription")
+        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
         self.processingBox.setMaximumSize(webSize)
         self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
 

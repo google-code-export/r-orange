@@ -27,13 +27,13 @@ class rExecutor(OWRpy):
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         
         #GUI
-        self.box = redRGUI.widgetBox(self.controlArea, "R Executor")
+        self.box = OWGUI.widgetBox(self.controlArea, "R Executor")
         self.infob = redRGUI.widgetLabel(self.box, "")
         # splice canvas for the right hand side of the canvas
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
-        runbox = redRGUI.widgetBox(self, "Command Line", orientation=QHBoxLayout())
+        runbox = OWGUI.widgetBox(self, "Command Line", orientation=QHBoxLayout())
         self.splitCanvas.addWidget(runbox)
         self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
         processbutton = redRGUI.button(runbox,self, "Run", callback = self.runR, width=150)
@@ -46,10 +46,10 @@ class rExecutor(OWRpy):
         redRGUI.button(self.box, self, "Clear Output", callback = self.clearOutput)
         self.infoa = redRGUI.widgetLabel(self.box, "")
         
-        self.dataBox = redRGUI.widgetBox(self.controlArea, "Input Infromation")
+        self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
         self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
         
-        self.metadataBox = redRGUI.widgetBox(self.controlArea, "Metadata")
+        self.metadataBox = OWGUI.widgetBox(self.controlArea, "Metadata")
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
         
@@ -60,7 +60,7 @@ class rExecutor(OWRpy):
         
         
         
-        sendbox = redRGUI.widgetBox(self.controlArea, "Send Box")
+        sendbox = OWGUI.widgetBox(self.controlArea, "Send Box")
         self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
         sendbutton = redRGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
         self.resize(800,600)
