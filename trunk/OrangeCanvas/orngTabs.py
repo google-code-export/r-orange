@@ -300,12 +300,10 @@ class WidgetListBase:
         
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
-        try:
-            tfile = orngEnviron.directoryNames['orangeDir'] + '\\tagsSystem\\tabsList.txt'
-            f = open(tfile, 'r')
-        except: #must handle linux file systems
-            tfile = orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tabsList.txt'
-            f = open(tfile, 'r')
+        
+        tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tabsList.txt')
+        f = open(tfile, 'r')
+        
         mainTabs = f.read().split('\n')
         f.close()
         
@@ -347,7 +345,7 @@ class WidgetListBase:
         
         
         try:
-            subfile = tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt'
+            subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
             #print 'checking file '+subfile+' for more tabs'
             f = open(subfile, 'r')
             subTabs = f.read().split('\n')
