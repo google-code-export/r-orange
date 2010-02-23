@@ -97,6 +97,7 @@ class sbIII(OWRpy):
             self.yColumnSelector.addRItems(self.R('colnames('+self.data+')'))
             self.subsetCMSelector.addRItems(self.R('colnames('+self.cm+')'))
             self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
+            self.paintCMSelector.addRItems(self.R('colnames('+self.data+')'))
             
             self.plot()
     def populateCM(self):
@@ -110,6 +111,8 @@ class sbIII(OWRpy):
             except:
                 self.X.setText('Failed')
             #self.subsetCMClass.addItems(self.R('levels(as.factor('+self.cm+'[,"'+cmSelector+'"]))'))
+            
+
     def plot(self):
         # populate the cm class columns
         cmSelector = self.subsetCMSelector.currentText()
@@ -126,7 +129,10 @@ class sbIII(OWRpy):
             cmSubset = ''
         
         if paintClass != ' ':
-            cm = self.R(self.cm+cmSubset)
+            if paintClass in self.R('colnames('+self.cm+')'):
+                cm = self.R(self.cm+cmSubset)
+            elif paintClass in self.R('colnames('+self.data+')'):
+                cm = self.R(self.data+cmSubset)
             paint = cm[str(paintClass)]
         else: paint = []
         # make the plot
