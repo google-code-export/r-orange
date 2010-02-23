@@ -4,6 +4,7 @@
 <description>Plots a survival object, usually from Survival Fit</description>
 <icon>icons/survival.png</icon>
 <tags>Survival</tags>
+<RFunctions>graphics:plot, survival:Surv</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 

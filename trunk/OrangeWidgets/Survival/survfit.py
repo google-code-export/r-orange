@@ -4,6 +4,7 @@
 <description>Generates a survival fit object</description>
 <icon>icons/survival.png</icon>
 <tags>Survival</tags>
+<RFunctions>survival:survfit, survival:Surv</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 

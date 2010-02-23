@@ -4,6 +4,7 @@
 <description>Performs survival difference analysis.  This is similar to the Cox widget.</description>
 <icon>icons/survival.png</icon>
 <tags>Survival</tags>
+<RFunctions>survival:survdiff</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 

@@ -4,6 +4,7 @@
 <description>Performs Cox proportional hazards analysis and generates a Cox model.  The Cox model can be used to validate the proportional hazards of the data.</description>
 <icon>icons/survival.png</icon>
 <tags>Survival</tags>
+<RFunctions>survival:coxph</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 
