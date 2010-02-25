@@ -76,8 +76,9 @@ class readFile(OWRpy):
             # if file == "(none)":
                 # self.filecombo.addItem("(none)")
             # else:
-            self.filecombo.addItem(os.path.split(file)[1])
-        
+            try:
+                self.filecombo.addItem(os.path.split(file)[1])
+            except: pass
 
     # def selectFile(self, n):
         # if n < len(self.recentFiles) :
@@ -91,11 +92,13 @@ class readFile(OWRpy):
         # self.scanfile()
     
     def browseFile(self): 
-        fn = self.R(self.Rvariables['filename'] + ' <- choose.files()')
-        if self.R('length(' + self.Rvariables['filename'] +')') != 0:
+        fn = QFileDialog.getOpenFileName(self, "Open File", os.path.abspath('/'), "Normal text file (*.txt)")
+        print str(fn)
+        if fn.isEmpty(): return
+        else:
             if fn in self.recentFiles:
-                self.recentFiles.remove(fn)
-            self.recentFiles.insert(0, fn)
+                self.recentFiles.remove(str(fn))
+            self.recentFiles.insert(0, str(fn))
             self.setFileList()
             self.saveSettings()
 
