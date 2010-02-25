@@ -1,6 +1,7 @@
 """
 <name>ED, EC, ID</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<RFunctions>drc:ED</RFunctions>
 <tags>Dose Response</tags>
 <icon>icons/drc.PNG</icon>
 """

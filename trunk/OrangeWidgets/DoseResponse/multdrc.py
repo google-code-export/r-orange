@@ -1,6 +1,7 @@
 """
 <name>Multi Dose Response</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<RFunctions>drc:,stats:anova</RFunctions>
 <tags>Dose Response</tags>
 <icon>icons/drc.PNG</icon>
 """
