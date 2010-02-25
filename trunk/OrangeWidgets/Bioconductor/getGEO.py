@@ -2,8 +2,9 @@
 <name>getGEO</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Gets GEO data and brings it into the RedR session.  May have problems if a very large dataset is imported</description>
-<tags>Bioconductor</tags>
-<icon>icons/ReadCel.png</icon>
+<tags>bioinformatics</tags>
+<RFunctions>GEOquery:getGEO</RFunctions>
+<icon>icons/readcel.png</icon>
 """
 from OWRpy import * 
 import OWGUI 

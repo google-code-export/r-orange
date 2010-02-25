@@ -1,8 +1,9 @@
 """
 <name>Present calls with panp</name>
 <description>Calculates differential expression of genes from an eSet object</description>
-<tags>Bioconductor</tags>
-<icon>icons/ReadCel.png</icon>
+<tags>microarray</tags>
+<RFunctions>panp:pa.calls</RFunctions>
+<icon>icons/readcel.png</icon>
 <priority>2010</priority>
 """
 from OWRpy import *

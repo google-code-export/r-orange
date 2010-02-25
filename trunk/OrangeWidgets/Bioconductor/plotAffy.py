@@ -1,8 +1,9 @@
 """
 <name>Plot Affy Image</name>
 <description>Obtains an affybatch and plots the images of the files</description>
-<tags>Bioconductor</tags>
-<icon>icons/plotAffy.png</icon>
+<tags>microarray</tags>
+<RFunctions>affy:image</RFunctions>
+<icon>icons/plotaffy.png</icon>
 <priority>70</priority>
 """
 

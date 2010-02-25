@@ -1,8 +1,9 @@
 """
 <name>Limma Decide</name>
 <description>Calculates differential expression of genes from an eSet object</description>
-<tags>Bioconductor</tags>
-<icon>icons/ReadCel.png</icon>
+<tags>microarray</tags>
+<RFunctions>limma:decideTests</RFunctions>
+<icon>icons/readcel.png</icon>
 <priority>2030</priority>
 """
 

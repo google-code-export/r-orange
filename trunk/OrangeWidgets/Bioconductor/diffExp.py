@@ -1,8 +1,9 @@
 """
 <name>Diff Exp</name>
 <description>Calculates differential expression of genes from an eSet object</description>
-<tags>Bioconductor</tags>
-<icon>icons/DiffExp.png</icon>
+<tags>microarray</tags>
+<RFunctions>limma:lmFit</RFunctions>
+<icon>icons/diffexp.png</icon>
 <priority>70</priority>
 """
 
