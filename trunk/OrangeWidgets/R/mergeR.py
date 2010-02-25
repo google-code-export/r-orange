@@ -1,8 +1,9 @@
 """
-<name>Merge RExampleTables</name>
-<description>Merges or subsets two RExampleTables depending on options.</description>
-<tags>Data Subsetting and Merging</tags>
-<icon>icons/Merge.png</icon>
+<name>Merge Data</name>
+<description>Merges or subsets two datasets depending on options.</description>
+<tags>Data Manipulation</tags>
+<RFunctions>base:match,base:merge</RFunctions>
+<icon>icons/merge.png</icon>
 <priority>2030</priority>
 """
 

@@ -1,8 +1,9 @@
 """
 <name>Column Selection</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
-<tags>Data Subsetting and Merging</tags>
-<icon>icons/Subset.png</icon>
+<tags>Data Manipulation</tags>
+<RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
+<icon>icons/subset.png</icon>
 <priority>2020</priority>
 """
 

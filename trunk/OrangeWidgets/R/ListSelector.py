@@ -1,8 +1,9 @@
 """
 <name>List Selector</name>
 <description>Allows viewing of a list and picks parts of a list and sends them.</description>
-<tags>Data Subsetting and Merging</tags>
-<icon>icons/RExecutor.png</icon>
+<tags>Data Manipulation</tags>
+<RFunctions>base:list</RFunctions>
+<icon>icons/rexecutor.png</icon>
 <author>Kyle R. Covington</author>
 <priority>3010</priority>
 """

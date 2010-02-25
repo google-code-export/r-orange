@@ -2,8 +2,8 @@
 <name>R Variable Separator</name>
 <author>Kyle R. Covington</author>
 <description>Separates variables from an environment and sends them.  Generally used with the R Loader Widget.</description>
-<tags>Special</tags>
-<icon>icons/RExecutor.PNG</icon>
+<tags>R</tags>
+<icon>icons/rexecutor.png</icon>
 <priority>10</priority>
 """
 from OWRpy import * 

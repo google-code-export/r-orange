@@ -1,10 +1,10 @@
 """
 <name>Data Entry</name>
 <description>A table input data entry into a data.frame.</description>
-<tags>Data Entry</tags>
-<icon>icons/File.png</icon>
+<tags>Data Input</tags>
+<RFunctions>base:data.frame</RFunctions>
+<icon>icons/file.png</icon>
 <priority>20</priority>
-
 """
 
 import redRGUI

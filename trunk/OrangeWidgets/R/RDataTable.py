@@ -1,10 +1,11 @@
 """
-<name>Data Table</name>
+<name>View Data Table</name>
 <description>Shows data in a spreadsheet.</description>
-<tags>R</tags>
-<icon>icons/DataTable.png</icon>
+<tags>Data Manipulation</tags>
+<RFunctions>base:data.frame,base:matrix</RFunctions>
+<icon>icons/datatable.png</icon>
 <priority>1010</priority>
-<contact>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</contact>
+<author>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</author>
 """
 
 # OWDataTable.py

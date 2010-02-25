@@ -1,8 +1,9 @@
 """
-<name>Melt DF</name>
+<name>Melt Data Frame</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <tags>Data Manipulation</tags>
-<icon>icons/RExecutor.png</icon>
+<RFunctions>reshape:melf</RFunctions>
+<icon>icons/rexecutor.png</icon>
 <priority>2060</priority>
 """
 from OWRpy import * 

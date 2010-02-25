@@ -1,7 +1,8 @@
 """
 <name>Row Col Picker</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.  Very similar to the Row Col Selector but this widget doesn't look to row or column criteria.  Instead, this widget subsets on row or column name alone, while Row Col Selector does not.</description>
-<tags>Data Subsetting and Merging</tags>
+<tags>Data Manipulation</tags>
+<RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
 <icon>icons/Subset.png</icon>
 <priority>2010</priority>
 
