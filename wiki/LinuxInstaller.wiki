@@ -1,5 +1,5 @@
+#summary Summary of the installation of Red-R on a Linux system (Debian)
 #labels Featured
-#Summary of the installation of Red-R on a Linux system (Debian)
 
 = Prerequisites =
 
