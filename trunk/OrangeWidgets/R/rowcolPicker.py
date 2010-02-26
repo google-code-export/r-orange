@@ -21,6 +21,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
 		self.namesPresent = 0
 		self.dataClass = None
 		self.setRvariableNames(['rowcolSelector'])
+        self.loadSettings()
 		
 		self.inputs = [('Data Table', RvarClasses.RDataFrame, self.setWidget), ('Subsetting Vector', RvarClasses.RVector, self.setSubsettingVector)]
 		self.outputs = [('Data Table', RvarClasses.RDataFrame), ('Reduced Vector', RvarClasses.RVector)]

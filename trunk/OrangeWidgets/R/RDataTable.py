@@ -72,8 +72,8 @@ class RDataTable(OWRpy):
         #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
         saveTab = self.tabWidgeta.createTabPage('Save Data')
         redRGUI.widgetLabel(saveTab, "Saves the current table to a file.")
-        redRGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
-        self.fileName = redRGUI.lineEdit(saveTab, label = "File:", width = 50)
+        redRGUI.button(saveTab, self, "Set File", callback = self.chooseDirectory)
+        self.fileName = redRGUI.widgetLabel(saveTab, "")
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
         redRGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         #infoBox.setMinimumWidth(200)
@@ -120,7 +120,9 @@ class RDataTable(OWRpy):
         
         
     def chooseDirectory(self):
-        self.R('setwd(choose.dir())')
+        #self.R('setwd(choose.dir())')
+        name = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'), "Normal text file (*.txt)"))
+        self.fileName.setText(name)
     def writeFile(self):
         if self.delim == 0: #'tab'
             sep = '\t'

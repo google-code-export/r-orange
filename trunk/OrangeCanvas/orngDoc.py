@@ -666,11 +666,11 @@ class SchemaDoc(QWidget):
         print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                print 'for widget'
+                print 'for widget (orngDoc.oy)'
                 SignalManager.loadSavedSession = True
                 widget.instance.onLoadSavedSession()
                 SignalManager.loadSavedSession = False
-            except: pass
+            except: print 'Loading Failed for ' + str(i)
         SignalManager.loadSavedSession = False
         print 'done on load'
 

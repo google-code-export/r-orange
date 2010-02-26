@@ -140,9 +140,9 @@ class OWRpy(OWWidget,RSession):
                 try:
                     v = getattr(self, att).getSettings()
                 except: v = None
-                # print 'settings:' + str(v)
+                print 'settings:' + str(v)
                 if not 'RGUIElementsSettings' in settings.keys():
-                    # print 'ba'
+                    print 'RGUIElementsSettings not in settings.keys (OWRpy.py)'
                     settings['RGUIElementsSettings'] = {}
                 
                 if v: settings['RGUIElementsSettings'][att] = v
@@ -153,7 +153,7 @@ class OWRpy(OWWidget,RSession):
             elif type(getattr(self, att)) in [list,dict,tuple]:
                 settings[att] =  self.getdeepattr(att)
         
-        # print settings
+        print str(settings) + ' (OWRpy.py)'
         return settings
     def getGlobalSettings(self):
         print 'get global settings'
@@ -339,7 +339,7 @@ class OWRpy(OWWidget,RSession):
     def onLoadSavedSession(self):
         print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']
-        print 'Loading the following elements ' + self.RGUIElementsSettings + ' (OWRpy.py)'
+        print 'Loading the following elements ' + str(self.RGUIElementsSettings) + ' (OWRpy.py)'
         for i in self.RGUIElementsSettings.keys():
             try:            
                 print '**********************' + i
