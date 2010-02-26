@@ -24,10 +24,22 @@ class Rtable(table):
         return r
     def loadSettings(self,data):
         print data
-        if data['Rdata']:
-            d = self.R.R('as.data.frame(' + data['Rdata'] + ')')
-        else:
-            d = None
-        data['data'] = d;
-        table.loadSettings(self,data)
+        
+        
+        self.setRTable(data['Rdata'])
+        
+        if 'sortIndex' in data.keys():
+            # print 'aaaaaaaaa###############'
+            self.sortByColumn(data['sortIndex'],data['order'])
+        print 'aaaaaaaaatable#########################'
+        if 'selection' in data.keys() and len(data['selection']):
+            # print 'table#########################'
+            for i in data['selection']:
+                # print i
+                self.setItemSelected(self.item(i[0],i[1]),True)
+            
+                #self.selectRow(i[0])
+            
+        self.setState(data)
+        
   

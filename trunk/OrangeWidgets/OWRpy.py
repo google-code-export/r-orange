@@ -137,14 +137,15 @@ class OWRpy(OWWidget,RSession):
             # print 'frist att: ' + att
             if getattr(self, att).__class__.__name__ in redRGUI.qtWidgets:
                 print 'getting gui settings for:' + att
-             
-                v = getattr(self, att).getSettings()
+                try:
+                    v = getattr(self, att).getSettings()
+                except: v = None
                 # print 'settings:' + str(v)
                 if not 'RGUIElementsSettings' in settings.keys():
                     # print 'ba'
                     settings['RGUIElementsSettings'] = {}
                 
-                settings['RGUIElementsSettings'][att] = v
+                if v: settings['RGUIElementsSettings'][att] = v
                 # print settings['RGUIElementsSettings']
                     
             elif type(getattr(self, att)) in [str,int]:
@@ -338,13 +339,10 @@ class OWRpy(OWWidget,RSession):
     def onLoadSavedSession(self):
         print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']
-        
+        print 'Loading the following elements ' + self.RGUIElementsSettings + ' (OWRpy.py)'
         for i in self.RGUIElementsSettings.keys():
             try:            
                 print '**********************' + i
-                # print getattr(self, i).loadSettings
-                # print self.RGUIElementsSettings[i]
-                # print getattr(self, i).loadSettings
                 getattr(self, i).loadSettings(self.RGUIElementsSettings[i])
             except:
                 print 'error:' + i
@@ -357,7 +355,7 @@ class OWRpy(OWWidget,RSession):
     
     def onLoadSavedSession2(self):
         #print str(self.RGUIElementsSettings)
-        
+        # set the sent items but don't activate the refresh of the widgets (this is handled by signalManager)
         for (name, data) in self.sentItems:
             self.send(name, data)
         #print str(self.RGUIElementsSettings.keys())

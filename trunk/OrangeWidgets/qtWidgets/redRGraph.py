@@ -1,6 +1,6 @@
 # redRGraph.py  base for all plotting widgets in RedR  built on PyQwt
 
-# Kyle R Covington and Anup Parikh
+# Kyle R Covington and Anup Parikh modified from Orange code
 
 from PyQt4.Qwt5 import *
 from PyQt4.QtCore import *
@@ -986,3 +986,9 @@ drawLegend(items)\n""" % (str(legendItems)))
         col = [obj.color().red(), obj.color().green(), obj.color().blue()];
         col = tuple([v/float(255) for v in col])
         return col, obj.color().alpha()/float(255)
+        
+    def getSettings(self):
+        pass # there are no settings that we are able to save at the moment
+        
+    def loadSettings(self):
+        pass # there are no settings to set at the moment

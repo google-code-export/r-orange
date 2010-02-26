@@ -117,11 +117,7 @@ class RDataTable(OWRpy):
         # self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
         
         self.table = redRGUI.Rtable(self.mainArea)
-        #self.mainArea.layout().addWidget(self.table)
-        #self.table.hide()
         
-
-        # self.updateColor()
         
     def chooseDirectory(self):
         self.R('setwd(choose.dir())')

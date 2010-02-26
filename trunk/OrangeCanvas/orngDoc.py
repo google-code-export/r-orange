@@ -507,8 +507,10 @@ class SchemaDoc(QWidget):
         if not importBlank:
             try:
                 #load the data ...
-                from rpy_options import set_options
-                set_options(RHOME=os.environ['RPATH'])
+                try:
+                    from rpy_options import set_options
+                    set_options(RHOME=os.environ['RPATH'])
+                except: pass
                 import rpy
                 import re
 
@@ -522,7 +524,7 @@ class SchemaDoc(QWidget):
                         # insert function to load all R packages that were loaded in the previous session
                         #self.settings
                         rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
-
+                print "Loading widgets "+str(self.widgets) + "(orngDoc.py)"
                 for widget in self.widgets:
                     widget.caption += 'A'
                 
@@ -580,8 +582,10 @@ class SchemaDoc(QWidget):
             try:
                 # removed the section for loading the RData, this should be a blank schema
                 import re
-                from rpy_options import set_options
-                set_options(RHOME=os.environ['RPATH'])
+                try:
+                    from rpy_options import set_options
+                    set_options(RHOME=os.environ['RPATH'])
+                except: pass
                 import rpy
                 
                 for widget in self.widgets:
@@ -659,6 +663,7 @@ class SchemaDoc(QWidget):
             # self.signalManager.processNewSignals(self.widgets[0].instance)  
         #print 'finish process'
         print 'start onload' # we do want to reload the settings of the widgets
+        print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
                 print 'for widget'
