@@ -34,7 +34,9 @@ class affyNormalize(OWRpy):
         self.enableMethBox = False
         self.norminfo = ''
         self.loadSettings()
-        
+        #print 'aaaa'
+        # import sys
+        # sys.exit()
         self.require_librarys(['affy'])
         
         
@@ -184,7 +186,7 @@ class affyNormalize(OWRpy):
 
     def toSend(self):
         self.newdata['data'] = 'exprs('+self.Rvariables['normalized_affybatch']+')'
-        self.newdata['eset'] = 'eset':self.Rvariables['normalized_affybatch']
+        self.newdata['eset'] = self.Rvariables['normalized_affybatch']
         self.rSend("Normalized Expression Matrix", self.newdata)
         self.newdata['data'] = self.Rvariables['normalized_affybatch']
         self.rSend("Normalized AffyBatch", self.newdata)
