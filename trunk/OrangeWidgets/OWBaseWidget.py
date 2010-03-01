@@ -347,6 +347,8 @@ class OWBaseWidget(QDialog):
     def setSettings(self,settings):
         for key in settings:
             # print key
+            if key == 'inputs': continue
+            if key == 'outputs': continue
             self.__setattr__(key, settings[key])
         
 
@@ -493,6 +495,8 @@ class OWBaseWidget(QDialog):
     # Loads settings from the widget's .ini file
     def loadSettings(self, file = None):
         print 'loadSettings in owbasewidget'
+        print self.inputs
+        print str(self.outputs) + ' preload'
         file = self.getSettingsFile(file)
         settings = {}
         if file:
@@ -511,25 +515,8 @@ class OWBaseWidget(QDialog):
         if settings:
             if hasattr(self, "settingsList"):
                 self.setSettings(settings)
-
-            # contextHandlers = getattr(self, "contextHandlers", {})
-            # for contextHandler in contextHandlers.values():
-                # localName = contextHandler.localContextName
-                ##print 'localname'  + localName + '\n'
-                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                # if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
-                   # and settings.has_key(localName):
-                    # del settings[localName]
-                    # delattr(self, localName)
-                    # contextHandler.initLocalContext(self)
-
-                # if not getattr(contextHandler, "globalContexts", False): # don't have it or empty
-                    # contexts = settings.get(localName, False)
-                    # if contexts != False:
-                        # contextHandler.globalContexts = contexts
-                # else:
-                    # if contextHandler.syncWithGlobal:
-                        # setattr(self, localName, contextHandler.globalContexts)
+        print self.inputs
+        print str(self.outputs) + ' post load'
 
 
     def saveSettings(self, file = None):
@@ -677,7 +664,10 @@ class OWBaseWidget(QDialog):
 
     # return widget, that is already connected to this singlelink signal. If this widget exists, the connection will be deleted (since this is only single connection link)
     def removeExistingSingleLink(self, signal):
+        print str(self.inputs)
+        print str(self.outputs)
         for i in self.inputs:
+            #print str(*i) + ' input owbasewidget'
             input = InputSignal(*i)
             if input.name == signal and not input.single: return None
 

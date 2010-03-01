@@ -160,7 +160,7 @@ class OWRpy(OWWidget,RSession):
         for a,b in self.outputs:
             aoutputs.append(a)
         settings['outputs'] = aoutputs
-        print str(settings) + ' (OWRpy.py)'
+        #print str(settings) + ' (OWRpy.py)'
         return settings
     def getGlobalSettings(self):
         print 'get global settings'
@@ -346,7 +346,7 @@ class OWRpy(OWWidget,RSession):
     def onLoadSavedSession(self):
         print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']
-        print 'Loading the following elements ' + str(self.RGUIElementsSettings) + ' (OWRpy.py)'
+        #print 'Loading the following elements ' + str(self.RGUIElementsSettings) + ' (OWRpy.py)'
         for i in self.RGUIElementsSettings.keys():
             try:            
                 print '**********************' + i

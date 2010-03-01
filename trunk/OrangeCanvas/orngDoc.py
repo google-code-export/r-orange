@@ -249,7 +249,10 @@ class SchemaDoc(QWidget):
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals, forceOutSignals)
+            print str(forceInSignals)
+            print str(forceOutSignals)
+            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+            #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
         except:
             type, val, traceback = sys.exc_info()
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
@@ -360,6 +363,8 @@ class SchemaDoc(QWidget):
         for category in self.canvasDlg.widgetRegistry.keys():
             for name, widget in self.canvasDlg.widgetRegistry[category].items():
                 if widget.fileName == widgetFileName:  
+                    print str(forceInSignals)
+                    print str(forceOutSignals)
                     return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
         return None
 
@@ -542,9 +547,9 @@ class SchemaDoc(QWidget):
                 loadedOk = 1
                 for widget in widgets.getElementsByTagName("widget"):
                     name = widget.getAttribute("widgetName")
-                    print 'Name: '+str(name)+' (orngDoc.py)'
+                    #print 'Name: '+str(name)+' (orngDoc.py)'
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                    print str(settings) + ' (orngDoc.py)'
+                    #print str(settings) + ' (orngDoc.py)'
                     #print 'widget settings are' + str(settings)
                     try:
                         for library in settings['RPackages']:
@@ -552,6 +557,7 @@ class SchemaDoc(QWidget):
                     except: pass #there must not be a setting like that one in the dict, must be an orange widget.
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                     if not tempWidget:
+                        print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
                         tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) # we must build a fake widget this will involve getting the inputs and outputs and joining them at the widget creation step.
                         if not tempWidget:
                             #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
@@ -620,7 +626,7 @@ class SchemaDoc(QWidget):
                 loadedOk = 1
                 for widget in widgets.getElementsByTagName("widget"):
                     name = widget.getAttribute("widgetName")
-                    print 'Name: ' + str(name) + ' (orngDoc.py)'
+                    #print 'Name: ' + str(name) + ' (orngDoc.py)'
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                     #print 'widget settings are' + str(settings)
                     try:
