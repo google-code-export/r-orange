@@ -223,17 +223,21 @@ class SignalManager:
         for o in widgetFrom.outputs:
             output = OutputSignal(*o)
             if output.name == signalNameFrom: found=1
-        if not found:
-            print "Error. Widget %s changed its output signals. It does not have signal %s anymore." % (str(getattr(widgetFrom, "captionTitle", "")), signalNameFrom)
-            return 0
+        if not found: # this could be a dummy and we need to add the signal
+            import RvarClasses
+            widgetFrom.outputs.append((signalNameFrom, RvarClasses.RVariable))
+            #print "Error. Widget %s changed its output signals. It does not have signal %s anymore." % (str(getattr(widgetFrom, "captionTitle", "")), signalNameFrom)
+            #return 0
 
         found = 0
         for i in widgetTo.inputs:
             input = InputSignal(*i)
             if input.name == signalNameTo: found=1
         if not found:
-            print "Error. Widget %s changed its input signals. It does not have signal %s anymore." % (str(getattr(widgetTo, "captionTitle", "")), signalNameTo)
-            return 0
+            import RvarClasses
+            widgetTo.inputs.append((signalNameTo, RvarClasses.RVariable))
+            #print "Error. Widget %s changed its input signals. It does not have signal %s anymore." % (str(getattr(widgetTo, "captionTitle", "")), signalNameTo)
+            #return 0
 
 
         if self.links.has_key(widgetFrom):

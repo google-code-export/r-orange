@@ -146,7 +146,7 @@ class CanvasLine(QGraphicsLineItem):
 # # CANVAS WIDGET
 # #######################################
 class CanvasWidget(QGraphicsRectItem):
-    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = {}):
+    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = {}, forceInSignals = None, forceOutSignals = None):
         # import widget class and create a class instance
         m = __import__(widgetInfo.fileName)
         self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName], _owInfo = canvasDlg.settings["owInfo"], _owWarning = canvasDlg.settings["owWarning"], _owError = canvasDlg.settings["owError"], _owShowStatus = canvasDlg.settings["owShow"], _useContexts = canvasDlg.settings["useContexts"], _category = widgetInfo.category, _settingsFromSchema = widgetSettings)
@@ -174,6 +174,14 @@ class CanvasWidget(QGraphicsRectItem):
         QGraphicsRectItem.__init__(self, None, canvas)
         self.signalManager = signalManager
         self.widgetInfo = widgetInfo
+        if forceInSignals: 
+            import RvarClasses
+            for a in forceInSignals:
+                self.widgetInfo.inputs.append((a, RvarClasses.RVariable, None))
+        if forceOutSignals:
+            import RvarClasses
+            for a in forceOutSignals:
+                self.widgetInfo.outputs.append((a, RvarClasses.RVariable))
         self.canvas = canvas
         self.view = view
         self.canvasDlg = canvasDlg

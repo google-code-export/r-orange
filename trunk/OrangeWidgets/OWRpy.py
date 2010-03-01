@@ -152,7 +152,14 @@ class OWRpy(OWWidget,RSession):
                 settings[att] =  self.getdeepattr(att)
             elif type(getattr(self, att)) in [list,dict,tuple]:
                 settings[att] =  self.getdeepattr(att)
-        
+        ainputs = []
+        for a, b, c in self.inputs:
+            ainputs.append(a)
+        settings['inputs'] = ainputs
+        aoutputs = []
+        for a,b in self.outputs:
+            aoutputs.append(a)
+        settings['outputs'] = aoutputs
         print str(settings) + ' (OWRpy.py)'
         return settings
     def getGlobalSettings(self):
