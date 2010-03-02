@@ -10,6 +10,7 @@ import orngDoc, orngOutput, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx
 import orngEnviron
+import xml.dom.minidom
 
 WB_TOOLBOX = 0
 WB_TREEVIEW = 1
@@ -301,65 +302,55 @@ class WidgetListBase:
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
         
-        tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tabsList.txt')
+        tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tags.xml')
         f = open(tfile, 'r')
+        print str(f)
         
-        mainTabs = f.read().split('\n')
+        mainTabs = xml.dom.minidom.parse(f)
         f.close()
+        treeXML = mainTabs.childNodes[0]
+        print treeXML.childNodes
         
-        for itab in mainTabs:
-            tab = self.insertWidgetTab(itab, 1) # a QTreeWidgetItem
-            #print 'inserted tab '+itab
-            self.insertChildTabs(itab, tab, tfile, widgetRegistry)
-            self.insertWidgets(itab, tab, widgetRegistry)
+        for itab in treeXML.childNodes:
+            if itab.nodeName == 'group': #picked a group element
+                
+                tab = self.insertWidgetTab(str(itab.getAttribute('name')), 1) # a QTreeWidgetItem
+                print 'inserted tab '+str(itab.getAttribute('name'))
+                self.insertChildTabs(itab, tab, widgetRegistry)
+                
+                self.insertWidgets(itab.getAttribute('name'), tab, widgetRegistry)
 
-        # first insert the default tab names
-        # for (tabName, show) in widgetTabList + extraTabs:
-            # if not show or not widgetRegistry.has_key(tabName): continue
-            # tab = self.insertWidgetTab(tabName, show)
-            
-            # directory = widgetRegistry[tabName].directory
-            # widgets = [(int(widgetInfo.priority), name, widgetInfo) for (name, widgetInfo) in widgetRegistry[tabName].items()]
-            # widgets.sort()
-            # exIndex = 0
-            # for (priority, name, widgetInfo) in widgets:
-                # if isinstance(self, WidgetTree):
-                    # button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
-                # else:
-                    # button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
-                    ### self.widgetInfo[strCategory + " - " + nameList[i]] = {"fileName": fileNameList[i], "iconName": iconNameList[i], "author" : authorList[i], "description":descriptionList[i], "priority":priorityList, "inputs": inputList[i], "outputs" : outputList[i], "button": button, "directory": directory}
-                    # for k in range(priority/1000 - exIndex):
-                        # tab.layout().addSpacing(10)
-                    # exIndex = priority / 1000
-                    # tab.layout().addWidget(button)
-                # tab.widgets.append(button)
-                # self.allWidgets.append(button)
-
-            if hasattr(tab, "adjustSize"):
-                tab.adjustSize()
+                if hasattr(tab, "adjustSize"):
+                    tab.adjustSize()
         
         # return the list of tabs and their status (shown/hidden)
         return widgetTabList + extraTabs
         
-    def insertChildTabs(self, itab, tab, tfile, widgetRegistry):
-        
-        
+    def insertChildTabs(self, itab, tab, widgetRegistry):
         try:
-            subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
+            #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
             #print 'checking file '+subfile+' for more tabs'
-            f = open(subfile, 'r')
-            subTabs = f.read().split('\n')
-            #print 'found subtabs '+str(subTabs)
-            f.close()
+            #f = open(subfile, 'r')
+            if itab.hasChildNodes(): subTabs = itab.childNodes
+            else: return
+            
+            for child in subTabs:
+                if child.nodeName == 'group': # we found another group
+                    childTab = WidgetTreeFolder(tab, str(child.getAttribute('name')))
+                    childTab.widgets = []
+                    childTab.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
+                    self.insertChildTabs(child, childTab, widgetRegistry)
+                    self.insertWidgets(child.getAttribute('name'), childTab, widgetRegistry)
+                
         except: #subtabs don't exist
             return
         
-        for ttab in subTabs:
-            child = WidgetTreeFolder(tab, ttab)
-            child.widgets = []
-            child.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
-            self.insertChildTabs(ttab, child, subTabs, widgetRegistry)
-            self.insertWidgets(ttab, child, widgetRegistry)
+        # for ttab in subTabs:
+            # child = WidgetTreeFolder(tab, ttab)
+            # child.widgets = []
+            
+            # self.insertChildTabs(ttab, child, subTabs, widgetRegistry)
+            # self.insertWidgets(ttab, child, widgetRegistry)
         
     def insertWidgets(self, itab, tab, widgetRegistry):
         #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
@@ -369,7 +360,7 @@ class WidgetListBase:
             for wName in widgetRegistry[tabName].keys():
                 awidgets = {}
                 try: 
-                    #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+                    print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
                     wtags = widgetRegistry[tabName][wName].tags
                     wtags = wtags.replace(' ', '')
                     wtags = wtags.split(',')
