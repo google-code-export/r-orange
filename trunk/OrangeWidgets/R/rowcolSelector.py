@@ -179,6 +179,7 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
             if self.rowcolBox.getChecked() == 'Row':
                 self.Rvariables['rowcolSelector'] = self.parentData['data']
                 self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'<-!('+self.data+'[,'+self.attName+']'+' %in% c('+','.join(selectedDFItems)+'))') # assign the selections to the cm for this object
+                
             elif self.rowcolBox.getChecked() == 'Column': # pick the columns that you want and send those forward as the new data
                 self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+self.data+'['+self.attName+',]'+' %in% c('+','.join(selectedDFItems)+')'+']')
             
@@ -197,23 +198,25 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
                 RLogic = []
                 for logical in logic:
                     RLogic.append(str(isNot+'('+self.data+'[,'+self.attName+']'+logical+self.attsLineEdit.text()+')'))
-                self.Rvariables['rowcolSelector'] = self.parentData['data']
+                #self.Rvariables['rowcolSelector'] = self.parentData['data']
+                self.parentData['data'] = self.data+'['+self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'== 1,]'
                 self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'<-'+'&'.join(RLogic)) # add criteria to the cm
+                
             elif self.rowcolBox.getChecked() == 'Column':
                 RLogic = []
                 for logical in logic:
                     RLogic.append(isNot+'('+self.data+'['+self.attName+',]'+logical+self.attsLineEdit.text()+')')            
                 self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+'&'.join(RLogic)+']')
-                    
+                self.parentData['data'] = self.Rvariables['rowcolSelector']
                     
         # send the data
-        self.parentData['data'] = self.Rvariables['rowcolSelector']
+        
         self.parentData['cm'] = self.cm  
         self.parentData['parent'] = self.parent
         self.rSend('Data Table', self.parentData)
         
         
-        self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')
+        self.R('txt<-capture.output('+self.parentData['data']+'[1:5,])')
         tmp = self.R('paste(txt, collapse ="\n")')
         self.outputBox.setHtml('A sample of your selection is shown.  Ignore any values with NA.<pre>'+tmp+'</pre>')
             

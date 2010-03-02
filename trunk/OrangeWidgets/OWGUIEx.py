@@ -150,28 +150,30 @@ class LineEditHint(QLineEdit):
             self.translation = string.maketrans(self.delimiters, self.delimiters[0] * len(self.delimiters))
         
     def eventFilter(self, object, ev):
-        if object != self.listWidget:
-            return 0
-        
-        if ev.type() == QEvent.MouseButtonPress:
-            self.listWidget.hide()
-            return 1
-                
-        consumed = 0
-        if ev.type() == QEvent.KeyPress:
-            consumed = 1
-            if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                self.doneCompletion()
-            elif ev.key() == Qt.Key_Escape:
+        try: # a wrapper that prevents problems for the listbox debigging should remove this
+            if object != self.listWidget:
+                return 0
+            
+            if ev.type() == QEvent.MouseButtonPress:
                 self.listWidget.hide()
-                #self.setFocus()
-            elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
-                self.listWidget.setFocus()
-                self.listWidget.event(ev)
-            else:
-                #self.setFocus()
-                self.event(ev)
-        return consumed
+                return 1
+                    
+            consumed = 0
+            if ev.type() == QEvent.KeyPress:
+                consumed = 1
+                if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
+                    self.doneCompletion()
+                elif ev.key() == Qt.Key_Escape:
+                    self.listWidget.hide()
+                    #self.setFocus()
+                elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
+                    self.listWidget.setFocus()
+                    self.listWidget.event(ev)
+                else:
+                    #self.setFocus()
+                    self.event(ev)
+            return consumed
+        except: return 0
         
     def doneCompletion(self, *args):
         if self.listWidget.isVisible():

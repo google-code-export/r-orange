@@ -27,7 +27,7 @@ class mergeR(OWRpy):
         #default values        
         self.colAsel = None
         self.colBsel = None
-        self.forceMergeAll = 0 #checkbox value for forcing merger on all data, default is to remove instances from the rows or cols.
+        #self.forceMergeAll = 0 #checkbox value for forcing merger on all data, default is to remove instances from the rows or cols.
         print 'init merge and load settings'
         self.loadSettings()
         
@@ -58,7 +58,7 @@ class mergeR(OWRpy):
         
         # ## Other options
         otherBox = redRGUI.widgetBox(self.controlArea, "Binding")
-        redRGUI.checkBox(otherBox, self, "forceMergeAll", "Force Merger")
+        self.forceMergeAll = redRGUI.checkBox(otherBox, self, ["Force Merger"])
         redRGUI.button(otherBox, self, "Bind By Columns", callback = self.colBind)
         redRGUI.button(otherBox, self, "Bind By Rows", callback = self.rowBind)
 
@@ -179,7 +179,7 @@ class mergeR(OWRpy):
     
     def rowBind(self):
         try:
-            if self.forceMergeAll == 0:
+            if self.forceMergeAll.isChecked() == 0:
                 self.R('tmp<-colnames('+self.dataB+') %in% colnames('+self.dataA+')')
                 self.R('tmp2<-'+self.dataB+'[,!tmp]')
                 self.R(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', tmp2)')
@@ -191,7 +191,7 @@ class mergeR(OWRpy):
             self.infoa.setText("Merger Failed. Be sure data is connected")
     def colBind(self):
         try:
-            if self.forceMergeAll == 0:
+            if self.forceMergeAll.isChecked() == 0:
                 self.R('tmp<-rownames('+self.dataB+') %in% rownames('+self.dataA+')')
                 self.R('tmp2<-'+self.dataB+'[!tmp,]')
                 self.R(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', tmp2)')
