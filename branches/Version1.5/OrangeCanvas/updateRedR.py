@@ -47,15 +47,7 @@ def start(lastRevproplist, versionNumber, silent = True):
                     vnum = avers2
                     
             if newVersionDetected == 1:
-                #make the widget to select the versions
-                # versionBox = QWidget()
-                # QLabel('New Versions Detected!\nIf you would like to update\nselect the desired version and click Update.', versionBox)
-                # vListBox = QListWidget(versionBox)
-                # vListBox.addItems(aversList)
-                # OkButton = QAbstractButton(versionBox)
-                # OkButton.setText('Update')
-                # NoButton = QAbstractButton(versionBox)
-                # NoButton.setText('Cancel')
+                
                 updateMe = QMessageBox.information(None, 'RedRUpdate', 'Newer version detected, would you like to update?', QMessageBox.Yes, QMessageBox.No)
                 if updateMe == QMessageBox.Yes:
                     versionNumber = maxVer
