@@ -300,8 +300,10 @@ class WidgetListBase:
         
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
-        tfile = orngEnviron.directoryNames['orangeDir'] + '\\tagsSystem\\tabsList.txt'
+        
+        tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tabsList.txt')
         f = open(tfile, 'r')
+        
         mainTabs = f.read().split('\n')
         f.close()
         
@@ -343,7 +345,7 @@ class WidgetListBase:
         
         
         try:
-            subfile = tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt'
+            subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
             #print 'checking file '+subfile+' for more tabs'
             f = open(subfile, 'r')
             subTabs = f.read().split('\n')
@@ -623,7 +625,7 @@ class CanvasPopup(QMenu):
         self.candidates = []
         self.canvasDlg = canvasDlg
         cats = orngRegistry.readCategories()
-        self.suggestDict = dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])])
+        self.suggestDict = {} #dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])]) ## gives an error in linux
         self.suggestItems = [QListWidgetItem(self.canvasDlg.getWidgetIcon(widget), widget.name) for widget in self.suggestDict.values()]
         self.categoriesYOffset = 0
                 
@@ -658,11 +660,11 @@ class CanvasPopup(QMenu):
                 act.setEnabled(False)
 
     def updateWidgesByOutputs(self, widgetInfo):
-        self.selectActions("outputClasses", widgetInfo.inputClasses)
-        
+        #self.selectActions("outputClasses", widgetInfo.inputClasses)
+        pass
     def updateWidgetsByInputs(self, widgetInfo):
-        self.selectActions("inputClasses", widgetInfo.outputClasses)
-    
+        #self.selectActions("inputClasses", widgetInfo.outputClasses)
+        pass
     def updatePredictedWidgets(self, widgets, actClassesAttr, ioClasses=None):
         self.candidates = []
         for widget in widgets:
@@ -670,18 +672,19 @@ class CanvasPopup(QMenu):
                 self.candidates.append(widget)
             else:
                 # filter widgets by allowed signal 
-                added = False
-                for category, show in self.canvasDlg.settings["WidgetTabs"]:
-                    if not show or not self.canvasDlg.widgetRegistry.has_key(category):
-                        continue
+                # added = False
+                # for category, show in self.canvasDlg.settings["WidgetTabs"]:
+                    # if not show or not self.canvasDlg.widgetRegistry.has_key(category):
+                        # continue
     
-                    for candidate in self.canvasDlg.widgetRegistry[category]:
-                        if widget.strip().lower() == candidate.strip().lower():
-                            if getattr(self.canvasDlg.widgetRegistry[category][candidate], actClassesAttr) & ioClasses:
-                                self.candidates.append(candidate)
-                                added = True
-                    if added:
-                        break
+                    # for candidate in self.canvasDlg.widgetRegistry[category]:
+                        # if widget.strip().lower() == candidate.strip().lower():
+                            # if getattr(self.canvasDlg.widgetRegistry[category][candidate], actClassesAttr) & ioClasses:
+                                # self.candidates.append(candidate)
+                                # added = True
+                    # if added:
+                        # break
+                self.candidates.append(widget)
         self.candidates = self.candidates[:3]
         
     def updateMenu(self):

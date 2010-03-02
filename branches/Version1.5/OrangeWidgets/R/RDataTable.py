@@ -1,10 +1,11 @@
 """
-<name>Data Table</name>
+<name>View Data Table</name>
 <description>Shows data in a spreadsheet.</description>
-<tags>R</tags>
-<icon>icons/DataTable.png</icon>
+<tags>Data Manipulation</tags>
+<RFunctions>base:data.frame,base:matrix</RFunctions>
+<icon>icons/datatable.png</icon>
 <priority>1010</priority>
-<contact>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</contact>
+<author>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</author>
 """
 
 # OWDataTable.py
@@ -14,25 +15,26 @@
 # all sorts of preprocessing (including discretization) on the table,
 # output a new table and export it in variety of formats.
 from OWRpy import *
-import OWGUI, RRGUI
+import OWGUI, redRGUI
 import math
-from orngDataCaching import *
+#from orngDataCaching import *
+#import RRGUI
 
 ##############################################################################
 
 OrangeValueRole = Qt.UserRole + 1
 
 class RDataTable(OWRpy):
-    settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
+    #settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
 
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, parent, signalManager, "Data Table")
         #OWRpy.__init__(self)
         
-        self.inputs = [("Examples", RvarClasses.RDataFrame, self.dataset, Multiple + Default)]
+        self.inputs = [("Examples", RvarClasses.RDataFrame, self.dataset)]
         self.outputs = []
 
-        self.data = {}          # key: id, value: ExampleTable
+        self.data = {}          # dict containing the table infromation
         self.showMetas = {}     # key: id, value: (True/False, columnList)
         self.showMeta = 1
         self.showAttributeLabels = 1
@@ -43,7 +45,6 @@ class RDataTable(OWRpy):
         
         #R modifications
         
-        self.fileName = ''
         self.delim = 0
         self.currentData = ''
         self.dataTableIndex = {}
@@ -53,75 +54,75 @@ class RDataTable(OWRpy):
         self.loadSettings()
 
         # info box
-        infoBox = OWGUI.widgetBox(self.controlArea, "Info")
-        self.infoEx = OWGUI.widgetLabel(infoBox, 'No data on input.')
-        self.infoMiss = OWGUI.widgetLabel(infoBox, ' ')
-        OWGUI.widgetLabel(infoBox, ' ')
-        self.infoAttr = OWGUI.widgetLabel(infoBox, ' ')
-        self.infoMeta = OWGUI.widgetLabel(infoBox, ' ')
-        OWGUI.widgetLabel(infoBox, ' ')
-        self.infoClass = OWGUI.widgetLabel(infoBox, ' ')
+        # infoBox = redRGUI.groupBox(self.controlArea, "Info")
+        # self.infoEx = redRGUI.widgetLabel(infoBox, 'No data on input.')
+        # self.infoMiss = redRGUI.widgetLabel(infoBox, ' ')
+        # redRGUI.widgetLabel(infoBox, ' ')
+        # self.infoAttr = redRGUI.widgetLabel(infoBox, ' ')
+        # self.infoMeta = redRGUI.widgetLabel(infoBox, ' ')
+        # redRGUI.widgetLabel(infoBox, ' ')
+        # self.infoClass = redRGUI.widgetLabel(infoBox, ' ')
         
         
         #tabs
-        tabWidgeta = RRGUI.tabWidget(self.controlArea, None, self)
+        self.tabWidgeta = redRGUI.tabWidget(self.controlArea)
         
         
         
-                        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
-        saveTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Save Data:')
-        OWGUI.widgetLabel(saveTab, "Saves the current table to a file.")
-        OWGUI.button(saveTab, self, "Choose Directory", callback = self.chooseDirectory)
-        OWGUI.lineEdit(saveTab, self, 'fileName', label = "File:", width = 50)
-        OWGUI.comboBox(saveTab, self, 'delim', label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
-        OWGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
-        infoBox.setMinimumWidth(200)
-        OWGUI.separator(self.controlArea)
+        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        saveTab = self.tabWidgeta.createTabPage('Save Data')
+        redRGUI.widgetLabel(saveTab, "Saves the current table to a file.")
+        redRGUI.button(saveTab, self, "Set File", callback = self.chooseDirectory)
+        self.fileName = redRGUI.widgetLabel(saveTab, "")
+        self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
+        redRGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
+        #infoBox.setMinimumWidth(200)
+        redRGUI.separator(self.controlArea)
         
         #links:
-        linksTab = RRGUI.createTabPage(tabWidgeta, None, self, 'Link Data:')
+        linksTab = self.tabWidgeta.createTabPage('Link Data')
                 #OWGUI.widgetLabel(infoBox, "Links:")
                 
-        self.linkListBox = OWGUI.listBox(linksTab, self)
+        self.linkListBox = redRGUI.listBox(linksTab)
         self.linkListBox.setSelectionMode(QAbstractItemView.MultiSelection)
-        OWGUI.lineEdit(linksTab, self, 'mylink', label = 'Custom Link:')
+        redRGUI.lineEdit(linksTab, label = 'Custom Link:')
         
         #save box
         
 
 
         # settings box
-        boxSettings = OWGUI.widgetBox(self.controlArea, "Settings")
-        self.cbShowMeta = OWGUI.checkBox(boxSettings, self, "showMeta", 'Show meta attributes', callback = self.cbShowMetaClicked)
-        self.cbShowMeta.setEnabled(False)
-        self.cbShowAttLbls = OWGUI.checkBox(boxSettings, self, "showAttributeLabels", 'Show attribute labels (if any)', callback = self.cbShowAttLabelsClicked)
-        self.cbShowAttLbls.setEnabled(True)
-        self.cbShowDistributions = OWGUI.checkBox(boxSettings, self, "showDistributions", 'Visualize continuous values', callback = self.cbShowDistributions)
-        colBox = OWGUI.indentedBox(boxSettings, orientation = "horizontal")
-        OWGUI.widgetLabel(colBox, "Color: ")
-        self.colButton = OWGUI.toolButton(colBox, self, self.changeColor, width=20, height=20, debuggingEnabled = 0)
-        OWGUI.rubber(colBox)
+        boxSettings = redRGUI.widgetBox(self.controlArea, "Settings")
+        
 
-        resizeColsBox = OWGUI.widgetBox(boxSettings, 0, "horizontal", 0)
-        OWGUI.label(resizeColsBox, self, "Resize columns: ")
+        # colBox = redRGUI.indentedBox(boxSettings, orientation = "horizontal")
+        # redRGUI.widgetLabel(colBox, "Color: ")
+        # self.colButton = redRGUI.toolButton(colBox, self, self.changeColor, width=20, height=20, debuggingEnabled = 0)
+        # redRGUI.rubber(colBox)
+
+        resizeColsBox = OWGUI.widgetBox(boxSettings, orientation="horizontal")
+        OWGUI.widgetLabel(resizeColsBox, "Resize columns: ")
         OWGUI.button(resizeColsBox, self, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
         OWGUI.button(resizeColsBox, self, "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
         OWGUI.rubber(resizeColsBox)
 
         self.btnResetSort = OWGUI.button(boxSettings, self, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
-        OWGUI.rubber(self.controlArea)
+        redRGUI.rubber(self.controlArea)
 
         # GUI with tabs
-        self.tabs = OWGUI.tabWidget(self.mainArea)
-        self.id2table = {}  # key: widget id, value: table
-        self.table2id = {}  # key: table, value: widget id
-        self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
-
-        self.updateColor()
+        # self.tabs = redRGUI.tabWidget(self.mainArea)
+        # self.id2table = {}  # key: widget id, value: table
+        # self.table2id = {}  # key: table, value: widget id
+        # self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
+        
+        self.table = redRGUI.Rtable(self.mainArea)
+        
         
     def chooseDirectory(self):
-        self.R('setwd(choose.dir())')
+        #self.R('setwd(choose.dir())')
+        name = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'), "Normal text file (*.txt)"))
+        self.fileName.setText(name)
     def writeFile(self):
         if self.delim == 0: #'tab'
             sep = '\t'
@@ -129,7 +130,7 @@ class RDataTable(OWRpy):
             sep = ' '
         elif self.delim == 2:
             sep = ','
-        self.R('write.table('+self.currentData+',file="'+self.fileName+'", quote = FALSE, sep="'+sep+'")')
+        self.R('write.table('+self.currentData+',file="'+str(self.fileName.text())+'", quote = FALSE, sep="'+sep+'")')
     def changeColor(self):
         color = QColorDialog.getColor(self.distColor, self)
         if color.isValid():
@@ -148,13 +149,13 @@ class RDataTable(OWRpy):
         self.colButton.setIcon(QIcon(pixmap))
 
     def increaseColWidth(self):
-        table = self.tabs.currentWidget()
+        table = self.table
         for col in range(table.columnCount()):
             w = table.columnWidth(col)
             table.setColumnWidth(col, w + 10)
 
     def decreaseColWidth(self):
-        table = self.tabs.currentWidget()
+        table = self.table
         for col in range(table.columnCount()):
             w = table.columnWidth(col)
             minW = table.sizeHintForColumn(col)
@@ -163,30 +164,20 @@ class RDataTable(OWRpy):
     def RWidgetReload(self):
         print 'on load data table'
         self.processSignals()
+   
+
     def dataset(self, dataset, id=None):
-        """Generates a new table and adds it to a new tab when new data arrives;
-        or hides the table and removes a tab when data==None;
-        or replaces the table when new data arrives together with already existing id."""
+        """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         #print 'got data'
         #print data
         self.supressTabClick = True
         if dataset != None:  # can be an empty table!
-            
-            data = self.convertDataframeToExampleTable(dataset['data'])
-
-            if self.data.has_key(id):
-                # remove existing table
-                table = self.id2table[id]
-                self.data.pop(id)
-                self.showMetas.pop(id)
-                table.hide()
-                self.tabs.removeTab(self.tabs.indexOf(table))
-                self.table2id.pop(self.id2table.pop(id))
-                self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
-            self.data[id] = data
+            self.table.show()
+            data = {}
+            self.data = data
             tableData = dataset['data']
             if 'link' in dataset:
-                self.link[str(id)] = dataset['link']
+                #self.link[str(id)] = dataset['link']
                 print 'setting link as '+str(self.link[str(id)])
                 self.linkListBox.clear()
                 if str(id) in self.link:
@@ -197,45 +188,46 @@ class RDataTable(OWRpy):
             else: 
                 linkData = None
                 print 'no link data detected'
-            self.showMetas[id] = (True, [])
-            self.dataTableIndex[id] = dataset
+            #self.showMetas[id] = (True, [])
+            #self.dataTableIndex[id] = dataset
             self.currentData = dataset['data']
-            table = OWGUI.table(None, 0,0)
+
             #if id in self.link: #start the block for assignment of link data attributes
-            self.connect(table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
-            table.setSelectionBehavior(QAbstractItemView.SelectRows)
+            self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
+            self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-            self.id2table[id] = table
-            self.table2id[table] = id
-            if data.name:
-                tabName = "%s " % data.name
-            else:
-                tabName = ""
-            tabName += "(" + str(id[1]) + ")"
-            if id[2] != None:
-                tabName += " [" + str(id[2]) + "]"
-            self.tabs.addTab(table, tabName)
+            # self.id2table[id] = table
+            # self.table2id[table] = id
+            # if 'name' in dataset:
+                # tabName = "%s " % dataset['name']
+            # else:
+                # tabName = ""
+            # tabName += "(" + str(id[1]) + ")"
+            # if id[2] != None:
+                # tabName += " [" + str(id[2]) + "]"
+            # self.tabs.addTab(table, tabName)
 
-            self.progressBarInit()
-            self.setTable(table, data)
-            self.progressBarFinished()
+            #self.progressBarInit()
+            #self.setTable(table, data)
+            self.table.setRTable(dataset['data'])
+            #self.progressBarFinished()
             self.needsProcessingHandler(self, 0)
-            self.tabs.setCurrentIndex(self.tabs.indexOf(table))
-            self.setInfo(data)
-            self.cbShowMeta.setEnabled(len(self.showMetas[id][1])>0)        # enable showMetas checkbox only if metas exist
+            #self.tabs.setCurrentIndex(self.tabs.indexOf(table))
+            # self.setInfo(data)
+            #self.cbShowMeta.setEnabled(len(self.showMetas[id][1])>0)        # enable showMetas checkbox only if metas exist
 
-        elif self.data.has_key(id):
-            table = self.id2table[id]
-            self.data.pop(id)
-            self.showMetas.pop(id)
-            table.hide()
-            self.tabs.removeTab(self.tabs.indexOf(table))
-            self.table2id.pop(self.id2table.pop(id))
-            self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
+        # elif self.data.has_key(id):
+            # table = self.id2table[id]
+            # self.data.pop(id)
+            ##self.showMetas.pop(id)
+            # table.hide()
+            # self.tabs.removeTab(self.tabs.indexOf(table))
+            # self.table2id.pop(self.id2table.pop(id))
+            # self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
 
         # disable showMetas checkbox if there is no data on input
-        if len(self.data) == 0:
-            self.cbShowMeta.setEnabled(False)
+        # if len(self.data) == 0:
+            # self.cbShowMeta.setEnabled(False)
         
         self.supressTabClick = False
             
@@ -413,7 +405,9 @@ class RDataTable(OWRpy):
             # h = table.horizontalHeader().adjustSize()
 
     def cbShowDistributions(self):
-        table = self.tabs.currentWidget()
+        table = self.table
+        # print self.tabs.currentWidget
+        # print table
         table.reset()
 
     # show data in the default order
@@ -447,20 +441,24 @@ class RDataTable(OWRpy):
             self.infoMeta.setText('')
             self.infoClass.setText('')
         else:
-            self.infoEx.setText("%s example%s," % sp(data))
-            missData = orange.Preprocessor_takeMissing(data)
-            self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
-            #self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
-            #self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
-            if data.domain.classVar:
-                if data.domain.classVar.varType == orange.VarTypes.Discrete:
-                    self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))
-                elif data.domain.classVar.varType == orange.VarTypes.Continuous:
-                    self.infoClass.setText('Continuous class.')
-                else:
-                    self.infoClass.setText("Class is neither discrete nor continuous.")
-            else:
-                self.infoClass.setText('Classless domain.')
+            #(row, col) = data['matrix'].shape
+            row = len(data[data.keys()[0]])
+            col = len(data.keys())
+
+            self.processingBox.setHtml('%i rows and %i columns.' % (row, col))
+            #missData = orange.Preprocessor_takeMissing(data)
+            # self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
+            # self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
+            # self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
+            # if data.domain.classVar:
+                # if data.domain.classVar.varType == orange.VarTypes.Discrete:
+                    # self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))
+                # elif data.domain.classVar.varType == orange.VarTypes.Continuous:
+                    # self.infoClass.setText('Continuous class.')
+                # else:
+                    # self.infoClass.setText("Class is neither discrete nor continuous.")
+            # else:
+                # self.infoClass.setText('Classless domain.')
                 
 
 class TableItemDelegate(QItemDelegate):
@@ -492,21 +490,3 @@ class TableItemDelegate(QItemDelegate):
 
 
 
-if __name__=="__main__":
-    a = QApplication(sys.argv)
-    ow = OWDataTable()
-
-    #d1 = orange.ExampleTable(r'..\..\doc\datasets\auto-mpg')
-    #d2 = orange.ExampleTable('test-labels')
-    #d3 = orange.ExampleTable(r'..\..\doc\datasets\sponge.tab')
-    #d4 = orange.ExampleTable(r'..\..\doc\datasets\wpbc.csv')
-    #d5 = orange.ExampleTable(r'..\..\doc\datasets\adult_sample.tab')
-    d5 = orange.ExampleTable(r"E:\Development\Orange Datasets\UCI\wine.tab")
-    #d5 = orange.ExampleTable(r"e:\Development\Orange Datasets\Cancer\SRBCT.tab")
-    ow.show()
-    #ow.dataset(d1,"auto-mpg")
-    #ow.dataset(d2,"voting")
-    #ow.dataset(d4,"wpbc")
-    ow.dataset(d5,"adult_sample")
-    a.exec_()
-    ow.saveSettings()

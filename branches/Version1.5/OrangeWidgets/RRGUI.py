@@ -13,6 +13,7 @@ enter_icon = None
 
 import OWGUI    #we inherit most of our classes either from OWGUI or from base QT
 
+       
 def widgetBox(widget, widgetattr, master, box=None, orientation='vertical', addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0, addToLayout = 1):
     b = OWGUI.widgetBox(widget, box, orientation, addSpace, sizePolicy, margin, spacing, flat, addToLayout)
     if widgetattr != None:
@@ -35,6 +36,8 @@ def checkBox(widget, widgetattr, master, value, label, box=None, tooltip=None, c
         master.RGUIElements.append((widgetattr, 'checkBox'))
     return wa
     
+
+
 def lineEdit(widget, widgetattr, master, value,
              label=None, labelWidth=None, orientation='vertical', box=None, tooltip=None,
              callback=None, valueType = unicode, validator=None, controlWidth = None, callbackOnType = False, focusInCallback = None, **args):

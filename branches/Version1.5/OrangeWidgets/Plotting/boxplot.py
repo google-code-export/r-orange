@@ -2,8 +2,9 @@
 <name>boxplot</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Boxplot shows a boxplot of data either in the form of a data table or a list.  This data should be only numeric, no text.  Boxplot makes a bar and wisker plot of the data with the mean represented as the bar in the center, notches representing confidence intervals, etc.  For data in the form of a table groups are taken to be the column data, if this is not correct please consider using Transpose to 'flip' the data.<description>
+<RFunctions>graphics:boxplot</RFunctions>
 <tags>Plotting</tags>
-<icon>icons/boxplot.PNG</icon>
+<icon>icons/boxplot.png</icon>
 """
 from OWRpy import * 
 import OWGUI 

@@ -4,10 +4,12 @@
 <description>Performs survival difference analysis.  This is similar to the Cox widget.</description>
 <icon>icons/survival.png</icon>
 <tags>Survival</tags>
+<RFunctions>survival:survdiff</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 
 import RRGUI 
+import SurvivalClasses
 class survdiff(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,7 +21,7 @@ class survdiff(OWRpy):
         self.RFunctionParam_na_action = ""
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
+        self.inputs = [("Data Table", RvarClasses.RVariable, self.processdata), ("Survival Fit", SurvivalClasses.SurvFit, self.processSurvFit)]
         self.outputs = [("survdiff Output", RvarClasses.RVariable)]
         
         box = RRGUI.tabWidget(self.controlArea, None, self)
@@ -34,11 +36,19 @@ class survdiff(OWRpy):
         self.controlArea.layout().addWidget(self.RoutputWindow)
     def processdata(self, data):
         self.require_librarys(["survival"]) 
+        self.RFunctionParam_data = ""
         if data:
             self.RFunctionParam_data=data["data"]
             self.commitFunction()
+
+    def processSurvFit(self, data):
+        self.require_librarys(['survival'])
+        self.RFunctionParam_data=""
+        if data:
+            self.RFunctionParam_data=data['rawdata']
             if 'formula' in data:
                 self.RFunctionParam_formula = data['formula']
+            self.commitFunction()
     def commitFunction(self):
         if self.RFunctionParam_data == '': return
         if self.RFunctionParam_formula == '': return
@@ -57,4 +67,12 @@ class survdiff(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['survdiff']+'<-survdiff(data='+str(self.RFunctionParam_data)+','+inj+')')
+        
+        self.R('txt<-capture.output('+self.Rvariables['survdiff']+')')
+        self.RoutputWindow.clear()
+        tmp = self.R('paste(txt, collapse ="\n")')
+        self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
+        
         self.rSend("survdiff Output", {"data":self.Rvariables["survdiff"], "formula":self.RFunctionParam_formula})
+        
+        

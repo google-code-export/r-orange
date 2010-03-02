@@ -2,8 +2,9 @@
 <name>Histogram</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Makes a histogram of data.  This data should be in the form of a single 'vector'.  Use of the Row of Column selectors or perhaps the list selector may be helpful in this.</description>
+<RFunctions>graphics:hist</RFunctions>
 <tags>Plotting</tags>
-<icon>icons/Histogram.PNG</icon>
+<icon>icons/histogram.png</icon>
 """
 from OWRpy import * 
 import OWGUI 

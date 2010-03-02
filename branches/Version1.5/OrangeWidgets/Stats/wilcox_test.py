@@ -2,8 +2,9 @@
 <name>Wilcoxon Test</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Performs one and two sample Wilcoxon tests on vectors of data, the latter is also known as 'Mann-Whitney' test.  This widget accepts 'vectors' which may be created by the Row or Column selectors or the List selector widget.</description>
-<tags>NonParametric</tags>
-<icon>icons/stats.PNG</icon>
+<tags>Non Parametric</tags>
+<icon>icons/stats.png</icon>
+<RFunctions>stats:wilcox.test</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 

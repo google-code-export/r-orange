@@ -17,6 +17,7 @@ class plot(OWRpy):
         self.RFunctionParam_xlab = ''
         self.RFunctionParam_ylab = ''
         self.RFunctionParam_cex = '100'
+        self.data = {}
         #self.RFunctionParam_y = ''
         self.loadSettings()
         self.RFunctionParam_x = ''
@@ -30,12 +31,15 @@ class plot(OWRpy):
         OWGUI.button(box, self, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
+            self.data = data
             self.RFunctionParam_x=data["data"]
             self.commitFunction()
     def commitFunction(self):
         #if self.RFunctionParam_y == '': return
         if self.RFunctionParam_x == '': return
         injection = []
+        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data:
+            injection.append('pch=rownames('+self.RFunctionParam_x+')')
         if self.RFunctionParam_main != '':
             injection.append('main = "'+self.RFunctionParam_main+'"')
         if self.RFunctionParam_xlab != '':
@@ -50,6 +54,6 @@ class plot(OWRpy):
             inj = ','+','.join(injection)
         else: inj = ''
         #try:
-        self.Rplot('plot('+str(self.RFunctionParam_x)+inj+', col=c(1,2))')
+        self.Rplot('plot('+str(self.RFunctionParam_x)+inj+')')
         # except:
             # QMessageBox.information(None, 'Plotting Error', 'Your plot failed, this may not be a supported plot type.', QMessageBox.Ok)

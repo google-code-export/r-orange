@@ -1,3 +1,4 @@
+""" Modified by Kyle R. Covington """
 import os, sys, user
 
 def __getDirectoryNames():
@@ -5,8 +6,9 @@ def __getDirectoryNames():
     try:
         orangeDir = os.path.split(os.path.abspath(__file__))[0]
     except:
-        import orange
-        orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]
+        # import orange
+        # orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]
+        pass
 
     try:
         orangeVer = orangeDir.split(os.path.sep)[-1]
@@ -15,6 +17,7 @@ def __getDirectoryNames():
 
     canvasDir = os.path.join(orangeDir, "OrangeCanvas")
     widgetDir = os.path.join(orangeDir, "OrangeWidgets")
+    tagsDir = os.path.join(orangeDir, "tagsSystem")
     picsDir = os.path.join(widgetDir, "icons")
     addOnsDir = os.path.join(orangeDir, "add-ons")
 
@@ -60,7 +63,7 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
 
-    return dict([(name, vars()[name]) for name in ["orangeDir", "canvasDir", "widgetDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
+    return dict([(name, vars()[name]) for name in ["orangeDir", "canvasDir", "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
 
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))

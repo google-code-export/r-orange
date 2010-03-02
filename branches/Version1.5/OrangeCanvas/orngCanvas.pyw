@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, os, cPickle, orngRegistry, orngEnviron, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
-import orange, user, orngMisc
+import user, orngMisc
 import updateRedR
 
 class OrangeCanvasDlg(QMainWindow):
@@ -138,7 +138,7 @@ class OrangeCanvasDlg(QMainWindow):
         deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
         h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
         w = max(0, deskW/2 - width/2)
-        self.move(w,h)
+        self.move(w,h+2)
 
         self.helpWindow = orngHelp.HelpWindow(self)
         self.reportWindow = OWReport.ReportWindow()
@@ -210,14 +210,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuFile.addAction( "New Scheme",  self.menuItemNewScheme, QKeySequence.New)
         self.menuFile.addAction(QIcon(self.file_open), "&Open...", self.menuItemOpen, QKeySequence.Open )
         self.menuFile.addAction(QIcon(self.file_open), "&Open and Freeze...", self.menuItemOpenFreeze)
+        self.menuFile.addAction("Import Schema", self.importSchema)
         if os.path.exists(os.path.join(self.canvasSettingsDir, "lastSchema.tmp")):
             self.menuFile.addAction("Reload Last Schema", self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
         #self.menuFile.addAction( "&Clear", self.menuItemClear)
         self.menuFile.addSeparator()
         self.menuSaveID = self.menuFile.addAction(QIcon(self.file_save), "&Save", self.menuItemSave, QKeySequence.Save )
         self.menuSaveAsID = self.menuFile.addAction( "Save &As...", self.menuItemSaveAs)
-        self.menuFile.addAction( "&Save as Application (Tabs)...", self.menuItemSaveAsAppTabs)
-        self.menuFile.addAction( "&Save as Application (Buttons)...", self.menuItemSaveAsAppButtons)
+        #self.menuFile.addAction( "&Save as Application (Tabs)...", self.menuItemSaveAsAppTabs)
+        #self.menuFile.addAction( "&Save as Application (Buttons)...", self.menuItemSaveAsAppButtons)
         self.menuFile.addSeparator()
         self.menuFile.addAction(QIcon(self.file_print), "&Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
         self.menuFile.addSeparator()
@@ -232,6 +233,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
         self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
+        self.menuOptions.addAction("Set to debug mode", self.setDebugMode)
 
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
@@ -275,7 +277,19 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
-
+    def setDebugMode(self):
+        if self.output.debugMode:
+            self.output.debugMode = 0
+        else:
+            self.output.debugMode = 1
+    def importSchema(self):
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
+        if name.isEmpty():
+            return
+        self.schema.clear()
+        self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
+        self.addToRecentMenu(str(name))
+        
     def menuItemOpen(self):
         name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
         if name.isEmpty():
@@ -521,6 +535,7 @@ class OrangeCanvasDlg(QMainWindow):
 
     def updateStyle(self):
         QApplication.setStyle(QStyleFactory.create(self.settings["style"]))
+        #QApplication.setStyle(QStyle.QWindowsStyle)
         qApp.setStyleSheet(" QDialogButtonBox { button-layout: 0; }")       # we want buttons to go in the "windows" direction (Yes, No, Cancel)
         if self.settings["useDefaultPalette"]:
             QApplication.setPalette(qApp.style().standardPalette())

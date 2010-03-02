@@ -7,6 +7,7 @@
 from OWBaseWidget import *
 # remove the try-except after reporting is ready for deployment
 import OWReport
+from datetime import date
 
 class OWWidget(OWBaseWidget):
     def __init__(self, parent=None, signalManager=None, title="Orange Widget", wantGraph=False, wantStatusBar=False, savePosition=True, wantMainArea=1, noReport=False, showSaveGraph=1, resizingEnabled=1, **args):
@@ -23,6 +24,10 @@ class OWWidget(OWBaseWidget):
         self.layout().setMargin(2)
 
         self.topWidgetPart = OWGUI.widgetBox(self, orientation="horizontal", margin=0)
+        self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin = 2)
+        self.defaultLeftArea.setMaximumSize(200, 800)
+        self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
+        #self.defaultLeftArea.setPalette(QPalette.Base)
         self.leftWidgetPart = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=0)
         if wantMainArea:
             self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.MinimumExpanding))
@@ -140,7 +145,7 @@ class OWWidget(OWBaseWidget):
             print "Cannot open a new report when an old report is still active"
             return False
         self.reportName = name or self.windowTitle()
-        self.__reportData = ""
+        self.__reportData = "Repot Date: %s <br>" % date.today()
         if needDirectory:
             return OWReport.report.createDirectory()
         else:
@@ -185,7 +190,7 @@ class OWWidget(OWBaseWidget):
     def startReportList(self):
         if self.__reportData is None:
             self.startReport()
-        self.__reportData += "    <UL>\n"
+        self.__reportData += "    <UL>\nR"
 
     def addToReportList(self, item):
         self.__reportData += "      <LI>%s</LI>\n" % item
@@ -248,9 +253,15 @@ class OWWidget(OWBaseWidget):
        
     def finishReport(self):
         if self.__reportData is not None:
-            OWReport.report(self.reportName, self.__reportData or "")
+            OWReport.ReportWindow(self.reportName, self.__reportData or "")
             self.__reportData = None
 
+    def showReport(self):
+        self.reportView = OWReport.RedRReport()
+        
+        self.reportView.show()
+        #self.reportView.reportView.show()
+        self.reportView.reportView.setHtml(self.__reportData)
 if __name__ == "__main__":
     a = QApplication(sys.argv)
     ow = OWWidget()

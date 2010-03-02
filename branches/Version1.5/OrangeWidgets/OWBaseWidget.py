@@ -7,9 +7,9 @@ import orngEnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from OWContexts import *
+#from OWContexts import *
 import sys, time, random, user, os, os.path, cPickle, copy, orngMisc
-import orange
+#import orange
 import orngDebugging
 from string import *
 from orngSignalManager import *
@@ -78,9 +78,10 @@ def unisetattr(self, name, value, grandparent):
 
 
     # if there are any context handlers, call the fastsave to write the value into the context
-    if hasattr(self, "contextHandlers") and hasattr(self, "currentContexts"):
-        for contextName, contextHandler in self.contextHandlers.items():
-            contextHandler.fastSave(self.currentContexts.get(contextName), self, name, value)
+    ## Context handler deprecated
+    # if hasattr(self, "contextHandlers") and hasattr(self, "currentContexts"):
+        # for contextName, contextHandler in self.contextHandlers.items():
+            # contextHandler.fastSave(self.currentContexts.get(contextName), self, name, value)
 
 
 
@@ -100,7 +101,7 @@ class ControlledAttributesDict(dict):
 
 ##################
 # this definitions are needed only to define ExampleTable as subclass of ExampleTableWithClass
-from orange import ExampleTable
+#from orange import ExampleTable
 
 class AttributeList(list):
     pass
@@ -128,7 +129,7 @@ class OWBaseWidget(QDialog):
         return self
 
 
-    def __init__(self, parent = None, signalManager = None, title="Orange BaseWidget", modal=FALSE, savePosition = False, resizingEnabled = 1, **args):
+    def __init__(self, parent = None, signalManager = None, title="RedR BaseWidget", modal=FALSE, savePosition = False, resizingEnabled = 1, **args):
         # do we want to save widget position and restore it on next load
         self.savePosition = savePosition
         if savePosition:
@@ -149,6 +150,8 @@ class OWBaseWidget(QDialog):
         if not signalManager: self.signalManager = globalSignalManager        # use the global instance of signalManager  - not advised
         else:                 self.signalManager = signalManager              # use given instance of signal manager
 
+        self.working = 0     #used to monitor when the widget is working.  Other widgets can check this to supress functions or to check on up/down stream widgets.
+        self.linksOutWidgets = {}
         self.inputs = []     # signalName:(dataType, handler, onlySingleConnection)
         self.outputs = []    # signalName: dataType
         self.wrappers =[]    # stored wrappers for widget events
@@ -166,9 +169,10 @@ class OWBaseWidget(QDialog):
         self.widgetStateHandler = None
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
 
-        if hasattr(self, "contextHandlers"):
-            for contextHandler in self.contextHandlers.values():
-                contextHandler.initLocalContext(self)
+        ## context handlers deprecated
+        # if hasattr(self, "contextHandlers"):
+            # for contextHandler in self.contextHandlers.values():
+                # contextHandler.initLocalContext(self)
 
 
     # uncomment this when you need to see which events occured
@@ -233,9 +237,9 @@ class OWBaseWidget(QDialog):
         if not data.domain.classVar:
             self.error(1234, "A data set with a class attribute is required.")
             return 0
-        if wantedVarType and data.domain.classVar.varType != wantedVarType:
-            self.error(1235, "Unable to handle %s class." % (data.domain.classVar.varType == orange.VarTypes.Discrete and "discrete" or "continuous"))
-            return 0
+        # if wantedVarType and data.domain.classVar.varType != wantedVarType:
+            # self.error(1235, "Unable to handle %s class." % (data.domain.classVar.varType == orange.VarTypes.Discrete and "discrete" or "continuous"))
+            # return 0
         return 1
 
     # call processEvents(), but first remember position and size of widget in case one of the events would be move or resize
@@ -342,117 +346,140 @@ class OWBaseWidget(QDialog):
     # settings - the map with the settings
     def setSettings(self,settings):
         for key in settings:
-            print key
+            # print key
+            if key == 'inputs': continue
+            if key == 'outputs': continue
             self.__setattr__(key, settings[key])
-        #self.__dict__.update(settings)
+        
 
     # Get all settings
     # returns map with all settings
+    # ## !!!!!!!!!!!!!!!!!!!!  getSettings is deprecated
     def getSettings(self, alsoContexts = True):
-        print 'get settings called'
+        print 'get settings in owbasewidget'
         settings = {}
         if hasattr(self, "settingsList"):
             for name in self.settingsList:
                 try:
-                    settings[name] =  self.getdeepattr(name)
+                    if type(self.getdeepattr(name)) == type(''):
+                        settings[name] =  self.getdeepattr(name)
+                    elif type(self.getdeepattr(name)) == type({}): # if it's a dictionary, these are risky because they might contain instances of Qt objects so we need to watch out.
+                        # if QObject not in self.getdeepattr(name):
+                            # settings[name] = self.getdeepattr(name)
+                        # else:
+                            # print 'Qt object in '+str(name)+', unable to save'
+                        pass
+                    elif type(self.getdeepattr(name)) == type([]): #if it's a list
+                        # if QObject not in self.getdeepattr(name):
+                            # settings[name] = self.getdeepattr(name)
+                        # else:
+                            # print 'Qt object in '+str(name)+', unable to save'
+                        pass
                 except:
                     #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
                     pass
                     
             #instert logic for saving the gui settings
         for element in self.RGUIElements:
-            #print element
-            GUIsetting = {}
-            elementClass = element[1]
-            elementName = element[0]
-            if elementClass == 'widgetBox':
-                GUIsetting['class'] = 'widgetBox'
-            elif elementClass == 'widgetLabel':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'widgetLabel'
-            elif elementClass == 'checkBox':
-                GUIsetting['checked'] = getattr(self, elementName).isChecked()
-                GUIsetting['class'] = 'checkBox'
-            elif elementClass == 'lineEdit':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'lineEdit'
-            elif elementClass == 'button':
-                GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
-                GUIsetting['class'] = 'button'
-            elif elementClass == 'listBox':
-                GUIsetting['items'] = getattr(self, elementName).items()
-                GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
-                GUIsetting['class'] = 'listBox'
-            elif elementClass == 'radioButtonsInBox':
-                GUIsetting['class'] = 'radioButtonsInBox'
-            elif elementClass == 'comboBox':
-                text = []
-                cb = getattr(self, elementName)
-                for i in range(cb.count()):
-                    text.append(cb.itemText(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['class'] = 'comboBox'
-            elif elementClass == 'comboBoxWithCaption':
-                text = []
-                cb = getattr(self, elementName)
-                for i in range(cb.count()):
-                    text.append(cb.itemText(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['class'] = 'comboBoxWithCaption'
-            elif elementClass == 'tabWidget':
-                text = []
-                enabled = []
-                tab = getattr(self, elementName)
-                for i in range(tab.count()):
-                    text.append(tab.tabText(i))
-                    enabled.append(tab.isEnabled(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['itemEnabled'] = enabled
-                GUIsetting['class'] = 'tabWidget'
-            elif elementClass == 'createTabPage':
-                GUIsetting['class'] = 'createTabPage'
-            elif elementClass == 'table':
-                table = getattr(self, elementName)
-                GUIsetting['selectedRanges'] = table.selectedRanges()
-                row = table.rowCount()
-                col = table.columnCount()
-                rowNames = []
-                for i in range(row):
-                    rowNames.append(table.verticalHeaderItem(i).text())
-                GUIsetting['rowNames'] = rowNames
-                
-                colNames = []
-                for j in range(col):
-                    colNames.append(table.horizontalHeaderItem(j).text())
-                GUIsetting['colNames'] = colNames
-                
-                tableItems = []
-                for i in range(row):
+            try:
+                #print element
+                GUIsetting = {}
+                elementClass = element[1]
+                elementName = element[0]
+                print elementClass
+                if elementClass == 'widgetBox':
+                    GUIsetting['class'] = 'widgetBox'
+                elif elementClass == 'widgetLabel':
+                    GUIsetting['text'] = str(getattr(self, elementName).text())
+                    GUIsetting['class'] = 'widgetLabel'
+                elif elementClass == 'checkBox':
+                    GUIsetting['checked'] = getattr(self, elementName).isChecked()
+                    GUIsetting['class'] = 'checkBox'
+                elif elementClass == 'lineEdit':
+                    GUIsetting['text'] = getattr(self, elementName).text()
+                    GUIsetting['class'] = 'lineEdit'
+                elif elementClass == 'button':
+                    GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
+                    GUIsetting['class'] = 'button'
+                elif elementClass == 'listBox':
+                    GUIsetting['items'] = getattr(self, elementName).items()
+                    GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
+                    GUIsetting['class'] = 'listBox'
+                elif elementClass == 'radioButtonsInBox':
+                    GUIsetting['class'] = 'radioButtonsInBox'
+                elif elementClass == 'comboBox':
+                    text = []
+                    cb = getattr(self, elementName)
+                    for i in range(cb.count()):
+                        text.append(str(cb.itemText(i)))
+                    GUIsetting['itemText'] = text
+                    GUIsetting['class'] = 'comboBox'
+                elif elementClass == 'comboBoxWithCaption':
+                    text = []
+                    cb = getattr(self, elementName)
+                    for i in range(cb.count()):
+                        text.append(str(cb.itemText(i)))
+                    GUIsetting['itemText'] = text
+                    GUIsetting['class'] = 'comboBoxWithCaption'
+                elif elementClass == 'tabWidget':
+                    text = []
+                    enabled = []
+                    tab = getattr(self, elementName)
+                    for i in range(tab.count()):
+                        text.append(str(tab.tabText(i)))
+                        enabled.append(tab.isEnabled(i))
+                    GUIsetting['itemText'] = text
+                    GUIsetting['itemEnabled'] = enabled
+                    GUIsetting['class'] = 'tabWidget'
+                elif elementClass == 'createTabPage':
+                    GUIsetting['class'] = 'createTabPage'
+                elif elementClass == 'table':
+                    table = getattr(self, elementName)
+                    GUIsetting['selectedRanges'] = table.selectedRanges()
+                    row = table.rowCount()
+                    col = table.columnCount()
+                    rowNames = []
+                    for i in range(row):
+                        rowNames.append(str(table.verticalHeaderItem(i).text()))
+                    GUIsetting['rowNames'] = rowNames
+                    
+                    colNames = []
                     for j in range(col):
-                        try:
-                            tableItems.append((i,j,table.item(i,j).text()))
-                        except: pass
-                GUIsetting['tableItems'] = tableItems
-                GUIsetting['class'] = 'table'
-            elif elementClass == 'textEdit':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'textEdit'
-                
-                
-            settings[str('GUIelement_'+elementName)] = GUIsetting
+                        colNames.append(str(table.horizontalHeaderItem(j).text()))
+                    GUIsetting['colNames'] = colNames
+                    
+                    tableItems = []
+                    for i in range(row):
+                        for j in range(col):
+                            try:
+                                tableItems.append((i,j,str(table.item(i,j).text())))
+                            except: pass
+                    GUIsetting['tableItems'] = tableItems
+                    GUIsetting['class'] = 'table'
+                elif elementClass == 'textEdit':
+                    GUIsetting['text'] = str(getattr(self, elementName).text())
+                    GUIsetting['class'] = 'textEdit'
+                    
+                    
+            
+                settings[str('GUIelement_'+elementName)] = GUIsetting
+            except:
+                print 'element' + elementName + 'failed to save, this should be corrected by the widget maker as soon as possible.'
         
-        
-        if alsoContexts:
-            contextHandlers = getattr(self, "contextHandlers", {})
-            for contextHandler in contextHandlers.values():
-                contextHandler.mergeBack(self)
-                settings[contextHandler.localContextName] = contextHandler.globalContexts
-                settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
+        # try:
+            # if alsoContexts:
+                # contextHandlers = getattr(self, "contextHandlers", {})
+                # for contextHandler in contextHandlers.values():
+                    # contextHandler.mergeBack(self)
+                    # settings[contextHandler.localContextName] = contextHandler.globalContexts
+                    # settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
+        # except: pass
             
         return settings
 
 
     def getSettingsFile(self, file):
+        print 'getSettingsFile in owbasewidget'
         if file==None:
             if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
                 file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
@@ -467,42 +494,29 @@ class OWBaseWidget(QDialog):
 
     # Loads settings from the widget's .ini file
     def loadSettings(self, file = None):
+        print 'loadSettings in owbasewidget'
+        print self.inputs
+        print str(self.outputs) + ' preload'
         file = self.getSettingsFile(file)
+        settings = {}
         if file:
             try:
                 settings = cPickle.load(file)
             except:
                 settings = None
-        settings = None # do not load ini file
+        #settings = None # do not load ini file
         if hasattr(self, "_settingsFromSchema"):
             if settings: settings.update(self._settingsFromSchema)
             else:        settings = self._settingsFromSchema
 
         #print 'start loading local variables'
-        #print settings
+        # print settings
         # can't close everything into one big try-except since this would mask all errors in the below code
         if settings:
             if hasattr(self, "settingsList"):
                 self.setSettings(settings)
-
-            contextHandlers = getattr(self, "contextHandlers", {})
-            for contextHandler in contextHandlers.values():
-                localName = contextHandler.localContextName
-                print 'localname'  + localName + '\n'
-                structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                if (structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion) \
-                   and settings.has_key(localName):
-                    del settings[localName]
-                    delattr(self, localName)
-                    contextHandler.initLocalContext(self)
-
-                if not getattr(contextHandler, "globalContexts", False): # don't have it or empty
-                    contexts = settings.get(localName, False)
-                    if contexts != False:
-                        contextHandler.globalContexts = contexts
-                else:
-                    if contextHandler.syncWithGlobal:
-                        setattr(self, localName, contextHandler.globalContexts)
+        print self.inputs
+        print str(self.outputs) + ' post load'
 
 
     def saveSettings(self, file = None):
@@ -524,17 +538,17 @@ class OWBaseWidget(QDialog):
         settings = cPickle.loads(str)
         self.setSettings(settings)
 
-        contextHandlers = getattr(self, "contextHandlers", {})
-        for contextHandler in contextHandlers.values():
-            localName = contextHandler.localContextName
-            if settings.has_key(localName):
-                structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
-                    del settings[localName]
-                    delattr(self, localName)
-                    contextHandler.initLocalContext(self)
-                else:
-                    setattr(self, localName, settings[localName])
+        # contextHandlers = getattr(self, "contextHandlers", {})
+        # for contextHandler in contextHandlers.values():
+            # localName = contextHandler.localContextName
+            # if settings.has_key(localName):
+                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
+                # if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
+                    # del settings[localName]
+                    # delattr(self, localName)
+                    # contextHandler.initLocalContext(self)
+                # else:
+                    # setattr(self, localName, settings[localName])
 
     # return settings in string format compatible with cPickle
     def saveSettingsStr(self):
@@ -542,10 +556,11 @@ class OWBaseWidget(QDialog):
         settings = self.getSettings()
         #print settings
         #print str(self.RGUIElements)
-        return cPickle.dumps(settings)
+        try:
+            return cPickle.dumps(settings)
+        except: 
+            print str(settings)
 
-    def onSaveSession(self):
-        pass
         
     def onDeleteWidget(self, suppress = 0):
         pass
@@ -606,7 +621,14 @@ class OWBaseWidget(QDialog):
         for i in self.inputs:
             input = InputSignal(*i)
             if input.name == signalName: return input.single
-
+    
+    def addOutputConnection(self, widgetTo, signalName):
+        existing = []
+        if self.linksOutWidgets.has_key(signalName):
+            existing = self.linksOutWidgets[signalName]
+            existing.append(widgetTo)
+        else:
+            self.linksOutWidgets[signalName] = [widgetTo]
     def addInputConnection(self, widgetFrom, signalName):
         for i in range(len(self.inputs)):
             if self.inputs[i][0] == signalName:
@@ -622,6 +644,14 @@ class OWBaseWidget(QDialog):
         #if not self.linksIn.has_key(signalName): self.linksIn[signalName] = [(0, widgetFrom, handler, [])]    # (dirty, handler, signalData)
 
     # delete a link from widgetFrom and this widget with name signalName
+    
+    def removeOutputConnection(self, widgetTo, signalName):
+        if self.linksOutWidgets.has_key(signalName):
+            links = self.linksOutWidgets[signalName]
+            links.remove(widgetTo)
+            self.linksOutWidgets[signalName] = links
+            
+        
     def removeInputConnection(self, widgetFrom, signalName):
         if self.linksIn.has_key(signalName):
             links = self.linksIn[signalName]
@@ -634,7 +664,10 @@ class OWBaseWidget(QDialog):
 
     # return widget, that is already connected to this singlelink signal. If this widget exists, the connection will be deleted (since this is only single connection link)
     def removeExistingSingleLink(self, signal):
+        print str(self.inputs)
+        print str(self.outputs)
         for i in self.inputs:
+            #print str(*i) + ' input owbasewidget'
             input = InputSignal(*i)
             if input.name == signal and not input.single: return None
 
@@ -654,11 +687,12 @@ class OWBaseWidget(QDialog):
 
     # signal manager calls this function when all input signals have updated the data
     def processSignals(self,processHandler = True):
+        print 'processing Signals'
         if self.closing == True:
             return
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
-        
+        self.working = 1
         # we define only a way to handle signals that have defined a handler function
         for signal in self.inputs:        # we go from the first to the last defined input
             key = signal[0]
@@ -702,10 +736,13 @@ class OWBaseWidget(QDialog):
 
         if self.processingHandler:
             self.processingHandler(self, 0)    # remove focus from this widget
+            
+        self.working = 0
         self.needProcessing = 0
 
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):
+        print 'updating new signal data'
         if not self.linksIn.has_key(signalName): return
         for i in range(len(self.linksIn[signalName])):
             (dirty, widget, handler, signalData) = self.linksIn[signalName][i]
@@ -865,28 +902,32 @@ class OWBaseWidget(QDialog):
         return changed
 
     def synchronizeContexts(self):
-        if hasattr(self, "contextHandlers"):
-            for contextName, handler in self.contextHandlers.items():
-                context = self.currentContexts.get(contextName, None)
-                if context:
-                    handler.settingsFromWidget(self, context)
+        # if hasattr(self, "contextHandlers"):
+            # for contextName, handler in self.contextHandlers.items():
+                # context = self.currentContexts.get(contextName, None)
+                # if context:
+                    # handler.settingsFromWidget(self, context)
+                    
+        pass
 
     def openContext(self, contextName="", *arg):
-        if not self._useContexts:
-            return
-        handler = self.contextHandlers[contextName]
-        context = handler.openContext(self, *arg)
-        if context:
-            self.currentContexts[contextName] = context
-
+        # if not self._useContexts:
+            # return
+        # handler = self.contextHandlers[contextName]
+        # context = handler.openContext(self, *arg)
+        # if context:
+            # self.currentContexts[contextName] = context
+        pass
 
     def closeContext(self, contextName=""):
-        if not self._useContexts:
-            return
-        curcontext = self.currentContexts.get(contextName)
-        if curcontext:
-            self.contextHandlers[contextName].closeContext(self, curcontext)
-            del self.currentContexts[contextName]
+        # if not self._useContexts:
+            # return
+        # curcontext = self.currentContexts.get(contextName)
+        # if curcontext:
+            # self.contextHandlers[contextName].closeContext(self, curcontext)
+            # del self.currentContexts[contextName]
+            
+        pass
 
     def settingsToWidgetCallback(self, handler, context):
         pass

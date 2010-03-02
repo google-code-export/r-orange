@@ -2,6 +2,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 import os, time, tempfile, shutil, urllib, zipfile, re, shutil
+import datetime
 import orngEnviron, OWGUI
 
 reportsDir = orngEnviron.reportsDir
@@ -199,4 +200,11 @@ def reportTree(tree, expanded=True):
     res += ''.join(printTree(tree.topLevelItem(cc), 0, depth, visibleColumns, expanded) for cc in range(tops))
     res += "</table>\n"
     return res
- 
+class RedRReport(QWidget):
+    def __init__(self, parent= None, html = ''):
+        QWidget.__init__(self, parent)
+        self.setLayout(QVBoxLayout())
+        self.reportView = QWebView()
+        self.layout().addWidget(self.reportView)
+        self.reportView.setHtml(html)
+

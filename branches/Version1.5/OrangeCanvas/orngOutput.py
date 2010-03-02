@@ -1,4 +1,4 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si)
+# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington and Anup Parikh
 # Description:
 #     print system output and exceptions into a window. Enables copy/paste
 #
@@ -19,6 +19,7 @@ class OutputWindow(QDialog):
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
         self.numberofLines = 0
+        self.debugMode = 0
 
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.textOutput)
@@ -97,7 +98,7 @@ class OutputWindow(QDialog):
         # print text
         # return
         self.numberofLines += 1
-        if self.numberofLines > 1000:
+        if self.numberofLines > 100 and not self.debugMode:
             self.textOutput.clear()
             self.numberofLines = 0
         Text = self.getSafeString(text)
@@ -134,7 +135,7 @@ class OutputWindow(QDialog):
         for line in lines:
             self.numberofLines += 1
             self.write(line)
-            if self.numberofLines > 1000:
+            if self.numberofLines > 100 and not self.debugMode:
                 self.textOutput.clear()
 
     def flush(self):
@@ -146,7 +147,8 @@ class OutputWindow(QDialog):
     def uploadException(self,err):
         import httplib,urllib
         #import sys,pickle
-        res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
+        #res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
+        res = QMessageBox.No
         if res == QMessageBox.Yes:
             params = urllib.urlencode({'error':err})
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}

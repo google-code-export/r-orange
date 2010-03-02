@@ -1,14 +1,15 @@
 """
 <name>List Selector</name>
 <description>Allows viewing of a list and picks parts of a list and sends them.</description>
-<tags>Data Subsetting and Merging</tags>
-<icon>icons/RExecutor.png</icon>
+<tags>Data Manipulation</tags>
+<RFunctions>base:list</RFunctions>
+<icon>icons/rexecutor.png</icon>
 <author>Kyle R. Covington</author>
 <priority>3010</priority>
 """
 
 from OWRpy import *
-import OWGUI
+import redRGUI
 
 class ListSelector(OWRpy):
     #This widget has no settings list
@@ -22,8 +23,8 @@ class ListSelector(OWRpy):
         self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList)]
         
         #GUI
-        box = OWGUI.widgetBox(self.controlArea, "List Data")
-        self.names = OWGUI.listBox(box, self, callback = self.sendSelection)
+        box = redRGUI.widgetBox(self.controlArea, "List Data")
+        self.names = redRGUI.listBox(box, self, callback = self.sendSelection)
         
     def process(self, data):
         self.data = None

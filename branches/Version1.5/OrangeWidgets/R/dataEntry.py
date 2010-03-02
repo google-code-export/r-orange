@@ -1,18 +1,18 @@
 """
 <name>Data Entry</name>
 <description>A table input data entry into a data.frame.</description>
-<tags>Data Entry</tags>
-<icon>icons/File.png</icon>
+<tags>Data Input</tags>
+<RFunctions>base:data.frame</RFunctions>
+<icon>icons/file.png</icon>
 <priority>20</priority>
-
 """
 
-import OWGUI
+import redRGUI
 from OWRpy import *
 
 
+
 class dataEntry(OWRpy):
-    settingsList = ['modelProcessed', 'savedData', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 1, resizingEnabled = 1)
 
@@ -24,29 +24,25 @@ class dataEntry(OWRpy):
         self.colHeaders = True
 
         self.savedData = None
-        self.loadSettings()
         self.setRvariableNames(['table'])
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame)]
+        self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
         #GUI.
         
-        box = OWGUI.widgetBox(self.controlArea, "Options")
-        OWGUI.button(box, self, 'Commit', self.commitTable)
-        OWGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
-        OWGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
-        #OWGUI.button(box, self, 'Add Column', self.addColumn)
+        box = redRGUI.widgetBox(self.controlArea, "Options")
+        redRGUI.button(box, self, 'Commit', self.commitTable)
+        redRGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
+        redRGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
+        #redRGUI.button(box, self, 'Add Column', self.addColumn)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
         
-        box = OWGUI.widgetBox(self.controlArea, "Table")
+        box = redRGUI.widgetBox(self.controlArea, "Table")
         self.splitCanvas.addWidget(box)
-        self.dataTable = QTableWidget()
-        box.layout().addWidget(self.dataTable)
-        self.dataTable.setColumnCount(self.colCount+1)
-        self.dataTable.setRowCount(self.rowCount+1)
+        self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
         # self.setRownamesColor()
         # self.setColnamesColor()
@@ -59,15 +55,6 @@ class dataEntry(OWRpy):
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         self.resize(800,600)
         
-        #OWGUI.button(box, self, 'add row', callback = self.addRow)
-        #self.connect(self.dataTable, SIGNAL("cellEntered(int, int)"), self.itemEntered)
-    # def setRownamesColor(self):
-        # for i in range(1, self.dataTable.columnCount()):
-            # self.dataTable.item(i,0).setBackgroundColor(Qt.blue)
-            
-    # def setColnamesColor(self):
-        # for j in range(1, self.dataTable.rowCount()):
-            # self.dataTable.item(0,j).setBackgroundColor(Qt.blue)
     def processDF(self, data):
         if data:
             self.data = data['data']
@@ -108,7 +95,7 @@ class dataEntry(OWRpy):
         for name in colnames:
            
             for i in range(1, rlen+1):
-                newitem = QTableWidgetItem(str(data[name][i-1]))
+                newitem = QTableWidgetItem(str(data[name][i-1])) # must correct for the different indexis of R and python
                 self.dataTable.setItem(i, col, newitem)
             col += 1
         upcell = QTableWidgetItem()

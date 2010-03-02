@@ -1,8 +1,9 @@
 """
 <name>Column Selection</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
-<tags>Data Subsetting and Merging</tags>
-<icon>icons/Subset.png</icon>
+<tags>Data Manipulation</tags>
+<RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
+<icon>icons/subset.png</icon>
 <priority>2020</priority>
 """
 
@@ -504,6 +505,13 @@ class colSelector(OWRpy): # a simple widget that actually will become quite comp
         self.newdata['data'] = self.Rvariables['result']
         resultclass = self.rsession('class('+self.Rvariables['result']+')')
         if resultclass == 'data.frame':
+            self.rSend("R DataFrame" , self.newdata)
+            self.tableinfoc.setText("Data Frame sent with:")
+            cols = self.rsession('length('+self.Rvariables['result']+'[1,])')
+            rows = self.rsession('length('+self.Rvariables['result']+'[,1])')
+            self.tableinfod.setText("%s columns and %s rows." % (str(cols), str(rows)))
+        elif resultclass == 'matrix':
+            self.newdata['data'] = 'as.data.frame('+self.Rvariables['result']+')'
             self.rSend("R DataFrame" , self.newdata)
             self.tableinfoc.setText("Data Frame sent with:")
             cols = self.rsession('length('+self.Rvariables['result']+'[1,])')

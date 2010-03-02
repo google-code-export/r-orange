@@ -7,7 +7,7 @@
 """
 
 from OWRpy import *
-import OWGUI
+import redRGUI
 
 class widgetMaker(OWRpy):
     def __init__(self, parent=None, signalManager=None):
@@ -35,31 +35,31 @@ class widgetMaker(OWRpy):
         # GUI
         # several tabs with different parameters such as loading in a function, setting parameters, setting inputs and outputs
         
-        box = OWGUI.widgetBox(self.controlArea, "")
-        self.infoa = OWGUI.widgetLabel(box, '')
-        OWGUI.lineEdit(box, self, 'packageName', label = 'Package:', orientation = 1)
-        OWGUI.button(box, self, 'Load Package', callback = self.loadRPackage)
-        OWGUI.lineEdit(box, self, 'functionName', label = 'Function Name:', orientation = 1)
-        OWGUI.button(box, self, 'Parse Function', callback = self.parseFunction)
+        box = redRGUI.widgetBox(self.controlArea, "")
+        self.infoa = redRGUI.widgetLabel(box, '')
+        redRGUI.lineEdit(box, self, 'packageName', label = 'Package:', orientation = 1)
+        redRGUI.button(box, self, 'Load Package', callback = self.loadRPackage)
+        redRGUI.lineEdit(box, self, 'functionName', label = 'Function Name:', orientation = 1)
+        redRGUI.button(box, self, 'Parse Function', callback = self.parseFunction)
         
-        box = OWGUI.widgetBox(self.controlArea, "Inputs and Outputs")
+        box = redRGUI.widgetBox(self.controlArea, "Inputs and Outputs")
         self.inputArea = QTableWidget()
         box.layout().addWidget(self.inputArea)
         self.inputArea.setColumnCount(4)
         
         self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
-        OWGUI.button(box, self, 'Accept Inputs', callback = self.acceptInputs)
-        OWGUI.checkBox(box, self, 'functionAllowOutput', 'Allow Output')
-        OWGUI.checkBox(box, self, 'captureROutput', 'Show Output')
+        redRGUI.button(box, self, 'Accept Inputs', callback = self.acceptInputs)
+        redRGUI.checkBox(box, self, 'functionAllowOutput', 'Allow Output')
+        redRGUI.checkBox(box, self, 'captureROutput', 'Show Output')
         
-        OWGUI.button(box, self, 'Generate Code', callback = self.generateCode)
-        OWGUI.button(box, self, 'Launch Widget', callback = self.launch)
+        redRGUI.button(box, self, 'Generate Code', callback = self.generateCode)
+        redRGUI.button(box, self, 'Launch Widget', callback = self.launch)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
         
-        codebox = OWGUI.widgetBox(self, "Code Box")
+        codebox = redRGUI.widgetBox(self, "Code Box")
         self.splitCanvas.addWidget(codebox)
 
         self.codeArea = QTextEdit()
@@ -194,6 +194,7 @@ class widgetMaker(OWRpy):
         self.makeGUI()
         self.makeProcessSignals()
         self.makeCommitFunction()
+        self.makeReportFunction()
         #self.makeRsendFunction()
         
         self.combineCode()
@@ -204,8 +205,7 @@ class widgetMaker(OWRpy):
         self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
-        self.headerCode += 'import OWGUI \n'
-        self.headerCode += 'import RRGUI \n'
+        self.headerCode += 'import redRGUI \n'
         
     def makeInitHeader(self):
         self.initCode = ''
@@ -216,6 +216,7 @@ class widgetMaker(OWRpy):
         self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
         if self.functionAllowOutput:
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName+'"])\n'
+            self.initCode += '\t\tself.data = {}\n'
         for element in self.fieldList.keys():
             if element == '___':
                 pass
@@ -243,27 +244,29 @@ class widgetMaker(OWRpy):
         
     def makeGUI(self):
         self.guiCode = ''
-        self.guiCode += '\t\tbox = RRGUI.tabWidget(self.controlArea, None, self)\n'
-        self.guiCode += '\t\tself.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")\n'
-        self.guiCode += '\t\tself.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")\n'
+        self.guiCode += """\t\tself.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')\n"""
+        self.guiCode += '\t\tbox = redRGUI.tabWidget(self.controlArea)\n'
+        self.guiCode += '\t\tself.standardTab = box.createTabPage(name = "Standard")\n'
+        self.guiCode += '\t\tself.advancedTab = box.createTabPage(name = "Advanced")\n'
         for element in self.fieldList.keys():
             if element == '___':
                 pass
             else:
                 if type(self.fieldList[element][0]) == type(''):
                     if self.fieldList[element][1] == 'Standard':
-                        self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParam'+ element + '_lineEdit", self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
+                        self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "'+element+':")\n'
                     elif self.fieldList[element][1] == 'Advanced':
-                        self.guiCode += '\t\tself.RFUnctionParam'+ element +'_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParam'+ element + '_lineEdit", self, "RFunctionParam_'+element+'", label = "'+element+':")\n'
+                        self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "'+element+':")\n'
                 elif type(self.fieldList[element][0]) == type([]):
                     if self.fieldList[element][1] == 'Standard':
-                        self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = RRGUI.comboBox(self.standardTab, "RFunctionParam'+ element + '_comboBox", self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
+                        self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = redRGUI.comboBox(self.standardTab, label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
                     elif self.fieldList[element][1] == 'Advanced':
-                        self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = RRGUI.comboBox(self.advancedTab, "RFunctionParam'+ element + '_comboBox", self, "RFunctionParam_'+element+'", label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
-        self.guiCode += '\t\tOWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)\n'
+                        self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = redRGUI.comboBox(self.advancedTab, label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
+        self.guiCode += '\t\tredRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '\t\tredRGUI.button(self.controlArea, self, "Report", callback = self.sendReport)\n'
         if self.captureROutput:
-            self.guiCode += '\t\tself.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)\n'
-            self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
+            self.guiCode += '\t\tself.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")\n'
+            #self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):
         self.processSignals = ''
@@ -273,6 +276,7 @@ class widgetMaker(OWRpy):
                 self.processSignals += '\t\tself.require_librarys(["'+self.packageName+'"]) \n'
             self.processSignals += '\t\tif data:\n'
             self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data["data"]\n'
+            self.processSignals += '\t\t\tself.data = data.copy()\n'
             if self.processOnConnect:
                 self.processSignals += '\t\t\tself.commitFunction()\n'
                 
@@ -280,14 +284,14 @@ class widgetMaker(OWRpy):
         self.commitFunction = ''
         self.commitFunction += '\tdef commitFunction(self):\n'
         for inputName in self.functionInputs.keys():
-            self.commitFunction += "\t\tif self.RFunctionParam_"+inputName+" == '': return\n"
+            self.commitFunction += "\t\tif str(self.RFunctionParam_"+inputName+") == '': return\n"
         for element in self.fieldList.keys():
             if self.fieldList[element][2] == 'Required':
-                self.commitFunction += "\t\tif self.RFunctionParam_"+element+" == '': return\n"
+                self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) == '': return\n"
         self.commitFunction += "\t\tinjection = []\n"
         for element in self.fieldList.keys():
-            self.commitFunction += "\t\tif self.RFunctionParam_"+element+" != '':\n"
-            self.commitFunction += "\t\t\tstring = '"+element+"='+str(self.RFunctionParam_"+element+")\n"
+            self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
+            self.commitFunction += "\t\t\tstring = '"+element+"='+str(self.RFunctionParam"+ element +"_lineEdit.text())\n"
             self.commitFunction += "\t\t\tinjection.append(string)\n"
         self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("
@@ -323,10 +327,22 @@ class widgetMaker(OWRpy):
         
         
         if self.functionAllowOutput:
-            self.commitFunction += '\t\tself.rSend("'+self.functionName+' Output", {"data":self.Rvariables["'+self.functionName+'"]})\n'
-    
+            self.commitFunction += '\t\tsele.data["data"] = self.Rvariables["'+self.functionName+'"]\n'
+            self.commitFunction += '\t\tself.rSend("'+self.functionName+' Output", self.data)\n'
+    def makeReportFunction(self):
+        self.reportFunction = ''
+        self.reportFunction += '\tdef compileReport(self):\n'
+        for inputName in self.functionInputs.keys():
+            self.reportFunction += '\t\tself.reportSettings("Input Settings",[("'+inputName+'", self.RFunctionParam_'+inputName+')])\n' # output the inputs of the function
+        for element in self.fieldList.keys():
+            self.reportFunction += "\t\tself.reportSettings('Function Settings', [('"+element+"',str(self.RFunctionParam_"+element+"))])\n"
+        if self.functionAllowOutput:
+            self.reportFunction += '\t\tself.reportRaw(self.Rvariables["'+self.functionName+'"])\n'
+            
+        self.reportFunction += '\tdef sendReport(self):\n\t\tself.compileReport()\n\t\tself.showReport()\n'
+
     def combineCode(self):
         self.completeCode = '<pre>'
-        self.completeCode += self.headerCode+self.initCode+self.guiCode+self.processSignals+self.commitFunction
+        self.completeCode += self.headerCode+self.initCode+self.guiCode+self.processSignals+self.commitFunction+self.reportFunction
         self.completeCode += '</pre>'
         self.codeArea.setHtml(self.completeCode)

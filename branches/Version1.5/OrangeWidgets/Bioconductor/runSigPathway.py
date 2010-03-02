@@ -1,13 +1,15 @@
 """
 <name>Sig Pathway</name>
 <description>Performs Pathway Analysis on a genelist or subset (must specify gene list as either a full list or a subset on connecting)</description>
-<tags>Bioconductor</tags>
-<icon>icons/ReadCel.png</icon>
+<tags>microarray</tags>
+<RFunctions>sigPathway:runSigPathway</RFunctions>
+<icon>icons/readcel.png</icon>
 <priority>2030</priority>
 """
 
 import os, glob
-import OWGUI
+import redRGUI
+import redRGUI
 from OWRpy import *
 
 class runSigPathway(OWRpy):
@@ -29,50 +31,47 @@ class runSigPathway(OWRpy):
         self.sublist = ''
         self.wd = ''
         self.availablePaths = []
-        self.minNPS = str(20)
-        self.maxNPS = str(500)
         self.phenotype = ''
         self.weightType = 'constant'
         self.newdata = {}
         self.dboptions = ''
-        self.npath = 25
         self.subtable = {}
-        self.table1 = QTableWidget() # change the table while processing
-        self.table2 = QTableWidget() #change the table while processing
-        self.loadSettings()
+        self.table1 = redRGUI.table() # change the table while processing
+        self.table2 = redRGUI.table() #change the table while processing
+        #self.loadSettings()
         
         self.usedb = 1
         
-        self.require_librarys(['sigPathway'])
+
         
         #self.sendMe()
         #GUI
-        info = OWGUI.widgetBox(self.controlArea, "Info")
+        info = redRGUI.widgetBox(self.controlArea, "Info")
         
-        self.infoa = OWGUI.widgetLabel(info, "No data connected yet.")
-        self.infob = OWGUI.widgetLabel(info, '')
-        self.infoc = OWGUI.widgetLabel(info, '')
+        self.infoa = redRGUI.widgetLabel(info, "No data connected yet.")
+        self.infob = redRGUI.widgetLabel(info, '')
+        self.infoc = redRGUI.widgetLabel(info, '')
         
         
-        sigPathOptions = OWGUI.widgetBox(self.controlArea, "Options")
-        OWGUI.lineEdit(sigPathOptions, self, 'minNPS', 'Min Genes in Pathway:')
-        OWGUI.lineEdit(sigPathOptions, self, 'maxNPS', 'Max Genes in Pathway:')
-        self.pAnnotlist = OWGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
-        OWGUI.lineEdit(sigPathOptions, self, 'chiptype', label = "Chiptype")
-        OWGUI.lineEdit(sigPathOptions, self, 'npath', label = 'Number of Pathways')
+        sigPathOptions = redRGUI.widgetBox(self.controlArea, "Options")
+        self.minNPS = redRGUI.lineEdit(sigPathOptions, '20', 'Min Genes in Pathway:')
+        self.maxNPS = redRGUI.lineEdit(sigPathOptions, '500', 'Max Genes in Pathway:')
+        self.pAnnotlist = redRGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
+        self.chiptype = redRGUI.lineEdit(sigPathOptions, '', label = "Chiptype")
+        self.npath = redRGUI.lineEdit(sigPathOptions, '25', label = 'Number of Pathways')
         self.pAnnotlist.setEnabled(False)
-        self.getNewAnnotButton = OWGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
-        OWGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
-        OWGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
-        OWGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
-        OWGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
+        self.getNewAnnotButton = redRGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
+        redRGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
+        redRGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
+        redRGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
+        redRGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
         
         #split the canvas into two halves
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
         
-        self.pathtable = OWGUI.widgetBox(self, "Pathway Info")
-        self.pathinfoA = OWGUI.widgetLabel(self.pathtable, "")
+        self.pathtable = redRGUI.widgetBox(self, "Pathway Info")
+        self.pathinfoA = redRGUI.widgetLabel(self.pathtable, "")
         self.splitCanvas.addWidget(self.pathtable)
         
         self.splitCanvas.addWidget(self.table1)
@@ -101,6 +100,7 @@ class runSigPathway(OWRpy):
         self.wd = self.rsession('choose.dir()')
     
     def process(self, data): #collect a preprocessed file for pathway analysis
+        self.require_librarys(['sigPathway'])
         if data:
             self.olddata = data
             self.data = data['data']
@@ -108,16 +108,16 @@ class runSigPathway(OWRpy):
             self.infoa.setText("Data connected")
             if 'eset' in data:
                 self.affy = data['eset']
-                self.chiptype = self.rsession('annotation('+self.affy+')')
+                self.chiptype.setText(self.rsession('annotation('+self.affy+')'))
                 self.getChiptype()
             elif 'affy' in data:
                 self.affy = data['affy']
-                self.chiptype = self.rsession('annotation('+self.affy+')')
+                self.chiptype.setText(self.rsession('annotation('+self.affy+')'))
                 self.getChiptype()
             else:
                 self.infob.setText("No Chip Type Info Available. \n Please input.")
-            if self.chiptype != '':
-                self.infob.setText('Your chip type is '+self.chiptype)
+            if str(self.chiptype.text()) != '':
+                self.infob.setText('Your chip type is '+str(self.chiptype.text()))
             if 'classes' in self.olddata:
                 self.phenotype = self.olddata['classes']
             else: return
@@ -183,7 +183,7 @@ class runSigPathway(OWRpy):
             self.getChiptype()
             self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
             try:
-                self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS+', maxNPS = '+self.maxNPS+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath)+self.dboptions+')')
+                self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS.text()+', maxNPS = '+self.maxNPS.text()+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath)+self.dboptions+')')
             except:
                 self.pathinfoA.setText("Error occured in processing.  Change parameters and repeat.")
                 return
@@ -226,7 +226,7 @@ class runSigPathway(OWRpy):
         
     def cellClicked(self, item):
         self.clickedRow = int(item.row())+1
-        self.subtable = {'data':'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':['http://www.ncbi.nlm.nih.gov/gene/','']}
+        self.subtable = {'data':'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':{'IHOP':'http://www.ihop-net.org/UniPub/iHOP/?search={4}', 'Entrez Gene': 'http://www.ncbi.nih.gov/gene/{3}'}}
         self.sendMe()
         try: self.table2
         except: pass

@@ -1,13 +1,14 @@
-import orange
-
-class RVariable(orange.Variable):
-	pass
-	
+# Kyle R Covington
+class RVariable:
+    pass
 class RDataFrame(RVariable):
-	pass
-	
+    pass
+    
 class RVector(RVariable):
-	pass
+    pass
 
 class RList(RVariable):
-	pass
+    pass
+    
+class RSession(RVariable):
+    pass

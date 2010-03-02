@@ -1,4 +1,4 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si)
+# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington
 #
 
 import os, sys, re, glob, stat
@@ -118,9 +118,9 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
             if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
                 sys.path.remove(dirname)
             widgClass = wmod.__dict__[widgname]
-            inputClasses = set(eval(x[1], wmod.__dict__).__name__ for x in eval(inputList))
-            outputClasses = set(y.__name__ for x in eval(outputList) for y in eval(x[1], wmod.__dict__).mro())
-            
+            # inputClasses = set(eval(x[1], wmod.__dict__).__name__ for x in eval(inputList))
+            # outputClasses = set(y.__name__ for x in eval(outputList) for y in eval(x[1], wmod.__dict__).mro())
+            #print 'OUTPUT CLASSES: '+str(outputClasses)
             widgetInfo = WidgetDescription(
                              name = data[istart+6:iend],
                              category = category,
@@ -128,7 +128,7 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
                              fileName = widgname,
                              fullName = filename,
                              inputList = inputList, outputList = outputList,
-                             inputClasses = inputClasses, outputClasses = outputClasses
+                             #inputClasses = inputClasses, outputClasses = outputClasses
                              )
     
             for attr, deflt in (("contact>", "") , ("icon>", "icons/Unknown.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
@@ -161,7 +161,7 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
                 hasErrors = True
             print "   %s: %s" % (widgname, msg)
             widgetsWithError.append(widgname)
-       
+        
     return widgets
 
 

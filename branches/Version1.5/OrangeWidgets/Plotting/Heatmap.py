@@ -1,8 +1,9 @@
 """
 <name>Heatmap</name>
 <description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.</description>
-<tags>Bioconductor, Plotting</tags>
-<icon>icons/HeatMap.png</icon>
+<tags>Plotting</tags>
+<RFunctions>stats:heatmap</RFunctions>
+<icon>icons/heatmap.png</icon>
 <priority>2040</priority>
 """
 
@@ -53,7 +54,11 @@ class Heatmap(OWRpy):
     def makePlot(self):
         #self.require_libraries([heatmap.plus])
         self.infoa.setText("You are plotting "+self.plotdata)
-        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', ColSideColors=rgb(t(col2rgb('+self.classes+'+2)), maxColorValue=255), col= topo.colors(50))', 3, 4)
+        if self.classes:
+            colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2))'
+        else:
+            colClasses = ''
+        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= topo.colors(50)'+ colClasses+')', 3, 4)
         
     def rowvChoiceprocess(self):
         if self.plotdata:
