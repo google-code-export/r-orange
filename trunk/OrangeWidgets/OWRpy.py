@@ -57,10 +57,21 @@ class OWRpy(OWWidget,RSession):
         webSize = QSize(200,100)
         self.help.setMaximumSize(webSize)
  
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        #self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         
+        #url = self.help.url('http://www.google.com')
+        
+        import inspect, os
+        #print inspect.stack()
+        #print inspect.stack()[1][1]
+        #print inspect.stack()[1]
+        #print __file__
+        #print os.path.basename(inspect.stack()[1][1])
+        url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
+        print url
+        self.help.load(QUrl(url))
         notesBox = OWGUI.widgetBox(self, "Notes")
         self.notes = redRGUI.textEdit(notesBox)
         helpBox = OWGUI.widgetBox(self, "Discription")
