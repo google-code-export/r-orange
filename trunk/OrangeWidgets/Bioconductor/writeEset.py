@@ -1,7 +1,7 @@
 """
 <name>Write eSet</name>
 <description>Writes an eSet to a tab delimited file.</description>
-<tags>microarray</tags>
+<tags>Microarray</tags>
 <RFunctions>affy:write.exprs</RFunctions>
 <icon>icons/readcel.png</icon>
 <priority>80</priority>

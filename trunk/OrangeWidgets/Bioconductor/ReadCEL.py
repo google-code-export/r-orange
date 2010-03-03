@@ -1,7 +1,7 @@
 """
 <name>Read CEL Files</name>
 <description>Allows the user to pick CEL files either individually or through a .txt file and outputs the eSet as an R.object</description>
-<tags>microarray</tags>
+<tags>Microarray</tags>
 <RFunctions>affy:ReadAffy,affy:justRMA</RFunctions>
 <icon>icons/readcel.png</icon>
 <priority>10</priority>
