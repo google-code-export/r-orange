@@ -3,7 +3,10 @@
 #    main file, that creates the MDI environment
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import sys, os, cPickle, orngRegistry, orngEnviron, OWGUI
+import sys, os, cPickle
+mypath = os.path.split(sys.path[-1])[0]
+sys.path.insert(1, mypath)
+import orngRegistry, orngEnviron, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import user, orngMisc
 import updateRedR
