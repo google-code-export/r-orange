@@ -1,7 +1,7 @@
 """
 <name>Normalize</name>
 <description>Processes an Affybatch to an eset using RMA</description>
-<tags>microarray</tags>
+<tags>Microarray</tags>
 <RFunctions>affy:rma,affy:mas5,affy:expresso</RFunctions>
 <icon>icons/normalize.png</icon>
 <priority>1010</priority>
