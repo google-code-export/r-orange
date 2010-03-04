@@ -4,7 +4,7 @@ import os, sys, user
 def __getDirectoryNames():
     """Return a dictionary with Orange directories."""
     try:
-        orangeDir = os.path.split(os.path.abspath(__file__))[0]
+        orangeDir = os.path.split(os.path.abspath(__file__))[0] # must point to the correct directory
     except:
         # import orange
         # orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]

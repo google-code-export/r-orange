@@ -4,9 +4,10 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, os, cPickle
-mypath = os.path.split(sys.path[-1])[0]
-sys.path.insert(1, mypath)
-import orngRegistry, orngEnviron, OWGUI
+mypath = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+sys.path.insert(0, mypath) # this sequence is nessesary when there are multiple versions of RedR on the system.  This may also work with installation into other working directories.
+#sys.modules = []
+import orngEnviron, orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import user, orngMisc
 import updateRedR
@@ -26,7 +27,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.originalPalette = QApplication.palette()
 
         self.__dict__.update(orngEnviron.directoryNames)
-               
+        
         self.defaultPic = os.path.join(self.picsDir, "Unknown.png")
         self.defaultBackground = os.path.join(self.picsDir, "frame.png")
         canvasPicsDir  = os.path.join(self.canvasDir, "icons")
