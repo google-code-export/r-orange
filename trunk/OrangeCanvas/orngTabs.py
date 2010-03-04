@@ -271,17 +271,11 @@ class MyTreeWidget(QTreeWidget):
         win.addWidget(item.widgetInfo)
         if (self.mouseRightClick or self.shiftPressed) and len(win.widgets) > 1:
             win.addLine(win.widgets[-2], win.widgets[-1])
-    
-    
-    
-
-            
+         
 class WidgetScrollArea(QScrollArea):
     def wheelEvent(self, ev):
         hs = self.horizontalScrollBar()
         hs.setValue(min(max(hs.minimum(), hs.value()-ev.delta()), hs.maximum()))
-
-
 
 class WidgetListBase:
     def __init__(self, canvasDlg, widgetInfo):
@@ -290,8 +284,58 @@ class WidgetListBase:
         self.allWidgets = []
         self.tabDict = {}
         self.tabs = []
+    def createFavoriteWidgetTabs(self, widgetRegistry, widgetDir, picsDir, defaultPic):
+        # populate the favorites widget, we will want to repopulate this when a widget is added
+        
+        try:
+            ffile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/favorites.xml')
+            f = open(ffile, 'r')
+        except: # there was an exception, the user might not have the favorites file, we need to make one and set a default settings 
+            self.insertWidgetTab('Favorites', 1) # make a favorites tab
+            return
+            
+        favTabs = xml.dom.minidom.parse(f)
+        f.close()
+        treeXML = mainTabs.childNodes[0] # everything is contained within the Favorites
+        print 'Favorites' + str(treeXML.childNodes)
+            
+        #loop to make the catagories
+        for node in treeXML.childNodes: # put the child nodes into the widgets
+            if node.nodeName == 'group':
+                tab = self.insertWidgetTab(str(node.getAttribute('name')), 1)
+                self.insertFavoriteChildTabs(node, tab, widgetRegistry)
+                
+                self.insertFavoriteWidgets(node, tab, widgetRegistry)
 
+                if hasattr(tab, "adjustSize"):
+                    tab.adjustSize()
+        
+        self.insertFavoriteWidgets(treeXML, self, widgetRegistry)
+        
+    def insertFavoriteChildTabs(self, node, tab, widgetRegistry):
+        try:
+            if node.hasChildNodes(): subTabs = node.childNodes
+            else: return
+            
+            for child in subTabs:
+                if child.nodeName == 'group': # we found another group
+                    childTab = WidgetTreeFolder(tab, str(child.getAttribute('name')))
+                    childTab.widgets = []
+                    childTab.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
+                    self.insertFavoriteChildTabs(child, childTab, widgetRegistry)
+                    self.insertFavoriteWidgets(child, childTab, widgetRegistry)
+                
+        except: #subtabs don't exist
+            return
+            
+    def insertFavoriteWidgets(self, node, tab, widgetRegistry):
+        widgets = None
+        for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
+            
+            for wName in widgetRegistry[tabName].keys(): #wName will be a collection of widget names as they appear in the tree
+                ###
     def createWidgetTabs(self, widgetTabList, widgetRegistry, widgetDir, picsDir, defaultPic):
+        print str(widgetRegistry) + ' widget registry'
         self.widgetDir = widgetDir
         self.picsDir = picsDir
         self.defaultPic = defaultPic
@@ -315,7 +359,7 @@ class WidgetListBase:
             if itab.nodeName == 'group': #picked a group element
                 
                 tab = self.insertWidgetTab(str(itab.getAttribute('name')), 1) # a QTreeWidgetItem
-                print 'inserted tab '+str(itab.getAttribute('name'))
+                #print 'inserted tab '+str(itab.getAttribute('name'))
                 self.insertChildTabs(itab, tab, widgetRegistry)
                 
                 self.insertWidgets(itab.getAttribute('name'), tab, widgetRegistry)
@@ -344,14 +388,7 @@ class WidgetListBase:
                 
         except: #subtabs don't exist
             return
-        
-        # for ttab in subTabs:
-            # child = WidgetTreeFolder(tab, ttab)
-            # child.widgets = []
-            
-            # self.insertChildTabs(ttab, child, subTabs, widgetRegistry)
-            # self.insertWidgets(ttab, child, widgetRegistry)
-        
+                
     def insertWidgets(self, itab, tab, widgetRegistry):
         #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
         widgets = None
@@ -360,7 +397,7 @@ class WidgetListBase:
             for wName in widgetRegistry[tabName].keys():
                 awidgets = {}
                 try: 
-                    print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+                    #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
                     wtags = widgetRegistry[tabName][wName].tags
                     wtags = wtags.replace(' ', '')
                     wtags = wtags.split(',')
@@ -391,31 +428,7 @@ class WidgetListBase:
                         self.allWidgets.append(button)
                         
                 except: pass
-            # for stabName in awidgets.keys():
-                # widgets = [(int(widgetInfo.priority), name, widgetInfo) for (name, widgetInfo) in awidgets[stabName].items()]
-            # if not widgets: return
-            # widgets.sort()
-            # exIndex = 0
-            # for (priority, name, widgetInfo) in widgets:
-            
-                # print str((priority, name, widgetInfo))+ ' attempting to be added'
-                # if isinstance(self, WidgetTree):
-                    # print 'trying to add a button'
-                    # button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
-                    
-                # else:
-                    # button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
-                    
-                    # for k in range(priority/1000 - exIndex):
-                        # tab.layout().addSpacing(10)
-                    # exIndex = priority / 1000
-                    # tab.layout().addWidget(button)
-                # if button not in tab.widgets:
-                    # tab.widgets.append(button)
-                # self.allWidgets.append(button)
-
-
-
+           
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
@@ -451,8 +464,6 @@ class WidgetTabs(WidgetListBase, QTabWidget):
         return widgetSpace
 
 
-
-
 class WidgetTree(WidgetListBase, QDockWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
@@ -467,15 +478,14 @@ class WidgetTree(WidgetListBase, QDockWidget):
         tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
         self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
         self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
+        self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
         #tmpBoxLayout.insertWidget(0, CanvasPopup)
         tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
         tmpBoxLayout.insertWidget(1, self.treeWidget)
+        tmpBoxLayout.insertWidget(2, self.favoritesTree)
         
         self.setWidget(self.containerWidget)
         
-        #self.setWidget(self.treeWidget)
-        
-        #self.setWidget(self.containerWidget)
         iconSize = self.canvasDlg.toolbarIconSizeList[self.canvasDlg.settings["toolbarIconSize"]]
         self.treeWidget.setIconSize(QSize(iconSize, iconSize))
 #        self.treeWidget.setRootIsDecorated(0) 

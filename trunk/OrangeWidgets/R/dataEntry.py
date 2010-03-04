@@ -10,8 +10,6 @@
 import redRGUI
 from OWRpy import *
 
-
-
 class dataEntry(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 1, resizingEnabled = 1)
@@ -20,8 +18,6 @@ class dataEntry(OWRpy):
         self.colCount = 10
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
-        self.rowHeaders = True
-        self.colHeaders = True
 
         self.savedData = None
         self.setRvariableNames(['table'])
@@ -32,8 +28,8 @@ class dataEntry(OWRpy):
         
         box = redRGUI.widgetBox(self.controlArea, "Options")
         redRGUI.button(box, self, 'Commit', self.commitTable)
-        redRGUI.checkBox(box, self, 'rowHeaders', 'Use Row Headers:')
-        redRGUI.checkBox(box, self, 'colHeaders', 'Use Column Headers:')
+        self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers:'])
+        self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers:'])
         #redRGUI.button(box, self, 'Add Column', self.addColumn)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
@@ -144,7 +140,7 @@ class dataEntry(OWRpy):
             self.colHeaders = True
         rownames = {}  
         colnames = {}        
-        if self.rowHeaders == True:
+        if self.rowHeaders.items()[0].isChecked() == True:
             
             for i in rowi[1:]:
                 item = self.dataTable.item(i, coli[0])
@@ -157,7 +153,7 @@ class dataEntry(OWRpy):
                 rownames[str(i)] = (str(thisText))
             coli = coli[1:] #index up the cols
 
-        if self.colHeaders == True:
+        if self.colHeaders.items()[0].isChecked() == True:
             for j in coli:
                 item = self.dataTable.item(rowi[0], j)
                 if item != None:
