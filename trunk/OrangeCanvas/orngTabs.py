@@ -220,7 +220,7 @@ class MyTreeWidget(QTreeWidget):
         p = QPointF(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos()))) + QPointF(schema.canvasView.mapToScene(QPoint(0, 0)))
 
         dinwin, widget = getattr(self, "widgetDragging", (None, None))
-        if dinwin and (dinwin != win or not inside):
+        if dinwin and not inside:
              dinwin.removeWidget(widget)
              delattr(self, "widgetDragging")
              dinwin.canvasView.scene().update()
@@ -291,18 +291,18 @@ class WidgetListBase:
             ffile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/favorites.xml')
             f = open(ffile, 'r')
         except: # there was an exception, the user might not have the favorites file, we need to make one and set a default settings 
-            self.insertWidgetTab('Favorites', 1) # make a favorites tab
+            self.insertFavoriteWidgetTab('Favorites', 1) # make a favorites tab
             return
             
         favTabs = xml.dom.minidom.parse(f)
         f.close()
-        treeXML = mainTabs.childNodes[0] # everything is contained within the Favorites
+        treeXML = favTabs.childNodes[0] # everything is contained within the Favorites
         print 'Favorites' + str(treeXML.childNodes)
             
         #loop to make the catagories
         for node in treeXML.childNodes: # put the child nodes into the widgets
             if node.nodeName == 'group':
-                tab = self.insertWidgetTab(str(node.getAttribute('name')), 1)
+                tab = self.insertFavoriteWidgetTab(str(node.getAttribute('name')), 1)
                 self.insertFavoriteChildTabs(node, tab, widgetRegistry)
                 
                 self.insertFavoriteWidgets(node, tab, widgetRegistry)
@@ -310,7 +310,7 @@ class WidgetListBase:
                 if hasattr(tab, "adjustSize"):
                     tab.adjustSize()
         
-        self.insertFavoriteWidgets(treeXML, self, widgetRegistry)
+        #self.insertFavoriteWidgets(treeXML, self, widgetRegistry)
         
     def insertFavoriteChildTabs(self, node, tab, widgetRegistry):
         try:
@@ -330,10 +330,47 @@ class WidgetListBase:
             
     def insertFavoriteWidgets(self, node, tab, widgetRegistry):
         widgets = None
+        #print str(widgetRegistry.keys())
+        
         for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
-            
+            #print widgetRegistry[tabName].keys()
             for wName in widgetRegistry[tabName].keys(): #wName will be a collection of widget names as they appear in the tree
-                ###
+                print wName
+                awidgets = {} # not sure what this does yet
+                for subNode in node.childNodes: # what are the child nodes
+                    if subNode.nodeName == 'description':
+                        subNodeAtt = ''
+                        for subNode2 in subNode.childNodes:
+                            if subNode2.nodeType == node.TEXT_NODE:
+                                subNodeAtt = subNodeAtt + subNode2.data
+                        subNodeAtt = str(subNodeAtt)
+                        subNodeAtt = subNodeAtt.replace(' ', '')
+                        print subNodeAtt.strip()
+                        widgetNames = subNodeAtt.split(',')
+                        print str(widgetNames)
+                        if wName.replace(' ', '') in widgetNames: # add the widget
+                            if tabName not in awidgets.keys(): awidgets[tabName] = {}
+                            awidgets[tabName][wName] = widgetRegistry[tabName][wName]
+                            #print 'made it past the awidgets stage'
+                            #print str(awidgets[tabName].items())
+                            (name, widgetInfo) = awidgets[tabName].items()[0]
+                            (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
+                            #print str((priority, name, widgetInfo)) + 'made it to 7894'
+                            #print str(widgetInfo)
+                            if isinstance(self, WidgetTree):
+                                print str(tab)
+                                button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
+                                
+                            else:
+                                button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
+                                for k in range(priority/1000 - exIndex):
+                                    tab.layout().addSpacing(10)
+                                exIndex = priority / 1000
+                                tab.layout().addWidget(button)
+                            if button not in tab.widgets:
+                                tab.widgets.append(button)
+                            self.allWidgets.append(button)
+                        
     def createWidgetTabs(self, widgetTabList, widgetRegistry, widgetDir, picsDir, defaultPic):
         print str(widgetRegistry) + ' widget registry'
         self.widgetDir = widgetDir
@@ -404,7 +441,7 @@ class WidgetListBase:
                 except: 
                     wtags = 'Prototypes'
                 try:
-                    if itab.replace(' ', '') in wtags:
+                    if itab.replace(' ', '') in wtags: # add the widget
                         if tabName not in awidgets.keys(): awidgets[tabName] = {}
                         awidgets[tabName][wName] = widgetRegistry[tabName][wName]
                         #print 'made it past the awidgets stage'
@@ -510,7 +547,24 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.tabs.append((name, 2*int(show), item))
 
         return item
+    def insertFavoriteWidgetTab(self, name, show = 1):
+        if self.tabDict.has_key(name):
+            self.tabDict[name].setHidden(not show)
+            return self.tabDict[name]
         
+        item = WidgetTreeFolder(self.favoritesTree, name)
+        item.widgets = []
+        self.tabDict[name] = item
+
+        if not show:
+            item.setHidden(1)
+        if self.canvasDlg.settings.has_key("treeItemsOpenness") and self.canvasDlg.settings["treeItemsOpenness"].has_key(name):
+             item.setExpanded(self.canvasDlg.settings["treeItemsOpenness"][name])
+        elif not self.canvasDlg.settings.has_key("treeItemsOpenness") and self.favoritesTree.topLevelItemCount() == 1:
+            item.setExpanded(1)
+        self.tabs.append((name, 2*int(show), item))
+
+        return item
     def callback(self):
         text = str(self.widgetSuggestEdit.text())
         for action in self.actions:

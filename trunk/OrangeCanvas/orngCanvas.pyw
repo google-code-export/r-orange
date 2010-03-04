@@ -187,6 +187,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
 
         self.settings["WidgetTabs"] = self.tabs.createWidgetTabs(self.settings["WidgetTabs"], self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
+        self.tabs.createFavoriteWidgetTabs(self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
         if not self.settings.get("showWidgetToolbar", True): 
             self.widgetsToolBar.hide()
 
