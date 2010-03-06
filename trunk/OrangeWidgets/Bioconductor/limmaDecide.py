@@ -49,10 +49,10 @@ class limmaDecide(OWRpy):
         
         optionsbox = redRGUI.widgetBox(self.controlArea, "Options")
         grid.addWidget(optionsbox, 0,0)
-        redRGUI.comboBox(optionsbox, self, "dmethod", label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
-        redRGUI.comboBox(optionsbox, self, "adjmethods", label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
-        redRGUI.lineEdit(optionsbox, self, "pval", label = "Minimum p-value change:", orientation = 0)
-        redRGUI.lineEdit(optionsbox, self, "foldchange", label = "Minimum fold change:", orientation = 0)
+        redRGUI.comboBox(optionsbox, label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
+        redRGUI.comboBox(optionsbox, label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
+        redRGUI.lineEdit(optionsbox, label = "Minimum p-value change:", orientation = 0)
+        redRGUI.lineEdit(optionsbox, label = "Minimum fold change:", orientation = 0)
         
         computebox = redRGUI.widgetBox(self.controlArea, "Compute")
         grid.addWidget(computebox, 1,0)

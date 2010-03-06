@@ -50,12 +50,7 @@ class ReadCEL(OWRpy):
         self.setFileList()
         # self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
         
-        
-    # def onLoadSavedSession(self):
-        # self.infoc.setText("Data reloaded from saved session.")
-        # self.infod.setText("You may want to use a data viewer to check the data.")
-        # if self.Rvariables['eset'] in self.R('ls()'):
-            # self.sendMe()        
+                
     def setFileList(self):
         self.filecombo.clear()
         if not self.recentFiles:
@@ -82,7 +77,7 @@ class ReadCEL(OWRpy):
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        self.R(self.Rvariables['folder'] +'<-choose.dir()', 'setRData')
+        self.R(self.Rvariables['folder'] +'<-choose.dir()', 'setRData') #need to remove the choose.dir ###
         if not self.R('is.na(' + self.Rvariables['folder'] +')'):
             folder = self.R(self.Rvariables['folder'])
             if folder in self.recentFiles: self.recentFiles.remove(folder)

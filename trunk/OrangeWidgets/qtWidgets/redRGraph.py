@@ -406,7 +406,7 @@ class redRGraph(QwtPlot):
             else:
                 newSymbol = QwtSymbol(symbol, QBrush(bc), QPen(pc), QSize(si, si))
             curve.setSymbol(newSymbol)
-            #curve.setStyle(style)
+            curve.setStyle(style)
             #curve.setPen(QPen(penColor, lineWidth))
             curve.setData([xData[i]], [yData[i]])
             curve.attach(self)
