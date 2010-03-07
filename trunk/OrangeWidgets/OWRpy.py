@@ -74,7 +74,7 @@ class OWRpy(OWWidget,RSession):
         # self.defaultLeftArea.layout().addWidget(helpBox)
         
         notesBox = redRGUI.widgetBox(self.defaultLeftArea, "Notes")
-        notesBox.setBaseSize(webSize)
+        notesBox.setBaseSize(QSize(200,100))
         notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
         notesText = redRGUI.widgetLabel(notesBox, "Please place notes in this area.")
         # notesBox.layout().addWidget(self.notes)
@@ -106,7 +106,7 @@ class OWRpy(OWWidget,RSession):
         self.processingBox.setMaximumSize(QSize(300,40))
         self.processingBox.setHtml('<small>Processing not yet performed.</small>')
 
-        self.processingBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.processingBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         #processingBoxBox.layout().addWidget(self.processingBox)
         #self.defaultLeftArea.layout().addWidget(processingBoxBox)
         
