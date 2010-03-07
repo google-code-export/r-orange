@@ -8,7 +8,7 @@ from OWWidget import *
 from PyQt4 import QtWebKit
 from RSession import *
 import redRGUI 
-
+import inspect, os
 import time
 import RvarClasses
 import RAffyClasses
@@ -39,6 +39,7 @@ class OWRpy(OWWidget,RSession):
         OWRpy.num_widgets += 1
         ctime = str(time.time())
         self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + ctime
+        
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.setRvariableNames(['title'])
@@ -49,68 +50,83 @@ class OWRpy(OWWidget,RSession):
         
         #collect the sent items
         self.sentItems = []
+        
+        #dont save these variables
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
         
-
+        #start widget GUI
+        #sidePanal = redRGUI.widgetBox(self,'Documentation')
+        
+        webSize = QSize(200,300)
+        
         self.help = QtWebKit.QWebView(self)
-        self.processingBox = QtWebKit.QWebView(self)
-        webSize = QSize(200,100)
         self.help.setMaximumSize(webSize)
- 
-        #self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
-        
-        #url = self.help.url('http://www.google.com')
-        
-        import inspect, os
-        #print inspect.stack()
-        #print inspect.stack()[1][1]
-        #print inspect.stack()[1]
-        #print __file__
-        #print os.path.basename(inspect.stack()[1][1])
-        url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
-        print url
-        self.help.load(QUrl(url))
-        notesBox = OWGUI.widgetBox(self, "Notes")
-        self.notes = redRGUI.textEdit(notesBox)
-        helpBox = OWGUI.widgetBox(self, "Discription")
-        processingBoxBox = OWGUI.widgetBox(self, "Processing Status")
-        self.processingBox.setMaximumSize(webSize)
-        self.processingBox.setHtml('<small>Processing not yet performed, please see the help documentation if you are having trouble using this widget.</small>')
 
-        #self.processingBox.setUrl(QUrl("http://en.wikipedia.org/wiki/File:Rotating_earth_(small).gif"))
-        processingBoxBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        processingBoxBox.layout().addWidget(self.processingBox)
-        notesBox.setBaseSize(webSize)
+        url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
+        self.help.load(QUrl(url))
+        helpBox = redRGUI.widgetBox(self.defaultLeftArea, "Discription")
         helpBox.setBaseSize(webSize)
-        helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        helpBox.layout().addWidget(self.help)        
+        # self.defaultLeftArea.layout().addWidget(helpBox)
         
+        notesBox = redRGUI.widgetBox(self.defaultLeftArea, "Notes")
+        notesBox.setBaseSize(webSize)
+        notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
         notesText = redRGUI.widgetLabel(notesBox, "Please place notes in this area.")
         # notesBox.layout().addWidget(self.notes)
-        helpBox.layout().addWidget(self.help)
         
-        #self.controlArea.layout().addWidget(self.widgetToolBar)
-        self.defaultLeftArea.layout().addWidget(helpBox)
-        #self.help.mainFrame().show()
-        self.defaultLeftArea.layout().addWidget(notesBox)
-        self.defaultLeftArea.layout().addWidget(processingBoxBox)
+        self.notes = redRGUI.textEdit(notesBox)
+        # self.defaultLeftArea.layout().addWidget(notesBox)
+        
+
+
         self.statusBar = QStatusBar()
+        self.statusBar.setLayout(QHBoxLayout())
         self.layout().addWidget(self.statusBar)
+        
         # self.splitter = QSplitter(self.controlArea)
         # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
         # self.controlArea.layout().addWidget(self.splitter)
         # self.splitter.addWidget(self.widgetMainArea)
         #self.controlArea.setLayout(self.splitter)
-        self.statusIndicator = OWGUI.widgetLabel(self, "Data not connected")
+        
+        self.documentationCheckBox = QCheckBox('Documentation')
+        self.documentationCheckBox.setChecked(True)
+        QObject.connect(self.documentationCheckBox, SIGNAL('stateChanged(int)'), self.toggleDocumentation)
+        self.statusBar.addWidget(self.documentationCheckBox)
+
+        #self.processingBox = redRGUI.widgetLabel(self.statusBar, "Data not connected")
+
+        self.processingBox = QtWebKit.QWebView(self)
+        #processingBoxBox = redRGUI.widgetBox(self.defaultLeftArea, "Processing Status")
+        self.processingBox.setMaximumSize(QSize(300,40))
+        self.processingBox.setHtml('<small>Processing not yet performed.</small>')
+
+        self.processingBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        #processingBoxBox.layout().addWidget(self.processingBox)
+        #self.defaultLeftArea.layout().addWidget(processingBoxBox)
+        
+        self.statusBar.addWidget(self.processingBox)
+        
         #self.statusIndicator.setBackgroundRole(QPalette.Dark)
         
         #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
-        self.statusBar.addWidget(self.statusIndicator)
+        
         #self.statusBar.addWidget(self.statusImage)
         #MoviePlayer().show()
 
+    def toggleDocumentation(self,state):
+        for c in self.defaultLeftArea.children():
+            if isinstance(c, QLayout): continue
+            if self.documentationCheckBox.isChecked():
+                c.show()
+            else:
+                c.hide()
+        
     def setRvariableNames(self,names):
         
         #names.append('loadSavedSession')

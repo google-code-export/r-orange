@@ -785,47 +785,6 @@ def comboBoxWithCaption(widget, master, value, label, box=None, items=None, tool
     return combo
 
 # creates a widget box with a button in the top right edge, that allows you to hide all the widgets in the box and collapse the box to its minimum height
-class collapsableWidgetBox(QGroupBox):
-    def __init__(self, widget, box = "", master = None, value = "", orientation = "vertical", callback = None):
-        QGroupBox.__init__(self, widget)
-        self.setFlat(1)
-        if orientation == 'vertical': self.setLayout(QVBoxLayout())
-        else:                         self.setLayout(QHBoxLayout())
-
-        if widget.layout():
-            widget.layout().addWidget(self)
-        if type(box) in (str, unicode): # if you pass 1 for box, there will be a box, but no text
-            self.setTitle(" " + box.strip() + " ")
-
-        self.setCheckable(1)
-        
-        self.master = master
-        self.value = value
-        self.callback = callback
-        QObject.connect(self, SIGNAL("clicked()"), self.toggled)
-
-
-    def toggled(self, val = 0):
-        if self.value:
-            self.master.__setattr__(self.value, self.isChecked())
-            self.updateControls()
-            self.setFlat(1)
-        if self.callback != None:
-            self.callback()
-
-    def updateControls(self):
-        val = self.master.getdeepattr(self.value)
-        self.setChecked(val)
-        self.setFlat(not val)
-
-        for c in self.children():
-            if isinstance(c, QLayout): continue
-            if val:
-                c.show()
-            else:
-                c.hide()
-
-
 # creates an icon that allows you to show/hide the widgets in the widgets list
 class widgetHider(QWidget):
     def __init__(self, widget, master, value, size = (19,19), widgets = [], tooltip = None):
