@@ -9,7 +9,7 @@ class checkBox(widgetBox,widgetState):
     def __init__(self,widget,label=None,buttons = None, orientation='vertical',callback = None, **args):
         widgetBox.__init__(self,widget,orientation=orientation)
         #widget.layout().addWidget(self)
-        if(len(buttons) > 1):
+        if(buttons is not None and len(buttons) > 1):
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
             self.buttons = QButtonGroup(self.box)
