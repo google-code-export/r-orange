@@ -3,14 +3,16 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
         
-class widgetBox(QGroupBox,widgetState):
-    def __init__(self,widget, name = '', orientation=QVBoxLayout(), addSpace=False, 
-    sizePolicy = None, margin = -1, spacing = -1, flat = 0, addToLayout = 1):
-        QGroupBox.__init__(self,widget)
-        if type(name) in (str, unicode): # if you pass 1 for box, there will be a box, but no text
-            self.setTitle(" "+name.strip()+" ")
+class widgetBox(QWidget,widgetState):
+    def __init__(self,widget, orientation=QVBoxLayout(), addSpace=False, 
+    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1):
+
+        QWidget.__init__(self,widget)
+            
+        # if type(name) in (str, unicode): # if you pass 1 for box, there will be a box, but no text
+            # self.setTitle(" "+name.strip()+" ")
         if margin == -1: margin = 7
-        self.setFlat(flat)
+        # self.setFlat(flat)
         if widget.layout():
             widget.layout().addWidget(self)
         
@@ -26,8 +28,11 @@ class widgetBox(QGroupBox,widgetState):
             
         if self.layout() == 0 or self.layout() == None:
             self.setLayout(QVBoxLayout())
+
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
+        
+            
 
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)

@@ -17,14 +17,15 @@ class groupBox(QGroupBox,redRGUI.widgetState):
             self.setLayout(QHBoxLayout())
         else:
             self.setLayout(QVBoxLayout())
-        if sizePolicy:
-            self.setSizePolicy(sizePolicy)
+        #if sizePolicy:
+        self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
 
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)
         if margin != -1:
             self.layout().setMargin(margin)
-
+        else:
+            self.layout().setMargin(4)
         if addSpace and isinstance(addSpace, int):
             redRGUI.separator(widget, 0, addSpace)
         elif addSpace:

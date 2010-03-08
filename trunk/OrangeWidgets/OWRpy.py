@@ -66,14 +66,14 @@ class OWRpy(OWWidget,RSession):
 
         url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
         self.help.load(QUrl(url))
-        helpBox = redRGUI.widgetBox(self.defaultLeftArea, "Discription")
+        helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
         helpBox.setBaseSize(webSize)
         helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         helpBox.layout().addWidget(self.help)        
         # self.defaultLeftArea.layout().addWidget(helpBox)
         
-        notesBox = redRGUI.widgetBox(self.defaultLeftArea, "Notes")
+        notesBox = redRGUI.groupBox(self.defaultLeftArea, "Notes")
         notesBox.setBaseSize(QSize(200,100))
         notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
         notesText = redRGUI.widgetLabel(notesBox, "Please place notes in this area.")
@@ -101,16 +101,16 @@ class OWRpy(OWWidget,RSession):
 
         #self.processingBox = redRGUI.widgetLabel(self.statusBar, "Data not connected")
 
-        self.processingBox = QtWebKit.QWebView(self)
+        self.status = QtWebKit.QWebView(self)
         #processingBoxBox = redRGUI.widgetBox(self.defaultLeftArea, "Processing Status")
-        self.processingBox.setMaximumSize(QSize(300,40))
-        self.processingBox.setHtml('<small>Processing not yet performed.</small>')
+        self.status.setMaximumSize(QSize(300,40))
+        self.status.setHtml('<small>Processing not yet performed.</small>')
 
-        self.processingBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         #processingBoxBox.layout().addWidget(self.processingBox)
         #self.defaultLeftArea.layout().addWidget(processingBoxBox)
         
-        self.statusBar.addWidget(self.processingBox)
+        self.statusBar.addWidget(self.status)
         
         #self.statusIndicator.setBackgroundRole(QPalette.Dark)
         

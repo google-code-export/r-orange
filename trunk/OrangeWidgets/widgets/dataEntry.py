@@ -26,17 +26,17 @@ class dataEntry(OWRpy):
         self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
         #GUI.
         
-        box = redRGUI.widgetBox(self.controlArea, "Options")
-        redRGUI.button(box, self, 'Commit', self.commitTable)
-        self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers:'])
-        self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers:'])
+        box = redRGUI.groupBox(self.controlArea, "Options")
+        redRGUI.button(box, 'Commit', self.commitTable)
+        self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers'])
+        self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers'])
         #redRGUI.button(box, self, 'Add Column', self.addColumn)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
 
         
-        box = redRGUI.widgetBox(self.controlArea, "Table")
+        box = redRGUI.groupBox(self.controlArea, "Table")
         self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
         self.dataTable.show()

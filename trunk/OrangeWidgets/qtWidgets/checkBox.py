@@ -7,8 +7,10 @@ from PyQt4.QtGui import *
 
 class checkBox(widgetBox,widgetState):
     def __init__(self,widget,label=None,buttons = None, orientation='vertical',callback = None, **args):
+        
         widgetBox.__init__(self,widget,orientation=orientation)
-        #widget.layout().addWidget(self)
+        
+        
         if(buttons is not None and len(buttons) > 1):
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
@@ -20,11 +22,12 @@ class checkBox(widgetBox,widgetState):
                 self.buttons.addButton(w)
                 self.box.layout().addWidget(w)
         else:
-            self.buttons = QButtonGroup(self)
-            self.buttons.setExclusive(False)
-            w = QCheckBox(buttons[0])
-            self.buttons.addButton(w)
-            self.layout().addWidget(w)
+            print 'asdf'
+            # self.buttons = QButtonGroup(self)
+            # self.buttons.setExclusive(False)
+            self.buttons = QCheckBox(buttons[0])
+            #self.buttons.addButton(w)
+            self.layout().addWidget(self.buttons)
 
         if callback:
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)

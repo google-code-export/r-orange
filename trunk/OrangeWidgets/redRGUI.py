@@ -344,31 +344,28 @@ class LineEditWFocusOut(QLineEdit):
 
 
 
-def button(widget, master, label, callback = None, disabled=0, tooltip=None, debuggingEnabled = 1, width = None, height = None, toggleButton = False, value = "", addToLayout = 1):
+def button(widget,  label, callback = None, disabled=0, tooltip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
     btn = QPushButton(label, widget)
     if addToLayout and widget.layout():
         widget.layout().addWidget(btn)
-
+    
     if width:
         btn.setFixedWidth(width)
+    else:
+        btn.setFixedWidth(len(label)*7+5)
     if height:
         btn.setFixedHeight(height)
     btn.setDisabled(disabled)
+    
     if tooltip:
         btn.setToolTip(tooltip)
         
-    if toggleButton or value:
+    if toggleButton:
         btn.setCheckable(True)
         
-    if value:
-        btn.setChecked(getdeepattr(master, value))
-        cfront, cback, cfunc = connectControl(btn, master, value, None, "toggled(bool)", CallFrontButton(btn),
-                                  cfunc = callback and FunctionCallback(master, callback, widget=btn))
-    elif callback:
+    if callback:
         QObject.connect(btn, SIGNAL("clicked()"), callback)
         
-    if debuggingEnabled and hasattr(master, "_guiElements"):
-        master._guiElements = getattr(master, "_guiElements", []) + [("button", btn, callback)]
     return btn
 
 def toolButton(widget, master, callback = None, width = None, height = None, tooltip = None, addToLayout = 1, debuggingEnabled = 1):
