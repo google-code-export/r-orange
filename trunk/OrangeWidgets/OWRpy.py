@@ -65,24 +65,29 @@ class OWRpy(OWWidget,RSession):
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
 
         url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
-        self.help.load(QUrl(url))
-        helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
-        helpBox.setBaseSize(webSize)
-        helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        try:
+            self.help.load(QUrl(url))
+        except: pass 
+        #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
+        self.helpBox = QDialog(self)
+        self.helpBox.setLayout(QVBoxLayout())
+        self.helpBox.setBaseSize(webSize)
+        self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        helpBox.layout().addWidget(self.help)        
-        # self.defaultLeftArea.layout().addWidget(helpBox)
+        self.helpBox.layout().addWidget(self.help)        
         
-        notesBox = redRGUI.groupBox(self.defaultLeftArea, "Notes")
-        notesBox.setBaseSize(QSize(200,100))
-        notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
-        notesText = redRGUI.widgetLabel(notesBox, "Please place notes in this area.")
+        self.notesBox = QDialog(self)
+        self.notesBox.setLayout(QVBoxLayout())
+        self.notesBox.setBaseSize(QSize(200,100))
+        self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
+        notesText = redRGUI.widgetLabel(self.notesBox, "Please place notes in this area.")
         # notesBox.layout().addWidget(self.notes)
         
-        self.notes = redRGUI.textEdit(notesBox)
+        self.notes = redRGUI.textEdit(self.notesBox)
         # self.defaultLeftArea.layout().addWidget(notesBox)
         
-
+        showHelpButton = redRGUI.button(None, 'Show Help', callback = self.showHelp)
+        showNotesButton = redRGUI.button(None, 'Show Notes', callback = self.showNotes)
 
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
@@ -118,7 +123,11 @@ class OWRpy(OWWidget,RSession):
         
         #self.statusBar.addWidget(self.statusImage)
         #MoviePlayer().show()
-
+    def showHelp(self):
+        self.helpBox.show()
+        
+    def showNotes(self):
+        self.notesBox.show()
     def toggleDocumentation(self,state):
         for c in self.defaultLeftArea.children():
             if isinstance(c, QLayout): continue
