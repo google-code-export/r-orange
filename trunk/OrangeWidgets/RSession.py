@@ -71,7 +71,7 @@ class RSession():
             print inst.message
             QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
             self.processingBox.setHtml('<center>Error occured during processing please check data or <a href="http://red-r.org/">contact the developers.</a></center>')
-
+            return None # now processes can catch potential errors
         RSession.processing = False
         if processing_notice:
             self.processingBox.setHtml('<center>Processing complete</center>')

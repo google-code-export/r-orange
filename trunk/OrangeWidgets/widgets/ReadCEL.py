@@ -9,7 +9,7 @@
 
 from OWRpy import *
 #import OWGUI
-import redRGUI 
+import redRGUI, os
 import RAffyClasses
 
 
@@ -41,7 +41,7 @@ class ReadCEL(OWRpy):
         #self.filecombo = QComboBox(box)
         self.filecombo.setMinimumWidth(150)
         # box.layout().addWidget(self.filecombo)
-        button = redRGUI.button(box, self, '...', callback = self.browseFile, width = 25, disabled=0)
+        button = redRGUI.button(box, self, 'Add Folder', callback = self.browseFile, width = 25, disabled=0)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
         self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
         self.infob = redRGUI.widgetLabel(box, '')
@@ -77,13 +77,15 @@ class ReadCEL(OWRpy):
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        self.R(self.Rvariables['folder'] +'<-choose.dir()', 'setRData') #need to remove the choose.dir ###
-        if not self.R('is.na(' + self.Rvariables['folder'] +')'):
-            folder = self.R(self.Rvariables['folder'])
-            if folder in self.recentFiles: self.recentFiles.remove(folder)
-            self.recentFiles.insert(0, folder)
-            self.setFileList()
-            self.process()
+        fn = QFileDialog.getExistingDirectory(None, 'CEL File Directory', os.path.abspath('/'))
+        print str(fn)
+        if fn.isEmpty(): return
+        self.R(self.Rvariables['folder'] + '<-"' + str(os.path.abspath(str(fn))).replace('\\', '\\\\') + '"')
+        folder = str(os.path.abspath(fn))
+        if folder in self.recentFiles: self.recentFiles.remove(folder)
+        self.recentFiles.insert(0, folder)
+        self.setFileList()
+        self.process()
         
     def process(self):
         self.infoa.setText("Your data is processing")
@@ -102,4 +104,6 @@ class ReadCEL(OWRpy):
     def sendMe(self):
         out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'cm':'cm_'+self.Rvariables['eset'], 'parent':'exprs('+self.Rvariables['eset']+')'}
         self.rSend("Expression Matrix", out)
-        self.rSend("Eset", {'data':self.Rvariables['eset']})
+        out2 = out.copy()
+        out2['data'] = str(self.Rvariables['eset'])
+        self.rSend("Eset", out2)

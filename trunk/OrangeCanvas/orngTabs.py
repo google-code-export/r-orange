@@ -297,7 +297,7 @@ class WidgetListBase:
         favTabs = xml.dom.minidom.parse(f)
         f.close()
         treeXML = favTabs.childNodes[0] # everything is contained within the Favorites
-        print 'Favorites' + str(treeXML.childNodes)
+        #print 'Favorites' + str(treeXML.childNodes)
             
         #loop to make the catagories
         for node in treeXML.childNodes: # put the child nodes into the widgets
@@ -335,7 +335,7 @@ class WidgetListBase:
         for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
             #print widgetRegistry[tabName].keys()
             for wName in widgetRegistry[tabName].keys(): #wName will be a collection of widget names as they appear in the tree
-                print wName
+                #print wName
                 awidgets = {} # not sure what this does yet
                 for subNode in node.childNodes: # what are the child nodes
                     if subNode.nodeName == 'description':
@@ -345,9 +345,9 @@ class WidgetListBase:
                                 subNodeAtt = subNodeAtt + subNode2.data
                         subNodeAtt = str(subNodeAtt)
                         subNodeAtt = subNodeAtt.replace(' ', '')
-                        print subNodeAtt.strip()
+                        #print subNodeAtt.strip()
                         widgetNames = subNodeAtt.split(',')
-                        print str(widgetNames)
+                        #print str(widgetNames)
                         if wName.replace(' ', '') in widgetNames: # add the widget
                             if tabName not in awidgets.keys(): awidgets[tabName] = {}
                             awidgets[tabName][wName] = widgetRegistry[tabName][wName]
@@ -358,7 +358,7 @@ class WidgetListBase:
                             #print str((priority, name, widgetInfo)) + 'made it to 7894'
                             #print str(widgetInfo)
                             if isinstance(self, WidgetTree):
-                                print str(tab)
+                                #print str(tab)
                                 button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
                                 
                             else:
@@ -372,7 +372,7 @@ class WidgetListBase:
                             self.allWidgets.append(button)
                         
     def createWidgetTabs(self, widgetTabList, widgetRegistry, widgetDir, picsDir, defaultPic):
-        print str(widgetRegistry) + ' widget registry'
+        #print str(widgetRegistry) + ' widget registry'
         self.widgetDir = widgetDir
         self.picsDir = picsDir
         self.defaultPic = defaultPic
@@ -385,12 +385,12 @@ class WidgetListBase:
         
         tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tags.xml')
         f = open(tfile, 'r')
-        print str(f)
+        #print str(f)
         
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         treeXML = mainTabs.childNodes[0]
-        print treeXML.childNodes
+        #print treeXML.childNodes
         
         for itab in treeXML.childNodes:
             if itab.nodeName == 'group': #picked a group element

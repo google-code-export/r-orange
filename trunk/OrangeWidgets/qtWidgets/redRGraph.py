@@ -379,13 +379,6 @@ class redRGraph(QwtPlot):
     def points(self, name, xData, yData, brushColor = [], penColor = [], size = [], style = QwtPlotCurve.NoCurve, symbol = QwtSymbol.Ellipse, enableLegend = 0, showFilledSymbols = None, lineWidth = 1, pen = None, autoScale = 0, antiAlias = None, penAlpha = 255, brushAlpha = 255):
         if len(xData) != len(yData): return None
         
-
-        # if penAlpha != 255:
-            # penColor.setAlpha(penAlpha)
-        # if brushAlpha != 255:
-            # brushColor.setAlpha(brushAlpha)
-        
-        
         for i in range(len(xData)):
             curve = QwtPlotCurve(name)
             curve.setRenderHint(QwtPlotItem.RenderAntialiased, antiAlias == 1 or self.useAntialiasing)
