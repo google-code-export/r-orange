@@ -3,7 +3,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class table(QTableWidget,widgetState):
-    def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = True, selectionMode = -1, addToLayout = 1):
+    def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1):
         QTableWidget.__init__(self,rows,columns,widget)
         self.sortIndex = None
         self.oldSortingIndex = None

@@ -15,14 +15,7 @@ import orngEnviron
 def start(lastRevproplist, versionNumber, silent = True):
 
     
-    #versionNumber = 'Version0'
-    #versionNumber = 'Version1.5'
-    # movie = MoviePlayer()
-    # movie.show()
-    # movie.start()
-    # QMessageBox.information(None, 'RedR', str(versionNumber), QMessageBox.Ok)
-    # movie.stop()
-    # movie.hide()
+    
     svnLoc = 'http://r-orange.googlecode.com/svn/trunk/'
     
     try:
@@ -63,7 +56,7 @@ def start(lastRevproplist, versionNumber, silent = True):
                 
                     
             
-        newRevproplist = client.revproplist(svnLoc)[1]
+        newRevproplist = client.revproplist(svnLoc, revision = pysvn.Revision(pysvn.opt_revision_kind.committed))[1]
     except:
         return lastRevproplist, versionNumber
 

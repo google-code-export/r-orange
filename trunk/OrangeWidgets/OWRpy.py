@@ -108,6 +108,7 @@ class OWRpy(OWWidget,RSession):
 
         self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.statusBar.addWidget(self.status)
+        self.GUIDialogDialog = None
         if wantGUIDialog:
             self.GUIDialogDialog = QDialog(self)
             self.GUIDialogDialog.setWindowTitle(str(title + ' GUI Dialog'))
@@ -528,6 +529,11 @@ class OWRpy(OWWidget,RSession):
             
     def refresh(self):
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
+    def closeEvent(self, event):
+        if self.GUIDialogDialog != None:
+            self.GUIDialogDialog.hide()
+        self.notesBox.hide()
+        self.helpBox.hide()
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)
