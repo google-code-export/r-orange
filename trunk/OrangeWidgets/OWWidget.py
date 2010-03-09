@@ -42,7 +42,7 @@ class OWWidget(OWBaseWidget):
         
         self.controlArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
         self.controlArea.setMinimumWidth(350)
-        self.controlArea.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.space = self.controlArea
 
         if wantGraph and showSaveGraph:

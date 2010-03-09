@@ -94,6 +94,7 @@ class OWRpy(OWWidget,RSession):
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
         self.layout().addWidget(self.statusBar)
+        self.statusBar.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         
         self.statusBar.setLayout(QHBoxLayout())
         #self.processingBox = redRGUI.widgetLabel(self.statusBar, "Data not connected")

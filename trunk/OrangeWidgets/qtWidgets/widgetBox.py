@@ -30,7 +30,7 @@ class widgetBox(QWidget,widgetState):
             self.setLayout(QVBoxLayout())
 
         if sizePolicy:
-            self.setSizePolicy(sizePolicy)
+            self.setSizePolicy(sizePolicy, sizePolicy)
         else:
             self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         
