@@ -95,10 +95,6 @@ class OWRpy(OWWidget,RSession):
         self.statusBar.setLayout(QHBoxLayout())
         self.layout().addWidget(self.statusBar)
         
-        #self.documentationCheckBox = QCheckBox('Documentation')
-        #self.documentationCheckBox.setChecked(True)
-        #QObject.connect(self.documentationCheckBox, SIGNAL('stateChanged(int)'), self.toggleDocumentation)
-        #self.statusBar.addWidget(self.documentationCheckBox)
         self.statusBar.setLayout(QHBoxLayout())
         #self.processingBox = redRGUI.widgetLabel(self.statusBar, "Data not connected")
 
@@ -115,7 +111,7 @@ class OWRpy(OWWidget,RSession):
             self.GUIDialogDialog.setLayout(QVBoxLayout())
             self.GUIDialogDialog.setBaseSize(QSize(300, 100))
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog)
-            self.GUIDialogDialog.show()
+            #self.GUIDialogDialog.show()
             self.GUIDialogButton = redRGUI.button(self.statusBar, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
         showHelpButton = redRGUI.button(self.statusBar, 'Show Help', callback = self.helpBox.show)
         showNotesButton = redRGUI.button(self.statusBar, 'Show Notes', callback = self.notesBox.show)

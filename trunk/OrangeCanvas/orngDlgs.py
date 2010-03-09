@@ -1,4 +1,4 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si)
+# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington
 # Description:
 #    signal dialog, canvas options dialog
 

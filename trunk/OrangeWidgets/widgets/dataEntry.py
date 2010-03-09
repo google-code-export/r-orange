@@ -11,8 +11,8 @@ import redRGUI
 from OWRpy import *
 
 class dataEntry(OWRpy):
-    def __init__(self, parent=None, signalManager=None, wantGUIDialog = 1):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 1, resizingEnabled = 1)
+    def __init__(self, parent=None, signalManager=None):
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 1, resizingEnabled = 1)
 
         self.rowCount = 10
         self.colCount = 10
@@ -37,12 +37,10 @@ class dataEntry(OWRpy):
         # self.mainArea.layout().addWidget(self.splitCanvas)
 
         
-        box = redRGUI.groupBox(self.controlArea, "Table")
-        self.splitCanvas.addWidget(box)
+        box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy.Expanding)
+        #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
-        # self.setRownamesColor()
-        # self.setColnamesColor()
         upcell = QTableWidgetItem()
         upcell.setBackgroundColor(Qt.gray)
         upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
@@ -50,7 +48,7 @@ class dataEntry(OWRpy):
         # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
-        self.resize(600,400)
+        #self.resize(600,400)
         
     def processDF(self, data):
         if data:

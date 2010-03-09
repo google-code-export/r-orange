@@ -311,12 +311,13 @@ class OWBaseWidget(QDialog):
             self.setWindowTitle(caption)
 
     # put this widget on top of all windows
-    def reshow(self):
+    def reshow(self): #show the widgets
         x,y = getattr(self, "widgetXPosition", None), getattr(self, "widgetYPosition", None)
         self.hide()
         if x != None and y != None:
             self.move(x,y)
         self.show()
+        if self.GUIDialogDialog != None: self.GUIDialogDialog.show()
         #self.raise_()
 
 
