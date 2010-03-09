@@ -37,14 +37,14 @@ class rExecutor(OWRpy):
         runbox = OWGUI.widgetBox(self, "Command Line", orientation=QHBoxLayout())
         self.splitCanvas.addWidget(runbox)
         self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
-        processbutton = redRGUI.button(runbox,self, "Run", callback = self.runR, width=150)
+        processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=150)
         
         
         
 
-        varbutton = redRGUI.button(self.box, self, "Recieved", callback = self.putrecieved, width = 150)
-        history = redRGUI.button(self.box, self, "RHistory", callback = self.putRHistory, width = 150)
-        redRGUI.button(self.box, self, "Clear Output", callback = self.clearOutput)
+        varbutton = redRGUI.button(self.box, "Recieved", callback = self.putrecieved, width = 150)
+        history = redRGUI.button(self.box, "RHistory", callback = self.putRHistory, width = 150)
+        redRGUI.button(self.box, "Clear Output", callback = self.clearOutput)
         self.infoa = redRGUI.widgetLabel(self.box, "")
         
         self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
@@ -63,7 +63,7 @@ class rExecutor(OWRpy):
         
         sendbox = OWGUI.widgetBox(self.controlArea, "Send Box")
         self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
-        sendbutton = redRGUI.button(sendbox, self, "Send", callback =self.sendThis, width=150)
+        sendbutton = redRGUI.button(sendbox, "Send", callback =self.sendThis, width=150)
         self.resize(800,600)
         
     def clearOutput(self):

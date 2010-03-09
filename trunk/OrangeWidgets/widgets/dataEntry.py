@@ -12,7 +12,7 @@ from OWRpy import *
 
 class dataEntry(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 1, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 10
         self.colCount = 10
@@ -37,7 +37,7 @@ class dataEntry(OWRpy):
         # self.mainArea.layout().addWidget(self.splitCanvas)
 
         
-        box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy.Expanding)
+        box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy.Preferred)
         #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
         self.dataTable.show()

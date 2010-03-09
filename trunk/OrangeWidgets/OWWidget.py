@@ -41,7 +41,8 @@ class OWWidget(OWBaseWidget):
             self.mainArea.updateGeometry()
         
         self.controlArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
-        self.controlArea.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        self.controlArea.setMinimumWidth(350)
+        self.controlArea.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.space = self.controlArea
 
         if wantGraph and showSaveGraph:
@@ -72,17 +73,9 @@ class OWWidget(OWBaseWidget):
                        
             self.statusBarIconArea.setLayout(QHBoxLayout())
             self.widgetStatusBar.setSizeGripEnabled(0) 
-            #self.statusBarIconArea.setFrameStyle (QFrame.Panel + QFrame.Sunken)
-            #self.widgetStatusBar.setFrameStyle (QFrame.Panel + QFrame.Sunken)
-            #self.widgetStatusBar.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
-            #self.widgetStatusBar.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred))
-            #self.widgetStatusBar.updateGeometry()
-            #self.statusBarIconArea.setFixedSize(16*2,18)
+
             self.statusBarIconArea.hide()
             
-
-            # create pixmaps used in statusbar to show info, warning and error messages
-            #self._infoWidget, self._infoPixmap = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-blue.png"))
             self._warningWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-orange.png"))
             self._errorWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-red.png"))
         

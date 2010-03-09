@@ -19,15 +19,8 @@ class affyNormalize(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Normalization")
         
-        #OWRpy.__init__(self)
-        #self.setStateVariables(['enableMethBox','data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod'])
-        #default values        
         self.normmeth = 'quantiles'
         self.normoptions = ''
-        self.bgcorrect = 'FALSE'
-        self.bgcorrectmeth = 'none'
-        self.pmcorrect = 'pmonly'
-        self.summarymeth = 'liwong'
         self.norm = ['quantiles']
         self.data = ''
         self.newdata = {}
@@ -44,7 +37,7 @@ class affyNormalize(OWRpy):
         #set R variable names
         self.setRvariableNames(['normalized_affybatch','folder'])
         
-        #signals		
+        #signals
         self.inputs = [("Eset", RAffyClasses.Eset, self.process)]
         self.outputs = [("Normalized Expression Matrix", RvarClasses.RDataFrame),("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
 
@@ -56,12 +49,8 @@ class affyNormalize(OWRpy):
 
         self.selMethBox = redRGUI.radioButtons(self.controlArea, 'Normalization Method', ["RMA", "MAS5", "Custom"], callback=self.selectMethodChanged)
         self.selMethBox.setChecked('RMA')
-        # QObject.connect(self.selMethBox.buttons, SIGNAL('buttonClicked(int)'), self.selectMethodChanged)
-        
-        # self.selMethBox.setEnabled(self.enableMethBox)
         info = redRGUI.widgetBox(self.controlArea, "Normalization Options")
-        
-        #drop list box
+
         
         #insert a block to check what type of object is connected.  If nothing connected set the items of the normalize methods objects to 
         self.normselector = redRGUI.comboBox(info, label="Normalization Method", items=self.norm, orientation=0)
@@ -76,44 +65,33 @@ class affyNormalize(OWRpy):
         self.summethselector.setEnabled(False)
         
         
-        runbutton = redRGUI.button(info, self, "Run Normalization", callback = self.normalize, width=200)
-        
-    # def onLoadSavedSession(self):
-        # print 'load affy norm'
-        # self.selectMethodChanged()
-        # self.selMethBox.setEnabled(True)
-        # if self.Rvariables['normalized_affybatch'] in self.R('ls()'):
-            # self.toSend()
-            # self.infoa.setText(self.norminfo)
-
+        runbutton = redRGUI.button(info, "Run Normalization", callback = self.normalize, width=200)
         
     def normalize(self):
         self.infoa.setText('Processing')
-        if self.selectMethod == 0:
+        if self.selMethBox.getChecked() == 'RMA':
             self.R(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
             self.norminfo = 'Normalized with RMA'
-        if self.selectMethod == 1:
+        if self.selMethBox.getChecked() == 'MAS5':
             self.R(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
             self.norminfo = 'Normalized with MAS5'
-        if self.selectMethod == 2:
-            self.R(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrect+', bgcorrect.method="'+self.bgcorrectmeth+'", pmcorrect.method="'+self.pmcorrect+'", summary.method="'+self.summarymeth+'")',True)
-            self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrect+', Method:'+self.bgcorrectmeth+', Perfect Match Correct Method: '+self.pmcorrect+', Summary Method: '+self.summarymeth
+        if self.selMethBox.getChecked() == 'Custom':
+            self.R(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrectselector.currentText()+', bgcorrect.method="'+self.bgcmethselector.currentText()+'", pmcorrect.method="'+self.pmcorrectselector.currentText()+'", summary.method="'+self.summethselector.currentText()+'")',True)
+            self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrectselector.currentText()+', Method:'+self.bgcmethselector.currentText()+', Perfect Match Correct Method: '+self.pmcorrectselector.currentText()+', Summary Method: '+self.summethselector.currentText()
         self.toSend()
         self.infoa.setText(self.norminfo)
         
-    def collectOptions(self):
-        if self.normmeth == None: self.normoptions = ""
-        elif self.normmeth == "":
-            self.normmeth = None
-            self.collectOptions()
-        else:
-            self.normoptions = ',method='+self.normmeth
+    # def collectOptions(self):
+        # if self.normselector.currentText() == None: self.normoptions = ""
+        # elif self.normselector.currentText() == "":
+            ##self.normselector.setText("")
+            # self.collectOptions()
+        # else:
+            # self.normoptions = ',method='+self.normselector.currentText()
     
     def process(self, dataset):
         #required librarys
-        
-        #self.needsProcessingHandler(self, 1)
-        
+
         self.rSend("Normalized Expression Matrix", None) #start the killing cascade because normalization is required
         self.rSend("Normalized AffyBatch", None) #start the killing cascade because normalization is required
                 
@@ -132,9 +110,6 @@ class affyNormalize(OWRpy):
                 
             self.selMethBox.setEnabled(True)
             self.infoa.setText('Data Loaded')
-            # if dataset['kill'] == True:
-                # self.rSend("Normalized DataFrame", {'kill':True, 'data':''})
-                # self.rSend("Normalized AffyBatch", {'kill':True, 'data':''})
         except: 
             print 'error'
 
@@ -145,13 +120,7 @@ class affyNormalize(OWRpy):
         
     
     def selectMethodChanged(self):
-        # print 'callback#################################'
-        # return
-        # print self.__dict__
-        # print ev.__dict__
-        # print 'asdfasdfasdf'
-        # if not 'selMethBox' in self.__dict__.keys(): return;
-        # return
+
         if self.selMethBox.getChecked() == 'RMA':
             self.bgcorrectselector.setEnabled(False)
             self.bgcmethselector.setEnabled(False)
@@ -178,11 +147,10 @@ class affyNormalize(OWRpy):
             self.summethselector.setEnabled(True)
             self.norm = ['quantiles']
             self.normselector.clear()
-            self.normselector.addItems(self.R('normalize.methods('+self.data+')'))
-            self.normselector.setCurrentIndex(self.normselector.findText('invariantset'))
-            self.normselector.setEnabled(True)
-        
-        #self.infoa.setText('Ready to Normalize')
+            if self.data != '': # normalize.methods() results in an error in R
+                self.normselector.addItems(self.R('normalize.methods('+self.data+')'))
+                self.normselector.setCurrentIndex(self.normselector.findText('invariantset'))
+                self.normselector.setEnabled(True)
 
     def toSend(self):
         self.newdata['data'] = 'exprs('+self.Rvariables['normalized_affybatch']+')'

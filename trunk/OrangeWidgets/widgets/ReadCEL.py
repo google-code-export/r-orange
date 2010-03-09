@@ -22,7 +22,9 @@ class ReadCEL(OWRpy):
         self.recentFiles = []
         self.methodcombo = 0
         self.loadSettings()
-        
+        # make sure that there is an escape option for the file selection 
+        if '' not in self.recentFiles:
+            self.recentFiles.insert(0, '')
         
         #set R variable names
         self.setRvariableNames(['eset','folder'])
@@ -34,19 +36,15 @@ class ReadCEL(OWRpy):
 
 
         #GUI
-        box = redRGUI.groupBox(self.controlArea, "Select Folder", addSpace = True, orientation='vertical')
+        box = redRGUI.groupBox(self.controlArea, "Select Folder", sizePolicy = QSizePolicy.Preferred, addSpace = True, orientation='vertical')
         self.numArrays = redRGUI.comboBox(box, label = 'Number of arrays', items = ['Less than 40', 'More than 40'])
         self.filecombo = redRGUI.comboBox(box, items = self.recentFiles, callback=self.selectFile)
-        
-        #self.filecombo = QComboBox(box)
-        self.filecombo.setMinimumWidth(150)
-        # box.layout().addWidget(self.filecombo)
-        button = redRGUI.button(box, self, 'Add Folder', callback = self.browseFile, width = 25, disabled=0)
+        button = redRGUI.button(box, 'Add Folder', callback = self.browseFile, disabled=0)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
         self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
-        self.infob = redRGUI.widgetLabel(box, '')
-        self.infoc = redRGUI.widgetLabel(box, '')
-        self.infod = redRGUI.widgetLabel(box, '')
+        # self.infob = redRGUI.widgetLabel(box, '')
+        # self.infoc = redRGUI.widgetLabel(box, '')
+        # self.infod = redRGUI.widgetLabel(box, '')
         self.setFileList()
         # self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
         
@@ -66,13 +64,13 @@ class ReadCEL(OWRpy):
         if n < len(self.recentFiles) :
             name = self.recentFiles[n]
             self.recentFiles.remove(name)
-            self.recentFiles.insert(0, name)
+            self.recentFiles.insert(1, name)
         elif n:
             self.browseFile(1)
 
         if len(self.recentFiles) > 0:
             self.setFileList()
-        self.R(self.Rvariables['folder'] + ' = "' + self.recentFiles[0].replace('\\', '\\\\') + '"', 'setRData')
+        self.R(self.Rvariables['folder'] + ' = "' + self.currentText().replace('\\', '\\\\') + '"', 'setRData')
         self.process()
         
         
@@ -94,9 +92,9 @@ class ReadCEL(OWRpy):
         if self.methodcombo == 0:
             self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')','setRData',True)
         if self.methodcombo == 1:
-            self.infob.setText("This may take several minutes")
+            self.infoa.setText("This may take several minutes")
             self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
-            self.infoc.setText("Data preprocessed with RMA normalization")
+            self.infoa.setText("Data preprocessed with RMA normalization")
         self.infoa.setText("Your data has been processed.")
         self.sendMe()
         
