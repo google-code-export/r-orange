@@ -39,10 +39,10 @@ class readFile(OWRpy):
         
         self.filecombo = redRGUI.comboBox(box,items=self.recentFiles)
         
-        button = redRGUI.button(box, self, 'Browse', callback = self.browseFile, disabled=0)
+        button = redRGUI.button(box, 'Browse', callback = self.browseFile, disabled=0)
         self.filecombo.setMinimumWidth(150)
         box.layout().addWidget(self.filecombo)
-        redRGUI.button(box, self, 'Report', callback = self.sendReport, disabled = 0)
+        redRGUI.button(box, 'Report', callback = self.sendReport, disabled = 0)
         
         
         box = redRGUI.groupBox(self.controlArea, label="File Options", addSpace = True, orientation ='horizontal')
@@ -51,8 +51,8 @@ class readFile(OWRpy):
         self.hasHeader = redRGUI.checkBox(box, buttons = ['header'])
         
         self.userowNames = redRGUI.lineEdit(box, label = 'Rowname Column:')
-        redRGUI.button(box, self, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
-        redRGUI.button(box, self, 'Load File', callback = self.loadFile)
+        redRGUI.button(box, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
+        redRGUI.button(box, 'Load File', callback = self.loadFile)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
         self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
         self.infob = redRGUI.widgetLabel(box, '')

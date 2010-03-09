@@ -25,7 +25,7 @@ class OWRpy(OWWidget,RSession):
     occupied = 0
     Rhistory = '<code>'
     
-    def __init__(self,parent=None, signalManager=None, title="R Widget",**args):
+    def __init__(self,parent=None, signalManager=None, title="R Widget", wantGUIDialog = 0, **args):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
         RSession.__init__(self)
@@ -70,13 +70,16 @@ class OWRpy(OWWidget,RSession):
         except: pass 
         #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
         self.helpBox = QDialog(self)
+        self.helpBox.setWindowTitle(str(title + ' help'))
         self.helpBox.setLayout(QVBoxLayout())
         self.helpBox.setBaseSize(webSize)
         self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.helpBox.layout().addWidget(self.help)        
         
+        # code for the notesBox that can be shown 
         self.notesBox = QDialog(self)
+        self.notesBox.setWindowTitle(str(title + ' notes box'))
         self.notesBox.setLayout(QVBoxLayout())
         self.notesBox.setBaseSize(QSize(200,100))
         self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
@@ -86,55 +89,47 @@ class OWRpy(OWWidget,RSession):
         self.notes = redRGUI.textEdit(self.notesBox)
         # self.defaultLeftArea.layout().addWidget(notesBox)
         
-        showHelpButton = redRGUI.button(None, 'Show Help', callback = self.showHelp)
-        showNotesButton = redRGUI.button(None, 'Show Notes', callback = self.showNotes)
+        
 
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
         self.layout().addWidget(self.statusBar)
         
-        # self.splitter = QSplitter(self.controlArea)
-        # self.widgetMainArea = OWGUI.widgetBox(self, orientation="vertical", margin=2)
-        # self.controlArea.layout().addWidget(self.splitter)
-        # self.splitter.addWidget(self.widgetMainArea)
-        #self.controlArea.setLayout(self.splitter)
-        
-        self.documentationCheckBox = QCheckBox('Documentation')
-        self.documentationCheckBox.setChecked(True)
-        QObject.connect(self.documentationCheckBox, SIGNAL('stateChanged(int)'), self.toggleDocumentation)
-        self.statusBar.addWidget(self.documentationCheckBox)
-
+        #self.documentationCheckBox = QCheckBox('Documentation')
+        #self.documentationCheckBox.setChecked(True)
+        #QObject.connect(self.documentationCheckBox, SIGNAL('stateChanged(int)'), self.toggleDocumentation)
+        #self.statusBar.addWidget(self.documentationCheckBox)
+        self.statusBar.setLayout(QHBoxLayout())
         #self.processingBox = redRGUI.widgetLabel(self.statusBar, "Data not connected")
 
-        self.status = QtWebKit.QWebView(self)
+        self.status = redRGUI.widgetLabel(self.statusBar, '')
         #processingBoxBox = redRGUI.widgetBox(self.defaultLeftArea, "Processing Status")
-        self.status.setMaximumSize(QSize(300,40))
-        self.status.setHtml('<small>Processing not yet performed.</small>')
+        self.status.setText('Processing not yet performed.')
 
         self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        #processingBoxBox.layout().addWidget(self.processingBox)
-        #self.defaultLeftArea.layout().addWidget(processingBoxBox)
-        
         self.statusBar.addWidget(self.status)
-        
-        #self.statusIndicator.setBackgroundRole(QPalette.Dark)
-        
-        #self.statusImage = QImage('C:/Python25/Lib/site-packages/orange/OrangeCanvas/ajax-loader.gif')
-        
-        #self.statusBar.addWidget(self.statusImage)
-        #MoviePlayer().show()
+        if wantGUIDialog:
+            self.GUIDialogDialog = QDialog(self)
+            self.GUIDialogDialog.setWindowTitle(str(title + ' GUI Dialog'))
+            self.GUIDialogDialog.setLayout(QVBoxLayout())
+            self.GUIDialogDialog.setBaseSize(QSize(300, 100))
+            self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog)
+            self.GUIDialogDialog.show()
+            self.GUIDialogButton = redRGUI.button(self.statusBar, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+        showHelpButton = redRGUI.button(self.statusBar, 'Show Help', callback = self.helpBox.show)
+        showNotesButton = redRGUI.button(self.statusBar, 'Show Notes', callback = self.notesBox.show)
     def showHelp(self):
         self.helpBox.show()
         
     def showNotes(self):
         self.notesBox.show()
-    def toggleDocumentation(self,state):
-        for c in self.defaultLeftArea.children():
-            if isinstance(c, QLayout): continue
-            if self.documentationCheckBox.isChecked():
-                c.show()
-            else:
-                c.hide()
+    # def toggleDocumentation(self,state):
+        # for c in self.defaultLeftArea.children():
+            # if isinstance(c, QLayout): continue
+            # if self.documentationCheckBox.isChecked():
+                # c.show()
+            # else:
+                # c.hide()
         
     def setRvariableNames(self,names):
         
