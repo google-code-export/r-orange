@@ -11,23 +11,26 @@ class checkBox(widgetBox,widgetState):
         widgetBox.__init__(self,widget,orientation=orientation)
         
         
-        if(buttons is not None and len(buttons) > 1):
+        if(label is not None):
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
             self.buttons = QButtonGroup(self.box)
             self.buttons.setExclusive(False)
-            
             for i in buttons:
                 w = QCheckBox(i)
                 self.buttons.addButton(w)
                 self.box.layout().addWidget(w)
         else:
-            print 'asdf'
-            # self.buttons = QButtonGroup(self)
-            # self.buttons.setExclusive(False)
-            self.buttons = QCheckBox(buttons[0])
-            #self.buttons.addButton(w)
-            self.layout().addWidget(self.buttons)
+            self.buttons = QButtonGroup(self)
+            self.buttons.setExclusive(False)
+            for i in buttons:
+                w = QCheckBox(i)
+                self.buttons.addButton(w)
+                self.layout().addWidget(w)
+            
+            # self.buttons = QCheckBox(buttons[0])
+            # self.buttons.addButton(w)
+            # self.layout().addWidget(self.buttons)
 
         if callback:
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)

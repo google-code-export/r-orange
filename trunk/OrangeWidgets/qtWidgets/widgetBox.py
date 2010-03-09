@@ -31,6 +31,8 @@ class widgetBox(QWidget,widgetState):
 
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
+        else:
+            self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         
             
 
