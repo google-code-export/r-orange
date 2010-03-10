@@ -155,18 +155,18 @@ class diffExp(OWRpy):
                 self.arrays.addItem(v)
             
 
-    def phenoVarListBoxItemClicked(self):
-        if self.processingComplete == 1:
-            self.modelFormula = ''
-            self.processingComplete = 0
-        element = self.phenoVarListBox.selectedItems()[0].text()
-        self.modelFormula += str(element)
-        self.phenoVarListBox.setEnabled(False)
-        self.plusButton.setEnabled(True)
-        self.colonButton.setEnabled(True)
-        self.starButton.setEnabled(True)
-        self.processEsetButton.setEnabled(True)
-        self.modelText.setText("Model: " + self.modelFormula)
+    # def phenoVarListBoxItemClicked(self):
+        # if self.processingComplete == 1:
+            # self.modelFormula = ''
+            # self.processingComplete = 0
+        # element = self.phenoVarListBox.selectedItems()[0].text()
+        # self.modelFormula += str(element)
+        # self.phenoVarListBox.setEnabled(False)
+        # self.plusButton.setEnabled(True)
+        # self.colonButton.setEnabled(True)
+        # self.starButton.setEnabled(True)
+        # self.processEsetButton.setEnabled(True)
+        # self.modelText.setText("Model: " + self.modelFormula)
     # def plusButtonClicked(self):
         # self.modelFormula += ' + '
         # self.phenoVarListBox.setEnabled(True)
