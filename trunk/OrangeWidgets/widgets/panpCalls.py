@@ -29,10 +29,6 @@ class panpCalls(OWRpy):
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         self.loadSettings()
 
-        
-
-
-        
         self.inputs = [("Normalized Affybatch", RAffyClasses.RAffyBatch, self.process)]
         self.outputs = [("Present Gene Signal Matrix", RvarClasses.RDataFrame)]
         
@@ -46,7 +42,7 @@ class panpCalls(OWRpy):
         self.tightCut.setText('0.01')
         self.percentA = redRGUI.lineEdit(box, label = "Percent Absent", orientation = "horizontal")
         self.percentA.setText('20')
-        processbutton = redRGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
+        processbutton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
         self.infoa = redRGUI.widgetLabel(box, "Widget Initialized")
         
 
@@ -86,13 +82,9 @@ class panpCalls(OWRpy):
         self.R(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+str(self.percentA.text())+'/100','setRData', True)
         self.R(self.Rvariables['peset']+'<-as.data.frame(exprs('+self.eset+')[' + self.Rvariables['Present'] + ',])','setRData',True)
         self.R('colnames('+self.Rvariables['peset']+') <- colnames(exprs('+self.eset+'))')
-        self.panpinfo = 'Processed with loose cut off = '+self.looseCut+', tight cut off ='+self.tightCut+', and percent absent = '+str(self.percentA.text())
+        self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
         self.infoa.setText('Processed')
         self.senddata = self.data.copy()
         self.senddata['data'] = self.Rvariables['peset']
         self.senddata['eset'] = self.eset
         self.rSend('Present Gene Signal Matrix', self.senddata)
-    
-
-    
-        

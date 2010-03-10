@@ -51,21 +51,21 @@ class diffExp(OWRpy):
         # set as valstack 0
         box = redRGUI.widgetBox(boxVal, "Process")
         grid.addWidget(box, 0,1)
-        processButton = redRGUI.button(box, self, "Process eSet", callback = self.processEset, width=200)
+        processButton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
         self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
-        setAbutton = redRGUI.button(box, self, "Switch Class", callback = self.switchClass, width = 200)
+        setAbutton = redRGUI.button(box, "Switch Class", callback = self.switchClass, width = 200)
         self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
         self.infob = redRGUI.widgetLabel(box, "Setting Class A")
         
         selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays")
         grid.addWidget(selecteda, 0,0)
         self.selectedArrays = redRGUI.listBox(selecteda, self)
-        clearaButton = redRGUI.button(selecteda, self, "Clear",callback = self.clearA, width = 200)
+        clearaButton = redRGUI.button(selecteda, "Clear",callback = self.clearA, width = 200)
         
         selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays")
         grid.addWidget(selectedb, 0,2)
         self.selectedArraysB = redRGUI.listBox(selectedb, self)
-        clearbButton = redRGUI.button(selectedb, self, "Clear", callback = self.clearB, width = 200)
+        clearbButton = redRGUI.button(selectedb, "Clear", callback = self.clearB, width = 200)
         self.valuesStack.addWidget(boxVal)
         # end valstack 0
         
@@ -82,36 +82,24 @@ class diffExp(OWRpy):
         
         box = redRGUI.widgetBox(self, "Phenotype Variables")
         grid2.addWidget(box, 0, 0)
-        self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
-        buttonsBox = redRGUI.widgetBox(self, "Commands")
-        grid2.addWidget(buttonsBox, 0,1)
-        self.plusButton = redRGUI.button(buttonsBox, self, "And", callback = self.plusButtonClicked)
-        self.plusButton.setEnabled(False)
-        self.colonButton = redRGUI.button(buttonsBox, self, "Interacting With", callback = self.colonButtonClicked)
-        self.colonButton.setEnabled(False)
-        self.starButton = redRGUI.button(buttonsBox, self, "Together and Interacting", callback = self.starButtonClicked)
-        self.starButton.setEnabled(False)
-        self.processEsetButton = redRGUI.button(buttonsBox, self, "Commit", callback = self.processEset)
-        self.processEsetButton.setEnabled(False)
+        self.functionBox = redRGUI.RFormulaEntry(box)
+        # self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
+        # buttonsBox = redRGUI.widgetBox(self, "Commands")
+        # grid2.addWidget(buttonsBox, 0,1)
+        # self.plusButton = redRGUI.button(buttonsBox, "And", callback = self.plusButtonClicked)
+        # self.plusButton.setEnabled(False)
+        # self.colonButton = redRGUI.button(buttonsBox, "Interacting With", callback = self.colonButtonClicked)
+        # self.colonButton.setEnabled(False)
+        # self.starButton = redRGUI.button(buttonsBox, "Together and Interacting", callback = self.starButtonClicked)
+        # self.starButton.setEnabled(False)
+        # self.processEsetButton = redRGUI.button(buttonsBox, "Commit", callback = self.processEset)
+        # self.processEsetButton.setEnabled(False)
         
-        self.modelText = redRGUI.widgetLabel(boxVal, "Model: ")
-        self.valuesStack.addWidget(boxVal)
+        # self.modelText = redRGUI.widgetLabel(boxVal, "Model: ")
+        # self.valuesStack.addWidget(boxVal)
         
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
         
-        #self.Rreload() #Important to be at the end of the __init__
-        # try:
-            # varexists1 = self.R('exists("'+self.Rvariables['classes']+'")') #should trigger an exception if it doesn't exist
-            # varexists2 = self.R('exists("'+self.Rvariables['results']+'")')
-            # self.infod.setText(str(varexists))
-            # if varexists1 and varexists2:
-                # self.processEset(reload = True)
-            # else:
-                # return
-        # except:
-            # pass
-        # if self.loadingSavedSession:
-            # self.processEset()
     def onLoadSavedSession(self):
         if self.Rvariables['results'] in self.R('ls()'):
             self.Rreload()
@@ -138,7 +126,7 @@ class diffExp(OWRpy):
         if not data: return
         if 'data' in data: # make sure that there is data there 
             self.phenoData = data['data']
-            colnames = self.rsession('colnames('+self.phenoData+')')
+            colnames = self.R('colnames('+self.phenoData+')')
             for names in colnames:
                 self.phenoVarListBox.addItem(names)
             self.valuesStack.setCurrentWidget(self.boxIndices[1])
@@ -179,30 +167,30 @@ class diffExp(OWRpy):
         self.starButton.setEnabled(True)
         self.processEsetButton.setEnabled(True)
         self.modelText.setText("Model: " + self.modelFormula)
-    def plusButtonClicked(self):
-        self.modelFormula += ' + '
-        self.phenoVarListBox.setEnabled(True)
-        self.plusButton.setEnabled(False)
-        self.colonButton.setEnabled(False)
-        self.starButton.setEnabled(False)
-        self.processEsetButton.setEnabled(False)
-        self.modelText.setText("Model: " + self.modelFormula)
-    def colonButtonClicked(self):
-        self.modelFormula += ' : '
-        self.phenoVarListBox.setEnabled(True)
-        self.plusButton.setEnabled(False)
-        self.colonButton.setEnabled(False)
-        self.starButton.setEnabled(False)
-        self.processEsetButton.setEnabled(False)
-        self.modelText.setText("Model: " + self.modelFormula)
-    def starButtonClicked(self):
-        self.modelFormula += ' * '
-        self.phenoVarListBox.setEnabled(True)
-        self.plusButton.setEnabled(False)
-        self.colonButton.setEnabled(False)
-        self.starButton.setEnabled(False)
-        self.processEsetButton.setEnabled(False)
-        self.modelText.setText("Model: " + self.modelFormula)
+    # def plusButtonClicked(self):
+        # self.modelFormula += ' + '
+        # self.phenoVarListBox.setEnabled(True)
+        # self.plusButton.setEnabled(False)
+        # self.colonButton.setEnabled(False)
+        # self.starButton.setEnabled(False)
+        # self.processEsetButton.setEnabled(False)
+        # self.modelText.setText("Model: " + self.modelFormula)
+    # def colonButtonClicked(self):
+        # self.modelFormula += ' : '
+        # self.phenoVarListBox.setEnabled(True)
+        # self.plusButton.setEnabled(False)
+        # self.colonButton.setEnabled(False)
+        # self.starButton.setEnabled(False)
+        # self.processEsetButton.setEnabled(False)
+        # self.modelText.setText("Model: " + self.modelFormula)
+    # def starButtonClicked(self):
+        # self.modelFormula += ' * '
+        # self.phenoVarListBox.setEnabled(True)
+        # self.plusButton.setEnabled(False)
+        # self.colonButton.setEnabled(False)
+        # self.starButton.setEnabled(False)
+        # self.processEsetButton.setEnabled(False)
+        # self.modelText.setText("Model: " + self.modelFormula)
     def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
         if not reload: # we really need to process this block
             if self.phenoData == '':

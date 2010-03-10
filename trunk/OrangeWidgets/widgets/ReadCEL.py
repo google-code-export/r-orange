@@ -39,14 +39,12 @@ class ReadCEL(OWRpy):
         box = redRGUI.groupBox(self.controlArea, "Select Folder", sizePolicy = QSizePolicy.Preferred, addSpace = True, orientation='vertical')
         self.numArrays = redRGUI.comboBox(box, label = 'Number of arrays', items = ['Less than 40', 'More than 40'])
         self.filecombo = redRGUI.comboBox(box, items = self.recentFiles, callback=self.selectFile)
-        button = redRGUI.button(box, 'Add Folder', callback = self.browseFile, disabled=0)
+        buttonsBox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        button = redRGUI.button(buttonsBox, 'Add Folder', callback = self.browseFile, disabled=0)
+        button2 = redRGUI.button(buttonsBox, 'Process File', callback = self.process)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
         self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
-        # self.infob = redRGUI.widgetLabel(box, '')
-        # self.infoc = redRGUI.widgetLabel(box, '')
-        # self.infod = redRGUI.widgetLabel(box, '')
         self.setFileList()
-        # self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
         
                 
     def setFileList(self):
@@ -64,33 +62,33 @@ class ReadCEL(OWRpy):
         if n < len(self.recentFiles) :
             name = self.recentFiles[n]
             self.recentFiles.remove(name)
-            self.recentFiles.insert(1, name)
+            self.recentFiles.insert(0, name)
         elif n:
             self.browseFile(1)
 
         if len(self.recentFiles) > 0:
             self.setFileList()
-        self.R(self.Rvariables['folder'] + ' = "' + self.currentText().replace('\\', '\\\\') + '"', 'setRData')
-        self.process()
+        #self.R(self.Rvariables['folder'] + ' = "' + str(self.filecombo.currentText()).replace('\\', '\\\\') + '"', 'setRData')
+        #self.process()
         
         
     def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
         fn = QFileDialog.getExistingDirectory(None, 'CEL File Directory', os.path.abspath('/'))
         print str(fn)
         if fn.isEmpty(): return
-        self.R(self.Rvariables['folder'] + '<-"' + str(os.path.abspath(str(fn))).replace('\\', '\\\\') + '"')
+        #self.R(self.Rvariables['folder'] + '<-"' + str(os.path.abspath(str(fn))).replace('\\', '\\\\') + '"')
         folder = str(os.path.abspath(fn))
         if folder in self.recentFiles: self.recentFiles.remove(folder)
         self.recentFiles.insert(0, folder)
         self.setFileList()
-        self.process()
+        #self.process()
         
     def process(self):
         self.infoa.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
         if self.methodcombo == 0:
-            self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path='+self.Rvariables['folder']+')','setRData',True)
+            self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path="'+str(self.filecombo.currentText()).replace('\\', '\\\\')+'")','setRData',True)
         if self.methodcombo == 1:
             self.infoa.setText("This may take several minutes")
             self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)

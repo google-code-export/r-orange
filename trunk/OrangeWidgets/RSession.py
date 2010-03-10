@@ -41,7 +41,7 @@ class RSession():
         # RSession.occupied = 1
         output = None
         if processing_notice:
-            self.processingBox.setHtml('<center>Processing Started.<br>Please wait for processing to finish.</center>')
+            self.status.setText('Processing Started.Please wait for processing to finish.')
             # self.progressBarInit()
             # self.progressBarSet(30)
         print query
@@ -70,11 +70,11 @@ class RSession():
             self.progressBarFinished()
             print inst.message
             QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
-            self.processingBox.setHtml('<center>Error occured during processing please check data or <a href="http://red-r.org/">contact the developers.</a></center>')
+            self.status.setText('Error occured!!')
             return None # now processes can catch potential errors
         RSession.processing = False
         if processing_notice:
-            self.processingBox.setHtml('<center>Processing complete</center>')
+            self.status.setText('Processing complete')
             #self.progressBarFinished()
         
         #rthread.threadBreaking = True

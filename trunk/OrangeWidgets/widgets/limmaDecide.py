@@ -15,12 +15,7 @@ class limmaDecide(OWRpy):
     settingsList = ['modelProcessed', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        
-        self.vs = self.variable_suffix
-        self.dmethod = "separate"
-        self.adjmethods = "BH"
-        self.foldchange = "0"
-        self.pval = "0.05"
+
         self.data = ''
         self.ebdata = ''
         self.olddata = None
@@ -49,15 +44,15 @@ class limmaDecide(OWRpy):
         
         optionsbox = redRGUI.widgetBox(self.controlArea, "Options")
         grid.addWidget(optionsbox, 0,0)
-        redRGUI.comboBox(optionsbox, label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
-        redRGUI.comboBox(optionsbox, label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
-        redRGUI.lineEdit(optionsbox, label = "Minimum p-value change:", orientation = 0)
-        redRGUI.lineEdit(optionsbox, label = "Minimum fold change:", orientation = 0)
+        self.dmethod = redRGUI.comboBox(optionsbox, label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
+        self.adjmethods = redRGUI.comboBox(optionsbox, label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
+        self.pval = redRGUI.lineEdit(optionsbox, label = "Minimum p-value change:", orientation = 0)
+        self.foldchange = redRGUI.lineEdit(optionsbox, label = "Minimum fold change:", orientation = 0)
         
         computebox = redRGUI.widgetBox(self.controlArea, "Compute")
         grid.addWidget(computebox, 1,0)
         self.infoa = redRGUI.widgetLabel(computebox, "Data not yet connected")
-        runbutton = redRGUI.button(computebox, self, "Run Analysis", callback = self.runAnalysis, width=200)
+        runbutton = redRGUI.button(computebox, "Run Analysis", callback = self.runAnalysis, width=200)
         
 
 
@@ -81,7 +76,7 @@ class limmaDecide(OWRpy):
         #self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
 
         #run the analysis using the parameters selected or input
-        self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod)+'", adjust.method="'+str(self.adjmethods)+'", p.value='+str(self.pval)+', lfc='+str(self.foldchange)+')')
+        self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod.text())+'", adjust.method="'+str(self.adjmethods.text())+'", p.value='+str(self.pval.text())+', lfc='+str(self.foldchange.text())+')')
         self.infoa.setText("Gene Matrix Processed and sent!")
         self.sending = {'data':self.Rvariables['gcm']}
         self.rSend("Gene Change Matrix", self.sending)

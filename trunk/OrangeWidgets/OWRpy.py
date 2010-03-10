@@ -150,7 +150,7 @@ class OWRpy(OWWidget,RSession):
         except:
             self.needsProcessingHandler(self, 1)
         self.sentItems.append((name, variable))
-        self.processingBox.setHtml('<center>Data sent.</center>')
+        self.status.setText('Data sent.')
 
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
