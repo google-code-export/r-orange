@@ -26,7 +26,7 @@ class diffExp(OWRpy):
         self.olddata = {}
         self.loadSettings()
         
-        self.setRvariableNames(['results','classes','subset'])
+        self.setRvariableNames(['results','classes','subset', 'diffExp_cm'])
         
 
         self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Phenotype Data", RvarClasses.RDataFrame, self.phenoProcess)]
@@ -49,7 +49,7 @@ class diffExp(OWRpy):
         layk.setLayout(grid)
         
         # set as valstack 0
-        box = redRGUI.widgetBox(boxVal, "Process")
+        box = redRGUI.widgetBox(boxVal, "Process", sizePolicy = QSizePolicy.Expanding)
         grid.addWidget(box, 0,1)
         processButton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
         self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
@@ -57,12 +57,12 @@ class diffExp(OWRpy):
         self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
         self.infob = redRGUI.widgetLabel(box, "Setting Class A")
         
-        selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays")
+        selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy.Expanding)
         grid.addWidget(selecteda, 0,0)
         self.selectedArrays = redRGUI.listBox(selecteda, self)
         clearaButton = redRGUI.button(selecteda, "Clear",callback = self.clearA, width = 200)
         
-        selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays")
+        selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy.Expanding)
         grid.addWidget(selectedb, 0,2)
         self.selectedArraysB = redRGUI.listBox(selectedb, self)
         clearbButton = redRGUI.button(selectedb, "Clear", callback = self.clearB, width = 200)
@@ -80,7 +80,7 @@ class diffExp(OWRpy):
         layk2.setLayout(grid2)
         
         
-        box = redRGUI.widgetBox(self, "Phenotype Variables")
+        box = redRGUI.widgetBox(boxVal, "Phenotype Variables")
         grid2.addWidget(box, 0, 0)
         self.functionBox = redRGUI.RFormulaEntry(box)
         # self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
@@ -96,7 +96,7 @@ class diffExp(OWRpy):
         # self.processEsetButton.setEnabled(False)
         
         # self.modelText = redRGUI.widgetLabel(boxVal, "Model: ")
-        # self.valuesStack.addWidget(boxVal)
+        self.valuesStack.addWidget(boxVal)
         
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
         
@@ -147,12 +147,14 @@ class diffExp(OWRpy):
         if data:
             self.data = data['data']
             self.olddata = data.copy()
-            self.samplenames = self.rsession('colnames('+self.data+')') #collect the sample names to make the differential matrix
+            self.samplenames = self.R('colnames('+self.data+')') #collect the sample names to make the differential matrix
 
             if self.samplenames is str:
                 self.samplenames = [self.samplenames]
-            for v in self.samplenames:
-                self.arrays.addItem(v)
+            else:
+                for v in self.samplenames:
+                    self.arrays.addItem(v)
+                self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
             
 
     # def phenoVarListBoxItemClicked(self):
@@ -205,20 +207,23 @@ class diffExp(OWRpy):
                     self.sampleB.append(str(self.selectedArraysB.item(int(j)).text()))
                 #self.infoa.setText(h)
                 
-                self.rsession(self.Rvariables['subset']+'<-'+self.data+'[,c('+h+i[:len(i)-1]+')]')
-                self.rsession(self.Rvariables['classes']+'<-as.numeric(colnames('+self.Rvariables['subset']+') %in% c('+i[:len(i)-1]+'))') #make the cla object in R to assign the classes based on the values of h
+                self.R(self.Rvariables['subset']+'<-'+self.data+'[,c('+h+i[:len(i)-1]+')]')
+                self.R(self.Rvariables['classes']+'<-as.numeric(colnames('+self.Rvariables['subset']+') %in% c('+i[:len(i)-1]+'))') #make the cla object in R to assign the classes based on the values of h
 
                 
-                self.rsession('cvect<-data.frame(type=1, class='+self.Rvariables['classes']+')') 
-                self.rsession('design<-model.matrix(~class, cvect)')
+                self.R('cvect<-data.frame(type=1, class='+self.Rvariables['classes']+')') 
+                self.R('design<-model.matrix(~class, cvect)')
             else: #someone attached phenoData so lets use that to make the design
-                self.rsession('design<-model.matrix(~'+self.modelFormula+', '+self.phenoData+')')
+                self.R('design<-model.matrix(~'+self.funcitonBox.Formula()[1]+', '+self.phenoData+')')
                 
-            self.rsession('fit<-lmFit('+self.Rvariables['subset']+', design)')
-            self.rsession(self.Rvariables['results']+'<-eBayes(fit)')
+            self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
+            self.R(self.Rvariables['results']+'<-eBayes(fit)')
             self.newdata = self.olddata.copy()
         self.newdata['data']=self.Rvariables['results']
         self.newdata['classes'] = self.Rvariables['classes']
+        self.makeCM(self.Rvariables['diffExp_cm'], self.Rvariables['results']) # assign the CM of this widget.  This is the moment of creation of this CM.  
+        self.newdata['cm'] = self.Rvariables['diffExp_cm']
+        self.newdata['parent'] = self.Rvariables['results']
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1

@@ -72,10 +72,10 @@ class RDataTable(OWRpy):
         #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
         saveTab = self.tabWidgeta.createTabPage('Save Data')
         redRGUI.widgetLabel(saveTab, "Saves the current table to a file.")
-        redRGUI.button(saveTab, self, "Set File", callback = self.chooseDirectory)
+        redRGUI.button(saveTab, "Set File", callback = self.chooseDirectory)
         self.fileName = redRGUI.widgetLabel(saveTab, "")
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
-        redRGUI.button(saveTab, self, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
+        redRGUI.button(saveTab, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
         #infoBox.setMinimumWidth(200)
         redRGUI.separator(self.controlArea)
         
@@ -102,11 +102,11 @@ class RDataTable(OWRpy):
 
         resizeColsBox = OWGUI.widgetBox(boxSettings, orientation="horizontal")
         OWGUI.widgetLabel(resizeColsBox, "Resize columns: ")
-        OWGUI.button(resizeColsBox, self, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
-        OWGUI.button(resizeColsBox, self, "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
-        OWGUI.rubber(resizeColsBox)
+        redRGUI.button(resizeColsBox, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
+        redRGUI.button(resizeColsBox, "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
+        redRGUI.rubber(resizeColsBox)
 
-        self.btnResetSort = OWGUI.button(boxSettings, self, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
+        self.btnResetSort = redRGUI.button(boxSettings, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
         redRGUI.rubber(self.controlArea)
 

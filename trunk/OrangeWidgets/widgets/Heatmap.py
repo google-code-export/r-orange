@@ -25,9 +25,11 @@ class Heatmap(OWRpy):
         
         #GUI
         infobox = redRGUI.widgetBox(self.controlArea, "Options")
-        OWGUI.button(infobox, self, "Replot", callback=self.makePlot, width=200)
-        OWGUI.button(infobox, self, 'Identify', callback = self.identify, width=200)
+        redRGUI.button(infobox, "Replot", callback=self.makePlot, width=200)
+        redRGUI.button(infobox, 'Identify', callback = self.identify, width=200)
         self.plotOnConnect = redRGUI.checkBox(infobox,buttons=['Plot on Connect'])
+        self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
+        self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
         self.infoa = OWGUI.widgetLabel(infobox, "Nothing to report")
         
@@ -42,6 +44,7 @@ class Heatmap(OWRpy):
             self.plotdata = data['data']
             if 'classes' in data:
                 self.classes = data['classes']
+                self.showClasses.setEnabled(True)
             else:
                 self.classes = 'rep(0, length('+self.plotdata+'[1,]))'
             if self.R('class('+self.plotdata+')') == "data.frame":
@@ -55,7 +58,7 @@ class Heatmap(OWRpy):
     def makePlot(self):
             
         self.infoa.setText("You are plotting "+self.plotdata)
-        if self.classes:
+        if self.classes and ('Show Classes' in self.showClasses.getChecked()):
             colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
         else:
             colClasses = ''

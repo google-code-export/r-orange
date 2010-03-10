@@ -31,9 +31,12 @@ class RFormulaEntry(QWidget, widgetState):
         
     def addItems(self, items):
         self.outcomeVariable.clear()
+        self.elementsListBox.clear()
         self.modelLineEdit.clear()
-        self.outcomeVariable.addItems(items)
-        self.modelLineEdit.addItems(items)
+        self.outcomeVariable.addItem('')
+        for item in items:
+            self.outcomeVariable.addItem(item)
+        self.elementsListBox.addItems(items)
         
     def updateEnabled(self, pos):
         # 1 is the beginning state of the widget, 0 is the state after an element is selected
@@ -61,5 +64,11 @@ class RFormulaEntry(QWidget, widgetState):
         if str(self.outcomeVariable.currentText()) in str(self.modelLineEdit.text()):
             return None
         else:
-            return str(self.outcomeVariable.currentText() + ' ~ ' +self.modelLineEdit.text())
+            return (str(self.outcomeVariable.currentText(), self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
+    def getSettings(self):
+        return {'items': 'nothing'} # complete
+        #items = []
+        #for item in self.elementsListBox.items():
+    def loadSettings(self, data):
+        pass # complete
         

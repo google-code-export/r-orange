@@ -31,7 +31,9 @@ class listBox(QListWidget,widgetState):
             self.setDropIndicatorShown(1)
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             self.dragStartPosition = 0
-        redRGUI.connectControl(self, self.widget, value, callback, 'itemSelectionChanged()', redRGUI.CallFrontListBox(self), redRGUI.CallBackListBox(self, self.widget))
+        #redRGUI.connectControl(self, self.widget, value, callback, 'itemSelectionChanged()', redRGUI.CallFrontListBox(self), redRGUI.CallBackListBox(self, self.widget))
+        if callback:
+            QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
     def sizeHint(self):
         return self.defaultSizeHint
     def startDrag(self, supportedActions):

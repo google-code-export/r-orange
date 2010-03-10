@@ -7,8 +7,17 @@ class table(QTableWidget,widgetState):
         QTableWidget.__init__(self,rows,columns,widget)
         self.sortIndex = None
         self.oldSortingIndex = None
+        
+        ### should turn this into a function as all widgets use it to some degree
         if widget and addToLayout and widget.layout():
             widget.layout().addWidget(self)
+        elif widget and addToLayout:
+            try:
+                widget.addWidget(self)
+            except: # there seems to be no way to add this widget
+                pass
+                
+        ###
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)
         if data:

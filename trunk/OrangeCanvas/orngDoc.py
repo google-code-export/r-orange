@@ -546,27 +546,29 @@ class SchemaDoc(QWidget):
                 # read widgets
                 loadedOk = 1
                 for widget in widgets.getElementsByTagName("widget"):
-                    name = widget.getAttribute("widgetName")
-                    #print 'Name: '+str(name)+' (orngDoc.py)'
-                    settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                    #print str(settings) + ' (orngDoc.py)'
-                    #print 'widget settings are' + str(settings)
                     try:
-                        for library in settings['RPackages']:
-                            rpy.r('require('+library+')')
-                    except: pass #there must not be a setting like that one in the dict, must be an orange widget.
-                    tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
-                    if not tempWidget:
-                        print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
-                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) # we must build a fake widget this will involve getting the inputs and outputs and joining them at the widget creation step.
+                        name = widget.getAttribute("widgetName")
+                        #print 'Name: '+str(name)+' (orngDoc.py)'
+                        settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
+                        #print str(settings) + ' (orngDoc.py)'
+                        #print 'widget settings are' + str(settings)
+                        try:
+                            for library in settings['RPackages']:
+                                rpy.r('require('+library+')')
+                        except: pass #there must not be a setting like that one in the dict, must be an orange widget.
+                        tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                         if not tempWidget:
-                            #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
-                            failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
-                            loadedOk = 0
-                            print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                            print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                            tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) # we must build a fake widget this will involve getting the inputs and outputs and joining them at the widget creation step.
+                            if not tempWidget:
+                                #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
+                                failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                                loadedOk = 0
+                                print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
 
-                    qApp.processEvents()
-
+                        qApp.processEvents()
+                    except:
+                        print 'Error occured during widget loading'
                 
                 #read lines
                 lineList = lines.getElementsByTagName("channel")

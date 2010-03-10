@@ -21,13 +21,13 @@ class runSigPathway(OWRpy):
         self.outputs = [("Pathway Analysis File", RvarClasses.RDataFrame), ("Pathway Annotation List", RvarClasses.RDataFrame), ("Pathway List", RvarClasses.RDataFrame)]
         
         self.vs = self.variable_suffix
-        self.setRvariableNames(['data', 'affy', 'pAnnots', 'chiptype', 'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType'])
+        self.setRvariableNames(['data', 'affy', 'pAnnots',  'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType', 'sigpath'])
         self.Rpannot = None
         self.clickedRow = None
         self.data = ''
         self.affy = ''
         self.pAnnots = ''
-        self.chiptype = ''
+        
         self.sublist = ''
         self.wd = ''
         self.availablePaths = []
@@ -36,11 +36,9 @@ class runSigPathway(OWRpy):
         self.newdata = {}
         self.dboptions = ''
         self.subtable = {}
-        self.table1 = redRGUI.table() # change the table while processing
-        self.table2 = redRGUI.table() #change the table while processing
+
         #self.loadSettings()
         
-        self.usedb = 1
         
 
         
@@ -56,15 +54,15 @@ class runSigPathway(OWRpy):
         sigPathOptions = redRGUI.widgetBox(self.controlArea, "Options")
         self.minNPS = redRGUI.lineEdit(sigPathOptions, '20', 'Min Genes in Pathway:')
         self.maxNPS = redRGUI.lineEdit(sigPathOptions, '500', 'Max Genes in Pathway:')
-        self.pAnnotlist = redRGUI.comboBox(sigPathOptions, self, "Rpannot", label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
+        self.pAnnotlist = redRGUI.comboBox(sigPathOptions, label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
         self.chiptype = redRGUI.lineEdit(sigPathOptions, '', label = "Chiptype")
         self.npath = redRGUI.lineEdit(sigPathOptions, '25', label = 'Number of Pathways')
         self.pAnnotlist.setEnabled(False)
-        self.getNewAnnotButton = redRGUI.button(sigPathOptions, self, label = "New Annotation File", callback = self.noFile, width = 200)
-        redRGUI.button(sigPathOptions, self, label='Load pathway file', callback = self.loadpAnnot, width = 200)
-        redRGUI.button(sigPathOptions, self, 'Run', callback = self.runPath, width = 200)
-        redRGUI.button(sigPathOptions, self, 'Show Table', callback = self.tableShow, width = 200)
-        redRGUI.checkBox(sigPathOptions, self, 'usedb', 'Use Annotation Database')
+        self.getNewAnnotButton = redRGUI.button(sigPathOptions, label = "New Annotation File", callback = self.noFile, width = 200)
+        redRGUI.button(sigPathOptions, label='Load pathway file', callback = self.loadpAnnot, width = 200)
+        redRGUI.button(sigPathOptions, 'Run', callback = self.runPath, width = 200)
+        redRGUI.button(sigPathOptions, 'Show Table', callback = self.tableShow, width = 200)
+        self.usedb = redRGUI.checkBox(sigPathOptions, buttons = ['Use Annotation Database'])
         
         #split the canvas into two halves
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
@@ -73,7 +71,8 @@ class runSigPathway(OWRpy):
         self.pathtable = redRGUI.widgetBox(self, "Pathway Info")
         self.pathinfoA = redRGUI.widgetLabel(self.pathtable, "")
         self.splitCanvas.addWidget(self.pathtable)
-        
+        self.table1 = redRGUI.table(self.splitCanvas) # change the table while processing
+        self.table2 = redRGUI.table(self.splitCanvas) #change the table while processing
         self.splitCanvas.addWidget(self.table1)
         self.splitCanvas.addWidget(self.table2)
         
@@ -90,14 +89,12 @@ class runSigPathway(OWRpy):
         except:
             pass
 
-        
-        
     def loadpAnnot(self):
-        self.rsession('load(choose.files())')
+        self.R('load(choose.files())') # change this to Qt format
         self.pAnnots = 'G'
         # ## give some output as to what file the annotations are comming from
     def setFileFolder(self):
-        self.wd = self.rsession('choose.dir()')
+        self.wd = self.R('choose.dir()') # change this to Qt format
     
     def process(self, data): #collect a preprocessed file for pathway analysis
         self.require_librarys(['sigPathway'])
@@ -108,11 +105,13 @@ class runSigPathway(OWRpy):
             self.infoa.setText("Data connected")
             if 'eset' in data:
                 self.affy = data['eset']
-                self.chiptype.setText(self.rsession('annotation('+self.affy+')'))
+                self.chiptype.setText(self.R('annotation('+self.affy+')'))
+                self.usedb.setChecked(['Use Annotation Database'])
                 self.getChiptype()
             elif 'affy' in data:
                 self.affy = data['affy']
-                self.chiptype.setText(self.rsession('annotation('+self.affy+')'))
+                self.chiptype.setText(self.R('annotation('+self.affy+')'))
+                self.usedb.setChecked(['Use Annotation Database'])
                 self.getChiptype()
             else:
                 self.infob.setText("No Chip Type Info Available. \n Please input.")
@@ -121,7 +120,7 @@ class runSigPathway(OWRpy):
             if 'classes' in self.olddata:
                 self.phenotype = self.olddata['classes']
             else: return
-                #self.rsession('data.entry(colnames('+self.data+'), cla'+self.vs+'=NULL)')
+                #self.R('data.entry(colnames('+self.data+'), cla'+self.vs+'=NULL)')
                 #self.phenotype = 'cla'+self.vs
         else: return
     def processPathAnnot(self, data): #connect a processed annotation file if removed, re-enable the choose file function
@@ -133,10 +132,10 @@ class runSigPathway(OWRpy):
             self.wdline.setEnabled(True)
             self.wdfilebutton.setEnabled(True)
     def getChiptype(self):
-        if self.usedb == 1:
+        if 'Use Annotation Database' in self.usedb.getChecked():
             try:
-                self.require_librarys([self.chiptype])
-                self.dboptions = ',annotpkg = "'+self.chiptype+'"'
+                self.require_librarys([str(self.chiptype.text() + '.db')])
+                self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
                 self.infob.setText("Chip type loaded")
             except:	
                 self.infob.setText("There was an exception")
@@ -144,8 +143,8 @@ class runSigPathway(OWRpy):
         else: return
     
     def noFile(self):
-        self.rsession('shell.exec("http://chip.org/~ppark/Supplements/PNAS05.html")') #open website for more pathways
-        self.infoa.setText("Please select the file that coresponds to your array type and save to the Pathway Folder in My Documents.") #send the user a message to download the appropriate pathway.
+        self.R('shell.exec("http://chip.org/~ppark/Supplements/PNAS05.html")') #open website for more pathways
+        self.infoa.setText("Please select the file that coresponds to your array type and save.") #send the user a message to download the appropriate pathway.
         self.infob.setText("Once you have saved the array please press the update button.") #prompt the user to update the pathway list
         
     def updatePaths(self):
@@ -163,17 +162,17 @@ class runSigPathway(OWRpy):
         
     def noDbFile(self):
         try:
-            self.rsession('source("http://bioconductor.org/biocLite.R")')
-            self.rsession('biocLite("'+self.chiptype+'")')
-            self.rsession('biocLite("'+self.chiptype+'.db")')
-            self.require_librarys([self.chiptype])
+            self.R('source("http://bioconductor.org/biocLite.R")')
+            self.R('biocLite("'+str(self.chiptype.text())+'")')
+            self.R('biocLite("'+str(self.chiptype.text())+'.db")')
+            self.require_librarys([str(self.chiptype.text()), str(self.chiptype.text() + '.db')])
             #r('require("'+self.chiptype+'")')
             #r('require("'+self.chiptype+'.db")')
             self.infob.setText("Chip type downloaded and loaded")
-            self.dboptions = ',annotpkg = "'+self.chiptype+'"'
+            self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
         except: 
             self.infoa.setText("Unable to include the .db file, please check that you are connected to the internet and that your .db file is available.")
-            self.infob.setText("Your chip type appears to be "+self.chiptype+".")
+            self.infob.setText("Your chip type appears to be "+str(self.chiptype.text())+".")
             self.dboptions = ''
             
 
@@ -181,20 +180,20 @@ class runSigPathway(OWRpy):
     def runPath(self, reload = 0):
         if not reload:
             self.getChiptype()
-            self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
+            #self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
             try:
-                self.rsession('sigpath_'+self.vs+'<-runSigPathway('+self.pAnnots+', minNPS='+self.minNPS.text()+', maxNPS = '+self.maxNPS.text()+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath)+self.dboptions+')')
+                self.R(self.Rvariables['sigpath']+'<-runSigPathway('+self.pAnnots+', minNPS='+str(self.minNPS.text())+', maxNPS = '+str(self.maxNPS.text())+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath.text())+self.dboptions+')')
             except:
                 self.pathinfoA.setText("Error occured in processing.  Change parameters and repeat.")
                 return
             self.newdata = self.olddata.copy()
-        self.newdata['data'] = 'sigpath_'+self.vs+'$df.pathways'
-        self.newdata['sigPathObj'] = 'sigpath_'+self.vs
+        self.newdata['data'] = self.Rvariables['sigpath']+'$df.pathways'
+        self.newdata['sigPathObj'] = self.Rvariables['sigpath']
         self.send("Pathway Analysis File", self.newdata)
 
-        headers = self.rsession('colnames('+self.newdata['data']+')')
+        headers = self.R('colnames('+self.newdata['data']+')')
         #self.headers = r('colnames('+self.dataframename+')')
-        dataframe = self.rsession(self.newdata['data'])
+        dataframe = self.R(self.newdata['data'])
         self.table1.setColumnCount(len(headers))
         self.table1.setRowCount(len(dataframe[headers[0]]))
         n=0
@@ -226,16 +225,16 @@ class runSigPathway(OWRpy):
         
     def cellClicked(self, item):
         self.clickedRow = int(item.row())+1
-        self.subtable = {'data':'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':{'IHOP':'http://www.ihop-net.org/UniPub/iHOP/?search={4}', 'Entrez Gene': 'http://www.ncbi.nih.gov/gene/{3}'}}
+        self.subtable = {'data':self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':{'IHOP':'http://www.ihop-net.org/UniPub/iHOP/?search={4}', 'Entrez Gene': 'http://www.ncbi.nih.gov/gene/{3}'}}
         self.sendMe()
         try: self.table2
         except: pass
         else: self.table2.clear()
         #self.table2 = MyTable(self.subtable['data'])
         
-        headers = self.rsession('colnames('+self.subtable['data']+')')
+        headers = self.R('colnames('+self.subtable['data']+')')
         #self.headers = r('colnames('+self.dataframename+')')
-        dataframe = self.rsession(self.subtable['data'])
+        dataframe = self.R(self.subtable['data'])
         self.table2.setColumnCount(len(headers))
         self.table2.setRowCount(len(dataframe[headers[0]]))
         n=0
@@ -252,9 +251,9 @@ class runSigPathway(OWRpy):
     def geneClicked(self, item):
         
         clickedGene = int(item.row())+1
-        if 'GeneID' in self.rsession('colnames(sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']])'):
-            genenumber = self.rsession('sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]['+str(clickedGene)+',3]')
-            self.rsession('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
+        if 'GeneID' in self.R('colnames('+self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']])'):
+            genenumber = self.R(self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']]['+str(clickedGene)+',3]')
+            self.R('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
         
     def phenotypeConnected(self, data):
         if data:

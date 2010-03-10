@@ -151,7 +151,9 @@ class OWRpy(OWWidget,RSession):
             self.needsProcessingHandler(self, 1)
         self.sentItems.append((name, variable))
         self.status.setText('Data sent.')
-
+    def makeCM(self, Variable, Parent):
+        self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
+        
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
         settings = {}

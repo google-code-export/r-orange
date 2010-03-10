@@ -46,8 +46,8 @@ class limmaDecide(OWRpy):
         grid.addWidget(optionsbox, 0,0)
         self.dmethod = redRGUI.comboBox(optionsbox, label = "Combine Method"+"  ", items = ["separate", "global", "hierarchical", "nestedF"], orientation=0)
         self.adjmethods = redRGUI.comboBox(optionsbox, label = "P-value Adjust Methods", items = ["BH", "none", "fdr", "BY", "holm"], orientation=0)
-        self.pval = redRGUI.lineEdit(optionsbox, label = "Minimum p-value change:", orientation = 0)
-        self.foldchange = redRGUI.lineEdit(optionsbox, label = "Minimum fold change:", orientation = 0)
+        self.pval = redRGUI.lineEdit(optionsbox, text = '0.01', label = "Minimum p-value change:", orientation = 0)
+        self.foldchange = redRGUI.lineEdit(optionsbox, text = '0', label = "Minimum fold change:", orientation = 0)
         
         computebox = redRGUI.widgetBox(self.controlArea, "Compute")
         grid.addWidget(computebox, 1,0)
@@ -76,7 +76,7 @@ class limmaDecide(OWRpy):
         #self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
 
         #run the analysis using the parameters selected or input
-        self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod.text())+'", adjust.method="'+str(self.adjmethods.text())+'", p.value='+str(self.pval.text())+', lfc='+str(self.foldchange.text())+')')
+        self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod.currentText())+'", adjust.method="'+str(self.adjmethods.currentText())+'", p.value='+str(self.pval.text())+', lfc='+str(self.foldchange.text())+')')
         self.infoa.setText("Gene Matrix Processed and sent!")
         self.sending = {'data':self.Rvariables['gcm']}
         self.rSend("Gene Change Matrix", self.sending)
@@ -115,7 +115,7 @@ class limmaDecide(OWRpy):
 
     def sendesetsubset(self):
         if self.eset != None and self.modelProcessed == 1:
-            self.rsession(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
+            self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
             self.newdata = self.olddata.copy()
             self.newdata['data']=self.Rvariables['eset_sub']
             if 'classes' in self.ebdata:
