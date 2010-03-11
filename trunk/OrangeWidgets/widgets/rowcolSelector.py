@@ -86,7 +86,7 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
                     self.namesPresent = 0
             else: #by exclusion we haven't picked anything yet
                 self.attributes.clear()
-                self.processingBox.setHtml('You must select either Row or Column to procede')
+                self.status.setText('You must select either Row or Column to procede')
     def rowcolButtonSelected(self): #recall the GUI setting the data if data is selected
         print self.rowcolBox.getChecked()
         if self.data: self.setWidget(self.parentData)
@@ -135,7 +135,7 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
             self.classifyData(c)
 
         else: #by exclusion we haven't picked anything yet
-            self.processingBox.setHtml('You must select either Row or Column to procede')
+            self.status.setText('You must select either Row or Column to procede')
         
     def classifyData(self, c):
         if c == 'character':

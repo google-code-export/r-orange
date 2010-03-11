@@ -131,8 +131,9 @@ class mergeR(OWRpy):
             
     def run(self):
         try:
-            h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
-            
+            if self.dataA != '' and self.dataB != '':
+                h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
+            else: h = None
             # make a temp variable that is the combination of the parent frame and the cm for the parent.
             self.R('tmpa<-cbind('+self.dataA+','+self.dataParentA['cm']+')')
             self.R('tmpb<-cbind('+self.dataB+','+self.dataParentB['cm']+')')

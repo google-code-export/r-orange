@@ -26,7 +26,7 @@ class limmaDecide(OWRpy):
         self.modelProcessed = 0
         self.loadSettings()
         
-        self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg'])
+        self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm'])
         
         #self.sendMe()
         
@@ -118,6 +118,8 @@ class limmaDecide(OWRpy):
             self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
             self.newdata = self.olddata.copy()
             self.newdata['data']=self.Rvariables['eset_sub']
+            self.makeCM(self.Rvariables['cm'], self.Rvariables['eset_sub']) # moment of creation of this cm
+            self.newdata['cm'] = self.Rvariables['cm']
             if 'classes' in self.ebdata:
                 self.newdata['classes'] = self.ebdata['classes']
             self.rSend("Expression Subset", self.newdata)

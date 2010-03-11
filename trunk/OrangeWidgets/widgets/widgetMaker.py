@@ -34,9 +34,9 @@ class widgetMaker(OWRpy):
         box = redRGUI.widgetBox(self.controlArea, "")
         self.infoa = redRGUI.widgetLabel(box, '')
         self.packageName = redRGUI.lineEdit(box, label = 'Package:', orientation = 1)
-        redRGUI.button(box, self, 'Load Package', callback = self.loadRPackage)
+        redRGUI.button(box, 'Load Package', callback = self.loadRPackage)
         self.functionName = redRGUI.lineEdit(box, label = 'Function Name:', orientation = 1)
-        redRGUI.button(box, self, 'Parse Function', callback = self.parseFunction)
+        redRGUI.button(box, 'Parse Function', callback = self.parseFunction)
         self.argsLineEdit = redRGUI.lineEdit(box, label = 'GUI Args')
         self.connect(self.argsLineEdit, SIGNAL('textChanged(QString)'), self.setArgsLineEdit)
         box = redRGUI.widgetBox(self.controlArea, "Inputs and Outputs")
@@ -46,12 +46,12 @@ class widgetMaker(OWRpy):
         
         #self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
-        redRGUI.button(box, self, 'Accept Inputs', callback = self.acceptInputs)
+        redRGUI.button(box, 'Accept Inputs', callback = self.acceptInputs)
         self.functionAllowOutput = redRGUI.checkBox(box, label = None, buttons = ['Allow Output'])
         self.captureROutput = redRGUI.checkBox(box, buttons = ['Show Output'])
         
-        redRGUI.button(box, self, 'Generate Code', callback = self.generateCode)
-        redRGUI.button(box, self, 'Launch Widget', callback = self.launch)
+        redRGUI.button(box, 'Generate Code', callback = self.generateCode)
+        redRGUI.button(box, 'Launch Widget', callback = self.launch)
         
         self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
         self.mainArea.layout().addWidget(self.splitCanvas)
@@ -73,9 +73,9 @@ class widgetMaker(OWRpy):
         import orngEnviron, orngRegistry, orngCanvas
         widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
-        path = widgetDirName +  "/Prototypes/" + self.functionName.text().replace('.', '_') + ".py"
+        path = widgetDirName +  "\\widgets\\" + self.functionName.text().replace('.', '_') + ".py"
         #print 'path:' + path
-        file = open(path, "wt")
+        file = open(os.path.abspath(path), "wt")
         tmpCode = self.completeCode
         tmpCode = tmpCode.replace('<pre>', '')
         tmpCode = tmpCode.replace('</pre>', '')
@@ -213,7 +213,7 @@ class widgetMaker(OWRpy):
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
 
         self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
-        if self.functionAllowOutput.isChecked():
+        if 'Allow Output' in self.functionAllowOutput.getChecked():
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
             self.initCode += '\t\tself.data = {}\n'
         # set's the default's of the fields
@@ -238,7 +238,7 @@ class widgetMaker(OWRpy):
                 self.initCode += '("'+element+'", RvarClasses.RVariable, self.process'+element+'),'
             self.initCode = self.initCode[:len(self.initCode)-1]
             self.initCode += ']\n'
-        if self.functionAllowOutput.isChecked():
+        if 'Allow Output' in self.functionAllowOutput.getChecked():
             self.initCode += '\t\tself.outputs = [("'+self.functionName.text()+' Output", RvarClasses.RVariable)]\n'
         self.initCode += '\t\t\n'
         
@@ -262,9 +262,9 @@ class widgetMaker(OWRpy):
                         self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = redRGUI.comboBox(self.standardTab, label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
                     elif self.fieldList[element][1] == 'Advanced':
                         self.guiCode += '\t\tself.RFunctionParam' + element +'_comboBox = redRGUI.comboBox(self.advancedTab, label = "'+element+':", items = '+str(self.fieldList[element][0])+')\n'
-        self.guiCode += '\t\tredRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)\n'
-        self.guiCode += '\t\tredRGUI.button(self.controlArea, self, "Report", callback = self.sendReport)\n'
-        if self.captureROutput.isChecked():
+        self.guiCode += '\t\tredRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '\t\tredRGUI.button(self.controlArea, "Report", callback = self.sendReport)\n'
+        if 'Show Output' in self.captureROutput.getChecked():
             self.guiCode += '\t\tself.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")\n'
             #self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
 
@@ -295,9 +295,7 @@ class widgetMaker(OWRpy):
             self.commitFunction += "\t\t\tinjection.append(string)\n"
         self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("
-        if self.captureROutput.isChecked():
-            self.commitFunction += "'txt&lt;-capture.output('+"
-        if self.functionAllowOutput.isChecked():
+        if 'Allow Output' in self.functionAllowOutput.getChecked():
             self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("
         else:
             self.commitFunction += "'"+self.functionName.text()+"("
@@ -313,10 +311,9 @@ class widgetMaker(OWRpy):
                 # self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
         # self.commitFunction = self.commitFunction[:-1]
         self.commitFunction += "'+inj+'"
-        if self.captureROutput.isChecked():
-            self.commitFunction += ')'
         self.commitFunction += ")')\n"
-        if self.captureROutput.isChecked():
+        if 'Show Output' in self.captureROutput.getChecked():
+            self.commitFunction += "\t\tself.R('txt<-capture.output(self.Rvariables['"+self.functionName.text()+"']+')')"
             self.commitFunction += "\t\tself.RoutputWindow.clear()\n"
             self.commitFunction += "\t\ttmp = self.R('paste(txt, collapse =\x22\x5cn\x22)')\n"
             self.commitFunction += "\t\tself.RoutputWindow.insertHtml('&lt;br&gt;&lt;pre&gt;'+tmp+'&lt;/pre&gt;')\n"
@@ -326,8 +323,8 @@ class widgetMaker(OWRpy):
         # self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
         
         
-        if self.functionAllowOutput.isChecked():
-            self.commitFunction += '\t\tsele.data["data"] = self.Rvariables["'+self.functionName.text()+'"]\n'
+        if 'Allow Output' in self.functionAllowOutput.getChecked():
+            self.commitFunction += '\t\tself.data["data"] = self.Rvariables["'+self.functionName.text()+'"]\n'
             self.commitFunction += '\t\tself.rSend("'+self.functionName.text()+' Output", self.data)\n'
     def makeReportFunction(self):
         self.reportFunction = ''
@@ -335,8 +332,8 @@ class widgetMaker(OWRpy):
         for inputName in self.functionInputs.keys():
             self.reportFunction += '\t\tself.reportSettings("Input Settings",[("'+inputName+'", self.RFunctionParam_'+inputName+')])\n' # output the inputs of the function
         for element in self.fieldList.keys():
-            self.reportFunction += "\t\tself.reportSettings('Function Settings', [('"+element+"',str(self.RFunctionParam_"+element+"))])\n"
-        if self.functionAllowOutput.isChecked():
+            self.reportFunction += "\t\tself.reportSettings('Function Settings', [('"+element+"',str(self.RFunctionParam"+ element +"_lineEdit.text()"))])\n"
+        if 'Allow Output' in self.functionAllowOutput.getChecked():
             self.reportFunction += '\t\tself.reportRaw(self.Rvariables["'+self.functionName.text()+'"])\n'
             
         self.reportFunction += '\tdef sendReport(self):\n\t\tself.compileReport()\n\t\tself.showReport()\n'

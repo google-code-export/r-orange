@@ -49,7 +49,7 @@ class diffExp(OWRpy):
         layk.setLayout(grid)
         
         # set as valstack 0
-        box = redRGUI.widgetBox(boxVal, "Process", sizePolicy = QSizePolicy.Expanding)
+        box = redRGUI.widgetBox(boxVal, "Process", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(box, 0,1)
         processButton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
         self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
@@ -57,12 +57,12 @@ class diffExp(OWRpy):
         self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
         self.infob = redRGUI.widgetLabel(box, "Setting Class A")
         
-        selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy.Expanding)
+        selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(selecteda, 0,0)
         self.selectedArrays = redRGUI.listBox(selecteda, self)
         clearaButton = redRGUI.button(selecteda, "Clear",callback = self.clearA, width = 200)
         
-        selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy.Expanding)
+        selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(selectedb, 0,2)
         self.selectedArraysB = redRGUI.listBox(selectedb, self)
         clearbButton = redRGUI.button(selectedb, "Clear", callback = self.clearB, width = 200)
