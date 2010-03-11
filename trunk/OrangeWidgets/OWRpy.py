@@ -46,6 +46,7 @@ class OWRpy(OWWidget,RSession):
         self.setRvariableNames(['title'])
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
+        self.autoShowDialog = 1
         
         #collect the sent items
         self.sentItems = []
@@ -102,10 +103,6 @@ class OWRpy(OWWidget,RSession):
         self.status.setText('Processing not yet performed.')
         self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.statusBar.addWidget(self.status)
-        showHelpButton = redRGUI.button(self.statusBar, 'Show Help', callback = self.helpBox.show)
-        showNotesButton = redRGUI.button(self.statusBar, 'Show Notes', callback = self.notesBox.show)
-        self.statusBar.addWidget(showHelpButton)
-        self.statusBar.addWidget(showNotesButton)
         self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
         
         self.GUIDialogDialog = None
@@ -117,8 +114,14 @@ class OWRpy(OWWidget,RSession):
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog)
             #self.GUIDialogDialog.show()
             self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+            self.GUIDialogDialog.move(50, 50)
         showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBox.show)
         showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBox.show)
+    def showGUIDialog(self):
+        if self.autoShowDialog:
+            
+            self.GUIDialogDialog.show()
+            self.GUIDialogDialog.move(50, 50)
     def showHelp(self):
         self.helpBox.show()
         

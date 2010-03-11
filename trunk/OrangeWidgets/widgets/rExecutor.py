@@ -47,15 +47,16 @@ class rExecutor(OWRpy):
         # grid = QGridLayout() # instantiate the grid
         # lay.setLayout(grid) # put the grid into the controlArea
         leftArea = redRGUI.widgetBox(area)
+        leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         #grid.addWidget(leftArea, 0,0)
         rightArea = redRGUI.widgetBox(area)
         rightArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #grid.addWidget(rightArea, 0, 1)
         
         ### end Grid
-        runbox = redRGUI.groupBox(rightArea, "Command Line", orientation=QHBoxLayout())
+        runbox = redRGUI.groupBox(rightArea, "Command Line", orientation='horizontal')
         self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
-        processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=150)
+        processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=100)
 
         self.dataBox = redRGUI.groupBox(leftArea, "Input Infromation")
         self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
@@ -66,10 +67,12 @@ class rExecutor(OWRpy):
 
         self.thistext = redRGUI.textEdit(rightArea)
 
-        sendbox = redRGUI.groupBox(leftArea, "Send Box")
-        self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
-        sendbutton = redRGUI.button(sendbox, "Send", callback =self.sendThis, width=150)
-        self.resize(800,600)
+        #sendbox = redRGUI.groupBox(leftArea, "Send Box")
+        #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
+        sendbutton = redRGUI.button(runbox, "Send", callback =self.sendThis, width=100)
+        self.resize(700,500)
+        self.move(300, 25)
+        self.autoShowDialog = 0
         
     def clearOutput(self):
         self.thistext.clear()
@@ -82,7 +85,7 @@ class rExecutor(OWRpy):
         self.command.setText(tmp)
     def sendThis(self):
         
-        self.sendt = {'data':str(self.sendthis.text()), 'parent':str(self.sendthis.text())}
+        self.sendt = {'data':str(self.command.text()), 'parent':str(self.command.text())}
         thisdata = self.sendt['data']
         thisdataclass = self.R('class('+thisdata+')')
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic

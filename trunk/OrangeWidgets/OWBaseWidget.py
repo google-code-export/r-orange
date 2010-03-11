@@ -318,8 +318,8 @@ class OWBaseWidget(QDialog):
             self.move(x,y)
         self.show()
         if self.GUIDialogDialog != None:
-            self.GUIDialogDialog.move(50, 50)
-            self.GUIDialogDialog.show()
+            self.showGUIDialog()
+            
         #self.raise_()
 
 

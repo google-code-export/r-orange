@@ -52,7 +52,7 @@ class readFile(OWRpy):
         
         self.userowNames = redRGUI.lineEdit(box, label = 'Rowname Column:')
         redRGUI.button(box, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
-        redRGUI.button(box, 'Load File', callback = self.loadFile)
+        redRGUI.button(self.bottomAreaRight, 'Load File', callback = self.loadFile)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
         self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
         self.infob = redRGUI.widgetLabel(box, '')

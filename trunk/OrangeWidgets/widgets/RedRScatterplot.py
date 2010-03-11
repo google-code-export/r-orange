@@ -18,7 +18,7 @@ class RedRScatterplot(OWRpy):
     globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
         self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
         self.outputs = [('test output', RvarClasses.RDataFrame)]
@@ -27,25 +27,26 @@ class RedRScatterplot(OWRpy):
         self.cm = None
         self.loadSettings()
 
-        self.X = redRGUI.widgetLabel(self.controlArea, '')
-        self.Y = redRGUI.widgetLabel(self.controlArea, '')
-        self.Z = redRGUI.widgetLabel(self.controlArea, '')
-        self.tabWidgeta = redRGUI.tabWidget(self.controlArea)
+        self.tabWidgeta = redRGUI.tabWidget(self.GUIDialog)
         #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
         plotTab = self.tabWidgeta.createTabPage('Plot')
-        self.xColumnSelector = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
-        self.yColumnSelector = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
+        self.xColumnSelector = redRGUI.comboBox(plotTab, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
+        self.yColumnSelector = redRGUI.comboBox(plotTab, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
         self.subsetCMSelector = redRGUI.comboBox(plotTab, items=[' '], callback = self.populateCM)
         self.subsetCMClass = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
         paintTab = self.tabWidgeta.createTabPage('Paint')
         self.paintCMSelector = redRGUI.comboBox(paintTab, items = [' '], callback = self.plot)
-        plotarea = redRGUI.widgetBox(self.controlArea, "graph")
+        plotarea = redRGUI.groupBox(self.controlArea, "Graph")
+        plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
         self.graph = redRGUI.redRGraph(plotarea)
         plotarea.layout().addWidget(self.graph)
-        self.zoomSelectToolbarBox = redRGUI.widgetBox(self.controlArea, "Plot Tool Bar")
-        self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self.zoomSelectToolbarBox, self, self.graph)
-        redRGUI.button(self.controlArea, self, "selected", callback = self.showSelected)
+        self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, "Plot Tool Bar")
+        self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self, self.zoomSelectToolbarBox, self.graph)
+        redRGUI.button(self.bottomAreaRight, "Select", callback = self.showSelected, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        
+        self.resize(600, 500)
+        self.move(300, 25)
     def refresh(self):
         if self.cm != None:
             try:

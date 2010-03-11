@@ -19,6 +19,8 @@ class mergeR(OWRpy):
         
         self.dataParentA = {}
         self.dataParentB = {}
+        self.dataA = ''
+        self.dataB = ''
         
         
         self.inputs = [("RExampleTable A", RvarClasses.RDataFrame, self.processA), ("RExampleTable B", RvarClasses.RDataFrame, self.processB)]
@@ -61,9 +63,11 @@ class mergeR(OWRpy):
         # ## Other options
         otherBox = redRGUI.groupBox(self.controlArea, "Binding", orientation = 'horizontal')
         self.forceMergeAll = redRGUI.checkBox(otherBox, buttons=["Force Merger"])
-        redRGUI.button(otherBox, "Bind By Columns", callback = self.colBind)
-        redRGUI.button(otherBox, "Bind By Rows", callback = self.rowBind)
-
+        self.colBindButton = redRGUI.button(otherBox, "Bind By Columns", callback = self.colBind)
+        self.rowBindButton = redRGUI.button(otherBox, "Bind By Rows", callback = self.rowBind)
+        self.colBindButton.setEnabled(False)
+        self.rowBindButton.setEnabled(False)
+        redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.run)
         
     def onLoadSavedSession(self):
         
@@ -90,6 +94,19 @@ class mergeR(OWRpy):
                     self.colA.setCurrentRow((self.colA.count()-1))
             
             self.run()
+            
+            if self.dataA != '' and self.dataB != '':
+                aRowLen = self.R('length('+self.dataA+'[,1])')
+                aColLen = self.R('length('+self.dataB+'[1,])')
+                bRowLen = self.R('length('+self.dataA+'[,1])')
+                bColLen = self.R('length('+self.dataA+'[1,])')
+                try:
+                    if aRowLen == bRowLen:
+                        self.colBindButton.setEnabled(True)
+                    if aColLen == bColLen:
+                        self.rowBindButton.setEnabled(True)
+                except: # there must not be any row of col names so there can't be a comparison
+                    pass
         else: return
             #self.sendNothing
 

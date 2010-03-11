@@ -14,12 +14,13 @@ class RFormulaEntry(QWidget, widgetState):
         
         #place the command keys
         buttonsBox = redRGUI.groupBox(box, label = "Formula Commands")
-        self.plusButton = redRGUI.button(buttonsBox, "And", callback = self.plusButtonClicked)
+        self.plusButton = redRGUI.button(buttonsBox, "And (+)", callback = self.plusButtonClicked)
         self.plusButton.setEnabled(False)
-        self.colonButton = redRGUI.button(buttonsBox, "Interacting With", callback = self.colonButtonClicked)
+        self.colonButton = redRGUI.button(buttonsBox, "Interacting With (:)", callback = self.colonButtonClicked)
         self.colonButton.setEnabled(False)
-        self.starButton = redRGUI.button(buttonsBox, "Together and Interacting", callback = self.starButtonClicked)
+        self.starButton = redRGUI.button(buttonsBox, "Together and Interacting (*)", callback = self.starButtonClicked)
         self.starButton.setEnabled(False)
+        redRGUI.button(buttonsBox, 'Clear', self.clearFormula)
         self.elementsListBox = redRGUI.listBox(buttonsBox, label = 'Elements', callback = self.FormulaEntryElementSelected)
         self.elementsListBox.setEnabled(True)
         
@@ -28,7 +29,10 @@ class RFormulaEntry(QWidget, widgetState):
         self.outcomeVariable = redRGUI.comboBox(modelBox, label = 'Outcome (f(x)):')
         redRGUI.widgetLabel(modelBox, ' = ')
         self.modelLineEdit = redRGUI.lineEdit(modelBox, label = None)
-        
+    
+    def clearFormula(self):
+        self.modelLineEdit.clear()
+        self.updateEnabled(1)
     def addItems(self, items):
         self.outcomeVariable.clear()
         self.elementsListBox.clear()
@@ -46,25 +50,25 @@ class RFormulaEntry(QWidget, widgetState):
         self.starButton.setEnabled(not pos)
     def FormulaEntryElementSelected(self):
         self.modelLineEdit.setText(str(self.modelLineEdit.text()) + str(self.elementsListBox.currentItem().text()))
-        self.updateEnabled(1)
+        self.updateEnabled(0)
         
     def plusButtonClicked(self):
         self.modelLineEdit.setText(str(self.modelLineEdit.text()) + ' + ')
-        self.updateEnabled(0)
+        self.updateEnabled(1)
         
     def colonButtonClicked(self):
         self.modelLineEdit.setText(str(self.modelLineEdit.text()) + ' : ')
-        self.updateEnabled(0)
+        self.updateEnabled(1)
         
     def starButtonClicked(self):
         self.modelLineEdit.setText(str(self.modelLineEdit.text()) + ' * ')
-        self.updateEnabled(0)
+        self.updateEnabled(1)
         
     def Formula(self):
         if str(self.outcomeVariable.currentText()) in str(self.modelLineEdit.text()):
             return None
         else:
-            return (str(self.outcomeVariable.currentText(), self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
+            return (str(self.outcomeVariable.currentText()), str(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
     def getSettings(self):
         return {'items': 'nothing'} # complete
         #items = []

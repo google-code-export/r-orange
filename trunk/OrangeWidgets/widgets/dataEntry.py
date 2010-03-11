@@ -32,7 +32,7 @@ class dataEntry(OWRpy):
         self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers'])
         self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers'])
 
-        box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy.Preferred)
+        box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
         self.dataTable.show()
