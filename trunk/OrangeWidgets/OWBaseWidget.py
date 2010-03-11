@@ -379,7 +379,7 @@ class OWBaseWidget(QDialog):
                             # print 'Qt object in '+str(name)+', unable to save'
                         pass
                 except:
-                    #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+                    
                     pass
                     
             #instert logic for saving the gui settings
@@ -559,7 +559,9 @@ class OWBaseWidget(QDialog):
         settings = self.getSettings()
         #print settings
         #print str(self.RGUIElements)
+        #print cPickle.dumps(settings) + 'settings dump'
         try:
+            
             return cPickle.dumps(settings)
         except: 
             print str(settings)

@@ -249,8 +249,9 @@ class SchemaDoc(QWidget):
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            print str(forceInSignals)
-            print str(forceOutSignals)
+            #print str(forceInSignals) 
+            #print str(forceOutSignals)
+            print 'adding widget '+caption
             newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
         except:
@@ -363,8 +364,8 @@ class SchemaDoc(QWidget):
         for category in self.canvasDlg.widgetRegistry.keys():
             for name, widget in self.canvasDlg.widgetRegistry[category].items():
                 if widget.fileName == widgetFileName:  
-                    print str(forceInSignals)
-                    print str(forceOutSignals)
+                    print str(forceInSignals) + 'force in signals'
+                    print str(forceOutSignals) + 'force out signals'
                     return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
         return None
 
@@ -445,6 +446,7 @@ class SchemaDoc(QWidget):
             print 'looking for settingsstr'
             #try:
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
+            #print str(settingsDict[widget.caption]) + '\n\n settings Dict (orngDoc)'
             # except:
                 # settingsDict[widget.caption] = None
                 #sprint str(widget.caption) + 'failed to save some settings'
@@ -548,9 +550,11 @@ class SchemaDoc(QWidget):
                 for widget in widgets.getElementsByTagName("widget"):
                     try:
                         name = widget.getAttribute("widgetName")
-                        #print 'Name: '+str(name)+' (orngDoc.py)'
+                        print 'Name: '+str(name)+' (orngDoc.py)'
+                        print str(widget.getAttribute("caption"))
+                        print str(settingsDict)
                         settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                        #print str(settings) + ' (orngDoc.py)'
+                        print str(settings) + ' (orngDoc.py)'
                         #print 'widget settings are' + str(settings)
                         try:
                             for library in settings['RPackages']:

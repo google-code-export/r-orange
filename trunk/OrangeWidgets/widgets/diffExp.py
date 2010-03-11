@@ -11,7 +11,7 @@ from OWRpy import *
 import redRGUI
 
 class diffExp(OWRpy):
-    settingsList = [ 'samplenames', 'sampleA', 'sampleB', 'phenoData', 'modelFormula', 'newdata']
+
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         #self.setStateVariables(['samplenames', 'sampleA', 'sampleB'])        
@@ -37,10 +37,11 @@ class diffExp(OWRpy):
         
         #GUI
         self.boxIndices = {}
+        self.blackList.append('boxIndices')
         self.valuesStack = QStackedWidget(self)
         self.controlArea.layout().addWidget(self.valuesStack)
         
-        boxVal = redRGUI.widgetBox(self.controlArea, "Set Classes")
+        boxVal = redRGUI.widgetBox(self.controlArea)
         self.boxIndices[0] = boxVal
         layk = QWidget(self)
         boxVal.layout().addWidget(layk)
@@ -49,7 +50,7 @@ class diffExp(OWRpy):
         layk.setLayout(grid)
         
         # set as valstack 0
-        box = redRGUI.widgetBox(boxVal, "Process", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
+        box = redRGUI.widgetBox(boxVal, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(box, 0,1)
         processButton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
         self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
@@ -57,12 +58,12 @@ class diffExp(OWRpy):
         self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
         self.infob = redRGUI.widgetLabel(box, "Setting Class A")
         
-        selecteda = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
+        selecteda = redRGUI.widgetBox(self.controlArea,sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(selecteda, 0,0)
         self.selectedArrays = redRGUI.listBox(selecteda, self)
         clearaButton = redRGUI.button(selecteda, "Clear",callback = self.clearA, width = 200)
         
-        selectedb = redRGUI.widgetBox(self.controlArea, "Selected Arrays", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
+        selectedb = redRGUI.widgetBox(self.controlArea,sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(selectedb, 0,2)
         self.selectedArraysB = redRGUI.listBox(selectedb, self)
         clearbButton = redRGUI.button(selectedb, "Clear", callback = self.clearB, width = 200)
@@ -71,7 +72,7 @@ class diffExp(OWRpy):
         
         # valstack 1: phenodataConnected
         
-        boxVal = redRGUI.widgetBox(self.controlArea, "Set Classes")
+        boxVal = redRGUI.widgetBox(self.controlArea)
         self.boxIndices[1] = boxVal
         layk2 = QWidget(self)
         boxVal.layout().addWidget(layk2)
@@ -80,7 +81,7 @@ class diffExp(OWRpy):
         layk2.setLayout(grid2)
         
         
-        box = redRGUI.widgetBox(boxVal, "Phenotype Variables")
+        box = redRGUI.widgetBox(boxVal)
         grid2.addWidget(box, 0, 0)
         self.functionBox = redRGUI.RFormulaEntry(box)
         # self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
@@ -100,10 +101,6 @@ class diffExp(OWRpy):
         
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
         
-    def onLoadSavedSession(self):
-        if self.Rvariables['results'] in self.R('ls()'):
-            self.Rreload()
-            self.processEset(reload = 1)
     def clearA(self):
         self.selectedArrays.clear()
         self.sampleA = []
@@ -124,6 +121,7 @@ class diffExp(OWRpy):
             self.infob.setText("Setting Class A")
     def phenoProcess(self, data):
         if not data: return
+        lib = self.require_librarys(['affy','gcrma','limma'])
         if 'data' in data: # make sure that there is data there 
             self.phenoData = data['data']
             colnames = self.R('colnames('+self.phenoData+')')
@@ -136,7 +134,11 @@ class diffExp(OWRpy):
     
     
     def process(self, data):
-        self.require_librarys(['affy','gcrma','limma'])
+        lib = self.require_librarys(['affy','gcrma','limma'])
+        if not lib: 
+            self.require_librarys(['affy', 'gcrma', 'limma'], force = True)
+            print 'Error occured during library loading'
+            return
         self.arrays.clear()
         self.selectedArrays.clear()
         self.selectedArraysB.clear()
@@ -155,44 +157,7 @@ class diffExp(OWRpy):
                 for v in self.samplenames:
                     self.arrays.addItem(v)
                 self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
-            
 
-    # def phenoVarListBoxItemClicked(self):
-        # if self.processingComplete == 1:
-            # self.modelFormula = ''
-            # self.processingComplete = 0
-        # element = self.phenoVarListBox.selectedItems()[0].text()
-        # self.modelFormula += str(element)
-        # self.phenoVarListBox.setEnabled(False)
-        # self.plusButton.setEnabled(True)
-        # self.colonButton.setEnabled(True)
-        # self.starButton.setEnabled(True)
-        # self.processEsetButton.setEnabled(True)
-        # self.modelText.setText("Model: " + self.modelFormula)
-    # def plusButtonClicked(self):
-        # self.modelFormula += ' + '
-        # self.phenoVarListBox.setEnabled(True)
-        # self.plusButton.setEnabled(False)
-        # self.colonButton.setEnabled(False)
-        # self.starButton.setEnabled(False)
-        # self.processEsetButton.setEnabled(False)
-        # self.modelText.setText("Model: " + self.modelFormula)
-    # def colonButtonClicked(self):
-        # self.modelFormula += ' : '
-        # self.phenoVarListBox.setEnabled(True)
-        # self.plusButton.setEnabled(False)
-        # self.colonButton.setEnabled(False)
-        # self.starButton.setEnabled(False)
-        # self.processEsetButton.setEnabled(False)
-        # self.modelText.setText("Model: " + self.modelFormula)
-    # def starButtonClicked(self):
-        # self.modelFormula += ' * '
-        # self.phenoVarListBox.setEnabled(True)
-        # self.plusButton.setEnabled(False)
-        # self.colonButton.setEnabled(False)
-        # self.starButton.setEnabled(False)
-        # self.processEsetButton.setEnabled(False)
-        # self.modelText.setText("Model: " + self.modelFormula)
     def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
         if not reload: # we really need to process this block
             if self.phenoData == '':

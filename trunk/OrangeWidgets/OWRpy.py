@@ -173,11 +173,12 @@ class OWRpy(OWWidget,RSession):
                 continue
             # print 'frist att: ' + att
             if getattr(self, att).__class__.__name__ in redRGUI.qtWidgets:
-                print 'getting gui settings for:' + att
+                print 'getting gui settings for:' + att + '\n\n'
                 try:
                     v = getattr(self, att).getSettings()
-                except: v = None
-                print 'settings:' + str(v)
+                    #print str(v) + '\n\n'
+                except: v = {}
+                #print 'settings:' + str(v)
                 if not 'RGUIElementsSettings' in settings.keys():
                     print 'RGUIElementsSettings not in settings.keys (OWRpy.py)'
                     settings['RGUIElementsSettings'] = {}
@@ -201,6 +202,7 @@ class OWRpy(OWWidget,RSession):
         except:
             pass
         #print str(settings) + ' (OWRpy.py)'
+        #print 'My settings are ' + str(settings)
         return settings
     def getGlobalSettings(self):
         print 'get global settings'
@@ -239,14 +241,13 @@ class OWRpy(OWWidget,RSession):
                 else:
                     self.settingsList.extend([att])
             elif type(getattr(self, att)) == type({}) or type(getattr(self, att)) == type([]): #we need to chech these types to see if they contain any instances or other things that we can't pickle.
-                # print att
-                # self.settingsList.extend([att])
+                
                 pass
         for name in self.settingsList:
             try:
                 settings[name] =  self.getdeepattr(name)
             except:
-                #print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+                
                 pass
         for element in self.RGUIElements:
             # print element
@@ -407,7 +408,7 @@ class OWRpy(OWWidget,RSession):
             self.send(name, data)
         #print str(self.RGUIElementsSettings.keys())
         for key in self.RGUIElementsSettings.keys():
-            print key
+            #print key
             elementName = key.replace('GUIelement_', '')
             info = self.RGUIElementsSettings[key]
             try:

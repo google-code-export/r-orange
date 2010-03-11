@@ -136,8 +136,8 @@ class listBox(QListWidget,widgetState):
         for i in range(0,self.count()):
             items.append(self.item(i).text())
         
-        selected = [self.indexFromItem(i).row() for i in self.selectedItems()]
-        r = {'items':items,'selected':selected}
+        
+        r = {'items':items}
         r.update(self.getState())
         # print r
         return r

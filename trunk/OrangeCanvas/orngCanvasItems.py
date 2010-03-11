@@ -150,8 +150,9 @@ class CanvasLine(QGraphicsLineItem):
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
     def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = {}, forceInSignals = None, forceOutSignals = None):
         # import widget class and create a class instance
-        print str(forceInSignals)
-        print str(forceOutSignals)
+        #print str(forceInSignals)
+        #print str(forceOutSignals)
+        print 'Initializing widget'
         m = __import__(widgetInfo.fileName)
         self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName], _owInfo = canvasDlg.settings["owInfo"], _owWarning = canvasDlg.settings["owWarning"], _owError = canvasDlg.settings["owError"], _owShowStatus = canvasDlg.settings["owShow"], _useContexts = canvasDlg.settings["useContexts"], _category = widgetInfo.category, _settingsFromSchema = widgetSettings)
         if widgetInfo.fileName == 'dummy': 

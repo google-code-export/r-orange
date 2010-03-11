@@ -84,22 +84,22 @@ class RSession():
         qApp.restoreOverrideCursor()
         return output
                         
-    def require_librarys(self,librarys):
+    def require_librarys(self,librarys, force = False):
         import orngEnviron
         #lib = os.path.join(os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"]), "Rpackages").replace("\\", "/")
         #self.R('.libPaths("' + lib  +'")')
-        
+        success = 0
         #if self.packagesLoaded == 0:
         for library in librarys:
-            if library not in self.RPackages:
+            if force or (library not in self.RPackages):
                 try:
-                    if not self.R("require('"+ library +"')"): 
+                    if not self.R("require("+ library +")"): 
                         self.R('setRepositories(ind=1:7)')
                         self.R('chooseCRANmirror()')
                         self.R('install.packages("' + library + '")')
                         self.R('require(' + library + ')')
                     self.RPackages.append(library)
-                    return 1
+                    success = 1
                 except rpy.RPyRException, inst:
                     print 'asdf'
                     m = re.search("'(.*)'",inst.message)
@@ -108,12 +108,13 @@ class RSession():
                 except:
                     print 'aaa'
                     return 0
+        
             #self.packagesLoaded = 1
             else:
                 print 'Packages Loaded'
                 return 1
         #add the librarys to a list so that they are loaded when R is loaded.
-        
+        return success
     def convertDataframeToExampleTable(self, dataFrame_name):
         #set_default_mode(CLASS_CONVERSION)
         dfsummary = self.R(dataFrame_name, 'getRSummary')
