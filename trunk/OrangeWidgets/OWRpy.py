@@ -105,7 +105,8 @@ class OWRpy(OWWidget,RSession):
         showNotesButton = redRGUI.button(self.statusBar, 'Show Notes', callback = self.notesBox.show)
         self.statusBar.addWidget(showHelpButton)
         self.statusBar.addWidget(showNotesButton)
-
+        self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
+        
         self.GUIDialogDialog = None
         if wantGUIDialog:
             self.GUIDialogDialog = QDialog(self)
