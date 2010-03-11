@@ -89,8 +89,9 @@ class RSession():
         #lib = os.path.join(os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"]), "Rpackages").replace("\\", "/")
         #self.R('.libPaths("' + lib  +'")')
         
-        if self.packagesLoaded == 0:
-            for library in librarys:
+        #if self.packagesLoaded == 0:
+        for library in librarys:
+            if library not in self.RPackages:
                 try:
                     if not self.R("require('"+ library +"')"): 
                         self.R('setRepositories(ind=1:7)')
@@ -98,15 +99,19 @@ class RSession():
                         self.R('install.packages("' + library + '")')
                         self.R('require(' + library + ')')
                     self.RPackages.append(library)
+                    return 1
                 except rpy.RPyRException, inst:
                     print 'asdf'
                     m = re.search("'(.*)'",inst.message)
                     self.require_librarys([m.group(1)])
+                    return 0
                 except:
                     print 'aaa'
-            self.packagesLoaded = 1
-        else:
-            print 'Packages Loaded'
+                    return 0
+            #self.packagesLoaded = 1
+            else:
+                print 'Packages Loaded'
+                return 1
         #add the librarys to a list so that they are loaded when R is loaded.
         
     def convertDataframeToExampleTable(self, dataFrame_name):

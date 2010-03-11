@@ -24,7 +24,7 @@ class Melt_DF(OWRpy):
         self.RFunctionParam_measure_var = redRGUI.lineEdit(box, label = "measure_var:")
         self.RFunctionParam_variable_name = redRGUI.lineEdit(box, label = "variable_name:") 
         self.RFunctionParam_id_var = redRGUI.lineEdit(box, label = "id_var:")
-        redRGUI.button(box, self, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def RWidgetReload(self):
         self.commitFunction()
     def processdata(self, data):

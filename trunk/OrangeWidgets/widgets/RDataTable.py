@@ -28,7 +28,7 @@ class RDataTable(OWRpy):
     #settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
 
     def __init__(self, parent=None, signalManager = None):
-        OWRpy.__init__(self, parent, signalManager, "Data Table")
+        OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
         self.inputs = [("Examples", RvarClasses.RDataFrame, self.dataset)]
@@ -53,19 +53,8 @@ class RDataTable(OWRpy):
         self.link = {}
         self.loadSettings()
 
-        # info box
-        # infoBox = redRGUI.groupBox(self.controlArea, "Info")
-        # self.infoEx = redRGUI.widgetLabel(infoBox, 'No data on input.')
-        # self.infoMiss = redRGUI.widgetLabel(infoBox, ' ')
-        # redRGUI.widgetLabel(infoBox, ' ')
-        # self.infoAttr = redRGUI.widgetLabel(infoBox, ' ')
-        # self.infoMeta = redRGUI.widgetLabel(infoBox, ' ')
-        # redRGUI.widgetLabel(infoBox, ' ')
-        # self.infoClass = redRGUI.widgetLabel(infoBox, ' ')
-        
-        
         #tabs
-        self.tabWidgeta = redRGUI.tabWidget(self.controlArea)
+        self.tabWidgeta = redRGUI.tabWidget(self.GUIDialog)
         
         
         
@@ -76,8 +65,7 @@ class RDataTable(OWRpy):
         self.fileName = redRGUI.widgetLabel(saveTab, "")
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
         redRGUI.button(saveTab, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
-        #infoBox.setMinimumWidth(200)
-        redRGUI.separator(self.controlArea)
+
         
         #links:
         linksTab = self.tabWidgeta.createTabPage('Link Data')
@@ -88,18 +76,11 @@ class RDataTable(OWRpy):
         redRGUI.lineEdit(linksTab, label = 'Custom Link:')
         
         #save box
-        
-
-
         # settings box
-        boxSettings = redRGUI.widgetBox(self.controlArea, "Settings")
+        self.tableBox = redRGUI.groupBox(self.controlArea, label = 'Data Table')
+        self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        boxSettings = redRGUI.groupBox(self.GUIDialog, "Settings")
         
-
-        # colBox = redRGUI.indentedBox(boxSettings, orientation = "horizontal")
-        # redRGUI.widgetLabel(colBox, "Color: ")
-        # self.colButton = redRGUI.toolButton(colBox, self, self.changeColor, width=20, height=20, debuggingEnabled = 0)
-        # redRGUI.rubber(colBox)
-
         resizeColsBox = OWGUI.widgetBox(boxSettings, orientation="horizontal")
         OWGUI.widgetLabel(resizeColsBox, "Resize columns: ")
         redRGUI.button(resizeColsBox, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
@@ -108,16 +89,9 @@ class RDataTable(OWRpy):
 
         self.btnResetSort = redRGUI.button(boxSettings, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
-        redRGUI.rubber(self.controlArea)
-
-        # GUI with tabs
-        # self.tabs = redRGUI.tabWidget(self.mainArea)
-        # self.id2table = {}  # key: widget id, value: table
-        # self.table2id = {}  # key: table, value: widget id
-        # self.connect(self.tabs,SIGNAL("currentChanged(QWidget*)"),self.tabClicked)
-        
-        self.table = redRGUI.Rtable(self.mainArea)
-        
+        self.table = redRGUI.Rtable(self.tableBox)
+        self.resize(700,500)
+        self.move(300, 25)
         
     def chooseDirectory(self):
         #self.R('setwd(choose.dir())')

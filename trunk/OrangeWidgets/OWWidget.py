@@ -12,7 +12,7 @@ import OWReport
 from datetime import date
 
 class OWWidget(OWBaseWidget):
-    def __init__(self, parent=None, signalManager=None, title="Orange Widget", wantGraph=False, wantStatusBar=False, savePosition=True, wantMainArea=1, noReport=False, showSaveGraph=1, resizingEnabled=1, **args):
+    def __init__(self, parent=None, signalManager=None, title="Orange Widget", wantGraph=False, wantStatusBar=False, savePosition=True, wantMainArea=0, noReport=False, showSaveGraph=1, resizingEnabled=1, **args):
         """
         Initialization
         Parameters:
@@ -43,6 +43,11 @@ class OWWidget(OWBaseWidget):
         self.controlArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
         self.controlArea.setMinimumWidth(350)
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        self.bottomArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="horizontal", margin=wantMainArea and 0 or 4)
+        self.bottomAreaLeft = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
+        self.bottomAreaCenter = OWGUI.widgetBox(self.bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed), orientation = 'horizontal')
+        self.bottomAreaRight = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
         self.space = self.controlArea
 
         if wantGraph and showSaveGraph:

@@ -17,14 +17,14 @@ class ListSelector(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
         #self.selection = 0
-        self.setRvariableNames(['listelement'])
+        self.setRvariableNames(['cm', 'listelement'])
         self.data = None
         self.inputs = [('R List', RvarClasses.RList, self.process)]
         self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList)]
         
         #GUI
-        box = redRGUI.widgetBox(self.controlArea, "List Data")
-        self.names = redRGUI.listBox(box, self, callback = self.sendSelection)
+        box = redRGUI.groupBox(self.controlArea, "List Data")
+        self.names = redRGUI.listBox(box, callback = self.sendSelection)
         
     def process(self, data):
         self.data = None
@@ -47,7 +47,8 @@ class ListSelector(OWRpy):
         self.R(self.Rvariables['listelement']+'<-'+self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]')
         myclass = self.R('class('+self.Rvariables['listelement']+')')
         if myclass == 'data.frame':
-            self.rSend('R Data Frame', {'data':self.Rvariables['listelement']})
+            self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
+            self.rSend('R Data Frame', {'data':self.Rvariables['listelement'], 'parent':self.Rvariables['listelement'], 'cm':self.Rvariables['cm']})
             print 'Sent Data Frame'
         elif myclass == 'list':
             self.rSend('R List', {'data':self.Rvariables['listelement']})

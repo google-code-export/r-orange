@@ -28,15 +28,10 @@ class dataEntry(OWRpy):
         
         
         box = redRGUI.groupBox(self.GUIDialog, "Options")
-        redRGUI.button(box, 'Commit', self.commitTable)
+        redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
         self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers'])
         self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers'])
-        #redRGUI.button(box, self, 'Add Column', self.addColumn)
-        
-        # self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
-        # self.mainArea.layout().addWidget(self.splitCanvas)
 
-        
         box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy.Preferred)
         #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
@@ -48,8 +43,8 @@ class dataEntry(OWRpy):
         # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
-        #self.resize(600,400)
-        
+        self.resize(700,500)
+        self.move(300, 25)
     def processDF(self, data):
         if data:
             self.data = data['data']

@@ -15,7 +15,7 @@ from OWRpy import *
 class runSigPathway(OWRpy):
     settingsList = ['clickedRow', 'vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 1, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
         self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Pathway Annotation List", RvarClasses.RDataFrame, self.processPathAnnot), ('Phenotype Vector', RvarClasses.RVector, self.phenotypeConnected)]
         self.outputs = [("Pathway Analysis File", RvarClasses.RDataFrame), ("Pathway Annotation List", RvarClasses.RDataFrame), ("Pathway List", RvarClasses.RDataFrame)]
@@ -37,12 +37,6 @@ class runSigPathway(OWRpy):
         self.dboptions = ''
         self.subtable = {}
 
-        #self.loadSettings()
-        
-        
-
-        
-        #self.sendMe()
         #GUI
         info = redRGUI.widgetBox(self.controlArea, "Info")
         
@@ -51,7 +45,7 @@ class runSigPathway(OWRpy):
         self.infoc = redRGUI.widgetLabel(info, '')
         
         
-        sigPathOptions = redRGUI.widgetBox(self.controlArea, "Options")
+        sigPathOptions = redRGUI.widgetBox(self.controlArea, "Options", sizePolicy = QSizePolicy.Maximum)
         self.minNPS = redRGUI.lineEdit(sigPathOptions, '20', 'Min Genes in Pathway:')
         self.maxNPS = redRGUI.lineEdit(sigPathOptions, '500', 'Max Genes in Pathway:')
         self.pAnnotlist = redRGUI.comboBox(sigPathOptions, label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
@@ -65,16 +59,16 @@ class runSigPathway(OWRpy):
         self.usedb = redRGUI.checkBox(sigPathOptions, buttons = ['Use Annotation Database'])
         
         #split the canvas into two halves
-        self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
-        self.mainArea.layout().addWidget(self.splitCanvas)
+        self.splitCanvas = QSplitter(Qt.Horizontal, self.controlArea)
+        self.controlArea.layout().addWidget(self.splitCanvas)
         
-        self.pathtable = redRGUI.widgetBox(self, "Pathway Info")
+        self.pathtable = redRGUI.groupBox(self, "Pathway Info", sizePolicy = QSizePolicy.Expanding)
         self.pathinfoA = redRGUI.widgetLabel(self.pathtable, "")
         self.splitCanvas.addWidget(self.pathtable)
-        self.table1 = redRGUI.table(self.splitCanvas) # change the table while processing
-        self.table2 = redRGUI.table(self.splitCanvas) #change the table while processing
-        self.splitCanvas.addWidget(self.table1)
-        self.splitCanvas.addWidget(self.table2)
+        self.table1 = redRGUI.table(self.pathtable) # change the table while processing
+        self.table2 = redRGUI.table(self.pathtable) #change the table while processing
+        #self.splitCanvas.addWidget(self.table1)
+        #self.splitCanvas.addWidget(self.table2)
         
     def onLoadSavedSession(self):
         try:
@@ -133,13 +127,13 @@ class runSigPathway(OWRpy):
             self.wdfilebutton.setEnabled(True)
     def getChiptype(self):
         if 'Use Annotation Database' in self.usedb.getChecked():
-            try:
-                self.require_librarys([str(self.chiptype.text() + '.db')])
-                self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
-                self.infob.setText("Chip type loaded")
-            except:	
-                self.infob.setText("There was an exception")
-                self.noDbFile() #try to get the db file
+            
+            lib = self.require_librarys([str(self.chiptype.text() + '.db')]) # require the libraries, these are in the biocLite repository so if fails we need to run a special algorithm to get the packages
+            self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
+            self.infob.setText("Chip type loaded")
+            
+            #self.infob.setText("There was an exception")
+            if not lib: self.noDbFile() #try to get the db file
         else: return
     
     def noFile(self):

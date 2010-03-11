@@ -42,10 +42,10 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
         self.attsLineEdit.hide()
         
         buttonsBox = redRGUI.widgetBoxNoLabel(selectionBox)
-        self.subOnAttachedButton = redRGUI.button(buttonsBox, self, "Select on Attached", callback=self.subOnAttached)
+        self.subOnAttachedButton = redRGUI.button(buttonsBox, "Select on Attached", callback=self.subOnAttached)
         self.subOnAttachedButton.setEnabled(False)
         
-        self.subsetButton = redRGUI.button(buttonsBox, self, "Subset", callback=self.subset)
+        self.subsetButton = redRGUI.button(self.bottomAreaRight, "Subset", callback=self.subset)
         self.infoArea = redRGUI.textEdit(self.controlArea, '<center>Criteria not selected.  Please select a criteria to see its attributes.</center>')
         self.outputBox = redRGUI.textEdit(self.controlArea, '<center>No output generated yet.  Please make selections to generate output.</center>')
         

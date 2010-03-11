@@ -13,7 +13,7 @@ class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
     def __init__(self, parent=None, signalManager=None):
         #OWWidget.__init__(self, parent, signalManager, "Sample Data")
-        OWRpy.__init__(self)
+        OWRpy.__init__(self, wantGUIDialog = 1, wandMainArea = 0)
         
         self.command = ''
         self.sendthis = ''
@@ -28,40 +28,45 @@ class rExecutor(OWRpy):
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         
         #GUI
-        self.box = OWGUI.widgetBox(self.controlArea, "R Executor")
+        
+        #GUIDialog
+        self.box = redRGUI.groupBox(self.GUIDialog, "R Executor")
         self.infob = redRGUI.widgetLabel(self.box, "")
-        # splice canvas for the right hand side of the canvas
-        self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
-        self.mainArea.layout().addWidget(self.splitCanvas)
-
-        runbox = OWGUI.widgetBox(self, "Command Line", orientation=QHBoxLayout())
-        self.splitCanvas.addWidget(runbox)
-        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
-        processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=150)
         
-        
-        
-
         varbutton = redRGUI.button(self.box, "Recieved", callback = self.putrecieved, width = 150)
         history = redRGUI.button(self.box, "RHistory", callback = self.putRHistory, width = 150)
         redRGUI.button(self.box, "Clear Output", callback = self.clearOutput)
         self.infoa = redRGUI.widgetLabel(self.box, "")
+        # grid
+        area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        lay = QWidget()
+        # self.controlArea.layout().addWidget(lay)
+        # self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # lay.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # grid = QGridLayout() # instantiate the grid
+        # lay.setLayout(grid) # put the grid into the controlArea
+        leftArea = redRGUI.widgetBox(area)
+        #grid.addWidget(leftArea, 0,0)
+        rightArea = redRGUI.widgetBox(area)
+        rightArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #grid.addWidget(rightArea, 0, 1)
         
-        self.dataBox = OWGUI.widgetBox(self.controlArea, "Input Infromation")
+        ### end Grid
+        runbox = redRGUI.groupBox(rightArea, "Command Line", orientation=QHBoxLayout())
+        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
+        processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=150)
+
+        self.dataBox = redRGUI.groupBox(leftArea, "Input Infromation")
         self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
         
-        self.metadataBox = OWGUI.widgetBox(self.controlArea, "Metadata")
+        self.metadataBox = OWGUI.widgetBox(leftArea, "Metadata")
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
-        
-        
-        
-        
-        self.thistext = redRGUI.textEdit(self.splitCanvas)
-        
-        
-        
-        sendbox = OWGUI.widgetBox(self.controlArea, "Send Box")
+
+        self.thistext = redRGUI.textEdit(rightArea)
+
+        sendbox = redRGUI.groupBox(leftArea, "Send Box")
         self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
         sendbutton = redRGUI.button(sendbox, "Send", callback =self.sendThis, width=150)
         self.resize(800,600)

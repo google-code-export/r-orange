@@ -35,32 +35,34 @@ class mergeR(OWRpy):
         self.setRvariableNames(['merged_dataAB','merged_dataBA','merged_dataAll', 'merged_dataAB_cm_', 'merged_dataAll_cm_', 'merged_dataBA_cm_'])
                 
         #GUI
+        
+        infoBox = redRGUI.groupBox(self.controlArea, "Info")
+        self.infoa = redRGUI.widgetLabel(infoBox, "No Data Loaded")
+        
         layk = QWidget(self)
         self.controlArea.layout().addWidget(layk)
         grid = QGridLayout()
         grid.setMargin(0)
         layk.setLayout(grid)
         
-        pickA = redRGUI.widgetBox(self.controlArea, "Select Columns to Merge From A")
+        pickA = redRGUI.groupBox(self.controlArea, "Select Columns to Merge From A")
         grid.addWidget(pickA, 0,0)
-        self.colA = redRGUI.listBox(pickA, self, callback = self.setcolA)
+        self.colA = redRGUI.listBox(pickA, callback = self.setcolA)
         
         
-        pickB = redRGUI.widgetBox(self.controlArea, "Select Columns to Merge From B")
+        pickB = redRGUI.groupBox(self.controlArea, "Select Columns to Merge From B")
         grid.addWidget(pickB, 0,1)
-        self.colB = redRGUI.listBox(pickB, self, callback = self.setcolB)
+        self.colB = redRGUI.listBox(pickB, callback = self.setcolB)
         
-        infoBox = redRGUI.widgetBox(self.controlArea, "Info")
-        self.infoa = redRGUI.widgetLabel(infoBox, "No Data Loaded")
         
         #runbox = redRGUI.widgetBox(self.controlArea, "Run")
         #redRGUI.button(runbox, self, "Run", callback = self.run)
         
         # ## Other options
-        otherBox = redRGUI.widgetBox(self.controlArea, "Binding")
+        otherBox = redRGUI.groupBox(self.controlArea, "Binding", orientation = 'horizontal')
         self.forceMergeAll = redRGUI.checkBox(otherBox, buttons=["Force Merger"])
-        redRGUI.button(otherBox, self, "Bind By Columns", callback = self.colBind)
-        redRGUI.button(otherBox, self, "Bind By Rows", callback = self.rowBind)
+        redRGUI.button(otherBox, "Bind By Columns", callback = self.colBind)
+        redRGUI.button(otherBox, "Bind By Rows", callback = self.rowBind)
 
         
     def onLoadSavedSession(self):

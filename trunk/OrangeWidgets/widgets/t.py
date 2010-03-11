@@ -22,8 +22,8 @@ class t(OWRpy):
         self.inputs = [("x", RvarClasses.RDataFrame, self.processx)]
         self.outputs = [("t Output", RvarClasses.RDataFrame)]
         
-        box = redRGUI.widgetBox(self.controlArea, "Widget Box")
-        OWGUI.button(box,self, "Commit", callback = self.commitFunction)
+        #box = redRGUI.widgetBox(self.controlArea, "Widget Box")
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
