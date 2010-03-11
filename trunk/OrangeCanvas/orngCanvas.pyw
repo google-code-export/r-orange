@@ -3,14 +3,16 @@
 #    main file, that creates the MDI environment
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 import sys, os, cPickle
-mypath = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
-sys.path.insert(0, mypath) # this sequence is nessesary when there are multiple versions of RedR on the system.  This may also work with installation into other working directories.
-#sys.modules = []
-import orngEnviron, orngRegistry, OWGUI
+mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
+
+sys.path.insert(0, mypath)
+import orngEnviron
+import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import user, orngMisc
-import updateRedR
+#import updateRedR
 
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags = 0):
@@ -51,7 +53,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.loadSettings()
         
-        self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'])
+        #self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'])
         
         
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
@@ -472,8 +474,8 @@ class OrangeCanvasDlg(QMainWindow):
     def menuCheckForUpdates(self):
         # import updateOrange
         # self.updateDlg = updateOrange.updateOrangeDlg(None, "", Qt.WDestructiveClose)
-        self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'], silent = False)
-
+        #self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'], silent = False)
+        pass
     def menuItemAboutOrange(self):
         dlg = orngDlgs.AboutDlg()
         dlg.exec_()

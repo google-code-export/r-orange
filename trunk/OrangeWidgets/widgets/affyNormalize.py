@@ -27,9 +27,6 @@ class affyNormalize(OWRpy):
         self.enableMethBox = False
         self.norminfo = ''
         self.loadSettings()
-        #print 'aaaa'
-        # import sys
-        # sys.exit()
         self.require_librarys(['affy'])
         
         
@@ -43,13 +40,15 @@ class affyNormalize(OWRpy):
 
         
         #the GUI
-        status = redRGUI.widgetBox(self.controlArea, "Status")
-        self.infoa = redRGUI.widgetLabel(status, 'No data loaded.')
+        # status = redRGUI.widgetBox(self.controlArea, "Status")
+        # self.infoa = redRGUI.widgetLabel(status, 'No data loaded.')
         #normrad = redRGUI.widgetBox(self.controlArea, "Normalization Methods")
 
-        self.selMethBox = redRGUI.radioButtons(self.controlArea, 'Normalization Method', ["RMA", "MAS5", "Custom"], callback=self.selectMethodChanged)
+        self.selMethBox = redRGUI.radioButtons(self.controlArea, 'Normalization Method', ["RMA",
+        "MAS5", "Custom"], callback=self.selectMethodChanged,orientation='horizontal')
         self.selMethBox.setChecked('RMA')
-        info = redRGUI.widgetBox(self.controlArea, "Normalization Options")
+        
+        info = redRGUI.groupBox(self.controlArea, "Normalization Options")
 
         
         #insert a block to check what type of object is connected.  If nothing connected set the items of the normalize methods objects to 
@@ -65,10 +64,12 @@ class affyNormalize(OWRpy):
         self.summethselector.setEnabled(False)
         
         
-        runbutton = redRGUI.button(info, "Run Normalization", callback = self.normalize, width=200)
+        runbutton = redRGUI.button(self.controlArea, "Run Normalization", callback = self.normalize)
+        # runbutton.layout().setAlignment(Qt.AlignRight)
+        
         
     def normalize(self):
-        self.infoa.setText('Processing')
+        self.status.setText('Processing')
         if self.selMethBox.getChecked() == 'RMA':
             self.R(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
             self.norminfo = 'Normalized with RMA'
@@ -79,7 +80,7 @@ class affyNormalize(OWRpy):
             self.R(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrectselector.currentText()+', bgcorrect.method="'+self.bgcmethselector.currentText()+'", pmcorrect.method="'+self.pmcorrectselector.currentText()+'", summary.method="'+self.summethselector.currentText()+'")',True)
             self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrectselector.currentText()+', Method:'+self.bgcmethselector.currentText()+', Perfect Match Correct Method: '+self.pmcorrectselector.currentText()+', Summary Method: '+self.summethselector.currentText()
         self.toSend()
-        self.infoa.setText(self.norminfo)
+        self.status.setText(self.norminfo)
         
     # def collectOptions(self):
         # if self.normselector.currentText() == None: self.normoptions = ""
@@ -109,7 +110,7 @@ class affyNormalize(OWRpy):
                 self.selectMethodChanged()
                 
             self.selMethBox.setEnabled(True)
-            self.infoa.setText('Data Loaded')
+            self.status.setText('Data Loaded')
         except: 
             print 'error'
 

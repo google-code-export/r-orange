@@ -29,24 +29,23 @@ class OWRpy(OWWidget,RSession):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
         RSession.__init__(self)
-        print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
-            ISBN 3-900051-07-0\n \
-            R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
-            You are welcome to redistribute it under certain conditions.\n \
-            Type 'license()' or 'licence()' for distribution details."
+        # print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
+            # ISBN 3-900051-07-0\n \
+            # R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
+            # You are welcome to redistribute it under certain conditions.\n \
+            # Type 'license()' or 'licence()' for distribution details."
         
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
+        
         ctime = str(time.time())
         self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + ctime
         
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.setRvariableNames(['title'])
-        
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
-        
         
         #collect the sent items
         self.sentItems = []
@@ -63,23 +62,21 @@ class OWRpy(OWWidget,RSession):
         self.help.setMaximumSize(webSize)
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
-
-        url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
         try:
+            # url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
             self.help.load(QUrl(url))
         except: pass 
         #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
         self.helpBox = QDialog(self)
-        self.helpBox.setWindowTitle(str(title + ' help'))
+        self.helpBox.setWindowTitle(str(title + ' Help'))
         self.helpBox.setLayout(QVBoxLayout())
         self.helpBox.setBaseSize(webSize)
         self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.helpBox.layout().addWidget(self.help)        
-        
         # code for the notesBox that can be shown 
         self.notesBox = QDialog(self)
-        self.notesBox.setWindowTitle(str(title + ' notes box'))
+        self.notesBox.setWindowTitle(str(title + ' Notes'))
         self.notesBox.setLayout(QVBoxLayout())
         self.notesBox.setBaseSize(QSize(200,100))
         self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
@@ -102,9 +99,13 @@ class OWRpy(OWWidget,RSession):
         self.status = redRGUI.widgetLabel(self.statusBar, '')
         #processingBoxBox = redRGUI.widgetBox(self.defaultLeftArea, "Processing Status")
         self.status.setText('Processing not yet performed.')
-
         self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.statusBar.addWidget(self.status)
+        showHelpButton = redRGUI.button(self.statusBar, 'Show Help', callback = self.helpBox.show)
+        showNotesButton = redRGUI.button(self.statusBar, 'Show Notes', callback = self.notesBox.show)
+        self.statusBar.addWidget(showHelpButton)
+        self.statusBar.addWidget(showNotesButton)
+
         self.GUIDialogDialog = None
         if wantGUIDialog:
             self.GUIDialogDialog = QDialog(self)
@@ -114,8 +115,6 @@ class OWRpy(OWWidget,RSession):
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog)
             #self.GUIDialogDialog.show()
             self.GUIDialogButton = redRGUI.button(self.statusBar, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
-        showHelpButton = redRGUI.button(self.statusBar, 'Show Help', callback = self.helpBox.show)
-        showNotesButton = redRGUI.button(self.statusBar, 'Show Notes', callback = self.notesBox.show)
     def showHelp(self):
         self.helpBox.show()
         

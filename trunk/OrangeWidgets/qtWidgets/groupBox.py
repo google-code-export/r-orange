@@ -17,8 +17,8 @@ class groupBox(QGroupBox,redRGUI.widgetState):
             self.setLayout(QHBoxLayout())
         else:
             self.setLayout(QVBoxLayout())
-        if sizePolicy != None: self.setSizePolicy(sizePolicy, sizePolicy)
-        else: self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        if sizePolicy != None: self.setSizePolicy(sizePolicy)
+        #else: self.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
 
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)

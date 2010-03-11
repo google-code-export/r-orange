@@ -1,7 +1,7 @@
 from redRGUI import widgetState
 from widgetBox import widgetBox
 from widgetLabel import widgetLabel
-from widgetBoxNoLabel import widgetBoxNoLabel
+
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -11,7 +11,7 @@ class comboBox(QComboBox,widgetState):
         
         QComboBox.__init__(self,widget)
         if label:
-            hb = widgetBoxNoLabel(widget,orientation=orientation)
+            hb = widgetBox(widget,orientation=orientation)
             widgetLabel(hb, label)
             hb.layout().addWidget(self)
         else:

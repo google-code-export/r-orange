@@ -346,8 +346,11 @@ class LineEditWFocusOut(QLineEdit):
 
 def button(widget,  label, callback = None, disabled=0, tooltip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
     btn = QPushButton(label, widget)
+    w = widgetBox(widget)
+    w.layout().setAlignment(Qt.AlignRight)
+    w.layout().addWidget(btn)
     if addToLayout and widget.layout():
-        widget.layout().addWidget(btn)
+        widget.layout().addWidget(w)
     
     if width:
         btn.setFixedWidth(width)

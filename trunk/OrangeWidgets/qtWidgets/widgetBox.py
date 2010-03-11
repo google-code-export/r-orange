@@ -9,9 +9,7 @@ class widgetBox(QWidget,widgetState):
 
         QWidget.__init__(self,widget)
             
-        # if type(name) in (str, unicode): # if you pass 1 for box, there will be a box, but no text
-            # self.setTitle(" "+name.strip()+" ")
-        if margin == -1: margin = 7
+        if margin == -1: margin = 0
         # self.setFlat(flat)
         if widget.layout():
             widget.layout().addWidget(self)
@@ -30,9 +28,9 @@ class widgetBox(QWidget,widgetState):
             self.setLayout(QVBoxLayout())
 
         if sizePolicy:
-            self.setSizePolicy(sizePolicy, sizePolicy)
-        else:
-            self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+            self.setSizePolicy(sizePolicy)
+        # else:
+            # self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         
             
 

@@ -1,10 +1,11 @@
-""" Modified by Kyle R. Covington """
+""" Modified by Kyle R. Covington and Anup Parikh """
 import os, sys, user
 
 def __getDirectoryNames():
     """Return a dictionary with Orange directories."""
     try:
-        orangeDir = os.path.split(os.path.abspath(__file__))[0]
+        orangeDir = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
+        #print orangeDir
     except:
         # import orange
         # orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]
@@ -26,37 +27,43 @@ def __getDirectoryNames():
         widgetDir = None
     if not os.path.isdir(picsDir):
         picsDir = ""
+    
+    # home = user.home
+    # if home[-1] == ":":
+        # home += "\\"
+    # if os.name == "nt":
+        # applicationDir = os.path.join(home, "Application Data")
+        # if not os.path.isdir(applicationDir):
+            # try: os.makedirs(applicationDir)
+            # except: pass
+        # outputDir = os.path.join(applicationDir, orangeVer)                  # directory for saving settings and stuff
+        # reportsDir = os.path.join(home, "My Documents", "Orange Reports")
+    # elif sys.platform == "darwin":
+        # applicationDir = os.path.join(home, "Library", "Application Support")
+        # if not os.path.isdir(applicationDir):
+            # try: os.makedirs(applicationDir)
+            # except: pass
+        # outputDir = os.path.join(applicationDir, orangeVer)
+        # reportsDir = os.path.join(home, "Library/Application Support/orange/Reports")
+    # else:
+        # outputDir = os.path.join(home, "."+orangeVer)                  # directory for saving settings and stuff
+        # reportsDir = os.path.join(home, "orange-reports")
 
-    home = user.home
-    if home[-1] == ":":
-        home += "\\"
-    if os.name == "nt":
-        applicationDir = os.path.join(home, "Application Data")
-        if not os.path.isdir(applicationDir):
-            try: os.makedirs(applicationDir)
-            except: pass
-        outputDir = os.path.join(applicationDir, orangeVer)                  # directory for saving settings and stuff
-        reportsDir = os.path.join(home, "My Documents", "Orange Reports")
-    elif sys.platform == "darwin":
-        applicationDir = os.path.join(home, "Library", "Application Support")
-        if not os.path.isdir(applicationDir):
-            try: os.makedirs(applicationDir)
-            except: pass
-        outputDir = os.path.join(applicationDir, orangeVer)
-        reportsDir = os.path.join(home, "Library/Application Support/orange/Reports")
-    else:
-        outputDir = os.path.join(home, "."+orangeVer)                  # directory for saving settings and stuff
-        reportsDir = os.path.join(home, "orange-reports")
+    # orangeSettingsDir = outputDir
+    # if sys.platform == "darwin":
+        # bufferDir = os.path.join(home, "Library")
+        # bufferDir = os.path.join(bufferDir, "Caches")
+        # bufferDir = os.path.join(bufferDir, orangeVer)
+    # else:
+        # bufferDir = os.path.join(outputDir, "buffer")
 
-    orangeSettingsDir = outputDir
-    if sys.platform == "darwin":
-        bufferDir = os.path.join(home, "Library")
-        bufferDir = os.path.join(bufferDir, "Caches")
-        bufferDir = os.path.join(bufferDir, orangeVer)
-    else:
-        bufferDir = os.path.join(outputDir, "buffer")
-    canvasSettingsDir = os.path.join(outputDir, "OrangeCanvasQt4") if canvasDir <> None else None
-    widgetSettingsDir = os.path.join(outputDir, "widgetSettingsQt4") if widgetDir <> None else None
+
+    orangeSettingsDir = os.path.join(orangeDir,'settings')
+    
+    reportsDir = os.path.join(orangeSettingsDir, "orange-reports")
+    bufferDir = os.path.join(orangeSettingsDir, "buffer")
+    canvasSettingsDir = os.path.join(orangeSettingsDir, "OrangeCanvasQt4") 
+    widgetSettingsDir = os.path.join(orangeSettingsDir, "widgetSettingsQt4")
 
     for dname in [orangeSettingsDir, bufferDir, widgetSettingsDir, canvasSettingsDir, reportsDir]:
         if dname <> None and not os.path.isdir(dname):
@@ -108,11 +115,11 @@ def __getAddOns():
     registeredAddOns = __readAddOnsList()
     return {'addOns': defaultAddOns + registeredAddOns}
 
-def addAddOnsDirectoriesToPath():
-    for (name, path) in addOns:
-        for p in [path, os.path.join(path, "widgets"), os.path.join(path, "widgets", "prototypes")]:
-            if os.path.isdir(p) and not any([samepath(p, x) for x in sys.path]):
-                sys.path.insert(0, p)
+# def addAddOnsDirectoriesToPath():
+    # for (name, path) in addOns:
+        # for p in [path, os.path.join(path, "widgets"), os.path.join(path, "widgets", "prototypes")]:
+            # if os.path.isdir(p) and not any([samepath(p, x) for x in sys.path]):
+                # sys.path.insert(0, p)
 
 directoryNames = __getDirectoryNames()
 globals().update(directoryNames)
@@ -121,4 +128,4 @@ addOns = __getAddOns()
 globals().update(addOns)
 
 addOrangeDirectoriesToPath()
-addAddOnsDirectoriesToPath()
+# addAddOnsDirectoriesToPath()

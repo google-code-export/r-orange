@@ -36,14 +36,22 @@ class ReadCEL(OWRpy):
 
 
         #GUI
-        box = redRGUI.groupBox(self.controlArea, "Select Folder", sizePolicy = QSizePolicy.Preferred, addSpace = True, orientation='vertical')
-        self.numArrays = redRGUI.comboBox(box, label = 'Number of arrays', items = ['Less than 40', 'More than 40'])
-        self.filecombo = redRGUI.comboBox(box, items = self.recentFiles, callback=self.selectFile)
+        box = redRGUI.groupBox(self.controlArea, "Select Folder",
+        sizePolicy=QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed))
+        
+        self.numArrays = redRGUI.radioButtons(box, label = 'Number of arrays', 
+        buttons = ['Less than 40', 'More than 40'])
+        
+        self.filecombo = redRGUI.comboBox(box, items = self.recentFiles, 
+        callback=self.selectFile)
+        
+        
         buttonsBox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         button = redRGUI.button(buttonsBox, 'Add Folder', callback = self.browseFile, disabled=0)
         button2 = redRGUI.button(buttonsBox, 'Process File', callback = self.process)
-        box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
-        self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
+        
+        # box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
+        # self.status = redRGUI.widgetLabel(box, 'No data loaded.')
         self.setFileList()
         
                 
@@ -84,16 +92,16 @@ class ReadCEL(OWRpy):
         #self.process()
         
     def process(self):
-        self.infoa.setText("Your data is processing")
+        self.status.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
         if self.methodcombo == 0:
             self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path="'+str(self.filecombo.currentText()).replace('\\', '\\\\')+'")','setRData',True)
         if self.methodcombo == 1:
-            self.infoa.setText("This may take several minutes")
+            self.status.setText("This may take several minutes")
             self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
-            self.infoa.setText("Data preprocessed with RMA normalization")
-        self.infoa.setText("Your data has been processed.")
+            self.status.setText("Data preprocessed with RMA normalization")
+        self.status.setText("Your data has been processed.")
         self.sendMe()
         
     
