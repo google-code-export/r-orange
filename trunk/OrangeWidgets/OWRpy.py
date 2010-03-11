@@ -68,6 +68,7 @@ class OWRpy(OWWidget,RSession):
         except: pass 
         #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
         self.helpBox = QDialog(self)
+        self.helpBox.setWindowTitle(str(title + ' help'))
         self.helpBox.setWindowTitle(str(title + ' Help'))
         self.helpBox.setLayout(QVBoxLayout())
         self.helpBox.setBaseSize(webSize)
@@ -115,7 +116,9 @@ class OWRpy(OWWidget,RSession):
             self.GUIDialogDialog.setBaseSize(QSize(300, 100))
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog)
             #self.GUIDialogDialog.show()
-            self.GUIDialogButton = redRGUI.button(self.statusBar, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+            self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+        showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBox.show)
+        showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBox.show)
     def showHelp(self):
         self.helpBox.show()
         
