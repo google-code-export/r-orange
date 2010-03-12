@@ -40,7 +40,7 @@ class rExecutor(OWRpy):
         # grid
         area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        lay = QWidget()
+        #lay = QWidget()
         # self.controlArea.layout().addWidget(lay)
         # self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # lay.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
