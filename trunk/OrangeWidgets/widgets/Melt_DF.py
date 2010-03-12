@@ -21,6 +21,8 @@ class Melt_DF(OWRpy):
         
         box = redRGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_na_rm = redRGUI.comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
+        self.RFunctionParam_na_rm2 = redRGUI.comboBox(box, label = "Remove NAasdf:", items = ['Yes', 'No'])
+        self.RFunctionParam_na_rm3 = redRGUI.comboBox(box, label = "Remove NA   :", items = ['Yes', 'No'])
         self.RFunctionParam_measure_var = redRGUI.lineEdit(box, label = "measure_var:")
         self.RFunctionParam_variable_name = redRGUI.lineEdit(box, label = "variable_name:") 
         self.RFunctionParam_id_var = redRGUI.lineEdit(box, label = "id_var:")

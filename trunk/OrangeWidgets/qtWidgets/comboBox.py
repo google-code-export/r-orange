@@ -7,7 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class comboBox(QComboBox,widgetState):
-    def __init__(self,widget,label=None, items=None, orientation='vertical',callback = None, callback2 = None, **args):
+    def __init__(self,widget,label=None, items=None, orientation='horizontal',callback = None, callback2 = None, **args):
         
         QComboBox.__init__(self,widget)
         if label:

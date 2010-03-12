@@ -44,17 +44,18 @@ class affyNormalize(OWRpy):
         # self.infoa = redRGUI.widgetLabel(status, 'No data loaded.')
         #normrad = redRGUI.widgetBox(self.controlArea, "Normalization Methods")
 
-        self.selMethBox = redRGUI.radioButtons(self.controlArea, 'Normalization Method', ["RMA",
-        "MAS5", "Custom"], callback=self.selectMethodChanged,orientation='horizontal')
+        self.selMethBox = redRGUI.radioButtons(self.controlArea, label='Normalization Method',
+        buttons=["RMA", "MAS5", "Custom"], 
+        callback=self.selectMethodChanged,orientation='horizontal')
         self.selMethBox.setChecked('RMA')
         
-        info = redRGUI.groupBox(self.controlArea, "Normalization Options")
+        info = redRGUI.widgetBox(self.controlArea, "Normalization Options")
 
         
         #insert a block to check what type of object is connected.  If nothing connected set the items of the normalize methods objects to 
         self.normselector = redRGUI.comboBox(info, label="Normalization Method", items=self.norm, orientation=0)
         self.normselector.setEnabled(False)
-        self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
+        self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods asdf asdf asdf asdf asdf asdf asdf asdf", items=['TRUE', 'FALSE'], orientation=0)
         self.bgcorrectselector.setEnabled(False)
         self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=[],
         #self.R('bgcorrect.methods'), 
