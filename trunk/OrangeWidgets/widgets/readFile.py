@@ -39,10 +39,10 @@ class readFile(OWRpy):
         
         self.filecombo = redRGUI.comboBox(box,items=self.recentFiles)
         
-        button = redRGUI.button(box, 'Browse', callback = self.browseFile, disabled=0)
+        button = redRGUI.button(box, label = 'Browse', callback = self.browseFile, disabled=0)
         self.filecombo.setMinimumWidth(150)
         box.layout().addWidget(self.filecombo)
-        redRGUI.button(box, 'Report', callback = self.sendReport, disabled = 0)
+        redRGUI.button(box, label = 'Report', callback = self.sendReport, disabled = 0)
         
         
         box = redRGUI.groupBox(self.controlArea, label="File Options", addSpace = True, orientation ='horizontal')
@@ -52,21 +52,16 @@ class readFile(OWRpy):
         
         self.userowNames = redRGUI.lineEdit(box, label = 'Rowname Column:')
         redRGUI.button(box, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
-        redRGUI.button(self.bottomAreaRight, 'Load File', callback = self.loadFile)
-        box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
-        self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
+        redRGUI.button(self.bottomAreaRight, label = 'Load File', callback = self.loadFile)
+        box = redRGUI.groupBox(self.controlArea, label = "Info", addSpace = True)
+        self.infoa = redRGUI.widgetLabel(box, label = 'No data loaded.')
         self.infob = redRGUI.widgetLabel(box, '')
         self.infoc = redRGUI.widgetLabel(box, '')
         self.fileInfo = redRGUI.textEdit(box)
         self.fileInfo.setHidden(True)
         self.scanarea = redRGUI.textEdit(self.controlArea)
-        
-        #self.recentFiles=filter(os.path.exists, self.recentFiles)
         self.setFileList()
-        # self.connect(self.filecombo, SIGNAL('activated(int)'), self.selectFile)
-        #print 'on init :' + str(self.loadingSavedSession)
-        
-        #self.controlArea.layout().addWidget(self.scanarea)
+
         
     def setFileList(self):
         if self.recentFiles == None: self.recentFiles = []

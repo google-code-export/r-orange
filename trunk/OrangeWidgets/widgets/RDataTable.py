@@ -79,15 +79,15 @@ class RDataTable(OWRpy):
         # settings box
         self.tableBox = redRGUI.groupBox(self.controlArea, label = 'Data Table')
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        boxSettings = redRGUI.groupBox(self.GUIDialog, "Settings")
+        boxSettings = redRGUI.groupBox(self.GUIDialog, label = "Settings")
         
         resizeColsBox = OWGUI.widgetBox(boxSettings, orientation="horizontal")
-        OWGUI.widgetLabel(resizeColsBox, "Resize columns: ")
-        redRGUI.button(resizeColsBox, "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
-        redRGUI.button(resizeColsBox, "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
+        redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
+        redRGUI.button(resizeColsBox, label = "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
+        redRGUI.button(resizeColsBox, label = "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
         redRGUI.rubber(resizeColsBox)
 
-        self.btnResetSort = redRGUI.button(boxSettings, "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
+        self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
         self.table = redRGUI.Rtable(self.tableBox)
         self.resize(700,500)

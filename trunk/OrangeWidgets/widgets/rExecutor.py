@@ -36,41 +36,30 @@ class rExecutor(OWRpy):
         varbutton = redRGUI.button(self.box, "Recieved", callback = self.putrecieved, width = 150)
         history = redRGUI.button(self.box, "RHistory", callback = self.putRHistory, width = 150)
         redRGUI.button(self.box, "Clear Output", callback = self.clearOutput)
-        self.infoa = redRGUI.widgetLabel(self.box, "")
+        self.infoa = redRGUI.widgetLabel(self.box, label = "")
         # grid
         area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #lay = QWidget()
-        # self.controlArea.layout().addWidget(lay)
-        # self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # lay.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # grid = QGridLayout() # instantiate the grid
-        # lay.setLayout(grid) # put the grid into the controlArea
-        leftArea = redRGUI.widgetBox(area)
-        #print leftArea.layout()
-        #leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        #grid.addWidget(leftArea, 0,0)
-        rightArea = redRGUI.widgetBox(area)
-        #rightArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #grid.addWidget(rightArea, 0, 1)
-        
-        # end Grid
-        runbox = redRGUI.groupBox(rightArea, "Command Line", orientation='horizontal')
-        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
-        processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=100)
 
-        self.dataBox = redRGUI.groupBox(leftArea, "Input Infromation")
-        self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
+        leftArea = redRGUI.widgetBox(area)
+        rightArea = redRGUI.widgetBox(area)
+
+        runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')
+        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
+        processbutton = redRGUI.button(runbox, label = "Run", callback = self.runR, width=100)
+
+        self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
+        self.infov = redRGUI.widgetLabel(self.dataBox, label = "No Input")
         
-        self.metadataBox = OWGUI.widgetBox(leftArea, "Metadata")
-        self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
+        self.metadataBox = redRGUI.widgetBox(leftArea, label = "Metadata")
+        self.infoM = redRGUI.widgetLabel(self.metadataBox, label = "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
 
         self.thistext = redRGUI.textEdit(leftArea)
 
         #sendbox = redRGUI.groupBox(leftArea, "Send Box")
         #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
-        sendbutton = redRGUI.button(runbox, "Send", callback =self.sendThis, width=100)
+        sendbutton = redRGUI.button(runbox, label = "Send", callback =self.sendThis, width=100)
         self.resize(700,500)
         self.move(300, 25)
         self.autoShowDialog = 0

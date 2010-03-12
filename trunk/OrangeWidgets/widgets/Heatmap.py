@@ -24,15 +24,15 @@ class Heatmap(OWRpy):
         self.rowvChoice = None
         
         #GUI
-        infobox = redRGUI.widgetBox(self.controlArea, "Options")
-        redRGUI.button(self.bottomAreaRight, "Replot", callback=self.makePlot, width=200)
-        redRGUI.button(infobox, 'Save as PDF', callback = self.savePDF)
-        redRGUI.button(infobox, 'Identify', callback = self.identify, width=200)
-        self.plotOnConnect = redRGUI.checkBox(infobox,buttons=['Plot on Connect'])
+        infobox = redRGUI.groupBox(self.controlArea, label = "Options")
+        redRGUI.button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
+        redRGUI.button(infobox, label = 'Save as PDF', callback = self.savePDF)
+        redRGUI.button(infobox, label = 'Identify', callback = self.identify, width=200)
+        self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
         self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
-        self.infoa = OWGUI.widgetLabel(infobox, "Nothing to report")
+        self.infoa = redRGUI.widgetLabel(infobox, label = "Nothing to report")
         
     def onLoadSavedSession(self):
         print 'load heatmap'
