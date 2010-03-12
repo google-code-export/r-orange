@@ -56,15 +56,22 @@ class affyNormalize(OWRpy):
         self.normselector.setEnabled(False)
         self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
         self.bgcorrectselector.setEnabled(False)
-        self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=self.R('bgcorrect.methods'), orientation=0)
+        self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=[],
+        #self.R('bgcorrect.methods'), 
+        orientation=0)
         self.bgcmethselector.setEnabled(False)
-        self.pmcorrectselector = redRGUI.comboBox(info, label="Perfect Match Correct Methods", items=self.R('pmcorrect.methods'), orientation=0)
+        self.pmcorrectselector = redRGUI.comboBox(info, label="Perfect Match Correct Methods",
+        items=[]
+        #self.R('pmcorrect.methods')
+        , orientation=0)
         self.pmcorrectselector.setEnabled(False)
-        self.summethselector = redRGUI.comboBox(info, label="Summary Methods", items=self.R('express.summary.stat.methods'), orientation=0)
+        self.summethselector = redRGUI.comboBox(info, label="Summary Methods", items=[]
+        #self.R('express.summary.stat.methods')
+        , orientation=0)
         self.summethselector.setEnabled(False)
         
         
-        runbutton = redRGUI.button(self.controlArea, "Run Normalization", callback = self.normalize)
+        runbutton = redRGUI.button(self.bottomAreaRight, "Run Normalization", callback = self.normalize)
         # runbutton.layout().setAlignment(Qt.AlignRight)
         
         

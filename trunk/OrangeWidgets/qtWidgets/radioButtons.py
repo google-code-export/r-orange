@@ -6,27 +6,22 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class radioButtons(widgetBox,widgetState):
-    def __init__(self,widget,label=None,buttons=None,orientation='vertical',callback = None, **args):
+    def __init__(self,widget,label=None,box = False, buttons=None,orientation='vertical',callback = None, **args):
         widgetBox.__init__(self,widget,orientation=orientation)
         #widget.layout().addWidget(self)
-        if(len(buttons) > 1):
+        if box:
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
-            self.buttons = QButtonGroup(self.box)
-            
-            
-            for i in buttons:
-                w = QRadioButton(i)
-                self.buttons.addButton(w)
-                self.box.layout().addWidget(w)
         else:
-            self.buttons = QButtonGroup(self)
+            self.box = self
             
-            w = QRadioButton(buttons[0])
+        self.buttons = QButtonGroup(self.box)
+        for i in buttons:
+            w = QRadioButton(i)
             self.buttons.addButton(w)
-            self.layout().addWidget(w)
+            self.box.layout().addWidget(w)
+
         if callback:
-            
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
 
         

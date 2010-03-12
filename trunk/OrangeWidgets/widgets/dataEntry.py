@@ -31,8 +31,8 @@ class dataEntry(OWRpy):
         
         box = redRGUI.groupBox(self.GUIDialog, "Options")
         redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
-        self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers'])
-        self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers'])
+        self.rowHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Row Headers'])
+        self.colHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Column Headers'])
 
         box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)

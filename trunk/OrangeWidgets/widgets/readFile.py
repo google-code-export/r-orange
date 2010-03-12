@@ -37,23 +37,22 @@ class readFile(OWRpy):
         #GUI
         box = redRGUI.groupBox(self.controlArea, label="Data File", addSpace = True, orientation='horizontal')
         
-        self.filecombo = redRGUI.comboBox(box, label = 'File', items=self.recentFiles)
+        self.filecombo = redRGUI.comboBox(box,items=self.recentFiles)
         
         button = redRGUI.button(box, 'Browse', callback = self.browseFile, disabled=0)
         self.filecombo.setMinimumWidth(150)
         box.layout().addWidget(self.filecombo)
-        #redRGUI.button(box, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
-        redRGUI.button(box, 'Load File', callback = self.loadFile)
-        redRGUI.button(self.bottomAreaLeft, 'Report', callback = self.sendReport, disabled = 0)
+        redRGUI.button(box, 'Report', callback = self.sendReport, disabled = 0)
         
         
         box = redRGUI.groupBox(self.controlArea, label="File Options", addSpace = True, orientation ='horizontal')
         
-        self.delimiter = redRGUI.radioButtons(box, label = 'Column Separator', buttons = ['Tab', 'Space', 'Comma'])
-        self.hasHeader = redRGUI.checkBox(box, buttons = ['Use Headers']) #, tooltip = ['Do you want to use the first row as the header'])
+        self.delimiter = redRGUI.comboBox(box, items = ['Tab', 'Space', 'Comma'])
+        self.hasHeader = redRGUI.checkBox(box, buttons = ['header'])
         
-        self.userowNames = redRGUI.comboBox(box, label = 'Rowname Column:', items = [''])
-        
+        self.userowNames = redRGUI.lineEdit(box, label = 'Rowname Column:')
+        redRGUI.button(box, 'Scan', callback = self.scanfile, width = 30, disabled = 0)
+        redRGUI.button(self.bottomAreaRight, 'Load File', callback = self.loadFile)
         box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
         self.infoa = redRGUI.widgetLabel(box, 'No data loaded.')
         self.infob = redRGUI.widgetLabel(box, '')
@@ -93,7 +92,7 @@ class readFile(OWRpy):
             self.recentFiles.insert(0, str(fn))
             self.setFileList()
             self.saveSettings()
-        self.scanfile()
+
     def scanfile(self):
         if len(self.recentFiles) ==0: return
         self.scanarea.clear()
@@ -101,23 +100,16 @@ class readFile(OWRpy):
         self.R(self.Rvariables['filename'] + ' = "' + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"')
         if self.R('length(' + self.Rvariables['filename'] +')') == 0: self.browseFile
         if self.R('length(' + self.Rvariables['filename'] +')') == 0: return
-        if 'Tab' in self.delimiter.getChecked(): #'tab'
+        if self.delimiter.currentText() == 'Tab': #'tab'
             sep = '\t'
-        elif 'Space' in self.delimiter.getChecked():
+        elif self.delimiter.currentText() == 'Space':
             sep = ' '
-        elif 'Comma' in self.delimiter.getChecked():
+        elif self.delimiter.currentText() == 'Comma':
             sep = ','
         self.R('txt<-capture.output(read.table('+self.Rvariables['filename']+', nrows = 5, sep = "'+sep+'", fill = T))')
         pasted = self.R('paste(txt, collapse = " \n")')
         self.scanarea.setText('If this table does not make sense, you may want to change the seperator.<br><pre>'+pasted+'<\pre>')
-        colnames = self.R('colnames(txt)')
-        self.userowNames.clear()
-        self.userowNames.addItem('')
-        if type(colnames) == type(''):
-            pass #self.userowNames.addItem(colnames)
-        else:
-            for name in colnames:
-                self.userowNames.addItem(name)
+        
             
     def loadFile(self):
         if len(self.recentFiles) ==0: return
@@ -134,8 +126,8 @@ class readFile(OWRpy):
             header = 'FALSE'
         elif self.useheader == 1:
             header = 'TRUE'
-        if self.userowNames.currentText() != '':
-            rownames = str(self.userowNames.currentIndex())
+        if self.userowNames.text() != '':
+            rownames = str(self.userowNames.text())
         else:
             rownames = 'NULL' #force numbering
         self.R(self.Rvariables['dataframe'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header+', sep = "'+sep+'", row.names = '+rownames+', fill = T)','setRData',True)

@@ -47,13 +47,14 @@ class rExecutor(OWRpy):
         # grid = QGridLayout() # instantiate the grid
         # lay.setLayout(grid) # put the grid into the controlArea
         leftArea = redRGUI.widgetBox(area)
-        leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #print leftArea.layout()
+        #leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         #grid.addWidget(leftArea, 0,0)
         rightArea = redRGUI.widgetBox(area)
-        rightArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #rightArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #grid.addWidget(rightArea, 0, 1)
         
-        ### end Grid
+        # end Grid
         runbox = redRGUI.groupBox(rightArea, "Command Line", orientation='horizontal')
         self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
         processbutton = redRGUI.button(runbox,"Run", callback = self.runR, width=100)
@@ -65,7 +66,7 @@ class rExecutor(OWRpy):
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
 
-        self.thistext = redRGUI.textEdit(rightArea)
+        self.thistext = redRGUI.textEdit(leftArea)
 
         #sendbox = redRGUI.groupBox(leftArea, "Send Box")
         #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
