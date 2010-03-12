@@ -40,7 +40,9 @@ class affyNormalize(OWRpy):
 
         
         #the GUI
+        self.selMethBox = redRGUI.radioButtons(self.controlArea, label = 'Normalization Method', buttons = ["RMA",
         # status = redRGUI.widgetBox(self.controlArea, "Status")
+        "MAS5", "Custom"], callback=self.selectMethodChanged,orientation='horizontal')
         # self.infoa = redRGUI.widgetLabel(status, 'No data loaded.')
         #normrad = redRGUI.widgetBox(self.controlArea, "Normalization Methods")
 
@@ -49,7 +51,11 @@ class affyNormalize(OWRpy):
         callback=self.selectMethodChanged,orientation='horizontal')
         self.selMethBox.setChecked('RMA')
         
+<<<<<<< .mine
+        info = redRGUI.groupBox(self.controlArea, label = "Normalization Options")
+=======
         info = redRGUI.widgetBox(self.controlArea, "Normalization Options")
+>>>>>>> .r391
 
         
         #insert a block to check what type of object is connected.  If nothing connected set the items of the normalize methods objects to 
@@ -72,7 +78,7 @@ class affyNormalize(OWRpy):
         self.summethselector.setEnabled(False)
         
         
-        runbutton = redRGUI.button(self.bottomAreaRight, "Run Normalization", callback = self.normalize)
+        runbutton = redRGUI.button(self.bottomAreaRight, label = "Run Normalization", callback = self.normalize)
         # runbutton.layout().setAlignment(Qt.AlignRight)
         
         
