@@ -29,14 +29,14 @@ class dataEntry(OWRpy):
         #GUI.
         
         
-        box = redRGUI.groupBox(self.GUIDialog, "Options")
-        redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
+        box = redRGUI.groupBox(self.GUIDialog, label = "Options")
+        redRGUI.button(self.bottomAreaRight, label = 'Commit', self.commitTable)
         self.rowHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Row Headers'])
         self.colHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Column Headers'])
 
-        box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        box = redRGUI.groupBox(self.controlArea, label = "Table", sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
-        self.dataTable = redRGUI.table(box, None, self.rowCount+1, self.colCount+1)
+        self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount+1)
         self.dataTable.show()
         upcell = QTableWidgetItem()
         upcell.setBackgroundColor(Qt.gray)
