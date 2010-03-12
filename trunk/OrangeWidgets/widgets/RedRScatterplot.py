@@ -84,7 +84,7 @@ class RedRScatterplot(OWRpy):
             self.data = data['data']
             self.parent = data['parent']
             self.cm = data['cm']
-            self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'))')
+            self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
             self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
             # set some of the plot data
             self.xColumnSelector.clear()

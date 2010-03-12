@@ -1,6 +1,7 @@
 """
-<name>Data Entry</name>
-<description>A table input data entry into a data.frame.</description>
+<name>CM Editor</name>
+<description>Virtually Identical to Data Entry but works on the CM of a data table.</description>
+<author>Kyle R Covington kylecovington1@gmail.com</author>
 <tags>Data Input</tags>
 <RFunctions>base:data.frame</RFunctions>
 <icon>icons/file.png</icon>
@@ -10,10 +11,10 @@
 import redRGUI
 from OWRpy import *
 
-class dataEntry(OWRpy):
+class cmEditor(OWRpy):
     settingsList = ['savedData']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 0, wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 10
         self.colCount = 10
@@ -25,14 +26,15 @@ class dataEntry(OWRpy):
         self.setRvariableNames(['table'])
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
+        self.outputs = [('Data Table', RvarClasses.RDataFrame), ('CM', RvarClasses.RDataFrame)] # trace problem with outputs
         #GUI.
         
         
-        box = redRGUI.groupBox(self.GUIDialog, "Options")
-        redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
-        self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers'])
-        self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers'])
+        #box = redRGUI.groupBox(self.GUIDialog, "Options") # no need for the dialog because all CM's have row and col names, this is required
+        self.commitButton = redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
+        self.commitButton.setEnabled(False) # can only work on existing data frames
+        #self.rowHeaders = redRGUI.checkBox(box, self, ['Use Row Headers'])
+        #self.colHeaders = redRGUI.checkBox(box, self, ['Use Column Headers'])
 
         box = redRGUI.groupBox(self.controlArea, "Table", sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
@@ -48,40 +50,52 @@ class dataEntry(OWRpy):
         self.resize(700,500)
         self.move(300, 25)
     def processDF(self, data):
-        if data and ('data' in data.keys()):
-            self.data = data['data']
+        if data and ('cm' in data.keys()):
+            self.data = data['cm']
             self.savedData = data.copy()
             self.populateTable()
+            self.commitButton.setEnabled(True)
         else:
+            self.commitButton.setEnabled(False)
             return
     def populateTable(self):
         self.dataTable.clear()
         rownames = self.R('rownames('+self.data+')')
-        rlen = self.R('length('+self.data+'[,1])')
-        self.dataTable.setRowCount(rlen+1)
-        self.rowCount = rlen+1
+        
         
         print str(rownames)
         if rownames != 'NULL':
+            rlen = len(rownames)
+            self.dataTable.setRowCount(rlen+1)
+            self.rowCount = rlen+1
             row = 1
             for name in rownames:
                 newitem = QTableWidgetItem(str(name))
                 self.dataTable.setItem(row,0,newitem)
                 row += 1
-            self.rowHeaders.setChecked(['Use Row Headers'])
-        clen = self.R('length('+self.data+'[1,])')
-        self.colCount = clen+1
-        self.dataTable.setColumnCount(clen+1)
+            #self.rowHeaders.setChecked(['Use Row Headers'])
+        else: # in the unlikely event that the cm doesn't have rownames
+            rlen = self.R('length('+self.data+'[,1])')
+            self.dataTable.setRowCount(rlen+1)
+            self.rowCount = rlen+1
+        # clen = self.R('length('+self.data+'[1,])')
+        # self.colCount = clen+1
+        # self.dataTable.setColumnCount(clen+1)
         colnames = self.R('colnames('+self.data+')')
-        if type(colnames) == type(''):
-            colnames = [colnames]
+        # if type(colnames) == type(''):
+            # colnames = [colnames]
         if colnames != 'NULL':  
             col = 1
             for name in colnames:
                 newitem = QTableWidgetItem(str(name))
                 self.dataTable.setItem(0, col, newitem)
                 col += 1
-            self.colHeaders.setChecked(['Use Column Headers'])
+            #self.colHeaders.setChecked(['Use Column Headers'])
+        else:
+            clen = 1
+            self.colCount = clen+1
+            self.dataTable.setColumnCount(clen+1)
+            colnames = []
         data = self.R(self.data)
         col = 1
         for name in colnames:
@@ -130,35 +144,35 @@ class dataEntry(OWRpy):
             rowi = range(trange.topRow(), trange.bottomRow()+1)
             coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
-        if self.dataTable.item(rowi[0], coli[0]) == None: 
+        #if self.dataTable.item(rowi[0], coli[0]) == None: 
 
-            self.rowHeaders.setChecked(['Use Row Headers'])
-            self.colHeaders.setChecked(['Use Column Headers'])
+            #self.rowHeaders.setChecked(['Use Row Headers'])
+            #self.colHeaders.setChecked(['Use Column Headers'])
         rownames = {}  
         colnames = {}        
-        if 'Use Row Headers' in self.rowHeaders.getChecked():
+        #if 'Use Row Headers' in self.rowHeaders.getChecked():
             
-            for i in rowi[1:]:
-                item = self.dataTable.item(i, coli[0])
-                if item != None:
-                    thisText = item.text()
-                else: thisText = str(i)
-                if thisText == None or thisText == '':
-                    thisText = str(i)
-                    
-                rownames[str(i)] = (str(thisText))
-            coli = coli[1:] #index up the cols
+        for i in rowi[1:]:
+            item = self.dataTable.item(i, coli[0])
+            if item != None:
+                thisText = item.text()
+            else: thisText = str(i)
+            if thisText == None or thisText == '':
+                thisText = str(i)
+                
+            rownames[str(i)] = (str(thisText))
+        coli = coli[1:] #index up the cols
 
-        if 'Use Column Headers' in self.colHeaders.getChecked():
-            for j in coli:
-                item = self.dataTable.item(rowi[0], j)
-                if item != None:
-                    thisText = item.text()
-                else: thisText = '"'+str(j)+'"'
-                if thisText == None or thisText == '':
-                    thisText = '"'+str(j)+'"'
-                colnames[str(j)] = (str(thisText))
-            rowi = rowi[1:] #index up the row count
+        #if 'Use Column Headers' in self.colHeaders.getChecked():
+        for j in coli:
+            item = self.dataTable.item(rowi[0], j)
+            if item != None:
+                thisText = item.text()
+            else: thisText = '"'+str(j)+'"'
+            if thisText == None or thisText == '':
+                thisText = '"'+str(j)+'"'
+            colnames[str(j)] = (str(thisText))
+        rowi = rowi[1:] #index up the row count
 
         rinsertion = []
         
@@ -200,10 +214,11 @@ class dataEntry(OWRpy):
                 rname.append(rownames[str(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
-        self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
+        self.R(self.savedData['cm']+'<-data.frame('+rinsert+')')
 
-        self.rSend('Data Table', {'data':self.Rvariables['table']})
-        self.savedData = {'data':self.Rvariables['table']}
+        self.rSend('Data Table', self.savedData)
+        self.rSend('CM', {'data':self.savedData['cm'], 'cm':self.savedData['cm'], 'parent':self.savedData['data']})
+        #self.savedData['cm'] = self.Rvariables['table']
     def onLoadSavedSession(self):
         if self.R('exists("'+self.Rvariables['table']+'")'):
             self.rSend('Data Table', {'data':self.Rvariables['table']})

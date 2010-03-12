@@ -43,9 +43,9 @@ class comboBox(QComboBox,widgetState):
         
     def addRItems(self, items):
         if items:
-            try:
-                self.addItems(items)
-            except:
+            if type(items) == type(''):
                 self.addItems([items])
+            elif type(items) == type([]):
+                self.addItems(items)
 
     

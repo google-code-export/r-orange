@@ -504,6 +504,13 @@ class OWRpy(OWWidget,RSession):
     def followLink(self, url):
         self.R('shell.exec("'+str(url.toString())+'")')
         self.notes.setHtml(str(url.toString()))
+    
+    def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
+        if file == None: file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'), "Normal text file (*.txt)"))
+        self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
+        self.R(query, 'setRData')
+        self.R('dev.off()')
+    
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget
         # print 'the devNumber is'+str(devNumber)

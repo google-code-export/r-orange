@@ -25,14 +25,14 @@ class Heatmap(OWRpy):
         
         #GUI
         infobox = redRGUI.widgetBox(self.controlArea, "Options")
-        redRGUI.button(infobox, "Replot", callback=self.makePlot, width=200)
+        redRGUI.button(self.bottomAreaRight, "Replot", callback=self.makePlot, width=200)
+        redRGUI.button(infobox, 'Save as PDF', callback = self.savePDF)
         redRGUI.button(infobox, 'Identify', callback = self.identify, width=200)
         self.plotOnConnect = redRGUI.checkBox(infobox,buttons=['Plot on Connect'])
         self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
         self.infoa = OWGUI.widgetLabel(infobox, "Nothing to report")
-        
         
     def onLoadSavedSession(self):
         print 'load heatmap'

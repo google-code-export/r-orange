@@ -33,7 +33,7 @@ class table(QTableWidget,widgetState):
         self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
-        
+        self.clear()
         self.setRowCount(len(data[data.keys()[0]]))
         self.setColumnCount(len(data.keys()))
 
