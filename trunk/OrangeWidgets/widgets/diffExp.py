@@ -52,7 +52,7 @@ class diffExp(OWRpy):
         # set as valstack 0
         box = redRGUI.widgetBox(boxVal, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(box, 0,1)
-        processButton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
+        processButton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset, width=150)
         self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
         setAbutton = redRGUI.button(box, "Switch Class", callback = self.switchClass, width = 200)
         self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
@@ -125,8 +125,7 @@ class diffExp(OWRpy):
         if 'data' in data: # make sure that there is data there 
             self.phenoData = data['data']
             colnames = self.R('colnames('+self.phenoData+')')
-            for names in colnames:
-                self.phenoVarListBox.addItem(names)
+            self.functionBox.addItems(colnames)
             self.valuesStack.setCurrentWidget(self.boxIndices[1])
         else:
             self.phenoData = ''
@@ -156,7 +155,7 @@ class diffExp(OWRpy):
             else:
                 for v in self.samplenames:
                     self.arrays.addItem(v)
-                self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
+                #self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
 
     def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
         if not reload: # we really need to process this block
@@ -179,7 +178,8 @@ class diffExp(OWRpy):
                 self.R('cvect<-data.frame(type=1, class='+self.Rvariables['classes']+')') 
                 self.R('design<-model.matrix(~class, cvect)')
             else: #someone attached phenoData so lets use that to make the design
-                self.R('design<-model.matrix(~'+self.funcitonBox.Formula()[1]+', '+self.phenoData+')')
+                self.R('design<-model.matrix(~'+self.functionBox.Formula()[1]+', '+self.phenoData+')')
+                self.R(self.Rvariables['subset']+ '<-' +self.data)
                 
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
             self.R(self.Rvariables['results']+'<-eBayes(fit)')

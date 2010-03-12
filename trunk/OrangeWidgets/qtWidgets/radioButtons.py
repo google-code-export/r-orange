@@ -28,23 +28,7 @@ class radioButtons(widgetBox,widgetState):
         if callback:
             
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
-        # if label:
-            # QGroupBox.__init__(self,title,widget)
-        # else:
-            # QGroupBox.__init__(self,widget)
-       
-        # widget.layout().addWidget(self)
-        # self.setLayout(QVBoxLayout())
-        # self.buttons = QButtonGroup(self)
-        
-        # for i in buttons:
-            # w = QRadioButton(i)
-            # self.buttons.addButton(w)
-            # self.layout().addWidget(w)
-        # print 'aaaaaaaaaaaaa'
-        # if callback:
-            # print callback
-            # QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
+
         
     def setChecked(self,id):
         for i in self.buttons.buttons():

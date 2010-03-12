@@ -66,7 +66,7 @@ class dataEntry(OWRpy):
                 newitem = QTableWidgetItem(str(name))
                 self.dataTable.setItem(row,0,newitem)
                 row += 1
-            self.rowHeaders = True
+            self.rowHeaders.setChecked(['Use Row Headers'])
         clen = self.R('length('+self.data+'[1,])')
         self.colCount = clen+1
         self.dataTable.setColumnCount(clen+1)
@@ -79,7 +79,7 @@ class dataEntry(OWRpy):
                 newitem = QTableWidgetItem(str(name))
                 self.dataTable.setItem(0, col, newitem)
                 col += 1
-            self.colHeaders = True
+            self.colHeaders.setChecked(['Use Column Headers'])
         data = self.R(self.data)
         col = 1
         for name in colnames:
@@ -130,11 +130,11 @@ class dataEntry(OWRpy):
             
         if self.dataTable.item(rowi[0], coli[0]) == None: 
 
-            self.rowHeaders = True
-            self.colHeaders = True
+            self.rowHeaders.setChecked(['Use Row Headers'])
+            self.colHeaders.setChecked(['Use Column Headers'])
         rownames = {}  
         colnames = {}        
-        if self.rowHeaders.items()[0].isChecked() == True:
+        if 'Use Row Headers' in self.rowHeaders.getChecked():
             
             for i in rowi[1:]:
                 item = self.dataTable.item(i, coli[0])
@@ -147,7 +147,7 @@ class dataEntry(OWRpy):
                 rownames[str(i)] = (str(thisText))
             coli = coli[1:] #index up the cols
 
-        if self.colHeaders.items()[0].isChecked() == True:
+        if 'Use Column Headers' in self.colHeaders.getChecked():
             for j in coli:
                 item = self.dataTable.item(rowi[0], j)
                 if item != None:
