@@ -354,6 +354,8 @@ def button(widget,  label, callback = None, disabled=0, tooltip=None, width = No
     
     if width:
         btn.setFixedWidth(width)
+    elif len(label)*7+5 < 50:
+        btn.setFixedWidth(50)
     else:
         btn.setFixedWidth(len(label)*7+5)
     if height:

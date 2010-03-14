@@ -14,17 +14,18 @@ import RAffyClasses
 
 
 class ReadCEL(OWRpy):
-    globalSettingsList = ['recentFiles']
+    globalSettingsList = ['recentFiles','path']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
         #self.setStateVariables(['recentFiles'])
         #default values        
-        self.recentFiles = []
+        self.recentFiles = ['Select Directory']
+        self.path = os.path.abspath('/')
         self.methodcombo = 0
         self.loadSettings()
         # make sure that there is an escape option for the file selection 
-        if '' not in self.recentFiles:
-            self.recentFiles.insert(0, '')
+        # if '' not in self.recentFiles:
+            # self.recentFiles.insert(0, '')
         
         #set R variable names
         self.setRvariableNames(['eset','folder'])
@@ -36,72 +37,60 @@ class ReadCEL(OWRpy):
 
 
         #GUI
-        box = redRGUI.groupBox(self.controlArea, "Select Folder",
-        sizePolicy=QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed))
+        box = redRGUI.groupBox(self.controlArea, "Select Folder",orientation='horizontal')
+        #sizePolicy=QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed))
         
-        self.numArrays = redRGUI.radioButtons(box, label = 'Number of arrays', 
-        buttons = ['Less than 40', 'More than 40'])
+        self.filecombo = redRGUI.comboBox(box, items = self.recentFiles)
+        self.filecombo.setCurrentIndex(0)
+        button = redRGUI.button(box, 'Browse', callback = self.browseFile)
         
-        self.filecombo = redRGUI.comboBox(box, items = self.recentFiles, 
-        callback=self.selectFile)
+        self.numArrays = redRGUI.radioButtons(self.controlArea, label = 'Number of arrays', 
+        buttons = ['Less than 40', 'More than 40'],setChecked='Less than 40', orientation='horizontal')
+
+        button2 = redRGUI.button(self.bottomAreaRight, 'Process Folder', callback = self.process)
         
-        
-        buttonsBox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
-        button = redRGUI.button(buttonsBox, 'Add Folder', callback = self.browseFile, disabled=0)
-        button2 = redRGUI.button(buttonsBox, 'Process File', callback = self.process)
-        
-        # box = redRGUI.groupBox(self.controlArea, "Info", addSpace = True)
-        # self.status = redRGUI.widgetLabel(box, 'No data loaded.')
         self.setFileList()
         
-                
     def setFileList(self):
+        if self.recentFiles == None: self.recentFiles = ['Select Directory']
+        
         self.filecombo.clear()
-        if not self.recentFiles:
-            self.filecombo.addItem("(none)")
         for file in self.recentFiles:
-            if file == "(none)":
-                self.filecombo.addItem("(none)")
-            else:
-                self.filecombo.addItem(file)
-        
+            self.filecombo.addItem(os.path.basename(file))
 
-    def selectFile(self, n):
-        if n < len(self.recentFiles) :
-            name = self.recentFiles[n]
-            self.recentFiles.remove(name)
-            self.recentFiles.insert(0, name)
-        elif n:
-            self.browseFile(1)
-
-        if len(self.recentFiles) > 0:
-            self.setFileList()
-        #self.R(self.Rvariables['folder'] + ' = "' + str(self.filecombo.currentText()).replace('\\', '\\\\') + '"', 'setRData')
-        #self.process()
+        # self.filecombo.setCurrentIndex(data['current'])
+        # self.scanFile()
+    
+    def browseFile(self): 
+        fn = QFileDialog.getExistingDirectory(self, "CEL Directory", self.path)
         
-        
-    def browseFile(self): #should open a dialog to choose a file that will be parsed to set the wd
-        fn = QFileDialog.getExistingDirectory(None, 'CEL File Directory', os.path.abspath('/'))
-        print str(fn)
+        #print str(fn)
         if fn.isEmpty(): return
-        #self.R(self.Rvariables['folder'] + '<-"' + str(os.path.abspath(str(fn))).replace('\\', '\\\\') + '"')
-        folder = str(os.path.abspath(fn))
-        if folder in self.recentFiles: self.recentFiles.remove(folder)
-        self.recentFiles.insert(0, folder)
-        self.setFileList()
-        #self.process()
+        self.path = os.path.split(str(fn))[0]
+        if fn in self.recentFiles:
+            self.recentFiles.remove(str(fn))
+        self.recentFiles.append(str(fn))
+        self.filecombo.addItem(os.path.basename(str(fn)))
+        self.filecombo.setCurrentIndex(len(self.recentFiles)-1)
+        
+        self.saveSettings()
         
     def process(self):
+        
+        if(self.recentFiles[self.filecombo.currentIndex()] == 'Select Directory'):
+            return
+        dir = self.recentFiles[self.filecombo.currentIndex()].replace('\\', '\\\\')
         self.status.setText("Your data is processing")
         #required librarys
         self.require_librarys(['affy'])
-        if self.methodcombo == 0:
-            self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path="'+str(self.filecombo.currentText()).replace('\\', '\\\\')+'")','setRData',True)
-        if self.methodcombo == 1:
+        if self.numArrays.getChecked() == 'Less than 40':
+            self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path="'+dir+'")','setRData',True)
+            self.status.setText("Your data has been processed with ReadAffy.")
+        else:
             self.status.setText("This may take several minutes")
             self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
-            self.status.setText("Data preprocessed with RMA normalization")
-        self.status.setText("Your data has been processed.")
+            self.status.setText("Data preprocessed with justRMA.")
+        
         self.sendMe()
         
     

@@ -36,32 +36,23 @@ class affyNormalize(OWRpy):
         
         #signals
         self.inputs = [("Eset", RAffyClasses.Eset, self.process)]
-        self.outputs = [("Normalized Expression Matrix", RvarClasses.RDataFrame),("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
+        self.outputs = [("Normalized Expression Matrix", RvarClasses.RDataFrame),
+        ("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
 
         
         #the GUI
-        self.selMethBox = redRGUI.radioButtons(self.controlArea, label = 'Normalization Method', buttons = ["RMA",
-        # status = redRGUI.widgetBox(self.controlArea, "Status")
-        "MAS5", "Custom"], callback=self.selectMethodChanged,orientation='horizontal')
-        # self.infoa = redRGUI.widgetLabel(status, 'No data loaded.')
-        #normrad = redRGUI.widgetBox(self.controlArea, "Normalization Methods")
-
         self.selMethBox = redRGUI.radioButtons(self.controlArea, label='Normalization Method',
         buttons=["RMA", "MAS5", "Custom"], 
         callback=self.selectMethodChanged,orientation='horizontal')
         self.selMethBox.setChecked('RMA')
         
-<<<<<<< .mine
         info = redRGUI.groupBox(self.controlArea, label = "Normalization Options")
-=======
-        info = redRGUI.widgetBox(self.controlArea, "Normalization Options")
->>>>>>> .r391
 
         
         #insert a block to check what type of object is connected.  If nothing connected set the items of the normalize methods objects to 
         self.normselector = redRGUI.comboBox(info, label="Normalization Method", items=self.norm, orientation=0)
         self.normselector.setEnabled(False)
-        self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods asdf asdf asdf asdf asdf asdf asdf asdf", items=['TRUE', 'FALSE'], orientation=0)
+        self.bgcorrectselector = redRGUI.comboBox(info, label="Background Correct Methods", items=['TRUE', 'FALSE'], orientation=0)
         self.bgcorrectselector.setEnabled(False)
         self.bgcmethselector = redRGUI.comboBox(info, label="Background Correct Methods", items=[],
         #self.R('bgcorrect.methods'), 

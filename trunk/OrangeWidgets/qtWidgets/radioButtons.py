@@ -6,10 +6,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class radioButtons(widgetBox,widgetState):
-    def __init__(self,widget,label=None,box = False, buttons=None,orientation='vertical',callback = None, **args):
+    def __init__(self,widget,label=None, buttons=None, setChecked = None,
+    orientation='vertical',callback = None, **args):
+        
         widgetBox.__init__(self,widget,orientation=orientation)
-        #widget.layout().addWidget(self)
-        if box:
+        
+        if label:
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
         else:
@@ -24,6 +26,8 @@ class radioButtons(widgetBox,widgetState):
         if callback:
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
 
+        if setChecked:
+            self.setChecked(setChecked)
         
     def setChecked(self,id):
         for i in self.buttons.buttons():
