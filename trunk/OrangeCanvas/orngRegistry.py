@@ -115,6 +115,7 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
             if not dirnameInPath:
                 sys.path.append(dirname)
             wmod = imp.load_source(widgname, filename)
+            #wmod.__dict__['widgetFilename'] = filename
             if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
                 sys.path.remove(dirname)
             widgClass = wmod.__dict__[widgname]

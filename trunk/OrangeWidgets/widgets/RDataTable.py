@@ -66,7 +66,9 @@ class RDataTable(OWRpy):
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
         redRGUI.button(saveTab, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
 
+        # print 'asdfasdf'
         
+        #print self.widgetFilename
         #links:
         linksTab = self.tabWidgeta.createTabPage('Link Data')
                 #OWGUI.widgetLabel(infoBox, "Links:")
@@ -81,10 +83,10 @@ class RDataTable(OWRpy):
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         boxSettings = redRGUI.groupBox(self.GUIDialog, label = "Settings")
         
-        resizeColsBox = OWGUI.widgetBox(boxSettings, orientation="horizontal")
-        redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
-        redRGUI.button(resizeColsBox, label = "+", self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
-        redRGUI.button(resizeColsBox, label = "-", self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
+        resizeColsBox = redRGUI.groupBox(boxSettings, orientation="horizontal")
+        redRGUI.widgetLabel(resizeColsBox, text = "Resize columns: ")
+        redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
+        redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
         redRGUI.rubber(resizeColsBox)
 
         self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")

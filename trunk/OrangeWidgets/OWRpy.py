@@ -58,13 +58,13 @@ class OWRpy(OWWidget,RSession):
         #sidePanal = redRGUI.widgetBox(self,'Documentation')
         
         webSize = QSize(200,300)
-        
+        #print self._widgetFileName
         self.help = QtWebKit.QWebView(self)
         self.help.setMaximumSize(webSize)
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         try:
-            # url = 'http://red-r.org/help.php?widget=' + os.path.basename(inspect.stack()[1][1])
+            url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetFileName)
             self.help.load(QUrl(url))
         except: pass 
         #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")

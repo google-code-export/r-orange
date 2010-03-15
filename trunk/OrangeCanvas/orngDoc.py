@@ -251,7 +251,7 @@ class SchemaDoc(QWidget):
         try:
             #print str(forceInSignals) 
             #print str(forceOutSignals)
-            print 'adding widget '+caption
+            #print 'adding widget '+caption
             newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
         except:

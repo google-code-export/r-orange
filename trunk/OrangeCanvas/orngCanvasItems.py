@@ -154,9 +154,20 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         #print str(forceOutSignals)
         print 'Initializing widget'
         m = __import__(widgetInfo.fileName)
-        self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName], _owInfo = canvasDlg.settings["owInfo"], _owWarning = canvasDlg.settings["owWarning"], _owError = canvasDlg.settings["owError"], _owShowStatus = canvasDlg.settings["owShow"], _useContexts = canvasDlg.settings["useContexts"], _category = widgetInfo.category, _settingsFromSchema = widgetSettings)
+        self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName],
+        _owInfo = canvasDlg.settings["owInfo"],
+        _owWarning = canvasDlg.settings["owWarning"],
+        _owError = canvasDlg.settings["owError"],
+        _owShowStatus = canvasDlg.settings["owShow"],
+        _useContexts = canvasDlg.settings["useContexts"],
+        _category = widgetInfo.category,
+        _settingsFromSchema = widgetSettings)
+        self.instance._widgetFileName = widgetInfo.fullName
+        
+        
         if widgetInfo.fileName == 'dummy': 
-            self.instance.__init__(signalManager = signalManager, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+            self.instance.__init__(signalManager = signalManager, 
+            forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
         else: self.instance.__init__(signalManager = signalManager)
         #self.instance.__init__(signalManager=signalManager)
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget
