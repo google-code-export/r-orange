@@ -3,10 +3,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class widgetLabel(QLabel,widgetState):
-    def __init__(self,widget,text=''):
+    def __init__(self,widget,label = ''):
         QLabel.__init__(self,widget)
         widget.layout().addWidget(self)
-        self.setText(text)
+        self.setText(label)
     def getSettings(self):
         # print 'in widgetLabel getSettings'
         r = {'text':self.text()}

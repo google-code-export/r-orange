@@ -58,15 +58,13 @@ class RSession():
         self.Rhistory += histquery + '</code><br><code>'
         try:
             if type == 'getRData':
-                #output  = 
-                self.RSessionThread.run(query)
+                output  = self.RSessionThread.run(query)
             elif type == 'setRData':
                 self.RSessionThread.run(query)
             elif type == 'getRSummary':
                 self.RSessionThread.run('tmp<-('+query+')')
-                #output = 
-                self.RSessionThread.run('list(rowNames=rownames(tmp), colNames=colnames(tmp), Length=length(tmp), Class=class(tmp), Summary=summary(tmp))')
-                self.RSessionThread.run('rm(tmp)', self)
+                output = self.RSessionThread.run('list(rowNames=rownames(tmp), colNames=colnames(tmp), Length=length(tmp), Class=class(tmp), Summary=summary(tmp))')
+                self.RSessionThread.run('rm(tmp)')
             else:
                 self.RSessionThread.run(query) # run the query anyway even if the user put un a wierd value
 

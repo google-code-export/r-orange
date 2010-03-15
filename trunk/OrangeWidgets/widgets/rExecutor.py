@@ -36,7 +36,7 @@ class rExecutor(OWRpy):
         varbutton = redRGUI.button(self.box, "Recieved", callback = self.putrecieved, width = 150)
         history = redRGUI.button(self.box, "RHistory", callback = self.putRHistory, width = 150)
         redRGUI.button(self.box, "Clear Output", callback = self.clearOutput)
-        self.infoa = redRGUI.widgetLabel(self.box, label = "")
+        self.infoa = redRGUI.widgetLabel(self.box, "")
         # grid
         area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -49,10 +49,10 @@ class rExecutor(OWRpy):
         processbutton = redRGUI.button(runbox, label = "Run", callback = self.runR, width=100)
 
         self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
-        self.infov = redRGUI.widgetLabel(self.dataBox, label = "No Input")
+        self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
         
-        self.metadataBox = redRGUI.widgetBox(leftArea, label = "Metadata")
-        self.infoM = redRGUI.widgetLabel(self.metadataBox, label = "No Meta Data")
+        self.metadataBox = redRGUI.widgetBox(leftArea, "Metadata")
+        self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
 
         self.thistext = redRGUI.textEdit(leftArea)

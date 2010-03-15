@@ -101,7 +101,7 @@ class OWRpy(OWWidget,RSession):
         self.status = redRGUI.widgetLabel(self.statusBar, '')
         #processingBoxBox = redRGUI.widgetBox(self.defaultLeftArea, "Processing Status")
         self.status.setText('Processing not yet performed.')
-        self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.statusBar.addWidget(self.status)
         self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
         
