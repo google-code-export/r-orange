@@ -5,7 +5,7 @@
 <icon>icons/ReadFile.png</icon>
 <priority>10</priority>
 """
-
+import RSession
 from OWRpy import *
 import OWGUI
 import redRGUI 
@@ -44,7 +44,20 @@ class sbIII(OWRpy):
         plotarea.layout().addWidget(self.graph)
         self.zoomSelectToolbarBox = redRGUI.widgetBox(self.controlArea, "Plot Tool Bar")
         self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self.zoomSelectToolbarBox, self, self.graph)
-        redRGUI.button(self.controlArea, self, "selected", callback = self.showSelected)
+        redRGUI.button(self.controlArea, "selected", callback = self.showSelected)
+        redRGUI.button(self.controlArea, label = 'Run QThread', callback = self.RunQthread)
+        redRGUI.button(self.controlArea, label = 'play movie', callback = self.ShowText)
+        self.movie = redRGUI.MyQMoviePlayer()
+        self.RThread = MyThread()
+        self.X.setText(str(self.movie.movie.fileName()))
+        self.Y.setText(str(self.movie.movie.frameCount()))
+        
+    def ShowText(self):
+        self.movie.show()
+        
+    def RunQthread(self):
+        print str(self.RThread.run(command = 'txt<-c(1,2,3)'))
+        
     def refresh(self):
         if self.cm != None:
             try:
@@ -154,3 +167,13 @@ class sbIII(OWRpy):
         if self.cm:
             self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
             self.sendRefresh()
+            
+            
+class MyThread(QThread, RSession):
+    def __init__(self, parent = None):
+        RSession.__init__(self)
+        QThread.__init__(self, None)
+        #self.command = ''
+    def run(self, command):
+        return self.R(command)
+        

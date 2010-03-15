@@ -8,10 +8,13 @@ import time
 import RvarClasses
 import RAffyClasses
 import threading, sys
+import orngEnviron
+import MyQMoviePlayer
 # from PyQt4 import QtWebKit
+from PyQt4.QtCore import *
 from OWWidget import *
 
-
+mutex = QMutex()
 class RSession():
     # lock = threading.Lock()
     # rsem = threading.Semaphore(value = 1)
@@ -26,13 +29,16 @@ class RSession():
         #print 'set load ssaved '
         #self.settingsList = ['variable_suffix','loadingSavedSession']
         self.packagesLoaded = 0
+        self.RSessionThread = RSessionThread()
 
-
-                
     def R(self, query, type = 'getRData', processing_notice=False):
         #RThread().start()
         # rthread = RThread()
         # rthread.start()
+        
+        # movie = ProcessingBoxThread()
+        # movie.start()
+        mutex.lock()
         
         
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -49,18 +55,20 @@ class RSession():
         histquery = histquery.replace('<', '&lt;') #convert for html
         histquery = histquery.replace('>', '&gt;')
         histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
-        RSession.Rhistory += histquery + '</code><br><code>'
+        self.Rhistory += histquery + '</code><br><code>'
         try:
             if type == 'getRData':
-                output  = rpy.r(query)
+                #output  = 
+                self.RSessionThread.run(query)
             elif type == 'setRData':
-                rpy.r(query)
+                self.RSessionThread.run(query)
             elif type == 'getRSummary':
-                rpy.r('tmp<-('+query+')')
-                output = rpy.r('list(rowNames=rownames(tmp), colNames=colnames(tmp), Length=length(tmp), Class=class(tmp), Summary=summary(tmp))')
-                rpy.r('rm(tmp)')
+                self.RSessionThread.run('tmp<-('+query+')')
+                #output = 
+                self.RSessionThread.run('list(rowNames=rownames(tmp), colNames=colnames(tmp), Length=length(tmp), Class=class(tmp), Summary=summary(tmp))')
+                self.RSessionThread.run('rm(tmp)', self)
             else:
-                rpy.r(query) # run the query anyway even if the user put un a wierd value
+                self.RSessionThread.run(query) # run the query anyway even if the user put un a wierd value
 
         except rpy.RPyRException, inst:
             # RSession.occupied = 0
@@ -70,9 +78,9 @@ class RSession():
             self.progressBarFinished()
             print inst.message
             QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
-            self.status.setText('Error occured!!')
+            #self.status.setText('Error occured!!')
             return None # now processes can catch potential errors
-        RSession.processing = False
+        self.processing = False
         if processing_notice:
             self.status.setText('Processing complete')
             #self.progressBarFinished()
@@ -81,6 +89,7 @@ class RSession():
         
         # RSession.occupied = 0
         # RSession.rsem.release()
+        mutex.unlock()
         qApp.restoreOverrideCursor()
         return output
                         
@@ -93,11 +102,11 @@ class RSession():
         for library in librarys:
             if force or (library not in self.RPackages):
                 try:
-                    if not self.R("require("+ library +")"): 
-                        self.R('setRepositories(ind=1:7)')
-                        self.R('chooseCRANmirror()')
-                        self.R('install.packages("' + library + '")')
-                        self.R('require(' + library + ')')
+                    if not self.runR("require("+ library +")"): 
+                        self.runR('setRepositories(ind=1:7)')
+                        self.runR('chooseCRANmirror()')
+                        self.runR('install.packages("' + library + '")')
+                        self.runR('require(' + library + ')')
                     self.RPackages.append(library)
                     success = 1
                 except rpy.RPyRException, inst:
@@ -113,11 +122,11 @@ class RSession():
             else:
                 print 'Packages Loaded'
                 return 1
-        #add the librarys to a list so that they are loaded when R is loaded.
+        #add the librarys to a list so that they are loaded when runR is loaded.
         return success
     def convertDataframeToExampleTable(self, dataFrame_name):
         #set_default_mode(CLASS_CONVERSION)
-        dfsummary = self.R(dataFrame_name, 'getRSummary')
+        dfsummary = self.runR(dataFrame_name, 'getRSummary')
         col_names = dfsummary['colNames']
         if type(col_names) is str:
             col_names = [col_names]
@@ -149,7 +158,7 @@ class RSession():
         self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(exampleTable_data' + self.variable_suffix + ')] <- "?"')
         
         d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
-        if self.R('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
+        if self.runR('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
             d = [d]
         #print d
         #type(d)
@@ -158,3 +167,40 @@ class RSession():
         self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
         return data
 
+class RSessionThread(QThread):
+    def __init__(self, parent = None):
+        QThread.__init__(self, None)
+        #self.command = ''
+    def run(self, query):
+
+        output = rpy.r(query)
+
+        return output
+    
+
+# class ProcessingBoxThread(QThread):
+    # def __init__(self, parent = None):
+        # QThread.__init__(self, parent)
+        # self.open = 1
+    # def run(self, widget):
+        #movie = MyQMoviePlayer.MyQMoviePlayer()
+        # widget.show()
+        # widget.movie.start()
+        # self.waitForMe()
+    # def waitForMe(self):
+        # self.wait()
+    # def start(self):
+        # self.run()
+
+# class RSession(RSessionExecutor):
+    # def __init__(self):
+        # self.RSessionThread = RSessionThread()
+        # RSessionExecutor.__init__(self)
+    # def R(self, command, type = 'getRData', processing_notice=False):
+        # print 'Entered R Thread'
+        # movie = MyQMoviePlayer.MyQMoviePlayer()
+        # output = self.RSessionThread.run(command, type = type, processing_notice = processing_notice)
+
+        # print 'Exited R Thread'
+        # movie.hide()
+        # return output
