@@ -55,7 +55,7 @@ class rExecutor(OWRpy):
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
 
-        self.thistext = redRGUI.textEdit(leftArea)
+        self.thistext = redRGUI.textEdit(rightArea)
 
         #sendbox = redRGUI.groupBox(leftArea, "Send Box")
         #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")

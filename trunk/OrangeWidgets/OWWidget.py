@@ -67,7 +67,7 @@ class OWWidget(OWBaseWidget):
             self.mainArea.updateGeometry()
         
         self.controlArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
-        self.controlArea.setMinimumWidth(350)
+        self.controlArea.setMinimumWidth(200)
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
         self.bottomArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="horizontal", margin=wantMainArea and 0 or 4)

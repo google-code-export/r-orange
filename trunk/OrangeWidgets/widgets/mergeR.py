@@ -67,6 +67,7 @@ class mergeR(OWRpy):
         self.rowBindButton = redRGUI.button(otherBox, "Bind By Rows", callback = self.rowBind)
         self.colBindButton.setEnabled(False)
         self.rowBindButton.setEnabled(False)
+        self.mergeLikeThis = redRGUI.checkBox(self.bottomAreaRight, buttons = ['Always Merge Like This'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
         redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.run)
         
     def onLoadSavedSession(self):
@@ -80,20 +81,22 @@ class mergeR(OWRpy):
         except:
             self.sendMe(kill=True)
     def processA(self, data):
-        print 'processA'
+        #print 'processA'
         if data:
             self.dataA = str(data['data'])
             self.dataParentA = data.copy()
             colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
             if type(colsA) is str:
                 colsA = [colsA]
+            old = self.colAsel
             self.colA.clear()
             for v in colsA:
                 self.colA.addItem(v)
-                if v == self.colAsel:
-                    self.colA.setCurrentRow((self.colA.count()-1))
+                if v == old:
+                    self.colA.setCurrentRow((self.colA.count()-1)) # set's the row to the current one 
             
-            self.run()
+            if 'Always Merge Like This' in self.mergeLikeThis.getChecked() and old == str(self.colA.selectedItems()[0].text()):
+                self.run()
             
             if self.dataA != '' and self.dataB != '':
                 aRowLen = self.R('length('+self.dataA+'[,1])')
@@ -111,21 +114,37 @@ class mergeR(OWRpy):
             #self.sendNothing
 
     def processB(self, data):
-        print 'processB'
+        #print 'processB'
         if data:
             self.dataB = str(data['data'])
             self.dataParentB = data.copy()
             colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
             if type(colsB) is str:
                 colsB = [colsB]
+            old = self.colBsel
             self.colB.clear()
             for v in colsB:
                 self.colB.addItem(v)
-                if v == self.colBsel:
+                if v == old:
                     self.colB.setCurrentRow((self.colB.count()-1))
                     
             #self.colB.setCurrentRow(self.colB.row(QListWidgetItem(self.colBsel)))
-            self.run()
+            if 'Always Merge Like This' in self.mergeLikeThis.getChecked() and old == str(self.colB.selectedItems()[0].text()):
+                self.run()
+            
+            if self.dataA != '' and self.dataB != '':
+                aRowLen = self.R('length('+self.dataA+'[,1])')
+                aColLen = self.R('length('+self.dataB+'[1,])')
+                bRowLen = self.R('length('+self.dataA+'[,1])')
+                bColLen = self.R('length('+self.dataA+'[1,])')
+                try:
+                    if aRowLen == bRowLen:
+                        self.colBindButton.setEnabled(True)
+                    if aColLen == bColLen:
+                        self.rowBindButton.setEnabled(True)
+                except: # there must not be any row of col names so there can't be a comparison
+                    pass
+                    
         else: return
             #self.sendNothing
             

@@ -52,6 +52,9 @@ class dataEntry(OWRpy):
         # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
+        self.window = QDialog(self)
+        self.window.setLayout(QVBoxLayout())
+        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
         self.resize(700,500)
         self.move(300, 25)
     def processDF(self, data):
@@ -125,13 +128,19 @@ class dataEntry(OWRpy):
         self.dataTable.setCurrentCell(row+1, col)
 
     def setCustomClasses(self):
-        self.window = QDialog(self)
-        self.window.setLayout(QVBoxLayout())
-        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 1)
+        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
         for j in range(1, self.colCount+1):
             cb = QComboBox()
+            item = self.dataTable.item(0, j)
+            if item == None:
+                newitem = QTableWidgetItem(str('NA'))
+            else:
+                newitem = QTableWidgetItem(str(item.text()))
             cb.addItems(['Default', 'Factor', 'Numeric', 'Character'])
-            self.classTable.setCellWidget(j-1, 0, cb)
+            self.classTable.setCellWidget(j-1, 1, cb)
+            newitem.setToolTip(str('Set the data type for column '+str(newitem.text())))
+            self.classTable.setItem(j-1, 0, newitem)
+            
         redRGUI.button(self.window, 'Set Classes', callback = self.setClasses)
         redRGUI.button(self.window, 'Clear Classes', callback = self.clearClasses)
         self.window.show()
@@ -149,7 +158,7 @@ class dataEntry(OWRpy):
         else:
             self.classes = []
             for j in range(0, self.classTable.rowCount()):
-                txt = self.classTable.cellWidget(j,0)
+                txt = self.classTable.cellWidget(j,1)
                 ct = txt.currentText()
                 if ct == 'Default':
                     self.classes.append(('', ''))
@@ -159,6 +168,8 @@ class dataEntry(OWRpy):
                     self.classes.append(('as.numeric(', ')'))
                 elif ct == 'Character':
                     self.classes.append(('as.character(', ')'))
+        self.window.hide()
+        self.status.setText('Classes Set')
     def commitTable(self):
         #run through the table and make the output
         trange = self.dataTable.selectedRanges()[0]
@@ -248,6 +259,13 @@ class dataEntry(OWRpy):
 
         self.rSend('Data Table', {'data':self.Rvariables['table']})
         self.savedData = {'data':self.Rvariables['table']}
+        
+    def closeEvent(self, event):
+        if self.GUIDialogDialog != None:
+            self.GUIDialogDialog.hide()
+        self.notesBoxDialog.hide()
+        self.helpBoxDialog.hide()
+        self.window.hide()
     def onLoadSavedSession(self):
         if self.R('exists("'+self.Rvariables['table']+'")'):
             self.rSend('Data Table', {'data':self.Rvariables['table']})

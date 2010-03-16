@@ -14,7 +14,7 @@ import MyQMoviePlayer
 from PyQt4.QtCore import *
 from OWWidget import *
 
-mutex = QMutex()
+#mutex = QMutex()
 class RSession():
     # lock = threading.Lock()
     # rsem = threading.Semaphore(value = 1)
@@ -38,7 +38,7 @@ class RSession():
         
         # movie = ProcessingBoxThread()
         # movie.start()
-        mutex.lock()
+        #mutex.lock()
         
         
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -87,7 +87,7 @@ class RSession():
         
         # RSession.occupied = 0
         # RSession.rsem.release()
-        mutex.unlock()
+        #mutex.unlock()
         qApp.restoreOverrideCursor()
         return output
                         
@@ -100,11 +100,11 @@ class RSession():
         for library in librarys:
             if force or (library not in self.RPackages):
                 try:
-                    if not self.runR("require("+ library +")"): 
-                        self.runR('setRepositories(ind=1:7)')
-                        self.runR('chooseCRANmirror()')
-                        self.runR('install.packages("' + library + '")')
-                        self.runR('require(' + library + ')')
+                    if not self.R("require("+ library +")"): 
+                        self.R('setRepositories(ind=1:7)')
+                        self.R('chooseCRANmirror()')
+                        self.R('install.packages("' + library + '")')
+                        self.R('require(' + library + ')')
                     self.RPackages.append(library)
                     success = 1
                 except rpy.RPyRException, inst:
@@ -120,11 +120,11 @@ class RSession():
             else:
                 print 'Packages Loaded'
                 return 1
-        #add the librarys to a list so that they are loaded when runR is loaded.
+        #add the librarys to a list so that they are loaded when R is loaded.
         return success
     def convertDataframeToExampleTable(self, dataFrame_name):
         #set_default_mode(CLASS_CONVERSION)
-        dfsummary = self.runR(dataFrame_name, 'getRSummary')
+        dfsummary = self.R(dataFrame_name, 'getRSummary')
         col_names = dfsummary['colNames']
         if type(col_names) is str:
             col_names = [col_names]
@@ -156,7 +156,7 @@ class RSession():
         self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(exampleTable_data' + self.variable_suffix + ')] <- "?"')
         
         d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
-        if self.runR('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
+        if self.R('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
             d = [d]
         #print d
         #type(d)

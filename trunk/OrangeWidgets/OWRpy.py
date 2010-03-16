@@ -29,7 +29,7 @@ class OWRpy(OWWidget,RSession):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
         RSession.__init__(self)
-        # print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
+        print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
             # ISBN 3-900051-07-0\n \
             # R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
             # You are welcome to redistribute it under certain conditions.\n \
@@ -69,34 +69,40 @@ class OWRpy(OWWidget,RSession):
             self.help.load(QUrl(url))
         except: pass 
 
-        self.rightDock=QDockWidget('Documentation')
-        self.rightDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
-        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        
+        self.helpBoxDialog = QDialog(self)
+
+        
+        # self.rightDock=QDockWidget('Documentation')
+        # self.rightDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+        # self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
         
         
         
-        self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
-        self.rightDock.setWidget(self.rightDockArea)
+        # self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
+        # self.rightDock.setWidget(self.rightDockArea)
         
-        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        # self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        
         #self.rightDock.setWidget(self.helpBox)
-        #self.helpBox.setWindowTitle(str(title + ' Help'))
-        #self.helpBox.setLayout(QVBoxLayout())
-        #self.helpBox.setBaseSize(webSize)
-        #self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.helpBox.layout().addWidget(self.help) 
-        self.rightDockArea.layout().addWidget(self.helpBox)
+        self.helpBoxDialog.setWindowTitle(str(title + ' Help'))
+        self.helpBoxDialog.setLayout(QVBoxLayout())
+        self.helpBoxDialog.setBaseSize(webSize)
+        self.helpBoxDialog.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.helpBoxDialog.layout().addWidget(self.help) 
+        #self.rightDockArea.layout().addWidget(self.helpBox)
         
         # code for the notesBox that can be shown 
-        self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        #self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.notesBoxDialog = QDialog(self)
         #self.rightDock.setWidget(self.notesBox)
-        #self.notesBox.setWindowTitle(str(title + ' Notes'))
-        self.notesBox.setLayout(QVBoxLayout())
-        #self.notesBox.setBaseSize(QSize(200,100))
-        #self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
-        notesText = redRGUI.widgetLabel(self.notesBox, "Please place notes in this area.")
+        self.notesBoxDialog.setWindowTitle(str(title + ' Notes'))
+        self.notesBoxDialog.setLayout(QVBoxLayout())
+        self.notesBoxDialog.setBaseSize(QSize(200,100))
+        self.notesBoxDialog.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
+        notesText = redRGUI.widgetLabel(self.notesBoxDialog, "Please place notes in this area.")
         #notesBox.layout().addWidget(self.notes)
-        self.notes = redRGUI.textEdit(self.notesBox)
+        self.notes = redRGUI.textEdit(self.notesBoxDialog)
         # self.defaultLeftArea.layout().addWidget(notesBox)
         
         
@@ -104,14 +110,10 @@ class OWRpy(OWWidget,RSession):
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
         self.setStatusBar(self.statusBar)
-        #self.layout().addWidget(self.statusBar)
         self.statusBar.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         
         self.statusBar.setLayout(QHBoxLayout())
-        #self.processingBox = redRGUI.widgetLabel(self.statusBar, "Data not connected")
-
         self.status = redRGUI.widgetLabel(self.statusBar, '')
-        #processingBoxBox = redRGUI.widgetBox(self.defaultLeftArea, "Processing Status")
         self.status.setText('Processing not yet performed.')
         self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.statusBar.addWidget(self.status)
@@ -121,11 +123,14 @@ class OWRpy(OWWidget,RSession):
         
         #print self.GUIDialogDialog
         if wantGUIDialog:
-            self.leftDock=QDockWidget('Advanced Options')
-            self.leftDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
-            self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
-            self.GUIDialog = redRGUI.widgetBox(self.leftDock,orientation=QVBoxLayout())
-            self.leftDock.setWidget(self.GUIDialog)
+            # self.leftDock=QDockWidget('Advanced Options')
+            # self.leftDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+            # self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
+            
+            self.GUIDialogDialog = QDialog(self)
+            self.GUIDialogDialog.setLayout(QVBoxLayout())
+            self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog,orientation=QVBoxLayout())
+            #self.leftDock.setWidget(self.GUIDialog)
 
             #self.GUIDialogDialog = QMainWindow(self)
             #print self.GUIDialogDialog
@@ -140,8 +145,8 @@ class OWRpy(OWWidget,RSession):
             # 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
             #self.GUIDialogDialog.move(50, 50)
 
-        # showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBox.show)
-        # showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBox.show)
+        showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBoxDialog.show)
+        showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBoxDialog.show)
 
     def showGUIDialog(self):
         if self.autoShowDialog:
@@ -184,7 +189,10 @@ class OWRpy(OWWidget,RSession):
         self.sentItems.append((name, variable))
         self.status.setText('Data sent.')
     def makeCM(self, Variable, Parent):
-        self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
+        if self.R('rownames('+Parent+')') != 'NULL':
+            self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
+        else:
+            self.R(Variable+'<-data.frame(row.names = c('+','.join(range(1, int(self.R('length('+Parent+'[,1])'))))+'))')
         
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
@@ -571,8 +579,8 @@ class OWRpy(OWWidget,RSession):
     def closeEvent(self, event):
         if self.GUIDialogDialog != None:
             self.GUIDialogDialog.hide()
-        self.notesBox.hide()
-        self.helpBox.hide()
+        self.notesBoxDialog.hide()
+        self.helpBoxDialog.hide()
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)

@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='', label=None,orientation='horizontal', **args):
+    def __init__(self,widget,text='', label=None,orientation='horizontal', toolTip = None,  **args):
         QLineEdit.__init__(self,widget)
         
         if label:
@@ -16,6 +16,7 @@ class lineEdit(QLineEdit,widgetState):
             hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
+        if toolTip: self.setToolTip(toolTip)
         self.setText(text)
     def getSettings(self):
         #print 'in get settings' + self.text()
