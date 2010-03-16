@@ -109,9 +109,9 @@ class AttributeList(list):
 class ExampleList(list):
     pass
 
-class OWBaseWidget(QDialog):
+class OWBaseWidget(QMainWindow):
     def __new__(cls, *arg, **args):
-        self = QDialog.__new__(cls)
+        self = QMainWindow.__new__(cls)
 
         #print "arg", arg
         #print "args: ", args
@@ -135,8 +135,8 @@ class OWBaseWidget(QDialog):
         if savePosition:
             self.settingsList = getattr(self, "settingsList", []) + ["widgetWidth", "widgetHeight", "widgetXPosition", "widgetYPosition", "widgetShown"]
 
-        if resizingEnabled: QDialog.__init__(self, parent, Qt.Window)
-        else:               QDialog.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
+        if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
+        else:               QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
 
         # directories are better defined this way, otherwise .ini files get written in many places
         self.__dict__.update(orngEnviron.directoryNames)
@@ -182,7 +182,7 @@ class OWBaseWidget(QDialog):
         eventDict = dict([(0, "None"), (130, "AccessibilityDescription"), (119, "AccessibilityHelp"), (86, "AccessibilityPrepare"), (114, "ActionAdded"), (113, "ActionChanged"), (115, "ActionRemoved"), (99, "ActivationChange"), (121, "ApplicationActivated"), (122, "ApplicationDeactivated"), (36, "ApplicationFontChange"), (37, "ApplicationLayoutDirectionChange"), (38, "ApplicationPaletteChange"), (35, "ApplicationWindowIconChange"), (68, "ChildAdded"), (69, "ChildPolished"), (71, "ChildRemoved"), (40, "Clipboard"), (19, "Close"), (82, "ContextMenu"), (52, "DeferredDelete"), (60, "DragEnter"), (62, "DragLeave"), (61, "DragMove"), (63, "Drop"), (98, "EnabledChange"), (10, "Enter"), (150, "EnterEditFocus"), (124, "EnterWhatsThisMode"), (116, "FileOpen"), (8, "FocusIn"), (9, "FocusOut"), (97, "FontChange"), (159, "GraphicsSceneContextMenu"), (164, "GraphicsSceneDragEnter"), (166, "GraphicsSceneDragLeave"), (165, "GraphicsSceneDragMove"), (167, "GraphicsSceneDrop"), (163, "GraphicsSceneHelp"), (160, "GraphicsSceneHoverEnter"), (162, "GraphicsSceneHoverLeave"), (161, "GraphicsSceneHoverMove"), (158, "GraphicsSceneMouseDoubleClick"), (155, "GraphicsSceneMouseMove"), (156, "GraphicsSceneMousePress"), (157, "GraphicsSceneMouseRelease"), (168, "GraphicsSceneWheel"), (18, "Hide"), (27, "HideToParent"), (127, "HoverEnter"), (128, "HoverLeave"), (129, "HoverMove"), (96, "IconDrag"), (101, "IconTextChange"), (83, "InputMethod"), (6, "KeyPress"), (7, "KeyRelease"), (89, "LanguageChange"), (90, "LayoutDirectionChange"), (76, "LayoutRequest"), (11, "Leave"), (151, "LeaveEditFocus"), (125, "LeaveWhatsThisMode"), (88, "LocaleChange"), (153, "MenubarUpdated"), (43, "MetaCall"), (102, "ModifiedChange"), (4, "MouseButtonDblClick"), (2, "MouseButtonPress"), (3, "MouseButtonRelease"), (5, "MouseMove"), (109, "MouseTrackingChange"), (13, "Move"), (12, "Paint"), (39, "PaletteChange"), (131, "ParentAboutToChange"), (21, "ParentChange"), (75, "Polish"), (74, "PolishRequest"), (123, "QueryWhatsThis"), (14, "Resize"), (117, "Shortcut"), (51, "ShortcutOverride"), (17, "Show"), (26, "ShowToParent"), (50, "SockAct"), (112, "StatusTip"), (100, "StyleChange"), (87, "TabletMove"), (92, "TabletPress"), (93, "TabletRelease"), (171, "TabletEnterProximity"), (172, "TabletLeaveProximity"), (1, "Timer"), (120, "ToolBarChange"), (110, "ToolTip"), (78, "UpdateLater"), (77, "UpdateRequest"), (111, "WhatsThis"), (118, "WhatsThisClicked"), (31, "Wheel"), (132, "WinEventAct"), (24, "WindowActivate"), (103, "WindowBlocked"), (25, "WindowDeactivate"), (34, "WindowIconChange"), (105, "WindowStateChange"), (33, "WindowTitleChange"), (104, "WindowUnblocked"), (126, "ZOrderChange"), (169, "KeyboardLayoutChange"), (170, "DynamicPropertyChange")])
         if eventDict.has_key(e.type()):
             print str(self.windowTitle()), eventDict[e.type()]
-        return QDialog.event(self, e)
+        return QMainWindow.event(self, e)
     """
 
     def getIconNames(self, iconName):
@@ -270,7 +270,7 @@ class OWBaseWidget(QDialog):
     # when widget is resized, save new width and height into widgetWidth and widgetHeight. some widgets can put this two
     # variables into settings and last widget shape is restored after restart
     def resizeEvent(self, ev):
-        QDialog.resizeEvent(self, ev)
+        QMainWindow.resizeEvent(self, ev)
         if self.savePosition:
             self.widgetWidth = self.width()
             self.widgetHeight = self.height()
@@ -279,14 +279,14 @@ class OWBaseWidget(QDialog):
     # when widget is moved, save new x and y position into widgetXPosition and widgetYPosition. some widgets can put this two
     # variables into settings and last widget position is restored after restart
     def moveEvent(self, ev):
-        QDialog.moveEvent(self, ev)
+        QMainWindow.moveEvent(self, ev)
         if self.savePosition:
             self.widgetXPosition = self.frameGeometry().x()
             self.widgetYPosition = self.frameGeometry().y()
 
     # set widget state to hidden
     def hideEvent(self, ev):
-        QDialog.hideEvent(self, ev)
+        QMainWindow.hideEvent(self, ev)
         if self.savePosition:
             self.widgetShown = 0
 
@@ -294,12 +294,12 @@ class OWBaseWidget(QDialog):
     # after show() we must call processEvents because show puts some LayoutRequests in queue
     # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
     def show(self):
-        QDialog.show(self)
+        QMainWindow.show(self)
         qApp.processEvents()
 
     # set widget state to shown
     def showEvent(self, ev):
-        QDialog.showEvent(self, ev)
+        QMainWindow.showEvent(self, ev)
         if self.savePosition:
             self.widgetShown = 1
 
@@ -605,13 +605,13 @@ class OWBaseWidget(QDialog):
         wrapper = SignalWrapper(self, method)
         self.connections[(control, signal)] = wrapper   # save for possible disconnect
         self.wrappers.append(wrapper)
-        QDialog.connect(control, signal, wrapper)
+        QMainWindow.connect(control, signal, wrapper)
         #QWidget.connect(control, signal, method)        # ordinary connection useful for dialogs and windows that don't send signals to other widgets
 
 
     def disconnect(self, control, signal, method=None):
         wrapper = self.connections[(control, signal)]
-        QDialog.disconnect(control, signal, wrapper)
+        QMainWindow.disconnect(control, signal, wrapper)
 
 
     def getConnectionMethod(self, control, signal):
@@ -859,7 +859,7 @@ class OWBaseWidget(QDialog):
         #print "focus in"
         #if qApp.canvasDlg.settings["synchronizeHelp"]:  on ubuntu: pops up help window on first widget focus for every widget   
         #    qApp.canvasDlg.helpWindow.showHelpFor(self, True)
-        QDialog.focusInEvent(self, *ev)
+        QMainWindow.focusInEvent(self, *ev)
         
     
     def keyPressEvent(self, e):
@@ -867,7 +867,7 @@ class OWBaseWidget(QDialog):
             self.openWidgetHelp()
 #            e.ignore()
         else:
-            QDialog.keyPressEvent(self, e)
+            QMainWindow.keyPressEvent(self, e)
 
     def information(self, id = 0, text = None):
         self.setState("Info", id, text)
@@ -957,7 +957,7 @@ class OWBaseWidget(QDialog):
             controlledName = parts[1]
 
     def __setattr__(self, name, value):
-        return unisetattr(self, name, value, QDialog)
+        return unisetattr(self, name, value, QMainWindow)
 
 
 

@@ -68,23 +68,28 @@ class OWRpy(OWWidget,RSession):
             self.help.load(QUrl(url))
         except: pass 
         #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
-        self.helpBox = QDialog(self)
-        self.helpBox.setWindowTitle(str(title + ' help'))
+        self.rightDock=QDockWidget('Documentation')
+        self.rightDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        self.rightDockArea = redRGUI.widgetBox(self.rightDock,orientation=QVBoxLayout())
+        self.rightDock.setWidget(self.rightDockArea)
+        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        #self.rightDock.setWidget(self.helpBox)
         self.helpBox.setWindowTitle(str(title + ' Help'))
         self.helpBox.setLayout(QVBoxLayout())
         self.helpBox.setBaseSize(webSize)
-        self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
+        #self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.helpBox.layout().addWidget(self.help)        
+
         # code for the notesBox that can be shown 
-        self.notesBox = QDialog(self)
-        self.notesBox.setWindowTitle(str(title + ' Notes'))
+        self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        #self.rightDock.setWidget(self.notesBox)
+        #self.notesBox.setWindowTitle(str(title + ' Notes'))
         self.notesBox.setLayout(QVBoxLayout())
-        self.notesBox.setBaseSize(QSize(200,100))
-        self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
+        #self.notesBox.setBaseSize(QSize(200,100))
+        #self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
         notesText = redRGUI.widgetLabel(self.notesBox, "Please place notes in this area.")
-        # notesBox.layout().addWidget(self.notes)
-        
+        #notesBox.layout().addWidget(self.notes)
         self.notes = redRGUI.textEdit(self.notesBox)
         # self.defaultLeftArea.layout().addWidget(notesBox)
         
@@ -92,7 +97,8 @@ class OWRpy(OWWidget,RSession):
 
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
-        self.layout().addWidget(self.statusBar)
+        self.setStatusBar(self.statusBar)
+        #self.layout().addWidget(self.statusBar)
         self.statusBar.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         
         self.statusBar.setLayout(QHBoxLayout())
@@ -106,17 +112,31 @@ class OWRpy(OWWidget,RSession):
         self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
         
         self.GUIDialogDialog = None
+        
+        #print self.GUIDialogDialog
         if wantGUIDialog:
-            self.GUIDialogDialog = QDialog(self)
-            self.GUIDialogDialog.setWindowTitle(str(title + ' GUI Dialog'))
-            self.GUIDialogDialog.setLayout(QVBoxLayout())
-            self.GUIDialogDialog.setBaseSize(QSize(300, 100))
-            self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog)
+            self.leftDock=QDockWidget('Advanced Options')
+            self.leftDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+            self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
+            self.GUIDialog = redRGUI.widgetBox(self.leftDock,orientation=QVBoxLayout())
+            self.leftDock.setWidget(self.GUIDialog)
+
+            #self.GUIDialogDialog = QMainWindow(self)
+            #print self.GUIDialogDialog
+            # self.GUIDialogDialog.setWindowTitle(str(title + ' GUI Dialog'))
+            # self.GUIDialogDialog.setLayout(QVBoxLayout())
+            # self.GUIDialogDialog.setBaseSize(QSize(300, 100))
+            
+            
+            #self.GUIDialogDialog.setCentralWidget(self.GUIDialog)
             #self.GUIDialogDialog.show()
-            self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
-            self.GUIDialogDialog.move(50, 50)
+            # self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 
+            # 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+            #self.GUIDialogDialog.move(50, 50)
+
         showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBox.show)
         showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBox.show)
+
     def showGUIDialog(self):
         if self.autoShowDialog:
             

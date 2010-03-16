@@ -22,11 +22,12 @@ class OWWidget(OWBaseWidget):
 
         OWBaseWidget.__init__(self, parent, signalManager, title, savePosition=savePosition, resizingEnabled=resizingEnabled, **args)
 
+        
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
 
         self.topWidgetPart = OWGUI.widgetBox(self, orientation="horizontal", margin=0)
-        
+        self.setCentralWidget(self.topWidgetPart)
         self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin=0)
         self.defaultLeftArea.setMaximumSize(200, 800)
         self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)

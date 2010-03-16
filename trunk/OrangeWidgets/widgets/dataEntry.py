@@ -13,7 +13,8 @@ from OWRpy import *
 class dataEntry(OWRpy):
     settingsList = ['savedData']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", 
+        wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 10
         self.colCount = 10
@@ -37,9 +38,12 @@ class dataEntry(OWRpy):
         #self.colHeaders.setChecked(['Use Column Headers'])
         self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
         redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
-        box = redRGUI.groupBox(self.controlArea, label = "Table", sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+
+        box = redRGUI.groupBox(self.controlArea, label = "Table", 
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount+1)
+
         self.dataTable.show()
         upcell = QTableWidgetItem()
         upcell.setBackgroundColor(Qt.gray)

@@ -60,11 +60,13 @@ class RDataTable(OWRpy):
         
         #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
         saveTab = self.tabWidgeta.createTabPage('Save Data')
-        redRGUI.widgetLabel(saveTab, "Saves the current table to a file.")
-        redRGUI.button(saveTab, "Set File", callback = self.chooseDirectory)
-        self.fileName = redRGUI.widgetLabel(saveTab, "")
-        self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', items = ['Tab', 'Space', 'Comma'], orientation = 0)
-        redRGUI.button(saveTab, "Write To File", self.writeFile, tooltip = "Write the table to a text file")
+        redRGUI.widgetLabel(saveTab, label="Saves the current table to a file.")
+        redRGUI.button(saveTab, label="Set File", callback = self.chooseDirectory)
+        self.fileName = redRGUI.widgetLabel(saveTab, label="")
+        self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', 
+        items = ['Tab', 'Space', 'Comma'], orientation = 0)
+        redRGUI.button(saveTab, label="Write To File", callback=self.writeFile,
+        tooltip = "Write the table to a text file")
 
         # print 'asdfasdf'
         
@@ -84,12 +86,15 @@ class RDataTable(OWRpy):
         boxSettings = redRGUI.groupBox(self.GUIDialog, label = "Settings")
         
         resizeColsBox = redRGUI.groupBox(boxSettings, orientation="horizontal")
-        redRGUI.widgetLabel(resizeColsBox, text = "Resize columns: ")
-        redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, tooltip = "Increase the width of the columns", width=30)
-        redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, tooltip = "Decrease the width of the columns", width=30)
+        redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
+        redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
+        tooltip = "Increase the width of the columns", width=30)
+        redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
+        tooltip = "Decrease the width of the columns", width=30)
         redRGUI.rubber(resizeColsBox)
 
-        self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
+        self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", 
+        callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
         self.table = redRGUI.Rtable(self.tableBox)
         self.resize(700,500)
