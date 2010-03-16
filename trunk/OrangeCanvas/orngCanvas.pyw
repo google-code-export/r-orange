@@ -551,6 +551,7 @@ class OrangeCanvasDlg(QMainWindow):
 
 
     def setStatusBarEvent(self, text):
+        
         if text == "" or text == None:
             self.statusBar().showMessage("")
             return

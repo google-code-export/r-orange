@@ -18,8 +18,10 @@ class widgetState:
         r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
         return r
     def setState(self,data):
+        print ' in wdiget state'
         self.setEnabled(data['enabled'])
         self.setHidden(data['hidden'])
+
 
 def forname(modname, classname):
     ''' Returns a class of "classname" from module "modname". '''

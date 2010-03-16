@@ -6,11 +6,23 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class radioButtons(widgetBox,widgetState):
-    def __init__(self,widget,label=None, buttons=None, setChecked = None,
+    def __init__(self,widget,label=None, buttons=None,toolTips = None, setChecked = None,
     orientation='vertical',callback = None, **args):
         
         widgetBox.__init__(self,widget,orientation=orientation)
         
+        # if label:
+            # self.box = groupBox(self,label=label,orientation=orientation)
+            # self.layout().addWidget(self.box)
+        # else:
+            # self.box = self
+            
+        # self.buttons = QButtonGroup(self.box)
+    
+        # for i in buttons:
+            # w = QRadioButton(i)
+            # self.buttons.addButton(w)
+            # self.box.layout().addWidget(w)
         if label:
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
@@ -18,8 +30,10 @@ class radioButtons(widgetBox,widgetState):
             self.box = self
             
         self.buttons = QButtonGroup(self.box)
-        for i in buttons:
-            w = QRadioButton(i)
+        for i,b in zip(range(len(buttons)),buttons):
+            w = QRadioButton(b)
+            if toolTips:
+                w.setToolTip(toolTips[i])
             self.buttons.addButton(w)
             self.box.layout().addWidget(w)
 
@@ -45,6 +59,6 @@ class radioButtons(widgetBox,widgetState):
     def loadSettings(self,data):
         #print 'radioButtons loadSettings' + data
         self.setChecked(data['checked'])
-        self.setState()
+        self.setState(data)
 
 

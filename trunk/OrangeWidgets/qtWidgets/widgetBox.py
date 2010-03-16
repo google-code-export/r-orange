@@ -43,3 +43,7 @@ class widgetBox(QWidget,widgetState):
             separator(widget, 0, addSpace)
         elif addSpace:
             separator(widget)
+    def getSettings(self):
+        return self.getState()
+    def loadSettings(self,data):
+        self.setState(data)

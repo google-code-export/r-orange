@@ -133,11 +133,14 @@ class listBox(QListWidget,widgetState):
     def getSettings(self):
         # print 'saving list box'
         items = []
+        selected = []
         for i in range(0,self.count()):
             items.append(self.item(i).text())
+            if self.item(i).isItemSelected():
+                selected.append(i)
         
         
-        r = {'items':items}
+        r = {'items':items, 'selected':selected}
         r.update(self.getState())
         # print r
         return r
@@ -150,6 +153,5 @@ class listBox(QListWidget,widgetState):
         for i in data['selected']:
             self.setItemSelected(self.item(i), True)
         
-        #self.setEnabled(data['enabled'])
         self.setState(data)
         

@@ -16,6 +16,7 @@ class comboBox(QComboBox,widgetState):
             hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
+        
         if items:
             self.addItems([unicode(i) for i in items])
         # print callback
@@ -31,15 +32,19 @@ class comboBox(QComboBox,widgetState):
         for i in range(0,self.count()):
             items.append(self.itemText(i))
         
-        r = {'items':items,'current':self.currentIndex(),'enabled':self.isEnabled()}
+        r = {'items':items,'current':self.currentIndex()}
+        r.update(self.getState())
         return r
         
     def loadSettings(self,data):
+        print 'in comboBox'
         print data
+        
         self.clear()
         self.addItems([unicode(i) for i in data['items']])
         self.setCurrentIndex(data['current'])
-        self.setEnabled(data['enabled'])
+        self.setState(data)
+        #self.setEnabled(data['enabled'])
         
     def addRItems(self, items):
         if items:

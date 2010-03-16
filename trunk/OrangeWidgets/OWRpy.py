@@ -57,8 +57,9 @@ class OWRpy(OWWidget,RSession):
         #start widget GUI
         #sidePanal = redRGUI.widgetBox(self,'Documentation')
         
+        
+
         webSize = QSize(200,300)
-        #print self._widgetFileName
         self.help = QtWebKit.QWebView(self)
         self.help.setMaximumSize(webSize)
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
@@ -67,20 +68,25 @@ class OWRpy(OWWidget,RSession):
             url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetFileName)
             self.help.load(QUrl(url))
         except: pass 
-        #helpBox = redRGUI.groupBox(self.defaultLeftArea, "Discription")
+
         self.rightDock=QDockWidget('Documentation')
         self.rightDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
-        self.rightDockArea = redRGUI.widgetBox(self.rightDock,orientation=QVBoxLayout())
+        
+        
+        
+        self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
         self.rightDock.setWidget(self.rightDockArea)
+        
         self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
         #self.rightDock.setWidget(self.helpBox)
-        self.helpBox.setWindowTitle(str(title + ' Help'))
-        self.helpBox.setLayout(QVBoxLayout())
-        self.helpBox.setBaseSize(webSize)
+        #self.helpBox.setWindowTitle(str(title + ' Help'))
+        #self.helpBox.setLayout(QVBoxLayout())
+        #self.helpBox.setBaseSize(webSize)
         #self.helpBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.helpBox.layout().addWidget(self.help)        
-
+        self.helpBox.layout().addWidget(self.help) 
+        self.rightDockArea.layout().addWidget(self.helpBox)
+        
         # code for the notesBox that can be shown 
         self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
         #self.rightDock.setWidget(self.notesBox)
@@ -134,8 +140,8 @@ class OWRpy(OWWidget,RSession):
             # 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
             #self.GUIDialogDialog.move(50, 50)
 
-        showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBox.show)
-        showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBox.show)
+        # showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBox.show)
+        # showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBox.show)
 
     def showGUIDialog(self):
         if self.autoShowDialog:
@@ -196,7 +202,7 @@ class OWRpy(OWWidget,RSession):
                 print 'getting gui settings for:' + att + '\n\n'
                 try:
                     v = getattr(self, att).getSettings()
-                    #print str(v) + '\n\n'
+                    print str(v) + '\n\n'
                 except: v = {}
                 #print 'settings:' + str(v)
                 if not 'RGUIElementsSettings' in settings.keys():
@@ -245,7 +251,7 @@ class OWRpy(OWWidget,RSession):
                 file = open(file, "w")
             cPickle.dump(settings, file)
 
-    def getSettings2(self, alsoContexts = True):
+    def getSettings2(self, alsoContexts = True): #depreciated
         settings = {}
         allAtts = self.__dict__
         
@@ -421,7 +427,7 @@ class OWRpy(OWWidget,RSession):
             self.send(name, data)
        
     
-    def onLoadSavedSession2(self):
+    def onLoadSavedSession2(self): #depreciated
         #print str(self.RGUIElementsSettings)
         # set the sent items but don't activate the refresh of the widgets (this is handled by signalManager)
         for (name, data) in self.sentItems:

@@ -551,10 +551,10 @@ class SchemaDoc(QWidget):
                     try:
                         name = widget.getAttribute("widgetName")
                         print 'Name: '+str(name)+' (orngDoc.py)'
-                        print str(widget.getAttribute("caption"))
-                        print str(settingsDict)
+                        #print str(widget.getAttribute("caption"))
+                        #print str(settingsDict)
                         settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                        print str(settings) + ' (orngDoc.py)'
+                        #print str(settings) + ' (orngDoc.py)'
                         #print 'widget settings are' + str(settings)
                         try:
                             for library in settings['RPackages']:

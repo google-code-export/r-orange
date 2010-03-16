@@ -1,9 +1,10 @@
-#from redRGUI import widgetState,separator
+from redRGUI import widgetState
 import redRGUI
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class groupBox(QGroupBox,redRGUI.widgetState):
+class groupBox(QGroupBox,widgetState):
     def __init__(self,widget, label = None, orientation='vertical', addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0):
         if label:
             QGroupBox.__init__(self,label)
@@ -13,12 +14,18 @@ class groupBox(QGroupBox,redRGUI.widgetState):
         
         widget.layout().addWidget(self)
 
-        if orientation == 'horizontal' or not orientation:
-            self.setLayout(QHBoxLayout())
-        else:
+        try:
+            if isinstance(orientation, QLayout):
+                self.setLayout(orientation)
+            elif orientation == 'horizontal' or not orientation:
+                self.setLayout(QHBoxLayout())
+            else:
+                self.setLayout(QVBoxLayout())
+        except:
             self.setLayout(QVBoxLayout())
-        if sizePolicy != None: self.setSizePolicy(sizePolicy)
-        #else: self.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+            
+        if self.layout() == 0 or self.layout() == None:
+            self.setLayout(QVBoxLayout())
 
         if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)
@@ -30,10 +37,11 @@ class groupBox(QGroupBox,redRGUI.widgetState):
             redRGUI.separator(widget, 0, addSpace)
         elif addSpace:
             redRGUI.separator(widget)
+    
     def getSettings(self):
         return self.getState()
     def loadSettings(self,data):
-        self.setState()
+        self.setState(data)
 
         
 
