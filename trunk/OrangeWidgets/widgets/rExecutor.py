@@ -42,6 +42,7 @@ class rExecutor(OWRpy):
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         leftArea = redRGUI.widgetBox(area)
+        leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         rightArea = redRGUI.widgetBox(area)
 
         runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')

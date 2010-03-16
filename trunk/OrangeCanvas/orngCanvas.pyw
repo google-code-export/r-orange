@@ -48,6 +48,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings = {}
         self.settings['svnSettings'] = {}
         self.settings['versionNumber'] = 'Version1.0'
+        self.settings['CRANrepos'] = 'http://cran.r-project.org'
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
 

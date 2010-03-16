@@ -7,7 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class listBox(QListWidget,widgetState):
-    def __init__(self, widget, value=None, label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback=None, toolTip = None, *args):
+    def __init__(self, widget, value=None, label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback=None, toolTip = None, items = None, *args):
         self.widget = widget
         QListWidget.__init__(self, *args)
         if label:
@@ -32,6 +32,8 @@ class listBox(QListWidget,widgetState):
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             self.dragStartPosition = 0
         #redRGUI.connectControl(self, self.widget, value, callback, 'itemSelectionChanged()', redRGUI.CallFrontListBox(self), redRGUI.CallBackListBox(self, self.widget))
+        if items and type(items) == type([]):
+            self.addItems(items)
         if toolTip:
             self.setToolTip(toolTip)
         if callback:

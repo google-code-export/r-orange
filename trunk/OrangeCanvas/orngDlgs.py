@@ -5,7 +5,14 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from orngCanvasItems import MyCanvasText
-import OWGUI, sys, os
+import OWGUI, sys, os 
+#import RSession
+try:
+    from rpy_options import set_options
+    set_options(RHOME=os.environ['RPATH'])
+except: pass # need this because linux doesn't need to use the RPATH
+import rpy
+import redRGUI
 
 # this class is needed by signalDialog to show widgets and lines
 class SignalCanvasView(QGraphicsView):
@@ -426,10 +433,12 @@ class CanvasOptionsDlg(QDialog):
         GeneralTab = OWGUI.widgetBox(self.tabs, margin = 4)
         ExceptionsTab = OWGUI.widgetBox(self.tabs, margin = 4)
         TabOrderTab = OWGUI.widgetBox(self.tabs, margin = 4)
+        RSettings = OWGUI.widgetBox(self.tabs, margin = 4)
 
         self.tabs.addTab(GeneralTab, "General")
         self.tabs.addTab(ExceptionsTab, "Exception handling")
         self.tabs.addTab(TabOrderTab, "Widget tab order")
+        self.tabs.addTab(RSettings, 'R Settings')
 
         # #################################################################
         # GENERAL TAB
@@ -546,7 +555,19 @@ class CanvasOptionsDlg(QDialog):
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
 
-
+        #####################################
+        # R Settings Tab
+        rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
+        # get a data frame (dict) of r libraries
+        self.libs = rpy.r('getCRANmirrors()')
+        # place a listBox in the widget and fill it with a list of mirrors
+        self.libListBox = redRGUI.listBox(rlibrariesBox, label = 'Mirrors', items = self.libs['Name'], callback = self.setMirror)
+        self.libInfo = redRGUI.widgetLabel(rlibrariesBox, '')
+        
+    def setMirror(self):
+        item = self.libListBox.currentRow()
+        self.canvasDlg.settings['CRANrepos'] = str(self.libs['URL'][item])
+        self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
     def accept(self):
         self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()
         self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()

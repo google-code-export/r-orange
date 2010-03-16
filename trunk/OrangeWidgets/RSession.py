@@ -100,10 +100,13 @@ class RSession():
         for library in librarys:
             if force or (library not in self.RPackages):
                 try:
-                    if not self.R("require("+ library +")"): 
+                    if not self.R("require(\'"+ library +"\')"):
+                        #print qApp.cavasDlg.settings['CRANrepos']
                         self.R('setRepositories(ind=1:7)')
-                        self.R('chooseCRANmirror()')
-                        self.R('install.packages("' + library + '")')
+                        #self.R('chooseCRANmirror()') # change this 
+                        self.R('install.packages(\'' + library + 
+                        '\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
+                        '\')')
                         self.R('require(' + library + ')')
                     self.RPackages.append(library)
                     success = 1
