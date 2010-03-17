@@ -4,7 +4,7 @@ from PyQt4.QtGui import *
 
         
 class widgetBox(QWidget,widgetState):
-    def __init__(self,widget, orientation=QVBoxLayout(), addSpace=False, 
+    def __init__(self,widget, orientation='vertical', addSpace=False, 
     sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1):
 
         QWidget.__init__(self,widget)
