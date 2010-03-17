@@ -37,34 +37,47 @@ class SchemaDoc(QWidget):
     # we are about to close document
     # ask the user if he is sure
     def closeEvent(self,ce):
-        newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
-        self.RVariableRemoveSupress = 1
-        self.synchronizeContexts()
-        #if self.canvasDlg.settings["autoSaveSchemasOnClose"] and self.widgets != []:
-        if self.widgets != []:
-            self.save(os.path.join(self.canvasDlg.canvasSettingsDir, "lastSchema.tmp"))
+        res = QMessageBox.question(self, 'Red-R Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
+        
+        if res == QMessageBox.Yes:
+            newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
+            self.RVariableRemoveSupress = 1
+            self.synchronizeContexts()
+            #if self.canvasDlg.settings["autoSaveSchemasOnClose"] and self.widgets != []:
+            # if self.widgets != []:
+                # self.save(os.path.join(self.canvasDlg.canvasSettingsDir, "lastSchema.tmp"))
 
-        if self.canvasDlg.settings["dontAskBeforeClose"]:
-            if newSettings and self.schemaName != "":
-                pass
-                #self.save(True)
-            self.clear(close = True)  
-            self.removeTempDoc()
+            self.saveDocument()
+            ce.accept()
+            self.clear(close = True)
+        # if self.canvasDlg.settings["dontAskBeforeClose"]:
+            # if newSettings and self.schemaName != "":
+                # pass
+                ##self.save(True)
+            # self.clear(close = True)  
+            # self.removeTempDoc()
+            # ce.accept()
+        elif res == QMessageBox.No:
+            self.RVariableRemoveSupress = 1
+            self.clear(close = True)
             ce.accept()
         else:
-            res = QMessageBox.question(self, 'Orange Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
-            if res == QMessageBox.Yes:
-                self.saveDocument()
-                ce.accept()
-                self.clear(close = True)
-            elif res == QMessageBox.No:
-                self.clear(close = True)
-                self.removeTempDoc()
-                ce.accept()
-            else:
-                ce.ignore()     # we pressed cancel - we don't want to close the document
-                return
-
+            ce.ignore()
+            return
+            
+            # res = QMessageBox.question(self, 'Orange Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
+            # if res == QMessageBox.Yes:
+                # self.saveDocument()
+                # ce.accept()
+                # self.clear(close = True)
+            # elif res == QMessageBox.No:
+                # self.clear(close = True)
+                # self.removeTempDoc()
+                # ce.accept()
+            # else:
+                # ce.ignore()     # we pressed cancel - we don't want to close the document
+                # return
+        res = QMessageBox.question(self, 'Red-R Canvas','The canvas has made it through the closing process.', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
         QWidget.closeEvent(self, ce)
         orngHistory.logCloseSchema(self.schemaID)
         
