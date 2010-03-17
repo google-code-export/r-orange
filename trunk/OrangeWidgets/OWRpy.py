@@ -545,6 +545,7 @@ class OWRpy(OWWidget,RSession):
             file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "PDF (*.PDF)"))
         elif file == None: 
             file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "PDF (*.PDF)"))
+        if file.isEmpty(): return
         if file: qApp.canvasDlg.settings['HomeFolder'] = os.path.split(file)[0]
         self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
         self.R(query, 'setRData')

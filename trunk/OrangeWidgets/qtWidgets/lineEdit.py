@@ -13,10 +13,14 @@ class lineEdit(QLineEdit,widgetState):
         if label:
             hb = widgetBox(widget,orientation=orientation)
             widgetLabel(hb, label)
+            sb = widgetBox(hb)
+            sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
         if toolTip: self.setToolTip(toolTip)
+        self.setMaximumWidth(200)
+        self.setMinimumWidth(200)
         self.setText(text)
     def getSettings(self):
         #print 'in get settings' + self.text()
