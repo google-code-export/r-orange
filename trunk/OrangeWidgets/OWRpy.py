@@ -540,10 +540,20 @@ class OWRpy(OWWidget,RSession):
         self.notes.setHtml(str(url.toString()))
     
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
-        if file == None: file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'), "Normal text file (*.txt)"))
+        #print str(qApp.canvasDlg.settings)
+        if file == None and ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "PDF (*.PDF)"))
+        elif file == None: 
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "PDF (*.PDF)"))
+        if file: qApp.canvasDlg.settings['HomeFolder'] = os.path.split(file)[0]
         self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
         self.R(query, 'setRData')
         self.R('dev.off()')
+        self.status.setText('File saved as \"'+file+'\"')
+        cursor = self.notes.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        self.notes.setTextCursor(cursor)
+        self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
         # check that a device is currently used by this widget

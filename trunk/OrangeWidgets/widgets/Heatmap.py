@@ -17,7 +17,7 @@ class Heatmap(OWRpy):
         
         self.setRvariableNames(['heatsubset', 'hclust'])
         self.plotOnConnect = 0
-        
+        self.plotdata = ''
         self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.processMatrix)]
         self.outputs = [("Cluster Subset List", RvarClasses.RList)]
         
@@ -26,7 +26,7 @@ class Heatmap(OWRpy):
         #GUI
         infobox = redRGUI.groupBox(self.controlArea, label = "Options")
         redRGUI.button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
-        redRGUI.button(infobox, label = 'Save as PDF', callback = self.savePDF)
+        redRGUI.button(infobox, label = 'Save as PDF', callback = self.saveAsPDF)
         redRGUI.button(infobox, label = 'Identify', callback = self.identify, width=200)
         self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
         self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
@@ -37,7 +37,14 @@ class Heatmap(OWRpy):
     def onLoadSavedSession(self):
         print 'load heatmap'
         self.processSignals()
-
+    def saveAsPDF(self):
+        self.status.setText('Saving as PDF')
+        if self.classes and ('Show Classes' in self.showClasses.getChecked()):
+            colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
+        else:
+            colClasses = ''
+        self.savePDF('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= topo.colors(50)'+ colClasses+')')
+        #self.stats.setText('File Saved')
     def processMatrix(self, data =None):
         
         if data:
@@ -56,13 +63,14 @@ class Heatmap(OWRpy):
             self.Rplot('par(mfrow=c(1,1))')
 
     def makePlot(self):
-            
-        self.infoa.setText("You are plotting "+self.plotdata)
+        if self.plotdata == '': return
+        self.status.setText("You are plotting "+self.plotdata)
         if self.classes and ('Show Classes' in self.showClasses.getChecked()):
             colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
         else:
             colClasses = ''
         self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= topo.colors(50)'+ colClasses+')', 3, 4)
+        
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -73,6 +81,8 @@ class Heatmap(OWRpy):
                 self.rowvChoice = 'NULL'
                 
     def identify(self, kill = True):
+        if self.plotdata == '': return
+        
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
         self.Rplot('plot('+self.Rvariables['hclust']+')', devNumber = 1)
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')

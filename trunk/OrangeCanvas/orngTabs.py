@@ -391,11 +391,12 @@ class WidgetListBase:
         f.close()
         treeXML = mainTabs.childNodes[0]
         #print treeXML.childNodes
-        
+        self.canvasDlg.settings['widgetXML'] = mainTabs
         for itab in treeXML.childNodes:
             if itab.nodeName == 'group': #picked a group element
                 
                 tab = self.insertWidgetTab(str(itab.getAttribute('name')), 1) # a QTreeWidgetItem
+                
                 #print 'inserted tab '+str(itab.getAttribute('name'))
                 self.insertChildTabs(itab, tab, widgetRegistry)
                 
@@ -418,6 +419,7 @@ class WidgetListBase:
             for child in subTabs:
                 if child.nodeName == 'group': # we found another group
                     childTab = WidgetTreeFolder(tab, str(child.getAttribute('name')))
+                    
                     childTab.widgets = []
                     childTab.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
                     self.insertChildTabs(child, childTab, widgetRegistry)
@@ -770,45 +772,88 @@ def constructCategoriesPopup(canvasDlg):
     global categoriesPopup
     categoriesPopup = CanvasPopup(canvasDlg)
     categoriesPopup.setStyleSheet(""" QMenu { background-color: #fffff0; selection-background-color: blue; } QMenu::item:disabled { color: #dddddd } QMenu::separator {height: 1px; background: #dddddd; margin-left: 3px; margin-right: 4px;}""")
-
+    
+    
+    tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tags.xml')
+    f = open(tfile, 'r')
+    #print str(f)
+    
+    mainTabs = xml.dom.minidom.parse(f)
+    f.close() 
+    
+    treeXML = mainTabs.childNodes[0]
+    #print treeXML.childNodes
+    
+    for itab in treeXML.childNodes:
+        if itab.nodeName == 'group': #picked a group element
+            catmenu = categoriesPopup.addMenu(str(itab.getAttribute('name')))
+            categoriesPopup.catActions.append(catmenu) # put the catmenu in the categoriespopup
+            insertChildActions(canvasDlg, catmenu, categoriesPopup, itab)
+            insertWidgets(canvasDlg, catmenu, categoriesPopup, str(itab.getAttribute('name'))) 
+                
     for category, show in canvasDlg.settings["WidgetTabs"]:
         if not show or not canvasDlg.widgetRegistry.has_key(category):
             continue
-##    widgetTabList = canvasDlg.settings.get("WidgetTabs", None)
-##    if widgetTabList:
-##        widgetTabList = [wt for wt, ch in canvasDlg.settings["WidgetTabs"] if ch]
-##    else:
-##        widgetTabList = ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Prototypes"]
-##    extraTabs = [name for name in canvasDlg.widgetRegistry if name not in widgetTabList]
-##
-##    for category in widgetTabList + extraTabs:
         catmenu = categoriesPopup.addMenu(category)
         categoriesPopup.catActions.append(catmenu)
         for widgetInfo in sorted(canvasDlg.widgetRegistry[category].values(), key=lambda x:x.priority):
             icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
             act = catmenu.addAction(icon, widgetInfo.name)
+            print str(widgetInfo.name)+' widgetInfo.name (orgnTabs.py)'
             act.widgetInfo = widgetInfo
             act.category = catmenu
             categoriesPopup.allActions.append(act)
-          
-#def constructWidgetSuggest(canvasDlg):
-#    global widgetSuggestEdit
-#    widgetSuggestEdit = OWGUIEx.suggestLineEdit(None, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1)
-#    widgetSuggestEdit.setWindowFlags(Qt.Popup)
-#    widgetSuggestEdit.listWidget.setSpacing(2)
-#    widgetSuggestEdit.setStyleSheet(""" QLineEdit { background: #fffff0;} """)
-#    widgetSuggestEdit.listWidget.setStyleSheet(""" QListView { background: #fffff0; } QListView::item {padding: 3px 0px 3px 0px} QListView::item:selected, QListView::item:hover { color: white; background: blue;} """)
-#    
-#    cats = orngRegistry.readCategories()
-#    items = []
-#    for cat in cats.values():
-#        for widget in cat.values():
-#            iconNames = canvasDlg.getFullWidgetIconName(widget)
-#            icon = QIcon()
-#            for name in iconNames:
-#                icon.addPixmap(QPixmap(name))
-#            items.append(QListWidgetItem(icon, widget.name))
-#    widgetSuggestEdit.setItems(items)
+
+def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
+    ####
+    try:
+        #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
+        #print 'checking file '+subfile+' for more tabs'
+        #f = open(subfile, 'r')
+        if itab.hasChildNodes(): subTabs = itab.childNodes
+        else: return
+        
+        for child in subTabs:
+            if child.nodeName == 'group': # we found another group
+                childTab = catmenu.addMenu(str(child.getAttribute('name')))
+                categoriesPopup.catActions.append(childTab)
+                insertChildActions(canvasDlg, childTab, categoriesPopup, child)
+                insertWidgets(canvasDlg, childTab, categoriesPopup, str(child.getAttribute('name')))
+                
+    except: #subtabs don't exist
+        return
+def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
+    #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
+    widgets = None
+    for (tabName, show) in [(name, 1) for name in canvasDlg.widgetRegistry.keys()]:
+        
+        for wName in canvasDlg.widgetRegistry[tabName].keys():
+            awidgets = {}
+            try: 
+                #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+                wtags = canvasDlg.widgetRegistry[tabName][wName].tags
+                wtags = wtags.replace(' ', '')
+                wtags = wtags.split(',')
+            except: 
+                wtags = 'Prototypes'
+            try:
+                if catName.replace(' ', '') in wtags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
+                    if tabName not in awidgets.keys(): awidgets[tabName] = {}
+                    awidgets[tabName][wName] = canvasDlg.widgetRegistry[tabName][wName]
+                    #print 'made it past the awidgets stage'
+                    #print str(awidgets[tabName].items())
+                    (name, widgetInfo) = awidgets[tabName].items()[0]
+                    #(priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)  # collect the widget info from the widgetRegistry
+                    
+                    icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
+                    act = catmenu.addAction(icon, widgetInfo.name)
+                    print str(widgetInfo.name)+' widgetInfo.name (orgnTabs.py)'
+                    act.widgetInfo = widgetInfo
+                    act.category = catmenu
+                    categoriesPopup.allActions.append(act)
+                    
+                    
+            except: pass
 #        
 #    
 #    
