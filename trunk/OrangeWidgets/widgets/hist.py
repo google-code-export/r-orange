@@ -17,10 +17,12 @@ class hist(OWRpy):
         self.needsColumns = 0
         self.inputs = [("x", RvarClasses.RVariable, self.processx)]
         
-        box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        self.infoa = OWGUI.widgetLabel(box, "")
-        self.columnPicker = OWGUI.comboBox(box, self, 'column', label='Data Column:')
-        OWGUI.button(box, self, "Commit", callback = self.commitFunction)
+        box = redRGUI.groupBox(self.controlArea, "Widget Box")
+        #self.infoa = redRGUI.widgetLabel(box, "")
+        self.column = redRGUI.comboBox(box, label='Data Column:')
+        self.RFunctionParam_main = redRGUI.lineEdit(box, label = "Main Title")
+        self.RFunctionParam_xlab = redRGUI.lineEdit(box, label = "X Label")
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
@@ -31,17 +33,28 @@ class hist(OWRpy):
                 if type(colnames) == type(''):
                     colnames = [colnames]
                     
-                self.columnPicker.addItems(colnames)
+                self.column.addItems(colnames)
                 self.needsColumns = 1
             else:
                 self.commitFunction()
     def commitFunction(self):
-        if self.x == '': return
+        if self.RFunctionParam_x == '': return
         if self.needsColumns:
-            self.Rplot('hist(x='+str(self.RFunctionParam_x)+'[,"'+str(self.columnPicker.currentText())+'"])', 3,3)
+            injection = []
+            if self.RFunctionParam_main.text() != '':
+                injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
+            if self.RFunctionParam_xlab.text() != '':
+                injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+                
+            if injection != []:
+                inj = ','.join(injection)
+            else: inj = ''
+        
+        
+            self.Rplot('hist(x='+str(self.RFunctionParam_x)+'[,"'+str(self.column.currentText())+'"]'+','+inj+')', 3,3)
             return
         else:
             try:
                 self.Rplot('hist(x='+str(self.RFunctionParam_x)+')', 3, 3)
             except:
-                self.infoa.setText('Please make sure that you used the right kind of data.')
+                self.status.setText('Please make sure that you used the right kind of data.')

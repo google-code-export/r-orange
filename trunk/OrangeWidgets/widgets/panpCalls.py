@@ -42,15 +42,14 @@ class panpCalls(OWRpy):
         self.tightCut.setText('0.01')
         self.percentA = redRGUI.lineEdit(box, label = "Percent Absent", orientation = "horizontal")
         self.percentA.setText('20')
-        processbutton = redRGUI.button(box, "Process eSet", callback = self.processEset, width=200)
-        self.infoa = redRGUI.widgetLabel(box, "Widget Initialized")
+        processbutton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset, width=200)
         
 
     def onLoadSavedSession(self):
         # may want to check if the Rvariable exists
         print 'onload panp'
         if self.R('exists("'+self.Rvariables['peset']+'")'):
-            self.infoa.setText('Processed')
+            self.status.setText('Processed')
             self.senddata = self.data.copy()
             self.senddata['data'] = self.Rvariables['peset']
             self.senddata['eset'] = self.eset
@@ -62,28 +61,29 @@ class panpCalls(OWRpy):
         for output in self.outputs:
             self.rSend(output[0], None, 0)
         if dataset == None: 
-            self.infoa.setText("Blank data recieved")
+            self.status.setText("Blank data recieved")
         if dataset:
             self.data = dataset.copy()
             if 'data' in self.data:
                 self.eset = self.data['data']
-                self.infoa.setText("Data Received")
+                self.status.setText("Data Received")
             else:
-                self.infoa.setText("Processing imposible, not of eset or affybatch type")
+                self.status.setText("Processing imposible, not of eset or affybatch type")
         else:
-            self.infoa.setText("Processing imposible, not of eset or affybatch type")
+            self.status.setText("Processing imposible, not of eset or affybatch type")
             
     def processEset(self):
-        self.infoa.setText("Processing Started!!!")
+        if self.eset == '': return
+        self.status.setText("Processing Started!!!")
         self.R(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+str(self.looseCut.text())+', tightCutoff='+str(self.tightCut.text())+')','setRData', True)
-        self.infoa.setText('PA calls have been calculated')
+        self.status.setText('PA calls have been calculated')
         self.R(self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"','setRData', True)
         self.R(self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)','setRData', True)
         self.R(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+str(self.percentA.text())+'/100','setRData', True)
         self.R(self.Rvariables['peset']+'<-as.data.frame(exprs('+self.eset+')[' + self.Rvariables['Present'] + ',])','setRData',True)
         self.R('colnames('+self.Rvariables['peset']+') <- colnames(exprs('+self.eset+'))')
         self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
-        self.infoa.setText('Processed')
+        self.status.setText('Processed')
         self.senddata = self.data.copy()
         self.senddata['data'] = self.Rvariables['peset']
         self.senddata['eset'] = self.eset

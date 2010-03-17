@@ -17,8 +17,8 @@ class plotAffy(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "plotAffy")
         
         #default values        
-        self.irows = 1 #this sets the variable for the rows
-        self.icols = 1 #this sets the variable for the cols
+        #self.irows = 1 #this sets the variable for the rows
+        #self.icols = 1 #this sets the variable for the cols
         self.setRvariableNames(['qcs'])
         self.qcsProcessed = 0
         self.data = ''
@@ -36,16 +36,16 @@ class plotAffy(OWRpy):
         
         #the GUI
         info = redRGUI.widgetBox(self.controlArea, "Info")
-        self.infoa = redRGUI.widgetLabel(info, 'No data loaded.')
-        redRGUI.button(info, self, "Show Image", callback = self.process, width = 200)
-        redRGUI.button(info, self, "Show Box plot", callback = self.myboxplot, width = 200)
-        redRGUI.button(info, self, "Process and Show QC", callback = self.RAffyQC, width = 200)
+        #self.infoa = redRGUI.widgetLabel(info, 'No data loaded.')
+        redRGUI.button(info, "Show Image", callback = self.process, width = 150)
+        redRGUI.button(info,"Show Box plot", callback = self.myboxplot, width = 150)
+        redRGUI.button(info, "Process and Show QC", callback = self.RAffyQC, width = 150)
         
-        optionsa = redRGUI.widgetBox(self.controlArea, "Options")
-        self.infob = redRGUI.widgetLabel(optionsa, 'Button not pressed')
+        optionsa = redRGUI.groupBox(self.controlArea, "Options")
+        #self.infob = redRGUI.widgetLabel(optionsa, 'Button not pressed')
         #redRGUI.lineEdit(optionsa, self, "testLineEdit", "Test Line Edit", orientation = "horizontal")
-        redRGUI.lineEdit(optionsa, self, "irows", "Number of rows:", orientation="horizontal") #make line edits that will set the values of the irows and icols variables, this seems to happen automatically.  Only need to include variable name where the "irows" is in this example
-        redRGUI.lineEdit(optionsa, self, "icols", "Number of columns:", orientation="horizontal")
+        self.irows = redRGUI.lineEdit(optionsa, text = '1', label = "Number of rows:", orientation="horizontal") #make line edits that will set the values of the irows and icols variables, this seems to happen automatically.  Only need to include variable name where the "irows" is in this example
+        self.icols = redRGUI.lineEdit(optionsa, text = '1', label = "Number of columns:", orientation="horizontal")
         #testlineButton = redRGUI.button(optionsa, self, "test line edit", callback = self.test, width = 200)
         
         
@@ -56,11 +56,11 @@ class plotAffy(OWRpy):
     def init(self, dataset):
         if dataset and 'data' in dataset:
             self.data = dataset['data']
-            self.infoa.setText("Data Connected")
+            self.status.setText("Data Connected")
             self.qcsProcessed == 0
             self.dataset = dataset.copy()
         else:
-            self.infoa.setText("No data loaded or not of appropriate type.")
+            self.status.setText("No data loaded or not of appropriate type.")
             self.data = ''
     
     def process(self):
@@ -70,16 +70,17 @@ class plotAffy(OWRpy):
             
             #try: 
             self.Rplot('') # make a false call to the plot window just to initialize
-            self.rsession('par(mfrow=c('+str(self.irows)+','+str(self.icols)+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
+            self.rsession('par(mfrow=c('+str(self.irows.text())+','+str(self.icols.text())+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
             self.R('image('+self.data+')')
         else:
-            self.infoa.setText("No data connected.")
+            self.status.setText("No data connected.")
         #except: 
         #    self.infob.setText("Data not able to be processed")
     
     def myboxplot(self):
         #required librarys
         self.require_librarys(['affy'])
+        if self.data == '':return
         #try:
         self.Rplot('boxplot('+self.data+')')
         #except:     
@@ -87,6 +88,7 @@ class plotAffy(OWRpy):
         
     def RAffyQC(self):
         self.require_librarys(['simpleaffy'])
+        if self.data =='': return
         if self.qcsProcessed == 0:
             self.rsession(self.Rvariables['qcs']+'<-qc('+self.data+')')
         self.R('plot('+self.Rvariables['qcs']+')')

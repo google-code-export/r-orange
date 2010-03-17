@@ -24,11 +24,12 @@ class plot(OWRpy):
         self.inputs = [("x", RvarClasses.RVariable, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        self.RFunctionParam_main = redRGUI.lineEdit(box, 'RFunctionParam_main', label = 'Main Title:')
-        self.RFunctionParam_xlab = redRGUI.lineEdit(box, 'RFunctionParam_xlab', label = 'X Axis Label:')
-        self.RFunctionParam_ylab = redRGUI.lineEdit(box, 'RFunctionParam_ylab', label = 'Y Axis Label:')
-        self.RFunctionParam_cex = redRGUI.lineEdit(box, 'RFunctionParam_cex', label = 'Text Magnification Percent:')
-        redRGUI.button(self.bottonAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:')
+        self.RFunctionParam_xlab = redRGUI.lineEdit(box, label = 'X Axis Label:')
+        self.RFunctionParam_ylab = redRGUI.lineEdit(box, label = 'Y Axis Label:')
+        self.RFunctionParam_cex = redRGUI.lineEdit(box, '100', label = 'Text Magnification Percent:')
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
     def processx(self, data):
         if data:
             self.data = data
@@ -40,12 +41,12 @@ class plot(OWRpy):
         if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data:
             injection.append('pch=rownames('+self.RFunctionParam_x+')')
         if self.RFunctionParam_main.text() != '':
-            injection.append('main = "'+self.RFunctionParam_main.text()+'"')
+            injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
         if self.RFunctionParam_xlab.text() != '':
-            injection.append('xlab = "'+self.RFunctionParam_xlab.text()+'"')
-        if self.RFunctionParam_ylab/text() != '':
-            injection.append('ylab = "'+self.RFunctionParam_ylab/text()+'"')
-        if self.RFunctionParam_cex/text() != '100':
+            injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+        if self.RFunctionParam_ylab.text() != '':
+            injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+        if self.RFunctionParam_cex.text() != '100':
             mag = float(self.RFunctionParam_cex.text())/100
             injection.append('cex.lab = '+str(mag))
             injection.append('cex.axis = '+str(mag))
@@ -64,9 +65,9 @@ class plot(OWRpy):
             injection.append('main = "'+self.RFunctionParam_main.text()+'"')
         if self.RFunctionParam_xlab.text() != '':
             injection.append('xlab = "'+self.RFunctionParam_xlab.text()+'"')
-        if self.RFunctionParam_ylab/text() != '':
-            injection.append('ylab = "'+self.RFunctionParam_ylab/text()+'"')
-        if self.RFunctionParam_cex/text() != '100':
+        if self.RFunctionParam_ylab.text() != '':
+            injection.append('ylab = "'+self.RFunctionParam_ylab.text()+'"')
+        if self.RFunctionParam_cex.text() != '100':
             mag = float(self.RFunctionParam_cex.text())/100
             injection.append('cex.lab = '+str(mag))
             injection.append('cex.axis = '+str(mag))

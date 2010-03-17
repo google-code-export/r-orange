@@ -19,8 +19,8 @@ class lineEdit(QLineEdit,widgetState):
         else:
             widget.layout().addWidget(self)
         if toolTip: self.setToolTip(toolTip)
-        self.setMaximumWidth(200)
-        self.setMinimumWidth(200)
+        self.setMaximumWidth(175)
+        self.setMinimumWidth(175)
         self.setText(text)
     def getSettings(self):
         #print 'in get settings' + self.text()

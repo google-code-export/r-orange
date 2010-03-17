@@ -38,14 +38,17 @@ class runSigPathway(OWRpy):
         self.subtable = {}
 
         #GUI
-        info = redRGUI.widgetBox(self.controlArea, "Info")
+        mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        leftArea = redRGUI.widgetBox(mainArea, sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding))
+        rightArea = redRGUI.widgetBox(mainArea)
+        info = redRGUI.groupBox(leftArea, "Info")
         
         self.infoa = redRGUI.widgetLabel(info, "No data connected yet.")
         self.infob = redRGUI.widgetLabel(info, '')
         self.infoc = redRGUI.widgetLabel(info, '')
         
         
-        sigPathOptions = redRGUI.widgetBox(self.controlArea, "Options", sizePolicy = QSizePolicy.Maximum)
+        sigPathOptions = redRGUI.groupBox(leftArea, "Options", sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
         self.minNPS = redRGUI.lineEdit(sigPathOptions, '20', 'Min Genes in Pathway:')
         self.maxNPS = redRGUI.lineEdit(sigPathOptions, '500', 'Max Genes in Pathway:')
         self.pAnnotlist = redRGUI.comboBox(sigPathOptions, label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
@@ -54,17 +57,13 @@ class runSigPathway(OWRpy):
         self.pAnnotlist.setEnabled(False)
         self.getNewAnnotButton = redRGUI.button(sigPathOptions, label = "New Annotation File", callback = self.noFile, width = 200)
         redRGUI.button(sigPathOptions, label='Load pathway file', callback = self.loadpAnnot, width = 200)
-        redRGUI.button(sigPathOptions, 'Run', callback = self.runPath, width = 200)
-        redRGUI.button(sigPathOptions, 'Show Table', callback = self.tableShow, width = 200)
+        redRGUI.button(self.bottomAreaRight, 'Run', callback = self.runPath, width = 200)
+        #redRGUI.button(sigPathOptions, 'Show Table', callback = self.tableShow, width = 200)
         self.usedb = redRGUI.checkBox(sigPathOptions, buttons = ['Use Annotation Database'])
         
         #split the canvas into two halves
-        self.splitCanvas = QSplitter(Qt.Horizontal, self.controlArea)
-        self.controlArea.layout().addWidget(self.splitCanvas)
-        
-        self.pathtable = redRGUI.groupBox(self, "Pathway Info", sizePolicy = QSizePolicy.Expanding)
+        self.pathtable = redRGUI.groupBox(rightArea, "Pathway Info", sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         self.pathinfoA = redRGUI.widgetLabel(self.pathtable, "")
-        self.splitCanvas.addWidget(self.pathtable)
         self.table1 = redRGUI.table(self.pathtable) # change the table while processing
         self.table2 = redRGUI.table(self.pathtable) #change the table while processing
         #self.splitCanvas.addWidget(self.table1)
@@ -172,6 +171,7 @@ class runSigPathway(OWRpy):
 
         
     def runPath(self, reload = 0):
+        if self.data == '': return
         if not reload:
             self.getChiptype()
             #self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
@@ -201,13 +201,6 @@ class runSigPathway(OWRpy):
         self.table1.setHorizontalHeaderLabels(headers)
         self.connect(self.table1, SIGNAL("itemClicked(QTableWidgetItem*)"), self.cellClicked)
         
-    def createTable(self):
-        try: self.table
-        except: pass
-        else: self.table.hide()
-        self.table = MyTable(self.tstruct)  #This section of code is really messy, clean once working properly
-        
-        self.tableShow()
     
     def tableShow(self):
         try:

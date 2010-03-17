@@ -21,6 +21,7 @@ class diffExp(OWRpy):
         self.sampleB = []
         self.phenoData = ''
         self.modelFormula = ''
+        self.data = ''
         self.processingComplete = 0
         self.newdata = {}
         self.olddata = {}
@@ -158,6 +159,7 @@ class diffExp(OWRpy):
                 #self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
 
     def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
+        if self.data == '': return
         if not reload: # we really need to process this block
             if self.phenoData == '':
                 #first we need to construct the design
