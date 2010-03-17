@@ -6,19 +6,14 @@
 <icon>icons/readcel.png</icon>
 <priority>80</priority>
 """
-
-from rpy_options import set_options
-set_options(RHOME='c:/progra~1/r/R-2.6.2/')
-from rpy import *
-from OWWidget import *
+from OWRpy import *
 import redRGUI
-r.require('affy')
 
-class writeEset(OWWidget):
+class writeEset(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWWidget.__init__(self, parent, signalManager, "Sample Data")
+        OWRpy.__init__(self, parent, signalManager, "Sample Data")
         
-        self.inputs = [("Affybatch", orange.Variable, self.nothingb)]
+        self.inputs = [("Affybatch", RvarClasses.RVariable, self.nothingb)]
         self.outputs = None
         
         self.data = None
@@ -26,8 +21,8 @@ class writeEset(OWWidget):
         
         #GUI
         box = redRGUI.widgetBox(self.controlArea, "Write to file.")
-        redRGUI.lineEdit(box, self, "fileName", "File Name", orientation = "horizontal") 
-        writeButton = redRGUI.button(box, self, "Write to file", callback = self.write, width=200)
+        #redRGUI.lineEdit(box, label = "File Name", orientation = "horizontal") 
+        writeButton = redRGUI.button(box, "Write to file", callback = self.write, width=200)
         self.infoa = redRGUI.widgetLabel(box, "No output yet")
         
     def nothingb(self,data):
@@ -36,11 +31,17 @@ class writeEset(OWWidget):
         else: return
             
     def write(self):
-        if self.fileName == "":
-            self.infoa.setText("You must input a valid file name.")
-        elif self.data == None:
+        self.require_librarys(['affy'])
+        if self.data == None or self.data == '':
             self.infoa.setText("Data has not been loaded yet")
-        else:
-            r('write.exprs('+self.data+',file="'+self.fileName+'.txt", sep="\t")')
-            self.infoa.setText("Data was writen to "+self.fileName+" successfully!")
+            return
+        if ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "Plain Text (*.txt)"))
+        else: 
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "Plain Text (*.txt)"))
+
+        self.R('write.exprs('+self.data+',file="'+file+'", sep="\t")')
+        self.infoa.setText("Data was writen to "+file+" successfully!")
+        self.notes.setCursorToEnd()
+        self.notes.insertHtml('<br>File Saved as: '+file+'<br>')
         

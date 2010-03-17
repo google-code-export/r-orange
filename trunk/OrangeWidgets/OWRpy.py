@@ -550,9 +550,7 @@ class OWRpy(OWWidget,RSession):
         self.R(query, 'setRData')
         self.R('dev.off()')
         self.status.setText('File saved as \"'+file+'\"')
-        cursor = self.notes.textCursor()
-        cursor.movePosition(QTextCursor.End)
-        self.notes.setTextCursor(cursor)
+        self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
     def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):

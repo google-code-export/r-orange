@@ -74,6 +74,7 @@ class affyNormalize(OWRpy):
         
         
     def normalize(self):
+        if self.data == '': return
         self.status.setText('Processing')
         if self.selMethBox.getChecked() == 'RMA':
             self.R(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization

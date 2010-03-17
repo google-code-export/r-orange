@@ -32,24 +32,13 @@ class RSession():
         self.RSessionThread = RSessionThread()
 
     def R(self, query, type = 'getRData', processing_notice=False):
-        #RThread().start()
-        # rthread = RThread()
-        # rthread.start()
-        
-        # movie = ProcessingBoxThread()
-        # movie.start()
-        #mutex.lock()
-        
-        
+
         qApp.setOverrideCursor(Qt.WaitCursor)
-        
-        # RSession.rsem.acquire()
-        # RSession.occupied = 1
+
         output = None
         if processing_notice:
             self.status.setText('Processing Started.Please wait for processing to finish.')
-            # self.progressBarInit()
-            # self.progressBarSet(30)
+
         print query
         histquery = query
         histquery = histquery.replace('<', '&lt;') #convert for html
@@ -69,9 +58,7 @@ class RSession():
                 self.RSessionThread.run(query) # run the query anyway even if the user put un a wierd value
 
         except rpy.RPyRException, inst:
-            # RSession.occupied = 0
-            # RSession.lock.release()
-            # RSession.rsem.release()
+
             qApp.restoreOverrideCursor()
             self.progressBarFinished()
             print inst.message
@@ -83,11 +70,8 @@ class RSession():
             self.status.setText('Processing complete')
             #self.progressBarFinished()
         
-        #rthread.threadBreaking = True
-        
-        # RSession.occupied = 0
-        # RSession.rsem.release()
-        #mutex.unlock()
+        self.notes.setCursorToEnd()
+        self.notes.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
         qApp.restoreOverrideCursor()
         return output
                         

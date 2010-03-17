@@ -332,7 +332,7 @@ class widgetMaker(OWRpy):
         for inputName in self.functionInputs.keys():
             self.reportFunction += '\t\tself.reportSettings("Input Settings",[("'+inputName+'", self.RFunctionParam_'+inputName+')])\n' # output the inputs of the function
         for element in self.fieldList.keys():
-            self.reportFunction += "\t\tself.reportSettings('Function Settings', [('"+element+"',str(self.RFunctionParam"+ element +"_lineEdit.text()"))])\n"
+            self.reportFunction += "\t\tself.reportSettings('Function Settings', [('"+element+"',str(self.RFunctionParam"+ element +"_lineEdit.text()))])\n"
         if 'Allow Output' in self.functionAllowOutput.getChecked():
             self.reportFunction += '\t\tself.reportRaw(self.Rvariables["'+self.functionName.text()+'"])\n'
             

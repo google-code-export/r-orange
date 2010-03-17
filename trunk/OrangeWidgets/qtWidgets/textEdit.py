@@ -15,6 +15,10 @@ class textEdit(QTextEdit,widgetState):
         else:
             widget.layout().addWidget(self)
         self.insertHtml(html)
+    def setCursorToEnd(self):
+        cursor = self.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        self.setTextCursor(cursor)
     def getSettings(self):
         # print 'in textEdit getSettings'
         r = {'text': self.toHtml()}
