@@ -69,9 +69,10 @@ class RSession():
         if processing_notice:
             self.status.setText('Processing complete')
             #self.progressBarFinished()
-        
-        self.notes.setCursorToEnd()
-        self.notes.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
+        try:
+            self.notes.setCursorToEnd()
+            self.notes.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
+        except: pass #there must not be any notes to add to
         qApp.restoreOverrideCursor()
         return output
                         

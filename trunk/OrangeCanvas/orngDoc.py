@@ -529,11 +529,11 @@ class SchemaDoc(QWidget):
                     if re.search('tempSchema.tmp',os.path.basename(name)):
                         doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
                     else:
-                        print 'loading R session ...'
+                        #print 'loading R session ...'
                         # insert function to load all R packages that were loaded in the previous session
                         #self.settings
                         rpy.r('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
-                print "Loading widgets "+str(self.widgets) + "(orngDoc.py)"
+                #print "Loading widgets "+str(self.widgets) + "(orngDoc.py)"
                 for widget in self.widgets:
                     widget.caption += 'A'
                 
@@ -550,7 +550,7 @@ class SchemaDoc(QWidget):
                 for widget in widgets.getElementsByTagName("widget"):
                     try:
                         name = widget.getAttribute("widgetName")
-                        print 'Name: '+str(name)+' (orngDoc.py)'
+                        #print 'Name: '+str(name)+' (orngDoc.py)'
                         #print str(widget.getAttribute("caption"))
                         #print str(settingsDict)
                         settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
@@ -682,15 +682,15 @@ class SchemaDoc(QWidget):
         # if self.widgets:
             # self.signalManager.processNewSignals(self.widgets[0].instance)  
         #print 'finish process'
-        print 'start onload' # we do want to reload the settings of the widgets
-        print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
+        #print 'start onload' # we do want to reload the settings of the widgets
+        #print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                print 'for widget (orngDoc.oy)'
+                #print 'for widget (orngDoc.oy)'
                 SignalManager.loadSavedSession = True
                 widget.instance.onLoadSavedSession()
                 SignalManager.loadSavedSession = False
-            except: print 'Loading Failed for ' + str(i)
+            except: print 'Loading Failed for ' + str(widget)
         SignalManager.loadSavedSession = False
         print 'done on load'
 
