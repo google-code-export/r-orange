@@ -47,7 +47,13 @@ class SchemaDoc(QWidget):
             # if self.widgets != []:
                 # self.save(os.path.join(self.canvasDlg.canvasSettingsDir, "lastSchema.tmp"))
 
-            self.saveDocument()
+            saveComplete = self.saveDocument()
+            
+            if not saveComplete: 
+                QMessageBox.information(self, 'Red-R Canvas','Save interupted because no file name specified.\nData not saved.',  QMessageBox.Ok + QMessageBox.Default)
+                print 'Saving interupted'
+                ce.ignore()
+                return
             ce.accept()
             self.clear(close = True)
         # if self.canvasDlg.settings["dontAskBeforeClose"]:
@@ -77,7 +83,6 @@ class SchemaDoc(QWidget):
             # else:
                 # ce.ignore()     # we pressed cancel - we don't want to close the document
                 # return
-        res = QMessageBox.question(self, 'Red-R Canvas','The canvas has made it through the closing process.', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
         QWidget.closeEvent(self, ce)
         orngHistory.logCloseSchema(self.schemaID)
         
@@ -417,15 +422,19 @@ class SchemaDoc(QWidget):
     # ###########################################
     def saveDocument(self):
         if self.schemaName == "":
-            self.saveDocumentAs()
+            return self.saveDocumentAs()
         else:
-            self.save(None,False)
+            return self.save(None,False)
 
     def saveDocumentAs(self):
-        name = str(QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.ows)"))
-        if os.path.splitext(name)[0] == "": return
-        if os.path.splitext(name)[1].lower() != ".ows": name = os.path.splitext(name)[0] + ".ows"
-        self.save(name,False)
+        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.ows)")
+        
+        if not name or name == None: return False
+        if str(name) == '': return False
+        if os.path.splitext(str(name))[0] == "": return False
+        if os.path.splitext(str(name))[1].lower() != ".ows": name = os.path.splitext(str(name))[0] + ".ows"
+        return self.save(str(name),False)
+        
 
     # save the file
     def save(self, filename = None,tmp = True):
@@ -507,8 +516,8 @@ class SchemaDoc(QWidget):
             self.canvasDlg.settings["saveSchemaDir"] = self.schemaPath
             self.canvasDlg.addToRecentMenu(filename)
             self.canvasDlg.setCaption(self.schemaName)
-
-
+        
+        return True
     # load a scheme with name "filename"
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         print 'document load called'

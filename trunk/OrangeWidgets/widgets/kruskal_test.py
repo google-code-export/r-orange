@@ -18,29 +18,34 @@ class kruskal_test(OWRpy):
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         
         self.help.setHtml('<small>Performs the Kruskal Walis test on a set of data.  This should be a data.frame or data tabel with one column representing the outcome and another representing a group or grouping variable.  The Formula section should be entered in the form of outcom variable ~ grouping variable.  If multiple groups are used you may use the * key to separate them.  Example: height ~ foodQuality * genes.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-        box = redRGUI.tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamsubset_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "subset:")
+        #box = redRGUI.tabWidget(self.controlArea)
+        #self.standardTab = box.createTabPage(name = "Standard")
+        #self.advancedTab = box.createTabPage(name = "Advanced")
+        self.RFunctionParamsubset_lineEdit =  redRGUI.lineEdit(self.controlArea, label = "Subset:")
         #self.RFunctionParamx_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x:")
         #self.RFunctionParamg_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "g:")
-        self.RFunctionParamformula_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "formula:")
-        redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, self, "Report", callback = self.sendReport)
+        self.RFunctionParamformula =  redRGUI.RFormulaEntry(self.controlArea)
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         self.require_librarys(["stats"]) 
         if data:
             self.RFunctionParam_data=data["data"]
+            self.RFunctionParamformula.clearFormula()
             self.data = data.copy()
+            self.RFunctionParamformula.addItems(self.R('colnames('+self.RFunctionParam_data+')'))
             self.commitFunction()
+        else:
+            self.RFunctionParam_data = ''
+            self.RFunctionParamformula.clearFormula()
     def commitFunction(self):
         if str(self.RFunctionParam_data) == '': return
-        if str(self.RFunctionParamformula_lineEdit.text()) == '': return
+        formulaOutput = self.RFunctionParamformula.Formula()
+        if formulaOutput[0] == '' or formulaOutput[1] == '': return
         injection = []
-        if str(self.RFunctionParamformula_lineEdit.text()) != '':
-            string = str(self.RFunctionParamformula_lineEdit.text())
-            injection.append(string)
+        string = formulaOutput[0]+ ' ~ ' + formulaOutput[1]
+        injection.append(string)
         if str(self.RFunctionParamsubset_lineEdit.text()) != '':
             string = 'subset='+str(self.RFunctionParamsubset_lineEdit.text())
             injection.append(string)

@@ -141,8 +141,7 @@ class OWRpy(OWWidget,RSession):
             
             #self.GUIDialogDialog.setCentralWidget(self.GUIDialog)
             #self.GUIDialogDialog.show()
-            # self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 
-            # 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+            self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
             #self.GUIDialogDialog.move(50, 50)
 
         showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBoxDialog.show)

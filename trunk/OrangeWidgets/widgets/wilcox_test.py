@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import OWGUI 
-import RRGUI 
+import redRGUI
 
 class wilcox_test(OWRpy): 
     settingsList = []
@@ -21,12 +21,9 @@ class wilcox_test(OWRpy):
         self.inputs = [("x", RvarClasses.RVector, self.processx), ('y', RvarClasses.RVector, self.processy)]
         self.outputs = [("wilcox.test Output", RvarClasses.RVariable)]
         
-        box = RRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)
-        self.controlArea.layout().addWidget(self.RoutputWindow)
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.textEdit(self.controlArea)
+        
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]

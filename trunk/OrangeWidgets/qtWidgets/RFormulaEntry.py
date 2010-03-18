@@ -32,11 +32,12 @@ class RFormulaEntry(QWidget, widgetState):
     
     def clearFormula(self):
         self.modelLineEdit.clear()
+        #self.elementsListBox.clear()
+        self.outcomeVariable.clear()
         self.updateEnabled(1)
     def addItems(self, items):
-        self.outcomeVariable.clear()
+        self.clearFormula()
         self.elementsListBox.clear()
-        self.modelLineEdit.clear()
         self.outcomeVariable.addItem('')
         for item in items:
             self.outcomeVariable.addItem(item)
