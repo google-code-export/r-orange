@@ -1,5 +1,5 @@
 """
-<name>ED, EC, ID</name>
+<name>ED</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>drc:ED</RFunctions>
 <tags>Dose Response</tags>
@@ -7,87 +7,65 @@
 """
 from OWRpy import * 
 import redRGUI 
-
 class ED(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["ED"])
-        self.RFunctionParam_logBase = "NULL"
-        self.RFunctionParam_reference = 0
-        self.RFunctionParam_level = '0.95'
-        self.RFunctionParam_ci = 2
-        self.RFunctionParam_od = "FALSE"
-        self.RFunctionParam_bound = "TRUE"
         self.data = {}
-        
-        
-        self.RFunctionParam_respLev = "50"
-        self.RFunctionParam_type = 0
-        self.RFunctionParam_display = "TRUE"
         self.loadSettings() 
         self.RFunctionParam_object = ''
         self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
-        self.outputs = [("ED Output", RvarClasses.RDataFrame)]
+        self.outputs = [("ED Output", RvarClasses.RVariable)]
         
-        box = redRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = redRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = redRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        self.RFUnctionParamlogBase_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamlogBase_lineEdit", self, "RFunctionParam_logBase", label = "logBase:")
-        self.RFunctionParamreference_comboBox = redRGUI.comboBox(self.advancedTab, "RFunctionParamreference_comboBox", self, "RFunctionParam_reference", label = "reference:", items = ['control', 'upper'])
-        self.RFUnctionParamlevel_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamlevel_lineEdit", self, "RFunctionParam_level", label = "level:")
-        self.RFunctionParamci_comboBox = redRGUI.comboBox(self.advancedTab, "RFunctionParamci_comboBox", self, "RFunctionParam_ci", label = "ci:", items = ['none', 'delta', 'fls', 'tfls'])
-        self.RFUnctionParamod_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamod_lineEdit", self, "RFunctionParam_od", label = "od:")
-        self.RFUnctionParambound_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParambound_lineEdit", self, "RFunctionParam_bound", label = "bound:")
+        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        self.standardTab = redRGUI.widgetBox(self.controlArea)
+
+        self.RFunctionParamrespLev_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Response Level:", text = '50', toolTip = 'The response level.  For example for ED50 use 50.\nIf you desire more than one response level separate them by commas ex: 50, 90, 95.')
+        self.RFunctionParamci_lineEdit =  redRGUI.comboBox(self.standardTab,  label = "Confidence Function:", items = ['none', 'delt', 'fls', 'tfls'])
         
-        
-        self.RFUnctionParamrespLev_lineEdit =  redRGUI.lineEdit(self.standardTab, "RFUnctionParamrespLev_lineEdit", self, "RFunctionParam_respLev", label = "Levels:")
-        self.RFunctionParamtype_comboBox = redRGUI.comboBox(self.standardTab, "RFunctionParamtype_comboBox", self, "RFunctionParam_type", label = "type:", items = ['relative', 'absolute'])
-        self.RFUnctionParamdisplay_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamdisplay_lineEdit", self, "RFunctionParam_display", label = "display:")
-        redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit("RoutputWindow", self)
-        self.standardTab.layout().addWidget(self.RoutputWindow)
+        self.RFunctionParamlevel_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Confidence Interval:", text = '0.95', toolTip = 'The confidence interval to use with the Confidence Function.')
+        self.RFunctionParamtype_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "type:", text = '')
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
+        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         self.require_librarys(["drc"]) 
-        if data and 'data' in data:
+        if data:
             self.RFunctionParam_object=data["data"]
             self.data = data.copy()
             self.commitFunction()
     def commitFunction(self):
-        if self.RFunctionParam_object == '': return
-        if self.RFunctionParam_respLev == '': return
+        if str(self.RFunctionParam_object) == '': return
+        if str(self.RFunctionParamrespLev_lineEdit.text()) == '': return
         injection = []
-        if self.RFunctionParam_logBase != '':
-            string = 'logBase='+str(self.RFunctionParam_logBase)
+        if str(self.RFunctionParamrespLev_lineEdit.text()) != '':
+            string = 'respLev=c('+str(self.RFunctionParamrespLev_lineEdit.text())+')'
             injection.append(string)
-        if self.RFunctionParam_reference != '':
-            string = 'reference="'+str(self.RFunctionParamreference_comboBox.currentText())+'"'
+        if str(self.RFunctionParamci_lineEdit.currentText()) != 'none':
+            string = 'ci=\''+str(self.RFunctionParamci_lineEdit.currentText())+'\''
             injection.append(string)
-        if self.RFunctionParam_level != '':
-            string = 'level='+str(self.RFunctionParam_level)
+        if str(self.RFunctionParamtype_lineEdit.text()) != '':
+            string = 'type=\''+str(self.RFunctionParamtype_lineEdit.text())+'\''
             injection.append(string)
-        if self.RFunctionParam_ci != '':
-            string = 'ci="'+str(self.RFunctionParamci_comboBox.currentText())+'"'
-            injection.append(string)
-        if self.RFunctionParam_od != '':
-            string = 'od='+str(self.RFunctionParam_od)
-            injection.append(string)
-        if self.RFunctionParam_bound != '':
-            string = 'bound='+str(self.RFunctionParam_bound)
-            injection.append(string)
-        if self.RFunctionParam_respLev != '':
-            string = 'respLev=c('+str(self.RFunctionParam_respLev)+')'
-            injection.append(string)
-        if self.RFunctionParam_type != '':
-            string = 'type="'+str(self.RFunctionParamtype_comboBox.currentText())+'"'
-            injection.append(string)
-        if self.RFunctionParam_display != '':
-            string = 'display='+str(self.RFunctionParam_display)
+        if str(self.RFunctionParamlevel_lineEdit.text()) != '':
+            string = 'level='+str(self.RFunctionParamlevel_lineEdit.text())
             injection.append(string)
         inj = ','.join(injection)
-        self.R('txt<-capture.output('+self.Rvariables['ED']+'<-ED(object='+str(self.RFunctionParam_object)+','+inj+'))')
+        self.R(self.Rvariables['ED']+'<-ED(object='+str(self.RFunctionParam_object)+','+inj+')')
+        self.R('txt<-capture.output('+self.Rvariables['ED']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.data['data'] = self.Rvariables["ED"]
+        self.data["data"] = self.Rvariables["ED"]
         self.rSend("ED Output", self.data)
+    def compileReport(self):
+        self.reportSettings("Input Settings",[("object", self.RFunctionParam_object)])
+        self.reportSettings('Function Settings', [('respLev',str(self.RFunctionParamrespLev_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('ci',str(self.RFunctionParamci_lineEdit.currentText()))])
+        self.reportSettings('Function Settings', [('type',str(self.RFunctionParamtype_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('level',str(self.RFunctionParamlevel_lineEdit.text()))])
+        self.reportRaw(self.Rvariables["ED"])
+    def sendReport(self):
+        self.compileReport()
+        self.showReport()

@@ -28,7 +28,7 @@ class ReadCEL(OWRpy):
             # self.recentFiles.insert(0, '')
         
         #set R variable names
-        self.setRvariableNames(['eset','folder'])
+        self.setRvariableNames(['eset','folder', 'cm'])
         
         #signals
         self.inputs = None 
@@ -90,12 +90,12 @@ class ReadCEL(OWRpy):
             self.status.setText("This may take several minutes")
             self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
             self.status.setText("Data preprocessed with justRMA.")
-        
+        self.R(self.Rvariables['cm']+'<-data.frame(row.names = colnames(exprs('+self.Rvariables['eset']+')))') # in this case the cm should be the colnames, not the rownames as is usual
         self.sendMe()
         
     
     def sendMe(self):
-        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'cm':'cm_'+self.Rvariables['eset'], 'parent':'exprs('+self.Rvariables['eset']+')'}
+        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'cm':self.Rvariables['cm'], 'parent':'exprs('+self.Rvariables['eset']+')'}
         self.rSend("Expression Matrix", out)
         out2 = out.copy()
         out2['data'] = str(self.Rvariables['eset'])

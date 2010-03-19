@@ -154,41 +154,78 @@ class mergeR(OWRpy):
                 h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
             else: h = None
             # make a temp variable that is the combination of the parent frame and the cm for the parent.
-            self.R('tmpa<-cbind('+self.dataA+','+self.dataParentA['cm']+')')
-            self.R('tmpb<-cbind('+self.dataB+','+self.dataParentB['cm']+')')
+            if self.R('rownames('+self.dataA+') == rownames('+self.dataParentA['cm']+')') == 'TRUE':
+                self.R('tmpa<-cbind('+self.dataA+','+self.dataParentA['cm']+')')
+                self.R('tmpb<-cbind('+self.dataB+','+self.dataParentB['cm']+')')
+                useCM = True
+            else:
+                QMessageBox.information(self, 'Red-R Canvas','Your Class Manager (CM) doesn\'t match your sample names.\nUse the Class Manager Editor to check this and manipulate your data to have a CM that fits your data.\nThis Widget will procede with no CM and make new ones for you.',  QMessageBox.Ok + QMessageBox.Default)
+                self.R('tmpa<-cbind('+self.dataA+')')
+                self.R('tmpb<-cbind('+self.dataB+')')
+                useCM = False
             
-            if self.colAsel == None and self.colBsel == None and type(h) is str: 
-                self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + h + '")-1'))
-                self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + h + '")-1'))
-                self.R('tmpab<-merge(tmpa, tmpb,all.x=T)')
-                self.R(self.Rvariables['merged_dataAB']+'<-tmpab[!(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
-                self.R(self.Rvariables['merged_dataAB_cm_']+'<-tmpab[(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
-                
-                self.R('tmpba<-merge(tmpa, tmpb,all.y=T)')
-                self.R(self.Rvariables['merged_dataBA']+'<-tmpba[!(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]') 
-                self.R(self.Rvariables['merged_dataBA_cm_']+'<-tmpba[(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')        
+            if useCM:
+                if self.colAsel == None and self.colBsel == None and type(h) is str: 
+                    self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + h + '")-1'))
+                    self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + h + '")-1'))
+                    self.R('tmpab<-merge(tmpa, tmpb,all.x=T)')
+                    self.R(self.Rvariables['merged_dataAB']+'<-tmpab[!(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    self.R(self.Rvariables['merged_dataAB_cm_']+'<-tmpab[(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    
+                    self.R('tmpba<-merge(tmpa, tmpb,all.y=T)')
+                    self.R(self.Rvariables['merged_dataBA']+'<-tmpba[!(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]') 
+                    self.R(self.Rvariables['merged_dataBA_cm_']+'<-tmpba[(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')        
 
-                self.R('tmpall<-merge(tmpa, tmpb)')
-                self.R(self.Rvariables['merged_dataAll']+'<-tmpall[!(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
-                self.R(self.Rvariables['merged_dataAll_cm_']+'<-tmpall[(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    self.R('tmpall<-merge(tmpa, tmpb)')
+                    self.R(self.Rvariables['merged_dataAll']+'<-tmpall[!(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    self.R(self.Rvariables['merged_dataAll_cm_']+'<-tmpall[(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    
+                    
+                elif self.colAsel and self.colBsel:
                 
-                
-            elif self.colAsel and self.colBsel:
-            
-                self.R('tmpab<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
-                self.R(self.Rvariables['merged_dataAB']+'<-tmpab[!(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
-                self.R(self.Rvariables['merged_dataAB_cm_']+'<-tmpab[(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
-                
-                self.R('tmpba<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
-                self.R(self.Rvariables['merged_dataBA']+'<-tmpba[!(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]') 
-                self.R(self.Rvariables['merged_dataBA_cm_']+'<-tmpba[(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')        
+                    self.R('tmpab<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
+                    self.R(self.Rvariables['merged_dataAB']+'<-tmpab[!(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    self.R(self.Rvariables['merged_dataAB_cm_']+'<-tmpab[(colnames(tmpab) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    
+                    self.R('tmpba<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
+                    self.R(self.Rvariables['merged_dataBA']+'<-tmpba[!(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]') 
+                    self.R(self.Rvariables['merged_dataBA_cm_']+'<-tmpba[(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')        
 
-                self.R('tmpall<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
-                self.R(self.Rvariables['merged_dataAll']+'<-tmpall[!(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
-                self.R(self.Rvariables['merged_dataAll_cm_']+'<-tmpall[(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    self.R('tmpall<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
+                    self.R(self.Rvariables['merged_dataAll']+'<-tmpall[!(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    self.R(self.Rvariables['merged_dataAll_cm_']+'<-tmpall[(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+','+self.dataParentB['cm']+'))),]')
+                    
+            else:
+                if self.colAsel == None and self.colBsel == None and type(h) is str: 
+                    self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + h + '")-1'))
+                    self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + h + '")-1'))
+                    #self.R('tmpab<-merge(tmpa, tmpb,all.x=T)')
+                    self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb,all.x=T)')
+                    self.R(self.Rvariables['merged_dataAB_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAB']+'))')
+                    
+                    #self.R('tmpba<-merge(tmpa, tmpb,all.y=T)')
+                    self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,all.y=T)') 
+                    self.R(self.Rvariables['merged_dataBA_cm_']+'data.frame(row.names = rownames('+self.Rvariables['merged_dataBA']+'))')        
+
+                    #self.R('tmpall<-merge(tmpa, tmpb)')
+                    self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb)')
+                    self.R(self.Rvariables['merged_dataAll_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAll']+'))')
+                    
+                    
+                elif self.colAsel and self.colBsel:
                 
-                
-                
+                    #self.R('tmpab<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
+                    self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
+                    self.R(self.Rvariables['merged_dataAB_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAB']+'))')
+                    
+                    #self.R('tmpba<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
+                    self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
+                    self.R(self.Rvariables['merged_dataBA_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataBA']+'))')
+
+                    #self.R('tmpall<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
+                    self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
+                    self.R(self.Rvariables['merged_dataAll_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAll']+'))')
+                    
             
             self.sendMe()
         except: 

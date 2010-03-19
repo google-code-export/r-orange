@@ -202,6 +202,9 @@ class widgetMaker(OWRpy):
         self.headerCode = '"""\n'
         self.headerCode += '&lt;name&gt;'+self.functionName.text()+'&lt;/name&gt;\n'
         self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
+        self.headerCode += '&lt;RFunctions&gt;'+self.packageName.text()+':'+self.functionName.text()+'&lt;/RFunctions&gt;\n'
+        self.headerCode += '&lt;tags&gt;Prototypes&lt;/tags&gt;\n'
+        self.headerCode += '&lt;icon&gt;icons/RExecutor.png&lt;/icon&gt;\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
         self.headerCode += 'import redRGUI \n'
@@ -254,7 +257,7 @@ class widgetMaker(OWRpy):
             else:
                 if type(self.fieldList[element][0]) == type(''):
                     if self.fieldList[element][1] == 'Standard':
-                        self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "'+element+':")\n'
+                        self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "'+element+':", text = \''+self.fieldList[element][0]+'\')\n'
                     elif self.fieldList[element][1] == 'Advanced':
                         self.guiCode += '\t\tself.RFunctionParam'+ element +'_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "'+element+':")\n'
                 elif type(self.fieldList[element][0]) == type([]):
@@ -313,7 +316,7 @@ class widgetMaker(OWRpy):
         self.commitFunction += "'+inj+'"
         self.commitFunction += ")')\n"
         if 'Show Output' in self.captureROutput.getChecked():
-            self.commitFunction += "\t\tself.R('txt<-capture.output(self.Rvariables['"+self.functionName.text()+"']+')')"
+            self.commitFunction += "\t\tself.R(\'txt<-capture.output(\'+self.Rvariables[\'"+self.functionName.text()+"\']+\')\')\n"
             self.commitFunction += "\t\tself.RoutputWindow.clear()\n"
             self.commitFunction += "\t\ttmp = self.R('paste(txt, collapse =\x22\x5cn\x22)')\n"
             self.commitFunction += "\t\tself.RoutputWindow.insertHtml('&lt;br&gt;&lt;pre&gt;'+tmp+'&lt;/pre&gt;')\n"

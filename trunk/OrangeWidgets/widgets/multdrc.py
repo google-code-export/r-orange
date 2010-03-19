@@ -1,75 +1,59 @@
 """
-<name>Multi Dose Response</name>
+<name>multdrc</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>drc:multdrc,stats:anova</RFunctions>
 <tags>Dose Response</tags>
 <icon>icons/drc.PNG</icon>
 """
 from OWRpy import * 
-import redRGUI
+import redRGUI 
 class multdrc(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
+        self.autoShowDialog = 0
         self.setRvariableNames(["multdrc"])
-        self.RFunctionParam_hetvar = "NULL"
-        self.RFunctionParam_na_action = "na.omit"
-        self.RFunctionParam_fct = "l4()"
-        self.RFunctionParam_collapse = ""
-        self.RFunctionParam_cm = "NULL"
-        self.RFunctionParam_fctList = "NULL"
-        self.RFunctionParam_bcAdd = "0"
-        self.curve = 0
-        self.RFunctionParam_boxcox = "FALSE"
-        self.RFunctionParam_varPower = "FALSE"
-        self.RFunctionParam_formula = ""
-        self.RFunctionParam_control = "mdControl()"
-        self.RFunctionParam_weights = ""
-        self.RFunctionParam_startVal = ""
-        self.RFunctionParam_robust = "mean"
-        self.RFunctionParam_type = "continuous"
-        self.RFunctionParam_logDose = "NULL"
-        self.response = 0
         self.data = {}
-        self.dose = 0
         self.colNames = []
-        self.RFunctionParam_data = ''
         self.loadSettings() 
-
+        self.RFunctionParam_data = ''
+        self.RFunctionParam_formula = ''
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         self.outputs = [("multdrc Output", RvarClasses.RVariable)]
         
-        box = redRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = redRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = redRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        self.RFUnctionParamhetvar_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamhetvar_lineEdit", self, "RFunctionParam_hetvar", label = "hetvar:")
-        self.RFUnctionParamna_action_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamna_action_lineEdit", self, "RFunctionParam_na_action", label = "na_action:")
-        self.RFUnctionParamfct_lineEdit =  redRGUI.lineEdit(self.standardTab, "RFUnctionParamfct_lineEdit", self, "RFunctionParam_fct", label = "Model:")
-        self.RFUnctionParamcollapse_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamcollapse_lineEdit", self, "RFunctionParam_collapse", label = "collapse:")
-        self.RFUnctionParamcm_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamcm_lineEdit", self, "RFunctionParam_cm", label = "cm:")
-        self.RFUnctionParamfctList_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamfctList_lineEdit", self, "RFunctionParam_fctList", label = "fctList:")
-        self.RFUnctionParambcAdd_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParambcAdd_lineEdit", self, "RFunctionParam_bcAdd", label = "bcAdd:")
-        self.curveComboBox =  redRGUI.comboBox(self.standardTab, "curveComboBox", self, "curve", label = "Curves:")
-        self.RFUnctionParamboxcox_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamboxcox_lineEdit", self, "RFunctionParam_boxcox", label = "boxcox:")
-        self.RFUnctionParamvarPower_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamvarPower_lineEdit", self, "RFunctionParam_varPower", label = "varPower:")
-        #self.RFUnctionParamformula_lineEdit =  redRGUI.lineEdit(self.standardTab, "RFUnctionParamformula_lineEdit", self, "RFunctionParam_formula", label = "formula:")
-        self.responseComboBox = redRGUI.comboBox(self.standardTab, "responseComboBox", self, "response", label = "Response Data:")
-        self.doseComboBox = redRGUI.comboBox(self.standardTab, "doseComboBox", self, "dose", label = "Dose Data:")
-        self.RFUnctionParamcontrol_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamcontrol_lineEdit", self, "RFunctionParam_control", label = "control:")
-        self.RFUnctionParamweights_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamweights_lineEdit", self, "RFunctionParam_weights", label = "weights:")
-        self.RFUnctionParamstartVal_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamstartVal_lineEdit", self, "RFunctionParam_startVal", label = "startVal:")
-        self.RFUnctionParamrobust_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamrobust_lineEdit", self, "RFunctionParam_robust", label = "robust:")
-        self.RFUnctionParamtype_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamtype_lineEdit", self, "RFunctionParam_type", label = "type:")
-        self.RFUnctionParamlogDose_lineEdit =  redRGUI.lineEdit(self.advancedTab, "RFUnctionParamlogDose_lineEdit", self, "RFunctionParam_logDose", label = "logDose:")
-        redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.anovaTextArea = redRGUI.textEdit('anovaTextArea', self)
-        self.standardTab.layout().addWidget(self.anovaTextArea)
+        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        box = redRGUI.tabWidget(self.controlArea)
+        self.standardTab = box.createTabPage(name = "Standard")
+        self.advancedTab = box.createTabPage(name = "Advanced")
+        self.responseComboBox = redRGUI.comboBox(self.standardTab, label = "Response Data:", toolTip = 'The column of the data that specifies the outcome data of the experiment.')
+        self.doseComboBox = redRGUI.comboBox(self.standardTab, label = "Dose Data:", toolTip = 'The column of the data that specifies the dosing of the experiment.')
+        self.RFunctionParamcurve_comboBox =  redRGUI.comboBox(self.standardTab,  label = "Curve:", toolTip = 'The column of data that specifies the grouping of data to make the curves')
+        self.RFunctionParamhetvar_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "hetvar:")
+        self.RFunctionParamna_action_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "na_action:")
+        self.RFunctionParamfct_comboBox =  redRGUI.comboBox(self.advancedTab,  label = "Starter Function:")
+        self.RFunctionParamcollapse_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "collapse:")
+        self.RFunctionParamcm_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "cm:")
+        self.RFunctionParamfctList_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "fctList:")
+        self.RFunctionParambcAdd_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "bcAdd:")
+        
+        self.RFunctionParamboxcox_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "boxcox:")
+        self.RFunctionParamvarPower_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "varPower:")
+        #self.RFunctionParamformula_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "formula:")
+        self.RFunctionParamcontrol_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "control:")
+        self.RFunctionParamweights_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "weights:", toolTip = 'A vector of wieghts to add to the model, should be in the form c(weight1, weight2, ...) for R compatability.')
+        self.RFunctionParamstartVal_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "startVal:")
+        self.RFunctionParamrobust_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "robust:")
+        self.RFunctionParamtype_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "type:")
+        self.RFunctionParamlogDose_lineEdit =  redRGUI.lineEdit(self.advancedTab,  label = "logDose:")
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
+        self.anovaTextArea = redRGUI.textEdit(self.controlArea)
     def processdata(self, data):
         self.require_librarys(["drc"]) 
         if data:
             self.RFunctionParam_data=data["data"]
             self.data = data.copy()
-
+            
             if self.colNames == self.R('colnames('+data['data']+')'):
                 self.commitFunction()
                 return
@@ -77,82 +61,103 @@ class multdrc(OWRpy):
                 self.colNames = self.R('colnames('+data['data']+')')
                 self.responseComboBox.clear()
                 self.doseComboBox.clear()
-                self.curveComboBox.clear()
+                self.RFunctionParamcurve_comboBox.clear()
             self.responseComboBox.addItems(self.colNames)
             self.doseComboBox.addItems(self.colNames)
-            self.curveComboBox.addItems(self.colNames)
-            self.curveComboBox.addItem('None')
+            self.RFunctionParamcurve_comboBox.addItem('None')
+            self.RFunctionParamcurve_comboBox.addItems(self.colNames)
+            
             #self.commitFunction()
             self.anovaTextArea.clear()
     def commitFunction(self):
-        if self.RFunctionParam_data == '': return
-        #if self.curve == '': return
-        if self.curveComboBox.currentText() == self.doseComboBox.currentText() or self.curveComboBox.currentText() == self.responseComboBox.currentText():
+        if str(self.RFunctionParam_data) == '': return
+        if self.RFunctionParamcurve_comboBox.currentText() == self.doseComboBox.currentText() or self.RFunctionParamcurve_comboBox.currentText() == self.responseComboBox.currentText():
             print "Comparison not possible"
             return
         if self.doseComboBox.currentText() == self.responseComboBox.currentText():
             print "Comparison not possible"
             return
         self.RFunctionParam_formula = self.responseComboBox.currentText() + '~' + self.doseComboBox.currentText()
-        
-        #if self.RFunctionParam_formula == '': return
         injection = []
-        if self.RFunctionParam_hetvar != '':
-            string = 'hetvar='+str(self.RFunctionParam_hetvar)
+        if str(self.RFunctionParamhetvar_lineEdit.text()) != '':
+            string = 'hetvar='+str(self.RFunctionParamhetvar_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_na_action != '':
-            string = 'na.action='+str(self.RFunctionParam_na_action)
+        if str(self.RFunctionParamna_action_lineEdit.text()) != '':
+            string = 'na_action='+str(self.RFunctionParamna_action_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_fct != '':
-            string = 'fct='+str(self.RFunctionParam_fct)
+        if str(self.RFunctionParamfct_comboBox.currentText()) != '':
+            string = 'fct='+str(self.RFunctionParamfct_comboBox.currentText())
             injection.append(string)
-        if self.RFunctionParam_collapse != '':
-            string = 'collapse='+str(self.RFunctionParam_collapse)
+        if str(self.RFunctionParamcollapse_lineEdit.text()) != '':
+            string = 'collapse='+str(self.RFunctionParamcollapse_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_cm != '':
-            string = 'cm='+str(self.RFunctionParam_cm)
+        if str(self.RFunctionParamcm_lineEdit.text()) != '':
+            string = 'cm='+str(self.RFunctionParamcm_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_fctList != '':
-            string = 'fctList='+str(self.RFunctionParam_fctList)
+        if str(self.RFunctionParamfctList_lineEdit.text()) != '':
+            string = 'fctList='+str(self.RFunctionParamfctList_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_bcAdd != '':
-            string = 'bcAdd='+str(self.RFunctionParam_bcAdd)
+        if str(self.RFunctionParambcAdd_lineEdit.text()) != '':
+            string = 'bcAdd='+str(self.RFunctionParambcAdd_lineEdit.text())
             injection.append(string)
-        if self.curveComboBox.currentText() != '' and self.curveComboBox.currentText() != 'None':
-            string = 'curve='+str(self.curveComboBox.currentText())
+        if str(self.RFunctionParamcurve_comboBox.currentText()) != 'None':
+            string = 'curve='+str(self.RFunctionParamcurve_comboBox.currentText())
             injection.append(string)
-        if self.RFunctionParam_boxcox != '':
-            string = 'boxcox='+str(self.RFunctionParam_boxcox)
+        if str(self.RFunctionParamboxcox_lineEdit.text()) != '':
+            string = 'boxcox='+str(self.RFunctionParamboxcox_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_varPower != '':
-            string = 'varPower='+str(self.RFunctionParam_varPower)
+        if str(self.RFunctionParamvarPower_lineEdit.text()) != '':
+            string = 'varPower='+str(self.RFunctionParamvarPower_lineEdit.text())
             injection.append(string)
         if self.RFunctionParam_formula != '':
             string = 'formula='+str(self.RFunctionParam_formula)
             injection.append(string)
-        if self.RFunctionParam_control != '':
-            string = 'control='+str(self.RFunctionParam_control)
+        if str(self.RFunctionParamcontrol_lineEdit.text()) != '':
+            string = 'control='+str(self.RFunctionParamcontrol_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_weights != '':
-            string = 'weights='+str(self.RFunctionParam_weights)
+        if str(self.RFunctionParamweights_lineEdit.text()) != '':
+            string = 'weights='+str(self.RFunctionParamweights_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_startVal != '':
-            string = 'startVal='+str(self.RFunctionParam_startVal)
+        if str(self.RFunctionParamstartVal_lineEdit.text()) != '':
+            string = 'startVal='+str(self.RFunctionParamstartVal_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_robust != '':
-            string = 'robust="'+str(self.RFunctionParam_robust)+'"'
+        if str(self.RFunctionParamrobust_lineEdit.text()) != '':
+            string = 'robust='+str(self.RFunctionParamrobust_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_type != '':
-            string = 'type="'+str(self.RFunctionParam_type)+'"'
+        if str(self.RFunctionParamtype_lineEdit.text()) != '':
+            string = 'type='+str(self.RFunctionParamtype_lineEdit.text())
             injection.append(string)
-        if self.RFunctionParam_logDose != '':
-            string = 'logDose='+str(self.RFunctionParam_logDose)
+        if str(self.RFunctionParamlogDose_lineEdit.text()) != '':
+            string = 'logDose='+str(self.RFunctionParamlogDose_lineEdit.text())
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['multdrc']+'<-multdrc(data='+str(self.RFunctionParam_data)+','+inj+') # I made a dose response object')
-        self.data['data'] = self.Rvariables["multdrc"]
+        self.R(self.Rvariables['multdrc']+'<-multdrc(data='+str(self.RFunctionParam_data)+','+inj+')')
+        self.data["data"] = self.Rvariables["multdrc"]
         self.rSend("multdrc Output", self.data)
         self.anovaTextArea.clear()
         self.R('txt<-capture.output(anova('+self.Rvariables["multdrc"]+'))')
         tmp = self.R('paste(txt, collapse ="\n")')
         self.anovaTextArea.insertHtml('Check that the p-value of this output is greater that 0.05.  The p-value indicates goodness of fit of the data to the specified model.  Significantly different fits violate the assumptions of the model and make comparisons unreliable.  If you have a significant p-value please change the model in the model box above.  <br><pre>'+tmp+'</pre>')
+    def compileReport(self):
+        self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
+        self.reportSettings('Function Settings', [('hetvar',str(self.RFunctionParamhetvar_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('na_action',str(self.RFunctionParamna_action_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('fct',str(self.RFunctionParamfct_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('collapse',str(self.RFunctionParamcollapse_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('cm',str(self.RFunctionParamcm_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('fctList',str(self.RFunctionParamfctList_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('bcAdd',str(self.RFunctionParambcAdd_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('curve',str(self.RFunctionParamcurve_comboBox.currentText()))])
+        self.reportSettings('Function Settings', [('boxcox',str(self.RFunctionParamboxcox_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('varPower',str(self.RFunctionParamvarPower_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('formula',str(self.RFunctionParam_formula))])
+        self.reportSettings('Function Settings', [('control',str(self.RFunctionParamcontrol_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('weights',str(self.RFunctionParamweights_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('startVal',str(self.RFunctionParamstartVal_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('robust',str(self.RFunctionParamrobust_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('type',str(self.RFunctionParamtype_lineEdit.text()))])
+        self.reportSettings('Function Settings', [('logDose',str(self.RFunctionParamlogDose_lineEdit.text()))])
+        self.reportRaw(self.Rvariables["multdrc"])
+    def sendReport(self):
+        self.compileReport()
+        self.showReport()

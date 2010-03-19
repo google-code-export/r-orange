@@ -130,6 +130,7 @@ class OWRpy(OWWidget,RSession):
             self.GUIDialogDialog = QDialog(self)
             self.GUIDialogDialog.setLayout(QVBoxLayout())
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog,orientation=QVBoxLayout())
+            self.GUIDialogDialog.hide()
             #self.leftDock.setWidget(self.GUIDialog)
 
             #self.GUIDialogDialog = QMainWindow(self)
@@ -151,7 +152,7 @@ class OWRpy(OWWidget,RSession):
         if self.autoShowDialog:
             
             self.GUIDialogDialog.show()
-            self.GUIDialogDialog.move(50, 50)
+            #self.GUIDialogDialog.move(50, 50)
     def showHelp(self):
         self.helpBox.show()
         

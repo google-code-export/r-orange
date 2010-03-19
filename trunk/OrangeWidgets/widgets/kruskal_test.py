@@ -21,7 +21,7 @@ class kruskal_test(OWRpy):
         #box = redRGUI.tabWidget(self.controlArea)
         #self.standardTab = box.createTabPage(name = "Standard")
         #self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamsubset_lineEdit =  redRGUI.lineEdit(self.controlArea, label = "Subset:")
+        #self.RFunctionParamsubset_lineEdit =  redRGUI.lineEdit(self.controlArea, label = "Subset:")
         #self.RFunctionParamx_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x:")
         #self.RFunctionParamg_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "g:")
         self.RFunctionParamformula =  redRGUI.RFormulaEntry(self.controlArea)
@@ -46,9 +46,9 @@ class kruskal_test(OWRpy):
         injection = []
         string = formulaOutput[0]+ ' ~ ' + formulaOutput[1]
         injection.append(string)
-        if str(self.RFunctionParamsubset_lineEdit.text()) != '':
-            string = 'subset='+str(self.RFunctionParamsubset_lineEdit.text())
-            injection.append(string)
+        # if str(self.RFunctionParamsubset_lineEdit.text()) != '':  # We nolonger support subsets, you may subset using an upstream widget
+            # string = 'subset='+str(self.RFunctionParamsubset_lineEdit.text())
+            # injection.append(string)
 
         inj = ','.join(injection)
         self.R('txt<-capture.output(kruskal.test('+inj+', data='+str(self.RFunctionParam_data)+'))')
