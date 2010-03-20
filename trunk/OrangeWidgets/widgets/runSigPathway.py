@@ -1,5 +1,5 @@
 """
-<name>Sig Pathway</name>
+<name>Pathway Enrichment</name>
 <description>Performs Pathway Analysis on a genelist or subset (must specify gene list as either a full list or a subset on connecting)</description>
 <tags>Microarray</tags>
 <RFunctions>sigPathway:runSigPathway</RFunctions>
@@ -147,8 +147,7 @@ class runSigPathway(OWRpy):
             try:
                 olddir = os.getcwd()
                 os.chdir(self.wd)
-                self.pAnnotlist.clear()
-                self.pAnnotlist.addItems(glob.glob("*.RData"))
+                self.pAnnotlist.update(glob.glob("*.RData")
                 os.chdir(olddir)
             except:
                 self.infob.setText("There was a problem accessing your directory, please confirm that it is correct.")

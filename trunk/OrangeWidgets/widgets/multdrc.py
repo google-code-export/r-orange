@@ -59,16 +59,13 @@ class multdrc(OWRpy):
                 return
             else:
                 self.colNames = self.R('colnames('+data['data']+')')
-                self.responseComboBox.clear()
-                self.doseComboBox.clear()
-                self.RFunctionParamcurve_comboBox.clear()
-            self.responseComboBox.addItems(self.colNames)
-            self.doseComboBox.addItems(self.colNames)
-            self.RFunctionParamcurve_comboBox.addItem('None')
-            self.RFunctionParamcurve_comboBox.addItems(self.colNames)
+            self.responseComboBox.update(self.colNames)
+            self.doseComboBox.update(self.colNames)
+            #self.RFunctionParamcurve_comboBox.('None')
+            self.RFunctionParamcurve_comboBox.update(self.colNames.insert(0, 'None'))
             
-            #self.commitFunction()
-            self.anovaTextArea.clear()
+            self.commitFunction()
+            #self.anovaTextArea.clear()
     def commitFunction(self):
         if str(self.RFunctionParam_data) == '': return
         if self.RFunctionParamcurve_comboBox.currentText() == self.doseComboBox.currentText() or self.RFunctionParamcurve_comboBox.currentText() == self.responseComboBox.currentText():

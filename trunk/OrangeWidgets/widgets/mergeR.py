@@ -88,14 +88,9 @@ class mergeR(OWRpy):
             colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
             if type(colsA) is str:
                 colsA = [colsA]
-            old = self.colAsel
-            self.colA.clear()
-            for v in colsA:
-                self.colA.addItem(v)
-                if v == old:
-                    self.colA.setCurrentRow((self.colA.count()-1)) # set's the row to the current one 
-            
-            if 'Always Merge Like This' in self.mergeLikeThis.getChecked() and old == str(self.colA.selectedItems()[0].text()):
+            self.colA.update(colsA)
+
+            if 'Always Merge Like This' in self.mergeLikeThis.getChecked():
                 self.run()
             
             if self.dataA != '' and self.dataB != '':
@@ -121,15 +116,11 @@ class mergeR(OWRpy):
             colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
             if type(colsB) is str:
                 colsB = [colsB]
-            old = self.colBsel
-            self.colB.clear()
-            for v in colsB:
-                self.colB.addItem(v)
-                if v == old:
-                    self.colB.setCurrentRow((self.colB.count()-1))
+            self.colB.update(colsB)
+            
                     
             #self.colB.setCurrentRow(self.colB.row(QListWidgetItem(self.colBsel)))
-            if 'Always Merge Like This' in self.mergeLikeThis.getChecked() and old == str(self.colB.selectedItems()[0].text()):
+            if 'Always Merge Like This' in self.mergeLikeThis.getChecked():
                 self.run()
             
             if self.dataA != '' and self.dataB != '':

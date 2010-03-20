@@ -1,78 +1,71 @@
 """
-<name>Survival Difference</name>
+<name>survdiff</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Performs survival difference analysis.  This is similar to the Cox widget.</description>
-<icon>icons/survival.png</icon>
-<tags>Survival</tags>
 <RFunctions>survival:survdiff</RFunctions>
+<tags>Prototypes</tags>
+<icon>icons/RExecutor.png</icon>
 """
 from OWRpy import * 
-import OWGUI 
-import RRGUI 
+import redRGUI 
 import SurvivalClasses
 class survdiff(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["survdiff"])
-        self.RFunctionParam_subset = ""
-        self.RFunctionParam_formula = ""
-        self.RFunctionParam_rho = "0"
-        self.RFunctionParam_na_action = ""
+        self.data = {}
+        self.formula = ''
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("Data Table", RvarClasses.RVariable, self.processdata), ("Survival Fit", SurvivalClasses.SurvFit, self.processSurvFit)]
-        self.outputs = [("survdiff Output", RvarClasses.RVariable)]
+        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
+        self.outputs = [("survdiff Output", SurvivalClasses.SurvFit)]
         
-        box = RRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        self.RFUnctionParamsubset_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamsubset_lineEdit", self, "RFunctionParam_subset", label = "subset:")
-        self.RFUnctionParamformula_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamformula_lineEdit", self, "RFunctionParam_formula", label = "formula:")
-        self.RFUnctionParamrho_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamrho_lineEdit", self, "RFunctionParam_rho", label = "rho:")
-        self.RFUnctionParamna_action_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamna_action_lineEdit", self, "RFunctionParam_na_action", label = "na_action:")
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = RRGUI.textEdit("RoutputWindow", self)
-        self.controlArea.layout().addWidget(self.RoutputWindow)
+        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        hbox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        lbox = redRGUI.widgetBox(hbox)
+
+        self.standardTab = redRGUI.widgetBox(lbox)
+        self.RFunctionParamformula =  redRGUI.RFormulaEntry(lbox)
+        self.survTime = redRGUI.comboBox(self.RFunctionParamformula.extrasBox, label = 'Time')
+        self.RFunctionParamrho_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "rho:", text = '0', toolTip = 'Sets the rho parameter of the comparison.\nWith rho = 0 this is the log-rank or Mantel-Haenszel test,\nand with rho = 1 it is equivalent to the Peto & Peto modification of the Gehan-Wilcoxon test.')
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
+        self.RoutputWindow = redRGUI.textEdit(hbox, label = "RoutputWindow")
     def processdata(self, data):
         self.require_librarys(["survival"]) 
-        self.RFunctionParam_data = ""
         if data:
             self.RFunctionParam_data=data["data"]
-            self.commitFunction()
-
-    def processSurvFit(self, data):
-        self.require_librarys(['survival'])
-        self.RFunctionParam_data=""
-        if data:
-            self.RFunctionParam_data=data['rawdata']
-            if 'formula' in data:
-                self.RFunctionParam_formula = data['formula']
+            self.data = data.copy()
+            colnames = self.R('colnames('+self.RFunctionParam_data+')'
+            self.RFunctionParamformula.update(self.R('colnames('+self.RFunctionParam_data+')'))
+            self.survTime.update(colnames)
             self.commitFunction()
     def commitFunction(self):
-        if self.RFunctionParam_data == '': return
-        if self.RFunctionParam_formula == '': return
+        if str(self.RFunctionParam_data) == '': return
+        if str(self.survTime.currentText())== '': return
+        formulaOutput = self.RFunctionParamformula.Formula()
+        if not formulaOutput: return
+        if str(self.survTime.currentText()) == formulaOutput[0]: return
+        if formulaOutput[0] == '' or formulaOutput[1] =='': return
         injection = []
-        if self.RFunctionParam_subset != '':
-            string = 'subset='+str(self.RFunctionParam_subset)
-            injection.append(string)
-        if self.RFunctionParam_formula != '':
-            string = 'formula='+str(self.RFunctionParam_formula)
-            injection.append(string)
-        if self.RFunctionParam_rho != '':
-            string = 'rho='+str(self.RFunctionParam_rho)
-            injection.append(string)
-        if self.RFunctionParam_na_action != '':
-            string = 'na_action='+str(self.RFunctionParam_na_action)
+        injection.append('formula = Surv('+str(self.survTime.currentText())+','+formulaOutput[0]+')~'+formulaOutput[1])
+        self.formula = 'formula = Surv('+str(self.survTime.currentText())+','+formulaOutput[0]+')~'+formulaOutput[1]
+        if str(self.RFunctionParamrho_lineEdit.text()) != '':
+            string = 'rho='+str(self.RFunctionParamrho_lineEdit.text())
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['survdiff']+'<-survdiff(data='+str(self.RFunctionParam_data)+','+inj+')')
-        
         self.R('txt<-capture.output('+self.Rvariables['survdiff']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
-        
-        self.rSend("survdiff Output", {"data":self.Rvariables["survdiff"], "formula":self.RFunctionParam_formula})
-        
-        
+        self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+        self.data["data"] = self.Rvariables["survdiff"]
+        self.rSend("survdiff Output", self.data)
+    def compileReport(self):
+        self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
+        self.reportSettings('Function Settings', [('formula',self.formula)])
+        self.reportSettings('Function Settings', [('rho',str(self.RFunctionParamrho_lineEdit.text()))])
+        self.reportRaw(self.Rvariables["survdiff"])
+    def sendReport(self):
+        self.compileReport()
+        self.showReport()

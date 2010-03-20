@@ -8,6 +8,7 @@
 """
 from OWRpy import * 
 import OWGUI 
+import redRGUI
 class anova_lm(OWRpy): 
     settingsList = ['RFunctionParam_object']
     def __init__(self, parent=None, signalManager=None):
@@ -16,16 +17,17 @@ class anova_lm(OWRpy):
         self.loadSettings()
         self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
         
-        box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        OWGUI.button(box, self, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = QTextEdit()
-        box.layout().addWidget(self.RoutputWindow)
+        box = redRGUI.groupBox(self.controlArea, "Output")
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = redRGUI.textEdit(box)
+        #box.layout().addWidget(self.RoutputWindow)
     def onLoadSavedSession(self):
         self.commitFunction()
     def processobject(self, data):
         if data:
             self.RFunctionParam_object=data["data"]
             self.commitFunction()
+        else: self.RFunctionParam_object = ''
     def commitFunction(self):
         if self.RFunctionParam_object == '': return
         self.R('txt<-capture.output('+'anova.lm(object='+str(self.RFunctionParam_object)+'))')

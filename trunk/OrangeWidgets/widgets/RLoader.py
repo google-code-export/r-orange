@@ -26,4 +26,4 @@ class RLoader(OWRpy):
         
         # logic to handle exceptions to loading
         self.rSend('R Session', {'data':self.Rvariables['sessionEnviron']})
-        self.processingBox.setHtml('Session loaded from memory, please use the variable separator to parse the widget output.')
+        self.status.setText('Session loaded from memory, please use the variable separator to parse the widget output.')

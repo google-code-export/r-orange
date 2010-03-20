@@ -1,5 +1,5 @@
 """
-<name>Diff Exp</name>
+<name>Differential Expression</name>
 <description>Calculates differential expression of genes from an eSet object</description>
 <tags>Microarray</tags>
 <RFunctions>limma:lmFit</RFunctions>

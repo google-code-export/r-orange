@@ -30,19 +30,20 @@ class kruskal_test(OWRpy):
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         self.require_librarys(["stats"]) 
+        self.RoutputWindow.clear()
+        self.status.setText('New data recieved')
         if data:
             self.RFunctionParam_data=data["data"]
-            self.RFunctionParamformula.clearFormula()
             self.data = data.copy()
-            self.RFunctionParamformula.addItems(self.R('colnames('+self.RFunctionParam_data+')'))
+            self.RFunctionParamformula.update(self.R('colnames('+self.RFunctionParam_data+')'))
             self.commitFunction()
         else:
             self.RFunctionParam_data = ''
-            self.RFunctionParamformula.clearFormula()
+            self.RFunctionParamformula.clear()
     def commitFunction(self):
         if str(self.RFunctionParam_data) == '': return
         formulaOutput = self.RFunctionParamformula.Formula()
-        if formulaOutput[0] == '' or formulaOutput[1] == '': return
+        if formulaOutput == None or formulaOutput[0] == '' or formulaOutput[1] == '': return
         injection = []
         string = formulaOutput[0]+ ' ~ ' + formulaOutput[1]
         injection.append(string)
@@ -55,6 +56,7 @@ class kruskal_test(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
+        self.status.setText('Data sent')
     def compileReport(self):
         self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
         self.reportSettings('Function Settings', [('subset',str(self.RFunctionParamsubset_lineEdit))])

@@ -28,7 +28,6 @@ class ListSelector(OWRpy):
         
     def process(self, data):
         self.data = None
-        self.names.clear()
         if data:
             self.data = data['data']
             names = self.R('names('+self.data+')')
@@ -36,9 +35,9 @@ class ListSelector(OWRpy):
             if names == None:
                 names = range(1, self.R('length('+self.data+')')+1)
                 print names
-            for item in names:
-                self.names.addItem(str(item))
+            self.names.update(names)
         else:
+            self.name.clear()
             for signal in self.outputs:
                 self.rSend(signal[0], None)
                 

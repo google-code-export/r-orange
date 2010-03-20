@@ -33,10 +33,12 @@ class hist(OWRpy):
                 if type(colnames) == type(''):
                     colnames = [colnames]
                     
-                self.column.addItems(colnames)
+                self.column.update(colnames)
                 self.needsColumns = 1
-            else:
                 self.commitFunction()
+            
+        else:
+            self.RFunctionParam_x = ''
     def commitFunction(self):
         if self.RFunctionParam_x == '': return
         if self.needsColumns:

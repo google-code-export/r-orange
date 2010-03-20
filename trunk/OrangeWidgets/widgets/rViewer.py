@@ -18,8 +18,8 @@ class rViewer(OWRpy):
         self.RFunctionParam_data = None
         self.loadSettings()
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
+        self.showAll = redRGUI.checkBox(self.controlArea, buttons = ['Show All'])
+        OWGUI.button(self.bottomAreaRight, self, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
     
     def processdata(self, data):
@@ -29,8 +29,13 @@ class rViewer(OWRpy):
 
     
     def commitFunction(self):
-        if not self.RFunctionParam_data: self.RoutputWindow.setHtml('No data connected to show.')
-        self.R('txt<-capture.output('+self.RFunctionParam_data+')')
+        if not self.RFunctionParam_data:
+            self.RoutputWindow.setHtml('No data connected to show.')
+            return
+        if self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All' not in self.showAll.getChecked():
+            self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,])') #only need to see the first 5 rows of the data.
+        else:
+            self.R('txt<-capture.output('+self.RFunctionParam_data+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.setHtml('<pre>'+tmp+'</pre>')

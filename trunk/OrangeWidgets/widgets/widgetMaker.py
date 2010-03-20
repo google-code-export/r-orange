@@ -282,6 +282,8 @@ class widgetMaker(OWRpy):
             self.processSignals += '\t\t\tself.data = data.copy()\n'
             if self.processOnConnect:
                 self.processSignals += '\t\t\tself.commitFunction()\n'
+            self.processSignals += '\t\telse:'
+            self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=\'\''
                 
     def makeCommitFunction(self):
         self.commitFunction = ''

@@ -164,4 +164,13 @@ class listBox(QListWidget,widgetState):
         for i in range(0, self.count()-1):
             items.append(self.item(i))
         return items
-        
+    def update(self, items):
+        current = [str(item.text()) for item in self.selectedItems()]
+        self.clear()
+        self.addItems(items)
+        index = []
+        for t in current:
+            for lwi in self.findItems(t, Qt.MatchExactly):
+                index.append(lwi)
+        for i in index:
+            i.setSelected(True)

@@ -46,11 +46,12 @@ class rExecutor(OWRpy):
         rightArea = redRGUI.widgetBox(area)
 
         runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')
+        runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
         processbutton = redRGUI.button(runbox, label = "Run", callback = self.runR, width=100)
 
         self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
-        self.infov = redRGUI.widgetLabel(self.dataBox, "No Input")
+        self.status = redRGUI.widgetLabel(self.dataBox, "No Input")
         
         self.metadataBox = redRGUI.widgetBox(leftArea, "Metadata")
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
@@ -137,7 +138,7 @@ class rExecutor(OWRpy):
                 elif thisclass == 'list': # the object is a list
                     self.isList()
                 else:
-                    self.infov.setText("R object is of non-standard type.")
+                    self.status.setText("R object is of non-standard type.")
             if thisclass.__class__.__name__ == 'list': # we need to handle multible classes 
                 for item in thisclass:
                     if item == 'numeric': # we have a numeric vector as the object
@@ -151,16 +152,16 @@ class rExecutor(OWRpy):
                     elif item == 'list': # the object is a list
                         self.isList()
                     else:
-                        self.infov.setText("R object is of non-standard type.")
+                        self.status.setText("R object is of non-standard type.")
                     
         else: return
     
     def isNumeric(self):
-        self.infov.setText("Numeric Vector Connected of length %s" % str(self.R('length('+self.data+')')))
+        self.status.setText("Numeric Vector Connected of length %s" % str(self.R('length('+self.data+')')))
     def isCharacter(self):
-        self.infov.setText("Character Vector Connected of length %s" % str(self.R('length('+self.data+')')))
+        self.status.setText("Character Vector Connected of length %s" % str(self.R('length('+self.data+')')))
     def isDataFrame(self):
-        self.infov.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
+        self.status.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
             self.dfselected = redRGUI.listBox(self.dataBox, self)
@@ -171,7 +172,7 @@ class rExecutor(OWRpy):
             for e in colnames:
                 self.dfselected.addItem(e)
     def isMatrix(self):
-        self.infov.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
+        self.status.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = redRGUI.listBox(self.dataBox, self)
@@ -181,6 +182,6 @@ class rExecutor(OWRpy):
             except:
                 print 'Error with colnames, may not exist.'
     def isList(self):
-        self.infov.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
+        self.status.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
         
         

@@ -33,14 +33,14 @@ class pairwise_t_test(OWRpy):
     def process(self, data):
         if data:
             self.indata = data['data']
-            self.values.clear()
-            self.groups.clear()
             cols = self.R('colnames('+self.indata+')')
-            self.values.addItems(cols)
-            self.groups.addItems(cols)
+            self.RFunctionParam_x.update(cols)
+            self.RFunctionParam_g.update(cols)
             self.commitFunction()
         else:
             self.indata = ''
+            self.RFunctionParam_g.clear()
+            self.RFunctionParam_x.clear()
             return
             
             

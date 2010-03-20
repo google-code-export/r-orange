@@ -108,7 +108,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
-        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
+        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets and Show ToolBar", self.reloadWidgets)
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
@@ -242,7 +242,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
         self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
-        self.menuOptions.addAction("Set to debug mode", self.setDebugMode)
+        #self.debugModeButton = self.menuOptions.addAction('Set Debug Mode', self.setDebugMode)
+        #self.connect(self.debugModeButton, SIGNAL('toggled()'), self.setDebugMode)
 
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
@@ -287,9 +288,11 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
     def setDebugMode(self):
-        if self.output.debugMode:
+        if self.debugMode:
+            #self.debugModeButton.setChecked(True)
             self.output.debugMode = 0
         else:
+            #self.debugModeButton.setChecked(False)
             self.output.debugMode = 1
     def importSchema(self):
         name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
@@ -325,6 +328,7 @@ class OrangeCanvasDlg(QMainWindow):
     def reloadWidgets(self): # should have a way to set the desired tab location 
         self.widgetRegistry = orngRegistry.readCategories()
         self.createWidgetsToolbar()
+        self.widgetsToolBar.show()
     def menuItemSaveAs(self):
         self.schema.saveDocumentAs()
 
@@ -583,6 +587,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings.setdefault("snapToGrid", 1)
         self.settings.setdefault("writeLogFile", 1)
         self.settings.setdefault("dontAskBeforeClose", 1)
+        self.settings.setdefault("debugMode", 0)
         #self.settings.setdefault("autoSaveSchemasOnClose", 0)
         self.settings.setdefault("saveWidgetsPosition", 1)
         self.settings.setdefault("svnSettings", None)

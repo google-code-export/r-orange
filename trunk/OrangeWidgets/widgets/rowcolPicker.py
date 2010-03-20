@@ -1,5 +1,5 @@
 """
-<name>Row Col Picker</name>
+<name>Subset</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.  Very similar to the Row Col Selector but this widget doesn't look to row or column criteria.  Instead, this widget subsets on row or column name alone, while Row Col Selector does not.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
@@ -49,20 +49,18 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             c = self.R('colnames('+self.data+')')
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
                 if type(r) == list:
-                    self.attributes.clear()
-                    self.attributes.addItems(r)
+                    self.attributes.update(r)
                     self.namesPresent = 1
                 else:
-                    self.attributes.addItems([i for i in range(self.R('length('+self.data+'[1,])'))])
+                    self.attributes.update([i for i in range(self.R('length('+self.data+'[1,])'))])
                     self.namesPresent = 0
             elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
                 
                 if type(c) == list:
-                    self.attributes.clear()
-                    self.attributes.addItems(c)
+                    self.attributes.update(c)
                     self.namesPresent = 1
                 else:
-                    self.attributes.addItems([i for i in range(self.R('length('+self.data+'[,1])'))])
+                    self.attributes.update([i for i in range(self.R('length('+self.data+'[,1])'))])
                     self.namesPresent = 0
             else: #by exclusion we haven't picked anything yet
                 self.status.setText('You must select either Row or Column to procede')

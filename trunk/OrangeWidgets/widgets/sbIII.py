@@ -13,7 +13,7 @@ import OWToolbars
 import re
 import textwrap
 
-class sbIII(OWRpy):
+    class sbIII(OWRpy):
     
     globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):

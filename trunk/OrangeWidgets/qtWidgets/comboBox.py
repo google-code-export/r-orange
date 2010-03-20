@@ -52,5 +52,11 @@ class comboBox(QComboBox,widgetState):
                 self.addItems([items])
             elif type(items) == type([]):
                 self.addItems(items)
-
+    def update(self, items):
+        current = self.currentText()
+        self.clear()
+        self.addRItems(items)
+        index = self.findText(current)
+        if index != -1:
+            self.setCurrentIndex(index)
     

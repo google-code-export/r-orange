@@ -239,11 +239,9 @@ class readFile(OWRpy):
     def updateScan(self):
         colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')')
         if type(colNames) is str:
-            colNames = [colNames]
-        
-        self.rowNamesCombo.clear()
-        self.rowNamesCombo.addItem('No Row Names')
-        self.rowNamesCombo.addItems(colNames)
+            colNames = range(1, int(self.R('length('+self.Rvariables['dataframe_org']+'[1,])')))
+
+        self.rowNamesCombo.update(colNames.insert(0, 'No Row Names'))
         if self.rownames != 'NULL' and self.rownames in colNames:
             self.rowNamesCombo.setCurrentIndex(colNames.index(self.rownames)+1)
             

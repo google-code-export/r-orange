@@ -87,30 +87,22 @@ class RedRScatterplot(OWRpy):
             self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
             self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
             # set some of the plot data
-            self.xColumnSelector.clear()
-            self.yColumnSelector.clear()
-            self.subsetCMSelector.clear()
-            self.paintCMSelector.clear()
-            
-            self.subsetCMSelector.addRItems(' ')
-            self.paintCMSelector.addRItems(' ')
-            
-            self.xColumnSelector.addRItems(self.R('colnames('+self.data+')'))
-            self.yColumnSelector.addRItems(self.R('colnames('+self.data+')'))
-            self.subsetCMSelector.addRItems(self.R('colnames('+self.cm+')'))
-            self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
-            self.paintCMSelector.addRItems(self.R('colnames('+self.data+')'))
-            
+            self.xColumnSelector.update(self.R('colnames('+self.data+')'))
+            self.yColumnSelector.update(self.R('colnames('+self.data+')'))
+            self.subsetCMSelector.update(self.R('colnames('+self.cm+')').insert(0, ' '))
+            self.paintCMSelector.update(self.R('colnames('+self.cm+')').extend(self.R('colnames('+self.data+')')).insert(0, ' '))
+
             self.plot()
     def populateCM(self):
         cmSelector = self.subsetCMSelector.currentText()
-        self.subsetCMClass.clear()
+        
         if cmSelector != ' ':
             command = "levels(as.factor("+self.cm+"[,"+str(self.subsetCMSelector.currentIndex())+"]))"
             try:
                 self.R('tmp<-'+command) # must assign to a temp variable because otherwise R fails in the background.  This problem should be reported, and may be fixed in later Rpy releases.
-                self.subsetCMClass.addRItems(self.R('tmp'))
+                self.subsetCMClass.update(self.R('tmp'))
             except:
+                self.subsetCMClass.clear()
                 self.X.setText('Failed')
             #self.subsetCMClass.addItems(self.R('levels(as.factor('+self.cm+'[,"'+cmSelector+'"]))'))
             

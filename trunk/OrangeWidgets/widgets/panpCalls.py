@@ -42,7 +42,7 @@ class panpCalls(OWRpy):
         self.tightCut.setText('0.01')
         self.percentA = redRGUI.lineEdit(box, label = "Percent Absent", orientation = "horizontal")
         self.percentA.setText('20')
-        processbutton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset, width=200)
+        processbutton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset)
         
 
     def onLoadSavedSession(self):

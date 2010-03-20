@@ -98,7 +98,7 @@ class OutputWindow(QDialog):
         # print text
         # return
         self.numberofLines += 1
-        if self.numberofLines > 1000 and not self.debugMode:
+        if self.numberofLines > 100 and not self.debugMode:
             self.textOutput.clear()
             self.numberofLines = 0
         Text = self.getSafeString(text)
@@ -135,7 +135,7 @@ class OutputWindow(QDialog):
         for line in lines:
             self.numberofLines += 1
             self.write(line)
-            if self.numberofLines > 1000 and not self.debugMode:
+            if self.numberofLines > 100 and not self.debugMode:
                 self.textOutput.clear()
 
     def flush(self):

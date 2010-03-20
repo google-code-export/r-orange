@@ -8,46 +8,48 @@
 """
 from OWRpy import * 
 import OWGUI 
-import RRGUI
+import redRGUI
+import SurvivalClasses
 class survivalPlot(OWRpy): 
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.RFunctionParam_main = 'Survival Plot'
-        self.RFunctionParam_xlab = 'Time'
-        self.RFunctionParam_ylab = 'Percent Surviving'
-        self.RFunctionParam_cex = '120'
-        self.RFunctionParam_xscale = ''
-        #self.RFunctionParam_y = ''
         self.loadSettings()
         self.RFunctionParam_x = ''
-        self.inputs = [("x", RvarClasses.RVariable, self.processx)]
+        self.inputs = [("x", SurvivalClasses.SurvFit, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        RRGUI.lineEdit(box, None, self, 'RFunctionParam_main', label = 'Main Title:')
-        RRGUI.lineEdit(box, None, self, 'RFunctionParam_xlab', label = 'X Axis Label:')
-        RRGUI.lineEdit(box, None, self, 'RFunctionParam_ylab', label = 'Y Axis Label:')
-        RRGUI.lineEdit(box, None, self, 'RFunctionParam_xscale', label = 'X Scale Adjust:')
-        RRGUI.lineEdit(box, None, self, 'RFunctionParam_cex', label = 'Text Magnification Percent:')
-        OWGUI.button(box, self, "Commit", callback = self.commitFunction)
+        self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:', text = 'Survival Plot', toolTip = 'The title of the plot')
+        self.RFunctionParam_xlab = redRGUI.lineEdit(box, label = 'X Axis Label:', text = 'Time', toolTip = 'The text representing the X axis.')
+        self.RFunctionParam_ylab = redRGUI.lineEdit(box, label = 'Y Axis Label:', text = 'Percent Surviving', toolTip = 'The text representing the Y axis.')
+        self.RFunctionParam_xscale = redRGUI.lineEdit(box, label = 'X Scale Adjust:', toolTip = 'Number to adjust the scale by to convert from different times ex months to years.')
+        self.RFunctionParam_cex = redRGUI.lineEdit(box, label = 'Text Magnification Percent:', text = '120', toolTip = 'Magnification of the axes.')
+        redRGUI.button(self.bottomAreaRight, 'Save as PDF', callback = self.saveAsPDF)
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+    def saveAsPDF(self):
+        if self.RFunctionParam_x == '': return
+        self.savePDF('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')
+        self.status.setText('Plot Saved')
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
             self.commitFunction()
+        else:
+            self.RFunctionParam_x = ''
     def commitFunction(self):
         #if self.RFunctionParam_y == '': return
         if self.RFunctionParam_x == '': return
         injection = []
         if self.RFunctionParam_main != '':
-            injection.append('main = "'+self.RFunctionParam_main+'"')
+            injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
         if self.RFunctionParam_xlab != '':
-            injection.append('xlab = "'+self.RFunctionParam_xlab+'"')
+            injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
         if self.RFunctionParam_ylab != '':
-            injection.append('ylab = "'+self.RFunctionParam_ylab+'"')
+            injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
         if self.RFunctionParam_xscale != '':
-            injection.append('xscale = '+self.RFunctionParam_xscale)
+            injection.append('xscale = '+str(self.RFunctionParam_xscale.text()))
         if self.RFunctionParam_cex != '100':
-            mag = float(self.RFunctionParam_cex)/100
+            mag = float(str(self.RFunctionParam_cex.text()))/100
             injection.append('cex.lab = '+str(mag))
             injection.append('cex.axis = '+str(mag))
         inj = ','.join(injection)

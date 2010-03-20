@@ -72,7 +72,7 @@ class affyNormalize(OWRpy):
         runbutton = redRGUI.button(self.bottomAreaRight, label = "Run Normalization", callback = self.normalize)
         # runbutton.layout().setAlignment(Qt.AlignRight)
         
-        
+        self.resize(400, 200)
     def normalize(self):
         if self.data == '': return
         self.status.setText('Processing')

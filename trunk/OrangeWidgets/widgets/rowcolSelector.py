@@ -1,5 +1,5 @@
 """
-<name>Row Col Selection</name>
+<name>Row or Column Selector</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
@@ -69,20 +69,18 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
                 c = self.R('colnames('+self.data+')')
                 if type(c) == list:
-                    self.attributes.clear()
-                    self.attributes.addItems(c)
+                    self.attributes.update(c)
                     self.namesPresent = 1
                 else:
-                    self.attributes.addItems([i for i in range(self.R('length('+self.data+'[1,])'))])
+                    self.attributes.update([i for i in range(self.R('length('+self.data+'[1,])'))])
                     self.namesPresent = 0
             elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
                 
                 if type(r) == list:
-                    self.attributes.clear()
-                    self.attributes.addItems(r)
+                    self.attributes.update(r)
                     self.namesPresent = 1
                 else:
-                    self.attributes.addItems([i for i in range(self.R('length('+self.data+'[,1])'))])
+                    self.attributes.update([i for i in range(self.R('length('+self.data+'[,1])'))])
                     self.namesPresent = 0
             else: #by exclusion we haven't picked anything yet
                 self.attributes.clear()
@@ -141,15 +139,13 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
         if c == 'character':
             self.attsList.show()
             self.attsLineEdit.hide()
-            self.attsList.clear()
-            self.attsList.addItems(self.R('t'))
+            self.attsList.update(self.R('t'))
             self.infoArea.setHtml('Character attribute detected.  The attribute can be seen to the right of the logic box.  Multiple items can be selected for subsetting.')
             self.dataClass = 'character'
         elif c == 'factor':
             self.attsLineEdit.hide()
             self.attsList.show()
-            self.attsList.clear()
-            self.attsList.addItems(self.R('levels(t)'))
+            self.attsList.update(self.R('levels(t)'))
             self.R('txt<-capture.output(summary(t))')
             tmp = self.R('paste(txt, collapse ="\n")')
             self.infoArea.setHtml('A list of factors was detected.  These are often used for classification.  Multiple items can be selected for subsetting.<br><br>Summary:<br><pre>'+tmp+'</pre>')

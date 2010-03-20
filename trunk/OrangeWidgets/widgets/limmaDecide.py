@@ -54,7 +54,7 @@ class limmaDecide(OWRpy):
         self.infoa = redRGUI.widgetLabel(computebox, "Data not yet connected")
         self.pickGroup = redRGUI.button(computebox, "Change Model Group Subset", callback = self.showModelGroupDialog)
         self.pickGroup.setEnabled(False)
-        self.runbutton = redRGUI.button(self.bottomAreaRight, "Run Analysis", callback = self.runAnalysis, width=200)
+        self.runbutton = redRGUI.button(self.bottomAreaRight, "Run Analysis", callback = self.runAnalysis)
         self.runbutton.setEnabled(False)
         
         self.modelGroupDialog = QDialog()
@@ -97,7 +97,7 @@ class limmaDecide(OWRpy):
         self.groupNames = self.R('colnames('+self.Rvariables['gcm']+')')
         if len(self.groupNames) > 1:
             self.pickGroup.setEnabled(True)
-            self.modelListBox.addItems(self.groupNames)
+            self.modelListBox.update(self.groupNames)
             if self.eset != None:
                 self.modelGroupDialog.show()
         # self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])

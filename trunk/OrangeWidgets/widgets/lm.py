@@ -22,9 +22,9 @@ class lm(OWRpy):
         self.outputs = [("lm Output", RvarClasses.RVariable)]
         
         #GUI
-        self.GUIDialog.hide()
+        
         box = redRGUI.widgetBox(self.GUIDialog, orientation = 'horizontal')
-        paramBox = redRGUI.groupBox(box, 'Parameters')
+        paramBox = redRGUI.groupBox(self.GUIDialog, 'Parameters')
         formulaBox = redRGUI.widgetBox(self.controlArea)
         self.RFunctionParam_subset = redRGUI.lineEdit(paramBox, 'NULL', label = "subset:")
         self.RFunctionParam_qr = redRGUI.lineEdit(paramBox, 'TRUE', label = "qr:")
@@ -47,14 +47,15 @@ class lm(OWRpy):
         self.processButton = redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
-    
+        self.GUIDialogDialog.hide()
     def processdata(self, data):
         if data and data['data']:
             self.RFunctionParam_data=data["data"]
             names = self.R('colnames('+self.RFunctionParam_data+')')
-            self.formulEntry.addItems(names)
+            self.formulEntry.update(names)
             self.status.setText('Data Connected')
         else:
+            self.formulEntry.clear()
             self.RFunctionParam_data = ''
             self.status.setText('Data Connection Failed. Please Reconnect')
     def commitFunction(self):

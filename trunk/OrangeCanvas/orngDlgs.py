@@ -449,7 +449,7 @@ class CanvasOptionsDlg(QDialog):
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", "Don't ask to save schema before closing", debuggingEnabled = 0)
         self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", "Save size and position of widgets", debuggingEnabled = 0)
         self.useContextsCB = OWGUI.checkBox(generalBox, self.settings, "useContexts", "Use context settings")
-
+        self.setDebugModeCheckBox = OWGUI.checkBox(generalBox, self.canvasDlg.output, "debugMode", "Set to debug mode")
         validator = QIntValidator(self)
         validator.setRange(0,10000)
 

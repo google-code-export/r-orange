@@ -13,13 +13,13 @@ from OWRpy import *
 class dataEntry(OWRpy):
     settingsList = ['savedData']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", 
-        wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 10
         self.colCount = 10
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
+        self.classes = None
 
         self.savedData = None
         self.loadSettings()

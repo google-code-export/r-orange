@@ -13,27 +13,31 @@ class RFormulaEntry(QWidget, widgetState):
         ## add the elements to the box
         
         #place the command keys
-        buttonsBox = redRGUI.groupBox(box, label = "Formula Commands")
-        self.plusButton = redRGUI.button(buttonsBox, "And (+)", callback = self.plusButtonClicked)
+        self.buttonsBox = redRGUI.groupBox(box, label = "Formula Commands")
+        self.plusButton = redRGUI.button(self.buttonsBox, "And (+)", callback = self.plusButtonClicked)
         self.plusButton.setEnabled(False)
-        self.colonButton = redRGUI.button(buttonsBox, "Interacting With (:)", callback = self.colonButtonClicked)
+        self.colonButton = redRGUI.button(self.buttonsBox, "Interacting With (:)", callback = self.colonButtonClicked)
         self.colonButton.setEnabled(False)
-        self.starButton = redRGUI.button(buttonsBox, "Together and Interacting (*)", callback = self.starButtonClicked)
+        self.starButton = redRGUI.button(self.buttonsBox, "Together and Interacting (*)", callback = self.starButtonClicked)
         self.starButton.setEnabled(False)
-        redRGUI.button(buttonsBox, 'Clear', self.clearFormula)
-        self.elementsListBox = redRGUI.listBox(buttonsBox, label = 'Elements', callback = self.FormulaEntryElementSelected)
+        redRGUI.button(self.buttonsBox, 'Clear', self.clearFormula)
+        self.elementsListBox = redRGUI.listBox(self.buttonsBox, label = 'Elements', callback = self.FormulaEntryElementSelected)
         self.elementsListBox.setEnabled(True)
         
         # place the formula line edit
-        modelBox = redRGUI.groupBox(box, label = "Model Formula", orientation = 'horizontal')
-        self.outcomeVariable = redRGUI.comboBox(modelBox, label = 'Outcome (f(x)):')
-        redRGUI.widgetLabel(modelBox, ' = ')
-        self.modelLineEdit = redRGUI.lineEdit(modelBox, label = None)
-    
+        self.modelBox = redRGUI.groupBox(box, label = "Model Formula", orientation = 'horizontal')
+        self.extrasBox = redRGUI.widgetBox(self.modelBox)
+        self.outcomeVariable = redRGUI.comboBox(self.modelBox, label = 'Outcome (f(x)):')
+        redRGUI.widgetLabel(self.modelBox, ' = ')
+        self.modelLineEdit = redRGUI.lineEdit(self.modelBox, label = None)
+    def clear(self):
+        self.elementsListBox.clear()
+        self.outcomeVariable.clear()
+        self.clearFormula()
     def clearFormula(self):
         self.modelLineEdit.clear()
         #self.elementsListBox.clear()
-        self.outcomeVariable.clear()
+        #self.outcomeVariable.clear()
         self.updateEnabled(1)
     def addItems(self, items):
         self.clearFormula()
@@ -81,4 +85,21 @@ class RFormulaEntry(QWidget, widgetState):
     def loadSettings(self, data):
         self.setState(data)
         pass # complete
+        
+    def update(self, items):
+        ebis = []
+        for r in range(0, int(self.elementsListBox.count())-1):
+            ebi = self.elementsListBox.item(r)
+            ebis.append(str(self.elementsListBox.item(r).text()))
+        print ebis
+        print items
+        update = 1
+        for name in ebis:
+            if name not in items:
+                update = 0
+        if not update:
+            self.addItems(items) # we can't be sure that the elements in the formul entry lineEdit are in the new colnames.
+        else: # all of the same items are in the elementsListBox so we don't need to change it 
+            self.outcomeVariable.update(items)
+            self.elementsListBox.update(items)
         

@@ -62,7 +62,7 @@ class RSession():
             qApp.restoreOverrideCursor()
             self.progressBarFinished()
             print inst.message
-            QMessageBox.information(self, 'Orange Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
+            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
             #self.status.setText('Error occured!!')
             return None # now processes can catch potential errors
         self.processing = False
@@ -70,9 +70,9 @@ class RSession():
             self.status.setText('Processing complete')
             #self.progressBarFinished()
         try:
-            self.notes.setCursorToEnd()
-            self.notes.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
-        except: pass #there must not be any notes to add to
+            self.ROutput.setCursorToEnd()
+            self.ROutput.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
+        except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
         return output
                         

@@ -24,8 +24,8 @@ class pamr_cv(OWRpy):
         self.advancedTab = box.createTabPage(name = "Advanced")
         self.RFunctionParamfolds_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "folds:")
         self.RFunctionParamnfold_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "nfold:")
-        redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, self, "Report", callback = self.sendReport)
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
     def processdata(self, data):
         self.require_librarys(["pamr"]) 
         if data:

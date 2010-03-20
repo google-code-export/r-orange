@@ -1,6 +1,6 @@
 """
-<name>CM Editor</name>
-<description>Virtually Identical to Data Entry but works on the CM of a data table.</description>
+<name>Class Manager Editor</name>
+<description>Virtually Identical to Data Entry but works on the Class Manager of a data table.  This can be used to assign classes to data for plotting or subsetting.</description>
 <author>Kyle R Covington kylecovington1@gmail.com</author>
 <tags>Data Input</tags>
 <RFunctions>base:data.frame</RFunctions>

@@ -799,7 +799,7 @@ def constructCategoriesPopup(canvasDlg):
         for widgetInfo in sorted(canvasDlg.widgetRegistry[category].values(), key=lambda x:x.priority):
             icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
             act = catmenu.addAction(icon, widgetInfo.name)
-            print str(widgetInfo.name)+' widgetInfo.name (orgnTabs.py)'
+            
             act.widgetInfo = widgetInfo
             act.category = catmenu
             categoriesPopup.allActions.append(act)
@@ -847,7 +847,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                     
                     icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
                     act = catmenu.addAction(icon, widgetInfo.name)
-                    print str(widgetInfo.name)+' widgetInfo.name (orgnTabs.py)'
+                    
                     act.widgetInfo = widgetInfo
                     act.category = catmenu
                     categoriesPopup.allActions.append(act)

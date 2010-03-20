@@ -34,27 +34,9 @@ class Melt_DF(OWRpy):
             self.RFunctionParam_data=data["data"]
             self.data = data.copy()
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
-            mvOld = []
-            for item in self.RFunctionParam_measure_var.selectedItems():
-                mvOld.append(item.text())
-            self.RFunctionParam_measure_var.clear()
-            for name in colnames:
-                self.RFunctionParam_measure_var.addItem(name)
-            for item in self.RFunctionParam_measure_var.items():
-                if str(item.text()) in mvOld:
-                    self.RFunctionParam_measure_var.setItemSelected(item, True)
-            ivOld = []
-            for item in self.RFunctionParam_id_var.selectedItems():
-                ivOld.append(item.text())
-            self.RFunctionParam_id_var.clear()
-            for name in colnames:
-                self.RFunctionParam_id_var.addItem(name)
-            for item in self.RFunctionParam_id_var.items():
-                if str(item.text()) in ivOld:
-                    self.RFunctionParam_id_var.setItemSelected(item, True)
-            
-            
-            
+            self.RFunctionParam_measure_var.update(colnames)
+            self.RFunctionParam_id_var.update(colnames)
+
             self.commitFunction()
     def commitFunction(self):
         self.require_librarys(['reshape'])
