@@ -74,7 +74,7 @@ class readFile(OWRpy):
         orientation='vertical',callback=self.scanFile)
         
         self.rowNamesCombo = redRGUI.comboBox(box,label='Select Row Names', items=[],
-        orientation='vertical',callback=self.scanFile)
+        orientation='vertical')
         #self.rowNamesCombo.setMaximumWidth(250)        
         
         box = redRGUI.groupBox(options, label="Other Options", 
@@ -155,6 +155,7 @@ class readFile(OWRpy):
         self.loadFile(scan=True)
     
     def scanFile(self):
+        
         for i in self.columnTypes.findChildren(QWidget):
             i.setHidden(True)
         redRGUI.widgetBox(self.columnTypes)
@@ -171,7 +172,7 @@ class readFile(OWRpy):
             return
         
         self.R(self.Rvariables['filename'] + ' = "' 
-        + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"')
+        + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"') # should protext if R can't find this file
 
         if self.tableArea.isHidden():
             self.tableArea.setHidden(False)
@@ -224,7 +225,7 @@ class readFile(OWRpy):
         + ', header = '+header
         +', sep = "'+sep
         +'", colClasses = '+ ccl
-        #+'", row.names = '+param_name
+        +', row.names = '+param_name
         +', nrows = '+nrows
         +', fill = T)','setRData',True)
 
@@ -239,11 +240,14 @@ class readFile(OWRpy):
     def updateScan(self):
         colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')')
         if type(colNames) is str:
-            colNames = range(1, int(self.R('length('+self.Rvariables['dataframe_org']+'[1,])')))
-
-        self.rowNamesCombo.update(colNames.insert(0, 'No Row Names'))
-        if self.rownames != 'NULL' and self.rownames in colNames:
-            self.rowNamesCombo.setCurrentIndex(colNames.index(self.rownames)+1)
+            colNames = [str(c) for c in range(1, int(self.R('length('+self.Rvariables['dataframe_org']+'[1,])')))]
+        print colNames
+        self.rowNamesCombo.clear()
+        self.rowNamesCombo.addItem('NULL')
+        self.rowNamesCombo.addItems(colNames)
+        #self.rowNamesCombo.update(colNames)
+        # if self.rownames != 'NULL' and self.rownames in colNames:
+            # self.rowNamesCombo.setCurrentIndex(colNames.index(self.rownames)+1)
             
         self.scanarea.setHidden(False)
         self.scanarea.clear()
@@ -303,7 +307,7 @@ class readFile(OWRpy):
         dfsummary = self.R(self.Rvariables['dataframe_org'], 'getRSummary')
         
         col_names = dfsummary['colNames']
-
+        self.rowNamesCombo.update(col_names)
         self.infob.setText(self.R(self.Rvariables['filename']))
         self.infoc.setText("Number of rows: " + str(len(dfsummary['rowNames'])))
         self.FileInfoBox.setHidden(False)

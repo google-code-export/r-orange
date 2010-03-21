@@ -68,7 +68,7 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
             self.R(self.Rvariables['rowcolselect_cm_']+'<-data.frame(row.names = rownames('+self.data+'))')
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
                 c = self.R('colnames('+self.data+')')
-                if type(c) == list:
+                if c != 'NULL':
                     self.attributes.update(c)
                     self.namesPresent = 1
                 else:

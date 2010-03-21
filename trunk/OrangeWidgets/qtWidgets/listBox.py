@@ -164,10 +164,15 @@ class listBox(QListWidget,widgetState):
         for i in range(0, self.count()-1):
             items.append(self.item(i))
         return items
+    def addRItems(self, items):
+        if type(items) == type([]):
+            self.addItems(items)
+        else:
+            self.addItems([items])
     def update(self, items):
         current = [str(item.text()) for item in self.selectedItems()]
         self.clear()
-        self.addItems(items)
+        self.addRItems(items)
         index = []
         for t in current:
             for lwi in self.findItems(t, Qt.MatchExactly):

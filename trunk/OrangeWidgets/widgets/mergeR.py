@@ -139,6 +139,7 @@ class mergeR(OWRpy):
         else: return
             #self.sendNothing
             
+    
     def run(self):
         try:
             if self.dataA != '' and self.dataB != '':

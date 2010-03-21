@@ -92,6 +92,8 @@ class rExecutor(OWRpy):
                 self.sendt['cm'] = 'cm_'+self.sendt['data']
                 self.rSend('R Data Frame', self.sendt)
             elif thisdataclass == 'matrix': # the object is a matrix
+                self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
+                self.sendt['cm'] = 'cm_'+self.sendt['data']
                 self.rSend('R Data Frame', self.sendt)
             elif thisdataclass == 'list': # the object is a list
                 self.rSend('R List', self.sendt)

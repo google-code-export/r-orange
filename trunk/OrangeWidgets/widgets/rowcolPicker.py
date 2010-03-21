@@ -45,6 +45,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
     def setWidget(self, data):
         if data:
             self.data = data['data']
+            self.dataParent = data.copy()
             r = self.R('rownames('+self.data+')')
             c = self.R('colnames('+self.data+')')
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
@@ -66,7 +67,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
                 self.status.setText('You must select either Row or Column to procede')
     def rowcolButtonSelected(self): #recall the GUI setting the data if data is selected
         print self.rowcolBox.getChecked()
-        if self.data: self.setWidget({'data':self.data})
+        if self.dataParent: self.setWidget(self.dataParent)
     def setSubsettingVector(self, data):
         if 'data' in data:
             self.subOnAttachedButton.setEnabled(True)
@@ -165,7 +166,8 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         elif self.rowcolBox.getChecked() == 'Column':
             self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+']')
                 
-        self.rSend('Data Table', {'data':self.Rvariables['rowcolSelector']})
+        self.dataParent['data'] = self.Rvariables['rowcolSelector']
+        self.rSend('Data Table', self.dataParent)
                 
         
         self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')

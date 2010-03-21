@@ -13,6 +13,7 @@ class RVarSeparator(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self,parent, signalManager, "RVarSeparator", wantMainArea = 0, resizingEnabled = 1)
+        self.setRvariableNames(['separator_cm'])
         self.inputs = [('R Session', RvarClasses.RSession, self.process)]
         self.outputs = [('R Session', RvarClasses.RSession), ('R.object', RvarClasses.RVariable), ('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector)]
         self.setRvariableNames(['sessionEnviron'])
@@ -58,9 +59,15 @@ class RVarSeparator(OWRpy):
                 self.rSend('R Vector', self.sendthis)
                 self.status.setText('Character vector sent')
             elif thisdataclass == 'data.frame': # the object is a data.frame
+                self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
+                self.sendthis['cm'] = self.Rvariables['separator_cm']
+                self.sendthis['parent'] = self.sendthis['data']
                 self.rSend('R Data Frame', self.sendthis)
                 self.status.setText('Data frame sent')
             elif thisdataclass == 'matrix': # the object is a matrix
+                self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
+                self.sendthis['cm'] = self.Rvariables['separator_cm']
+                self.sendthis['parent'] = self.sendthis['data']
                 self.rSend('R Data Frame', self.sendthis)
                 self.status.setText('Matrix sent')
             elif thisdataclass == 'list': # the object is a list
