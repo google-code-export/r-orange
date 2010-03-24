@@ -379,30 +379,31 @@ class redRGraph(QwtPlot):
     def points(self, name, xData, yData, brushColor = [], penColor = [], size = [], style = QwtPlotCurve.NoCurve, symbol = QwtSymbol.Ellipse, enableLegend = 0, showFilledSymbols = None, lineWidth = 1, pen = None, autoScale = 0, antiAlias = None, penAlpha = 255, brushAlpha = 255):
         if len(xData) != len(yData): return None
         
-        for i in range(len(xData)):
-            curve = QwtPlotCurve(name)
-            curve.setRenderHint(QwtPlotItem.RenderAntialiased, antiAlias == 1 or self.useAntialiasing)
-            curve.setItemAttribute(QwtPlotItem.Legend, enableLegend)
-            curve.setItemAttribute(QwtPlotItem.AutoScale, autoScale)
-            if brushColor == []: bc = Qt.red
-            else: bc = self.setColor(int(brushColor[i]))
-            
-            if penColor == []: pc = Qt.red
-            else: pc = self.setColor(int(penColor[i]))
-            
-            if size == []: si = 5
-            else: si = size[i]
-            
-            
-            if showFilledSymbols or (showFilledSymbols == None and self.showFilledSymbols):
-                newSymbol = QwtSymbol(symbol, QBrush(bc), QPen(pc), QSize(si, si))
-            else:
-                newSymbol = QwtSymbol(symbol, QBrush(bc), QPen(pc), QSize(si, si))
-            curve.setSymbol(newSymbol)
-            curve.setStyle(style)
+        i = 1
+        #for i in range(len(xData)):
+        curve = QwtPlotCurve(name)
+        curve.setRenderHint(QwtPlotItem.RenderAntialiased, antiAlias == 1 or self.useAntialiasing)
+        curve.setItemAttribute(QwtPlotItem.Legend, enableLegend)
+        curve.setItemAttribute(QwtPlotItem.AutoScale, autoScale)
+        if brushColor == []: bc = Qt.red
+        else: bc = self.setColor(int(brushColor[i]))
+        
+        if penColor == []: pc = Qt.red
+        else: pc = self.setColor(int(penColor[i]))
+        
+        if size == []: si = 5
+        else: si = size[i]
+        
+        
+        if showFilledSymbols or (showFilledSymbols == None and self.showFilledSymbols):
+            newSymbol = QwtSymbol(symbol, QBrush(bc), QPen(pc), QSize(si, si))
+        else:
+            newSymbol = QwtSymbol(symbol, QBrush(bc), QPen(pc), QSize(si, si))
+        curve.setSymbol(newSymbol)
+        curve.setStyle(style)
             #curve.setPen(QPen(penColor, lineWidth))
-            curve.setData([xData[i]], [yData[i]])
-            curve.attach(self)
+        curve.setData(xData, yData)
+        curve.attach(self)
         self.xData = xData
         self.yData = yData
         self.setNewZoom(min(xData), max(xData), min(yData), max(yData))

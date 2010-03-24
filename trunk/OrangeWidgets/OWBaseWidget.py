@@ -389,7 +389,7 @@ class OWBaseWidget(QMainWindow):
                 GUIsetting = {}
                 elementClass = element[1]
                 elementName = element[0]
-                print elementClass
+                #print elementClass
                 if elementClass == 'widgetBox':
                     GUIsetting['class'] = 'widgetBox'
                 elif elementClass == 'widgetLabel':
@@ -498,8 +498,8 @@ class OWBaseWidget(QMainWindow):
     # Loads settings from the widget's .ini file
     def loadSettings(self, file = None):
         print 'loadSettings in owbasewidget'
-        print self.inputs
-        print str(self.outputs) + ' preload'
+        #print self.inputs
+        #print str(self.outputs) + ' preload'
         file = self.getSettingsFile(file)
         settings = {}
         if file:
@@ -518,8 +518,8 @@ class OWBaseWidget(QMainWindow):
         if settings:
             if hasattr(self, "settingsList"):
                 self.setSettings(settings)
-        print self.inputs
-        print str(self.outputs) + ' post load'
+        #print self.inputs
+        #print str(self.outputs) + ' post load'
 
 
     def saveSettings(self, file = None):
@@ -564,7 +564,8 @@ class OWBaseWidget(QMainWindow):
             
             return cPickle.dumps(settings)
         except: 
-            print str(settings)
+            #print str(settings)
+            pass
 
         
     def onDeleteWidget(self, suppress = 0):
@@ -669,8 +670,8 @@ class OWBaseWidget(QMainWindow):
 
     # return widget, that is already connected to this singlelink signal. If this widget exists, the connection will be deleted (since this is only single connection link)
     def removeExistingSingleLink(self, signal):
-        print str(self.inputs)
-        print str(self.outputs)
+        #print str(self.inputs)
+        #print str(self.outputs)
         for i in self.inputs:
             #print str(*i) + ' input owbasewidget'
             input = InputSignal(*i)
@@ -705,11 +706,11 @@ class OWBaseWidget(QMainWindow):
                 for i in range(len(self.linksIn[key])):
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
                     #print dirty,widgetFrom,handler, signalData
-                    print 'processHandler: ' + str(processHandler)
-                    print 'data being passed: ' 
-                    print signalData
+                    #print 'processHandler: ' + str(processHandler)
+                    print 'data being passed: ' + str(signalData)
+                     
                     if not (handler and dirty): continue
-                    print 'do the work'
+                    #print 'do the work'
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:

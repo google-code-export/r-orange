@@ -205,7 +205,12 @@ class OWRpy(OWWidget,RSession):
             self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
         else:
             self.R(Variable+'<-data.frame(row.names = c('+','.join(range(1, int(self.R('length('+Parent+'[,1])'))))+'))')
-        
+    def addToCM(self, colname = 'tmepColname', CM = None, values = None):
+        if CM == None: return
+        if values == None: return
+        if type(values) == type([]):
+            values = 'c('+','.join(values)+')'
+        self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
         settings = {}
@@ -219,14 +224,14 @@ class OWRpy(OWWidget,RSession):
                 continue
             # print 'frist att: ' + att
             if getattr(self, att).__class__.__name__ in redRGUI.qtWidgets:
-                print 'getting gui settings for:' + att + '\n\n'
+                #print 'getting gui settings for:' + att + '\n\n'
                 try:
                     v = getattr(self, att).getSettings()
-                    print str(v) + '\n\n'
+                    #print str(v) + '\n\n'
                 except: v = {}
                 #print 'settings:' + str(v)
                 if not 'RGUIElementsSettings' in settings.keys():
-                    print 'RGUIElementsSettings not in settings.keys (OWRpy.py)'
+                    #print 'RGUIElementsSettings not in settings.keys (OWRpy.py)'
                     settings['RGUIElementsSettings'] = {}
                 
                 if v: settings['RGUIElementsSettings'][att] = v
@@ -280,8 +285,8 @@ class OWRpy(OWWidget,RSession):
             # self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings', 'RPackages'])
 
         for att in allAtts:
-            print getattr(self, att).__class__
-            print getattr(self, att).__class__.__name__
+            #print getattr(self, att).__class__
+            #print getattr(self, att).__class__.__name__
             if type(getattr(self, att)) == type('') or type(getattr(self, att)) == type(1): # if they are strings we don't need to worry much
                 if att in self.blackList: pass  # allows us to make a blackList so that everything isn't saved, these things can be saved with special calls to settingsList.extend, but they won't be saved normally.
                 else:
@@ -418,25 +423,25 @@ class OWRpy(OWWidget,RSession):
         for k in self.Rvariables:
             #print self.Rvariables[k]
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
-        try:
-            #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
-            for device in self.device.keys():
-                dev = self.device[device]
-                #key = device.keys()[0]
-                self.R('dev.set('+str(dev)+')', 'setRData')
-                self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
+        # try:
+            ##if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
+            # for device in self.device.keys():
+                # dev = self.device[device]
+                ##key = device.keys()[0]
+                # self.R('dev.set('+str(dev)+')', 'setRData')
+                # self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
                 
-        except: pass
+        # except: pass
         self.widgetDelete()
     def widgetDelete(self):
         pass #holder function for other widgets
     def onLoadSavedSession(self):
-        print 'in onLoadSavedSession'
+        #print 'in onLoadSavedSession'
         #print self.RGUIElementsSettings['scanarea']
         #print 'Loading the following elements ' + str(self.RGUIElementsSettings) + ' (OWRpy.py)'
         for i in self.RGUIElementsSettings.keys():
             try:            
-                print '**********************' + i
+                #print '**********************' + i
                 getattr(self, i).loadSettings(self.RGUIElementsSettings[i])
             except:
                 print 'error:' + i
@@ -459,7 +464,7 @@ class OWRpy(OWWidget,RSession):
             info = self.RGUIElementsSettings[key]
             try:
                 self.updateWidget(elementName, info)
-                print key + ' complete'
+                #print key + ' complete'
             except:
                 print 'loading '+key+' failed'
         try:
@@ -473,8 +478,8 @@ class OWRpy(OWWidget,RSession):
         
     def updateWidget(self, name, value):
         print 'update widget called'
-        print name
-        print str(value)
+        #print name
+        #print str(value)
         elementClass = value['class']
         if elementClass == 'widgetBox':
             pass
@@ -499,7 +504,7 @@ class OWRpy(OWWidget,RSession):
         elif elementClass == 'comboBox':
             getattr(self, name).clear()
             getattr(self, name).addItems(value['itemText'])
-            print value['itemText'] + ' inserted into '+ name
+            #print value['itemText'] + ' inserted into '+ name
             try:
                 getattr(self, name).setCurrentIndex(value['selectedIndex'])
             except:
@@ -543,8 +548,8 @@ class OWRpy(OWWidget,RSession):
         elif elementClass == 'textEdit':
             getattr(self, elementName).setText(value['text'])
         elif elementClass == 'widgetNotes':
-            print elementClass
-            print str(value['text'])
+            #print elementClass
+            #print str(value['text'])
             self.notesAction.textEdit.setHtml(value['text'])
             
     def followLink(self, url):

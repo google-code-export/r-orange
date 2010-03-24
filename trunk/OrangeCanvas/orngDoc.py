@@ -382,8 +382,8 @@ class SchemaDoc(QWidget):
         for category in self.canvasDlg.widgetRegistry.keys():
             for name, widget in self.canvasDlg.widgetRegistry[category].items():
                 if widget.fileName == widgetFileName:  
-                    print str(forceInSignals) + 'force in signals'
-                    print str(forceOutSignals) + 'force out signals'
+                    #print str(forceInSignals) + 'force in signals'
+                    #print str(forceOutSignals) + 'force out signals'
                     return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
         return None
 
@@ -465,7 +465,7 @@ class SchemaDoc(QWidget):
             #temp.setAttribute("OutSignals", widget.instance.outputs)
             # if not tmp:
                 # widget.instance.onSaveSession()
-            print 'looking for settingsstr'
+            #print 'looking for settingsstr'
             #try:
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
             #print str(settingsDict[widget.caption]) + '\n\n settings Dict (orngDoc)'

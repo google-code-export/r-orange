@@ -1,5 +1,5 @@
 """
-<name>Row or Column Selector</name>
+<name>Row or Column Screener</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
@@ -13,6 +13,7 @@
 from OWRpy import *
 import OWGUI
 import redRGUI
+import OWGUIEx
 
 class rowcolSelector(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
     settingsList = ['rowcolselect', 'newdata', 'rowactiveCriteria', 'rowselectionCriteria', 'cTableTexts', 'olddata', 'ssvdata', 'data', 'test', 'saveData']
@@ -38,6 +39,8 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
         self.attsList = redRGUI.listBox(selectionBox)
         self.attsList.setSelectionMode(QAbstractItemView.MultiSelection)
         self.attsList.hide()
+        self.attsHintEdit = OWGUIEx.lineEditHint(selectionBox, None, None, callback = self.callback)
+        self.attsHintEdit.hide()
         self.attsLineEdit = redRGUI.lineEdit(selectionBox)
         self.attsLineEdit.hide()
         
@@ -134,16 +137,27 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
 
         else: #by exclusion we haven't picked anything yet
             self.status.setText('You must select either Row or Column to procede')
-        
+    def callback(self):
+        text = str(self.attsHintEdit.text())
+        for i in range(0, self.attsList.count()):
+            item = self.attsList.item(i)
+            if str(item.text()) == text:
+                self.attsList.setItemSelected(item, 1)
+                
+                
     def classifyData(self, c):
         if c == 'character':
             self.attsList.show()
             self.attsLineEdit.hide()
-            self.attsList.update(self.R('t'))
+            self.attsHintEdit.show()
+            self.attsHintEdit.setItems(self.R('as.vector(t)'))
+            self.attsList.update(self.R('as.vector(t)'))
             self.infoArea.setHtml('Character attribute detected.  The attribute can be seen to the right of the logic box.  Multiple items can be selected for subsetting.')
             self.dataClass = 'character'
         elif c == 'factor':
             self.attsLineEdit.hide()
+            self.attsHintEdit.show()
+            self.attsHintEdit.setItems(self.R('levels(t)'))
             self.attsList.show()
             self.attsList.update(self.R('levels(t)'))
             self.R('txt<-capture.output(summary(t))')
@@ -162,7 +176,7 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
             
     def subset(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None: return
-        
+        self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'<-rep(FALSE, length('+self.parentData['parent']+'[,1]))')
         if self.ISNOT.currentText() == 'IS': isNot = ''
         elif self.ISNOT.currentText() == 'IS NOT': isNot = '!' 
         
@@ -174,8 +188,9 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
             
             if self.rowcolBox.getChecked() == 'Row':
                 self.Rvariables['rowcolSelector'] = self.parentData['data']
-                self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'<-!('+self.data+'[,'+self.attName+']'+' %in% c('+','.join(selectedDFItems)+'))') # assign the selections to the cm for this object
                 
+                self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'[rownames('+self.parentData['data']+'),]<-'+isNot+'('+self.data+'[,'+self.attName+']'+' %in% c('+','.join(selectedDFItems)+'))') # assign the selections to the cm for this object
+                self.parentData['data'] = self.Rvariables['rowcolSelector']+'['+self.cm+'$'+self.Rvariables['rowcolselect_cm_']+',]'
             elif self.rowcolBox.getChecked() == 'Column': # pick the columns that you want and send those forward as the new data
                 self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+self.data+'['+self.attName+',]'+' %in% c('+','.join(selectedDFItems)+')'+']')
             
@@ -196,7 +211,7 @@ class rowcolSelector(OWRpy): # a simple widget that actually will become quite c
                     RLogic.append(str(isNot+'('+self.data+'[,'+self.attName+']'+logical+self.attsLineEdit.text()+')'))
                 #self.Rvariables['rowcolSelector'] = self.parentData['data']
                 self.parentData['data'] = self.data+'['+self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'== 1,]'
-                self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'<-'+'&'.join(RLogic)) # add criteria to the cm
+                self.R(self.cm+'$'+self.Rvariables['rowcolselect_cm_']+'[rownames('+self.parentData['data']+'),]<-'+'&'.join(RLogic)) # add criteria to the cm
                 
             elif self.rowcolBox.getChecked() == 'Column':
                 RLogic = []

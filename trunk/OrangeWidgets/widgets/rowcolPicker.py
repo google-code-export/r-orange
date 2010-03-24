@@ -12,6 +12,7 @@
 
 from OWRpy import *
 import OWGUI
+import OWGUIEx
 import redRGUI
 
 class rowcolPicker(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
@@ -20,7 +21,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1) #initialize the widget
         self.namesPresent = 0
         self.dataClass = None
-        self.setRvariableNames(['rowcolSelector'])
+        self.setRvariableNames(['rowcolSelector', 'rowcolSelector_cm'])
         self.loadSettings()
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.setWidget), ('Subsetting Vector', RvarClasses.RVector, self.setSubsettingVector)]
@@ -29,11 +30,14 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         self.help.setHtml('<small>The Row Column Selection widget allows one to select subsets of Data Tables.  If complex selections are required simply link many of these widgets together.  It may be useful to also consider using the Merge Data Table widget or the Melt widget when using this widget to but the data into the proper shape for later analysis.  The sections of this widget are:<br>Select by row or column<br><nbsp>- Allows you to select either rows or columns that match a certain criteria.  For example if you pick to select rows you will select based on criteria that are in the columns.<br>Attributes<br><nbsp>- Attributes are the names of the attributes that have the criteria that you will be selecting on, for example if you want to pick all rows that have a value greater than 5 in the second column the second column would be your attribute.<br>Logical<br><nbsp>- This section discribes the logic that should be applied to the selection, for example should the attribute be less than, greater than, equal to, or in a selection list.  "NOT" is also available.<br><br>One can also select based on an attached subsetting vector.  This will look for matches in the subsetting vector to values that are in your selected attribute.  This can be useful when dealing with "lists" of things that can be coerced into vectors.<br><br>This widget will send either a Data Table or a Vector depending on the dimention of your selection.')
         #set the gui
         box = OWGUI.widgetBox(self.controlArea, orientation = 'horizontal')
-        self.rowcolBox = redRGUI.radioButtons(box, 'Select by row or column', ['Row', 'Column'], callback=self.rowcolButtonSelected)
+        self.rowcolBox = redRGUI.radioButtons(box, 'The names come from:', ['Row', 'Column'], callback=self.rowcolButtonSelected)
         self.ISNOT = redRGUI.comboBox(box, items = ['IS', 'IS NOT'])
         self.attributes = redRGUI.listBox(box, label='Attributes')
         self.attributes.setSelectionMode(QAbstractItemView.MultiSelection)
+        
         selectionBox = OWGUI.widgetBox(box)
+        self.attsHintEdit = OWGUIEx.lineEditHint(selectionBox, None, None, callback = self.callback)
+        self.attsHintEdit.hide()    
         buttonsBox = OWGUI.widgetBox(selectionBox)
         self.subOnAttachedButton = OWGUI.button(buttonsBox, self, "Select on Attached", callback=self.subOnAttached)
         self.subOnAttachedButton.setEnabled(False)
@@ -51,20 +55,36 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
                 if type(r) == list:
                     self.attributes.update(r)
+                    self.attsHintEdit.show()
+                    self.attsHintEdit.setItems(r)
                     self.namesPresent = 1
                 else:
                     self.attributes.update([i for i in range(self.R('length('+self.data+'[1,])'))])
+                    self.attsHintEdit.show()
+                    self.attsHintEdit.setItems([i for i in range(self.R('length('+self.data+'[1,])'))])
                     self.namesPresent = 0
             elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
                 
                 if type(c) == list:
                     self.attributes.update(c)
+                    self.attsHintEdit.show()
+                    self.attsHintEdit.setItems(c)
                     self.namesPresent = 1
                 else:
                     self.attributes.update([i for i in range(self.R('length('+self.data+'[,1])'))])
+                    self.attsHintEdit.show()
+                    self.attsHintEdit.setItems([i for i in range(self.R('length('+self.data+'[,1])'))])
                     self.namesPresent = 0
             else: #by exclusion we haven't picked anything yet
                 self.status.setText('You must select either Row or Column to procede')
+    def callback(self):
+        text = str(self.attsHintEdit.text())
+        for i in range(0, self.attributes.count()):
+            item = self.attributes.item(i)
+            if str(item.text()) == text:
+                self.attributes.setItemSelected(item, 1)
+                
+    
     def rowcolButtonSelected(self): #recall the GUI setting the data if data is selected
         print self.rowcolBox.getChecked()
         if self.dataParent: self.setWidget(self.dataParent)
@@ -77,24 +97,28 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             return
         
     def subOnAttached(self):
-        tmpitem = self.R(self.ssv) #get the items to subset with
-        if type(tmpitem) is str: #it's a string!!!!!!!
-            items = []
-            items.append(tmpitem)
-        elif type(tmpitem) is list: #it's a list
-            items = tmpitem
-        elif type(tmpitem) is dict: #it's a dict
-            items = []
-            for key in tmpitem.keys():
-                items.append(tmpitem['key'])
-        #select the items in the listbox 
-        print str(tmpitem)
-        print str(items)
-        print self.ssv
-        print self.R(self.ssv)
-        for i in items:
-            self.attributes.setItemSelected(self.attributes.findItems(i, Qt.MatchExactly)[0], 1)
-            print i
+        if self.data == None or self.data == '': return
+        
+        if self.ISNOT.currentText() == 'IS': isNot = ''
+        elif self.ISNOT.currentText() == 'IS NOT': isNot = '!' 
+        
+        
+        if self.rowcolBox.getChecked() == 'Row':
+            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'['+isNot+'rownames('+self.data+')'+' %in% '+self.ssv+',]')
+        elif self.rowcolBox.getChecked() == 'Column':
+            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% '+self.ssv+']')
+                
+        self.makeCM(self.Rvariables['rowcolSelector_cm'], self.Rvariables['rowcolSelector'])
+        self.dataParent['cm'] = self.Rvariables['rowcolSelector_cm']
+        self.dataParent['parent'] = self.Rvariables['rowcolSelector']
+        self.dataParent['data'] = self.Rvariables['rowcolSelector']
+        self.rSend('Data Table', self.dataParent)
+                
+        
+        self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')
+        tmp = self.R('paste(txt, collapse ="\n")')
+        self.outputBox.setHtml('A sample of your selection is shown.  Ignore any values with NA.<pre>'+tmp+'</pre>')
+        
     def attributeSelected(self, item): # an item in the row or column section was clicked and you need to set the attList or give some infromation about the row or column for the user to make a decision.  In the case of continuous data we want to show the line edit for generating logic.  In the case of a set of text values or factors we want to show the factors so the user can select them.  We could also look for class infromation so that we could tell the user what she classified the data as.
         if self.data == None: return
         
@@ -150,7 +174,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             self.dataClass = 'numeric'
             
     def subset(self): # now we need to make the R command that will handle the subsetting.
-        if self.data == None: return
+        if self.data == None or self.data == '': return
         
         if self.ISNOT.currentText() == 'IS': isNot = ''
         elif self.ISNOT.currentText() == 'IS NOT': isNot = '!' 

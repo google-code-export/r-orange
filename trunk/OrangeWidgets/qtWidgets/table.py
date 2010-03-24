@@ -7,7 +7,7 @@ class table(QTableWidget,widgetState):
         QTableWidget.__init__(self,rows,columns,widget)
         self.sortIndex = None
         self.oldSortingIndex = None
-        
+        self.data = None
         ### should turn this into a function as all widgets use it to some degree
         if widget and addToLayout and widget.layout():
             widget.layout().addWidget(self)

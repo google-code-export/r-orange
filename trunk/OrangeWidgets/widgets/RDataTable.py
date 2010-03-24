@@ -177,39 +177,10 @@ class RDataTable(OWRpy):
             self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
             self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-            # self.id2table[id] = table
-            # self.table2id[table] = id
-            # if 'name' in dataset:
-                # tabName = "%s " % dataset['name']
-            # else:
-                # tabName = ""
-            # tabName += "(" + str(id[1]) + ")"
-            # if id[2] != None:
-                # tabName += " [" + str(id[2]) + "]"
-            # self.tabs.addTab(table, tabName)
-
-            #self.progressBarInit()
-            #self.setTable(table, data)
             self.table.setRTable(dataset['data'])
-            #self.progressBarFinished()
+
             self.needsProcessingHandler(self, 0)
-            #self.tabs.setCurrentIndex(self.tabs.indexOf(table))
-            # self.setInfo(data)
-            #self.cbShowMeta.setEnabled(len(self.showMetas[id][1])>0)        # enable showMetas checkbox only if metas exist
 
-        # elif self.data.has_key(id):
-            # table = self.id2table[id]
-            # self.data.pop(id)
-            ##self.showMetas.pop(id)
-            # table.hide()
-            # self.tabs.removeTab(self.tabs.indexOf(table))
-            # self.table2id.pop(self.id2table.pop(id))
-            # self.setInfo(self.data.get(self.table2id.get(self.tabs.currentWidget(),None),None))
-
-        # disable showMetas checkbox if there is no data on input
-        # if len(self.data) == 0:
-            # self.cbShowMeta.setEnabled(False)
-        
         self.supressTabClick = False
             
     def itemClicked(self, val, table):
@@ -427,20 +398,6 @@ class RDataTable(OWRpy):
             col = len(data.keys())
 
             self.processingBox.setHtml('%i rows and %i columns.' % (row, col))
-            #missData = orange.Preprocessor_takeMissing(data)
-            # self.infoMiss.setText('%s (%.1f%s) with missing values.' % (len(missData), len(data) and 100.*len(missData)/len(data), "%"))
-            # self.infoAttr.setText("%s attribute%s," % sp(data.domain.attributes,True))
-            # self.infoMeta.setText("%s meta attribute%s." % sp(data.domain.getmetas()))
-            # if data.domain.classVar:
-                # if data.domain.classVar.varType == orange.VarTypes.Discrete:
-                    # self.infoClass.setText('Discrete class with %s value%s.' % sp(data.domain.classVar.values))
-                # elif data.domain.classVar.varType == orange.VarTypes.Continuous:
-                    # self.infoClass.setText('Continuous class.')
-                # else:
-                    # self.infoClass.setText("Class is neither discrete nor continuous.")
-            # else:
-                # self.infoClass.setText('Classless domain.')
-                
 
 class TableItemDelegate(QItemDelegate):
     def __init__(self, widget = None, table = None):

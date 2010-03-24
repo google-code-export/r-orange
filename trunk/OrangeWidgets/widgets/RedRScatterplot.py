@@ -11,7 +11,7 @@ import OWGUI
 import redRGUI 
 import OWToolbars
 import re
-import textwrap
+import textwrap, numpy
 
 class RedRScatterplot(OWRpy):
     
@@ -83,14 +83,18 @@ class RedRScatterplot(OWRpy):
         if data:
             self.data = data['data']
             self.parent = data['parent']
-            self.cm = data['cm']
-            self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
-            self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
+            # if 'cm' in data:
+                # self.cm = data['cm']
+                # self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
+                # self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
+                # cmColNames = self.R('colnames('+self.cm+')')
+                # if type(cmColNames) == type(''): cmColNames = [cmColNames]
+                #self.subsetCMSelector.update(self.R('colnames('+self.cm+')').insert(0, ' '))
+                #self.paintCMSelector.update(self.R('colnames('+self.cm+')').extend(self.R('colnames('+self.data+')')).insert(0, ' '))
             # set some of the plot data
             self.xColumnSelector.update(self.R('colnames('+self.data+')'))
             self.yColumnSelector.update(self.R('colnames('+self.data+')'))
-            self.subsetCMSelector.update(self.R('colnames('+self.cm+')').insert(0, ' '))
-            self.paintCMSelector.update(self.R('colnames('+self.cm+')').extend(self.R('colnames('+self.data+')')).insert(0, ' '))
+            
 
             self.plot()
     def populateCM(self):
@@ -132,11 +136,13 @@ class RedRScatterplot(OWRpy):
         # make the plot
         if xCol == yCol: return
         self.graph.clear()
-        XData = self.R(self.data + '['+subset+',"'+str(xCol)+'"]')
-        YData = self.R(self.data + '['+subset+',"'+str(yCol)+'"]')
+        matrix = self.R('as.matrix('+self.data + '['+subset+' , c("'+str(xCol)+'", "'+str(yCol)+'")])')
+        numArray = numpy.array(matrix)
+        # XData = self.R(self.data + '['+subset+',"'+str(xCol)+'"]')
+        # YData = self.R(self.data + '['+subset+',"'+str(yCol)+'"]')
         self.subset = self.data + '['+subset+',]'
-        if XData == [] or YData == []: return
-        self.graph.points("MyData", xData = self.R('as.numeric('+self.data + '['+subset+',"'+str(xCol)+'"])'), yData = self.R('as.numeric('+self.data + '['+subset+',"'+str(yCol)+'"])'), brushColor = paint, penColor=paint, size=[])
+        #if XData == [] or YData == []: return
+        self.graph.points("MyData", xData = numArray[0:,0], yData = numArray[0:, 1], brushColor = paint, penColor=paint, size=[])
         #self.X.setText(str(paint))
 
     def sendMe(self):

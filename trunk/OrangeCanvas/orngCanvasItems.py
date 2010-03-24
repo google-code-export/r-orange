@@ -255,22 +255,24 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
         # save settings
         if (self.instance != None):
-            if self.canvasDlg.menuSaveSettings == 1:        # save settings only if checked in the main menu
-                try:
-                    self.instance.saveSettings()
-                except:
-                    print "Unable to successfully save settings for %s widget" % (self.instance.captionTitle)
-                    type, val, traceback = sys.exc_info()
-                    sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
-            self.instance.close()
-            self.instance.linksOut.clear()      # this helps python to more quickly delete the unused objects
-            self.instance.linksIn.clear()
-            self.instance.onDeleteWidget(suppress)      # this is a cleanup function that can take care of deleting some unused objects
             try:
-                import sip
-                sip.delete(self.instance)
-            except:
-                pass
+                if self.canvasDlg.menuSaveSettings == 1:        # save settings only if checked in the main menu
+                    try:
+                        self.instance.saveSettings()
+                    except:
+                        print "Unable to successfully save settings for %s widget" % (self.instance.captionTitle)
+                        type, val, traceback = sys.exc_info()
+                        sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
+                self.instance.close()
+                self.instance.linksOut.clear()      # this helps python to more quickly delete the unused objects
+                self.instance.linksIn.clear()
+                self.instance.onDeleteWidget(suppress)      # this is a cleanup function that can take care of deleting some unused objects
+            except: pass
+            # try:
+                # import sip
+                # sip.delete(self.instance)
+            # except:
+                # pass
 
     def savePosition(self):
         self.oldPos = self.pos()

@@ -84,7 +84,7 @@ class OrangeCanvasDlg(QMainWindow):
             self.warningIcon = None
             self.informationIcon = None
             self.widgetIcons = None
-            print "Unable to load all necessary icons. Please reinstall Orange."
+            print "Unable to load all necessary icons. Please reinstall Red-R."
 
         self.setStatusBar(MyStatusBar(self))
                 

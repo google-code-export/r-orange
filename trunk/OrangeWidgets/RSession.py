@@ -60,7 +60,7 @@ class RSession():
         except rpy.RPyRException, inst:
 
             qApp.restoreOverrideCursor()
-            self.progressBarFinished()
+            #self.progressBarFinished()
             print inst.message
             QMessageBox.information(self, 'Red-R Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
             #self.status.setText('Error occured!!')

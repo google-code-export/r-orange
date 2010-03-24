@@ -11,7 +11,7 @@ class widgetBox(QWidget,widgetState):
             
         if margin == -1: margin = 0
         # self.setFlat(flat)
-        if widget.layout():
+        if widget and widget.layout():
             widget.layout().addWidget(self)
         
         try:
