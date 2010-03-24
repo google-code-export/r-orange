@@ -29,11 +29,6 @@ class OWRpy(OWWidget,RSession):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
         RSession.__init__(self)
-        print "R version 2.7.0 (2008-04-22) \nCopyright (C) 2008 The R Foundation for Statistical Computing \
-            # ISBN 3-900051-07-0\n \
-            # R is free software and comes with ABSOLUTELY NO WARRANTY. \n \
-            # You are welcome to redistribute it under certain conditions.\n \
-            # Type 'license()' or 'licence()' for distribution details."
         
         #The class variable is used to create the unique names in R
         OWRpy.num_widgets += 1
@@ -47,18 +42,17 @@ class OWRpy(OWWidget,RSession):
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
         self.autoShowDialog = 1
-        
         #collect the sent items
         self.sentItems = []
         
         #dont save these variables
         self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
         
+        
+        
         #start widget GUI
         #sidePanal = redRGUI.widgetBox(self,'Documentation')
         
-        
-
         webSize = QSize(200,300)
         self.help = QtWebKit.QWebView(self)
         self.help.setMaximumSize(webSize)
@@ -158,6 +152,10 @@ class OWRpy(OWWidget,RSession):
 
         showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBoxDialog.show)
         showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBoxDialog.show)
+        
+
+    
+
     def showROutput(self):
         self.ROutputDialog.show()
     def showGUIDialog(self):
@@ -211,10 +209,12 @@ class OWRpy(OWWidget,RSession):
         if type(values) == type([]):
             values = 'c('+','.join(values)+')'
         self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
+    
+    
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
         settings = {}
-        allAtts = self.__dict__#dir(self)
+        allAtts = self.__dict__
         parentVaribles = OWWidget().__dict__.keys()
         self.blackList.extend(parentVaribles)
         #print self.blackList
@@ -259,16 +259,117 @@ class OWRpy(OWWidget,RSession):
         print 'get global settings'
         settings = {}
         if hasattr(self, "globalSettingsList"):
-            for name in self.globalSettingsList:
-                try:
-                    settings[name] =  self.getdeepattr(name)
-                except:
-                    print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+            self.globalSettingsList.append('windowState')
+        else:
+            self.globalSettingsList =  ['windowState']
+            
+        for name in self.globalSettingsList:
+            try:
+                settings[name] =  self.getdeepattr(name)
+            except:
+                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
         return settings
         
+    
+    def getdeepattr(self, attr, **argkw):
+        try:
+            return reduce(lambda o, n: getattr(o, n, None),  attr.split("."), self)
+        except:
+            if argkw.has_key("default"):
+                return argkw[default]
+            else:
+                raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
+
+    def getSettingsFile(self, file):
+        print 'getSettingsFile in owbasewidget'
+        if file==None:
+            if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
+                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+            else:
+                return
+        if type(file) == str:
+            if os.path.exists(file):
+                return open(file, "r")
+        else:
+            return file
+
+
+
+    # Loads settings from string str which is compatible with cPickle
+    def loadSettingsStr(self, str):
+        if str == None or str == "":
+            return
+
+        settings = cPickle.loads(str)
+        self.setSettings(settings)
+
+        # contextHandlers = getattr(self, "contextHandlers", {})
+        # for contextHandler in contextHandlers.values():
+            # localName = contextHandler.localContextName
+            # if settings.has_key(localName):
+                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
+                # if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
+                    # del settings[localName]
+                    # delattr(self, localName)
+                    # contextHandler.initLocalContext(self)
+                # else:
+                    # setattr(self, localName, settings[localName])
+
+    # return settings in string format compatible with cPickle
+    def saveSettingsStr(self):
+        #print 'saveSettingsStr called'
+        settings = self.getSettings()
+        #print settings
+        #print str(self.RGUIElements)
+        #print cPickle.dumps(settings) + 'settings dump'
+        try:
+            
+            return cPickle.dumps(settings)
+        except: 
+            #print str(settings)
+            pass
+
+
+    # Set all settings
+    # settings - the map with the settings
+    def setSettings(self,settings):
+        for key in settings:
+            # print key
+            if key == 'inputs': continue
+            if key == 'outputs': continue
+            self.__setattr__(key, settings[key])
+        
+    def loadSettings(self, file = None):
+        print 'loadSettings in owbasewidget'
+        #print self.inputs
+        #print str(self.outputs) + ' preload'
+        file = self.getSettingsFile(file)
+        settings = {}
+        if file:
+            try:
+                settings = cPickle.load(file)
+            except:
+                settings = None
+        #settings = None # do not load ini file
+        if hasattr(self, "_settingsFromSchema"):
+            if settings: settings.update(self._settingsFromSchema)
+            else:        settings = self._settingsFromSchema
+
+        #print 'start loading local variables'
+        # print settings
+        # can't close everything into one big try-except since this would mask all errors in the below code
+        if settings:
+            if hasattr(self, "settingsList"):
+                self.setSettings(settings)
+        #print self.inputs
+        #print str(self.outputs) + ' post load'
+
     def saveSettings(self, file = None):
-        print 'save settings'
+        print 'owrpy save settings'
         settings = self.getGlobalSettings()
+        print settings
+        print file
+        print self.captionTitle
         if settings:
             if file==None:
                 file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
@@ -412,6 +513,8 @@ class OWRpy(OWWidget,RSession):
         return settings
         
       
+    
+    
     def onDeleteWidget(self, suppress = 0):
         # for k in self.Rvariables:
             # print self.Rvariables[k]
@@ -603,10 +706,17 @@ class OWRpy(OWWidget,RSession):
     def refresh(self):
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
     def closeEvent(self, event):
+        print 'in owrpy close'
         if self.GUIDialogDialog != None:
             self.GUIDialogDialog.hide()
         self.notesBoxDialog.hide()
         self.helpBoxDialog.hide()
+        self.windowState["geometry"] = self.saveGeometry()
+        self.windowState["state"] = self.saveState()
+        self.windowState['pos'] = self.pos()
+        self.windowState['size'] = self.size()
+        self.saveSettings()
+
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)

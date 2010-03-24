@@ -506,11 +506,13 @@ class WidgetTabs(WidgetListBase, QTabWidget):
 class WidgetTree(WidgetListBase, QDockWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
-        QDockWidget.__init__(self, "Widgets")
+        QDockWidget.__init__(self)
+        self.setObjectName('widgetDock')
         self.actions = categoriesPopup.allActions
         self.treeWidget = MyTreeWidget(canvasDlg, self)
         self.treeWidget.setFocusPolicy(Qt.ClickFocus)    # this is needed otherwise the document window will sometimes strangely lose focus and the output window will be focused
-        
+        self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+
         
         # must make a widget container to hold the search area and the widget tree
         self.containerWidget = QWidget()

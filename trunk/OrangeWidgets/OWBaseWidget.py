@@ -131,6 +131,7 @@ class OWBaseWidget(QMainWindow):
 
     def __init__(self, parent = None, signalManager = None, title="RedR BaseWidget", modal=FALSE, savePosition = False, resizingEnabled = 1, **args):
         # do we want to save widget position and restore it on next load
+        self.windowState = {}
         self.savePosition = savePosition
         if savePosition:
             self.settingsList = getattr(self, "settingsList", []) + ["widgetWidth", "widgetHeight", "widgetXPosition", "widgetYPosition", "widgetShown"]
@@ -272,6 +273,7 @@ class OWBaseWidget(QMainWindow):
     def resizeEvent(self, ev):
         QMainWindow.resizeEvent(self, ev)
         if self.savePosition:
+            # print 'resizeevent'
             self.widgetWidth = self.width()
             self.widgetHeight = self.height()
 
@@ -281,8 +283,10 @@ class OWBaseWidget(QMainWindow):
     def moveEvent(self, ev):
         QMainWindow.moveEvent(self, ev)
         if self.savePosition:
+            # print 'moveevent'
             self.widgetXPosition = self.frameGeometry().x()
             self.widgetYPosition = self.frameGeometry().y()
+
 
     # set widget state to hidden
     def hideEvent(self, ev):
@@ -294,6 +298,16 @@ class OWBaseWidget(QMainWindow):
     # after show() we must call processEvents because show puts some LayoutRequests in queue
     # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
     def show(self):
+        if 'state' in self.windowState.keys():
+            self.restoreState(self.windowState['state'])
+        if 'geometry' in self.windowState.keys():
+            self.restoreGeometry(self.windowState['geometry'])
+       
+        if 'size' in self.windowState.keys():
+            self.resize(self.windowState['size'])
+        if 'pos' in self.windowState.keys():
+            self.move(self.windowState['pos'])
+
         QMainWindow.show(self)
         qApp.processEvents()
 
@@ -335,245 +349,11 @@ class OWBaseWidget(QMainWindow):
         self.signalManager.send(self, signalName, value, id)
 
 
-    def getdeepattr(self, attr, **argkw):
-        try:
-            return reduce(lambda o, n: getattr(o, n, None),  attr.split("."), self)
-        except:
-            if argkw.has_key("default"):
-                return argkw[default]
-            else:
-                raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
-
-
-    # Set all settings
-    # settings - the map with the settings
-    def setSettings(self,settings):
-        for key in settings:
-            # print key
-            if key == 'inputs': continue
-            if key == 'outputs': continue
-            self.__setattr__(key, settings[key])
-        
-
-    # Get all settings
-    # returns map with all settings
-    # ## !!!!!!!!!!!!!!!!!!!!  getSettings is deprecated
-    def getSettings(self, alsoContexts = True):
-        print 'get settings in owbasewidget'
-        settings = {}
-        if hasattr(self, "settingsList"):
-            for name in self.settingsList:
-                try:
-                    if type(self.getdeepattr(name)) == type(''):
-                        settings[name] =  self.getdeepattr(name)
-                    elif type(self.getdeepattr(name)) == type({}): # if it's a dictionary, these are risky because they might contain instances of Qt objects so we need to watch out.
-                        # if QObject not in self.getdeepattr(name):
-                            # settings[name] = self.getdeepattr(name)
-                        # else:
-                            # print 'Qt object in '+str(name)+', unable to save'
-                        pass
-                    elif type(self.getdeepattr(name)) == type([]): #if it's a list
-                        # if QObject not in self.getdeepattr(name):
-                            # settings[name] = self.getdeepattr(name)
-                        # else:
-                            # print 'Qt object in '+str(name)+', unable to save'
-                        pass
-                except:
-                    
-                    pass
-                    
-            #instert logic for saving the gui settings
-        for element in self.RGUIElements:
-            try:
-                #print element
-                GUIsetting = {}
-                elementClass = element[1]
-                elementName = element[0]
-                #print elementClass
-                if elementClass == 'widgetBox':
-                    GUIsetting['class'] = 'widgetBox'
-                elif elementClass == 'widgetLabel':
-                    GUIsetting['text'] = str(getattr(self, elementName).text())
-                    GUIsetting['class'] = 'widgetLabel'
-                elif elementClass == 'checkBox':
-                    GUIsetting['checked'] = getattr(self, elementName).isChecked()
-                    GUIsetting['class'] = 'checkBox'
-                elif elementClass == 'lineEdit':
-                    GUIsetting['text'] = getattr(self, elementName).text()
-                    GUIsetting['class'] = 'lineEdit'
-                elif elementClass == 'button':
-                    GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
-                    GUIsetting['class'] = 'button'
-                elif elementClass == 'listBox':
-                    GUIsetting['items'] = getattr(self, elementName).items()
-                    GUIsetting['selectedItems'] = getattr(self, elementName).selectedItems()
-                    GUIsetting['class'] = 'listBox'
-                elif elementClass == 'radioButtonsInBox':
-                    GUIsetting['class'] = 'radioButtonsInBox'
-                elif elementClass == 'comboBox':
-                    text = []
-                    cb = getattr(self, elementName)
-                    for i in range(cb.count()):
-                        text.append(str(cb.itemText(i)))
-                    GUIsetting['itemText'] = text
-                    GUIsetting['class'] = 'comboBox'
-                elif elementClass == 'comboBoxWithCaption':
-                    text = []
-                    cb = getattr(self, elementName)
-                    for i in range(cb.count()):
-                        text.append(str(cb.itemText(i)))
-                    GUIsetting['itemText'] = text
-                    GUIsetting['class'] = 'comboBoxWithCaption'
-                elif elementClass == 'tabWidget':
-                    text = []
-                    enabled = []
-                    tab = getattr(self, elementName)
-                    for i in range(tab.count()):
-                        text.append(str(tab.tabText(i)))
-                        enabled.append(tab.isEnabled(i))
-                    GUIsetting['itemText'] = text
-                    GUIsetting['itemEnabled'] = enabled
-                    GUIsetting['class'] = 'tabWidget'
-                elif elementClass == 'createTabPage':
-                    GUIsetting['class'] = 'createTabPage'
-                elif elementClass == 'table':
-                    table = getattr(self, elementName)
-                    GUIsetting['selectedRanges'] = table.selectedRanges()
-                    row = table.rowCount()
-                    col = table.columnCount()
-                    rowNames = []
-                    for i in range(row):
-                        rowNames.append(str(table.verticalHeaderItem(i).text()))
-                    GUIsetting['rowNames'] = rowNames
-                    
-                    colNames = []
-                    for j in range(col):
-                        colNames.append(str(table.horizontalHeaderItem(j).text()))
-                    GUIsetting['colNames'] = colNames
-                    
-                    tableItems = []
-                    for i in range(row):
-                        for j in range(col):
-                            try:
-                                tableItems.append((i,j,str(table.item(i,j).text())))
-                            except: pass
-                    GUIsetting['tableItems'] = tableItems
-                    GUIsetting['class'] = 'table'
-                elif elementClass == 'textEdit':
-                    GUIsetting['text'] = str(getattr(self, elementName).text())
-                    GUIsetting['class'] = 'textEdit'
-                    
-                    
-            
-                settings[str('GUIelement_'+elementName)] = GUIsetting
-            except:
-                print 'element' + elementName + 'failed to save, this should be corrected by the widget maker as soon as possible.'
-        
-        # try:
-            # if alsoContexts:
-                # contextHandlers = getattr(self, "contextHandlers", {})
-                # for contextHandler in contextHandlers.values():
-                    # contextHandler.mergeBack(self)
-                    # settings[contextHandler.localContextName] = contextHandler.globalContexts
-                    # settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
-        # except: pass
-            
-        return settings
-
-
-    def getSettingsFile(self, file):
-        print 'getSettingsFile in owbasewidget'
-        if file==None:
-            if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
-                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
-            else:
-                return
-        if type(file) == str:
-            if os.path.exists(file):
-                return open(file, "r")
-        else:
-            return file
-
-
-    # Loads settings from the widget's .ini file
-    def loadSettings(self, file = None):
-        print 'loadSettings in owbasewidget'
-        #print self.inputs
-        #print str(self.outputs) + ' preload'
-        file = self.getSettingsFile(file)
-        settings = {}
-        if file:
-            try:
-                settings = cPickle.load(file)
-            except:
-                settings = None
-        #settings = None # do not load ini file
-        if hasattr(self, "_settingsFromSchema"):
-            if settings: settings.update(self._settingsFromSchema)
-            else:        settings = self._settingsFromSchema
-
-        #print 'start loading local variables'
-        # print settings
-        # can't close everything into one big try-except since this would mask all errors in the below code
-        if settings:
-            if hasattr(self, "settingsList"):
-                self.setSettings(settings)
-        #print self.inputs
-        #print str(self.outputs) + ' post load'
-
-
-    def saveSettings(self, file = None):
-        if file == None:
-            return
-        settings = self.getSettings()
-        if settings:
-            if file==None:
-                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
-            if type(file) == str:
-                file = open(file, "w")
-            cPickle.dump(settings, file)
-
-    # Loads settings from string str which is compatible with cPickle
-    def loadSettingsStr(self, str):
-        if str == None or str == "":
-            return
-
-        settings = cPickle.loads(str)
-        self.setSettings(settings)
-
-        # contextHandlers = getattr(self, "contextHandlers", {})
-        # for contextHandler in contextHandlers.values():
-            # localName = contextHandler.localContextName
-            # if settings.has_key(localName):
-                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                # if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
-                    # del settings[localName]
-                    # delattr(self, localName)
-                    # contextHandler.initLocalContext(self)
-                # else:
-                    # setattr(self, localName, settings[localName])
-
-    # return settings in string format compatible with cPickle
-    def saveSettingsStr(self):
-        #print 'saveSettingsStr called'
-        settings = self.getSettings()
-        #print settings
-        #print str(self.RGUIElements)
-        #print cPickle.dumps(settings) + 'settings dump'
-        try:
-            
-            return cPickle.dumps(settings)
-        except: 
-            #print str(settings)
-            pass
 
         
-    def onDeleteWidget(self, suppress = 0):
-        pass
-
     # this function is only intended for derived classes to send appropriate signals when all settings are loaded
     def activateLoadedSettings(self):
-        pass
+        print 'activateLoadedSettings'
 
     # reimplemented in other widgets
     def setOptions(self):

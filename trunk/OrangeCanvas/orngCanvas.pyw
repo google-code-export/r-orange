@@ -6,13 +6,12 @@ from PyQt4.QtGui import *
 
 import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
-
 sys.path.insert(0, mypath)
 import orngEnviron
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import user, orngMisc
-#import updateRedR
+
 
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags = 0):
@@ -49,15 +48,14 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings['svnSettings'] = {}
         self.settings['versionNumber'] = 'Version1.0'
         self.settings['CRANrepos'] = 'http://cran.r-project.org'
-        self.settings['HomeFolder'] = str(os.path.abspath('/Python25/Lib/site-packages/redR1.5/Projects'))
+        #self.settings['HomeFolder'] = str(os.path.abspath('/Python25/Lib/site-packages/redR1.5/Projects'))
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
 
         self.loadSettings()
-        
-        #self.settings['svnSettings'], self.settings['versionNumber'] = updateRedR.start(self.settings['svnSettings'], self.settings['versionNumber'])
-        
-        
+        #print self.settings
+     
+
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
         self.widgetActiveColor   = QColor(*self.settings["widgetActiveColor"])
         self.lineColor           = QColor(*self.settings["lineColor"])
@@ -135,18 +133,27 @@ class OrangeCanvasDlg(QMainWindow):
         self.readShortcuts()
         self.readRecentFiles()
 
-        width, height = self.settings.get("canvasWidth", 700), self.settings.get("canvasHeight", 600)
-        self.resize(width, height)
+        #width, height = self.settings.get("canvasWidth", 700), self.settings.get("canvasHeight", 600)
+        
+        if 'windowState' in self.settings.keys():
+            self.restoreState(self.settings['windowState'])
+        if 'geometry' in self.settings.keys():
+            self.restoreGeometry(self.settings['geometry'])
+       
+        if 'size' in self.settings.keys():
+            self.resize(self.settings['size'])
+        if 'pos' in self.settings.keys():
+            self.move(self.settings['pos'])
 
         # center window in the desktop
         # in newer versions of Qt we can also find the center of a primary screen
         # on multiheaded desktops
-        desktop = app.desktop()
-        deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
-        deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
-        h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
-        w = max(0, deskW/2 - width/2)
-        self.move(w,h+2)
+        # desktop = app.desktop()
+        # deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
+        # deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
+        # h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
+        # w = max(0, deskW/2 - width/2)
+        # self.move(w,h+2)
 
         self.helpWindow = orngHelp.HelpWindow(self)
         self.reportWindow = OWReport.ReportWindow()
@@ -175,6 +182,7 @@ class OrangeCanvasDlg(QMainWindow):
                 webbrowser.open("http://sourceforge.net/projects/numpy/")
 
 
+        
     def createWidgetsToolbar(self):
         if self.widgetsToolBar:
             self.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
@@ -487,13 +495,6 @@ class OrangeCanvasDlg(QMainWindow):
         dlg.exec_()
 
 
-## to see the signals you have to call: self.output.catchException(0); self.output.catchOutput(0)
-## and run orngCanvas.pyw from command line using "python.exe orngCanvas.pyw"
-#    def event(self, e):
-#        eventDict = dict([(0, "None"), (130, "AccessibilityDescription"), (119, "AccessibilityHelp"), (86, "AccessibilityPrepare"), (114, "ActionAdded"), (113, "ActionChanged"), (115, "ActionRemoved"), (99, "ActivationChange"), (121, "ApplicationActivated"), (122, "ApplicationDeactivated"), (36, "ApplicationFontChange"), (37, "ApplicationLayoutDirectionChange"), (38, "ApplicationPaletteChange"), (35, "ApplicationWindowIconChange"), (68, "ChildAdded"), (69, "ChildPolished"), (71, "ChildRemoved"), (40, "Clipboard"), (19, "Close"), (82, "ContextMenu"), (52, "DeferredDelete"), (60, "DragEnter"), (62, "DragLeave"), (61, "DragMove"), (63, "Drop"), (98, "EnabledChange"), (10, "Enter"), (150, "EnterEditFocus"), (124, "EnterWhatsThisMode"), (116, "FileOpen"), (8, "FocusIn"), (9, "FocusOut"), (97, "FontChange"), (159, "GraphicsSceneContextMenu"), (164, "GraphicsSceneDragEnter"), (166, "GraphicsSceneDragLeave"), (165, "GraphicsSceneDragMove"), (167, "GraphicsSceneDrop"), (163, "GraphicsSceneHelp"), (160, "GraphicsSceneHoverEnter"), (162, "GraphicsSceneHoverLeave"), (161, "GraphicsSceneHoverMove"), (158, "GraphicsSceneMouseDoubleClick"), (155, "GraphicsSceneMouseMove"), (156, "GraphicsSceneMousePress"), (157, "GraphicsSceneMouseRelease"), (168, "GraphicsSceneWheel"), (18, "Hide"), (27, "HideToParent"), (127, "HoverEnter"), (128, "HoverLeave"), (129, "HoverMove"), (96, "IconDrag"), (101, "IconTextChange"), (83, "InputMethod"), (6, "KeyPress"), (7, "KeyRelease"), (89, "LanguageChange"), (90, "LayoutDirectionChange"), (76, "LayoutRequest"), (11, "Leave"), (151, "LeaveEditFocus"), (125, "LeaveWhatsThisMode"), (88, "LocaleChange"), (153, "MenubarUpdated"), (43, "MetaCall"), (102, "ModifiedChange"), (4, "MouseButtonDblClick"), (2, "MouseButtonPress"), (3, "MouseButtonRelease"), (5, "MouseMove"), (109, "MouseTrackingChange"), (13, "Move"), (12, "Paint"), (39, "PaletteChange"), (131, "ParentAboutToChange"), (21, "ParentChange"), (75, "Polish"), (74, "PolishRequest"), (123, "QueryWhatsThis"), (14, "Resize"), (117, "Shortcut"), (51, "ShortcutOverride"), (17, "Show"), (26, "ShowToParent"), (50, "SockAct"), (112, "StatusTip"), (100, "StyleChange"), (87, "TabletMove"), (92, "TabletPress"), (93, "TabletRelease"), (171, "TabletEnterProximity"), (172, "TabletLeaveProximity"), (1, "Timer"), (120, "ToolBarChange"), (110, "ToolTip"), (78, "UpdateLater"), (77, "UpdateRequest"), (111, "WhatsThis"), (118, "WhatsThisClicked"), (31, "Wheel"), (132, "WinEventAct"), (24, "WindowActivate"), (103, "WindowBlocked"), (25, "WindowDeactivate"), (34, "WindowIconChange"), (105, "WindowStateChange"), (33, "WindowTitleChange"), (104, "WindowUnblocked"), (126, "ZOrderChange"), (169, "KeyboardLayoutChange"), (170, "DynamicPropertyChange")])
-#        if eventDict.has_key(e.type()):
-#            print str(self.windowTitle()), eventDict[e.type()]
-#        return QMainWindow.event(self, e)
 
 
     def menuItemCanvasOptions(self):
@@ -648,6 +649,11 @@ class OrangeCanvasDlg(QMainWindow):
             self.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
         self.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
         self.settings["showToolbar"] = self.toolbar.isVisible()
+        
+        self.settings["geometry"] = self.saveGeometry()
+        self.settings["windowState"] = self.saveState()
+        self.settings['pos'] = self.pos()
+        self.settings['size'] = self.size()
 
         closed = self.schema.close()
         if closed:
@@ -740,21 +746,6 @@ class OrangeQApplication(QApplication):
     def __init__(self, *args):
         QApplication.__init__(self, *args)
         
-#    def notify(self, receiver, event):
-#        eventDict = {0: 'None', 1: 'Timer', 2: 'MouseButtonPress', 3: 'MouseButtonRelease', 4: 'MouseButtonDblClick', 5: 'MouseMove', 6: 'KeyPress', 7: 'KeyRelease', 8: 'FocusIn', 9: 'FocusOut', 10: 'Enter', 11: 'Leave', 12: 'Paint', 13: 'Move', 14: 'Resize', 17: 'Show', 18: 'Hide', 19: 'Close', 21: 'ParentChange', 24: 'WindowActivate', 25: 'WindowDeactivate', 26: 'ShowToParent', 27: 'HideToParent', 31: 'Wheel', 33: 'WindowTitleChange', 34: 'WindowIconChange', 35: 'ApplicationWindowIconChange', 36: 'ApplicationFontChange', 37: 'ApplicationLayoutDirectionChange', 38: 'ApplicationPaletteChange', 39: 'PaletteChange', 40: 'Clipboard', 43: 'MetaCall', 50: 'SockAct', 51: 'ShortcutOverride', 52: 'DeferredDelete', 60: 'DragEnter', 61: 'DragMove', 62: 'DragLeave', 63: 'Drop', 68: 'ChildAdded', 69: 'ChildPolished', 70: 'ChildInserted', 71: 'ChildRemoved', 74: 'PolishRequest', 75: 'Polish', 76: 'LayoutRequest', 77: 'UpdateRequest', 78: 'UpdateLater', 82: 'ContextMenu', 83: 'InputMethod', 86: 'AccessibilityPrepare', 87: 'TabletMove', 88: 'LocaleChange', 89: 'LanguageChange', 90: 'LayoutDirectionChange', 92: 'TabletPress', 93: 'TabletRelease', 94: 'OkRequest', 96: 'IconDrag', 97: 'FontChange', 98: 'EnabledChange', 99: 'ActivationChange', 100: 'StyleChange', 101: 'IconTextChange', 102: 'ModifiedChange', 103: 'WindowBlocked', 104: 'WindowUnblocked', 105: 'WindowStateChange', 109: 'MouseTrackingChange', 110: 'ToolTip', 111: 'WhatsThis', 112: 'StatusTip', 113: 'ActionChanged', 114: 'ActionAdded', 115: 'ActionRemoved', 116: 'FileOpen', 117: 'Shortcut', 118: 'WhatsThisClicked', 119: 'AccessibilityHelp', 120: 'ToolBarChange', 121: 'ApplicationActivate', 122: 'ApplicationDeactivate', 123: 'QueryWhatsThis', 124: 'EnterWhatsThisMode', 125: 'LeaveWhatsThisMode', 126: 'ZOrderChange', 127: 'HoverEnter', 128: 'HoverLeave', 129: 'HoverMove', 130: 'AccessibilityDescription', 131: 'ParentAboutToChange', 132: 'WinEventAct', 150: 'EnterEditFocus', 151: 'LeaveEditFocus', 153: 'MenubarUpdated', 155: 'GraphicsSceneMouseMove', 156: 'GraphicsSceneMousePress', 157: 'GraphicsSceneMouseRelease', 158: 'GraphicsSceneMouseDoubleClick', 159: 'GraphicsSceneContextMenu', 160: 'GraphicsSceneHoverEnter', 161: 'GraphicsSceneHoverMove', 162: 'GraphicsSceneHoverLeave', 163: 'GraphicsSceneHelp', 164: 'GraphicsSceneDragEnter', 165: 'GraphicsSceneDragMove', 166: 'GraphicsSceneDragLeave', 167: 'GraphicsSceneDrop', 168: 'GraphicsSceneWheel', 169: 'KeyboardLayoutChange', 170: 'DynamicPropertyChange', 171: 'TabletEnterProximity', 172: 'TabletLeaveProximity', 173: 'NonClientAreaMouseMove', 174: 'NonClientAreaMouseButtonPress', 175: 'NonClientAreaMouseButtonRelease', 176: 'NonClientAreaMouseButtonDblClick', 177: 'MacSizeChange', 178: 'ContentsRectChange', 181: 'GraphicsSceneResize', 182: 'GraphicsSceneMove', 183: 'CursorChange', 184: 'ToolTipChange', 186: 'GrabMouse', 187: 'UngrabMouse', 188: 'GrabKeyboard', 189: 'UngrabKeyboard'}
-#        import time
-#        try:
-#            if str(receiver.windowTitle()) != "":
-#                print time.strftime("%H:%M:%S"), "%15s" % str(receiver.windowTitle()) + ": ",      # print only events for QWidget classes and up
-#                if eventDict.has_key(event.type()):
-#                    print eventDict[event.type()] 
-#                else:
-#                    print "unknown event name (" + str(event.type()) + ")"
-#        except:
-#            pass
-#            #print str(receiver.objectName()),
-#                
-#        return QApplication.notify(self, receiver, event)
 
 
 def main(argv = None):
@@ -762,6 +753,10 @@ def main(argv = None):
         argv = sys.argv
 
     app = OrangeQApplication(sys.argv)
+    QCoreApplication.setOrganizationName("Red-r");
+    QCoreApplication.setOrganizationDomain("red-r.com");
+    QCoreApplication.setApplicationName("Red-r");
+
     dlg = OrangeCanvasDlg(app)
     qApp.canvasDlg = dlg
     dlg.show()

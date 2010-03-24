@@ -29,18 +29,17 @@ class OWWidget(OWBaseWidget):
         self.topWidgetPart = OWGUI.widgetBox(self, orientation="horizontal", margin=0)
         self.setCentralWidget(self.topWidgetPart)
         
-        grip1 = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical')
-        QObject.connect(grip1, SIGNAL('MouseButtonDblClick()'), self.grip1Clicked)
+        # grip1 = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical')
+        # QObject.connect(grip1, SIGNAL('MouseButtonDblClick()'), self.grip1Clicked)
         
-        grip1.setMaximumSize(30,30)
-        for i in range(5):
-            frame2 = QFrame()
-            frame2.setFrameStyle(QFrame.VLine | QFrame.Sunken)
-            frame2.setLineWidth(2)
-            frame2.setMidLineWidth(0)
-            frame2.setMaximumSize(30,3)
-            #frame2.setStyleSheet('margin-right:1px')
-            grip1.layout().addWidget(frame2)
+        # grip1.setMaximumSize(30,30)
+        # for i in range(5):
+            # frame2 = QFrame()
+            # frame2.setFrameStyle(QFrame.VLine | QFrame.Sunken)
+            # frame2.setLineWidth(2)
+            # frame2.setMidLineWidth(0)
+            # frame2.setMaximumSize(30,3)
+            # grip1.layout().addWidget(frame2)
         
 
         self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin=0)
@@ -48,16 +47,15 @@ class OWWidget(OWBaseWidget):
         self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
         
         self.leftWidgetPart = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=0)
-        grip = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical')
-        grip.setMaximumSize(30,30)
-        for i in range(5):
-            frame2 = QFrame()
-            frame2.setFrameStyle(QFrame.VLine | QFrame.Sunken)
-            frame2.setLineWidth(2)
-            frame2.setMidLineWidth(0)
-            frame2.setMaximumSize(30,3)
-            #frame2.setStyleSheet('margin-right:1px')
-            grip.layout().addWidget(frame2)
+        # grip = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical')
+        # grip.setMaximumSize(30,30)
+        # for i in range(5):
+            # frame2 = QFrame()
+            # frame2.setFrameStyle(QFrame.VLine | QFrame.Sunken)
+            # frame2.setLineWidth(2)
+            # frame2.setMidLineWidth(0)
+            # frame2.setMaximumSize(30,3)
+            # grip.layout().addWidget(frame2)
 
         if wantMainArea:
             self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.MinimumExpanding))
