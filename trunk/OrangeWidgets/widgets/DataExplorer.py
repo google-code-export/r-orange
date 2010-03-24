@@ -153,6 +153,9 @@ class DataExplorer(OWRpy):
                 elif j > 1 and i == 0: # setting the line edits for looking through the columns
                     # first we need to find the colData and the class of this column
                     colData = self.R('as.vector('+self.currentDataTransformation+'[,'+str(j-1)+'])') # we need this for setting the data that will go into the body of the table
+                    if type(colData) in [type(''), type(1), type(1.3)]:
+                        colData = [colData]
+                        print 'colData converted to list'
                     thisClass = self.R('class('+self.currentDataTransformation+'[,'+str(j-1)+'])')
                     if thisClass in ['character']: # we want to show the element but not add it to the criteria
                         cw = OWGUIEx.lineEditHint(self, None, None, callback = lambda i = i, j = j: self.columnLineEditHintAccepted(i, j))
@@ -183,16 +186,18 @@ class DataExplorer(OWRpy):
         cw = self.table.cellWidget(i, j)
         text = str(cw.text())
         colName = str(self.table.item(1, j).text())
-        self.criteriaList.append('['+self.dataParent['parent']+'[,"'+colName+'"] == \''+text+'\',]')
-        newData = {'data':self.orriginalData+''.join(self.criteriaList)}
+        self.criteriaList.append(self.dataParent['parent']+'$'+colName+'==\''+text+'\'')
+        #self.criteriaList.append('['+self.dataParent['parent']+'[,"'+colName+'"] == \''+text+'\',]')
+        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'}
         self.processData(newData, False)
         
     def columnNumericCriteriaAccepted(self, i, j):
         cw = self.table.cellWidget(i, j)
         text = str(cw.text())
         colName = str(self.table.item(1, j).text())
-        self.criteriaList.append('['+self.dataParent['parent']+'[,"'+colName+'"]'+text+',]')
-        newData = {'data':self.orriginalData+''.join(self.criteriaList)}
+        self.criteriaList.append(self.dataParent['parent']+'$'+colName+text)
+        #self.criteriaList.append('['+self.dataParent['parent']+'[,"'+colName+'"] == \''+text+'\',]')
+        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'}
         self.processData(newData, False)
         
     def columnLineEditHintAccepted(self, i, j):
