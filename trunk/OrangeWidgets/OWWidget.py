@@ -26,87 +26,64 @@ class OWWidget(OWBaseWidget):
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
 
-        self.topWidgetPart = OWGUI.widgetBox(self, orientation="horizontal", margin=0)
+        self.topWidgetPart = OWGUI.widgetBox(self, orientation="vertical", margin=0)
         self.setCentralWidget(self.topWidgetPart)
+             
+        # self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin=0)
+        # self.defaultLeftArea.setMaximumSize(200, 800)
+        # self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
         
-        # grip1 = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical')
-        # QObject.connect(grip1, SIGNAL('MouseButtonDblClick()'), self.grip1Clicked)
-        
-        # grip1.setMaximumSize(30,30)
-        # for i in range(5):
-            # frame2 = QFrame()
-            # frame2.setFrameStyle(QFrame.VLine | QFrame.Sunken)
-            # frame2.setLineWidth(2)
-            # frame2.setMidLineWidth(0)
-            # frame2.setMaximumSize(30,3)
-            # grip1.layout().addWidget(frame2)
-        
+        # self.leftWidgetPart = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=0)
 
-        self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin=0)
-        self.defaultLeftArea.setMaximumSize(200, 800)
-        self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
+        # if wantMainArea:
+            # self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.MinimumExpanding))
+            # self.leftWidgetPart.updateGeometry()
+            # self.mainArea = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", sizePolicy=QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding), margin=0)
+            # self.mainArea.layout().setMargin(4)
+            # self.mainArea.updateGeometry()
         
-        self.leftWidgetPart = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=0)
-        # grip = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical')
-        # grip.setMaximumSize(30,30)
-        # for i in range(5):
-            # frame2 = QFrame()
-            # frame2.setFrameStyle(QFrame.VLine | QFrame.Sunken)
-            # frame2.setLineWidth(2)
-            # frame2.setMidLineWidth(0)
-            # frame2.setMaximumSize(30,3)
-            # grip.layout().addWidget(frame2)
-
-        if wantMainArea:
-            self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.MinimumExpanding))
-            self.leftWidgetPart.updateGeometry()
-            self.mainArea = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", sizePolicy=QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding), margin=0)
-            self.mainArea.layout().setMargin(4)
-            self.mainArea.updateGeometry()
-        
-        self.controlArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
-        self.controlArea.setMinimumWidth(200)
+        self.controlArea = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
+        #self.controlArea.setMinimumWidth(200)
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.bottomArea = OWGUI.widgetBox(self.leftWidgetPart, orientation="horizontal", margin=wantMainArea and 0 or 4)
+        self.bottomArea = OWGUI.widgetBox(self.topWidgetPart, orientation="horizontal", margin=wantMainArea and 0 or 4)
         self.bottomAreaLeft = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
         self.bottomAreaCenter = OWGUI.widgetBox(self.bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed), orientation = 'horizontal')
         self.bottomAreaRight = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
         self.space = self.controlArea
 
-        if wantGraph and showSaveGraph:
-            self.buttonBackground = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=2)
-            self.graphButton = OWGUI.button(self.buttonBackground, self, "&Save Graph")
-            self.graphButton.setAutoDefault(0)
+        # if wantGraph and showSaveGraph:
+            # self.buttonBackground = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=2)
+            # self.graphButton = OWGUI.button(self.buttonBackground, self, "&Save Graph")
+            # self.graphButton.setAutoDefault(0)
 
-        self.__reportData = None
-        if OWReport.report and not noReport and hasattr(self, "sendReport"):
-            if not hasattr(self, "buttonBackground"):
-                self.buttonBackground = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=6)
-            self.reportButton = OWGUI.button(self.buttonBackground, self, "&Report", self.reportAndFinish, debuggingEnabled=0)
-            self.reportButton.setAutoDefault(0)
+        # self.__reportData = None
+        # if OWReport.report and not noReport and hasattr(self, "sendReport"):
+            # if not hasattr(self, "buttonBackground"):
+                # self.buttonBackground = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=6)
+            # self.reportButton = OWGUI.button(self.buttonBackground, self, "&Report", self.reportAndFinish, debuggingEnabled=0)
+            # self.reportButton.setAutoDefault(0)
 
-        if wantStatusBar:
-            #self.widgetStatusArea = OWGUI.widgetBox(self, orientation = "horizontal", margin = 2)
-            self.widgetStatusArea = QFrame(self) 
-            self.statusBarIconArea = QFrame(self)
-            self.widgetStatusBar = QStatusBar(self) 
+        # if wantStatusBar:
+            # self.widgetStatusArea = QFrame(self) 
+            # self.statusBarIconArea = QFrame(self)
+            # self.widgetStatusBar = QStatusBar(self) 
             
-            self.layout().addWidget(self.widgetStatusArea)
+            # self.layout().addWidget(self.widgetStatusArea)
             
-            self.widgetStatusArea.setLayout(QHBoxLayout(self.widgetStatusArea))
-            self.widgetStatusArea.layout().addWidget(self.statusBarIconArea)
-            self.widgetStatusArea.layout().addWidget(self.widgetStatusBar)
-            self.widgetStatusArea.layout().setMargin(0)
-            self.widgetStatusArea.setFrameShape(QFrame.StyledPanel)
+            # self.widgetStatusArea.setLayout(QHBoxLayout(self.widgetStatusArea))
+            # self.widgetStatusArea.layout().addWidget(self.statusBarIconArea)
+            # self.widgetStatusArea.layout().addWidget(self.widgetStatusBar)
+            # self.widgetStatusArea.layout().setMargin(0)
+            # self.widgetStatusArea.setFrameShape(QFrame.StyledPanel)
                        
-            self.statusBarIconArea.setLayout(QHBoxLayout())
-            self.widgetStatusBar.setSizeGripEnabled(0) 
+            # self.statusBarIconArea.setLayout(QHBoxLayout())
+            # self.widgetStatusBar.setSizeGripEnabled(0) 
 
-            self.statusBarIconArea.hide()
+            # self.statusBarIconArea.hide()
             
-            self._warningWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-orange.png"))
-            self._errorWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-red.png"))
+            # self._warningWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-orange.png"))
+            # self._errorWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-red.png"))
         
         
     def grip1Clicked(self):

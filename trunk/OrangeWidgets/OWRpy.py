@@ -52,41 +52,52 @@ class OWRpy(OWWidget,RSession):
         
         
         #start widget GUI
-        #sidePanal = redRGUI.widgetBox(self,'Documentation')
-        
-
-        
 
         
         self.rightDock=QDockWidget('Documentation')
-        self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
-        
+        self.rightDock.setObjectName('rightDock')
+        self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)        
         self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        
         self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
+        print self.rightDockArea.sizeHint()
+        self.rightDockArea.setMinimumWidth(200)
+        self.rightDockArea.setMinimumHeight(400)
+        
+        #self.rightDockArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum) 
         self.rightDock.setWidget(self.rightDockArea)
         
         ### help ####
-        webSize = QSize(200,300)
-        self.help = QtWebKit.QWebView(self)
-        #self.help.setMaximumSize(webSize)
-        self.help.setMaximumHeight(200)
+        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.helpBox.setMinimumHeight(150)
+
+        self.help = QtWebKit.QWebView(self.helpBox)
+        print 'help size', self.help.sizeHint()
+        self.help.setMinimumHeight(150)
+        self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum) 
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         try:
             url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetFileName)
             self.help.load(QUrl(url))
         except: pass 
+        #self.helpBox.layout().addWidget(self.help)
         
-        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        self.helpBox.layout().addWidget(self.help) 
+
+        
         ### notes ####
         notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
         redRGUI.widgetLabel(notesBox, label="Notes:")
         self.notes = redRGUI.textEdit(notesBox)
+        print 'notes size', self.notes.sizeHint()
+
         ### R output ####        
         ROutputBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
         redRGUI.widgetLabel(ROutputBox, label="R code executed in this widget:")
         self.ROutput = redRGUI.textEdit(ROutputBox)
+        print 'ROutput size', self.ROutput.sizeHint()
+        
+        ROutputBox.setMinimumHeight(150)
         
         #### help box ####
         # self.helpBoxDialog = QDialog(self)
@@ -135,7 +146,7 @@ class OWRpy(OWWidget,RSession):
         #print self.GUIDialogDialog
         if wantGUIDialog:
             self.leftDock=QDockWidget('Advanced Options')
-            
+            self.rightDock.setObjectName('leftDock')
             self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
             self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog,orientation='vertical')

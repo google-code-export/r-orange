@@ -133,7 +133,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.readShortcuts()
         self.readRecentFiles()
 
-        #width, height = self.settings.get("canvasWidth", 700), self.settings.get("canvasHeight", 600)
+        
         
         if 'windowState' in self.settings.keys():
             self.restoreState(self.settings['windowState'])
@@ -146,6 +146,7 @@ class OrangeCanvasDlg(QMainWindow):
         # center window in the desktop
         # in newer versions of Qt we can also find the center of a primary screen
         # on multiheaded desktops
+            width, height = self.settings.get("canvasWidth", 700), self.settings.get("canvasHeight", 600)
             desktop = app.desktop()
             deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
             deskW = desktop.screenGeometry(desktop.primaryScreen()).width()

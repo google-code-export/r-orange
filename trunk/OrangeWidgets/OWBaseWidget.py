@@ -258,9 +258,10 @@ class OWBaseWidget(QMainWindow):
     def restoreWidgetPosition(self):
         if self.savePosition:
             if getattr(self, "widgetXPosition", None) != None and getattr(self, "widgetYPosition", None) != None:
-                #print self.captionTitle, "restoring position", self.widgetXPosition, self.widgetYPosition
+                print self.captionTitle, "restoring position", self.widgetXPosition, self.widgetYPosition
                 self.move(self.widgetXPosition, self.widgetYPosition)
             if getattr(self,"widgetWidth", None) != None and getattr(self,"widgetHeight", None) != None:
+                print self.captionTitle, "restoring position2", self.widgetWidth, self.widgetHeight
                 self.resize(self.widgetWidth, self.widgetHeight)
 
     # this is called in canvas when loading a schema. it opens the widgets that were shown when saving the schema
@@ -299,16 +300,18 @@ class OWBaseWidget(QMainWindow):
     # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
     def show(self):
         print 'owbasewidget show'
-        print self.windowState.keys()
-        if 'state' in self.windowState.keys():
-            self.restoreState(self.windowState['state'])
-        if 'geometry' in self.windowState.keys():
-            self.restoreGeometry(self.windowState['geometry'])
+        print self.rightDockArea.sizeHint()
+        print self.rightDockArea.size()
+        # print self.windowState.keys()
+        # if 'state' in self.windowState.keys():
+            # self.restoreState(self.windowState['state'])
+        # if 'geometry' in self.windowState.keys():
+            # self.restoreGeometry(self.windowState['geometry'])
        
-        if 'size' in self.windowState.keys():
-            self.resize(self.windowState['size'])
-        if 'pos' in self.windowState.keys():
-            self.move(self.windowState['pos'])
+        # if 'size' in self.windowState.keys():
+            # self.resize(self.windowState['size'])
+        # if 'pos' in self.windowState.keys():
+            # self.move(self.windowState['pos'])
 
         QMainWindow.show(self)
         

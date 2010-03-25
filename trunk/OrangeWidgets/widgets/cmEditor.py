@@ -14,7 +14,7 @@ from OWRpy import *
 class cmEditor(OWRpy):
     settingsList = ['savedData']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 0, wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "CM Editor", wantGUIDialog = 0, wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 10
         self.colCount = 10
