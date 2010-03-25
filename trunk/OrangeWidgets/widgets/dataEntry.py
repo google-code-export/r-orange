@@ -260,12 +260,12 @@ class dataEntry(OWRpy):
         self.rSend('Data Table', {'data':self.Rvariables['table']})
         self.savedData = {'data':self.Rvariables['table']}
         
-    def closeEvent(self, event):
-        if self.GUIDialogDialog != None:
-            self.GUIDialogDialog.hide()
-        self.notesBoxDialog.hide()
-        self.helpBoxDialog.hide()
-        self.window.hide()
+    # def closeEvent(self, event):
+        # if self.GUIDialogDialog != None:
+            # self.GUIDialogDialog.hide()
+        # self.notesBoxDialog.hide()
+        # self.helpBoxDialog.hide()
+        # self.window.hide()
     def onLoadSavedSession(self):
         if self.R('exists("'+self.Rvariables['table']+'")'):
             self.rSend('Data Table', {'data':self.Rvariables['table']})

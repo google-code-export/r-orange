@@ -298,6 +298,8 @@ class OWBaseWidget(QMainWindow):
     # after show() we must call processEvents because show puts some LayoutRequests in queue
     # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
     def show(self):
+        print 'owbasewidget show'
+        print self.windowState.keys()
         if 'state' in self.windowState.keys():
             self.restoreState(self.windowState['state'])
         if 'geometry' in self.windowState.keys():
@@ -309,6 +311,12 @@ class OWBaseWidget(QMainWindow):
             self.move(self.windowState['pos'])
 
         QMainWindow.show(self)
+        
+        if self.rightDock.isFloating():
+            self.rightDock.show()
+        if hasattr(self, "leftDock") and self.leftDock.isFloating():
+            self.leftDock.show()
+ 
         qApp.processEvents()
 
     # set widget state to shown

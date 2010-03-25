@@ -142,18 +142,19 @@ class OrangeCanvasDlg(QMainWindow):
        
         if 'size' in self.settings.keys():
             self.resize(self.settings['size'])
-        if 'pos' in self.settings.keys():
-            self.move(self.settings['pos'])
-
+        else:
         # center window in the desktop
         # in newer versions of Qt we can also find the center of a primary screen
         # on multiheaded desktops
-        # desktop = app.desktop()
-        # deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
-        # deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
-        # h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
-        # w = max(0, deskW/2 - width/2)
-        # self.move(w,h+2)
+            desktop = app.desktop()
+            deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
+            deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
+            h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
+            w = max(0, deskW/2 - width/2)
+            self.move(w,h+2)
+        if 'pos' in self.settings.keys():
+            self.move(self.settings['pos'])
+
 
         self.helpWindow = orngHelp.HelpWindow(self)
         self.reportWindow = OWReport.ReportWindow()

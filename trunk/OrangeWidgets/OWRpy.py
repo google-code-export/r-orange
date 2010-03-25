@@ -25,7 +25,8 @@ class OWRpy(OWWidget,RSession):
     occupied = 0
     Rhistory = '<code>'
     
-    def __init__(self,parent=None, signalManager=None, title="R Widget", wantGUIDialog = 0, **args):
+    def __init__(self,parent=None, signalManager=None, 
+    title="R Widget", wantGUIDialog = 0, **args):
         
         OWWidget.__init__(self, parent, signalManager, title, **args)
         RSession.__init__(self)
@@ -53,67 +54,75 @@ class OWRpy(OWWidget,RSession):
         #start widget GUI
         #sidePanal = redRGUI.widgetBox(self,'Documentation')
         
+
+        
+
+        
+        self.rightDock=QDockWidget('Documentation')
+        self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        
+        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
+        self.rightDock.setWidget(self.rightDockArea)
+        
+        ### help ####
         webSize = QSize(200,300)
         self.help = QtWebKit.QWebView(self)
-        self.help.setMaximumSize(webSize)
+        #self.help.setMaximumSize(webSize)
+        self.help.setMaximumHeight(200)
         self.help.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self.help, SIGNAL('linkClicked(QUrl)'), self.followLink)
         try:
             url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetFileName)
             self.help.load(QUrl(url))
         except: pass 
-
         
-        self.helpBoxDialog = QDialog(self)
-
+        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.helpBox.layout().addWidget(self.help) 
+        ### notes ####
+        notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        redRGUI.widgetLabel(notesBox, label="Notes:")
+        self.notes = redRGUI.textEdit(notesBox)
+        ### R output ####        
+        ROutputBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        redRGUI.widgetLabel(ROutputBox, label="R code executed in this widget:")
+        self.ROutput = redRGUI.textEdit(ROutputBox)
         
-        # self.rightDock=QDockWidget('Documentation')
-        # self.rightDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
-        # self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        #### help box ####
+        # self.helpBoxDialog = QDialog(self)
+        # self.helpBoxDialog.setWindowTitle(str(title + ' Help'))
+        # self.helpBoxDialog.setLayout(QVBoxLayout())
+        # self.helpBoxDialog.setBaseSize(webSize)
+        # self.helpBoxDialog.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # self.helpBoxDialog.layout().addWidget(self.help) 
+        # self.rightDockArea.layout().addWidget(self.helpBox)
         
-        
-        
-        # self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
-        # self.rightDock.setWidget(self.rightDockArea)
-        
-        # self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        
-        #self.rightDock.setWidget(self.helpBox)
-        self.helpBoxDialog.setWindowTitle(str(title + ' Help'))
-        self.helpBoxDialog.setLayout(QVBoxLayout())
-        self.helpBoxDialog.setBaseSize(webSize)
-        self.helpBoxDialog.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.helpBoxDialog.layout().addWidget(self.help) 
-        #self.rightDockArea.layout().addWidget(self.helpBox)
-        
-        # code for the notesBox that can be shown 
-        #self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        self.notesBoxDialog = QDialog(self)
-        #self.rightDock.setWidget(self.notesBox)
-        self.notesBoxDialog.setWindowTitle(str(title + ' Notes'))
-        self.notesBoxDialog.move(int(self.x())+300, int(self.y())-10)
-        self.notesBoxDialog.setLayout(QVBoxLayout())
-        self.notesBoxDialog.setBaseSize(QSize(200,100))
-        self.notesBoxDialog.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
-        notesText = redRGUI.widgetLabel(self.notesBoxDialog, "Please place notes in this area.")
-        #notesBox.layout().addWidget(self.notes)
-        self.notes = redRGUI.textEdit(self.notesBoxDialog)
-        self.ROutputButton = redRGUI.button(self.notesBoxDialog, 'Show R Output', callback = self.showROutput)
+        #### code for the notesBox that can be shown ####
+        # self.notesBoxDialog = QDialog(self)
+        # self.notesBoxDialog.setWindowTitle(str(title + ' Notes'))
+        # self.notesBoxDialog.move(int(self.x())+300, int(self.y())-10)
+        # self.notesBoxDialog.setLayout(QVBoxLayout())
+        # self.notesBoxDialog.setBaseSize(QSize(200,100))
+        # self.notesBoxDialog.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)   
+        # notesText = redRGUI.widgetLabel(self.notesBoxDialog, "Please place notes in this area.")
+        # notesBox.layout().addWidget(self.notes)
+        # self.notes = redRGUI.textEdit(self.notesBoxDialog)
+        # self.ROutputButton = redRGUI.button(self.notesBoxDialog, 'Show R Output', callback = self.showROutput)
         # self.defaultLeftArea.layout().addWidget(notesBox)
         
         #### R Output Dialog ###
-        self.ROutputDialog = QDialog(self)
-        self.ROutputDialog.setLayout(QVBoxLayout())
-        self.ROutputDialog.setWindowTitle(str(title) + ' R Output')
-        self.ROutputDialog.move(int(self.x())-20, int(self.y())-200)
-        self.ROutput = redRGUI.textEdit(self.ROutputDialog)
-        self.ROutputDialog.hide()
+        # self.ROutputDialog = QDialog(self)
+        # self.ROutputDialog.setLayout(QVBoxLayout())
+        # self.ROutputDialog.setWindowTitle(str(title) + ' R Output')
+        # self.ROutputDialog.move(int(self.x())-20, int(self.y())-200)
+        # self.ROutput = redRGUI.textEdit(self.ROutputDialog)
+        # self.ROutputDialog.hide()
+        
+        ### status bar ###
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
         self.setStatusBar(self.statusBar)
         self.statusBar.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        
-        ### status bar ###
         self.statusBar.setLayout(QHBoxLayout())
         self.status = redRGUI.widgetLabel(self.statusBar, '')
         self.status.setText('Processing not yet performed.')
@@ -125,18 +134,21 @@ class OWRpy(OWWidget,RSession):
         
         #print self.GUIDialogDialog
         if wantGUIDialog:
-            # self.leftDock=QDockWidget('Advanced Options')
-            # self.leftDock.setFeatures(QDockWidget.NoDockWidgetFeatures)
-            # self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
+            self.leftDock=QDockWidget('Advanced Options')
             
-            self.GUIDialogDialog = QDialog(self)
-            self.GUIDialogDialog.setLayout(QVBoxLayout())
-            self.GUIDialogDialog.setWindowTitle(str(title) + ' Options')
+            self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+            self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
             self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog,orientation='vertical')
-            self.GUIDialogDialog.move(int(self.x())-20, int(self.y())-20)
-            self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
-            self.GUIDialogDialog.hide()
-            #self.leftDock.setWidget(self.GUIDialog)
+            self.leftDock.setWidget(self.GUIDialog)
+
+            
+            # self.GUIDialogDialog = QDialog(self)
+            # self.GUIDialogDialog.setLayout(QVBoxLayout())
+            # self.GUIDialogDialog.setWindowTitle(str(title) + ' Options')
+            # self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog,orientation='vertical')
+            # self.GUIDialogDialog.move(int(self.x())-20, int(self.y())-20)
+            # self.GUIDialogButton = redRGUI.button(self.bottomAreaLeft, 'Show GUI Dialog', callback = self.GUIDialogDialog.show)
+            # self.GUIDialogDialog.hide()
 
             #self.GUIDialogDialog = QMainWindow(self)
             #print self.GUIDialogDialog
@@ -150,8 +162,8 @@ class OWRpy(OWWidget,RSession):
             
             #self.GUIDialogDialog.move(50, 50)
 
-        showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBoxDialog.show)
-        showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBoxDialog.show)
+        # showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help', callback = self.helpBoxDialog.show)
+        # showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes', callback = self.notesBoxDialog.show)
         
 
     
@@ -168,13 +180,6 @@ class OWRpy(OWWidget,RSession):
         
     def showNotes(self):
         self.notesBox.show()
-    # def toggleDocumentation(self,state):
-        # for c in self.defaultLeftArea.children():
-            # if isinstance(c, QLayout): continue
-            # if self.documentationCheckBox.isChecked():
-                # c.show()
-            # else:
-                # c.hide()
         
     def setRvariableNames(self,names):
         
@@ -303,17 +308,6 @@ class OWRpy(OWWidget,RSession):
         settings = cPickle.loads(str)
         self.setSettings(settings)
 
-        # contextHandlers = getattr(self, "contextHandlers", {})
-        # for contextHandler in contextHandlers.values():
-            # localName = contextHandler.localContextName
-            # if settings.has_key(localName):
-                # structureVersion, dataVersion = settings.get(localName+"Version", (0, 0))
-                # if structureVersion < contextStructureVersion or dataVersion < contextHandler.contextDataVersion:
-                    # del settings[localName]
-                    # delattr(self, localName)
-                    # contextHandler.initLocalContext(self)
-                # else:
-                    # setattr(self, localName, settings[localName])
 
     # return settings in string format compatible with cPickle
     def saveSettingsStr(self):
@@ -367,9 +361,9 @@ class OWRpy(OWWidget,RSession):
     def saveSettings(self, file = None):
         print 'owrpy save settings'
         settings = self.getGlobalSettings()
-        print settings
-        print file
-        print self.captionTitle
+        # print settings
+        # print file
+        # print self.captionTitle
         if settings:
             if file==None:
                 file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
@@ -707,10 +701,13 @@ class OWRpy(OWWidget,RSession):
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
     def closeEvent(self, event):
         print 'in owrpy close'
-        if self.GUIDialogDialog != None:
-            self.GUIDialogDialog.hide()
-        self.notesBoxDialog.hide()
-        self.helpBoxDialog.hide()
+        # if self.GUIDialogDialog != None:
+            # self.GUIDialogDialog.hide()
+        # self.notesBoxDialog.hide()
+        # self.helpBoxDialog.hide()
+        self.rightDock.hide()
+        if hasattr(self, "leftDock"):
+            self.leftDock.hide()
         self.windowState["geometry"] = self.saveGeometry()
         self.windowState["state"] = self.saveState()
         self.windowState['pos'] = self.pos()
