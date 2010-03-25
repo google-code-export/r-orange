@@ -4,7 +4,7 @@
 #
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import os, sys, math
+import os, sys, math, sip
 import orngSignalManager
 import RvarClasses
 ERROR = 0
@@ -269,7 +269,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.instance.onDeleteWidget(suppress)      # this is a cleanup function that can take care of deleting some unused objects
             except: pass
             # try:
-                # import sip
+                ##import sip
+                # print self.instance
                 # sip.delete(self.instance)
             # except:
                 # pass

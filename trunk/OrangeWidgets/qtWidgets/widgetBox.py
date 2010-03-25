@@ -47,3 +47,12 @@ class widgetBox(QWidget,widgetState):
         return self.getState()
     def loadSettings(self,data):
         self.setState(data)
+    def delete(self):
+        itemRange = self.layout().count()
+        for i in range(0, itemRange):
+            item = self.layout().itemAt(i)
+            if item.widget:
+                try:
+                    item.widget.delete()
+                except: pass
+            sip.delete(item)

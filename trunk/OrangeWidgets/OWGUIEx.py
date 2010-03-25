@@ -2,7 +2,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import math, re, string
+import math, re, string, numpy
 from OWGUI import widgetLabel, widgetBox, lineEdit
 
 def lineEditFilter(widget, master, value, *arg, **args):
@@ -121,7 +121,7 @@ class LineEditHint(QLineEdit):
         self.listUpdateCallback = None
         self.autoSizeListWidget = 0
         self.caseSensitive = 1
-        self.matchAnywhere = 0
+        self.matchAnywhere = 1
         self.nrOfSuggestions = 10
         #self.setDelimiters(",; ")
         self.delimiters = None          # by default, we only allow selection of one element
@@ -135,11 +135,19 @@ class LineEditHint(QLineEdit):
         QObject.connect(self.listWidget, SIGNAL("itemClicked (QListWidgetItem *)"), self.doneCompletion)
         
     def setItems(self, items):
+        if type(items) == numpy.ndarray:
+            items = list(items) # need to correct for the case that we get a numpy object
+        
+        elif type(items) in [str, numpy.string_, numpy.float64]:
+            items = [str(items)]
+        
         if items:
             self.itemsAsItems = items
-            if type(items[0]) == str:                   self.itemsAsStrings = items
+            if (type(items[0]) == str) or (type(items[0]) == numpy.string_):                   self.itemsAsStrings = items
+            elif type(items[0]) in [numpy.float64]:
+                self.itemsAsStrings = [str(item) for item in items]
             elif type(items[0]) == QListWidgetItem:     self.itemsAsStrings = [str(item.text()) for item in items]
-            else:                                       print "SuggestLineEdit error: unsupported type for the items"
+            else:                                       print "SuggestLineEdit error: unsupported type for the items: "+str(type(items[0]))
         else:
             self.itemsAsItems = []
             self.itemsAsStrings = [] 

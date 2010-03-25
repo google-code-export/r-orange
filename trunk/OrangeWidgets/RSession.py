@@ -1,4 +1,4 @@
-import os
+import os, numpy
 try:
     from rpy_options import set_options
     set_options(RHOME=os.environ['RPATH'])
@@ -31,15 +31,15 @@ class RSession():
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
 
-    def R(self, query, type = 'getRData', processing_notice=False):
+    def R(self, query, type = 'getRData', processing_notice=False, silent = False):
 
         qApp.setOverrideCursor(Qt.WaitCursor)
 
         output = None
         if processing_notice:
             self.status.setText('Processing Started.Please wait for processing to finish.')
-
-        print query
+        if not silent:
+            print query
         histquery = query
         histquery = histquery.replace('<', '&lt;') #convert for html
         histquery = histquery.replace('>', '&gt;')
@@ -69,10 +69,11 @@ class RSession():
         if processing_notice:
             self.status.setText('Processing complete')
             #self.progressBarFinished()
-        try:
-            self.ROutput.setCursorToEnd()
-            self.ROutput.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
-        except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
+        if not silent:
+            try:
+                self.ROutput.setCursorToEnd()
+                self.ROutput.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
+            except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
         return output
                         

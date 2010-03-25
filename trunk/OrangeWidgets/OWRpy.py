@@ -520,16 +520,31 @@ class OWRpy(OWWidget,RSession):
         for k in self.Rvariables:
             #print self.Rvariables[k]
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
-        # try:
-            ##if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
-            # for device in self.device.keys():
-                # dev = self.device[device]
-                ##key = device.keys()[0]
-                # self.R('dev.set('+str(dev)+')', 'setRData')
-                # self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
+        try:
+            #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
+            for device in self.device.keys():
+                dev = self.device[device]
+                #key = device.keys()[0]
+                self.R('dev.set('+str(dev)+')', 'setRData')
+                self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
                 
-        # except: pass
+        except: pass
+        allAtts = self.__dict__#dir(self)
+        parentVaribles = OWWidget().__dict__.keys()
+        self.blackList.extend(parentVaribles)
+        #print self.blackList
+        for att in allAtts:
+            if att in self.blackList:
+                # print 'passed:' + att
+                continue
+            # print 'frist att: ' + att
+            if getattr(self, att).__class__.__name__ in redRGUI.qtWidgets:
+                #print 'getting gui settings for:' + att + '\n\n'
+                try:
+                    getattr(self, att).delete()
+                except: pass # must not have a delete function
         self.widgetDelete()
+        self.destroy()
     def widgetDelete(self):
         pass #holder function for other widgets
     def onLoadSavedSession(self):
