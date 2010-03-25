@@ -28,6 +28,7 @@ class DataExplorer(OWRpy):
         
         self.criteriaList = []
         self.columnCriteriaList = []
+        self.criteriaDialogList = []
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector), ('Column Subset Vector', RvarClasses.RVector, self.setColumnSelectVector)]
         self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
@@ -35,20 +36,18 @@ class DataExplorer(OWRpy):
         ######## GUI ############
         
         self.tableArea = redRGUI.widgetBox(self.controlArea)
-        holder = redRGUI.widgetBox(self.tableArea, orientation = 'horizontal') # need to make a holder so that all of the criteria buttons move to the left hand side.  Ideally there won't be that many criteria that they user will set, but who knows...
+        # holder = redRGUI.widgetBox(self.tableArea, orientation = 'horizontal') # need to make a holder so that all of the criteria buttons move to the left hand side.  Ideally there won't be that many criteria that they user will set, but who knows...
         
-        holder.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        redRGUI.widgetLabel(holder, "Row Selection Criteria (click to remove):")
-        self.criteriaArea = redRGUI.widgetBox(holder, orientation = 'horizontal')
-        self.criteriaArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        redRGUI.widgetLabel(holder, "Column Selection Criteria (click to remove):")
-        self.columnCriteriaArea = redRGUI.widgetBox(holder, orientation = 'horizontal')
-        self.columnCriteriaArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        bufferBox = redRGUI.widgetBox(holder)
-        bufferBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
+        # holder.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        # redRGUI.widgetLabel(holder, "Row Selection Criteria (click to remove):")
+        # self.criteriaArea = redRGUI.widgetBox(holder, orientation = 'horizontal')
+        # self.criteriaArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        # redRGUI.widgetLabel(holder, "Column Selection Criteria (click to remove):")
+        # self.columnCriteriaArea = redRGUI.widgetBox(holder, orientation = 'horizontal')
+        # self.columnCriteriaArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        # bufferBox = redRGUI.widgetBox(holder)
+        # bufferBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         self.table = redRGUI.table(self.tableArea)
-        #self.connect(self.table, SIGNAL('cellClicked(int, int)'), self.cellEntered) # monitors which cell is activated, this is used for setting the criteria of the lineEditHint next to the rows and the columns
-        
         self.clearButton = redRGUI.button(self.bottomAreaLeft, "Clear Table", self.table.clear())
         ######## Row Column Dialog ########
         self.rowcolDialog = QDialog()
@@ -90,6 +89,12 @@ class DataExplorer(OWRpy):
         pass
     def processData(self, data, newData = True):
         if data:
+            self.data = ''
+            self.currentDataTransformation = '' # holder for data transformations ex: ((data[1:5,])[,1:3])[1:2,]
+            self.dataParent = {}
+            self.criteriaList = []
+            self.columnCriteriaList = []
+            self.criteriaDialogList = []
             self.table.hide()
             self.table = redRGUI.table(self.tableArea)
             self.data = data['data']
@@ -210,30 +215,87 @@ class DataExplorer(OWRpy):
                      #commented out for testing
                 elif j > 1 and i == 0: # setting the line edits for looking through the columns
                     # first we need to find the colData and the class of this column
-                    #colData = self.R('as.vector('+self.currentDataTransformation+'[,'+str(j-1)+'])') # we need this for setting the data that will go into the body of the table
-                    # if type(colData) in [type(''), type(1), type(1.3)]:
-                        # colData = [colData]
-                        # print 'colData converted to list'
                     thisClass = self.R('class('+self.currentDataTransformation+'[,'+str(j-1)+'])', silent = True)
+                    
+                    # append the information into a series of dialogs that reside in a list, these will be searched when a button is pressed on the table.
+                    
                     if thisClass in ['character']: # we want to show the element but not add it to the criteria
-                        cw = OWGUIEx.lineEditHint(self, None, None, callback = lambda i = i, j = j: self.columnLineEditHintAccepted(i, j))
+                        # the jth selection criteria needs to be a character selection
+                        self.criteriaDialogList.insert(j-2, {'dialog':QDialog()})
+                        self.criteriaDialogList[j-2]['dialog'].hide()
+                        self.criteriaDialogList[j-2]['dialog'].setLayout(QVBoxLayout())
+                        self.criteriaDialogList[j-2]['dialog'].setWindowTitle(self.captionTitle+' '+self.colnames[j-2]+' Seleciton')
+                        self.criteriaDialogList[j-2]['cw'] = OWGUIEx.lineEditHint(self.criteriaDialogList[j-2]['dialog'], None, None
+                        #, callback = lambda i = i, j = j: self.columnLineEditHintAccepted(i, j))
+                        )
+                        redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Commit", callback = lambda k = j-2: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
+                        self.criteriaDialogList[j-2]['add'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Add", callback = lambda k = j-2: self.insertCriteriaAdd(k), tooltip = 'Adds the selection criteria to the dialog.\nPress Commit to commit to the table.')
+                        self.criteriaDialogList[j-2]['and'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "And", callback = lambda k = j-2: self.insertCriteriaAnd(k))
+                        self.criteriaDialogList[j-2]['and'].setEnabled(False)
+                        self.criteriaDialogList[j-2]['or'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Or", callback = lambda k = j-2: self.insertCriteriaOr(k))
+                        self.criteriaDialogList[j-2]['or'].setEnabled(False)
+                        self.criteriaDialogList[j-2]['not'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Not", callback = lambda k = j-2: self.insertCriteriaNot(k), tooltip = 'Sets the opposite of the criteria to the dialog.\nPress Commit to commit to the table.')
+                        
+                        redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Clear", callback = lambda k = j-2: self.clearCriteriaDialog(k), tooltip = 'Clear the dialog and all of the selection contents, you must press commit\nafter this to commit the changes and repopulate the widget') # funciton for clearing the selection criteria of the dialog
+                        self.criteriaDialogList[j-2]['widgetLabel'] = redRGUI.widgetLabel(self.criteriaDialogList[j-2]['dialog'], '')
+                        self.criteriaDialogList[j-2]['criteriaCollection'] = ''
                         #cw.setItems(self.R('as.vector('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
                         #print type(tableData[0:, j-2])
-                        cw.setItems(tableData[0:, j-2])
-                        cw.setToolTip('Moves to the selected text, but does not subset')
-                        self.table.setCellWidget(i, j, cw)
+                        self.criteriaDialogList[j-2]['cw'].setItems(tableData[0:, j-2])
+                        self.criteriaDialogList[j-2]['cw'].setToolTip('Moves to the selected text, but does not subset')
+                        cb = redRGUI.button(self, self.colnames[j-2]+'Criteria', callback = lambda k = j-2: self.showDialog(k))
+                        self.table.setCellWidget(i, j, cb)
                     elif thisClass in ['numeric']:
-                        cw = redRGUI.lineEdit(self, toolTip = 'Subsets based on the criteria that you input, ex. > 50 gives rows where this column is greater than 50, == 50 gives all rows where this column is equal to 50.\nNote, you must use two equal (=) signs, ex. ==.')
-                        #cw.setToolTip('Subsets based on the criteria that you input, ex. > 50 gives rows where this column is greater than 50, == 50 gives all rows where this column is equal to 50.\nNote, you must use two equal (=) signs, ex. ==.')
-                        self.connect(cw, SIGNAL('returnPressed()'), lambda i = i, j = j: self.columnNumericCriteriaAccepted(i, j))
-                        self.table.setCellWidget(i, j, cw)
+                        self.criteriaDialogList.insert(j-2, {'dialog':QDialog()})
+                        self.criteriaDialogList[j-2]['dialog'].hide()
+                        self.criteriaDialogList[j-2]['dialog'].setLayout(QVBoxLayout())
+                        self.criteriaDialogList[j-2]['dialog'].setWindowTitle(self.captionTitle+' '+self.colnames[j-2]+' Seleciton')
+                        self.criteriaDialogList[j-2]['cw'] = redRGUI.lineEdit(self.criteriaDialogList[j-2]['dialog'], toolTip = 'Subsets based on the criteria that you input, ex. > 50 gives rows where this column is greater than 50, == 50 gives all rows where this column is equal to 50.\nNote, you must use two equal (=) signs, ex. ==.')
+                        redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Commit"
+                        , callback = lambda k = j-2: self.commitCriteriaDialog(k)
+                        , tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
+                        self.criteriaDialogList[j-2]['add'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Add", callback = lambda k = j-2, logic = '': self.insertNumericCriteriaAdd(k, logic), tooltip = 'Adds the selection criteria to the dialog.\nPress Commit to commit to the table.')
+                        
+                        self.criteriaDialogList[j-2]['and'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "And", callback = lambda k = j-2: self.insertCriteriaAnd(k))
+                        self.criteriaDialogList[j-2]['and'].setEnabled(False)
+                        self.criteriaDialogList[j-2]['or'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Or", callback = lambda k = j-2: self.insertCriteriaOr(k))
+                        self.criteriaDialogList[j-2]['or'].setEnabled(False)
+                        self.criteriaDialogList[j-2]['not'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Not", callback = lambda k = j-2, logic = '!': self.insertNumericCriteriaAdd(k, logic), tooltip = 'Sets the opposite of the criteria to the dialog.\nPress Commit to commit to the table.')
+                        
+                        redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Clear", callback = lambda k = j-2: self.clearCriteriaDialog(k), tooltip = 'Clear the dialog and all of the selection contents, you must press commit\nafter this to commit the changes and repopulate the widget') # funciton for clearing the selection criteria of the dialog
+                        self.criteriaDialogList[j-2]['widgetLabel'] = redRGUI.widgetLabel(self.criteriaDialogList[j-2]['dialog'], '')
+                        self.criteriaDialogList[j-2]['criteriaCollection'] = ''
+                        
+                        #self.connect(self.criteriaDialogList[j-2]['cw'], SIGNAL('returnPressed()'), lambda i = i, j = j: self.columnNumericCriteriaAccepted(i, j))
+                        
+                        cb = redRGUI.button(self, self.colnames[j-2]+'Criteria', callback = lambda k = j-2: self.showDialog(k))
+                        self.table.setCellWidget(i, j, cb)
                     
                     elif thisClass in ['factor']:
-                        cw = OWGUIEx.lineEditHint(self, None, None, callback = lambda i = i, j = j: self.columnFactorCriteriaAccepted(i, j))
-                        cw.setToolTip('Subsets based on the elements from a factor column.  These columns contain repeating elements such as "apple", "apple", "banana", "banana".')
+                        self.criteriaDialogList.insert(j-2, {'dialog':QDialog()})
+                        self.criteriaDialogList[j-2]['dialog'].hide()
+                        self.criteriaDialogList[j-2]['dialog'].setLayout(QVBoxLayout())
+                        self.criteriaDialogList[j-2]['dialog'].setWindowTitle(self.captionTitle+' '+self.colnames[j-2]+' Seleciton')
+                        self.criteriaDialogList[j-2]['cw'] = OWGUIEx.lineEditHint(self.criteriaDialogList[j-2]['dialog'], None, None
+                        #, callback = lambda i = i, j = j: self.columnFactorCriteriaAccepted(i, j))
+                        )
+                        self.criteriaDialogList[j-2]['cw'].setToolTip('Subsets based on the elements from a factor column.  These columns contain repeating elements such as "apple", "apple", "banana", "banana".')
                         #print self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])')
-                        cw.setItems(self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
-                        self.table.setCellWidget(i, j, cw)
+                        self.criteriaDialogList[j-2]['cw'].setItems(self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
+                        redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Commit", callback = lambda k = j-2: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
+                        self.criteriaDialogList[j-2]['add'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Add", callback = lambda k = j-2, logic = '': self.insertTextCriteriaAdd(k, logic), tooltip = 'Adds the selection criteria to the dialog.\nPress Commit to commit to the table.')
+                        self.criteriaDialogList[j-2]['and'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "And", callback = lambda k = j-2: self.insertCriteriaAnd(k))
+                        self.criteriaDialogList[j-2]['and'].setEnabled(False)
+                        self.criteriaDialogList[j-2]['or'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Or", callback = lambda k = j-2: self.insertCriteriaOr(k))
+                        self.criteriaDialogList[j-2]['or'].setEnabled(False)
+                        self.criteriaDialogList[j-2]['not'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Not", callback = lambda k = j-2, logic = '!': self.insertTextCriteriaAdd(k, logic), tooltip = 'Sets the opposite of the criteria to the dialog.\nPress Commit to commit to the table.')
+                        
+                        redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Clear", callback = lambda k = j-2: self.clearCriteriaDialog(k), tooltip = 'Clear the dialog and all of the selection contents, you must press commit\nafter this to commit the changes and repopulate the widget') # funciton for clearing the selection criteria of the dialog
+                        self.criteriaDialogList[j-2]['widgetLabel'] = redRGUI.widgetLabel(self.criteriaDialogList[j-2]['dialog'], '')
+                        self.criteriaDialogList[j-2]['criteriaCollection'] = ''
+                        
+                        cb = redRGUI.button(self, self.colnames[j-2]+'Criteria', callback = lambda k = j-2: self.showDialog(k))
+                        self.table.setCellWidget(i, j, cb)
                         
                 elif j > 1 and i == 1: # set the colnames
                     ci = QTableWidgetItem(self.colnames[j-2])
@@ -247,6 +309,57 @@ class DataExplorer(OWRpy):
                     else:
                         ci = QTableWidgetItem(str(tableData[i-2, j-2])) # need to catch the case that there might not be multiple rows or columns
                     self.table.setItem(i, j, ci)
+                    
+    def showDialog(self, k):
+        self.criteriaDialogList[k]['dialog'].show()
+    def insertTextCriteriaAdd(self, k, logic):
+        # clear the criteria from the lineEdit, add that criteria to the criteriaList, update the widgetLabel to reflect the current selection criteria, the criteris list tryes to do it'e best but it isn't infallable.
+        cw = self.criteriaDialogList[k]['cw']
+        text = str(cw.text())
+        colName = str(self.table.item(1, k+2).text())
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'$'+colName+' == '+text+')'
+        self.criteriaDialogList[k]['widgetLabel'].setText(self.criteriaDialogList[k]['criteriaCollection'])
+        self.setDialogState(k, 0)
+    def insertNumericCriteriaAdd(self, k, logic):
+        cw = self.criteriaDialogList[k]['cw']
+        text = str(cw.text())
+        if '==' not in text and '>' not in text and '<' not in text:
+            # the person didn't put in a logical opperation even though we asked them to
+            self.status.setText('Please make a logical statement beginning with either \'==\', \'>\', or \'<\'')
+            return
+        colName = str(self.table.item(1, k+2).text())
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'$'+colName+text+')'
+        self.criteriaDialogList[k]['widgetLabel'].setText(self.criteriaDialogList[k]['criteriaCollection'])
+        self.setDialogState(k, 0)
+    def insertCriteriaAnd(self, k):
+        self.criteriaDialogList[k]['criteriaCollection'] += ' & '
+        self.criteriaDialogList[k]['widgetLabel'].setText(self.criteriaDialogList[k]['criteriaCollection'])
+        self.setDialogState(k, 1)
+    
+    def insertCriteriaOr(self, k):
+        self.criteriaDialogList[k]['criteriaCollection'] += ' | ' 
+        self.criteriaDialogList[k]['widgetLabel'].setText(self.criteriaDialogList['criteriaCollection'])
+        self.setDialogState(k, 1)
+        
+    def clearCriteriaDialog(self, k):
+        self.criteriaDialogList[k]['criteriaCollection'] = ''
+        self.criteriaDialogList[k]['widgetLabel'].setText(self.criteriaDialogList['criteriaCollection'])
+        self.setDialogState(k, 1)
+    def setDialogState(self, k, state):
+        self.criteriaDialogList[k]['add'].setEnabled(state)
+        self.criteriaDialogList[k]['and'].setEnabled(not state)
+        self.criteriaDialogList[k]['or'].setEnabled(not state)
+        self.criteriaDialogList[k]['not'].setEnabled(state)
+    def commitCriteriaDialog(self, k):
+        # collect all of the criteria from the criteriaDialogList , remove those that are blank '', commit the new selection criteria   
+        # collect all of the criteria
+        criteria = []
+        for item in self.criteriaDialogList:
+            if item['criteriaCollection'] != '':
+                criteria.append(item['criteriaCollection'])
+        # join these together into a single call across the columns
+        newData = {'data':self.orriginalData+'['+'&'.join(criteria)+',]'} # reprocess the table
+        self.processData(newData, False)
     def columnFactorCriteriaAccepted(self, i, j):
         print str(str(i) + ' column ' + str(j) + ' row ')
         cw = self.table.cellWidget(i, j)
@@ -338,10 +451,6 @@ class DataExplorer(OWRpy):
                 ccList.append(item)
         newData = {'data':self.orriginalData+'['+'&'.join(cList)+','+'&'.join(ccList)+']'} # reprocess the table
         self.processData(newData, False)
-    
-    def cellEntered(self, rowInt, colInt):
-        self.currentRow = rowInt
-        self.currentColumn = colInt
-        
+
     def deleteWidget(self):
         self.rowcolDialog.close()
