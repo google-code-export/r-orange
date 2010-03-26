@@ -53,6 +53,8 @@ class apply(OWRpy):
                     self.R(self.Rvariables['apply']+'<-data.frame('+self.Rvariables['apply']+', rownames('+self.RFunctionParam_X+'), row.names = rownames('+self.RFunctionParam_X+'))')
                 self.makeCM(self.Rvariables['apply_cm'], self.Rvariables['apply'])
                 self.data['cm'] = self.Rvariables['apply_cm']
+                self.data['parent'] = self.Rvariables['apply']
+                self.data['data'] = self.Rvariables['apply']
                 self.rSend("apply Output", self.data)
         def compileReport(self):
                 self.reportSettings("Input Settings",[("X", self.RFunctionParam_X)])

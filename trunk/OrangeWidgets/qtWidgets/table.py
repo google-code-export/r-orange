@@ -85,21 +85,21 @@ class table(QTableWidget,widgetState):
             
         self.setState(data)
     def delete(self):
-        rows = self.rowCount()
-        columns = self.columnCount()
-        for i in range(0, rows):
-            for j in range(0, columns):
-                try:
-                    item = self.item(i, j)
-                    if type(item) == PyQt4.QtGui.QTableWidgetItem:
+        # rows = self.rowCount()
+        # columns = self.columnCount()
+        # for i in range(0, rows):
+            # for j in range(0, columns):
+                # try:
+                    # item = self.item(i, j)
+                    # if type(item) == PyQt4.QtGui.QTableWidgetItem:
                         #print type(item)
-                        sip.delete(item)
-                except: pass
-                try:
-                    widget = self.cellWidget(i, j)
-                    if widget:
-                        print type(widget)
-                        sip.delete(widget)
-                except: pass
+                        # sip.delete(item)
+                # except: pass
+                # try:
+                    # widget = self.cellWidget(i, j)
+                    # if widget:
+                        #print type(widget)
+                        # sip.delete(widget)
+                # except: pass
                 
         sip.delete(self)

@@ -16,7 +16,7 @@ import math, sip
 class DataExplorer(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager = None):
-        OWRpy.__init__(self, parent, signalManager, "Data Table", wantMainArea = 0)
+        OWRpy.__init__(self, parent, signalManager, "Data Explorer", wantMainArea = 0)
         
         self.data = ''
         self.orriginalData = '' # a holder for data that we get from a connection
@@ -29,6 +29,7 @@ class DataExplorer(OWRpy):
         self.criteriaList = []
         self.columnCriteriaList = []
         self.criteriaDialogList = []
+        self.setRvariableNames(['dataExplorer'])
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector), ('Column Subset Vector', RvarClasses.RVector, self.setColumnSelectVector)]
         self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
@@ -49,6 +50,7 @@ class DataExplorer(OWRpy):
         # bufferBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         self.table = redRGUI.table(self.tableArea)
         self.clearButton = redRGUI.button(self.bottomAreaLeft, "Clear Table", self.table.clear())
+        redRGUI.button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
         ######## Row Column Dialog ########
         self.rowcolDialog = QDialog()
         self.rowcolDialogButton = redRGUI.button(self.bottomAreaLeft, "Show Row Column Dialog", callback = self.showRowColumnDialog)
@@ -94,7 +96,7 @@ class DataExplorer(OWRpy):
             self.dataParent = {}
             self.criteriaList = []
             self.columnCriteriaList = []
-            self.criteriaDialogList = []
+            
             self.table.hide()
             self.table = redRGUI.table(self.tableArea)
             self.data = data['data']
@@ -171,9 +173,20 @@ class DataExplorer(OWRpy):
         self.table.setRowCount(min([int(dims[0]), 500])+2) # set up the row and column counts of the table
         self.table.setColumnCount(min([int(dims[1]), 500])+2)
         tableData = self.R('as.matrix('+self.currentDataTransformation+')') # collect all of the table data into an object
+        if len(self.criteriaDialogList) != 0:
+            oldcriteriaList = []
+            for i in range(0, len(self.criteriaDialogList)):
+                oldcriteriaList.append(str(self.criteriaDialogList[i]['widgetLabel'].text()))
+            print oldcriteriaList
+        else:
+            oldcriteriaList = ['' for i in range(0, min([int(dims[1]), 500]))]
+        self.criteriaList = []
         tableData = numpy.array(tableData) # make the conversion to a numpy object for subsetting
         #print tableData
-        
+        colClasses = []
+        for i in range(0, dims[1]):
+            colClasses.append(self.R('class('+self.currentDataTransformation+')', silent = True))
+            
         # start to fill the table from top to bottom, left to right.
         for j in range(0, min([int(dims[1]), 500])+2):# the columns
             for i in range(0, min([int(dims[0]), 500])+2): # the rows
@@ -181,16 +194,14 @@ class DataExplorer(OWRpy):
                 
                 # some special cases that we need to consider, is this the first row (containing the search for the row) or is this the second row (containing the rownames)
                 if j == 0 and i > 1: # the data selector for the rows
-                    thisClass = self.R('class('+self.currentDataTransformation+'['+str(i-1)+',])', silent = True)
-                    if thisClass == 'factor':
+                    #thisClass = self.R('class('+self.currentDataTransformation+'['+str(i-1)+',])', silent = True)
+                    if 'factor' in colClasses or 'character' in colClasses:
                         cw = OWGUIEx.lineEditHint(self, None, None, callback = self.rowLevelsLineEditHintAccepted)
-                        cw.setItems(self.R('levels('+self.currentDataTransformation+'['+str(i-1)+',])', silent = True))
-                    elif thisClass == 'numeric':
+                        cw.setToolTip('Move to an element on this row.')
+                        cw.setItems('as.character('+self.R(self.currentDataTransformation+'['+str(i-1)+',])', silent = True))
+                    else:
                         cw = redRGUI.lineEdit(self, toolTip='Subsets based on the criteria that you input, ex. > 50 gives rows where this column is greater than 50, == 50 gives all rows where this column is equal to 50.\nNote, you must use two equal (=) signs, ex. ==.')
                         self.connect(cw, SIGNAL('returnPressed()'), lambda i = i, j = j: self.rowNumericCriteriaAccepted(i, j))
-                    else:
-                        cw = OWGUIEx.lineEditHint(self, None, None, callback = self.rowLineEditHintAccepted)
-                        cw.setItems(tableData[i-2])
                     self.table.setCellWidget(i,j, cw)
                 elif j == 0 and (i == 0 or i == 1):
                     upcell = QTableWidgetItem()
@@ -238,12 +249,14 @@ class DataExplorer(OWRpy):
                         
                         redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Clear", callback = lambda k = j-2: self.clearCriteriaDialog(k), tooltip = 'Clear the dialog and all of the selection contents, you must press commit\nafter this to commit the changes and repopulate the widget') # funciton for clearing the selection criteria of the dialog
                         self.criteriaDialogList[j-2]['widgetLabel'] = redRGUI.widgetLabel(self.criteriaDialogList[j-2]['dialog'], '')
+                        self.criteriaDialogList[j-2]['widgetLabel'].setText(oldcriteriaList[j-2])
                         self.criteriaDialogList[j-2]['criteriaCollection'] = ''
                         #cw.setItems(self.R('as.vector('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
                         #print type(tableData[0:, j-2])
-                        self.criteriaDialogList[j-2]['cw'].setItems(tableData[0:, j-2])
+                        self.criteriaDialogList[j-2]['cw'].setItems(self.R('as.character('+self.orriginalData+'[,'+str(j-1)+'])'))
                         self.criteriaDialogList[j-2]['cw'].setToolTip('Moves to the selected text, but does not subset')
                         cb = redRGUI.button(self, self.colnames[j-2]+'Criteria', callback = lambda k = j-2: self.showDialog(k))
+                        cb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                         self.table.setCellWidget(i, j, cb)
                     elif thisClass in ['numeric']:
                         self.criteriaDialogList.insert(j-2, {'dialog':QDialog()})
@@ -264,11 +277,13 @@ class DataExplorer(OWRpy):
                         
                         redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Clear", callback = lambda k = j-2: self.clearCriteriaDialog(k), tooltip = 'Clear the dialog and all of the selection contents, you must press commit\nafter this to commit the changes and repopulate the widget') # funciton for clearing the selection criteria of the dialog
                         self.criteriaDialogList[j-2]['widgetLabel'] = redRGUI.widgetLabel(self.criteriaDialogList[j-2]['dialog'], '')
+                        self.criteriaDialogList[j-2]['widgetLabel'].setText(oldcriteriaList[j-2])
                         self.criteriaDialogList[j-2]['criteriaCollection'] = ''
                         
                         #self.connect(self.criteriaDialogList[j-2]['cw'], SIGNAL('returnPressed()'), lambda i = i, j = j: self.columnNumericCriteriaAccepted(i, j))
                         
                         cb = redRGUI.button(self, self.colnames[j-2]+'Criteria', callback = lambda k = j-2: self.showDialog(k))
+                        cb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                         self.table.setCellWidget(i, j, cb)
                     
                     elif thisClass in ['factor']:
@@ -281,7 +296,7 @@ class DataExplorer(OWRpy):
                         )
                         self.criteriaDialogList[j-2]['cw'].setToolTip('Subsets based on the elements from a factor column.  These columns contain repeating elements such as "apple", "apple", "banana", "banana".')
                         #print self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])')
-                        self.criteriaDialogList[j-2]['cw'].setItems(self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
+                        self.criteriaDialogList[j-2]['cw'].setItems(self.R('levels('+self.orriginalData+'[,'+str(j-1)+'])'))
                         redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Commit", callback = lambda k = j-2: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
                         self.criteriaDialogList[j-2]['add'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Add", callback = lambda k = j-2, logic = '': self.insertTextCriteriaAdd(k, logic), tooltip = 'Adds the selection criteria to the dialog.\nPress Commit to commit to the table.')
                         self.criteriaDialogList[j-2]['and'] = redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "And", callback = lambda k = j-2: self.insertCriteriaAnd(k))
@@ -292,9 +307,11 @@ class DataExplorer(OWRpy):
                         
                         redRGUI.button(self.criteriaDialogList[j-2]['dialog'], "Clear", callback = lambda k = j-2: self.clearCriteriaDialog(k), tooltip = 'Clear the dialog and all of the selection contents, you must press commit\nafter this to commit the changes and repopulate the widget') # funciton for clearing the selection criteria of the dialog
                         self.criteriaDialogList[j-2]['widgetLabel'] = redRGUI.widgetLabel(self.criteriaDialogList[j-2]['dialog'], '')
+                        self.criteriaDialogList[j-2]['widgetLabel'].setText(oldcriteriaList[j-2])
                         self.criteriaDialogList[j-2]['criteriaCollection'] = ''
                         
                         cb = redRGUI.button(self, self.colnames[j-2]+'Criteria', callback = lambda k = j-2: self.showDialog(k))
+                        cb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                         self.table.setCellWidget(i, j, cb)
                         
                 elif j > 1 and i == 1: # set the colnames
@@ -309,7 +326,7 @@ class DataExplorer(OWRpy):
                     else:
                         ci = QTableWidgetItem(str(tableData[i-2, j-2])) # need to catch the case that there might not be multiple rows or columns
                     self.table.setItem(i, j, ci)
-                    
+        self.table.resizeColumnsToContents()
     def showDialog(self, k):
         self.criteriaDialogList[k]['dialog'].show()
     def insertTextCriteriaAdd(self, k, logic):
@@ -452,5 +469,24 @@ class DataExplorer(OWRpy):
         newData = {'data':self.orriginalData+'['+'&'.join(cList)+','+'&'.join(ccList)+']'} # reprocess the table
         self.processData(newData, False)
 
+    def commitSubset(self):
+        # commit the table as a new data frame
+        criteria = []
+        for item in self.criteriaDialogList:
+            if item['criteriaCollection'] != '':
+                criteria.append(item['criteriaCollection'])
+        # join these together into a single call across the columns
+        newData = {'data':self.orriginalData+'['+'&'.join(criteria)+',]'} # reprocess the table
+        if 'cm' in self.dataParent:
+            self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(criteria))
+            newData = self.dataParent.copy()
+            newData['data'] = self.orriginalData+'['+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+' == 1,]'
+            self.rSend('Data Subset', newData)
+            self.status.setText('Data Sent')
+        else:
+            newData = self.dataParent.copy()
+            newData['data'] = self.orriginalData+'['+'&'.join(criteria)+',]'
+            self.rSend('Data Subset', newData)
+            self.status.setText('Data Sent')
     def deleteWidget(self):
         self.rowcolDialog.close()
