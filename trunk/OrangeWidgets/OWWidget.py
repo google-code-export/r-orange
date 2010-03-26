@@ -25,8 +25,9 @@ class OWWidget(OWBaseWidget):
         
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
-
+        self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.topWidgetPart = OWGUI.widgetBox(self, orientation="vertical", margin=0)
+        self.topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.setCentralWidget(self.topWidgetPart)
              
         # self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin=0)

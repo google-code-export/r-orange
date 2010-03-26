@@ -198,7 +198,8 @@ class LineEditHint(QLineEdit):
 
     
     def textEdited(self):
-        if self.getLastTextItem() == "" or len(str(self.text()) >= self.minTextLength:        # if we haven't typed anything yet we hide the list widget
+        # if we haven't typed anything yet we hide the list widget
+        if self.getLastTextItem() == "" or len(str(self.text())) >= self.minTextLength:
             self.listWidget.hide()
         else:
             self.updateSuggestedItems()

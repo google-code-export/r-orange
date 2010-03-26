@@ -14,11 +14,12 @@ import redRGUI
 class ListSelector(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "ListSelector", wantMainArea = 0, resizingEnabled = 1)
         
         #self.selection = 0
         self.setRvariableNames(['cm', 'listelement'])
         self.data = None
+        self.loadSettings()
         self.inputs = [('R List', RvarClasses.RList, self.process)]
         self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList)]
         

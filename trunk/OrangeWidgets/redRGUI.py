@@ -346,34 +346,31 @@ class LineEditWFocusOut(QLineEdit):
 
 
 
-def button(widget,  label, callback = None, disabled=0, tooltip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
-    btn = QPushButton(label, widget)
-    # w = widgetBox(widget)
-    # w.layout().setAlignment(Qt.AlignRight)
-    # w.layout().addWidget(btn)
-    if addToLayout and widget.layout():
-        widget.layout().addWidget(btn)
+# def button(widget,  label, callback = None, disabled=0, tooltip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
+    # btn = QPushButton(label, widget)
+    # if addToLayout and widget.layout():
+        # widget.layout().addWidget(btn)
     
-    if width:
-        btn.setFixedWidth(width)
-    elif len(label)*7+5 < 50:
-        btn.setFixedWidth(50)
-    else:
-        btn.setFixedWidth(len(label)*7+5)
-    if height:
-        btn.setFixedHeight(height)
-    btn.setDisabled(disabled)
+    # if width:
+        # btn.setFixedWidth(width)
+    # elif len(label)*7+5 < 50:
+        # btn.setFixedWidth(50)
+    # else:
+        # btn.setFixedWidth(len(label)*7+5)
+    # if height:
+        # btn.setFixedHeight(height)
+    # btn.setDisabled(disabled)
     
-    if tooltip:
-        btn.setToolTip(tooltip)
+    # if tooltip:
+        # btn.setToolTip(tooltip)
         
-    if toggleButton:
-        btn.setCheckable(True)
+    # if toggleButton:
+        # btn.setCheckable(True)
         
-    if callback:
-        QObject.connect(btn, SIGNAL("clicked()"), callback)
+    # if callback:
+        # QObject.connect(btn, SIGNAL("clicked()"), callback)
         
-    return btn
+    # return btn
 
 def toolButton(widget, master, callback = None, width = None, height = None, tooltip = None, addToLayout = 1, debuggingEnabled = 1):
     btn = QToolButton(widget)

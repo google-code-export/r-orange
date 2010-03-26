@@ -8,6 +8,7 @@ from PyQt4.QtGui import *
 class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None,orientation='vertical'):
         QTextEdit.__init__(self,widget)
+        
         if label:
             hb = widgetBox(widget,orientation=orientation)
             widgetLabel(hb, label)
@@ -15,6 +16,9 @@ class textEdit(QTextEdit,widgetState):
         else:
             widget.layout().addWidget(self)
         self.insertHtml(html)
+
+    def sizeHint(self):
+        return QSize(10,10)
     def setCursorToEnd(self):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)
