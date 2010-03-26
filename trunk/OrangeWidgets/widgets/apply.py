@@ -1,5 +1,5 @@
 """
-<name>apply</name>
+<name>Apply Math</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>:apply</RFunctions>
 <tags>Prototypes</tags>
@@ -22,8 +22,8 @@ class apply(OWRpy):
                 box = redRGUI.tabWidget(self.controlArea)
                 self.standardTab = box.createTabPage(name = "Standard")
                 self.advancedTab = box.createTabPage(name = "Advanced")
-                self.RFunctionParamFUN_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "FUN:", text = '')
-                self.RFunctionParamMARGIN_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "MARGIN:", text = '')
+                self.RFunctionParamFUN_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Function:", text = '')
+                self.RFunctionParamMARGIN_radioButtons =  redRGUI.radioButtons(self.standardTab,  label = "Margin:", buttons = ['Rows', 'Columns'])
                 redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
                 redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         def processX(self, data):
@@ -36,13 +36,16 @@ class apply(OWRpy):
         def commitFunction(self):
                 if str(self.RFunctionParam_X) == '': return
                 if str(self.RFunctionParamFUN_lineEdit.text()) == '': return
-                if str(self.RFunctionParamMARGIN_lineEdit.text()) == '': return
+                if str(self.RFunctionParamMARGIN_radioButtons.getSelected()) == []: return
                 injection = []
                 if str(self.RFunctionParamFUN_lineEdit.text()) != '':
                         string = 'FUN='+str(self.RFunctionParamFUN_lineEdit.text())
                         injection.append(string)
-                if str(self.RFunctionParamMARGIN_lineEdit.text()) != '':
-                        string = 'MARGIN='+str(self.RFunctionParamMARGIN_lineEdit.text())
+                if 'Rows' in self.RFunctionParamMARGIN_radioButtons.getSelected():
+                        string = 'MARGIN='+str(1)
+                        injection.append(string)
+                else:
+                        string = 'MARGIN = '+str(2)
                         injection.append(string)
                 inj = ','.join(injection)
                 self.R(self.Rvariables['apply']+'<-apply(X='+str(self.RFunctionParam_X)+','+inj+')')

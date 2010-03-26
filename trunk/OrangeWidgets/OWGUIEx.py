@@ -122,7 +122,8 @@ class LineEditHint(QLineEdit):
         self.autoSizeListWidget = 0
         self.caseSensitive = 1
         self.matchAnywhere = 1
-        self.nrOfSuggestions = 10
+        self.nrOfSuggestions = 50
+        self.minTextLength = 3
         #self.setDelimiters(",; ")
         self.delimiters = None          # by default, we only allow selection of one element
         self.itemsAsStrings = []        # a list of strings that appear in the list widget
@@ -197,7 +198,7 @@ class LineEditHint(QLineEdit):
 
     
     def textEdited(self):
-        if self.getLastTextItem() == "":        # if we haven't typed anything yet we hide the list widget
+        if self.getLastTextItem() == "" or len(str(self.text()) >= self.minTextLength:        # if we haven't typed anything yet we hide the list widget
             self.listWidget.hide()
         else:
             self.updateSuggestedItems()

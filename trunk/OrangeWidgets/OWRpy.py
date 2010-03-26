@@ -573,7 +573,10 @@ class OWRpy(OWWidget,RSession):
 
         for (name, data) in self.sentItems:
             self.send(name, data)
-       
+        self.reloadWidget()
+        
+    def reloadWidget(self):
+        pass
     
     def onLoadSavedSession2(self): #depreciated
         #print str(self.RGUIElementsSettings)
