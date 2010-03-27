@@ -114,13 +114,10 @@ class OutputWindow(QDialog):
 
         # QTextCursor runs very slow with lots of text!!!!!!!!!!
         
-        #cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        #self.textOutput.setTextCursor(cursor)                             # existing text
-        #if text == " ": self.textOutput.insertHtml("&nbsp;")
-        #else:           
-        #self.textOutput.insertHtml(Text)                                  # then append the text
-        self.textOutput.append(Text)                                  # then append the text
+        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        self.textOutput.setTextCursor(cursor)                             # existing text
+        self.textOutput.insertPlainText(Text)                                  # then append the text
         #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
         #self.textOutput.setTextCursor(cursor)
 
