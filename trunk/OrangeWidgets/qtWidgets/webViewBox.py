@@ -24,8 +24,9 @@ class webViewBox(QtWebKit.QWebView,widgetState):
             except: pass 
     
     def followLink(self, url):
-        self.R('shell.exec("'+str(url.toString())+'")')
-        self.notes.setHtml(str(url.toString()))
+        # self.R('shell.exec("'+str(url.toString())+'")')
+        # self.notes.setHtml(str(url.toString()))
+        pass
 
     def sizeHint(self):
         return QSize(10,10)

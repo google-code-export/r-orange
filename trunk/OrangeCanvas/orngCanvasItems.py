@@ -162,7 +162,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         _useContexts = canvasDlg.settings["useContexts"],
         _category = widgetInfo.category,
         _settingsFromSchema = widgetSettings)
-        self.instance._widgetFileName = widgetInfo.fullName
+        self.instance._widgetInfo = widgetInfo
         
         
         if widgetInfo.fileName == 'dummy': 

@@ -55,12 +55,29 @@ class OWRpy(OWWidget,RSession):
         
         #start widget GUI
         
-        minWidth = 200
         
+        ### status bar ###
+        self.statusBar = QStatusBar()
+        self.statusBar.setLayout(QHBoxLayout())
+        self.statusBar.setSizeGripEnabled(False)
+        
+        self.setStatusBar(self.statusBar)
+        
+        self.status = redRGUI.widgetLabel(self.statusBar, '')
+        self.status.setText('Processing not yet performed.')
+        self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.statusBar.addWidget(self.status,4)
+        #self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
+        # self.statusBar.setStyleSheet("QLabel { border-top: 2px solid red; } ")
+
+        ### Right Dock ###
+        minWidth = 200
         self.rightDock=QDockWidget('Documentation')
         self.rightDock.setObjectName('rightDock')
+        self.connect(self.rightDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
         self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.rightDock.setMinimumWidth(minWidth)
+        
         self.rightDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
         
@@ -68,6 +85,7 @@ class OWRpy(OWWidget,RSession):
         self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
         self.rightDockArea.setMinimumWidth(minWidth)
         self.rightDockArea.setMinimumHeight(150)
+        self.rightDockArea.layout().setMargin(4)
         self.rightDockArea.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         self.rightDock.setWidget(self.rightDockArea)
 
@@ -78,7 +96,7 @@ class OWRpy(OWWidget,RSession):
         self.helpBox.setMinimumWidth(minWidth)
         self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
-        url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetFileName)
+        url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo.fileName)
         self.help = redRGUI.webViewBox(self.helpBox,url=url)
         self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
@@ -106,41 +124,45 @@ class OWRpy(OWWidget,RSession):
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
         self.documentationState = {'helpBox':True,'notesBox':True,'ROutputBox':True}
-        self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Show Help',toggleButton=True, callback = self.updateDocumentationDock)
-        self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Show Notes',toggleButton=True, callback = self.updateDocumentationDock)
-        self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'Show Help',toggleButton=True, callback = self.updateDocumentationDock)
+        self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Help',toggleButton=True, callback = self.updateDocumentationDock)
+        self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
+        self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
+        self.statusBar.addPermanentWidget(self.showHelpButton)
+        self.statusBar.addPermanentWidget(self.showNotesButton)
+        self.statusBar.addPermanentWidget(self.showROutputButton)
         
         self.GUIDialogDialog = None
         
-        #print self.GUIDialogDialog
         if self.hasAdvancedOptions:
             self.leftDock=QDockWidget('Advanced Options')
             self.leftDock.setObjectName('leftDock')
+            self.connect(self.leftDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
             self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
             self.leftDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
             self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
-            self.GUIDialog = redRGUI.widgetBox(self.GUIDialogDialog,orientation='vertical')
+            self.GUIDialog = redRGUI.widgetBox(self.leftDock,orientation='vertical')
             self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.leftDock.setWidget(self.GUIDialog)
             self.leftDockButton = redRGUI.button(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
+            self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.leftDockState = True
         
-        ### status bar ###
-        self.statusBar = QStatusBar()
-        self.statusBar.setLayout(QHBoxLayout())
-        self.setStatusBar(self.statusBar)
-        self.statusBar.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        self.statusBar.setLayout(QHBoxLayout())
-        self.status = redRGUI.widgetLabel(self.statusBar, '')
-        self.status.setText('Processing not yet performed.')
-        self.status.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.statusBar.addWidget(self.status)
-        self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
         
         
         
-    
+    def updateDock(self,ev):
+        print 'asdfasdf', ev
+        print self.windowTitle()
+        if self.rightDock.isFloating():
+            self.rightDock.setWindowTitle(self.windowTitle() + ' Documentation')
+        else:
+            self.rightDock.setWindowTitle('Documentation')
+        if hasattr(self, "leftDock"): 
+            if self.leftDock.isFloating():
+                self.leftDock.setWindowTitle(self.windowTitle() + ' Advanced Options')
+            else:
+                self.leftDock.setWindowTitle('Advanced Options')
+
 
     def showGUIDialog(self):
         if self.autoShowDialog:
@@ -177,6 +199,12 @@ class OWRpy(OWWidget,RSession):
             self.resize(self.windowState['size'])
         if 'pos' in self.windowState.keys():
             self.move(self.windowState['pos'])
+            
+        if self.rightDock.isFloating():
+            self.rightDock.show()
+        if hasattr(self, "leftDock") and self.leftDock.isFloating():
+            self.leftDock.show()
+
 
     def updateDocumentationDock(self):
         print 'in updatedock right'
@@ -322,8 +350,8 @@ class OWRpy(OWWidget,RSession):
     def getSettingsFile(self, file):
         print 'getSettingsFile in owbasewidget'
         if file==None:
-            if os.path.exists(os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")):
-                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+            if os.path.exists(os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")):
+                file = os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")
             else:
                 return
         if type(file) == str:
@@ -400,7 +428,7 @@ class OWRpy(OWWidget,RSession):
         # print self.captionTitle
         if settings:
             if file==None:
-                file = os.path.join(self.widgetSettingsDir, self.captionTitle + ".ini")
+                file = os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")
             if type(file) == str:
                 file = open(file, "w")
             cPickle.dump(settings, file)

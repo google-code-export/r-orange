@@ -106,9 +106,9 @@ class readFile(OWRpy):
         
         
         self.tableArea = redRGUI.groupBox(area)
-        #self.tableArea.setMinimumWidth(350)
-        self.tableArea.setHidden(True)
-        self.tableArea.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding))
+        self.tableArea.setMinimumWidth(200)
+        #self.tableArea.setHidden(True)
+        self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
         self.scanarea = redRGUI.textEdit(self.tableArea)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
@@ -150,8 +150,6 @@ class readFile(OWRpy):
         for i in self.columnTypes.findChildren(QWidget):
             i.setHidden(True)
         redRGUI.widgetBox(self.columnTypes)
-        self.columnTypes.adjustSize()
-        self.columnTypes.adjustSize()
         self.loadFile(scan=True)
     
     def scanFile(self):
@@ -166,7 +164,7 @@ class readFile(OWRpy):
         
         
     def loadFile(self,scan=False):
-        if len(self.recentFiles) ==0 or 'Select File' == self.filecombo.currentText(): 
+        if len(self.recentFiles) ==0 or self.filecombo.currentIndex() == 0: 
             self.scanarea.clear()
             #self.tableArea.setHidden(True)
             return
@@ -174,9 +172,9 @@ class readFile(OWRpy):
         self.R(self.Rvariables['filename'] + ' = "' 
         + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"') # should protext if R can't find this file
 
-        if self.tableArea.isHidden():
-            self.tableArea.setHidden(False)
-            self.resize(750,500)
+        # if self.tableArea.isHidden():
+            # self.tableArea.setHidden(False)
+            # self.resize(750,500)
 
         if self.delimiter.getChecked() == 'Tab': #'tab'
             sep = '\t'

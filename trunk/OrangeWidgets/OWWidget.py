@@ -53,39 +53,7 @@ class OWWidget(OWBaseWidget):
         self.bottomAreaRight = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
         self.space = self.controlArea
 
-        # if wantGraph and showSaveGraph:
-            # self.buttonBackground = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=2)
-            # self.graphButton = OWGUI.button(self.buttonBackground, self, "&Save Graph")
-            # self.graphButton.setAutoDefault(0)
 
-        # self.__reportData = None
-        # if OWReport.report and not noReport and hasattr(self, "sendReport"):
-            # if not hasattr(self, "buttonBackground"):
-                # self.buttonBackground = OWGUI.widgetBox(self.leftWidgetPart, orientation="vertical", margin=6)
-            # self.reportButton = OWGUI.button(self.buttonBackground, self, "&Report", self.reportAndFinish, debuggingEnabled=0)
-            # self.reportButton.setAutoDefault(0)
-
-        # if wantStatusBar:
-            # self.widgetStatusArea = QFrame(self) 
-            # self.statusBarIconArea = QFrame(self)
-            # self.widgetStatusBar = QStatusBar(self) 
-            
-            # self.layout().addWidget(self.widgetStatusArea)
-            
-            # self.widgetStatusArea.setLayout(QHBoxLayout(self.widgetStatusArea))
-            # self.widgetStatusArea.layout().addWidget(self.statusBarIconArea)
-            # self.widgetStatusArea.layout().addWidget(self.widgetStatusBar)
-            # self.widgetStatusArea.layout().setMargin(0)
-            # self.widgetStatusArea.setFrameShape(QFrame.StyledPanel)
-                       
-            # self.statusBarIconArea.setLayout(QHBoxLayout())
-            # self.widgetStatusBar.setSizeGripEnabled(0) 
-
-            # self.statusBarIconArea.hide()
-            
-            # self._warningWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-orange.png"))
-            # self._errorWidget = self.createPixmapWidget(self.statusBarIconArea, os.path.join(self.widgetDir + "icons/triangle-red.png"))
-        
         
     def grip1Clicked(self):
         print 'asdfasdfa'

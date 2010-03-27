@@ -32,7 +32,7 @@ class OutputWindow(QDialog):
 
         self.logFile = open(os.path.join(canvasDlg.canvasSettingsDir, "outputLog.html"), "w") # create the log file
         self.unfinishedText = ""
-
+        
         w = h = 500
         if canvasDlg.settings.has_key("outputWindowPos"):
             desktop = qApp.desktop()
@@ -96,29 +96,31 @@ class OutputWindow(QDialog):
     # simple printing of text called by print calls
     def write(self, text):
         # print text
-        # return
+        #return
         self.numberofLines += 1
-        if self.numberofLines > 1000 and not self.debugMode:
-            self.textOutput.clear()
-            self.numberofLines = 0
+        # if self.numberofLines > 1000 and not self.debugMode:
+            # self.textOutput.clear()
+            # self.numberofLines = 0
         Text = self.getSafeString(text)
-        Text = Text.replace("\n", "<br>\n")   # replace new line characters with <br> otherwise they don't get shown correctly in html output
+        #Text = Text.replace("\n", "<br>\n")   # replace new line characters with <br> otherwise they don't get shown correctly in html output
+        
         #text = "<nobr>" + text + "</nobr>"
         
         if self.canvasDlg.settings["focusOnCatchOutput"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
         if self.canvasDlg.settings["writeLogFile"]:
-            #self.logFile.write(str(text) + "<br>\n")
-            self.logFile.write(Text)
+            self.logFile.write(Text.replace("\n", "<br>\n"))
 
         # QTextCursor runs very slow with lots of text!!!!!!!!!!
         
         #cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         #self.textOutput.setTextCursor(cursor)                             # existing text
-        if text == " ": self.textOutput.insertHtml("&nbsp;")
-        else:           self.textOutput.insertHtml(Text)                                  # then append the text
+        #if text == " ": self.textOutput.insertHtml("&nbsp;")
+        #else:           
+        #self.textOutput.insertHtml(Text)                                  # then append the text
+        self.textOutput.append(Text)                                  # then append the text
         #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
         #self.textOutput.setTextCursor(cursor)
 
@@ -131,12 +133,12 @@ class OutputWindow(QDialog):
             
         
 
-    def writelines(self, lines):
-        for line in lines:
-            self.numberofLines += 1
-            self.write(line)
-            if self.numberofLines > 1000 and not self.debugMode:
-                self.textOutput.clear()
+    # def writelines(self, lines):
+        # for line in lines:
+            # self.numberofLines += 1
+            # self.write(line)
+            # if self.numberofLines > 1000 and not self.debugMode:
+                # self.textOutput.clear()
 
     def flush(self):
         pass

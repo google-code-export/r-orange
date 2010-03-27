@@ -334,8 +334,8 @@ class OWBaseWidget(QMainWindow):
         if x != None and y != None:
             self.move(x,y)
         self.show()
-        if self.GUIDialogDialog != None:
-            self.showGUIDialog()
+        # if self.GUIDialogDialog != None:
+            # self.showGUIDialog()
             
         #self.raise_()
 
@@ -747,7 +747,7 @@ class OWBaseWidget(QMainWindow):
 
 if __name__ == "__main__":
     a=QApplication(sys.argv)
-    oww=OWBaseWidget(adfaf=1)
+    oww=OWBaseWidget()
     oww.show()
     a.exec_()
     oww.saveSettings()
