@@ -10,6 +10,7 @@ import RAffyClasses
 import threading, sys
 import orngEnviron
 import MyQMoviePlayer
+import re
 # from PyQt4 import QtWebKit
 from PyQt4.QtCore import *
 from OWWidget import *
@@ -23,7 +24,7 @@ class RSession():
     def __init__(self):
         # rpy.__init__(self)
         self.device = {}
-        self.RPackages = []
+        # self.RPackages = []
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
         #print 'set load ssaved '
@@ -79,39 +80,55 @@ class RSession():
         return output
                         
     def require_librarys(self,librarys, force = False):
-        import orngEnviron
+        # import orngEnviron
         #lib = os.path.join(os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"]), "Rpackages").replace("\\", "/")
         #self.R('.libPaths("' + lib  +'")')
         success = 0
         #if self.packagesLoaded == 0:
+        installedRPackages = self.R('as.vector(installed.packages()[,1])',type='getRData')
+        # print installedRPackages
+        # print type(installedRPackages)
+        # if 'CRANrepos' not in qApp.canvasDlg.settings.keys():
+            # print 'need to select mirror'
+            
+        print qApp.canvasDlg.settings['CRANrepos']
+        
         for library in librarys:
-            if force or (library not in self.RPackages):
-                try:
-                    if not self.R("require(\'"+ library +"\')"):
-                        #print qApp.cavasDlg.settings['CRANrepos']
-                        self.R('setRepositories(ind=1:7)')
-                        #self.R('chooseCRANmirror()') # change this 
-                        self.R('install.packages(\'' + library + 
-                        '\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
-                        '\')')
-                        self.R('require(' + library + ')')
-                    self.RPackages.append(library)
-                    success = 1
-                except rpy.RPyRException, inst:
-                    print 'asdf'
-                    m = re.search("'(.*)'",inst.message)
-                    self.require_librarys([m.group(1)])
-                    return 0
-                except:
-                    print 'aaa'
-                    return 0
+            if library in installedRPackages:
+                self.R("require(\'"+ library +"\')")
+            else:
+                self.R('setRepositories(ind=1:7)')
+                self.R('install.packages(\'' + library + 
+                #'\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
+                '\')')
+                self.R('require(' + library + ')')
+            
+                # try:
+                    # if not self.R("require(\'"+ library +"\')"):
+                        # self.R('setRepositories(ind=1:7)')
+                        # self.R('install.packages(\'' + library + 
+                        # '\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
+                        # '\')')
+                        # self.R('require(' + library + ')')
+                    # self.RPackages.append(library)
+                    # success = 1
+                # except rpy.RPyRException, inst:
+                    # print 'asdf'
+                    # m = re.search("'(.*)'",inst.message)
+                    # self.require_librarys([m.group(1)])
+                    # return 0
+                # except:
+                    # print 'aaa'
+                    # m = re.search("'(.*)'",inst.message)
+                    # self.require_librarys([m.group(1)])
+                    # return 0
         
             #self.packagesLoaded = 1
-            else:
-                print 'Packages Loaded'
-                return 1
+            # else:
+                # print 'Packages Loaded'
+                # return 1
         #add the librarys to a list so that they are loaded when R is loaded.
-        return success
+        #return success
     def convertDataframeToExampleTable(self, dataFrame_name):
         #set_default_mode(CLASS_CONVERSION)
         dfsummary = self.R(dataFrame_name, 'getRSummary')

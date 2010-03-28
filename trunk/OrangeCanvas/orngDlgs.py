@@ -565,8 +565,11 @@ class CanvasOptionsDlg(QDialog):
         self.libInfo = redRGUI.widgetLabel(rlibrariesBox, '')
         
     def setMirror(self):
+        print 'setMirror'
         item = self.libListBox.currentRow()
-        self.canvasDlg.settings['CRANrepos'] = str(self.libs['URL'][item])
+        self.settings['CRANrepos'] = str(self.libs['URL'][item])
+        #print self.libs['URL'][item]
+        print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
     def accept(self):
         self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()

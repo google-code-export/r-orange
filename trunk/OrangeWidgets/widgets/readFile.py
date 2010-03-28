@@ -70,7 +70,7 @@ class readFile(OWRpy):
         addSpace = True, orientation ='horizontal')
 
         
-        self.hasHeader = redRGUI.checkBox(box, buttons = ['Use Row Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
+        self.hasHeader = redRGUI.checkBox(box, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
         self.rowNamesCombo = redRGUI.comboBox(box,label='Select Row Names', items=[],
@@ -204,7 +204,7 @@ class readFile(OWRpy):
         for i in self.otherOptions.getChecked():
             otherOptions += str(i) + '=TRUE,' 
         
-        if 'Use Row Headers' in self.hasHeader.getChecked():
+        if 'Column Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
         else:
             header = 'FALSE'

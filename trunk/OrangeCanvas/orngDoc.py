@@ -11,6 +11,7 @@ from orngDlgs import *
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
 import pprint
+import RSession
 pp = pprint.PrettyPrinter(indent=4)
 
 class SchemaDoc(QWidget):
@@ -424,23 +425,27 @@ class SchemaDoc(QWidget):
     # SAVING, LOADING, ....
     # ###########################################
     def saveDocument(self):
+        print 'saveDocument'
+        #return
         if self.schemaName == "":
             return self.saveDocumentAs()
         else:
             return self.save(None,False)
 
     def saveDocumentAs(self):
-        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.ows)")
+        print 'saveDocumentAs'
         
+        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.ows)")
         if not name or name == None: return False
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == "": return False
         if os.path.splitext(str(name))[1].lower() != ".ows": name = os.path.splitext(str(name))[0] + ".ows"
-        return self.save(str(name),False)
+        return self.save(str(name),tmp=False)
         
 
     # save the file
     def save(self, filename = None,tmp = True):
+        print 'start save schema'
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
         
@@ -470,13 +475,22 @@ class SchemaDoc(QWidget):
                 # widget.instance.onSaveSession()
             # print 'looking for settingsstr'
             #try:
+            # print widget.instance.saveSettingsStr
+            #print widget.caption
+            # try:
+                # widget.instance.saveSettingsStr()
+            # except:
+                # print 'a', sys.exc_info()[0] 
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
+            # return
             # print 'got str orngDoc'
             # print str(settingsDict[widget.caption]) + '\n\n settings Dict (orngDoc)'
             # except:
                 # settingsDict[widget.caption] = None
                 #sprint str(widget.caption) + 'failed to save some settings'
             widgets.appendChild(temp)
+
+        
 
         #save connections
         for line in self.lines:
@@ -542,10 +556,10 @@ class SchemaDoc(QWidget):
         if not importBlank:
             try:
                 #load the data ...
-                try:
-                    from rpy_options import set_options
-                    set_options(RHOME=os.environ['RPATH'])
-                except: pass
+                # try:
+                    # from rpy_options import set_options
+                    # set_options(RHOME=os.environ['RPATH'])
+                # except: pass
                 import rpy
                 import re
 
@@ -585,6 +599,7 @@ class SchemaDoc(QWidget):
                         try:
                             for library in settings['RPackages']['pythonObject']:
                                 rpy.r('require('+library+')')
+                            # RSession.require_librarys(settings['RPackages']['pythonObject'])
                         except: 
                             print 'Cannot load R librarys'
                             

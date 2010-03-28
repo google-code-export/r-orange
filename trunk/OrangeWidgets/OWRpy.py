@@ -380,7 +380,8 @@ class OWRpy(OWWidget,RSession):
         #self.loadSavedSession = value
 
     def saveSettingsStr(self):
-        #print 'saveSettingsStr called'
+        print 'saveSettingsStr called'
+        
         settings = self.getSettings()
         #print settings
         #print str(self.RGUIElements)
@@ -430,6 +431,7 @@ class OWRpy(OWWidget,RSession):
         print 'getSettingsFile in owbasewidget'
         if file==None:
             file = os.path.join(self.widgetSettingsDir, self._widgetInfo.fileName + ".ini")
+        # print file
         return file
 
     # Loads settings from string str which is compatible with cPickle
