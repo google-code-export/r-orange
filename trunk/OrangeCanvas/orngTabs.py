@@ -519,11 +519,11 @@ class WidgetTree(WidgetListBase, QDockWidget):
         tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
         self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
         self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
-        self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
+        #self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
         #tmpBoxLayout.insertWidget(0, CanvasPopup)
         tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
         tmpBoxLayout.insertWidget(1, self.treeWidget)
-        tmpBoxLayout.insertWidget(2, self.favoritesTree)
+        #tmpBoxLayout.insertWidget(2, self.favoritesTree)
         
         self.setWidget(self.containerWidget)
         

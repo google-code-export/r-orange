@@ -144,22 +144,23 @@ class OutputWindow(QDialog):
         return str(s).replace("<", "&lt;").replace(">", "&gt;")
 
     def uploadException(self,err):
-        import httplib,urllib
+        pass
+        # import httplib,urllib
         #import sys,pickle
         #res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
-        res = QMessageBox.No
-        if res == QMessageBox.Yes:
-            params = urllib.urlencode({'error':err})
-            headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = httplib.HTTPConnection("www.pricemonk.com",80)
-            conn.request("POST", "/red.php", params,headers)
-            response = conn.getresponse()
-            print response.status, response.reason
-            data = response.read()
-            print data
-            conn.close()
-        else:
-            return
+        # res = QMessageBox.No
+        # if res == QMessageBox.Yes:
+            # params = urllib.urlencode({'error':err})
+            # headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+            # conn = httplib.HTTPConnection("www.pricemonk.com",80)
+            # conn.request("POST", "/red.php", params,headers)
+            # response = conn.getresponse()
+            # print response.status, response.reason
+            # data = response.read()
+            # print data
+            # conn.close()
+        # else:
+            # return
         
 
     def exceptionHandler(self, type, value, tracebackInfo):

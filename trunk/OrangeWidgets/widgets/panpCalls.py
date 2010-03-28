@@ -11,7 +11,7 @@ import redRGUI
 import RAffyClasses
 
 class panpCalls(OWRpy):
-    settingsList = ['Rvariables','panpinfo', 'senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset']
+
     def __init__(self, parent=None, signalManager=None):
         #OWWidget.__init__(self, parent, signalManager, "Sample Data")
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
@@ -45,15 +45,15 @@ class panpCalls(OWRpy):
         processbutton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset)
         
 
-    def onLoadSavedSession(self):
+    # def onLoadSavedSession(self):
         # may want to check if the Rvariable exists
-        print 'onload panp'
-        if self.R('exists("'+self.Rvariables['peset']+'")'):
-            self.status.setText('Processed')
-            self.senddata = self.data.copy()
-            self.senddata['data'] = self.Rvariables['peset']
-            self.senddata['eset'] = self.eset
-            self.rSend('Present Gene Signal Matrix', self.senddata)
+        # print 'onload panp'
+        # if self.R('exists("'+self.Rvariables['peset']+'")'):
+            # self.status.setText('Processed')
+            # self.senddata = self.data.copy()
+            # self.senddata['data'] = self.Rvariables['peset']
+            # self.senddata['eset'] = self.eset
+            # self.rSend('Present Gene Signal Matrix', self.senddata)
         
     def process(self, dataset):
         print 'on procress panp'

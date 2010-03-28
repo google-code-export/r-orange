@@ -18,10 +18,7 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 
-class OWRpy(OWWidget,RSession):
-    #a class variable which is incremented every time OWRpy is instantiated.
-    # processing  = False
-    
+class OWRpy(OWWidget,RSession):   
     num_widgets = 0
     lock = threading.Lock()
     rsem = threading.Semaphore(value = 1)
@@ -99,8 +96,9 @@ class OWRpy(OWWidget,RSession):
         self.helpBox.setMinimumWidth(minWidth)
         self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
-        url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo.fileName)
-        self.help = redRGUI.webViewBox(self.helpBox,url=url)
+        url = 'http://red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo.fullName)
+        self.help = redRGUI.webViewBox(self.helpBox)
+        self.help.load(QUrl(url))
         self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
         
@@ -350,17 +348,12 @@ class OWRpy(OWWidget,RSession):
                 # print k
                 self.__setattr__(k, v['pythonObject'])
             else:
-                # print 'redRGUIObjects', k
-                #pp.pprint(v)
                 self.redRGUIObjects[k] = v;
-                # pp.pprint(self.redRGUIObjects[k])
-        # print '########################set settings'
-        #pp.pprint(self.redRGUIObjects)
+
     def onLoadSavedSession(self):
         print '########################in onLoadSavedSession'
-        #pp.pprint(self.redRGUIObjects)
         for k,v in self.redRGUIObjects.iteritems():
-            # print k
+            print k
             # pp.pprint(v)
             if 'redRGUIObject' in v.keys():
                 getattr(self, k).loadSettings(v['redRGUIObject'])
@@ -436,7 +429,7 @@ class OWRpy(OWWidget,RSession):
     def getSettingsFile(self, file=None):
         print 'getSettingsFile in owbasewidget'
         if file==None:
-            file = os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")
+            file = os.path.join(self.widgetSettingsDir, self._widgetInfo.fileName + ".ini")
         return file
 
     # Loads settings from string str which is compatible with cPickle
@@ -632,10 +625,6 @@ class OWRpy(OWWidget,RSession):
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
     def closeEvent(self, event):
         print 'in owrpy close'
-        # if self.GUIDialogDialog != None:
-            # self.GUIDialogDialog.hide()
-        # self.notesBoxDialog.hide()
-        # self.helpBoxDialog.hide()
         if self.rightDock.isFloating():
             self.rightDock.hide()
         if hasattr(self, "leftDock") and self.leftDock.isFloating():
@@ -644,6 +633,9 @@ class OWRpy(OWWidget,RSession):
         self.windowState["state"] = self.saveState()
         self.windowState['pos'] = self.pos()
         self.windowState['size'] = self.size()
+        
+        
+        
         self.saveSettings()
 
 class ToolBarTextEdit(QWidgetAction):

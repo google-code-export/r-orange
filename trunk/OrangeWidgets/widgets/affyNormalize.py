@@ -163,6 +163,7 @@ class affyNormalize(OWRpy):
         self.newdata['data'] = 'exprs('+self.Rvariables['normalized_affybatch']+')'
         self.newdata['eset'] = self.Rvariables['normalized_affybatch']
         self.rSend("Normalized Expression Matrix", self.newdata)
-        self.newdata['data'] = self.Rvariables['normalized_affybatch']
-        self.rSend("Normalized AffyBatch", self.newdata)
+        self.newdata2 = self.newdata.copy()
+        self.newdata2['data'] = self.Rvariables['normalized_affybatch']
+        self.rSend("Normalized AffyBatch", self.newdata2)
     

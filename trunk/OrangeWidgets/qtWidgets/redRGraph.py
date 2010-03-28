@@ -984,5 +984,5 @@ drawLegend(items)\n""" % (str(legendItems)))
     def getSettings(self):
         pass # there are no settings that we are able to save at the moment
         
-    def loadSettings(self):
+    def loadSettings(self,data):
         pass # there are no settings to set at the moment
