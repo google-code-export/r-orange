@@ -14,6 +14,8 @@ import RvarClasses
 import RAffyClasses
 import threading, sys
 import urllib
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 
 class OWRpy(OWWidget,RSession):
@@ -43,13 +45,14 @@ class OWRpy(OWWidget,RSession):
         self.setRvariableNames(['title'])
         self.RGUIElements = [] #make a blank one to start with which will be filled as the widget is created.
         self.RGUIElementsSettings = {}
+        self.redRGUIObjects = {}
         self.autoShowDialog = 1
         self.hasAdvancedOptions = wantGUIDialog
         #collect the sent items
         self.sentItems = []
         
         #dont save these variables
-        self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings']
+        self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings','redRGUIObjects']
         
         
         
@@ -239,8 +242,6 @@ class OWRpy(OWWidget,RSession):
         else:
             # print 'resize f'
             self.rightDock.hide()
-            # self.resize(10,10)
-            # self.updateGeometry()
         
     def setRvariableNames(self,names):
         
@@ -248,10 +249,6 @@ class OWRpy(OWWidget,RSession):
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
         
-    
-    # def setStateVariables(self,names):
-        # self.settingsList.extend(names)
-    
 
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send'
@@ -283,30 +280,15 @@ class OWRpy(OWWidget,RSession):
         allAtts = self.__dict__
         parentVaribles = OWWidget().__dict__.keys()
         self.blackList.extend(parentVaribles)
-        #print self.blackList
+        settings = {}
+        # print 'all atts:', allAtts
         for att in allAtts:
             if att in self.blackList:
-                # print 'passed:' + att
                 continue
             # print 'frist att: ' + att
-            if getattr(self, att).__class__.__name__ in redRGUI.qtWidgets:
-                #print 'getting gui settings for:' + att + '\n\n'
-                try:
-                    v = getattr(self, att).getSettings()
-                    #print str(v) + '\n\n'
-                except: v = {}
-                #print 'settings:' + str(v)
-                if not 'RGUIElementsSettings' in settings.keys():
-                    #print 'RGUIElementsSettings not in settings.keys (OWRpy.py)'
-                    settings['RGUIElementsSettings'] = {}
-                
-                if v: settings['RGUIElementsSettings'][att] = v
-                # print settings['RGUIElementsSettings']
-                    
-            elif type(getattr(self, att)) in [str,int]:
-                settings[att] =  self.getdeepattr(att)
-            elif type(getattr(self, att)) in [list,dict,tuple]:
-                settings[att] =  self.getdeepattr(att)
+            var = getattr(self, att)
+            settings[att] = self.returnSettings(var)
+        
         ainputs = []
         try:
             for a, b, c in self.inputs:
@@ -321,6 +303,151 @@ class OWRpy(OWWidget,RSession):
         #print str(settings) + ' (OWRpy.py)'
         #print 'My settings are ' + str(settings)
         return settings
+    def isPickleable(self,d):
+        try:
+            cPickle.dumps(d)
+            return True
+        except:
+            return False
+        
+    def returnSettings(self,var):
+        settings = {}
+        if var.__class__.__name__ in redRGUI.qtWidgets:
+            #print 'getting gui settings for:' + att + '\n\n'
+            try:
+                v = var.getSettings()
+            except: v = {}
+            
+            settings['redRGUIObject'] = {}
+            if v: settings['redRGUIObject'] = v
+        elif self.isPickleable(var):
+            settings['pythonObject'] =  var
+
+        #elif type(var) in [xrange, list, dict, tuple, set, frozenset]:
+        elif type(var) in [list]:
+            settings['list'] = []
+            for i in var:
+                settings['list'].append(self.returnSettings(i))
+        elif type(var) is dict:
+            # print var
+            settings['dict'] = {}
+            for k,v in var.iteritems():
+                settings['dict'][k] = self.returnSettings(v)
+        else:
+            settings = None
+        return settings
+                
+    def setSettings(self,settings):
+        print 'on set settings'
+        self.redRGUIObjects = {}
+        for k,v in settings.iteritems():
+            if k == 'inputs': continue
+            if k == 'outputs': continue
+            
+            if v == None:
+                continue
+            elif 'pythonObject' in v.keys(): 
+                # print k
+                self.__setattr__(k, v['pythonObject'])
+            else:
+                # print 'redRGUIObjects', k
+                #pp.pprint(v)
+                self.redRGUIObjects[k] = v;
+                # pp.pprint(self.redRGUIObjects[k])
+        # print '########################set settings'
+        #pp.pprint(self.redRGUIObjects)
+    def onLoadSavedSession(self):
+        print '########################in onLoadSavedSession'
+        #pp.pprint(self.redRGUIObjects)
+        for k,v in self.redRGUIObjects.iteritems():
+            # print k
+            # pp.pprint(v)
+            if 'redRGUIObject' in v.keys():
+                getattr(self, k).loadSettings(v['redRGUIObject'])
+            elif 'dict' in v.keys():
+                var = getattr(self, k)
+                self.setDictSettings(var,v['dict'])
+
+        self.loadDynamicData(self.redRGUIObjects)
+        for (name, data) in self.sentItems:
+            self.send(name, data)
+        self.reloadWidget()
+                
+    def loadDynamicData(self,settings):
+        pass
+    def setDictSettings(self, var, d):
+        for k,v in d.iteritems():
+            if type(v) == dict and 'redRGUIObject' in v.keys():
+                var[k].loadSettings(v['redRGUIObject'])
+            elif type(v) == dict:
+                self.setDictSettings(d[k],v)
+
+    def onSaveSession(self):
+        print 'save session'
+        #self.loadSavedSession = value
+
+    def saveSettingsStr(self):
+        #print 'saveSettingsStr called'
+        settings = self.getSettings()
+        #print settings
+        #print str(self.RGUIElements)
+        #print cPickle.dumps(settings) + 'settings dump'
+        try:
+            return cPickle.dumps(settings)
+        except: 
+            print "ERROR in Pickle", sys.exc_info()[0] 
+            pass
+
+    def loadSettings(self, file = None):
+        print 'loadSettings in owbasewidget'
+        #print self.inputs
+        #print str(self.outputs) + ' preload'
+        file = self.getSettingsFile(file)
+        settings = {}
+        if file:
+            try:
+                file = open(file, "r")
+                settings = cPickle.load(file)
+            except:
+                settings = None
+
+        if hasattr(self, "_settingsFromSchema"):
+            if settings: settings.update(self._settingsFromSchema)
+            else:        settings = self._settingsFromSchema
+
+        #print 'start loading local variables'
+        #pp.pprint(settings)
+        # can't close everything into one big try-except since this would mask all errors in the below code
+        if settings:
+            # if hasattr(self, "settingsList"):
+            self.setSettings(settings)
+    
+        
+#############widget specific settings#####################
+    def getdeepattr(self, attr, **argkw):
+        try:
+            return reduce(lambda o, n: getattr(o, n, None),  attr.split("."), self)
+        except:
+            if argkw.has_key("default"):
+                return argkw[default]
+            else:
+                raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
+
+    def getSettingsFile(self, file=None):
+        print 'getSettingsFile in owbasewidget'
+        if file==None:
+            file = os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")
+        return file
+
+    # Loads settings from string str which is compatible with cPickle
+    def loadSettingsStr(self, str):
+        if str == None or str == "":
+            return
+        settings = cPickle.loads(str)
+        self.setSettings(settings)
+    # return settings in string format compatible with cPickle
+        
+    
     def getGlobalSettings(self):
         print 'get global settings'
         settings = {}
@@ -332,94 +459,13 @@ class OWRpy(OWWidget,RSession):
             
         for name in self.globalSettingsList:
             try:
-                settings[name] =  self.getdeepattr(name)
+                settings[name] = {}
+                settings[name]['pythonObject'] =  self.getdeepattr(name)
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
         return settings
-        
     
-    def getdeepattr(self, attr, **argkw):
-        try:
-            return reduce(lambda o, n: getattr(o, n, None),  attr.split("."), self)
-        except:
-            if argkw.has_key("default"):
-                return argkw[default]
-            else:
-                raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
-
-    def getSettingsFile(self, file):
-        print 'getSettingsFile in owbasewidget'
-        if file==None:
-            if os.path.exists(os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")):
-                file = os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")
-            else:
-                return
-        if type(file) == str:
-            if os.path.exists(file):
-                return open(file, "r")
-        else:
-            return file
-
-
-
-    # Loads settings from string str which is compatible with cPickle
-    def loadSettingsStr(self, str):
-        if str == None or str == "":
-            return
-
-        settings = cPickle.loads(str)
-        self.setSettings(settings)
-
-
-    # return settings in string format compatible with cPickle
-    def saveSettingsStr(self):
-        #print 'saveSettingsStr called'
-        settings = self.getSettings()
-        #print settings
-        #print str(self.RGUIElements)
-        #print cPickle.dumps(settings) + 'settings dump'
-        try:
-            
-            return cPickle.dumps(settings)
-        except: 
-            #print str(settings)
-            pass
-
-
-    # Set all settings
-    # settings - the map with the settings
-    def setSettings(self,settings):
-        for key in settings:
-            # print key
-            if key == 'inputs': continue
-            if key == 'outputs': continue
-            self.__setattr__(key, settings[key])
-        
-    def loadSettings(self, file = None):
-        print 'loadSettings in owbasewidget'
-        #print self.inputs
-        #print str(self.outputs) + ' preload'
-        file = self.getSettingsFile(file)
-        settings = {}
-        if file:
-            try:
-                settings = cPickle.load(file)
-            except:
-                settings = None
-        #settings = None # do not load ini file
-        if hasattr(self, "_settingsFromSchema"):
-            if settings: settings.update(self._settingsFromSchema)
-            else:        settings = self._settingsFromSchema
-
-        #print 'start loading local variables'
-        # print settings
-        # can't close everything into one big try-except since this would mask all errors in the below code
-        if settings:
-            if hasattr(self, "settingsList"):
-                self.setSettings(settings)
-        #print self.inputs
-        #print str(self.outputs) + ' post load'
-
+    # save global settings
     def saveSettings(self, file = None):
         print 'owrpy save settings'
         settings = self.getGlobalSettings()
@@ -427,149 +473,11 @@ class OWRpy(OWWidget,RSession):
         # print file
         # print self.captionTitle
         if settings:
-            if file==None:
-                file = os.path.join(self.widgetSettingsDir, os.path.basename(self._widgetInfo.fileName) + ".ini")
-            if type(file) == str:
-                file = open(file, "w")
+            file = self.getSettingsFile(file)
+            file = open(file, "w")
             cPickle.dump(settings, file)
 
-    def getSettings2(self, alsoContexts = True): #depreciated
-        settings = {}
-        allAtts = self.__dict__
-        
-                
-        # if hasattr(self, "settingsList"):
-            # self.settingsList.extend(['variable_suffix', 'RGUIElementsSettings', 'RPackages'])
-
-        for att in allAtts:
-            #print getattr(self, att).__class__
-            #print getattr(self, att).__class__.__name__
-            if type(getattr(self, att)) == type('') or type(getattr(self, att)) == type(1): # if they are strings we don't need to worry much
-                if att in self.blackList: pass  # allows us to make a blackList so that everything isn't saved, these things can be saved with special calls to settingsList.extend, but they won't be saved normally.
-                else:
-                    self.settingsList.extend([att])
-            elif type(getattr(self, att)) == type({}) or type(getattr(self, att)) == type([]): #we need to chech these types to see if they contain any instances or other things that we can't pickle.
-                
-                pass
-        for name in self.settingsList:
-            try:
-                settings[name] =  self.getdeepattr(name)
-            except:
-                
-                pass
-        for element in self.RGUIElements:
-            # print element
-            #element.getSettings()
-            # element.__class__.__name__
-            continue
             
-            GUIsetting = {}
-            elementClass = element[1]
-            elementName = element[0]
-            if elementClass == 'widgetBox':
-                GUIsetting['class'] = 'widgetBox'
-            elif elementClass == 'widgetLabel':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'widgetLabel'
-            elif elementClass == 'checkBox':
-                GUIsetting['checked'] = getattr(self, elementName).isChecked()
-                GUIsetting['class'] = 'checkBox'
-            elif elementClass == 'lineEdit':
-                GUIsetting['text'] = getattr(self, elementName).text()
-                GUIsetting['class'] = 'lineEdit'
-            elif elementClass == 'button':
-                GUIsetting['enabled'] = getattr(self, elementName).isEnabled()
-                GUIsetting['class'] = 'button'
-            elif elementClass == 'listBox':
-                GUIsetting['items'] = []
-                for i in range(getattr(self, elementName).count()):
-                    GUIsetting['items'].append(getattr(self, elementName).item(i).text())
-                GUIsetting['selectedItems'] = []
-                for item in getattr(self, elementName).selectedItems():
-                    GUIsetting['selectedItems'].append(item.text())
-                GUIsetting['class'] = 'listBox'
-            elif elementClass == 'radioButtonsInBox':
-                GUIsetting['class'] = 'radioButtonsInBox'
-            elif elementClass == 'comboBox':
-                text = []
-                cb = getattr(self, elementName)
-                for i in range(cb.count()):
-                    text.append(cb.itemText(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['selectedIndex'] = getattr(self, elementName).currentIndex()
-                GUIsetting['class'] = 'comboBox'
-            elif elementClass == 'comboBoxWithCaption':
-                text = []
-                cb = getattr(self, elementName)
-                for i in range(cb.count()):
-                    text.append(cb.itemText(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['class'] = 'comboBoxWithCaption'
-            elif elementClass == 'tabWidget':
-                text = []
-                enabled = []
-                tab = getattr(self, elementName)
-                for i in range(tab.count()):
-                    text.append(tab.tabText(i))
-                    enabled.append(tab.isEnabled(i))
-                GUIsetting['itemText'] = text
-                GUIsetting['itemEnabled'] = enabled
-                GUIsetting['class'] = 'tabWidget'
-            elif elementClass == 'createTabPage':
-                GUIsetting['class'] = 'createTabPage'
-            elif elementClass == 'table':
-                table = getattr(self, elementName)
-                #GUIsetting['selectedRanges'] = table.selectedRanges()
-                row = table.rowCount()
-                col = table.columnCount()
-                rowNames = []
-                for i in range(row):
-                    try:
-                        rowNames.append(table.verticalHeaderItem(i).text())
-                    except:
-                        rowNames.append(None)
-                GUIsetting['rowNames'] = rowNames
-                
-                colNames = []
-                for j in range(col):
-                    try:
-                        colNames.append(table.horizontalHeaderItem(j).text())
-                    except:
-                        colNames.append(None)
-                GUIsetting['colNames'] = colNames
-                
-                tableItems = []
-                tableItemsSelected = []
-                for i in range(row):
-                    for j in range(col):
-                        try:
-                            tableItems.append((i,j,table.item(i,j).text()))
-                            #tableItemsSelected.append((i,j,table.item(i,j)
-                        except: pass
-                GUIsetting['tableItems'] = tableItems
-                GUIsetting['class'] = 'table'
-            elif elementClass == 'textEdit':
-                GUIsetting['text'] = getattr(self, elementName).toHtml()
-                GUIsetting['class'] = 'textEdit'
-            
-            self.RGUIElementsSettings[str('GUIelement_'+elementName)] = GUIsetting
-            
-        self.RGUIElementsSettings['widgetNotes'] = {'text':self.notesAction.textEdit.document().toHtml(), 'class': 'widgetNotes'}
-            # if hasattr(self, "settingsList"):
-                # self.settingsList.extend([str('GUIelement_'+elementName)])
-                # settings[str('GUIelement_'+elementName)] = GUIsetting
-            
-        if alsoContexts:
-            contextHandlers = getattr(self, "contextHandlers", {})
-            for contextHandler in contextHandlers.values():
-                contextHandler.mergeBack(self)
-                settings[contextHandler.localContextName] = contextHandler.globalContexts
-                settings[contextHandler.localContextName+"Version"] = (contextStructureVersion, contextHandler.contextDataVersion)
-            
-        return settings
-        
-      
-    
     
     def onDeleteWidget(self, suppress = 0):
         # for k in self.Rvariables:
@@ -594,49 +502,10 @@ class OWRpy(OWWidget,RSession):
         self.widgetDelete()
     def widgetDelete(self):
         pass #holder function for other widgets
-    def onLoadSavedSession(self):
-        #print 'in onLoadSavedSession'
-        #print self.RGUIElementsSettings['scanarea']
-        #print 'Loading the following elements ' + str(self.RGUIElementsSettings) + ' (OWRpy.py)'
-        for i in self.RGUIElementsSettings.keys():
-            try:            
-                #print '**********************' + i
-                getattr(self, i).loadSettings(self.RGUIElementsSettings[i])
-            except:
-                print 'error:' + i
-                print "Unexpected error:", sys.exc_info()[0]
-                
 
-        for (name, data) in self.sentItems:
-            self.send(name, data)
-        self.reloadWidget()
-        
     def reloadWidget(self):
         pass
-    
-    def onLoadSavedSession2(self): #depreciated
-        #print str(self.RGUIElementsSettings)
-        # set the sent items but don't activate the refresh of the widgets (this is handled by signalManager)
-        for (name, data) in self.sentItems:
-            self.send(name, data)
-        #print str(self.RGUIElementsSettings.keys())
-        for key in self.RGUIElementsSettings.keys():
-            #print key
-            elementName = key.replace('GUIelement_', '')
-            info = self.RGUIElementsSettings[key]
-            try:
-                self.updateWidget(elementName, info)
-                #print key + ' complete'
-            except:
-                print 'loading '+key+' failed'
-        try:
-            self.processSignals()
-            self.RWidgetReload()
-        except: pass
-    
-    def onSaveSession(self):
-        print 'save session'
-        #self.loadSavedSession = value
+
         
     def updateWidget(self, name, value):
         print 'update widget called'

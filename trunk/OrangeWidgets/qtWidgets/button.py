@@ -37,4 +37,8 @@ class button(QPushButton,widgetState):
         if callback:
             QObject.connect(self, SIGNAL("clicked()"), callback)
             
+    def getSettings(self):
+        pass
+    def loadSettings(self,data):
+        pass
 

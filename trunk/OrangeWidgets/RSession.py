@@ -64,6 +64,7 @@ class RSession():
             print inst.message
             QMessageBox.information(self, 'Red-R Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
             #self.status.setText('Error occured!!')
+            raise rpy.RPyRException
             return None # now processes can catch potential errors
         self.processing = False
         if processing_notice:

@@ -29,6 +29,8 @@ class comboBox(QComboBox,widgetState):
 
     def getSettings(self):
         items = []
+        # print 'in comboBox get'
+
         for i in range(0,self.count()):
             items.append(self.itemText(i))
         
@@ -37,8 +39,8 @@ class comboBox(QComboBox,widgetState):
         return r
         
     def loadSettings(self,data):
-        print 'in comboBox'
-        print data
+        # print 'in comboBox load'
+        # print data
         
         self.clear()
         self.addItems([unicode(i) for i in data['items']])

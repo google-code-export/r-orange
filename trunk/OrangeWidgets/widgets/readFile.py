@@ -23,11 +23,11 @@ class readFile(OWRpy):
         self.recentFiles=['Select File']
         self.delim = 0
         self.path = os.path.abspath('/')
-        self.userowNamesCombo = ''
+        self.colClasses = []
+        self.colNames = []
+        self.dataTypes = []
         self.useheader = 1
         self.loadSettings()
-        
-        # self.recentFiles.insert(0, 'Select File')
         
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'cm', 'parent'])
@@ -39,12 +39,12 @@ class readFile(OWRpy):
         #GUI
         
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
-        #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
-        #area.layout().setAlignment(Qt.AlignTop)
+        area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
+        area.layout().setAlignment(Qt.AlignTop)
         options = redRGUI.widgetBox(area,orientation='vertical')
         options.setMaximumWidth(300)
         # options.setMinimumWidth(300)
-        #options.setSizePolicy(QSizePolicy(QSizePolicy.Maximum,QSizePolicy.Maximum))
+        #options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         options.layout().setAlignment(Qt.AlignTop)
         
         
@@ -71,10 +71,10 @@ class readFile(OWRpy):
 
         
         self.hasHeader = redRGUI.checkBox(box, buttons = ['Use Row Headers'],setChecked=['Use Row Headers'],
-        orientation='vertical',callback=self.scanFile)
+        orientation='vertical',callback=self.scanNewFile)
         
         self.rowNamesCombo = redRGUI.comboBox(box,label='Select Row Names', items=[],
-        orientation='vertical')
+        orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
         
         box = redRGUI.groupBox(options, label="Other Options", 
@@ -88,13 +88,14 @@ class readFile(OWRpy):
         'logical: if TRUE blank lines in the input are ignored.',
         'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
         'logical: should character vectors be converted to factors?'],
-        orientation='vertical')
+        orientation='vertical',callback=self.scanFile)
         box.layout().addWidget(self.otherOptions,1,1)
         
         #self.quote = redRGUI.lineEdit(box,'')
         
         
-        holder = redRGUI.widgetBox(options)
+        holder = redRGUI.widgetBox(options,orientation='horizontal')
+        rescan = redRGUI.button(holder, label = 'Rescan File', callback = self.scanNewFile)
         load = redRGUI.button(holder, label = 'Load File', callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
@@ -122,6 +123,23 @@ class readFile(OWRpy):
         self.columnTypes.layout().setAlignment(Qt.AlignTop)
         self.setFileList()
 
+       
+    def loadDynamicData(self,settings):
+        print 'loadDynamicData readfile'
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings['dataTypes'])
+        #if 'dataTypes' in settings.keys():
+        for k,l,c in zip(range(len(self.colNames)),self.colNames,settings['dataTypes']['list']):
+            s = redRGUI.comboBox(self.columnTypes,items=[],orientation='horizontal',callback=self.updateColClasses)
+            s.loadSettings(c['redRGUIObject'])
+            s.setMinimumWidth(100)
+            q = redRGUI.widgetLabel(self.columnTypes,label=l)
+            self.columnTypes.layout().addWidget(s,k,1)
+            self.columnTypes.layout().addWidget(q,k,0)
+            self.dataTypes.append(s)
+
+        
         
     def setFileList(self):
         if self.recentFiles == None: self.recentFiles = []
@@ -149,32 +167,32 @@ class readFile(OWRpy):
     def scanNewFile(self):
         for i in self.columnTypes.findChildren(QWidget):
             i.setHidden(True)
-        redRGUI.widgetBox(self.columnTypes)
+          
+        self.rowNamesCombo.clear()
+        self.colClasses = []
+        self.colNames = []
+        self.dataTypes = []
         self.loadFile(scan=True)
     
-    def scanFile(self):
-        
-        for i in self.columnTypes.findChildren(QWidget):
-            i.setHidden(True)
-        redRGUI.widgetBox(self.columnTypes)
+    def updateColClasses(self):
 
-        self.columnTypes.adjustSize()
-        self.columnTypes.adjustSize()
+        self.colClasses = []
+        for i in self.dataTypes:
+            self.colClasses.append(str(i.currentText()))
+        # print 'colClasses' , self.colClasses
+        self.loadFile(scan=True)
+    def scanFile(self):
         self.loadFile(scan=True)
         
         
     def loadFile(self,scan=False):
         if len(self.recentFiles) ==0 or self.filecombo.currentIndex() == 0: 
             self.scanarea.clear()
-            #self.tableArea.setHidden(True)
             return
         
         self.R(self.Rvariables['filename'] + ' = "' 
         + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"') # should protext if R can't find this file
 
-        # if self.tableArea.isHidden():
-            # self.tableArea.setHidden(False)
-            # self.resize(750,500)
 
         if self.delimiter.getChecked() == 'Tab': #'tab'
             sep = '\t'
@@ -182,16 +200,15 @@ class readFile(OWRpy):
             sep = ' '
         elif self.delimiter.getChecked() == 'Comma':
             sep = ','
+        otherOptions = ''
+        for i in self.otherOptions.getChecked():
+            otherOptions += str(i) + '=TRUE,' 
         
         if 'Use Row Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
         else:
             header = 'FALSE'
         
-        if 'Use Row Headers' in self.hasHeader.getChecked():
-            header = 'TRUE'
-        else:
-            header = 'FALSE'
         
         if scan:
             nrows = '10'
@@ -205,30 +222,24 @@ class readFile(OWRpy):
             param_name = 'NULL' 
             self.rownames = 'NULL'
         
-        #if len(self.columnTypes.findChildren(QComboBox))
-        self.colClasses = []
-        labels = self.columnTypes.findChildren(QLabel)
-        types = self.columnTypes.findChildren(QComboBox)
-        #print labels
-        for l,c in zip(labels,types):
-            if not c.isHidden():
-                self.colClasses.append(str(c.currentText()))
-
+        
         if len(self.colClasses) > 0:
             ccl = 'c("' + '","'.join(self.colClasses) + '")'
         else:
             ccl = 'NA'
-            
-        self.R(self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] 
-        + ', header = '+header
-        +', sep = "'+sep
-        +'", colClasses = '+ ccl
-        +', row.names = '+param_name
-        +', nrows = '+nrows
-        +', fill = T)','setRData',True)
-
+        try:
+            self.R(self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] 
+            + ', header = '+header
+            +', sep = "'+sep
+            +'", colClasses = '+ ccl
+            +', row.names = '+param_name
+            +', nrows = '+nrows
+            +',' + otherOptions + ')','setRData',True)
+        except:
+            self.rowNamesCombo.setCurrentIndex(0)
+            self.updateScan()
+            return
         
-        #self.R(self.Rvariables['dataframe_final'] + ' = ' + self.Rvariables['dataframe_org'])
         
         if scan:
             self.updateScan()
@@ -236,18 +247,15 @@ class readFile(OWRpy):
             self.commit()
 
     def updateScan(self):
-        colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')')
-        if type(colNames) is str:
-            colNames = [str(c) for c in range(1, int(self.R('length('+self.Rvariables['dataframe_org']+'[1,])')))]
-        print colNames
-        self.rowNamesCombo.clear()
-        self.rowNamesCombo.addItem('NULL')
-        self.rowNamesCombo.addItems(colNames)
-        #self.rowNamesCombo.update(colNames)
-        # if self.rownames != 'NULL' and self.rownames in colNames:
-            # self.rowNamesCombo.setCurrentIndex(colNames.index(self.rownames)+1)
-            
-        self.scanarea.setHidden(False)
+        if self.rowNamesCombo.count() == 0:
+            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')')
+            if type(self.colNames) is str:
+                #colNames = [str(c) for c in range(1, int(self.R('length('+self.Rvariables['dataframe_org']+'[1,])')))]
+                self.colNames = [self.colNames]
+            self.rowNamesCombo.clear()
+            self.rowNamesCombo.addItem('NULL')
+            self.rowNamesCombo.addItems(self.colNames)
+
         self.scanarea.clear()
 
         data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
@@ -256,32 +264,31 @@ class readFile(OWRpy):
         txt = self.html_table(data)
         self.scanarea.setText(txt)
         
-        if(len(self.colClasses) ==0):
+        if len(self.colClasses) ==0:
             self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))')
             if type(self.colClasses) is str:
                 self.colClasses = [self.colClasses]
         
-        for i in self.columnTypes.findChildren(QWidget):
-            i.setHidden(True)
-        self.columnTypes.adjustSize()
-        types = ['factor','numeric','character','integer','logical']
-        #k=0
-        for k,i,v in zip(range(len(colNames)),colNames,self.colClasses):
-            s = redRGUI.comboBox(self.columnTypes,items=types,orientation='horizontal',callback=self.scanFile)
+        if len(self.dataTypes) ==0:
+            types = ['factor','numeric','character','integer','logical']
+            self.dataTypes = []
             
-            if str(v) in types:
-                s.setCurrentIndex(types.index(str(v)))
-            else:
-                s.addItem(str(v))
-                s.setCurrentIndex(s.count()-1)
-            s.setMinimumWidth(100)
-            q = redRGUI.widgetLabel(self.columnTypes,label=i)
-            #q.setText(i)
-            self.columnTypes.layout().addWidget(s,k,1)
-            self.columnTypes.layout().addWidget(q,k,0)
-            self.__setattr__('typeCombo' + str(k), s)
-            #k+=1
+            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.colClasses):
+                s = redRGUI.comboBox(self.columnTypes,items=types,orientation='horizontal',callback=self.updateColClasses)
+                
+                # print k,i,str(v)
+                if str(v) in types:
+                    s.setCurrentIndex(types.index(str(v)))
+                else:
+                    s.addItem(str(v))
+                    s.setCurrentIndex(s.count()-1)
+                s.setMinimumWidth(100)
+                q = redRGUI.widgetLabel(self.columnTypes,label=i)
+                self.columnTypes.layout().addWidget(s,k,1)
+                self.columnTypes.layout().addWidget(q,k,0)
+                self.dataTypes.append(s)
             
+    
     def updateRowNames(self):
         
         self.R('rownames(' + self.Rvariables['dataframe_final'] + ') <- ' 

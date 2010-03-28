@@ -101,7 +101,7 @@ class OutputWindow(QDialog):
         # if self.numberofLines > 1000 and not self.debugMode:
             # self.textOutput.clear()
             # self.numberofLines = 0
-        Text = self.getSafeString(text)
+        Text = text #self.getSafeString(text)
         #Text = Text.replace("\n", "<br>\n")   # replace new line characters with <br> otherwise they don't get shown correctly in html output
         
         #text = "<nobr>" + text + "</nobr>"

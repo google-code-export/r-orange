@@ -10,6 +10,8 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 class SchemaDoc(QWidget):
     def __init__(self, canvasDlg, *args):
@@ -466,10 +468,11 @@ class SchemaDoc(QWidget):
             #temp.setAttribute("OutSignals", widget.instance.outputs)
             # if not tmp:
                 # widget.instance.onSaveSession()
-            #print 'looking for settingsstr'
+            # print 'looking for settingsstr'
             #try:
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
-            #print str(settingsDict[widget.caption]) + '\n\n settings Dict (orngDoc)'
+            # print 'got str orngDoc'
+            # print str(settingsDict[widget.caption]) + '\n\n settings Dict (orngDoc)'
             # except:
                 # settingsDict[widget.caption] = None
                 #sprint str(widget.caption) + 'failed to save some settings'
@@ -504,7 +507,7 @@ class SchemaDoc(QWidget):
             zout.close()
             os.remove(tempR)
             os.remove(tempschema)
-            print 'image saved'
+            print 'image saved.'
         else :
             file = open(filename, "wt")
             file.write(xmlText)
@@ -567,26 +570,36 @@ class SchemaDoc(QWidget):
                 settings = schema.getElementsByTagName("settings")
                 settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
                 self.loadedSettingsDict = settingsDict
-                  
                 # read widgets
                 loadedOk = 1
                 for widget in widgets.getElementsByTagName("widget"):
                     try:
                         name = widget.getAttribute("widgetName")
-                        #print 'Name: '+str(name)+' (orngDoc.py)'
+                        print 'Name: '+str(name)+' (orngDoc.py)'
                         #print str(widget.getAttribute("caption"))
                         #print str(settingsDict)
                         settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                        #print str(settings) + ' (orngDoc.py)'
-                        #print 'widget settings are' + str(settings)
+                        #pp.pprint(settings)
+                        #print settings
+                        
                         try:
-                            for library in settings['RPackages']:
+                            for library in settings['RPackages']['pythonObject']:
                                 rpy.r('require('+library+')')
-                        except: pass #there must not be a setting like that one in the dict, must be an orange widget.
-                        tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                        except: 
+                            print 'Cannot load R librarys'
+                            
+                        tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
+                        int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                         if not tempWidget:
-                            print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
-                            tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) # we must build a fake widget this will involve getting the inputs and outputs and joining them at the widget creation step.
+                            print 'Widget loading disrupted.  Loading dummy widget with ' 
+                            + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                            # we must build a fake widget this will involve getting the inputs and outputs and joining 
+                            #them at the widget creation 
+                            
+                            step.tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), 
+                            int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,
+                            forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                            
                             if not tempWidget:
                                 #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
                                 failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
@@ -708,12 +721,12 @@ class SchemaDoc(QWidget):
         #print 'start onload' # we do want to reload the settings of the widgets
         #print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
-            try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                #print 'for widget (orngDoc.oy)'
-                SignalManager.loadSavedSession = True
-                widget.instance.onLoadSavedSession()
-                SignalManager.loadSavedSession = False
-            except: print 'Loading Failed for ' + str(widget)
+            #try: # important to have this or else failures in load saved settings will result in no links able to connect.
+            # print 'for widget (orngDoc.oy)'
+            SignalManager.loadSavedSession = True
+            widget.instance.onLoadSavedSession()
+            SignalManager.loadSavedSession = False
+            #except: print 'Loading Failed for ' + str(widget)
         SignalManager.loadSavedSession = False
         print 'done on load'
 
