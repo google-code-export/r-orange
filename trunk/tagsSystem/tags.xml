@@ -2,8 +2,17 @@
     <group name="Data Input">
         <Description>Widgets for Importing data into redR</Description>
     </group>
+    <group name="Data Exploration and Visualization">
+        <Description>Sets of widgets for looking at data</Description>
+    </group>
     <group name="Data Manipulation">
         <Description>Widgets for data manipulation</Description>
+        <group name="Data Classification">
+            <Description>Widgets that classify data</Description>
+        </group>
+    </group>
+    <group name="Table Subsetting">
+        <Description>Tools for subsetting tables</Description>
     </group>
     <group name="R">
         <Description>Special Widgets for Interfacing with R</Description>
