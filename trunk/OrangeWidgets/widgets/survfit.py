@@ -13,7 +13,7 @@ class survfit(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
-        self.GUIDialogDialog.hide()
+        
         self.setRvariableNames(["survfit"])
         self.data = {}
         self.loadSettings() 
@@ -22,7 +22,7 @@ class survfit(OWRpy):
         self.outputs = [("survfit Output", SurvivalClasses.SurvFit)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-        formulaBox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        formulaBox = redRGUI.widgetBox(self.controlArea)
         self.times = redRGUI.comboBox(formulaBox, label = 'Times', toolTip = 'The event times.')
         self.event = redRGUI.comboBox(formulaBox, label = 'Events', toolTip = 'The event status. 1 means an event occurred\nwhile 0 means there was no event at the end time.')
         self.groupings = redRGUI.comboBox(formulaBox, label = 'Groupings', toolTip = 'The column that specifies the groupings of the data.\nThis is optional.')
@@ -44,7 +44,7 @@ class survfit(OWRpy):
         if data:
             self.RFunctionParam_data=data["data"]
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
-            self.groupings.update(colnames.insert(0, ''))
+            self.groupings.update(colnames)
             self.times.update(colnames)
             self.event.update(colnames)
             self.data = data.copy()

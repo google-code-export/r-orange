@@ -86,8 +86,10 @@ class mergeR(OWRpy):
             self.dataA = str(data['data'])
             self.dataParentA = data.copy()
             colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
+            
             if type(colsA) is str:
                 colsA = [colsA]
+            colsA.insert(0, 'Rownames')
             self.colA.update(colsA)
 
             if 'Always Merge Like This' in self.mergeLikeThis.getChecked():
@@ -116,6 +118,7 @@ class mergeR(OWRpy):
             colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
             if type(colsB) is str:
                 colsB = [colsB]
+            colsB.insert(0, 'Rownames')
             self.colB.update(colsB)
             
                     
@@ -142,6 +145,7 @@ class mergeR(OWRpy):
     
     def run(self):
         try:
+            
             if self.dataA != '' and self.dataB != '':
                 h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
             else: h = None
@@ -207,15 +211,37 @@ class mergeR(OWRpy):
                 elif self.colAsel and self.colBsel:
                 
                     #self.R('tmpab<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
-                    self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
+                    if self.colAsel == 'Rownames' and self.colBsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb, by.x=0, by.y=0,all.x=T)')
+                    elif self.colAsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y=0,all.x=T)')
+                    elif self.colBsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb, by.x=0, by.y="'+self.colBsel+'",all.x=T)')
+                    else:
+                        self.R(self.Rvariables['merged_dataAB']+'<-merge(tmpa, tmpb, by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.x=T)')
                     self.R(self.Rvariables['merged_dataAB_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAB']+'))')
-                    
+
                     #self.R('tmpba<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
-                    self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
+                    
+                    if self.colAsel == 'Rownames' and self.colBsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,by.x=0, by.y=0,all.y=T)')
+                    elif self.colAsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,by.x=0, by.y="'+self.colBsel+'",all.y=T)')
+                    elif self.colBsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y=0,all.y=T)')
+                    else:
+                        self.R(self.Rvariables['merged_dataBA']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'",all.y=T)')
                     self.R(self.Rvariables['merged_dataBA_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataBA']+'))')
 
                     #self.R('tmpall<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
-                    self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
+                    if self.colAsel == 'Rownames' and self.colBsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb,by.x=0, by.y=0)')
+                    elif self.colAsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb,by.x=0, by.y="'+self.colBsel+'")')
+                    elif self.colBsel == 'Rownames':
+                        self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y=0)')
+                    else:
+                        self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb,by.x="'+self.colAsel+'", by.y="'+self.colBsel+'")')
                     self.R(self.Rvariables['merged_dataAll_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAll']+'))')
                     
             
