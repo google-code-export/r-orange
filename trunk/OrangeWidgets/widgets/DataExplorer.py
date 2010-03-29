@@ -1,7 +1,7 @@
 """
 <name>Data Explorer</name>
 <description>Shows data in a spreadsheet.  The data can be subset and passed to other widgets.</description>
-<tags>Data Exploration and Visualization</tags>
+<tags>Data Exploration and Visualization, Table Subsetting</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
 <icon>icons/datatable.png</icon>
 <priority>1010</priority>

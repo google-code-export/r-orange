@@ -1,8 +1,9 @@
 """
-<name>survdiff</name>
+<name>Survival Difference</name>
+<description>Calculates the survival differece between groups given a data table with event times, event status, and groupings.  This can perform complex comparisons including interactions.  The parameter rho can be set between 0 and 1 with With rho = 0 this is the log-rank or Mantel-Haenszel test, and with rho = 1 it is equivalent to the Peto & Peto modification of the Gehan-Wilcoxon test.</description>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>survival:survdiff</RFunctions>
-<tags>Prototypes</tags>
+<tags>Survival</tags>
 <icon>icons/RExecutor.png</icon>
 """
 from OWRpy import * 
@@ -20,7 +21,7 @@ class survdiff(OWRpy):
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         self.outputs = [("survdiff Output", SurvivalClasses.SurvFit)]
         
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        self.help.setHtml('<small>Calculates the survival differece between groups given a data table with event times, event status, and groupings.  This can perform complex comparisons including interactions.  The parameter rho can be set between 0 and 1 with With rho = 0 this is the log-rank or Mantel-Haenszel test, and with rho = 1 it is equivalent to the Peto & Peto modification of the Gehan-Wilcoxon test.</small>')
         hbox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         lbox = redRGUI.widgetBox(hbox)
 

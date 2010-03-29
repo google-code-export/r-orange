@@ -1,7 +1,7 @@
 """
 <name>List Selector</name>
 <description>Allows viewing of a list and picks parts of a list and sends them.</description>
-<tags>Data Manipulation</tags>
+<tags>Data Exploration and Visualization</tags>
 <RFunctions>base:list</RFunctions>
 <icon>icons/rexecutor.png</icon>
 <author>Kyle R. Covington</author>

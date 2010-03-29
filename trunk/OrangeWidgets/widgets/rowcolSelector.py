@@ -1,7 +1,7 @@
 """
 <name>Row or Column Screener</name>
 <description>Subsets a data.frame object to pass to subsequent widgets.</description>
-<tags>Data Manipulation</tags>
+<tags>Table Subsetting</tags>
 <RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
 <icon>icons/subset.png</icon>
 <priority>2010</priority>
