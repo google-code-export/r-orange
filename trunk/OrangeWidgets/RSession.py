@@ -1,9 +1,4 @@
 import os, numpy
-try:
-    from rpy_options import set_options
-    set_options(RHOME=os.environ['RPATH'])
-except: pass # need this because linux doesn't need to use the RPATH
-import rpy
 import time
 import RvarClasses
 import RAffyClasses
@@ -11,11 +6,17 @@ import threading, sys
 import orngEnviron
 import MyQMoviePlayer
 import re
-# from PyQt4 import QtWebKit
 from PyQt4.QtCore import *
 from OWWidget import *
 
-#mutex = QMutex()
+try:
+    from rpy_options import set_options
+    set_options(RHOME=os.environ['RPATH'])
+except: # need this because linux doesn't need to use the RPATH
+    print 'Cant find windows environ varuable RPATH'
+
+import rpy
+
 class RSession():
     # lock = threading.Lock()
     # rsem = threading.Semaphore(value = 1)

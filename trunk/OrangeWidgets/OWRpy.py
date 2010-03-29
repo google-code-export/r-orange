@@ -15,6 +15,7 @@ import RAffyClasses
 import threading, sys
 import urllib
 import pprint
+import cPickle
 pp = pprint.PrettyPrinter(indent=4)
 
 
@@ -36,7 +37,6 @@ class OWRpy(OWWidget,RSession):
         
         ctime = str(time.time())
         self.variable_suffix = '_' + str(OWRpy.num_widgets) + '_' + ctime
-        
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.setRvariableNames(['title'])
@@ -49,7 +49,7 @@ class OWRpy(OWWidget,RSession):
         self.sentItems = []
         
         #dont save these variables
-        self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings','redRGUIObjects']
+        self.blackList= ['blackList','GUIWidgets','RGUIElementsSettings','redRGUIObjects','_settingsFromSchema']
         
         
         
@@ -280,13 +280,18 @@ class OWRpy(OWWidget,RSession):
         self.blackList.extend(parentVaribles)
         settings = {}
         # print 'all atts:', allAtts
+        import re
         for att in allAtts:
             if att in self.blackList:
                 continue
             # print 'frist att: ' + att
+            if re.search('^_', att):
+                print 'reserved'
+                continue
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
-        
+
+
         ainputs = []
         try:
             for a, b, c in self.inputs:
@@ -302,10 +307,18 @@ class OWRpy(OWWidget,RSession):
         #print 'My settings are ' + str(settings)
         return settings
     def isPickleable(self,d):
+        #import pickle
+        #pickle.dump(d)
+        # pp.pprint(d)
+        # print type(d)
+        # print type(d)
         try:
             cPickle.dumps(d)
+            print 'pickalble'
             return True
         except:
+            print sys.exc_info()[0] 
+            print 'NOT pickalble'
             return False
         
     def returnSettings(self,var):
@@ -350,12 +363,14 @@ class OWRpy(OWWidget,RSession):
             else:
                 self.redRGUIObjects[k] = v;
 
+
     def onLoadSavedSession(self):
         print '########################in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
             print k
-            # pp.pprint(v)
+            pp.pprint(v)
             if 'redRGUIObject' in v.keys():
+                print v['redRGUIObject']
                 getattr(self, k).loadSettings(v['redRGUIObject'])
             elif 'dict' in v.keys():
                 var = getattr(self, k)
@@ -365,21 +380,23 @@ class OWRpy(OWWidget,RSession):
         for (name, data) in self.sentItems:
             self.send(name, data)
         self.reloadWidget()
-                
-    def loadDynamicData(self,settings):
-        pass
+
     def setDictSettings(self, var, d):
         for k,v in d.iteritems():
             if type(v) == dict and 'redRGUIObject' in v.keys():
                 var[k].loadSettings(v['redRGUIObject'])
             elif type(v) == dict:
                 self.setDictSettings(d[k],v)
+    def loadDynamicData(self,settings):
+        pass
+
 
     def onSaveSession(self):
         print 'save session'
         #self.loadSavedSession = value
 
     def saveSettingsStr(self):
+        
         print 'saveSettingsStr called'
         
         settings = self.getSettings()

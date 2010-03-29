@@ -6,12 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from orngCanvasItems import MyCanvasText
 import OWGUI, sys, os 
-#import RSession
-try:
-    from rpy_options import set_options
-    set_options(RHOME=os.environ['RPATH'])
-except: pass # need this because linux doesn't need to use the RPATH
-import rpy
+#from RSession import *
 import redRGUI
 
 # this class is needed by signalDialog to show widgets and lines
@@ -559,7 +554,10 @@ class CanvasOptionsDlg(QDialog):
         # R Settings Tab
         rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
         # get a data frame (dict) of r libraries
-        self.libs = rpy.r('getCRANmirrors()')
+        import RSession
+        RSession = RSession.RSession()
+
+        self.libs = RSession.R('getCRANmirrors()')
         # place a listBox in the widget and fill it with a list of mirrors
         self.libListBox = redRGUI.listBox(rlibrariesBox, label = 'Mirrors', items = self.libs['Name'], callback = self.setMirror)
         self.libInfo = redRGUI.widgetLabel(rlibrariesBox, '')

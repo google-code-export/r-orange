@@ -12,7 +12,8 @@ import redRGUI
 
 import re
 import textwrap
-
+import cPickle
+import pickle
 class readFile(OWRpy):
     
     globalSettingsList = ['recentFiles','path']
@@ -129,7 +130,8 @@ class readFile(OWRpy):
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings['dataTypes'])
-        #if 'dataTypes' in settings.keys():
+        if 'dataTypes' not in settings.keys():
+            return
         for k,l,c in zip(range(len(self.colNames)),self.colNames,settings['dataTypes']['list']):
             s = redRGUI.comboBox(self.columnTypes,items=[],orientation='horizontal',callback=self.updateColClasses)
             s.loadSettings(c['redRGUIObject'])

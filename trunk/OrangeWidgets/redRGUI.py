@@ -1,7 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, glob
-from RSession import RSession
 import orngEnviron
 from numpy import *
 #import sys, traceback

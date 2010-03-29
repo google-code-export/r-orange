@@ -11,7 +11,6 @@ from orngDlgs import *
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
 import pprint
-import RSession
 pp = pprint.PrettyPrinter(indent=4)
 
 class SchemaDoc(QWidget):
@@ -445,6 +444,9 @@ class SchemaDoc(QWidget):
 
     # save the file
     def save(self, filename = None,tmp = True):
+        import RSession
+        RSession = RSession.RSession()
+        # return
         print 'start save schema'
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
@@ -513,8 +515,10 @@ class SchemaDoc(QWidget):
             file.close()
             doc.unlink()
             print 'saving image...'
-            import rpy
-            rpy.r('save.image("' + tempR + '")')
+            import RSession
+            RSession = RSession.RSession()
+
+            RSession.R('save.image("' + tempR + '")')
             zout = zipfile.ZipFile(filename, "w")
             for fname in [tempschema,tempR]:
                 zout.write(fname)
