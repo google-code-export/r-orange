@@ -75,16 +75,21 @@ class RFormulaEntry(QWidget, widgetState):
         else:
             return (str(self.outcomeVariable.currentText()), str(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
     def getSettings(self):
-        r = {'items': 'nothing'}
-        print 'Formula entry get settings called'
-        #r.update(self.getState())
-        #print 'r.update in getSettings called and functioning.'
-        return {'items': 'nothing'} # complete
+        itemsText = []
+        for item in self.elementsListBox.items():
+           itemsText.append(str(item.text()))
+                
+        r = {'current':self.outcomeVariable.currentIndex(), 'buttonState': self.elementListBox.isEnabled(), 'listBoxItems':itemsText}
+        
+        return r
         #items = []
         #for item in self.elementsListBox.items():
     def loadSettings(self, data):
-        self.setState(data)
-        pass # complete
+        self.elementsListBox.addItems(data['listBoxItems'])
+        self.outcomeVariable.addItems(data['listBoxItems']
+        self.updateEnabled(data['buttonState'])
+        self.outcomeVariable.setCurrentIndex(data['current'])
+        
         
     def update(self, items):
         ebis = []
