@@ -4,7 +4,7 @@
 <description>Applies math across a data table.  These functions could include max (maximum value), mean (the mean value), median (median value), etc.>description>
 <RFunctions>:apply</RFunctions>
 <tags>Data Manipulation</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>icons/rexecutor.png</icon>
 """
 from OWRpy import * 
 import redRGUI 
