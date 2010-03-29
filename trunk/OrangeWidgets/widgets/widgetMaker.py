@@ -12,7 +12,7 @@ import redRGUI
 class widgetMaker(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         settingsList = ['output_txt', 'parameters']
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 1, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "File", resizingEnabled = 1)
         
         self.functionParams = ''
         self.widgetInputsName = []
@@ -30,8 +30,11 @@ class widgetMaker(OWRpy):
         
         # GUI
         # several tabs with different parameters such as loading in a function, setting parameters, setting inputs and outputs
-        
-        box = redRGUI.widgetBox(self.controlArea, "")
+        tabs = redRGUI.tabWidget(self.controlArea)
+        functionTab = tabs.createTabPage("Function Info")
+        codeTab = tabs.createTabPage("Code")
+        box = redRGUI.widgetBox(functionTab, "")
+        box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.infoa = redRGUI.widgetLabel(box, '')
         self.packageName = redRGUI.lineEdit(box, label = 'Package:', orientation = 1)
         redRGUI.button(box, 'Load Package', callback = self.loadRPackage)
@@ -39,11 +42,12 @@ class widgetMaker(OWRpy):
         redRGUI.button(box, 'Parse Function', callback = self.parseFunction)
         self.argsLineEdit = redRGUI.lineEdit(box, label = 'GUI Args')
         self.connect(self.argsLineEdit, SIGNAL('textChanged(QString)'), self.setArgsLineEdit)
-        box = redRGUI.widgetBox(self.controlArea, "Inputs and Outputs")
+        box = redRGUI.widgetBox(functionTab)
+        box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.inputArea = QTableWidget()
         box.layout().addWidget(self.inputArea)
         self.inputArea.setColumnCount(4)
-        
+        box = redRGUI.widgetBox(functionTab, orientation = 'horizontal')
         #self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
         redRGUI.button(box, 'Accept Inputs', callback = self.acceptInputs)
@@ -53,14 +57,8 @@ class widgetMaker(OWRpy):
         redRGUI.button(box, 'Generate Code', callback = self.generateCode)
         redRGUI.button(box, 'Launch Widget', callback = self.launch)
         
-        self.splitCanvas = QSplitter(Qt.Vertical, self.mainArea)
-        self.mainArea.layout().addWidget(self.splitCanvas)
-        
-        codebox = redRGUI.widgetBox(self, "Code Box")
-        self.splitCanvas.addWidget(codebox)
-
         self.codeArea = QTextEdit()
-        codebox.layout().addWidget(self.codeArea)
+        codeTab.layout().addWidget(self.codeArea)
         
     def setArgsLineEdit(self, string):
         myargs = str(self.argsLineEdit.text()).split(' ')

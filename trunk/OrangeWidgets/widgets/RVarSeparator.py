@@ -42,7 +42,7 @@ class RVarSeparator(OWRpy):
         else: 
             self.status.setText('No data to parse')
     def separate(self):
-        self.sendthis = {'data':str('na.omit(local('+self.varBox.selectedItems()[0].text()+', '+self.envName+'))')} #must declare explilcitly as a string or an error will occur.  We remove NA's just in case they are in the data
+        self.sendthis = {'data':str('local('+self.varBox.selectedItems()[0].text()+', '+self.envName+')')} #must declare explilcitly as a string or an error will occur.  We remove NA's just in case they are in the data
         
         #put logic for finding the type of variable that the object is and sending it from that channel of the output
         

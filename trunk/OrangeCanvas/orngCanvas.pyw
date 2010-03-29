@@ -187,6 +187,9 @@ class OrangeCanvasDlg(QMainWindow):
         
     def createWidgetsToolbar(self):
         if self.widgetsToolBar:
+            if self.widgetsToolBar.isFloating():
+                float = True
+            else: float = Qt.LeftDockWidgetArea
             self.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
             if isinstance(self.widgetsToolBar, QToolBar):
                 self.removeToolBar(self.widgetsToolBar)
@@ -197,8 +200,13 @@ class OrangeCanvasDlg(QMainWindow):
                 self.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
                 self.removeDockWidget(self.widgetsToolBar)
 
+        else:
+            float = False
+
         self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
+        self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
+        self.widgetsToolBar.setFloating(float)
 
         self.settings["WidgetTabs"] = self.tabs.createWidgetTabs(self.settings["WidgetTabs"], self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
