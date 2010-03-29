@@ -1,8 +1,9 @@
 """
 <name>Cox Porportional Hazards</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Performs Cox Proportional Hazards on a collection of data with event times, event status, and a set of grouping variables.  This widget can perform complex comparisons inculding interactions.</description>
 <RFunctions>survival:coxph</RFunctions>
-<tags>Prototypes</tags>
+<tags>Survival</tags>
 <icon>icons/RExecutor.png</icon>
 """
 from OWRpy import * 

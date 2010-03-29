@@ -36,7 +36,7 @@ class survdiff(OWRpy):
         if data:
             self.RFunctionParam_data=data["data"]
             self.data = data.copy()
-            colnames = self.R('colnames('+self.RFunctionParam_data+')'
+            colnames = self.R('colnames('+self.RFunctionParam_data+')')
             self.RFunctionParamformula.update(self.R('colnames('+self.RFunctionParam_data+')'))
             self.survTime.update(colnames)
             self.commitFunction()

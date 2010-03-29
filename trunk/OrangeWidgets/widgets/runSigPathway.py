@@ -147,7 +147,7 @@ class runSigPathway(OWRpy):
             try:
                 olddir = os.getcwd()
                 os.chdir(self.wd)
-                self.pAnnotlist.update(glob.glob("*.RData")
+                self.pAnnotlist.update(glob.glob("*.RData"))
                 os.chdir(olddir)
             except:
                 self.infob.setText("There was a problem accessing your directory, please confirm that it is correct.")

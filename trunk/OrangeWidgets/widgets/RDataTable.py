@@ -1,7 +1,7 @@
 """
 <name>View Data Table</name>
 <description>Shows data in a spreadsheet.</description>
-<tags>Data Manipulation</tags>
+<tags>Data Exploration and Visualization</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
 <icon>icons/datatable.png</icon>
 <priority>1010</priority>

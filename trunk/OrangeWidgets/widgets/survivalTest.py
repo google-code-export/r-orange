@@ -9,7 +9,7 @@
 from OWRpy import *
 import OWGUI
 
-class survivalTest(OWRpy):
+    class survivalTest(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
         settingsList = ['output_txt', 'parameters']

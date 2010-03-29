@@ -1,8 +1,9 @@
 """
 <name>Apply Math</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<description>Applies math across a data table.  These functions could include max (maximum value), mean (the mean value), median (median value), etc.>description>
 <RFunctions>:apply</RFunctions>
-<tags>Prototypes</tags>
+<tags>Data Manipulation</tags>
 <icon>icons/RExecutor.png</icon>
 """
 from OWRpy import * 
