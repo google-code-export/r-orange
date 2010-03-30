@@ -279,7 +279,7 @@ class DataExplorer(OWRpy):
                      #commented out for testing
                 elif j > 0 and i == 0: # setting the line edits for looking through the columns
                 
-                    cb = redRGUI.button(self, self.colnames[j-1]+'Criteria', callback = lambda k = j-1: self.showDialog(k))
+                    cb = redRGUI.button(self, self.colnames[j-1]+'Criteria', width = -1, callback = lambda k = j-1: self.showDialog(k))
                     cb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                     self.table.setCellWidget(i, j, cb)
                     

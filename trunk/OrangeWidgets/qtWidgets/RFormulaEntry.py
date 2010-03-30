@@ -85,11 +85,13 @@ class RFormulaEntry(QWidget, widgetState):
         #items = []
         #for item in self.elementsListBox.items():
     def loadSettings(self, data):
-        self.elementsListBox.addItems(data['listBoxItems'])
-        self.outcomeVariable.addItems(data['listBoxItems'])
-        self.updateEnabled(data['buttonState'])
-        self.outcomeVariable.setCurrentIndex(data['current'])
-        
+        try:
+            self.elementsListBox.addItems(data['listBoxItems'])
+            self.outcomeVariable.addItems(data['listBoxItems'])
+            self.updateEnabled(data['buttonState'])
+            self.outcomeVariable.setCurrentIndex(data['current'])
+        except:
+            print "Loading of RFormulaEntry encountered an error."
         
     def update(self, items):
         ebis = []
