@@ -303,7 +303,7 @@ class DataExplorer(OWRpy):
         cw = self.criteriaDialogList[k]['cw']
         text = str(cw.text())
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\''+colName+'\'] == \''+text+'\')'
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\"'+colName+'\"] == \''+text+'\')'
         self.criteriaDialogList[k]['widgetLabel'].clear()
         self.criteriaDialogList[k]['widgetLabel'].setHtml(self.criteriaDialogList[k]['criteriaCollection'])
         self.setDialogState(k, 0)
@@ -350,7 +350,7 @@ class DataExplorer(OWRpy):
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
                 criteria.append(item['criteriaCollection'])
-                criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
+                #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         newData = {'data':self.orriginalData+'['+'&'.join(criteria)+',]'} # reprocess the table
         self.processData(newData, False)

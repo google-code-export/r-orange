@@ -37,12 +37,12 @@ class apply(OWRpy):
         def commitFunction(self):
                 if str(self.RFunctionParam_X) == '': return
                 if str(self.RFunctionParamFUN_lineEdit.text()) == '': return
-                if str(self.RFunctionParamMARGIN_radioButtons.getSelected()) == []: return
+                if self.RFunctionParamMARGIN_radioButtons.getChecked() == []: return
                 injection = []
                 if str(self.RFunctionParamFUN_lineEdit.text()) != '':
                         string = 'FUN='+str(self.RFunctionParamFUN_lineEdit.text())
                         injection.append(string)
-                if 'Rows' in self.RFunctionParamMARGIN_radioButtons.getSelected():
+                if 'Rows' in self.RFunctionParamMARGIN_radioButtons.getChecked():
                         string = 'MARGIN='+str(1)
                         injection.append(string)
                 else:

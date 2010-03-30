@@ -149,16 +149,18 @@ class listBox(QListWidget,widgetState):
         # print r
         return r
     def loadSettings(self,data):
-        print 'loading list box'
-        print data
-        self.clear()
-        self.addItems([unicode(i) for i in data['items']])
-        
-        for i in data['selected']:
-            self.setItemSelected(self.item(i), True)
-        
-        self.setState(data)
-        
+        try:
+            print 'loading list box'
+            print data
+            self.clear()
+            self.addItems([unicode(i) for i in data['items']])
+            
+            for i in data['selected']:
+                self.setItemSelected(self.item(i), True)
+            
+            self.setState(data)
+        except:
+            print 'Error occured in List Box loading'
     def items(self):
         items = []
         for i in range(0, self.count()-1):

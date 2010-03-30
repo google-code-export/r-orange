@@ -367,15 +367,17 @@ class OWRpy(OWWidget,RSession):
     def onLoadSavedSession(self):
         print '########################in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
-            print k
+            print str(k)+ ' in onLoadSavedSession widget attribute'
             pp.pprint(v)
-            if 'redRGUIObject' in v.keys():
-                print v['redRGUIObject']
-                getattr(self, k).loadSettings(v['redRGUIObject'])
-            elif 'dict' in v.keys():
-                var = getattr(self, k)
-                self.setDictSettings(var,v['dict'])
-
+            try:
+                if 'redRGUIObject' in v.keys():
+                    print v['redRGUIObject']
+                    getattr(self, k).loadSettings(v['redRGUIObject'])
+                elif 'dict' in v.keys():
+                    var = getattr(self, k)
+                    self.setDictSettings(var,v['dict'])
+            except:
+                print 'Error occured in loading data ' + str(v) +' into self.'+str(k)
         self.loadDynamicData(self.redRGUIObjects)
         for (name, data) in self.sentItems:
             self.send(name, data)
