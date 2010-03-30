@@ -148,6 +148,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'] = OWGUIEx.lineEditHint(self.criteriaDialogList[j-1]['dialog'], None, None
                         #, callback = lambda i = i, j = j: self.columnLineEditHintAccepted(i, j))
                         )
+                        self.criteriaDialogList[j-1]['cw'].minTextLength = 3
                         cBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         lBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         redRGUI.button(cBox, "&Commit", callback = lambda k = j-1: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
@@ -201,6 +202,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'] = OWGUIEx.lineEditHint(self.criteriaDialogList[j-1]['dialog'], None, None
                         #, callback = lambda i = i, j = j: self.columnFactorCriteriaAccepted(i, j))
                         )
+                        self.criteriaDialogList[j-1]['cw'].minTextLength = 3
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Subsets based on the elements from a factor column.  These columns contain repeating elements such as "apple", "apple", "banana", "banana".')
                         #print self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])')
                         self.criteriaDialogList[j-1]['cw'].setItems(self.R('levels('+self.orriginalData+'[,'+str(j-1)+'])'))

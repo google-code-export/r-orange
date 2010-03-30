@@ -123,7 +123,7 @@ class LineEditHint(QLineEdit):
         self.caseSensitive = 1
         self.matchAnywhere = 1
         self.nrOfSuggestions = 50
-        self.minTextLength = 3
+        self.minTextLength = 1
         #self.setDelimiters(",; ")
         self.delimiters = None          # by default, we only allow selection of one element
         self.itemsAsStrings = []        # a list of strings that appear in the list widget

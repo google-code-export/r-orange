@@ -29,21 +29,20 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         
         self.help.setHtml('<small>The Row Column Selection widget allows one to select subsets of Data Tables.  If complex selections are required simply link many of these widgets together.  It may be useful to also consider using the Merge Data Table widget or the Melt widget when using this widget to but the data into the proper shape for later analysis.  The sections of this widget are:<br>Select by row or column<br><nbsp>- Allows you to select either rows or columns that match a certain criteria.  For example if you pick to select rows you will select based on criteria that are in the columns.<br>Attributes<br><nbsp>- Attributes are the names of the attributes that have the criteria that you will be selecting on, for example if you want to pick all rows that have a value greater than 5 in the second column the second column would be your attribute.<br>Logical<br><nbsp>- This section discribes the logic that should be applied to the selection, for example should the attribute be less than, greater than, equal to, or in a selection list.  "NOT" is also available.<br><br>One can also select based on an attached subsetting vector.  This will look for matches in the subsetting vector to values that are in your selected attribute.  This can be useful when dealing with "lists" of things that can be coerced into vectors.<br><br>This widget will send either a Data Table or a Vector depending on the dimention of your selection.')
         #set the gui
-        box = OWGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        box = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         self.rowcolBox = redRGUI.radioButtons(box, 'The names come from:', ['Row', 'Column'], callback=self.rowcolButtonSelected)
         self.ISNOT = redRGUI.comboBox(box, items = ['IS', 'IS NOT'])
         self.attributes = redRGUI.listBox(box, label='Attributes')
         self.attributes.setSelectionMode(QAbstractItemView.MultiSelection)
         
-        selectionBox = OWGUI.widgetBox(box)
+        selectionBox = redRGUI.widgetBox(box)
         self.attsHintEdit = OWGUIEx.lineEditHint(selectionBox, None, None, callback = self.callback)
         self.attsHintEdit.hide()    
-        buttonsBox = OWGUI.widgetBox(selectionBox)
-        self.subOnAttachedButton = OWGUI.button(buttonsBox, self, "Select on Attached", callback=self.subOnAttached)
+        buttonsBox = redRGUI.widgetBox(selectionBox)
+        self.subOnAttachedButton = redRGUI.button(buttonsBox, "Select on Attached", callback=self.subOnAttached)
         self.subOnAttachedButton.setEnabled(False)
         
-        self.subsetButton = OWGUI.button(buttonsBox, self, "Subset", callback=self.subset)
-        self.infoArea = redRGUI.textEdit(self.controlArea, '<center>Criteria not selected.  Please select a criteria to see its attributes.</center>')
+        self.subsetButton = redRGUI.button(buttonsBox, "Subset", callback=self.subset)
         self.outputBox = redRGUI.textEdit(self.controlArea, '<center>No output generated yet.  Please make selections to generate output.</center>')
         
     def setWidget(self, data):

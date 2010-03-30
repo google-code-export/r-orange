@@ -47,8 +47,9 @@ class rExecutor(OWRpy):
 
         runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout())
-        processbutton = redRGUI.button(runbox, label = "Run", callback = self.runR, width=100)
+        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout(), callback = self.runR)
+        self.command.setMaximumWidth(800)
+        processbutton = redRGUI.button(runbox, label = "&Run", callback = self.runR, width=100)
 
         self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
         self.status = redRGUI.widgetLabel(self.dataBox, "No Input")
@@ -61,7 +62,7 @@ class rExecutor(OWRpy):
 
         #sendbox = redRGUI.groupBox(leftArea, "Send Box")
         #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
-        sendbutton = redRGUI.button(runbox, label = "Send", callback =self.sendThis, width=100)
+        sendbutton = redRGUI.button(runbox, label = "&Send", tooltip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
         self.resize(700,500)
         self.move(300, 25)
         self.autoShowDialog = 0

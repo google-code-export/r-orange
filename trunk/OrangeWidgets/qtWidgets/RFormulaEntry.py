@@ -86,7 +86,7 @@ class RFormulaEntry(QWidget, widgetState):
         #for item in self.elementsListBox.items():
     def loadSettings(self, data):
         self.elementsListBox.addItems(data['listBoxItems'])
-        self.outcomeVariable.addItems(data['listBoxItems']
+        self.outcomeVariable.addItems(data['listBoxItems'])
         self.updateEnabled(data['buttonState'])
         self.outcomeVariable.setCurrentIndex(data['current'])
         
