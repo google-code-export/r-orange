@@ -18,10 +18,10 @@ class RedRScatterplot(OWRpy):
     globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
+        OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
         self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
-        self.outputs = [('test output', RvarClasses.RDataFrame)]
+        self.outputs = [('Scatterplot Output', RvarClasses.RDataFrame)]
         self.data = None
         self.parent = None
         self.cm = None
@@ -73,24 +73,38 @@ class RedRScatterplot(OWRpy):
         cmClass = self.subsetCMClass.currentText()
         if cmSelector != ' ':
             subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
-        else: subset = 'rownames('+self.data+')'
-        
+        else: 
+           if self.R('rownames('+self.data+')') != None:
+              subset = 'rownames('+self.data+')'
+           else:
+              subset = ''
         selected, unselected = self.graph.getSelectedPoints()
-        self.R(self.cm+'['+subset+',"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
-        self.sendMe()
+        if self.cm == None or self.cm == '':
+           newData = self.dataParent.copy()
+           newData['data'] = self.data+'[c('+str(selected)[1:-1]+'),]'
+           self.rSend('Scatterplot Output', newData)
+        else:
+           self.R(self.cm+'[,"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
+           self.sendMe()
         
     def gotX(self, data):
         if data:
             self.data = data['data']
             self.parent = data['parent']
-            # if 'cm' in data:
-                # self.cm = data['cm']
-                # self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
-                # self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
-                # cmColNames = self.R('colnames('+self.cm+')')
-                # if type(cmColNames) == type(''): cmColNames = [cmColNames]
-                #self.subsetCMSelector.update(self.R('colnames('+self.cm+')').insert(0, ' '))
-                #self.paintCMSelector.update(self.R('colnames('+self.cm+')').extend(self.R('colnames('+self.data+')')).insert(0, ' '))
+            self.dataParent = data.copy()
+            if 'cm' in data:
+                self.cm = data['cm']
+                self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
+                self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
+                cmColNames = self.R('colnames('+self.cm+')')
+                if type(cmColNames) == type(''): cmColNames = [cmColNames]
+                if cmColNames == 'NULL': cmColNames = []
+                self.subsetCMSelector.update(cmColNames.insert(0, ' '))
+                print self.R('colnames('+self.data+')')
+                cmColNames.extend(self.R('colnames('+self.data+')'))
+                self.paintCMSelector.update(cmColNames.insert(0, ' '))
+            else:
+               self.cm = ''            
             # set some of the plot data
             self.xColumnSelector.update(self.R('colnames('+self.data+')'))
             self.yColumnSelector.update(self.R('colnames('+self.data+')'))
@@ -113,11 +127,11 @@ class RedRScatterplot(OWRpy):
 
     def plot(self):
         # populate the cm class columns
-        cmSelector = self.subsetCMSelector.currentText()
-        cmClass = self.subsetCMClass.currentText()
-        xCol = self.xColumnSelector.currentText()
-        yCol = self.yColumnSelector.currentText()
-        paintClass = self.paintCMSelector.currentText()
+        cmSelector = str(self.subsetCMSelector.currentText())
+        cmClass = str(self.subsetCMClass.currentText())
+        xCol = str(self.xColumnSelector.currentText())
+        yCol = str(self.yColumnSelector.currentText())
+        paintClass = str(self.paintCMSelector.currentText())
 
         if cmSelector != ' ' and cmSelector != '' and int(self.subsetCMSelector.currentIndex()) != 0:
             subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
@@ -126,13 +140,7 @@ class RedRScatterplot(OWRpy):
             subset = ''
             cmSubset = ''
         
-        if paintClass != ' ':
-            if paintClass in self.R('colnames('+self.cm+')'):
-                cm = self.R(self.cm+cmSubset)
-            elif paintClass in self.R('colnames('+self.data+')'):
-                cm = self.R(self.data+cmSubset)
-            paint = cm[str(paintClass)]
-        else: paint = []
+        paint = []
         # make the plot
         if xCol == yCol: return
         self.graph.clear()
@@ -147,7 +155,7 @@ class RedRScatterplot(OWRpy):
 
     def sendMe(self):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
-        self.rSend('test output', data)
+        self.rSend('Scatterplot Output', data)
         self.sendRefresh()
         
     def widgetDelete(self):
