@@ -314,15 +314,14 @@ class OrangeCanvasDlg(QMainWindow):
             #self.debugModeButton.setChecked(False)
             self.output.debugMode = 1
     def importSchema(self):
-        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.ows)")
         if name.isEmpty():
             return
-        self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
         self.addToRecentMenu(str(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
+        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.ows)")
         if name.isEmpty():
             return
         self.schema.clear()
@@ -606,7 +605,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings.setdefault("svnSettings", None)
         self.settings.setdefault("versionNumber", 'Version0')
 ##        self.settings.setdefault("autoLoadSchemasOnStart", 0)
-
+        self.settings.setdefault("CRANrepos", 'http://cran.r-project.org')
         self.settings.setdefault("widgetSelectedColor", (0, 255, 0))
         self.settings.setdefault("widgetActiveColor", (0,0,255))
         self.settings.setdefault("lineColor", (0,255,0))

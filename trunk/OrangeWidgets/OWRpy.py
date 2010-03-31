@@ -360,7 +360,7 @@ class OWRpy(OWWidget,RSession):
         print '########################in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
             print str(k)+ ' in onLoadSavedSession widget attribute'
-            pp.pprint(v)
+            #pp.pprint(v)
             try:
                 if 'redRGUIObject' in v.keys():
                     getattr(self, k).loadSettings(v['redRGUIObject'])
@@ -497,15 +497,15 @@ class OWRpy(OWWidget,RSession):
         for k in self.Rvariables:
             #print self.Rvariables[k]
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
-        # try:
-            ##if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
-            # for device in self.device.keys():
-                # dev = self.device[device]
-                ##key = device.keys()[0]
-                # self.R('dev.set('+str(dev)+')', 'setRData')
-                # self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
+        try:
+            #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
+            for device in self.device.keys():
+                dev = self.device[device]
+                #key = device.keys()[0]
+                self.R('dev.set('+str(dev)+')', 'setRData')
+                self.R('dev.off() # shut down device for widget '+ str(OWRpy.num_widgets), 'setRData') 
                 
-        # except: pass
+        except: pass
         self.widgetDelete()
     def widgetDelete(self):
         pass #holder function for other widgets
