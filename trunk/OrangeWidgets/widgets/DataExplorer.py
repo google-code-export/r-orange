@@ -384,7 +384,7 @@ class DataExplorer(OWRpy):
         
         # process the data again
         self.processData(self.dataParent) # this sets the criteriaDialogList and the widget
-        
+       
         for i in range(0, len(self.criteriaList)):
             print 'Set Criteria '+str(i)+' to '+str(self.criteriaList[i])
             self.criteriaDialogList[i]['widgetLabel'].setHtml(self.criteriaList[i])
