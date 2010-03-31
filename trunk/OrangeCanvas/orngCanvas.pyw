@@ -279,10 +279,10 @@ class OrangeCanvasDlg(QMainWindow):
         localHelp = 0
         self.menuHelp = QMenu("&Help", self)
         if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")) or os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")):
-            if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")): self.menuHelp.addAction("Orange Help", self.menuOpenLocalOrangeHelp)
+            if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")): self.menuHelp.addAction("Red-R Help", self.menuOpenLocalOrangeHelp)
             if os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")): self.menuHelp.addAction("Red Canvas Help", self.menuOpenLocalCanvasHelp)
 
-        self.menuHelp.addAction("Orange Online Help", self.menuOpenOnlineOrangeHelp)
+        self.menuHelp.addAction("Red-R Online Help", self.menuOpenOnlineOrangeHelp)
         #self.menuHelp.addAction("Orange Canvas Online Help", self.menuOpenOnlineCanvasHelp)
 
         if os.path.exists(os.path.join(self.orangeDir, r"updateOrange.py")):
@@ -290,7 +290,7 @@ class OrangeCanvasDlg(QMainWindow):
             self.menuHelp.addAction("Check for updates", self.menuCheckForUpdates)
             
         self.menuHelp.addSeparator()
-        self.menuHelp.addAction("About Orange", self.menuItemAboutOrange)
+        self.menuHelp.addAction("About Red-R", self.menuItemAboutOrange)
 
         # widget popup menu
         self.widgetPopup = QMenu("Widget", self)
@@ -490,12 +490,12 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuOpenOnlineOrangeHelp(self):
         import webbrowser
-        webbrowser.open("http://www.ailab.si/orange/doc/widgets/catalog")
+        webbrowser.open("http://www.red-r.org")
 
     def menuOpenOnlineCanvasHelp(self):
         import webbrowser
         #webbrowser.open("http://www.ailab.si/orange/orangeCanvas") # to be added on the web
-        webbrowser.open("http://www.ailab.si/orange")
+        webbrowser.open("http://www.red-r.org")
 
     def menuCheckForUpdates(self):
         # import updateOrange

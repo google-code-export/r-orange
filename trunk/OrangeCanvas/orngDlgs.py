@@ -744,16 +744,9 @@ class AboutDlg(QDialog):
         logo = OWGUI.widgetLabel(self, "")
         logo.setPixmap(logoImage)
         
-        OWGUI.widgetLabel(self, '<p align="center"><h2>Orange</h2></p>') 
-        
-        try:
-            import orange
-            version = orange.version.split("(")[0].strip()
-            date = orange.version.split(",")[-1].strip(" )")
-            OWGUI.widgetLabel(self, '<p align="center">version %s</p>' % (version))
-            OWGUI.widgetLabel(self, '<p align="center">(built %s)</p>' % (date))
-        except:
-            pass
+        OWGUI.widgetLabel(self, '<p align="center"><h2>Red-R Version 2.0 beta</h2></p>')
+        OWGUI.widgetLabel(self, '<p align="center"><h3>Kyle R Covington and Anup Parikh 2010</h3></p>')
+
         OWGUI.widgetLabel(self, "" )
         #OWGUI.button(self, self, "Close", callback = self.accept)
         b = QDialogButtonBox(self)
