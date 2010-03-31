@@ -359,11 +359,11 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuItemPrinter(self):
         try:
-            import OWDlgs
-            sizeDlg = OWDlgs.OWChooseImageSizeDlg(self.schema.canvas)
-            sizeDlg.exec_()
+            printer = QPrinter() # must instantiate before setting, otherwise get a system crash !!!!
+            painter = QPainter(printer)
+            self.schema.canvas.render(painter)
         except:
-            print "Missing file 'OWDlgs.py'. This file should be in OrangeWidgets folder. Unable to print/save image."
+            print "Error in printing the schema"
         
 
     def readRecentFiles(self):
