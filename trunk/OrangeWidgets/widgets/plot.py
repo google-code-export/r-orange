@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Generic plot is the basis of most RedR plotting.  This accepts fits, data tables, or other RedR outputs and attempts to plot them.  However, there is no guarantee that your data will plot correctly.</description>
 <tags>Plotting</tags>
-<icon>icons/plot.PNG</icon>
+<icon>icons/plot.png</icon>
 
 """
 from OWRpy import * 
