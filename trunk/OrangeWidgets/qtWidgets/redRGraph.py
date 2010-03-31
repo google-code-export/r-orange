@@ -376,7 +376,7 @@ class redRGraph(QwtPlot):
         if colorint == 3:
             return Qt.blue
         else: return Qt.black
-    def points(self, name, xData, yData, brushColor = [], penColor = [], size = [], style = QwtPlotCurve.NoCurve, symbol = QwtSymbol.Ellipse, enableLegend = 0, showFilledSymbols = None, lineWidth = 1, pen = None, autoScale = 0, antiAlias = None, penAlpha = 255, brushAlpha = 255):
+    def points(self, name, xData, yData, brushColor = None, penColor = None, size = None, style = QwtPlotCurve.NoCurve, symbol = QwtSymbol.Ellipse, enableLegend = 0, showFilledSymbols = None, lineWidth = 1, pen = None, autoScale = 0, antiAlias = None, penAlpha = 255, brushAlpha = 255):
         if len(xData) != len(yData): return None
         
         i = 1
@@ -385,14 +385,14 @@ class redRGraph(QwtPlot):
         curve.setRenderHint(QwtPlotItem.RenderAntialiased, antiAlias == 1 or self.useAntialiasing)
         curve.setItemAttribute(QwtPlotItem.Legend, enableLegend)
         curve.setItemAttribute(QwtPlotItem.AutoScale, autoScale)
-        if brushColor == []: bc = Qt.red
-        else: bc = self.setColor(int(brushColor[i]))
+        if brushColor == None: bc = Qt.red
+        else: bc = self.setColor(int(brushColor))
         
-        if penColor == []: pc = Qt.red
-        else: pc = self.setColor(int(penColor[i]))
+        if penColor == None: pc = Qt.red
+        else: pc = self.setColor(int(penColor))
         
-        if size == []: si = 5
-        else: si = size[i]
+        if size == None: si = 5
+        else: si = size
         
         
         if showFilledSymbols or (showFilledSymbols == None and self.showFilledSymbols):

@@ -24,6 +24,10 @@ class rViewer(OWRpy):
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
     
     def printViewer(self):
+        # thisPrinter = QPrinter()
+        # printer = QPrintDialog(thisPrinter)
+        # print str(printer)
+        # printer.show()
         self.RoutputWindow.print_(QPrinter())
     def processdata(self, data):
         if data:
