@@ -852,7 +852,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                     
                     act.widgetInfo = widgetInfo
                     act.category = catmenu
-                    categoriesPopup.allActions.append(act)
+                    #categoriesPopup.allActions.append(act)
                     
                     
             except: pass
