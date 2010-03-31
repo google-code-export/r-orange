@@ -286,7 +286,6 @@ class OWRpy(OWWidget,RSession):
                 continue
             # print 'frist att: ' + att
             if re.search('^_', att):
-                print 'reserved'
                 continue
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
@@ -307,21 +306,14 @@ class OWRpy(OWWidget,RSession):
         #print 'My settings are ' + str(settings)
         return settings
     def isPickleable(self,d):
-        #import pickle
-        #pickle.dump(d)
-        # pp.pprint(d)
-        # print type(d)
-        # print type(d)
         if isinstance(d,QObject):
             print 'QT object NOT Pickleable'
             return False
         try:
             cPickle.dumps(d)
-            print 'Pickleable'
             return True
         except:
             print sys.exc_info() 
-            print 'NOT Pickleable'
             return False
         
     def returnSettings(self,var):
@@ -352,8 +344,7 @@ class OWRpy(OWWidget,RSession):
         print 'on set settings'
         self.redRGUIObjects = {}
         for k,v in settings.iteritems():
-            if k == 'inputs': continue
-            if k == 'outputs': continue
+            if k in ['inputs', 'outputs']: continue
             if v == None:
                 continue
             # elif k =='_customSettings':
@@ -368,15 +359,16 @@ class OWRpy(OWWidget,RSession):
     def onLoadSavedSession(self):
         print '########################in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
-            # print k
-            # pp.pprint(v)
-            if 'redRGUIObject' in v.keys():
-                # print v['redRGUIObject']
-                getattr(self, k).loadSettings(v['redRGUIObject'])
-            elif 'dict' in v.keys():
-                var = getattr(self, k)
-                self.setDictSettings(var,v['dict'])
-            
+            print str(k)+ ' in onLoadSavedSession widget attribute'
+            pp.pprint(v)
+            try:
+                if 'redRGUIObject' in v.keys():
+                    getattr(self, k).loadSettings(v['redRGUIObject'])
+                elif 'dict' in v.keys():
+                    var = getattr(self, k)
+                    self.setDictSettings(var,v['dict'])
+            except:
+                print 'Error occured in loading data ' + str(v) +' into self.'+str(k)
         self.loadDynamicData(self.redRGUIObjects)
         if '_customSettings' in self.redRGUIObjects.keys():
             self.loadCustomSettings(self.redRGUIObjects['_customSettings'])
@@ -417,9 +409,7 @@ class OWRpy(OWWidget,RSession):
             pass
 
     def loadSettings(self, file = None):
-        print 'loadSettings in owbasewidget'
-        #print self.inputs
-        #print str(self.outputs) + ' preload'
+        
         file = self.getSettingsFile(file)
         settings = {}
         if file:
@@ -433,8 +423,6 @@ class OWRpy(OWWidget,RSession):
             if settings: settings.update(self._settingsFromSchema)
             else:        settings = self._settingsFromSchema
 
-        #print 'start loading local variables'
-        #pp.pprint(settings)
         # can't close everything into one big try-except since this would mask all errors in the below code
         if settings:
             # if hasattr(self, "settingsList"):

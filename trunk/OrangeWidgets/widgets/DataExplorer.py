@@ -27,7 +27,6 @@ class DataExplorer(OWRpy):
         self.currentColumn = 0
         self.rowNameSelectionCriteria = ''
         self.criteriaList = []
-        self.columnCriteriaList = []
         self.criteriaDialogList = []
         self.setRvariableNames(['dataExplorer'])
         
@@ -344,42 +343,50 @@ class DataExplorer(OWRpy):
         # collect all of the criteria from the criteriaDialogList , remove those that are blank '', commit the new selection criteria   
         # collect all of the criteria
         self.subsetOnSelected()
-        criteria = []
+        self.criteriaList = []
         if self.rowNameSelectionCriteria != '':
-            criteria.append(self.rowNameSelectionCriteria)
+            self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                criteria.append(item['criteriaCollection'])
+                self.criteriaList.append(item['criteriaCollection'])
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
-        newData = {'data':self.orriginalData+'['+'&'.join(criteria)+',]'} # reprocess the table
+        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
         # commit the table as a new data frame
         self.subsetOnSelected()
-        criteria = []
+        self.criteriaList = []
         if self.rowNameSelectionCriteria != '':
-            criteria.append(self.rowNameSelectionCriteria)
+            self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                criteria.append(item['criteriaCollection'])
-                criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
+                self.criteriaList.append(item['criteriaCollection'])
+                #self.criteriaList.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
-        newData = {'data':self.orriginalData+'['+'&'.join(criteria)+',]'} # reprocess the table
+        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         if 'cm' in self.dataParent:
-            self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(criteria))
+            self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
             newData = self.dataParent.copy()
             newData['data'] = self.orriginalData+'['+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+' == 1,]'
             self.rSend('Data Subset', newData)
             self.status.setText('Data Sent')
         else:
             newData = self.dataParent.copy()
-            newData['data'] = self.orriginalData+'['+'&'.join(criteria)+',]'
+            newData['data'] = self.orriginalData+'['+'&'.join(self.criteriaList)+',]'
             self.rSend('Data Subset', newData)
             self.status.setText('Data Sent')
     def reloadWidget(self):
         # custom function for reloading the widget
-        pass
+        
+        # process the data again
+        self.processData(self.dataParent) # this sets the criteriaDialogList and the widget
+        
+        for i in range(0, len(self.criteriaList):
+            self.criteriaDialogList[i]['widgetLabel'].setHtml(self.criteriaList[i])
+            self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
+        self.commitCriteriaDialog()
+        print 'Previously Committed data has been displayed.'
     def deleteWidget(self):
         self.rowcolDialog.close()
