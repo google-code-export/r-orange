@@ -29,7 +29,7 @@ class DataExplorer(OWRpy):
         self.criteriaList = []
         self.criteriaDialogList = []
         self.setRvariableNames(['dataExplorer'])
-        
+        self.loadSettings()
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
         
@@ -351,6 +351,7 @@ class DataExplorer(OWRpy):
                 self.criteriaList.append(item['criteriaCollection'])
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
+        print self.criteriaList
         newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         self.processData(newData, False)
     
@@ -366,6 +367,7 @@ class DataExplorer(OWRpy):
                 #self.criteriaList.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
+        print self.criteriaList
         if 'cm' in self.dataParent:
             self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
             newData = self.dataParent.copy()
@@ -383,7 +385,8 @@ class DataExplorer(OWRpy):
         # process the data again
         self.processData(self.dataParent) # this sets the criteriaDialogList and the widget
         
-        for i in range(0, len(self.criteriaList):
+        for i in range(0, len(self.criteriaList)):
+            print 'Set Criteria '+str(i)+' to '+str(self.criteriaList[i])
             self.criteriaDialogList[i]['widgetLabel'].setHtml(self.criteriaList[i])
             self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
         self.commitCriteriaDialog()

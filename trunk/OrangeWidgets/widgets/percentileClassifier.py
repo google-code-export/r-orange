@@ -14,6 +14,7 @@ class percentileClassifier(OWRpy):
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
         self.data = ''
         self.dataParent = {}
+        self.loadSettings()
         self.inputs = [('Data Frame', RvarClasses.RDataFrame, self.processData)]
         self.outputs = [('Data Frame', RvarClasses.RDataFrame)]
         

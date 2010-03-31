@@ -139,7 +139,7 @@ class listBox(QListWidget,widgetState):
         items = []
         selected = []
         for i in range(0,self.count()):
-            items.append(self.item(i).text())
+            items.append(str(self.item(i).text()))
             if self.item(i).isItemSelected():
                 selected.append(i)
         
@@ -153,7 +153,7 @@ class listBox(QListWidget,widgetState):
             print 'loading list box'
             print data
             self.clear()
-            self.addItems([unicode(i) for i in data['items']])
+            self.addItems(data['items'])
             
             for i in data['selected']:
                 self.setItemSelected(self.item(i), True)
