@@ -15,6 +15,7 @@ class RLoader(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self,parent, signalManager, "RLoader", wantMainArea = 0, resizingEnabled = 1)
+        self.loadSettings()
         self.inputs = None
         self.outputs = [('R Session', RvarClasses.RSession)]
         self.setRvariableNames(['sessionEnviron'])

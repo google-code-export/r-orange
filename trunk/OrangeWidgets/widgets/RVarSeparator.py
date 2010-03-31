@@ -14,6 +14,7 @@ class RVarSeparator(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self,parent, signalManager, "RVarSeparator", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(['separator_cm'])
+        self.loadSettings()
         self.inputs = [('R Session', RvarClasses.RSession, self.process)]
         self.outputs = [('R Session', RvarClasses.RSession), ('R.object', RvarClasses.RVariable), ('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector)]
         self.setRvariableNames(['sessionEnviron'])
