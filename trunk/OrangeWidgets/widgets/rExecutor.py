@@ -47,8 +47,8 @@ class rExecutor(OWRpy):
 
         runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout(), callback = self.runR)
-        self.command.setMaximumWidth(800)
+        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout(), callback = self.runR, width = -1)
+        self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         processbutton = redRGUI.button(runbox, label = "&Run", callback = self.runR, width=100)
 
         self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
