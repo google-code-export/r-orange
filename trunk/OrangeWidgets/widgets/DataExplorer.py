@@ -379,7 +379,7 @@ class DataExplorer(OWRpy):
             newData['data'] = self.orriginalData+'['+'&'.join(self.criteriaList)+',]'
             self.rSend('Data Subset', newData)
             self.status.setText('Data Sent')
-    def reloadWidget(self):
+    def loadCustomSettings(self):
         # custom function for reloading the widget
         
         # process the data again
