@@ -14,6 +14,7 @@ import re
 import textwrap
 import cPickle
 import pickle
+
 class readFile(OWRpy):
     
     globalSettingsList = ['recentFiles','path']
@@ -36,7 +37,6 @@ class readFile(OWRpy):
         #signals
         self.inputs = None
         self.outputs = [("data.frame", RvarClasses.RDataFrame)]
-        
         #GUI
         
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
@@ -124,7 +124,10 @@ class readFile(OWRpy):
         self.columnTypes.layout().setAlignment(Qt.AlignTop)
         self.setFileList()
 
-       
+    # def getCustomSettings(self):
+        # return {'a':1}
+    # def loadCustomSettings(self,settings):
+        # print settings
     def loadDynamicData(self,settings):
         print 'loadDynamicData readfile'
         # import pprint

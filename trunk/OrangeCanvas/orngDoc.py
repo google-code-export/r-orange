@@ -313,7 +313,6 @@ class SchemaDoc(QWidget):
             caption = caption + " (" + str(i) + ")"
         newwidget.updateText(caption)
         newwidget.instance.setWindowTitle(caption)
-        
 
         self.widgets.append(newwidget)
         if saveTempDoc:
