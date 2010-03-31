@@ -20,8 +20,11 @@ class rViewer(OWRpy):
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
         self.showAll = redRGUI.checkBox(self.controlArea, buttons = ['Show All'])
         OWGUI.button(self.bottomAreaRight, self, "Commit", callback = self.commitFunction)
+        redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printViewer)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
     
+    def printViewer(self):
+        self.RoutputWindow.print_(QPrinter())
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data["data"]
