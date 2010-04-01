@@ -160,8 +160,11 @@ class RedRScatterplot(OWRpy):
                     QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
                     print vectorClass
                     return
+                    
                 elif vectorClass in ['numeric']:
                     numericLevels = True
+                else:
+                    numericLevels = False
                 levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))')
             else: # we made it this far so the data must be in the cm
                 d = self.cm                
@@ -172,6 +175,8 @@ class RedRScatterplot(OWRpy):
                     return
                 elif vectorClass in ['numeric']:
                     numericLevels = True
+                else:
+                    numericLevels = False
                 levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))')    
             print levels            
             for p in levels:
