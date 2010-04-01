@@ -184,12 +184,11 @@ class OWRpy(OWWidget,RSession):
         if self.hasAdvancedOptions:
             self.leftDockButton.setChecked(self.leftDockState)
             self.showLeftDock()
+        if self.rightDock.isFloating():
+            self.rightDock.show()
+        if hasattr(self, "leftDock") and self.leftDock.isFloating():
+            self.leftDock.show()
 
-        print self.documentationState
-        self.showHelpButton.setChecked(self.documentationState['helpBox'])
-        self.showNotesButton.setChecked(self.documentationState['notesBox'])
-        self.showROutputButton.setChecked(self.documentationState['ROutputBox'])
-        self.updateDocumentationDock()
         
         if 'state' in self.windowState.keys():
             self.restoreState(self.windowState['state'])
@@ -200,11 +199,13 @@ class OWRpy(OWWidget,RSession):
             self.resize(self.windowState['size'])
         if 'pos' in self.windowState.keys():
             self.move(self.windowState['pos'])
+
+        #print self.documentationState
+        self.showHelpButton.setChecked(self.documentationState['helpBox'])
+        self.showNotesButton.setChecked(self.documentationState['notesBox'])
+        self.showROutputButton.setChecked(self.documentationState['ROutputBox'])
+        self.updateDocumentationDock()
             
-        if self.rightDock.isFloating():
-            self.rightDock.show()
-        if hasattr(self, "leftDock") and self.leftDock.isFloating():
-            self.leftDock.show()
 
 
     def updateDocumentationDock(self):
@@ -231,14 +232,14 @@ class OWRpy(OWWidget,RSession):
             self.ROutputBox.hide()
             self.documentationState['ROutputBox'] = False
         
-        
+        print self.documentationState.values()
         if True in self.documentationState.values():
             self.rightDock.show()
             # print 'resize t'
             # self.resize(10,10)
             # self.updateGeometry()
         else:
-            # print 'resize f'
+            # print 'hide'
             self.rightDock.hide()
         
     def setRvariableNames(self,names):
@@ -658,13 +659,17 @@ class OWRpy(OWWidget,RSession):
             self.rightDock.hide()
         if hasattr(self, "leftDock") and self.leftDock.isFloating():
             self.leftDock.hide()
+        
+        for i in self.findChildren(QDialog):
+            i.setHidden(True)
+
         self.windowState["geometry"] = self.saveGeometry()
         self.windowState["state"] = self.saveState()
         self.windowState['pos'] = self.pos()
         self.windowState['size'] = self.size()
         
         self.saveGlobalSettings()
-
+    
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)

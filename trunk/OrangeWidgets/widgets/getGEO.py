@@ -7,8 +7,7 @@
 <icon>icons/readcel.png</icon>
 """
 from OWRpy import * 
-import OWGUI 
-import RRGUI 
+import redRGUI 
 class getGEO(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -22,15 +21,18 @@ class getGEO(OWRpy):
         self.loadSettings() 
         self.outputs = [("getGEO Output", RvarClasses.RVariable)]
         
-        box = RRGUI.tabWidget(self.controlArea, None, self)
-        self.standardTab = RRGUI.createTabPage(box, "standardTab", self, "Standard")
-        self.advancedTab = RRGUI.createTabPage(box, "advancedTab", self, "Advanced")
-        self.RFUnctionParamdestdir_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamdestdir_lineEdit", self, "RFunctionParam_destdir", label = "destdir:")
-        self.RFUnctionParamGEO_lineEdit =  RRGUI.lineEdit(self.standardTab, "RFUnctionParamGEO_lineEdit", self, "RFunctionParam_GEO", label = "GEO:")
-        self.RFUnctionParamGSEMatrix_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamGSEMatrix_lineEdit", self, "RFunctionParam_GSEMatrix", label = "GSEMatrix:")
-        self.RFUnctionParamGSElimits_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamGSElimits_lineEdit", self, "RFunctionParam_GSElimits", label = "GSElimits:")
-        self.RFUnctionParamfilename_lineEdit =  RRGUI.lineEdit(self.advancedTab, "RFUnctionParamfilename_lineEdit", self, "RFunctionParam_filename", label = "filename:")
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
+        box = redRGUI.tabWidget(self.controlArea)
+        self.standardTab = redRGUI.widgetBox(self.controlArea)
+        self.advancedTab = redRGUI.widgetBox(self.controlArea)
+        self.RFUnctionParamdestdir_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "destdir:")
+        self.RFUnctionParamGEO_lineEdit =  redRGUI.lineEdit(self.standardTab, label = "GEO:")
+        self.RFUnctionParamGSEMatrix_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "GSEMatrix:")
+        self.RFUnctionParamGSElimits_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "GSElimits:")
+        self.RFUnctionParamfilename_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "filename:")
+        box.createTabPage("Standard",widgetToAdd=self.standardTab)
+        box.createTabPage("Advanced",widgetToAdd=self.advancedTab)
+        redRGUI.button(self.controlArea, label="Commit", callback = self.commitFunction)
+        
     def commitFunction(self):
         self.require_librarys(['GEOquery', 'Biobase'])
         if self.RFunctionParam_GEO == '': return

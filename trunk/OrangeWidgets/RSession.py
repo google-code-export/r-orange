@@ -9,10 +9,11 @@ import re
 from PyQt4.QtCore import *
 from OWWidget import *
 
-try:
+if sys.platform=="win32":
     from rpy_options import set_options
-    set_options(RHOME=os.environ['RPATH'])
-except: # need this because linux doesn't need to use the RPATH
+    #set_options(RHOME=os.environ['RPATH'])
+    set_options(RHOME=os.path.join(orngEnviron.directoryNames['orangeDir'],'R')) 
+else: # need this because linux doesn't need to use the RPATH
     print 'Cant find windows environ varuable RPATH'
 
 import rpy

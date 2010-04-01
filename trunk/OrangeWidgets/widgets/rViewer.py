@@ -8,7 +8,6 @@
 """
 from OWRpy import * 
 import OWGUI 
-import RRGUI 
 import redRGUI
 class rViewer(OWRpy): 
     settingsList = []
