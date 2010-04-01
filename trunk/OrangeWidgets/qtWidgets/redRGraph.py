@@ -766,8 +766,10 @@ class redRGraph(QwtPlot):
                 else:
                     xmin = self.invTransform(QwtPlot.xBottom, xmin);  xmax = self.invTransform(QwtPlot.xBottom, xmax)
                     ymin = self.invTransform(QwtPlot.yLeft, ymin);    ymax = self.invTransform(QwtPlot.yLeft, ymax)
-
-                self.zoomStack.append((self.axisScaleDiv(QwtPlot.xBottom).lBound(), self.axisScaleDiv(QwtPlot.xBottom).hBound(), self.axisScaleDiv(QwtPlot.yLeft).lBound(), self.axisScaleDiv(QwtPlot.yLeft).hBound()))
+                try:
+                    self.zoomStack.append((self.axisScaleDiv(QwtPlot.xBottom).lBound(), self.axisScaleDiv(QwtPlot.xBottom).hBound(), self.axisScaleDiv(QwtPlot.yLeft).lBound(), self.axisScaleDiv(QwtPlot.yLeft).hBound()))
+                except:
+                    self.zoomStack.append((self.axisScaleDiv(QwtPlot.xBottom).lowerBound(), self.axisScaleDiv(QwtPlot.xBottom).upperBound(), self.axisScaleDiv(QwtPlot.yLeft).lowerBound(), self.axisScaleDiv(QwtPlot.yLeft).upperBound()))               
                 self.setNewZoom(xmin, xmax, ymax, ymin)
 
             elif self.state == SELECT_RECTANGLE:

@@ -373,15 +373,21 @@ class DataExplorer(OWRpy):
         newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         print self.criteriaList
         if 'cm' in self.dataParent:
-            self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
-            newData = self.dataParent.copy()
-            newData['data'] = self.orriginalData+'['+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+' == 1,]'
-            self.rSend('Data Subset', newData)
+            if len(self.criteriaList) > 0:
+                self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
+                newData = self.dataParent.copy()
+                newData['data'] = self.orriginalData+'['+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+' == 1,]'
+                self.rSend('Data Subset', newData)
+            else:
+                self.rSend('Data Subset', self.dataParent.copy())
             self.status.setText('Data Sent')
         else:
-            newData = self.dataParent.copy()
-            newData['data'] = self.orriginalData+'['+'&'.join(self.criteriaList)+',]'
-            self.rSend('Data Subset', newData)
+            if len(self.criteriaList) > 0:
+                newData = self.dataParent.copy()
+                newData['data'] = self.orriginalData+'['+'&'.join(self.criteriaList)+',]'
+                self.rSend('Data Subset', newData)
+            else:
+                self.rSend('Data Subset', self.dataParent.copy())
             self.status.setText('Data Sent')
     def loadCustomSettings(self,settings=None):
         # custom function for reloading the widget

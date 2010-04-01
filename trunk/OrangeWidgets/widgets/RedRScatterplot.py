@@ -72,15 +72,21 @@ class RedRScatterplot(OWRpy):
            subset = 'rownames('+self.data+')'
         else:
            subset = ''
-        print self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')
-        print type(self.R('as.matrix('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\'])'))
-        selected, unselected = self.graph.getSelectedPoints(xData = list(self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')), yData = list(self.R('as.matrix(t('+self.data+'[,\''+str(self.yColumnSelector.currentText())+'\']))')))
+        xData = self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')
+        yData = self.R('as.matrix(t('+self.data+'[,\''+str(self.yColumnSelector.currentText())+'\']))')
+        if type(xData) in [numpy.ndarray]:
+           xData = xData[0]
+           yData = yData[0]
+        print type(xData), 'Data type'   
+        print xData
+        selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
         if self.cm == None or self.cm == '':
            newData = self.dataParent.copy()
            newData['data'] = self.data+'[c('+str(selected)[1:-1]+'),]'
            self.rSend('Scatterplot Output', newData)
         else:
-           self.R(self.cm+'[,"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
+           self.R(self.cm+'[,"'+self.Rvariables['Plot']+'"]<-rep(0, length('+self.cm+'[,1]))')
+           self.R(self.cm+'[rownames('+self.data+'),"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
            self.sendMe()
         
     def gotX(self, data):
@@ -147,13 +153,33 @@ class RedRScatterplot(OWRpy):
         self.graph.clear()
         if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
             pc = 0
-            vectorClass = self.R('class('+self.data+'[,\''+paintClass+'\'])')
-            if vectorClass in ['numeric', 'character']: 
-                QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
-                return
-            for p in self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))'):
+            if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
+                d = self.data
+                vectorClass = self.R('class('+self.data+'[,\''+paintClass+'\'])')
+                if vectorClass in ['character']: 
+                    QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
+                    print vectorClass
+                    return
+                elif vectorClass in ['numeric']:
+                    numericLevels = True
+                levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))')
+            else: # we made it this far so the data must be in the cm
+                d = self.cm                
+                vectorClass = self.R('class('+self.cm+'[,\''+paintClass+'\'])')                
+                if vectorClass in ['character']: 
+                    QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
+                    print vectorClass                    
+                    return
+                elif vectorClass in ['numeric']:
+                    numericLevels = True
+                levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))')    
+            print levels            
+            for p in levels:
                 # generate the subset
-                subset = '('+self.data+'[,\''+paintClass+'\'] == \''+p+'\')'
+                if not numericLevels:
+                    subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
+                else: 
+                    subset = '('+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
                 # make a matrix for the levels
                 matrix = self.R('as.matrix('+self.data+'['+subset+', c("'+str(xCol)+'", "'+str(yCol)+'")])')
                 numArray = numpy.array(matrix)
@@ -178,7 +204,9 @@ class RedRScatterplot(OWRpy):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
-        
+    def loadCustomSettings(self, settings = None):
+        # custom function to replot the data that is in the scatterplot
+        self.plot()
     def widgetDelete(self):
         if self.cm:
             self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM

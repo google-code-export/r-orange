@@ -10,6 +10,7 @@ from RSession import *
 import redRGUI 
 import inspect, os
 import time
+import numpy
 import RvarClasses
 import RAffyClasses
 import threading, sys
@@ -275,22 +276,24 @@ class OWRpy(OWWidget,RSession):
     
     def getSettings(self, alsoContexts = True):
         print '#########################start get settings'
+        print 'moving to save'
         settings = {}
         allAtts = self.__dict__
         parentVaribles = OWWidget().__dict__.keys()
         self.blackList.extend(parentVaribles)
-        settings = {}
-        # print 'all atts:', allAtts
+        print 'all atts:', allAtts
         import re
-        for att in allAtts:
-            if att in self.blackList:
-                continue
-            # print 'frist att: ' + att
-            if re.search('^_', att):
-                continue
-            var = getattr(self, att)
-            settings[att] = self.returnSettings(var)
-
+        try:
+            for att in allAtts:
+                if att in self.blackList:
+                    continue
+                # print 'frist att: ' + att
+                if re.search('^_', att):
+                    continue
+                var = getattr(self, att)
+                settings[att] = self.returnSettings(var)
+        except:
+            print 'Exception occured in saving settings'
         settings['_customSettings'] = self.saveCustomSettings()
         ainputs = []
         try:
@@ -313,11 +316,23 @@ class OWRpy(OWWidget,RSession):
         if isinstance(d,QObject):
             print 'QT object NOT Pickleable'
             return False
-        try:
-            cPickle.dumps(d)
+        elif type(d) in [list, dict, tuple]:
+            ok = True
+            if type(d) in [list, tuple]:
+                for i in d:
+                    if self.isPickleable(i) == False:
+                        ok = False
+                return ok
+            elif type(d) in [dict]:
+                for k in d.keys():
+                    if self.isPickleable(d[k]) == False:
+                        ok = False
+                return ok
+        elif type(d) in [str, int, float, bool, numpy.float64]:
             return True
-        except:
-            print sys.exc_info() 
+        else: 
+            print type(d)
+            print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
             return False
         
     def returnSettings(self,var):
@@ -331,15 +346,17 @@ class OWRpy(OWWidget,RSession):
             if v: settings['redRGUIObject'] = v
         elif self.isPickleable(var):
             settings['pythonObject'] =  var
-        elif type(var) in [list]:
-            settings['list'] = []
-            for i in var:
-                settings['list'].append(self.returnSettings(i))
-        elif type(var) is dict:
+        #elif type(var) in [str, int, float, bool]:
+        #   settings = var
+        #elif type(var) in [list]:
+        #    settings['list'] = []
+        #    for i in var:
+        #        settings['list'].append(self.returnSettings(i))
+        #elif type(var) is dict:
             # print var
-            settings['dict'] = {}
-            for k,v in var.iteritems():
-                settings['dict'][k] = self.returnSettings(v)
+        #    settings['dict'] = {}
+        #    for k,v in var.iteritems():
+        #        settings['dict'][k] = self.returnSettings(v)
         else:
             settings = None
         return settings
