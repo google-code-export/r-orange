@@ -142,10 +142,9 @@ class listBox(QListWidget,widgetState):
             items.append(str(self.item(i).text()))
             if self.item(i).isItemSelected():
                 selected.append(i)
-        
-        
+
         r = {'items':items, 'selected':selected}
-        r.update(self.getState())
+        # r.update(self.getState())
         # print r
         return r
     def loadSettings(self,data):

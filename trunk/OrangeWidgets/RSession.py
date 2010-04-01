@@ -14,7 +14,7 @@ if sys.platform=="win32":
     #set_options(RHOME=os.environ['RPATH'])
     set_options(RHOME=os.path.join(orngEnviron.directoryNames['orangeDir'],'R')) 
 else: # need this because linux doesn't need to use the RPATH
-    print 'Cant find windows environ varuable RPATH'
+    print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
 import rpy
 
@@ -82,16 +82,14 @@ class RSession():
         return output
                         
     def require_librarys(self,librarys, force = False):
-        # import orngEnviron
-        #lib = os.path.join(os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"]), "Rpackages").replace("\\", "/")
-        #self.R('.libPaths("' + lib  +'")')
+
         success = 0
         #if self.packagesLoaded == 0:
         installedRPackages = self.R('as.vector(installed.packages()[,1])',type='getRData')
         # print installedRPackages
         # print type(installedRPackages)
-        # if 'CRANrepos' not in qApp.canvasDlg.settings.keys():
-            # print 'need to select mirror'
+        if 'CRANrepos' not in qApp.canvasDlg.settings.keys():
+            print 'need to select mirror in the settings dialog'
             
         print qApp.canvasDlg.settings['CRANrepos']
         
@@ -99,12 +97,14 @@ class RSession():
             if library in installedRPackages:
                 self.R("require(\'"+ library +"\')")
             else:
-                self.R('setRepositories(ind=1:7)')
-                self.R('install.packages(\'' + library + 
-                #'\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
-                '\')')
-                self.R('require(' + library + ')')
-            
+                try:
+                    self.R('setRepositories(ind=1:7)')
+                    self.R('install.packages(\'' + library + 
+                    '\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
+                    '\')')
+                    self.R('require(' + library + ')')
+                except:
+                    print 'Library load failed. This widget will not work!!!'
                 # try:
                     # if not self.R("require(\'"+ library +"\')"):
                         # self.R('setRepositories(ind=1:7)')

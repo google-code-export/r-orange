@@ -106,6 +106,8 @@ class DataExplorer(OWRpy):
             #print self.colnames
             if newData == True:
                 self.orriginalData = data['data']
+                self.criteriaDialogList = []
+                self.criteriaList = []
                 self.orriginalRowNames = self.rownames
                 self.orriginalColumnNames = self.colnames
                 self.dataParent = data.copy()
