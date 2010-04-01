@@ -110,6 +110,7 @@ class DataExplorer(OWRpy):
                 self.criteriaList = []
                 self.orriginalRowNames = self.rownames
                 self.orriginalColumnNames = self.colnames
+                print 'Colnames are '+str(self.orriginalColumnNames)
                 self.dataParent = data.copy()
                 # first get some info about the table so we can put that into the current table.
                 dims = self.R('dim('+self.data+')')
@@ -139,7 +140,7 @@ class DataExplorer(OWRpy):
                     thisClass = self.R('class('+self.orriginalData+'[,'+str(j)+'])', silent = True)
                         
                         # append the information into a series of dialogs that reside in a list, these will be searched when a button is pressed on the table.
-                        
+                    print thisClass
                     if thisClass in ['character']: # we want to show the element but not add it to the criteria
                         # the jth selection criteria needs to be a character selection
                         self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})
@@ -168,7 +169,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'].setItems(self.R(self.orriginalData+'[,'+str(j)+']'))
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Moves to the selected text, but does not subset')
                         
-                    elif thisClass in ['numeric']:
+                    elif thisClass in ['numeric', 'logical', 'integer']:
                         self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})
                         self.criteriaDialogList[j-1]['colname'] = self.orriginalColumnNames[j-1]
                         self.criteriaDialogList[j-1]['dialog'].hide()
@@ -196,7 +197,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['criteriaCollection'] = ''
                         
                     elif thisClass in ['factor']:
-                        self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})
+                        self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})               
                         self.criteriaDialogList[j-1]['colname'] = self.orriginalColumnNames[j-1]
                         self.criteriaDialogList[j-1]['dialog'].hide()
                         self.criteriaDialogList[j-1]['dialog'].setLayout(QVBoxLayout())
