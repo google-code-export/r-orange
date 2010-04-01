@@ -37,7 +37,10 @@ class groupBox(QGroupBox,widgetState):
             redRGUI.separator(widget, 0, addSpace)
         elif addSpace:
             redRGUI.separator(widget)
-    
+        
+        if sizePolicy:
+            self.setSizePolicy(sizePolicy)
+
     def getSettings(self):
         return self.getState()
     def loadSettings(self,data):

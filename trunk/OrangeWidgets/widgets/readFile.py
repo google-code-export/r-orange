@@ -40,21 +40,19 @@ class readFile(OWRpy):
         #GUI
         
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
-        area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
-        area.layout().setAlignment(Qt.AlignTop)
+        #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
+        #area.layout().setAlignment(Qt.AlignTop)
         options = redRGUI.widgetBox(area,orientation='vertical')
         options.setMaximumWidth(300)
         # options.setMinimumWidth(300)
-        #options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-        options.layout().setAlignment(Qt.AlignTop)
+        options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+        area.layout().setAlignment(options,Qt.AlignTop)
         
         
         #options.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         
         box = redRGUI.groupBox(options, label="Load File", 
         addSpace = True, orientation='horizontal')
-        
-
         self.filecombo = redRGUI.comboBox(box, 
         items=self.recentFiles,orientation='horizontal',callback=self.scanNewFile)
         self.filecombo.setCurrentIndex(0)
@@ -79,9 +77,12 @@ class readFile(OWRpy):
         #self.rowNamesCombo.setMaximumWidth(250)        
         
         box = redRGUI.groupBox(options, label="Other Options", 
-        addSpace = True, orientation =QGridLayout())
-        #split = redRGUI.widgetBox(box,orientation='horizontal')
-        self.otherOptions = redRGUI.checkBox(box,buttons=['fill','strip.white','blank.lines.skip',
+        addSpace = True, orientation ='vertical')
+        # box.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        split = redRGUI.widgetBox(box,orientation='horizontal')
+        # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        self.otherOptions = redRGUI.checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
         'allowEscapes','stringsAsFactors'],
         setChecked = ['blank.lines.skip'],
         toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
@@ -90,9 +91,26 @@ class readFile(OWRpy):
         'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
         'logical: should character vectors be converted to factors?'],
         orientation='vertical',callback=self.scanFile)
-        box.layout().addWidget(self.otherOptions,1,1)
+        # box.layout().addWidget(self.otherOptions,1,1)
+        box2 = redRGUI.widgetBox(split,orientation='vertical')
+        #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+        split.layout().setAlignment(box2,Qt.AlignTop)
+        self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
+        # self.quote.setMaximumWidth(50)
+        # self.quote.setMinimumWidth(50)
         
-        #self.quote = redRGUI.lineEdit(box,'')
+        self.numLinesScan = redRGUI.lineEdit(box2,text='10',label='# Lines to Scan:',width=50,orientation='horizontal')
+        # self.numLinesScan.setMaximumWidth(50)
+        # self.numLinesScan.setMinimumWidth(50)
+
+        self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',width=50,orientation='horizontal')
+        # self.numLinesSkip.setMaximumWidth(50)
+        # self.numLinesSkip.setMinimumWidth(50)
+
+
+        
+        # box.layout().addWidget(self.otherOptions,2,1)
+        
         
         
         holder = redRGUI.widgetBox(options,orientation='horizontal')
@@ -114,6 +132,7 @@ class readFile(OWRpy):
 
         self.scanarea = redRGUI.textEdit(self.tableArea)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
+        self.scanarea.setReadOnly(True)
         self.scroll = redRGUI.scrollArea(self.tableArea);
         
         self.columnTypes = redRGUI.widgetBox(self,orientation=QGridLayout(),margin=10);
@@ -128,7 +147,7 @@ class readFile(OWRpy):
         # return {'a':1}
     # def loadCustomSettings(self,settings):
         # print settings
-    def loadDynamicData(self,settings):
+    def loadCustomSettings(self,settings):
         print 'loadDynamicData readfile'
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
@@ -166,7 +185,7 @@ class readFile(OWRpy):
         self.filecombo.addItem(os.path.basename(str(fn)))
         self.filecombo.setCurrentIndex(len(self.recentFiles)-1)
         #self.setFileList()
-        self.saveSettings()
+        self.saveGlobalSettings()
         self.scanNewFile()
 
     def scanNewFile(self):
@@ -191,16 +210,27 @@ class readFile(OWRpy):
         
         
     def loadFile(self,scan=False):
-        if len(self.recentFiles) ==0 or self.filecombo.currentIndex() == 0: 
+        
+        if len(self.recentFiles) ==0 or self.filecombo.currentIndex() == 0:
             self.scanarea.clear()
             return
-        
+        if not os.path.isfile(self.recentFiles[self.filecombo.currentIndex()]):
+            del self.recentFiles[self.filecombo.currentIndex()]
+            self.setFileList()
+            QMessageBox.information(self,'Error', "File does not exist.", 
+            QMessageBox.Ok + QMessageBox.Default)
+
+            return
+            
         self.R(self.Rvariables['filename'] + ' = "' 
         + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"') # should protext if R can't find this file
-
+        # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
+            # self.delimiter.setChecked('Tab')
+        # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
+            # self.delimiter.setChecked('Comma')
 
         if self.delimiter.getChecked() == 'Tab': #'tab'
-            sep = '\t'
+            sep = '\\t'
         elif self.delimiter.getChecked() == 'Space':
             sep = ' '
         elif self.delimiter.getChecked() == 'Comma':
@@ -216,9 +246,10 @@ class readFile(OWRpy):
         
         
         if scan:
-            nrows = '10'
+            nrows = str(self.numLinesScan.text())
         else:
             nrows = '-1'
+        
         
         if self.rowNamesCombo.currentIndex() not in [0,-1]:
             self.rownames = str(self.rowNamesCombo.currentText())
@@ -233,18 +264,16 @@ class readFile(OWRpy):
         else:
             ccl = 'NA'
         try:
-            self.R(self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] 
-            + ', header = '+header
-            +', sep = "'+sep
-            +'", colClasses = '+ ccl
-            +', row.names = '+param_name
-            +', nrows = '+nrows
-            +',' + otherOptions + ')','setRData',True)
+        # +', quote='+self.quote.text()
+            RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + ')'
+            # print RStr
+            self.R(RStr,'setRData',True)
         except:
+            print sys.exc_info() 
+            print RStr
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
-        
         
         if scan:
             self.updateScan()
@@ -260,13 +289,22 @@ class readFile(OWRpy):
             self.rowNamesCombo.clear()
             self.rowNamesCombo.addItem('NULL')
             self.rowNamesCombo.addItems(self.colNames)
-
         self.scanarea.clear()
-
-        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))')
-        # print data
-        txt = self.html_table(data)
+        # print self.R(self.Rvariables['dataframe_org'])
+        # return
+        
+        # data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
+        # + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))')
+        #print data
+        # txt = self.html_table(data)
+        try:
+            txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")')
+        except:
+            QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+            QMessageBox.Ok + QMessageBox.Default)
+            return
+            
+            
         self.scanarea.setText(txt)
         
         if len(self.colClasses) ==0:
@@ -314,14 +352,11 @@ class readFile(OWRpy):
         return s
         
     def updateGUI(self):
-        dfsummary = self.R(self.Rvariables['dataframe_org'], 'getRSummary')
-        
-        col_names = dfsummary['colNames']
-        self.rowNamesCombo.update(col_names)
+        dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', 'getRData')
         self.infob.setText(self.R(self.Rvariables['filename']))
-        self.infoc.setText("Number of rows: " + str(len(dfsummary['rowNames'])))
+        self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
-    def commit(self, kill = True):
+    def commit(self):
         self.R(self.Rvariables['cm'] + '<- data.frame(row.names = rownames('
         +self.Rvariables['dataframe_org']+'))')
         self.updateGUI()

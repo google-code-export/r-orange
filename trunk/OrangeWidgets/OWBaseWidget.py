@@ -750,4 +750,4 @@ if __name__ == "__main__":
     oww=OWBaseWidget()
     oww.show()
     a.exec_()
-    oww.saveSettings()
+    oww.saveGlobalSettings()

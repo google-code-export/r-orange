@@ -314,6 +314,7 @@ class SchemaDoc(QWidget):
             caption = caption + " (" + str(i) + ")"
         newwidget.updateText(caption)
         newwidget.instance.setWindowTitle(caption)
+        
 
         self.widgets.append(newwidget)
         if saveTempDoc:
@@ -649,13 +650,17 @@ class SchemaDoc(QWidget):
         #print 'start onload' # we do want to reload the settings of the widgets
         #print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
-            #try: # important to have this or else failures in load saved settings will result in no links able to connect.
+            try: # important to have this or else failures in load saved settings will result in no links able to connect.
             # print 'for widget (orngDoc.oy)'
-            SignalManager.loadSavedSession = True
-            widget.instance.onLoadSavedSession()
-            SignalManager.loadSavedSession = False
-            #except: print 'Loading Failed for ' + str(widget)
-        SignalManager.loadSavedSession = False
+                SignalManager.loadSavedSession = True
+                widget.instance.onLoadSavedSession()
+                SignalManager.loadSavedSession = False
+            except: 
+                print 'Loading Failed for ' + str(widget)
+                SignalManager.loadSavedSession = False
+                QMessageBox.information(self,'Error', 'Loading Failed for ' + str(widget), 
+                QMessageBox.Ok + QMessageBox.Default)
+
         print 'done on load'
 
         # do we want to restore last position and size of the widget

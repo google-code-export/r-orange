@@ -258,7 +258,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             try:
                 if self.canvasDlg.menuSaveSettings == 1:        # save settings only if checked in the main menu
                     try:
-                        self.instance.saveSettings()
+                        self.instance.saveGlobalSettings()
                     except:
                         print "Unable to successfully save settings for %s widget" % (self.instance.captionTitle)
                         type, val, traceback = sys.exc_info()

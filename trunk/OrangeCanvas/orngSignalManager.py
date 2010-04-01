@@ -386,10 +386,10 @@ class SignalManager:
             if self.widgets[i].needProcessing:
                 try:
                     if self.loadSavedSession:
-                        print ' signal manager load session'
+                        print ' signal manager loading session'
                         self.widgets[i].processSignals(processHandler = False)
-                        
                     else:
+                        print ' signal manager not loading session'
                         self.widgets[i].processSignals(processHandler = True)
                     
                 except:

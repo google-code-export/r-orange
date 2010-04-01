@@ -73,7 +73,7 @@ class ReadCEL(OWRpy):
         self.filecombo.addItem(os.path.basename(str(fn)))
         self.filecombo.setCurrentIndex(len(self.recentFiles)-1)
         
-        self.saveSettings()
+        self.saveGlobalSettings()
         
     def process(self):
         

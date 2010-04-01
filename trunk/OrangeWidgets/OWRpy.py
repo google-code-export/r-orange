@@ -290,7 +290,7 @@ class OWRpy(OWWidget,RSession):
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
 
-        settings['_customSettings'] = self.getCustomSettings()
+        settings['_customSettings'] = self.saveCustomSettings()
         ainputs = []
         try:
             for a, b, c in self.inputs:
@@ -305,6 +305,9 @@ class OWRpy(OWWidget,RSession):
         #print str(settings) + ' (OWRpy.py)'
         #print 'My settings are ' + str(settings)
         return settings
+    def saveCustomSettings(self):
+        pass
+
     def isPickleable(self,d):
         if isinstance(d,QObject):
             print 'QT object NOT Pickleable'
@@ -369,9 +372,11 @@ class OWRpy(OWWidget,RSession):
                     self.setDictSettings(var,v['dict'])
             except:
                 print 'Error occured in loading data ' + str(v) +' into self.'+str(k)
-        self.loadDynamicData(self.redRGUIObjects)
+        # self.loadDynamicData(self.redRGUIObjects)
         if '_customSettings' in self.redRGUIObjects.keys():
             self.loadCustomSettings(self.redRGUIObjects['_customSettings'])
+        else:
+            self.loadCustomSettings(self.redRGUIObjects)
         for (name, data) in self.sentItems:
             self.send(name, data)
         self.reloadWidget()
@@ -382,17 +387,13 @@ class OWRpy(OWWidget,RSession):
                 var[k].loadSettings(v['redRGUIObject'])
             elif type(v) == dict:
                 self.setDictSettings(d[k],v)
-    def loadDynamicData(self,settings):
-        pass
-    def loadCustomSettings(self,settings):
-        pass
-    def getCustomSettings(self):
+    def loadCustomSettings(self,settings=None):
         pass
 
 
-    def onSaveSession(self):
-        print 'save session'
-        #self.loadSavedSession = value
+    # def onSaveSession(self):
+        # print 'save session'
+        # self.loadSavedSession = value
 
     def saveSettingsStr(self):
         
@@ -410,7 +411,7 @@ class OWRpy(OWWidget,RSession):
 
     def loadSettings(self, file = None):
         
-        file = self.getSettingsFile(file)
+        file = self.getGlobalSettingsFile(file)
         settings = {}
         if file:
             try:
@@ -439,7 +440,7 @@ class OWRpy(OWWidget,RSession):
             else:
                 raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
 
-    def getSettingsFile(self, file=None):
+    def getGlobalSettingsFile(self, file=None):
         print 'getSettingsFile in owbasewidget'
         if file==None:
             file = os.path.join(self.widgetSettingsDir, self._widgetInfo.fileName + ".ini")
@@ -447,16 +448,36 @@ class OWRpy(OWWidget,RSession):
         return file
 
     # Loads settings from string str which is compatible with cPickle
-    def loadSettingsStr(self, str):
-        if str == None or str == "":
-            return
-        settings = cPickle.loads(str)
-        self.setSettings(settings)
+    # def loadSettingsStr(self, str):
+        # if str == None or str == "":
+            # return
+        # settings = cPickle.loads(str)
+        # self.setSettings(settings)
     # return settings in string format compatible with cPickle
         
     
-    def getGlobalSettings(self):
-        print 'get global settings'
+    # def saveGlobalSettings(self):
+        # print 'get global settings'
+        # settings = {}
+        # default = ['windowState','documentationState']
+        # if hasattr(self, "globalSettingsList"):
+            # self.globalSettingsList.extend(default)
+        # else:
+            # self.globalSettingsList =  default
+            
+        # for name in self.globalSettingsList:
+            # try:
+                # settings[name] = {}
+                # settings[name]['pythonObject'] =  self.getdeepattr(name)
+            # except:
+                # print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+        # return settings
+    
+    # save global settings
+    def saveGlobalSettings(self, file = None):
+        # print 'owrpy save settings'
+        # settings = self.getGlobalSettings()
+        print 'owrpy global save settings'
         settings = {}
         default = ['windowState','documentationState']
         if hasattr(self, "globalSettingsList"):
@@ -470,21 +491,15 @@ class OWRpy(OWWidget,RSession):
                 settings[name]['pythonObject'] =  self.getdeepattr(name)
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-        return settings
-    
-    # save global settings
-    def saveSettings(self, file = None):
-        print 'owrpy save settings'
-        settings = self.getGlobalSettings()
-        # print settings
-        # print file
-        # print self.captionTitle
         if settings:
-            file = self.getSettingsFile(file)
+            file = self.getGlobalSettingsFile(file)
             file = open(file, "w")
             cPickle.dump(settings, file)
 
             
+    
+    
+    
     
     def onDeleteWidget(self, suppress = 0):
         # for k in self.Rvariables:
@@ -648,9 +663,7 @@ class OWRpy(OWWidget,RSession):
         self.windowState['pos'] = self.pos()
         self.windowState['size'] = self.size()
         
-        
-        
-        self.saveSettings()
+        self.saveGlobalSettings()
 
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
