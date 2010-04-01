@@ -27,9 +27,10 @@ class DataExplorer(OWRpy):
         self.currentColumn = 0
         self.rowNameSelectionCriteria = ''
         self.criteriaList = []
-        self.criteriaDialogList = []
+        
         self.setRvariableNames(['dataExplorer'])
         self.loadSettings()
+        self.criteriaDialogList = []
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
         

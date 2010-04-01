@@ -27,15 +27,12 @@ class RedRScatterplot(OWRpy):
         self.cm = None
         self.loadSettings()
 
-        self.tabWidgeta = redRGUI.tabWidget(self.GUIDialog)
-        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
-        plotTab = self.tabWidgeta.createTabPage('Plot')
-        self.xColumnSelector = redRGUI.comboBox(plotTab, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
-        self.yColumnSelector = redRGUI.comboBox(plotTab, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
-        self.subsetCMSelector = redRGUI.comboBox(plotTab, items=[' '], callback = self.populateCM)
-        self.subsetCMClass = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
-        paintTab = self.tabWidgeta.createTabPage('Paint')
-        self.paintCMSelector = redRGUI.comboBox(paintTab, items = [' '], callback = self.plot)
+
+        self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
+        self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
+        # self.subsetCMSelector = redRGUI.comboBox(plotTab, items=[' '], callback = self.populateCM)
+        # self.subsetCMClass = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
+        self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Painting Vector', items = [''], callback = self.plot)
         plotarea = redRGUI.groupBox(self.controlArea, label = "Graph")
         plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
@@ -50,35 +47,34 @@ class RedRScatterplot(OWRpy):
     def refresh(self):
         if self.cm != None:
             try:
-                previous = self.paintCMSelector.currentText()
-                self.paintCMSelector.clear()
-                self.paintCMSelector.addRItems(' ')
-                self.paintCMSelector.addRItems(self.R('colnames('+self.cm+')'))
-                try:
-                    self.paintCMSelector.setCurrentIndex(self.paintCMSelector.findText(previous))
-                except: pass
-                previous = self.subsetCMSelector.currentText()
-                self.subsetCMSelector.clear()
-                self.subsetCMSelector.addRItems(' ')
-                self.subsetCMSelector.addRItems(self.R('colnames('+self.cm+')'))
-                try:
-                    self.subsetCMSelector.setCurrentIndex(self.subsetCMSelector.findText(previous))
-                except: pass
+                names = self.R('colnames('+self.cm+')')
+                if type(names) == str:
+                    names = [names]
+                names += self.R('colnames('+self.data+')')
+                names.insert(0, '')
+                self.paintCMSelector.update(names)
+                
+                # names = ['']
+                # names += list(self.R('colnames('+self.cm+')'))
+                # self.subsetCMSelector.update(names)
+                
             except:
                 pass
         
     def showSelected(self):
         # set the values in the cm to selected 
-        cmSelector = self.subsetCMSelector.currentText()
-        cmClass = self.subsetCMClass.currentText()
-        if cmSelector != ' ':
-            subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
-        else: 
-           if self.R('rownames('+self.data+')') != None:
-              subset = 'rownames('+self.data+')'
-           else:
-              subset = ''
-        selected, unselected = self.graph.getSelectedPoints()
+        #cmSelector = self.subsetCMSelector.currentText()
+        #cmClass = self.subsetCMClass.currentText()
+        # if cmSelector != ' ':
+            # subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
+        #else: 
+        if self.R('rownames('+self.data+')') != None:
+           subset = 'rownames('+self.data+')'
+        else:
+           subset = ''
+        print self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')
+        print type(self.R('as.matrix('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\'])'))
+        selected, unselected = self.graph.getSelectedPoints(xData = list(self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')), yData = list(self.R('as.matrix(t('+self.data+'[,\''+str(self.yColumnSelector.currentText())+'\']))')))
         if self.cm == None or self.cm == '':
            newData = self.dataParent.copy()
            newData['data'] = self.data+'[c('+str(selected)[1:-1]+'),]'
@@ -97,14 +93,25 @@ class RedRScatterplot(OWRpy):
                 self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
                 self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
                 cmColNames = self.R('colnames('+self.cm+')')
+                #print cmColNames
                 if type(cmColNames) == type(''): cmColNames = [cmColNames]
                 if cmColNames == 'NULL': cmColNames = []
-                self.subsetCMSelector.update(cmColNames.insert(0, ' '))
-                print self.R('colnames('+self.data+')')
+                #print cmColNames
+                cmColNames.insert(0, ' ')
+                # self.subsetCMSelector.update(cmColNames)
+                # print cmColNames
                 cmColNames.extend(self.R('colnames('+self.data+')'))
-                self.paintCMSelector.update(cmColNames.insert(0, ' '))
+                self.paintCMSelector.update(cmColNames)
+                print cmColNames
             else:
-               self.cm = ''            
+                self.cm = ''            
+                cmColNames = self.R('colnames('+self.data+')')
+                print cmColNames
+                if type(cmColNames) == type(''): cmColNames = [cmColNames]
+                if cmColNames == 'NULL': cmColNames = []
+                print cmColNames.insert(0, '')
+                self.paintCMSelector.update(cmColNames)
+                print cmColNames
             # set some of the plot data
             self.xColumnSelector.update(self.R('colnames('+self.data+')'))
             self.yColumnSelector.update(self.R('colnames('+self.data+')'))
@@ -112,6 +119,8 @@ class RedRScatterplot(OWRpy):
 
             self.plot()
     def populateCM(self):
+    
+        return
         cmSelector = self.subsetCMSelector.currentText()
         
         if cmSelector != ' ':
@@ -127,32 +136,44 @@ class RedRScatterplot(OWRpy):
 
     def plot(self):
         # populate the cm class columns
-        cmSelector = str(self.subsetCMSelector.currentText())
-        cmClass = str(self.subsetCMClass.currentText())
+        #cmSelector = str(self.subsetCMSelector.currentText())
+        #cmClass = str(self.subsetCMClass.currentText())
         xCol = str(self.xColumnSelector.currentText())
         yCol = str(self.yColumnSelector.currentText())
         paintClass = str(self.paintCMSelector.currentText())
-
-        if cmSelector != ' ' and cmSelector != '' and int(self.subsetCMSelector.currentIndex()) != 0:
-            subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
-            cmSubset = '[,"'+cmSelector+'"] == "' + cmClass+'"'
-        else: 
-            subset = ''
-            cmSubset = ''
-        
-        paint = []
-        # make the plot
+        self.xData = []
+        self.yData = []
         if xCol == yCol: return
         self.graph.clear()
-        matrix = self.R('as.matrix('+self.data + '['+subset+' , c("'+str(xCol)+'", "'+str(yCol)+'")])')
-        numArray = numpy.array(matrix)
-        # XData = self.R(self.data + '['+subset+',"'+str(xCol)+'"]')
-        # YData = self.R(self.data + '['+subset+',"'+str(yCol)+'"]')
-        self.subset = self.data + '['+subset+',]'
-        #if XData == [] or YData == []: return
-        self.graph.points("MyData", xData = numArray[0:,0], yData = numArray[0:, 1], brushColor = paint, penColor=paint, size=[])
-        #self.X.setText(str(paint))
-
+        if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
+            pc = 0
+            vectorClass = self.R('class('+self.data+'[,\''+paintClass+'\'])')
+            if vectorClass in ['numeric', 'character']: 
+                QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
+                return
+            for p in self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))'):
+                # generate the subset
+                subset = '('+self.data+'[,\''+paintClass+'\'] == \''+p+'\')'
+                # make a matrix for the levels
+                matrix = self.R('as.matrix('+self.data+'['+subset+', c("'+str(xCol)+'", "'+str(yCol)+'")])')
+                numArray = numpy.array(matrix)
+                self.subset = self.data + '['+subset+',]'
+                self.graph.points("MyData", xData = numArray[0:,0], yData = numArray[0:, 1], brushColor = pc, penColor=pc)
+                print list(numArray[0:, 0])
+                self.xData += list(numArray[0:, 0])
+                print self.xData
+                self.yData += list(numArray[0:, 1])
+                pc += 1
+        # make the plot
+        
+        else:
+            matrix = self.R('as.matrix('+self.data + '[, c("'+str(xCol)+'", "'+str(yCol)+'")])')
+            numArray = numpy.array(matrix)
+            #self.subset = self.data + '['+subset+',]'
+            self.graph.points("MyData", xData = numArray[0:,0], yData = numArray[0:, 1])
+            self.xData += list(numArray[0:, 0])
+            self.yData += list(numArray[0:, 1])
+        self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
     def sendMe(self):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)

@@ -363,7 +363,7 @@ class OWRpy(OWWidget,RSession):
         print '########################in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
             print str(k)+ ' in onLoadSavedSession widget attribute'
-            #pp.pprint(v)
+            pp.pprint(v)
             try:
                 if 'redRGUIObject' in v.keys():
                     getattr(self, k).loadSettings(v['redRGUIObject'])

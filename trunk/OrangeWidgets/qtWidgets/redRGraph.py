@@ -369,13 +369,16 @@ class redRGraph(QwtPlot):
     def setColor(self, colorint):
         if colorint == 0 or colorint == 'FALSE':
             return Qt.black
-        if colorint == 1 or colorint == 'TRUE':
+        elif colorint == 1 or colorint == 'TRUE':
             return Qt.red
-        if colorint == 2:
+        elif colorint == 2:
             return Qt.green
-        if colorint == 3:
+        elif colorint == 3:
             return Qt.blue
-        else: return Qt.black
+        elif colorint == 4:
+            return Qt.yellow
+        else:
+            return self.setColor(colorint - 5) # run back through the levels and reduce by 5, the colors cycle every 5
     def points(self, name, xData, yData, brushColor = None, penColor = None, size = None, style = QwtPlotCurve.NoCurve, symbol = QwtSymbol.Ellipse, enableLegend = 0, showFilledSymbols = None, lineWidth = 1, pen = None, autoScale = 0, antiAlias = None, penAlpha = 255, brushAlpha = 255):
         if len(xData) != len(yData): return None
         
@@ -404,9 +407,7 @@ class redRGraph(QwtPlot):
             #curve.setPen(QPen(penColor, lineWidth))
         curve.setData(xData, yData)
         curve.attach(self)
-        self.xData = xData
-        self.yData = yData
-        self.setNewZoom(min(xData), max(xData), min(yData), max(yData))
+        
         return curve
 
     def addMarker(self, name, x, y, alignment = -1, bold = 0, color = None, brushColor = None, size=None, antiAlias = None):
@@ -523,8 +524,6 @@ class redRGraph(QwtPlot):
             midYMax = oldYMax * (steps-i)/float(steps) + newYMax * i/float(steps)
             self.setAxisScale(QwtPlot.xBottom, midXMin, midXMax, stepX)
             self.setAxisScale(QwtPlot.yLeft, midYMin, midYMax, stepY)
-            #if i == steps:
-            #    self.removeCurve(zoomOutCurveKey)
             t = time.time()
             self.replot()
             if time.time()-t > 0.1:

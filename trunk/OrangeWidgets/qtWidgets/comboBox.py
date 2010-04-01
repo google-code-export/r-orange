@@ -55,6 +55,9 @@ class comboBox(QComboBox,widgetState):
                 self.addItems([items])
             elif type(items) == type([]):
                 self.addItems(items)
+        else:
+            print str(items)
+            print 'Items failed to add'
     def update(self, items):
         current = self.currentText()
         self.clear()
