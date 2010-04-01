@@ -669,7 +669,11 @@ class OWRpy(OWWidget,RSession):
         self.windowState['size'] = self.size()
         
         self.saveGlobalSettings()
+        self.customCloseEvent()
     
+    def customCloseEvent(self):
+        pass
+
 class ToolBarTextEdit(QWidgetAction):
     def __init__(self,parent=None):
         QWidgetAction.__init__(self, parent)

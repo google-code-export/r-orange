@@ -131,8 +131,8 @@ class DataExplorer(OWRpy):
                 self.rowListBox.addRItems(self.rownames)
                 self.rowListHint.setItems(self.rownames)
                 ### Set the dialogs for row subsetting ###
-                orriginalData_matrix = self.R('as.matrix('+self.orriginalData+')')
-                orriginalData_matrix = numpy.array(orriginalData_matrix)
+                # orriginalData_matrix = self.R('as.matrix('+self.orriginalData+')')
+                # orriginalData_matrix = numpy.array(orriginalData_matrix)
                 for j in range(1, len(self.colnames)+1):
                     thisClass = self.R('class('+self.orriginalData+'[,'+str(j)+'])', silent = True)
                         
@@ -163,7 +163,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['widgetLabel'] = redRGUI.textEdit(self.criteriaDialogList[j-1]['dialog'], '')
                         self.criteriaDialogList[j-1]['criteriaCollection'] = ''
                         #cw.setItems(self.R('as.vector('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
-                        self.criteriaDialogList[j-1]['cw'].setItems(orriginalData_matrix[0:, int(j-1)])
+                        self.criteriaDialogList[j-1]['cw'].setItems(self.R(self.orriginalData+'[,'+str(j)+']'))
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Moves to the selected text, but does not subset')
                         
                     elif thisClass in ['numeric']:
@@ -205,7 +205,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'].minTextLength = 3
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Subsets based on the elements from a factor column.  These columns contain repeating elements such as "apple", "apple", "banana", "banana".')
                         #print self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])')
-                        self.criteriaDialogList[j-1]['cw'].setItems(self.R('levels('+self.orriginalData+'[,'+str(j-1)+'])'))
+                        self.criteriaDialogList[j-1]['cw'].setItems(self.R('levels('+self.orriginalData+'[,'+str(j)+'])'))
                         cBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         lBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         redRGUI.button(cBox, "&Commit", callback = lambda k = j-1: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
