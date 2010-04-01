@@ -171,8 +171,7 @@ class OrangeCanvasDlg(QMainWindow):
                 # self.schema.loadDocument(os.path.join(self.canvasSettingsDir, "tempSchema.tmp"), freeze = 1)
         
         
-        if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".ows":
-            self.schema.loadDocument(sys.argv[-1])
+        
         
         # show message box if no numpy
         qApp.processEvents()
@@ -182,7 +181,8 @@ class OrangeCanvasDlg(QMainWindow):
             if QMessageBox.warning(self,'Red Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
                 import webbrowser
                 webbrowser.open("http://sourceforge.net/projects/numpy/")
-
+        if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".ows": # do we need to load a schema, this happens if you open a saved session.
+            self.schema.loadDocument(sys.argv[-1])
 
         
     def createWidgetsToolbar(self):
