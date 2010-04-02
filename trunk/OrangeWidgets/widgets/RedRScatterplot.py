@@ -27,12 +27,14 @@ class RedRScatterplot(OWRpy):
         self.cm = None
         self.loadSettings()
 
-
+        # GUI
         self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
         self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
-        # self.subsetCMSelector = redRGUI.comboBox(plotTab, items=[' '], callback = self.populateCM)
-        # self.subsetCMClass = redRGUI.comboBox(plotTab, items=[], callback = self.plot, callback2 = self.refresh)
         self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Painting Vector', items = [''], callback = self.plot)
+        self.paintLegend = redRGUI.textEdit(self.GUIDialog)
+        self.paintLegend.hide()
+        
+        # plot area
         plotarea = redRGUI.groupBox(self.controlArea, label = "Graph")
         plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
@@ -152,6 +154,7 @@ class RedRScatterplot(OWRpy):
         if xCol == yCol: return
         self.graph.clear()
         if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
+            self.paintLegend.show()
             pc = 0
             if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
                 d = self.data
@@ -179,7 +182,11 @@ class RedRScatterplot(OWRpy):
                     numericLevels = False
                 levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
             print levels            
+            color = 0
             for p in levels:
+                # collect the color
+                lColor = self.setColor(color)
+                self.paintLegend.insetHtml('<tr><td bgcolor = \"'+lColor+'\">'+p+'</td></tr>')
                 # generate the subset
                 if not numericLevels:
                     subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
@@ -203,6 +210,7 @@ class RedRScatterplot(OWRpy):
         # make the plot
         
         else:
+            self.paintLegend.hide()
             # check if the column is a factor
             if self.R('class('+self.data+'[,\''+str(xCol)+'\'])') in ['factor']:
                 xData = self.R('match('+self.data+'[,\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
@@ -229,3 +237,16 @@ class RedRScatterplot(OWRpy):
         if self.cm:
             self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
             self.sendRefresh()
+    def setColor(self, colorint):
+        if colorint == 0 or colorint == 'FALSE':
+            return 'Black'
+        elif colorint == 1 or colorint == 'TRUE':
+            return 'Red'
+        elif colorint == 2:
+            return 'Green'
+        elif colorint == 3:
+            return 'Blue'
+        elif colorint == 4:
+            return 'Yellow'
+        else:
+            return self.setColor(colorint - 5) # run back through the levels and reduce by 5, the colors cycle every 5

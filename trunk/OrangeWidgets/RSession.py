@@ -85,14 +85,14 @@ class RSession():
         if wantType == None:
             return output
         if wantType == 'list':
-            if type(output) == str:
+            if type(output) == type(''):
                 return [output]
             else:
                 return output
         if wantType == 'dict':
-            if type(output) == str:
+            if type(output) == type(''):
                 return {'output':[output]}
-            elif type(output) == list:
+            elif type(output) == type([]):
                 return {'output': output}
             else:
                 return output
