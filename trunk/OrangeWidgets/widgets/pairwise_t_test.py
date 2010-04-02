@@ -25,7 +25,7 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_x = redRGUI.comboBox(box, label = "Values:")
         self.RFunctionParam_pool_sd = redRGUI.comboBox(box, label = "Pool Standard Deviation:", items = ['True', 'False'])
         self.RFunctionParam_g = redRGUI.comboBox(box, label = "Groups Column:")
-        self.RFunctionParam_p_adjust_method = redRGUI.lineEdit(box, label = "P-value Adjust Method:")
+        self.RFunctionParam_p_adjust_method = redRGUI.comboBox(box, label = "P-value Adjust Method:", items = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"])
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = QTextEdit()
         box.layout().addWidget(self.RoutputWindow)
@@ -47,12 +47,13 @@ class pairwise_t_test(OWRpy):
     
     def commitFunction(self):
         if self.indata == '': return
-        if self.values.currentText() == self.groups.currentText(): return
+        if self.RFunctionParam_x.currentText() == self.RFunctionParam_g.currentText(): return
         self.R('attach('+self.indata+')')
-        self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+str(self.values.currentText())+',pool_sd='+str(self.RFunctionParam_pool_sd.currentText())+',g='+str(self.groups.currentText())+',p.adjust.method='+str(self.RFunctionParam_p_adjust_method.text())+')')
+        self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+str(self.RFunctionParam_x.currentText())+',pool_sd='+str(self.RFunctionParam_pool_sd.currentText())+',g='+str(self.RFunctionParam_g.currentText())+',p.adjust.method=\''+str(self.RFunctionParam_p_adjust_method.currentText())+'\')')
         self.R('detach()')
         self.R('txt<-capture.output('+self.Rvariables['pairwise.t.test']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
+        print tmp
+        self.RoutputWindow.insertPlainText(tmp)
         self.rSend("pairwise.t.test Output", {"data":self.Rvariables["pairwise.t.test"]})

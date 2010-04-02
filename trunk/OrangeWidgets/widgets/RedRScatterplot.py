@@ -56,9 +56,7 @@ class RedRScatterplot(OWRpy):
                 names.insert(0, '')
                 self.paintCMSelector.update(names)
                 
-                # names = ['']
-                # names += list(self.R('colnames('+self.cm+')'))
-                # self.subsetCMSelector.update(names)
+                self.plot()
                 
             except:
                 pass
