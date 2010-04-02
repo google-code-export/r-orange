@@ -307,7 +307,7 @@ class DataExplorer(OWRpy):
         colName = str(self.table.item(1, k+1).text())
         self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\"'+colName+'\"] == \''+text+'\')'
         self.criteriaDialogList[k]['widgetLabel'].clear()
-        self.criteriaDialogList[k]['widgetLabel'].setHtml(self.criteriaDialogList[k]['criteriaCollection'])
+        self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
     def insertNumericCriteriaAdd(self, k, logic):
         cw = self.criteriaDialogList[k]['cw']
@@ -319,23 +319,23 @@ class DataExplorer(OWRpy):
         colName = str(self.table.item(1, k+1).text())
         self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\''+colName+'\']'+text+')'
         self.criteriaDialogList[k]['widgetLabel'].clear()
-        self.criteriaDialogList[k]['widgetLabel'].setHtml(self.criteriaDialogList[k]['criteriaCollection'])
+        self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
     def insertCriteriaAnd(self, k):
         self.criteriaDialogList[k]['criteriaCollection'] += ' & '
         self.criteriaDialogList[k]['widgetLabel'].clear()
-        self.criteriaDialogList[k]['widgetLabel'].setHtml(self.criteriaDialogList[k]['criteriaCollection'])
+        self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 1)
     
     def insertCriteriaOr(self, k):
         self.criteriaDialogList[k]['criteriaCollection'] += ' | ' 
         self.criteriaDialogList[k]['widgetLabel'].clear()
-        self.criteriaDialogList[k]['widgetLabel'].setHtml(self.criteriaDialogList[k]['criteriaCollection'])
+        self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 1)
         
     def clearCriteriaDialog(self, k):
         self.criteriaDialogList[k]['criteriaCollection'] = ''
-        self.criteriaDialogList[k]['widgetLabel'].setHtml(self.criteriaDialogList[k]['criteriaCollection'])
+        self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 1)
     def setDialogState(self, k, state):
         self.criteriaDialogList[k]['add'].setEnabled(state)
@@ -396,7 +396,7 @@ class DataExplorer(OWRpy):
        
         for i in range(0, len(self.criteriaList)):
             print 'Set Criteria '+str(i)+' to '+str(self.criteriaList[i])
-            self.criteriaDialogList[i]['widgetLabel'].setHtml(self.criteriaList[i])
+            self.criteriaDialogList[i]['widgetLabel'].setHtml('<pre>'+self.criteriaList[i]+'</pre>')
             self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
         self.commitCriteriaDialog()
         print 'Previously Committed data has been displayed.'
