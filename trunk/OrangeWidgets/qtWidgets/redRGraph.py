@@ -378,8 +378,19 @@ class redRGraph(QwtPlot,widgetState):
             return Qt.blue
         elif colorint == 4:
             return Qt.yellow
+        elif colorint == 5:
+            return Qt.gray
+        elif colorint == 6:
+            return Qt.magenta
+        elif colorint == 7:
+            return Qt.cyan
+        elif colorint == 8:
+            return Qt.darkBlue
+        elif colorint == 9:
+            return Qt.darkRed
+        
         else:
-            return self.setColor(colorint - 5) # run back through the levels and reduce by 5, the colors cycle every 5
+            return self.setColor(colorint - 10) # run back through the levels and reduce by 5, the colors cycle every 5
     def points(self, name, xData, yData, brushColor = None, penColor = None, size = None, style = QwtPlotCurve.NoCurve, symbol = QwtSymbol.Ellipse, enableLegend = 0, showFilledSymbols = None, lineWidth = 1, pen = None, autoScale = 0, antiAlias = None, penAlpha = 255, brushAlpha = 255):
         if len(xData) != len(yData): return None
         

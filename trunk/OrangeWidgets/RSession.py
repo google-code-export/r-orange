@@ -34,7 +34,7 @@ class RSession():
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
 
-    def R(self, query, type = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None):
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None):
 
         qApp.setOverrideCursor(Qt.WaitCursor)
 
@@ -49,11 +49,11 @@ class RSession():
         histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
         self.Rhistory += histquery + '</code><br><code>'
         try:
-            if type == 'getRData':
+            if callType == 'getRData':
                 output  = self.RSessionThread.run(query)
-            elif type == 'setRData':
+            elif callType == 'setRData':
                 self.RSessionThread.run(query)
-            elif type == 'getRSummary':
+            elif callType == 'getRSummary':
                 self.RSessionThread.run('tmp<-('+query+')')
                 output = self.RSessionThread.run('list(rowNames=rownames(tmp), colNames=colnames(tmp), Length=length(tmp), Class=class(tmp), Summary=summary(tmp))')
                 self.RSessionThread.run('rm(tmp)')

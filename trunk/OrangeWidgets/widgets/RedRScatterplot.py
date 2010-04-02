@@ -154,6 +154,7 @@ class RedRScatterplot(OWRpy):
         if xCol == yCol: return
         self.graph.clear()
         if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
+            self.paintLegend.clear()
             self.paintLegend.show()
             pc = 0
             if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
@@ -183,10 +184,13 @@ class RedRScatterplot(OWRpy):
                 levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
             print levels            
             color = 0
+            self.paintLegend.insertHtml('<h5>Color Legend</h5>')
+            self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
             for p in levels:
                 # collect the color
                 lColor = self.setColor(color)
-                self.paintLegend.insetHtml('<tr><td bgcolor = \"'+lColor+'\">'+p+'</td></tr>')
+                self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
+                color += 1
                 # generate the subset
                 if not numericLevels:
                     subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
@@ -207,6 +211,7 @@ class RedRScatterplot(OWRpy):
                 self.xData += xData
                 self.yData += yData
                 pc += 1
+            self.paintLegend.insertHtml('</table>')
         # make the plot
         
         else:
@@ -239,14 +244,25 @@ class RedRScatterplot(OWRpy):
             self.sendRefresh()
     def setColor(self, colorint):
         if colorint == 0 or colorint == 'FALSE':
-            return 'Black'
+            return '#000000'
         elif colorint == 1 or colorint == 'TRUE':
-            return 'Red'
+            return '#ff0000'
         elif colorint == 2:
-            return 'Green'
+            return '#00ff00'
         elif colorint == 3:
-            return 'Blue'
+            return '#0000ff'
         elif colorint == 4:
-            return 'Yellow'
+            return '#ffff00'
+        elif colorint == 5:
+            return '#a0a0a4'
+        elif colorint == 6:
+            return '#ff00ff'
+        elif colorint == 7:
+            return '#00ffff'
+        elif colorint == 8:
+            return '#000080'
+        elif colorint == 9:
+            return '#800000'
+        
         else:
-            return self.setColor(colorint - 5) # run back through the levels and reduce by 5, the colors cycle every 5
+            return self.setColor(colorint - 10) # run back through the levels and reduce by 5, the colors cycle every 5
