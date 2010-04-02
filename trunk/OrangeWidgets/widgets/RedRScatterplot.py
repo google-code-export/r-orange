@@ -30,7 +30,7 @@ class RedRScatterplot(OWRpy):
         # GUI
         self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
         self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
-        self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Painting Vector', items = [''], callback = self.plot)
+        self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''], callback = self.plot)
         self.paintLegend = redRGUI.textEdit(self.GUIDialog)
         self.paintLegend.hide()
         

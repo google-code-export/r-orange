@@ -256,19 +256,8 @@ class dataEntry(OWRpy):
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
-
-        self.rSend('Data Table', {'data':self.Rvariables['table']})
-        self.savedData = {'data':self.Rvariables['table']}
-        
-    # def closeEvent(self, event):
-        # if self.GUIDialogDialog != None:
-            # self.GUIDialogDialog.hide()
-        # self.notesBoxDialog.hide()
-        # self.helpBoxDialog.hide()
-        # self.window.hide()
-    def onLoadSavedSession(self):
-        if self.R('exists("'+self.Rvariables['table']+'")'):
-            self.rSend('Data Table', {'data':self.Rvariables['table']})
-        self.processDF(self.savedData)
+        self.newData = self.savedData.copy()
+        self.newData['data'] = self.Rvariables['table']
+        self.rSend('Data Table', self.newData)
        
             

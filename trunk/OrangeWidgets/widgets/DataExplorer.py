@@ -388,6 +388,7 @@ class DataExplorer(OWRpy):
             else:
                 self.rSend('Data Subset', self.dataParent.copy())
             self.status.setText('Data Sent')
+        self.sendRefresh()
     def loadCustomSettings(self,settings=None):
         # custom function for reloading the widget
         

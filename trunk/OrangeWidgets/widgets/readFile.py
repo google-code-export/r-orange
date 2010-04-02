@@ -264,7 +264,7 @@ class readFile(OWRpy):
         # +', quote='+self.quote.text()
             RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + ')'
             # print RStr
-            self.R(RStr,type='setRData', processingNotice=True)
+            self.R(RStr,callType='setRData', processingNotice=True)
         except:
             print sys.exc_info() 
             print RStr
