@@ -306,7 +306,7 @@ class DataExplorer(OWRpy):
         text = str(cw.text())
         colName = str(self.table.item(1, k+1).text())
         self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\"'+colName+'\"] == \''+text+'\')'
-        self.criteriaDialogList[k]['widgetLabel'].clear()
+        
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
     def insertNumericCriteriaAdd(self, k, logic):
@@ -318,18 +318,18 @@ class DataExplorer(OWRpy):
             return
         colName = str(self.table.item(1, k+1).text())
         self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\''+colName+'\']'+text+')'
-        self.criteriaDialogList[k]['widgetLabel'].clear()
+        
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
     def insertCriteriaAnd(self, k):
         self.criteriaDialogList[k]['criteriaCollection'] += ' & '
-        self.criteriaDialogList[k]['widgetLabel'].clear()
+        
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 1)
     
     def insertCriteriaOr(self, k):
         self.criteriaDialogList[k]['criteriaCollection'] += ' | ' 
-        self.criteriaDialogList[k]['widgetLabel'].clear()
+        
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 1)
         
