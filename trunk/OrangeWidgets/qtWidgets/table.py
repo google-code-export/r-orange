@@ -2,7 +2,7 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class table(QTableWidget,widgetState):
+class table(widgetState,QTableWidget):
     def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1):
         QTableWidget.__init__(self,rows,columns,widget)
         self.sortIndex = None
@@ -63,7 +63,6 @@ class table(QTableWidget,widgetState):
             r['sortIndex'] = self.oldSortingIndex
             r['order'] = self.oldSortingOrder
             
-        r.update(self.getState())
         # print r
         return r
     def loadSettings(self,data):
@@ -83,7 +82,6 @@ class table(QTableWidget,widgetState):
             
                 #self.selectRow(i[0])
             
-        self.setState(data)
     def delete(self):
         # rows = self.rowCount()
         # columns = self.columnCount()

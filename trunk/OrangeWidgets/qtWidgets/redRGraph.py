@@ -10,6 +10,7 @@ from OWBaseWidget import unisetattr
 from OWColorPalette import *      # color palletes, ...
 from OWGraphTools import *      # user defined curves, ...
 import OWToolbars
+from redRGUI import widgetState
 
 NOTHING = 0
 ZOOMING = 1
@@ -22,7 +23,7 @@ SELECT = 5
 #       a standard toolbar that can be used for selection and zooming should be standard and should require deactivation
 #       a set of panning or moving bars at the side and bottom so that one can move to other regions of the data
 
-class redRGraph(QwtPlot):
+class redRGraph(QwtPlot,widgetState):
     def __init__(self, parent = None, name = "None", showLegend=1):
         "Constructs the graph"
         QwtPlot.__init__(self, parent)

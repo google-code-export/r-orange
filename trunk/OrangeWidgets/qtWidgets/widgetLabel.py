@@ -10,14 +10,12 @@ class widgetLabel(QLabel,widgetState):
     def getSettings(self):
         # print 'in widgetLabel getSettings'
         r = {'text':self.text()}
-        r.update(self.getState())
         # print r
         return r
     def loadSettings(self,data):
         # print 'in widgetLabel loadSettings'
         # print data
         self.setText(data['text'])
-        self.setState(data)
     
         
 

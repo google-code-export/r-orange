@@ -27,10 +27,8 @@ class tabWidget(QTabWidget,widgetState):
         return widgetToAdd 
     def getSettings(self):
         r= {'currentIndex': self.currentIndex()}
-        r.update(self.getState())
         return r
     def loadSettings(self,data):
         #print 'called load' + str(value)
         self.setCurrentIndex(data['currentIndex'])
-        self.setState(data)
 

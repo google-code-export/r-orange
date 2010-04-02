@@ -650,15 +650,16 @@ class SchemaDoc(QWidget):
         #print 'start onload' # we do want to reload the settings of the widgets
         #print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
+            print 'for widget (orngDoc.oy) ' + widget.instance._widgetInfo.fileName
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-            # print 'for widget (orngDoc.oy)'
+            
                 SignalManager.loadSavedSession = True
                 widget.instance.onLoadSavedSession()
                 SignalManager.loadSavedSession = False
-            except: 
+            except:
                 print 'Loading Failed for ' + str(widget)
                 SignalManager.loadSavedSession = False
-                QMessageBox.information(self,'Error', 'Loading Failed for ' + str(widget), 
+                QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo.fileName, 
                 QMessageBox.Ok + QMessageBox.Default)
 
         print 'done on load'

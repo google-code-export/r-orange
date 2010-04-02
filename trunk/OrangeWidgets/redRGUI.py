@@ -13,10 +13,10 @@ import os.path
         
 enter_icon = None
 class widgetState:
-    def getState(self):
+    def getDefaultState(self):
         r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
         return r
-    def setState(self,data):
+    def setDefaultState(self,data):
         # print ' in wdiget state'
         self.setEnabled(data['enabled'])
         self.setHidden(data['hidden'])

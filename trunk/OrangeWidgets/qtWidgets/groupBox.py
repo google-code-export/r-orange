@@ -41,10 +41,10 @@ class groupBox(QGroupBox,widgetState):
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
 
-    def getSettings(self):
-        return self.getState()
-    def loadSettings(self,data):
-        self.setState(data)
+    # def getSettings(self):
+        # return self.getState()
+    # def loadSettings(self,data):
+        # self.setState(data)
     def delete(self):
         
         # itemRange = self.layout().count()

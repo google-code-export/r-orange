@@ -34,13 +34,13 @@ class RSession():
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
 
-    def R(self, query, type = 'getRData', processing_notice=False, silent = False):
+    def R(self, query, type = 'getRData', processingNotice=False, silent = False, showException=True):
 
         qApp.setOverrideCursor(Qt.WaitCursor)
 
         output = None
-        if processing_notice:
-            self.status.setText('Processing Started.Please wait for processing to finish.')
+        if processingNotice:
+            self.status.setText('Processing Started...')
         if not silent:
             print query
         histquery = query
@@ -60,23 +60,25 @@ class RSession():
             else:
                 self.RSessionThread.run(query) # run the query anyway even if the user put un a wierd value
 
-        except rpy.RPyRException, inst:
-
+        except rpy.RPyRException as inst:
             qApp.restoreOverrideCursor()
             #self.progressBarFinished()
-            print inst.message
-            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ inst.message,  QMessageBox.Ok + QMessageBox.Default)
+            print inst
+            # print showException
+            if showException:
+                QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
+                QMessageBox.Ok + QMessageBox.Default)
             #self.status.setText('Error occured!!')
             raise rpy.RPyRException
             return None # now processes can catch potential errors
         self.processing = False
-        if processing_notice:
-            self.status.setText('Processing complete')
+        if processingNotice:
+            self.status.setText('Processing complete.')
             #self.progressBarFinished()
         if not silent:
             try:
                 self.ROutput.setCursorToEnd()
-                self.ROutput.insertHtml('<br> R Query Performed: '+str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
+                self.ROutput.append(str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
             except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
         return output

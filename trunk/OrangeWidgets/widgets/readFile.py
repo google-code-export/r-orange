@@ -34,6 +34,7 @@ class readFile(OWRpy):
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'cm', 'parent'])
         
+        self.test = [redRGUI.widgetBox(self.controlArea,orientation='horizontal'),redRGUI.widgetBox(self.controlArea,orientation='horizontal')]
         #signals
         self.inputs = None
         self.outputs = [("data.frame", RvarClasses.RDataFrame)]
@@ -143,12 +144,8 @@ class readFile(OWRpy):
         self.columnTypes.layout().setAlignment(Qt.AlignTop)
         self.setFileList()
 
-    # def getCustomSettings(self):
-        # return {'a':1}
-    # def loadCustomSettings(self,settings):
-        # print settings
     def loadCustomSettings(self,settings):
-        print 'loadDynamicData readfile'
+        print 'loadCustomSettings readfile'
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings['dataTypes'])
@@ -267,7 +264,7 @@ class readFile(OWRpy):
         # +', quote='+self.quote.text()
             RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + ')'
             # print RStr
-            self.R(RStr,'setRData',True)
+            self.R(RStr,type='setRData', processingNotice=True)
         except:
             print sys.exc_info() 
             print RStr
@@ -298,7 +295,8 @@ class readFile(OWRpy):
         #print data
         # txt = self.html_table(data)
         try:
-            txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")')
+            txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',
+            processingNotice=True, showException=False)
         except:
             QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
             QMessageBox.Ok + QMessageBox.Default)

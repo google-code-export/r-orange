@@ -54,11 +54,9 @@ class radioButtons(widgetBox,widgetState):
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}
-        r.update(self.getState())
         return r
     def loadSettings(self,data):
         #print 'radioButtons loadSettings' + data
         self.setChecked(data['checked'])
-        self.setState(data)
 
 

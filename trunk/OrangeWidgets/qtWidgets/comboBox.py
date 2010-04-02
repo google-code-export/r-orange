@@ -35,7 +35,6 @@ class comboBox(QComboBox,widgetState):
             items.append(self.itemText(i))
         
         r = {'items':items,'current':self.currentIndex()}
-        r.update(self.getState())
         return r
         
     def loadSettings(self,data):
@@ -45,10 +44,14 @@ class comboBox(QComboBox,widgetState):
             self.clear()
             self.addItems([unicode(i) for i in data['items']])
             self.setCurrentIndex(data['current'])
-            self.setState(data)
             #self.setEnabled(data['enabled'])
         except:
             print 'Loading of comboBox encountered an error.'
+            import traceback,sys
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60        
+
     def addRItems(self, items):
         if items:
             if type(items) == type(''):

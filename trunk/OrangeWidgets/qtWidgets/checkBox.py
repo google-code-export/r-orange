@@ -10,19 +10,6 @@ class checkBox(widgetBox,widgetState):
     orientation='vertical',callback = None, **args):
         
         widgetBox.__init__(self,widget,orientation=orientation)
-        
-        
-        # if(label is not None):
-            # self.box = groupBox(self,label=label,orientation=orientation)
-            # self.layout().addWidget(self.box)
-            # self.buttons = QButtonGroup(self.box)
-            # self.buttons.setExclusive(False)
-            # for i in buttons:
-                # w = QCheckBox(i)
-                # self.buttons.addButton(w)
-                # self.box.layout().addWidget(w)
-        # else:
-            # self.buttons = QButtonGroup(self)
             
         if label:
             self.box = groupBox(self,label=label,orientation=orientation)
@@ -57,13 +44,11 @@ class checkBox(widgetBox,widgetState):
     def getSettings(self):
         # print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}
-        r.update(self.getState())
         return r
     def loadSettings(self,data):
         # print 'radioButtons loadSettings'
         # print data
         self.setChecked(data['checked'])
-        self.setState(data)
         
         # return
         

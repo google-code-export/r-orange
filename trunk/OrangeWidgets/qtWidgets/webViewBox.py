@@ -28,9 +28,5 @@ class webViewBox(QtWebKit.QWebView,widgetState):
 
     def sizeHint(self):
         return QSize(10,10)
-    def getSettings(self):
-        pass
-    def loadSettings(self,data):
-        pass
 
         

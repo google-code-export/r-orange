@@ -20,18 +20,15 @@ class Rtable(table):
         r = table.getSettings(self)
         del r['data']
         r['Rdata'] = self.Rdata
-        print r
         return r
     def loadSettings(self,data):
-        print data
-        
-        
+        #print data
         self.setRTable(data['Rdata'])
         
         if 'sortIndex' in data.keys():
             # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
-        print 'aaaaaaaaatable#########################'
+        #print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             # print 'table#########################'
             for i in data['selection']:
@@ -40,6 +37,5 @@ class Rtable(table):
             
                 #self.selectRow(i[0])
             
-        self.setState(data)
         
   
