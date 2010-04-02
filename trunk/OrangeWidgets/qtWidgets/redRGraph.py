@@ -754,16 +754,28 @@ class redRGraph(QwtPlot,widgetState):
                 if staticClick or xmax-xmin < 4 or ymax-ymin < 4:
                     x = self.invTransform(QwtPlot.xBottom, canvasPos.x())
                     y = self.invTransform(QwtPlot.yLeft, canvasPos.y())
-                    diffX = (self.axisScaleDiv(QwtPlot.xBottom).hBound() -  self.axisScaleDiv(QwtPlot.xBottom).lBound()) / 2.
-                    diffY = (self.axisScaleDiv(QwtPlot.yLeft).hBound() -  self.axisScaleDiv(QwtPlot.yLeft).lBound()) / 2.
+                    try:
+                        diffX = (self.axisScaleDiv(QwtPlot.xBottom).hBound() -  self.axisScaleDiv(QwtPlot.xBottom).lBound()) / 2.
+                        diffY = (self.axisScaleDiv(QwtPlot.yLeft).hBound() -  self.axisScaleDiv(QwtPlot.yLeft).lBound()) / 2.
+                    except:
+                        diffX = (self.axisScaleDiv(QwtPlot.xBottom).upperBound() -  self.axisScaleDiv(QwtPlot.xBottom).lowerBound()) / 2.
+                        diffY = (self.axisScaleDiv(QwtPlot.yLeft).upperBound() -  self.axisScaleDiv(QwtPlot.yLeft).lowerBound()) / 2.
 
                     # use this to zoom to the place where the mouse cursor is
-                    if diffX:
-                        xmin = x - (diffX/2.) * (x - self.axisScaleDiv(QwtPlot.xBottom).lBound()) / diffX
-                        xmax = x + (diffX/2.) * (self.axisScaleDiv(QwtPlot.xBottom).hBound() - x) / diffX
-                    if diffY:
-                        ymin = y + (diffY/2.) * (self.axisScaleDiv(QwtPlot.yLeft).hBound() - y) / diffY
-                        ymax = y - (diffY/2.) * (y - self.axisScaleDiv(QwtPlot.yLeft).lBound()) / diffY
+                    try:
+                        if diffX:
+                            xmin = x - (diffX/2.) * (x - self.axisScaleDiv(QwtPlot.xBottom).lBound()) / diffX
+                            xmax = x + (diffX/2.) * (self.axisScaleDiv(QwtPlot.xBottom).hBound() - x) / diffX
+                        if diffY:
+                            ymin = y + (diffY/2.) * (self.axisScaleDiv(QwtPlot.yLeft).hBound() - y) / diffY
+                            ymax = y - (diffY/2.) * (y - self.axisScaleDiv(QwtPlot.yLeft).lBound()) / diffY
+                    except: 
+                        if diffX:
+                            xmin = x - (diffX/2.) * (x - self.axisScaleDiv(QwtPlot.xBottom).lowerBound()) / diffX
+                            xmax = x + (diffX/2.) * (self.axisScaleDiv(QwtPlot.xBottom).upperBound() - x) / diffX
+                        if diffY:
+                            ymin = y + (diffY/2.) * (self.axisScaleDiv(QwtPlot.yLeft).upperBound() - y) / diffY
+                            ymax = y - (diffY/2.) * (y - self.axisScaleDiv(QwtPlot.yLeft).lowerBound()) / diffY
                 else:
                     xmin = self.invTransform(QwtPlot.xBottom, xmin);  xmax = self.invTransform(QwtPlot.xBottom, xmax)
                     ymin = self.invTransform(QwtPlot.yLeft, ymin);    ymax = self.invTransform(QwtPlot.yLeft, ymax)
@@ -811,14 +823,20 @@ class redRGraph(QwtPlot,widgetState):
 
         if getattr(self, "controlPressed", False):
             ys = self.axisScaleDiv(QwtPlot.yLeft)
-            yoff = d * (ys.hBound() - ys.lBound()) / 100.
-            self.setAxisScale(QwtPlot.yLeft, ys.lBound() + yoff, ys.hBound() + yoff, self.axisStepSize(QwtPlot.yLeft))
-
+            try:
+                yoff = d * (ys.hBound() - ys.lBound()) / 100.
+                self.setAxisScale(QwtPlot.yLeft, ys.lBound() + yoff, ys.hBound() + yoff, self.axisStepSize(QwtPlot.yLeft))
+            except:
+                yoff = d * (ys.upperBound() - ys.lowerBound()) / 100.
+                self.setAxisScale(QwtPlot.yLeft, ys.lowerBound() + yoff, ys.upperBound() + yoff, self.axisStepSize(QwtPlot.yLeft))
         elif getattr(self, "altPressed", False):
             xs = self.axisScaleDiv(QwtPlot.xBottom)
-            xoff = d * (xs.hBound() - xs.lBound()) / 100.
-            self.setAxisScale(QwtPlot.xBottom, xs.lBound() - xoff, xs.hBound() - xoff, self.axisStepSize(QwtPlot.xBottom))
-
+            try:
+                xoff = d * (xs.hBound() - xs.lBound()) / 100.
+                self.setAxisScale(QwtPlot.xBottom, xs.lBound() - xoff, xs.hBound() - xoff, self.axisStepSize(QwtPlot.xBottom))
+            except:
+                xoff = d * (xs.upperBound() - xs.lowerBound()) / 100.
+                self.setAxisScale(QwtPlot.xBottom, xs.lowerBound() - xoff, xs.upperBound() - xoff, self.axisStepSize(QwtPlot.xBottom))
         else:
             ro, rn = .9**d, 1-.9**d
 
@@ -827,12 +845,14 @@ class redRGraph(QwtPlot,widgetState):
 
             xs = self.axisScaleDiv(QwtPlot.xBottom)
             x = self.invTransform(QwtPlot.xBottom, ex)
-            self.setAxisScale(QwtPlot.xBottom, ro*xs.lBound() + rn*x, ro*xs.hBound() + rn*x, self.axisStepSize(QwtPlot.xBottom))
-
             ys = self.axisScaleDiv(QwtPlot.yLeft)
             y = self.invTransform(QwtPlot.yLeft, ey)
-            self.setAxisScale(QwtPlot.yLeft, ro*ys.lBound() + rn*y, ro*ys.hBound() + rn*y, self.axisStepSize(QwtPlot.yLeft))
-
+            try:
+                self.setAxisScale(QwtPlot.xBottom, ro*xs.lBound() + rn*x, ro*xs.hBound() + rn*x, self.axisStepSize(QwtPlot.xBottom))
+                self.setAxisScale(QwtPlot.yLeft, ro*ys.lBound() + rn*y, ro*ys.hBound() + rn*y, self.axisStepSize(QwtPlot.yLeft))
+            except:
+                self.setAxisScale(QwtPlot.xBottom, ro*xs.lowerBound() + rn*x, ro*xs.upperBound() + rn*x, self.axisStepSize(QwtPlot.xBottom))
+                self.setAxisScale(QwtPlot.yLeft, ro*ys.lowerBound() + rn*y, ro*ys.upperBound() + rn*y, self.axisStepSize(QwtPlot.yLeft))
         self.replot()
 
 
@@ -865,10 +885,12 @@ class redRGraph(QwtPlot,widgetState):
     # save graph in matplotlib python file
     def saveToMatplotlib(self, fileName, size = QSize(400,400)):
         f = open(fileName, "wt")
-
-        x1 = self.axisScaleDiv(QwtPlot.xBottom).lBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).hBound()
-        y1 = self.axisScaleDiv(QwtPlot.yLeft).lBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).hBound()
-
+        try:
+            x1 = self.axisScaleDiv(QwtPlot.xBottom).lBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).hBound()
+            y1 = self.axisScaleDiv(QwtPlot.yLeft).lBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).hBound()
+        except:
+            x1 = self.axisScaleDiv(QwtPlot.xBottom).lowerBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).upperBound()
+            y1 = self.axisScaleDiv(QwtPlot.yLeft).lowerBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).upperBound()
         if self.showAxisScale == 0: edgeOffset = 0.01
         else: edgeOffset = 0.08
 
