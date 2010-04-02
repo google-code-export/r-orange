@@ -177,7 +177,7 @@ class RedRScatterplot(OWRpy):
                     numericLevels = True
                 else:
                     numericLevels = False
-                levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))')    
+                levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
             print levels            
             for p in levels:
                 # generate the subset
@@ -185,25 +185,38 @@ class RedRScatterplot(OWRpy):
                     subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
                 else: 
                     subset = '('+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
-                # make a matrix for the levels
-                matrix = self.R('as.matrix('+self.data+'['+subset+', c("'+str(xCol)+'", "'+str(yCol)+'")])')
-                numArray = numpy.array(matrix)
-                self.subset = self.data + '['+subset+',]'
-                self.graph.points("MyData", xData = numArray[0:,0], yData = numArray[0:, 1], brushColor = pc, penColor=pc)
-                print list(numArray[0:, 0])
-                self.xData += list(numArray[0:, 0])
-                print self.xData
-                self.yData += list(numArray[0:, 1])
+                # make a list of points
+                # check if the column is a factor
+                if self.R('class('+self.data+'[,\''+str(xCol)+'\'])') in ['factor']:
+                    xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
+                else:
+                    xData = self.R(self.data+'['+subset+',\''+str(xCol)+'\']', wantType = 'list')
+                if self.R('class('+self.data+'[,\''+str(yCol)+'\'])') in ['factor']:
+                    yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
+                else:
+                    yData = self.R(self.data+'['+subset+',\''+str(yCol)+'\']', wantType = 'list')
+                
+                self.graph.points("MyData", xData = xData, yData = yData, brushColor = pc, penColor=pc)
+                self.xData += xData
+                self.yData += yData
                 pc += 1
         # make the plot
         
         else:
-            matrix = self.R('as.matrix('+self.data + '[, c("'+str(xCol)+'", "'+str(yCol)+'")])')
-            numArray = numpy.array(matrix)
-            #self.subset = self.data + '['+subset+',]'
-            self.graph.points("MyData", xData = numArray[0:,0], yData = numArray[0:, 1])
-            self.xData += list(numArray[0:, 0])
-            self.yData += list(numArray[0:, 1])
+            # check if the column is a factor
+            if self.R('class('+self.data+'[,\''+str(xCol)+'\'])') in ['factor']:
+                xData = self.R('match('+self.data+'[,\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
+            else:
+                xData = self.R(self.data+'[,\''+str(xCol)+'\']', wantType = 'list')
+            if self.R('class('+self.data+'[,\''+str(yCol)+'\'])') in ['factor']:
+                yData = self.R('match('+self.data+'[,\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
+            else:
+                yData = self.R(self.data+'[,\''+str(yCol)+'\']', wantType = 'list')
+            
+            self.graph.points("MyData", xData = xData, yData = yData)
+            self.xData += xData
+            self.yData += yData
+
         self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
     def sendMe(self):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.

@@ -34,7 +34,7 @@ class RSession():
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
 
-    def R(self, query, type = 'getRData', processingNotice=False, silent = False, showException=True):
+    def R(self, query, type = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None):
 
         qApp.setOverrideCursor(Qt.WaitCursor)
 
@@ -60,7 +60,8 @@ class RSession():
             else:
                 self.RSessionThread.run(query) # run the query anyway even if the user put un a wierd value
 
-        except rpy.RPyRException as inst:
+        except rpy.RPyRException:
+            inst = rpy.RPyRException
             qApp.restoreOverrideCursor()
             #self.progressBarFinished()
             print inst
@@ -81,7 +82,20 @@ class RSession():
                 self.ROutput.append(str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
             except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
-        return output
+        if wantType == None:
+            return output
+        if wantType == 'list':
+            if type(output) == str:
+                return [output]
+            else:
+                return output
+        if wantType == 'dict':
+            if type(output) == str:
+                return {'output':[output]}
+            elif type(output) == list:
+                return {'output': output}
+            else:
+                return output
                         
     def require_librarys(self,librarys, force = False):
 

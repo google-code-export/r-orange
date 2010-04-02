@@ -40,7 +40,6 @@ class DataExplorer(OWRpy):
         
         self.tableArea = redRGUI.widgetBox(self.controlArea)
         self.table = redRGUI.table(self.tableArea)
-        self.clearButton = redRGUI.button(self.bottomAreaLeft, "Clear Table", self.table.clear())
         redRGUI.button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
         self.dimsInfoArea = redRGUI.widgetLabel(self.bottomAreaCenter, '')
         
@@ -401,5 +400,14 @@ class DataExplorer(OWRpy):
             self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
         self.commitCriteriaDialog()
         print 'Previously Committed data has been displayed.'
+        
+    def customCloseEvent(self):
+        for item in self.criteriaDialogList:
+            item['dialog'].hide()
+            item['dialog'].accept()
+            item['dialog'].close()
+        self.rowcolDialog.hide()
+        self.rowcolDialog.accept()
+        self.rowcolDialog.close()
     def deleteWidget(self):
         self.rowcolDialog.close()
