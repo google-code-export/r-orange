@@ -22,8 +22,9 @@ class Melt_DF(OWRpy):
         box = redRGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_na_rm = redRGUI.comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
         self.RFunctionParam_measure_var = redRGUI.listBox(box, label = "Result Variable:", toolTip = 'The column that contains the result or the measurement that the data should be melted around.')
-         
+        self.RFunctionParam_measure_var.setSelectionMode(QAbstractItemView.MultiSelection)
         self.RFunctionParam_id_var = redRGUI.listBox(box, label = "Groupings:", toolTip = 'The columns indicating the groupings of the data.')
+        self.RFunctionParam_id_var.setSelectionMode(QAbstractItemView.MultiSelection)
         self.RFunctionParam_variable_name = redRGUI.lineEdit(box, label = "New Group Name:", toolTip = 'The name of the new column that the groupings will be put into.')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def RWidgetReload(self):

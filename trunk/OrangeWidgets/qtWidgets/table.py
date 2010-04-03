@@ -26,26 +26,27 @@ class table(widgetState,QTableWidget):
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
         
-    def setTable(self, data):
+    def setTable(self, data, rownames = None, colnames = None):
         print 'in table set'
         if data==None:
             return
-        self.data = data
+        self.data = data # expect a numpy array as the input
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
         self.clear()
-        self.setRowCount(len(data[data.keys()[0]]))
-        self.setColumnCount(len(data.keys()))
-
-        n = 0
-        for key in data:
-            m = 0
-            for item in data[key]:
-                newitem = QTableWidgetItem(str(item))
-                self.setItem(m, n, newitem)
-                m += 1
-            n += 1
-        
+        rowcount = len(data[0:, 0])
+        colcount = len(data[0, 0:])
+        self.setRowCount(rowcount)
+        self.setColumnCount(colcount)
+        if rownames != None:
+            self.setVerticalHeaderLabels(rownames)
+        if colnames != None:
+            self.setHorizontalHeaderLabels(colnames)
+        for i in range(0, rowcount):
+            for j in range(0, colcount):
+                newitem = QTableWidgetItem(str(data[i, j]))
+                self.setItem(i, j, newitem)
+                
         qApp.restoreOverrideCursor()
 
     def sort(self, index):

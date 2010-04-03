@@ -20,10 +20,9 @@ class dataEntry(OWRpy):
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
         self.classes = None
-
-        self.savedData = None
+        self.savedData = {}
         self.loadSettings()
-        self.setRvariableNames(['table'])
+        self.setRvariableNames(['table', 'table_cm'])
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
         self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
@@ -256,8 +255,12 @@ class dataEntry(OWRpy):
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
-        self.newData = self.savedData.copy()
-        self.newData['data'] = self.Rvariables['table']
+        if 'cm' in self.savedData.keys():
+            self.newData = self.savedData.copy()
+            self.newData['data'] = self.Rvariables['table']
+        else:
+            self.makeCM(self.Rvariables['table_cm'], self.Rvariables['table'])
+            self.newData = {'data': self.Rvariables['table'], 'parent': self.Rvariables['table'], 'cm': self.Rvariables['table_cm']}
         self.rSend('Data Table', self.newData)
        
             

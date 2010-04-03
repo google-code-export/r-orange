@@ -60,8 +60,7 @@ class RSession():
             else:
                 self.RSessionThread.run(query) # run the query anyway even if the user put un a wierd value
 
-        except rpy.RPyRException:
-            inst = rpy.RPyRException
+        except rpy.RPyRException as inst:
             qApp.restoreOverrideCursor()
             #self.progressBarFinished()
             print inst
@@ -84,24 +83,43 @@ class RSession():
         qApp.restoreOverrideCursor()
         if wantType == None:
             return output
-        if wantType == 'list':
-            if type(output) == type(''):
+        elif wantType == 'list':
+            if type(output) in [str, int, float, bool]:
                 return [output]
             else:
                 return output
-        if wantType == 'dict':
+        elif wantType == 'dict':
             if type(output) == type(''):
                 return {'output':[output]}
             elif type(output) == type([]):
                 return {'output': output}
             else:
                 return output
-                        
+        elif wantType == 'array': # want a numpy array
+            if type(output) == list:
+                output = numpy.array(output)
+                return output
+            elif type(output) in [str, int, float, bool]:
+                output = numpu.appay([output])
+                return output
+            elif type(output) == dict:
+                newOutput = []
+                for key in output.keys():
+                    newOutput.append(output[key])
+                return newOutput
+            elif type(output) in [numpy.ndarray]:
+                return output
+            else:
+                print type(output), 'Non normal type, please add to RSession array logic'
+                return output
+        else:
+            return output
+                
     def require_librarys(self,librarys, force = False):
 
         success = 0
         #if self.packagesLoaded == 0:
-        installedRPackages = self.R('as.vector(installed.packages()[,1])',type='getRData')
+        installedRPackages = self.R('as.vector(installed.packages()[,1])',callType='getRData')
         # print installedRPackages
         # print type(installedRPackages)
         if 'CRANrepos' not in qApp.canvasDlg.settings.keys():

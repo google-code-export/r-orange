@@ -403,6 +403,7 @@ class DataExplorer(OWRpy):
         print 'Previously Committed data has been displayed.'
         
     def customCloseEvent(self):
+        qApp.setOverrideCursor(Qt.WaitCursor)
         for item in self.criteriaDialogList:
             item['dialog'].hide()
             item['dialog'].accept()
@@ -410,5 +411,6 @@ class DataExplorer(OWRpy):
         self.rowcolDialog.hide()
         self.rowcolDialog.accept()
         self.rowcolDialog.close()
+        qApp.restoreOverrideCursor()
     def deleteWidget(self):
         self.rowcolDialog.close()
