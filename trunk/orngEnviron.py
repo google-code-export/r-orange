@@ -17,6 +17,7 @@ def __getDirectoryNames():
         orangeVer = "orange"
 
     canvasDir = os.path.join(orangeDir, "OrangeCanvas")
+    RDir = os.path.join(orangeDir, "R")
     widgetDir = os.path.join(orangeDir, "OrangeWidgets")
     tagsDir = os.path.join(orangeDir, "tagsSystem")
     picsDir = os.path.join(widgetDir, "icons")
@@ -70,7 +71,7 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
 
-    return dict([(name, vars()[name]) for name in ["orangeDir", "canvasDir", "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
+    return dict([(name, vars()[name]) for name in ["orangeDir", "canvasDir", "RDir", "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
 
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))

@@ -112,14 +112,11 @@ class OutputWindow(QDialog):
         if self.canvasDlg.settings["writeLogFile"]:
             self.logFile.write(Text.replace("\n", "<br>\n"))
 
-        # QTextCursor runs very slow with lots of text!!!!!!!!!!
         
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
         self.textOutput.insertPlainText(Text)                                  # then append the text
-        #cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
-        #self.textOutput.setTextCursor(cursor)
 
         if Text[-1:] == "\n":
             if self.canvasDlg.settings["printOutputInStatusBar"]:
@@ -143,8 +140,7 @@ class OutputWindow(QDialog):
     def getSafeString(self, s):
         return str(s).replace("<", "&lt;").replace(">", "&gt;")
 
-    def uploadException(self,err):
-        pass
+    # def uploadException(self,err):
         # import httplib,urllib
         #import sys,pickle
         #res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
@@ -162,7 +158,12 @@ class OutputWindow(QDialog):
         # else:
             # return
         
-
+    def printException(self):
+        import traceback, sys
+        print '-'*60
+        traceback.print_exc(file=sys.stdout)
+        print '-'*60        
+        
     def exceptionHandler(self, type, value, tracebackInfo):
         if self.canvasDlg.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
@@ -190,16 +191,12 @@ class OutputWindow(QDialog):
         for line in lines[:-1]:
             text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
         text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
-        try:
-            self.uploadException(text)
-        except:
-            pass
+        
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
+        # self.textOutput.insertPlainText(Text)                                  # then append the text
         self.textOutput.insertHtml(text)                                  # then append the text
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # and then scroll down to the end of the text
-        self.textOutput.setTextCursor(cursor)
 
         if self.canvasDlg.settings["writeLogFile"]:
             self.logFile.write(str(text) + "<br>\n")

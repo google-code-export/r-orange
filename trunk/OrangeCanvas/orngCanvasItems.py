@@ -152,7 +152,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         # import widget class and create a class instance
         #print str(forceInSignals)
         #print str(forceOutSignals)
-        print 'Initializing widget'
+        # print 'Initializing widget'
         m = __import__(widgetInfo.fileName)
         self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName],
         _owInfo = canvasDlg.settings["owInfo"],

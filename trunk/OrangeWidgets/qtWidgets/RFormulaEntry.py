@@ -1,15 +1,18 @@
 ## redRGUI.RFormula; provides a toolkit for editing R formulas where an R funciton may need a formulas
 
 from redRGUI import widgetState
+from groupBox import groupBox
 import redRGUI
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class RFormulaEntry(QWidget, widgetState):
+class RFormulaEntry(groupBox, widgetState):
     def __init__(self, parent, label = 'Formula Entry'):
         # make a widgetBox to hold everything
-        box = redRGUI.groupBox(parent, label = label)
+        groupBox.__init__(self,parent,label=label)
         
+        #box = redRGUI.groupBox(self, label = label)
+        box = self
         ## add the elements to the box
         
         #place the command keys
@@ -79,7 +82,8 @@ class RFormulaEntry(QWidget, widgetState):
         for item in self.elementsListBox.items():
            itemsText.append(str(item.text()))
                 
-        r = {'current':self.outcomeVariable.currentIndex(), 'buttonState': self.elementListBox.isEnabled(), 'listBoxItems':itemsText}
+        r = {'current':self.outcomeVariable.currentIndex(), 
+        'buttonState': self.elementsListBox.isEnabled(), 'listBoxItems':itemsText}
         
         return r
         #items = []

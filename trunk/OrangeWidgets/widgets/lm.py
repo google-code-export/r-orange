@@ -47,7 +47,6 @@ class lm(OWRpy):
         self.processButton = redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
-        self.GUIDialogDialog.hide()
     def processdata(self, data):
         if data and data['data']:
             self.RFunctionParam_data=data["data"]

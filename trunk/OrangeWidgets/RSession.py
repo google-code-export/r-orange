@@ -12,7 +12,7 @@ from OWWidget import *
 if sys.platform=="win32":
     from rpy_options import set_options
     #set_options(RHOME=os.environ['RPATH'])
-    set_options(RHOME=os.path.join(orngEnviron.directoryNames['orangeDir'],'R')) 
+    set_options(RHOME=orngEnviron.directoryNames['RDir'])
 else: # need this because linux doesn't need to use the RPATH
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
@@ -48,6 +48,7 @@ class RSession():
         histquery = histquery.replace('>', '&gt;')
         histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
         self.Rhistory += histquery + '</code><br><code>'
+        
         try:
             if callType == 'getRData':
                 output  = self.RSessionThread.run(query)
@@ -81,6 +82,7 @@ class RSession():
                 self.ROutput.append(str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
             except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
+        
         if wantType == None:
             return output
         elif wantType == 'list':
@@ -116,104 +118,42 @@ class RSession():
             return output
                 
     def require_librarys(self,librarys, force = False):
-
-        success = 0
+        libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
+        
+        
         #if self.packagesLoaded == 0:
-        installedRPackages = self.R('as.vector(installed.packages()[,1])',callType='getRData')
+        installedRPackages = self.R('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
         # print installedRPackages
         # print type(installedRPackages)
+        print self.R('getOption("repos")')
         if 'CRANrepos' not in qApp.canvasDlg.settings.keys():
-            print 'need to select mirror in the settings dialog'
+            qApp.canvasDlg.settings['CRANrepos'] = 'http://cran.r-project.org'
+        else:
+            #print qApp.canvasDlg.settings['CRANrepos']
+            self.R('local({r <- getOption("repos"); r["CRAN"] <- "' + qApp.canvasDlg.settings['CRANrepos'] + '"; options(repos=r)})')
             
-        print qApp.canvasDlg.settings['CRANrepos']
+            
+        
         
         for library in librarys:
             if library in installedRPackages:
-                self.R("require(\'"+ library +"\')")
+                self.R('require(' + library + ', lib.loc="' + libPath + '")')
             else:
                 try:
                     self.R('setRepositories(ind=1:7)')
-                    self.R('install.packages(\'' + library + 
-                    '\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
-                    '\')')
-                    self.R('require(' + library + ')')
+                    self.R('install.packages("' + library + '", lib="' + libPath + '")')
+                    self.R('require(' + library + ', lib.loc="' + libPath + '")')
                 except:
                     print 'Library load failed. This widget will not work!!!'
-                # try:
-                    # if not self.R("require(\'"+ library +"\')"):
-                        # self.R('setRepositories(ind=1:7)')
-                        # self.R('install.packages(\'' + library + 
-                        # '\', repos = \''+ qApp.canvasDlg.settings['CRANrepos']+
-                        # '\')')
-                        # self.R('require(' + library + ')')
-                    # self.RPackages.append(library)
-                    # success = 1
-                # except rpy.RPyRException, inst:
-                    # print 'asdf'
-                    # m = re.search("'(.*)'",inst.message)
-                    # self.require_librarys([m.group(1)])
-                    # return 0
-                # except:
-                    # print 'aaa'
-                    # m = re.search("'(.*)'",inst.message)
-                    # self.require_librarys([m.group(1)])
-                    # return 0
-        
-            #self.packagesLoaded = 1
-            # else:
-                # print 'Packages Loaded'
-                # return 1
-        #add the librarys to a list so that they are loaded when R is loaded.
-        #return success
-    def convertDataframeToExampleTable(self, dataFrame_name):
-        #set_default_mode(CLASS_CONVERSION)
-        dfsummary = self.R(dataFrame_name, 'getRSummary')
-        col_names = dfsummary['colNames']
-        if type(col_names) is str:
-            col_names = [col_names]
-        if dfsummary['Class'] == 'matrix':
-            col_def = self.rsession("apply(" + dataFrame_name + ",2,class)")
-        else:
-            col_def = self.rsession("sapply(" + dataFrame_name + ",class)")
-        if len(col_def) == 0:
-            col_names = [col_names]
-        
-        colClasses = []
-        for i in col_names:
-            if col_def[i] == 'numeric' or col_def[i] == 'integer':
-                colClasses.append(orange.FloatVariable(i))
-            elif col_def[i] == 'factor':
-                colClasses.append(orange.StringVariable(i))
-            elif col_def[i] == 'character':
-                colClasses.append(orange.StringVariable(i))
-            elif col_def[i] == 'logical':
-                colClasses.append(orange.StringVariable(i))
-            else:
-                colClasses.append(orange.StringVariable(i))
-                
-        if len(dfsummary['rowNames']) > 1000:
-            self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name + '[1:1000,]')
-        else:
-            self.rsession('exampleTable_data' + self.variable_suffix + '<- '+ dataFrame_name + '')
-            
-        self.rsession('exampleTable_data' + self.variable_suffix + '[is.na(exampleTable_data' + self.variable_suffix + ')] <- "?"')
-        
-        d = self.rsession('as.matrix(exampleTable_data' + self.variable_suffix + ')')
-        if self.R('nrow(exampleTable_data' + self.variable_suffix + ')') == 1:
-            d = [d]
-        #print d
-        #type(d)
-        domain = orange.Domain(colClasses)
-        data = orange.ExampleTable(domain, d)
-        self.rsession('rm(exampleTable_data' + self.variable_suffix + ')')
-        return data
+
+
 
 class RSessionThread(QThread):
     def __init__(self, parent = None):
         QThread.__init__(self, None)
         #self.command = ''
     def run(self, query):
-
+        #print 'asdf11 +' + query
         output = rpy.r(query)
 
         return output

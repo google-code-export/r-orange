@@ -561,12 +561,15 @@ class CanvasOptionsDlg(QDialog):
         # place a listBox in the widget and fill it with a list of mirrors
         self.libListBox = redRGUI.listBox(rlibrariesBox, label = 'Mirrors', items = self.libs['Name'], callback = self.setMirror)
         self.libInfo = redRGUI.widgetLabel(rlibrariesBox, '')
+        self.libInfo.setText('Repository URL: '+ self.settings['CRANrepos'])
         
     def setMirror(self):
-        print 'setMirror'
+        # print 'setMirror'
         item = self.libListBox.currentRow()
         self.settings['CRANrepos'] = str(self.libs['URL'][item])
-        #print self.libs['URL'][item]
+        import RSession
+        RSession = RSession.RSession()
+        RSession.R('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')
         print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
     def accept(self):

@@ -152,8 +152,7 @@ class OWRpy(OWWidget,RSession):
             self.leftDockState = True
 
     def updateDock(self,ev):
-        print 'asdfasdf', ev
-        print self.windowTitle()
+        #print self.windowTitle()
         if self.rightDock.isFloating():
             self.rightDock.setWindowTitle(self.windowTitle() + ' Documentation')
         else:
@@ -164,9 +163,9 @@ class OWRpy(OWWidget,RSession):
             else:
                 self.leftDock.setWindowTitle('Advanced Options')
 
-    def showGUIDialog(self):
-        if self.autoShowDialog:
-            self.leftDock.show()
+    # def showGUIDialog(self):
+        # if self.autoShowDialog:
+            # self.leftDock.show()
     
     def showLeftDock(self):
         print 'in updatedock left'
@@ -229,7 +228,7 @@ class OWRpy(OWWidget,RSession):
             self.ROutputBox.hide()
             self.documentationState['ROutputBox'] = False
         
-        print self.documentationState.values()
+        # print self.documentationState.values()
         if True in self.documentationState.values():
             self.rightDock.show()
             # print 'resize t'
@@ -271,7 +270,7 @@ class OWRpy(OWWidget,RSession):
     
     
     def getSettings(self, alsoContexts = True):
-        print 'moving to save'
+        # print 'moving to save'
         import re
         settings = {}
         allAtts = self.__dict__
@@ -282,7 +281,7 @@ class OWRpy(OWWidget,RSession):
         for att in allAtts:
             if att in self.blackList:
                 continue
-            # print 'frist att: ' + att
+            #print 'frist att: ' + att
             if re.search('^_', att):
                 continue
             var = getattr(self, att)
@@ -312,7 +311,7 @@ class OWRpy(OWWidget,RSession):
         #if isinstance(d,QObject):
         # print str(type(d))
         if re.search('PyQt4',str(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
-            print 'QT object NOT Pickleable'
+            # print 'QT object NOT Pickleable'
             return False
         elif type(d) in [list, dict, tuple]:
             #ok = True
@@ -328,7 +327,7 @@ class OWRpy(OWWidget,RSession):
                         #ok = False
                         return False
                 return True
-        elif type(d) in [str, int, float, bool, numpy.float64]:
+        elif type(d) in [type(None), str, int, float, bool, numpy.float64]:
             return True
         else: 
             print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
@@ -371,7 +370,7 @@ class OWRpy(OWWidget,RSession):
             settings = None
         return settings
     def setSettings(self,settings):
-        print 'on set settings'
+        # print 'on set settings'
         self.redRGUIObjects = {}
         for k,v in settings.iteritems():
             if k in ['inputs', 'outputs']: continue
@@ -385,7 +384,7 @@ class OWRpy(OWWidget,RSession):
             else:
                 self.redRGUIObjects[k] = v;
     def onLoadSavedSession(self):
-        print 'in onLoadSavedSession'
+        # print 'in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
             # print str(k)+ ' in onLoadSavedSession widget attribute'
             # pp.pprint(v)
@@ -406,8 +405,10 @@ class OWRpy(OWWidget,RSession):
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
             except:
-                print 'Error occured in loading data ' + str(v) +' into self.'+str(k)
-                import traceback
+                print 'Error occured in loading data self.'+str(k)
+                
+                pp.pprint(v)
+                import traceback,sys
                 print '-'*60
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
@@ -419,7 +420,7 @@ class OWRpy(OWWidget,RSession):
         for (name, data) in self.sentItems:
             self.send(name, data)
     def recursiveSetSetting(self,var,d):
-        print 'recursiveSetSetting'
+        # print 'recursiveSetSetting'
         
         if type(var) in [list,tuple]:
             for k in xrange(len(d)):
@@ -441,7 +442,7 @@ class OWRpy(OWWidget,RSession):
 
     def saveSettingsStr(self):
         
-        print 'saveSettingsStr called'
+        # print 'saveSettingsStr called'
         
         settings = self.getSettings()
         #print settings
@@ -485,15 +486,15 @@ class OWRpy(OWWidget,RSession):
                 raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
 
     def getGlobalSettingsFile(self, file=None):
-        print 'getSettingsFile in owbasewidget'
+        # print 'getSettingsFile in owbasewidget'
         if file==None:
             file = os.path.join(self.widgetSettingsDir, self._widgetInfo.fileName + ".ini")
         # print file
         return file
+
+    
     # save global settings
     def saveGlobalSettings(self, file = None):
-        # print 'owrpy save settings'
-        # settings = self.getGlobalSettings()
         print 'owrpy global save settings'
         settings = {}
         default = ['windowState','documentationState']

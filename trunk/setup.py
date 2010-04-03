@@ -1,10 +1,10 @@
 import os, sys
 from distutils.core import setup
 import py2exe
-sys.path.insert(0, 'C:\\Python25\\Lib\\site-packages\\redR-dist\\')
-sys.path.insert(0, 'C:\\Python25\\Lib\\site-packages\\redR-dist\\OrangeCanvas\\')
-sys.path.insert(0, 'C:\\Python25\\Lib\\site-packages\\redR-dist\\OrangeWidgets\\')
-sys.path.insert(0, 'C:\\Program Files (x86)\\R\\R-2.7.0\\bin')
+sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\')
+sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\OrangeCanvas\\')
+sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\OrangeWidgets\\')
+sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\R\\bin')
 
 Mydata_files = [
 #('', ['C:\\Program Files (x86)\\R\\R-2.7.0\\bin\\R.dll']),
@@ -45,9 +45,9 @@ setup(name="Red-R",
       "skip_archive": True, 
       # "compressed": True, 
       # "bundle_files": 3, 
-      "includes": ["sip",'OWRpy','OWColorPalette',
-      'OWGraphTools','OWReport','OWToolbars','RRGUI','PyQt4.Qwt5','PyQt4.QtSvg','_rpy2070'],
-      # 'excludes' : ['rpy']
+      "includes": ["sip",'OWRpy','OWColorPalette','win32api',
+      'OWGraphTools','OWReport','OWToolbars','PyQt4.Qwt5','PyQt4.QtSvg','_rpy2091'],
+      'dll_excludes' : ['powrprof.dll']
       }})
 
       

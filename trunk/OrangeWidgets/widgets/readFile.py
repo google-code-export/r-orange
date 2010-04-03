@@ -14,7 +14,7 @@ import re
 import textwrap
 import cPickle
 import pickle
-
+import types
 class readFile(OWRpy):
     
     globalSettingsList = ['recentFiles','path']
@@ -26,15 +26,15 @@ class readFile(OWRpy):
         self.delim = 0
         self.path = os.path.abspath('/')
         self.colClasses = []
+        self.myColClasses = []
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
         self.loadSettings()
-        
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'cm', 'parent'])
         
-        self.test = [redRGUI.widgetBox(self.controlArea,orientation='horizontal'),redRGUI.widgetBox(self.controlArea,orientation='horizontal')]
+        # raise Exception('asdf')
         #signals
         self.inputs = None
         self.outputs = [("data.frame", RvarClasses.RDataFrame)]
@@ -161,7 +161,6 @@ class readFile(OWRpy):
             self.dataTypes.append(s)
 
         
-        
     def setFileList(self):
         if self.recentFiles == None: self.recentFiles = []
         
@@ -197,9 +196,9 @@ class readFile(OWRpy):
     
     def updateColClasses(self):
 
-        self.colClasses = []
+        self.myColClasses = []
         for i in self.dataTypes:
-            self.colClasses.append(str(i.currentText()))
+            self.myColClasses.append(str(i[1].currentText()))
         # print 'colClasses' , self.colClasses
         self.loadFile(scan=True)
     def scanFile(self):
@@ -255,19 +254,23 @@ class readFile(OWRpy):
             param_name = 'NULL' 
             self.rownames = 'NULL'
         
+        cls = []
+        for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
+            if new != old:
+                cls.append(self.dataTypes[i][0] + '="' + new + '"')
         
-        if len(self.colClasses) > 0:
-            ccl = 'c("' + '","'.join(self.colClasses) + '")'
+        if len(cls) > 0:
+            ccl = 'c(' + ','.join(cls) + ')'
         else:
             ccl = 'NA'
         try:
         # +', quote='+self.quote.text()
             RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + ')'
             # print RStr
-            self.R(RStr,callType='setRData', processingNotice=True)
+            self.R(RStr, processingNotice=True)
         except:
-            print sys.exc_info() 
-            print RStr
+            # print sys.exc_info() 
+            # print RStr
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
@@ -294,27 +297,29 @@ class readFile(OWRpy):
         # + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))')
         #print data
         # txt = self.html_table(data)
+        # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
         try:
             txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',
             processingNotice=True, showException=False)
+            self.scanarea.setText(txt)
         except:
             QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
             QMessageBox.Ok + QMessageBox.Default)
             return
             
-            
-        self.scanarea.setText(txt)
+        
         
         if len(self.colClasses) ==0:
             self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))')
             if type(self.colClasses) is str:
                 self.colClasses = [self.colClasses]
+            self.myColClasses = self.colClasses
         
         if len(self.dataTypes) ==0:
             types = ['factor','numeric','character','integer','logical']
             self.dataTypes = []
             
-            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.colClasses):
+            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
                 s = redRGUI.comboBox(self.columnTypes,items=types,orientation='horizontal',callback=self.updateColClasses)
                 
                 # print k,i,str(v)
@@ -327,7 +332,7 @@ class readFile(OWRpy):
                 q = redRGUI.widgetLabel(self.columnTypes,label=i)
                 self.columnTypes.layout().addWidget(s,k,1)
                 self.columnTypes.layout().addWidget(q,k,0)
-                self.dataTypes.append(s)
+                self.dataTypes.append([i,s])
             
     
     def updateRowNames(self):

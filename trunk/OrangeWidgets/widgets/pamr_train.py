@@ -44,8 +44,8 @@ class pamr_train(OWRpy):
 		self.RFunctionParamthreshold_scale_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "threshold_scale:")
 		self.RFunctionParamthreshold_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "threshold:")
 		self.RFunctionParamsign_contrast_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "sign_contrast:")
-		redRGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
-		redRGUI.button(self.controlArea, self, "Report", callback = self.sendReport)
+		redRGUI.button(self.controlArea, label="Commit", callback = self.commitFunction)
+		redRGUI.button(self.controlArea, label="Report", callback = self.sendReport)
 	def processdata(self, data):
 		self.require_librarys(["pamr"]) 
 		if data:

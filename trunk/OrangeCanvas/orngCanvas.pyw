@@ -45,8 +45,8 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowIcon(QIcon(canvasIconName))
             
         self.settings = {}
-        self.settings['svnSettings'] = {}
-        self.settings['versionNumber'] = 'Version1.0'
+        # self.settings['svnSettings'] = {}
+        # self.settings['versionNumber'] = 'Version1.0'
         self.settings['CRANrepos'] = 'http://cran.r-project.org'
         #self.settings['HomeFolder'] = str(os.path.abspath('/Python25/Lib/site-packages/redR1.5/Projects'))
         self.menuSaveSettingsID = -1
@@ -146,6 +146,7 @@ class OrangeCanvasDlg(QMainWindow):
         # center window in the desktop
         # in newer versions of Qt we can also find the center of a primary screen
         # on multiheaded desktops
+            
             width, height = self.settings.get("canvasWidth", 700), self.settings.get("canvasHeight", 600)
             desktop = app.desktop()
             deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
@@ -153,6 +154,7 @@ class OrangeCanvasDlg(QMainWindow):
             h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
             w = max(0, deskW/2 - width/2)
             self.move(w,h+2)
+            self.resize(width,height)
         if 'pos' in self.settings.keys():
             self.move(self.settings['pos'])
 

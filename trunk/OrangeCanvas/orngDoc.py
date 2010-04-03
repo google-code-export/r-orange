@@ -287,7 +287,7 @@ class SchemaDoc(QWidget):
                 y = self.widgets[-1].y()
             else:
                 x = 30
-                y = 150
+                y = 50
         newwidget.setCoords(x, y)
         # move the widget to a valid position if necessary
         invalidPosition = (self.canvasView.findItemTypeCount(self.canvas.collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
@@ -484,6 +484,7 @@ class SchemaDoc(QWidget):
                 # widget.instance.saveSettingsStr()
             # except:
                 # print 'a', sys.exc_info()[0] 
+            print 'save in orngDoc ' + str(widget.caption)
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
             # return
             # print 'got str orngDoc'
@@ -588,9 +589,14 @@ class SchemaDoc(QWidget):
                     print 'Name: '+str(name)+' (orngDoc.py)'
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                     try:
-                        RSession.require_librarys(settings['RPackages']['pythonObject'])
+                        if 'RPackages' in settings.keys():
+                            RSession.require_librarys(settings['RPackages']['pythonObject'])
                     except: 
-                        print 'Cannot load R librarys'
+                        import traceback,sys
+                        print '-'*60
+                        traceback.print_exc(file=sys.stdout)
+                        print '-'*60        
+
                         
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
@@ -608,6 +614,11 @@ class SchemaDoc(QWidget):
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
                 except:
                     print 'Error occured during widget loading'
+                    import traceback,sys
+                    print '-'*60
+                    traceback.print_exc(file=sys.stdout)
+                    print '-'*60        
+
             if not importBlank: # a normal load of the session
                 pass
             else:
@@ -650,14 +661,17 @@ class SchemaDoc(QWidget):
         #print 'start onload' # we do want to reload the settings of the widgets
         #print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
         for widget in self.widgets:
-            print 'for widget (orngDoc.oy) ' + widget.instance._widgetInfo.fileName
+            print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo.fileName
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
             
                 SignalManager.loadSavedSession = True
                 widget.instance.onLoadSavedSession()
                 SignalManager.loadSavedSession = False
             except:
-                print 'Loading Failed for ' + str(widget)
+                import traceback,sys
+                print '-'*60
+                traceback.print_exc(file=sys.stdout)
+                print '-'*60        
                 SignalManager.loadSavedSession = False
                 QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo.fileName, 
                 QMessageBox.Ok + QMessageBox.Default)
