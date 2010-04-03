@@ -150,10 +150,7 @@ class OWRpy(OWWidget,RSession):
             self.leftDockButton = redRGUI.button(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.leftDockState = True
-        
-        
-        
-        
+
     def updateDock(self,ev):
         print 'asdfasdf', ev
         print self.windowTitle()
@@ -166,7 +163,6 @@ class OWRpy(OWWidget,RSession):
                 self.leftDock.setWindowTitle(self.windowTitle() + ' Advanced Options')
             else:
                 self.leftDock.setWindowTitle('Advanced Options')
-
 
     def showGUIDialog(self):
         if self.autoShowDialog:
@@ -208,8 +204,6 @@ class OWRpy(OWWidget,RSession):
         self.showNotesButton.setChecked(self.documentationState['notesBox'])
         self.showROutputButton.setChecked(self.documentationState['ROutputBox'])
         self.updateDocumentationDock()
-            
-
 
     def updateDocumentationDock(self):
         print 'in updatedock right'
@@ -313,7 +307,6 @@ class OWRpy(OWWidget,RSession):
         return settings
     def saveCustomSettings(self):
         pass
-
     def isPickleable(self,d):
         import re
         #if isinstance(d,QObject):
@@ -341,14 +334,6 @@ class OWRpy(OWWidget,RSession):
             print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
             print str(d)
             return False
-            # try:
-                # cPickle.dumps(d)
-                # return True
-            # except:
-                # print type(d)
-                # print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
-                # return False
-        
     def returnSettings(self,var):
         settings = {}
         if var.__class__.__name__ in redRGUI.qtWidgets:
@@ -385,7 +370,6 @@ class OWRpy(OWWidget,RSession):
         else:
             settings = None
         return settings
-                
     def setSettings(self,settings):
         print 'on set settings'
         self.redRGUIObjects = {}
@@ -400,8 +384,6 @@ class OWRpy(OWWidget,RSession):
                 self.__setattr__(k, v['pythonObject'])
             else:
                 self.redRGUIObjects[k] = v;
-
-
     def onLoadSavedSession(self):
         print 'in onLoadSavedSession'
         for k,v in self.redRGUIObjects.iteritems():
@@ -436,24 +418,6 @@ class OWRpy(OWWidget,RSession):
         
         for (name, data) in self.sentItems:
             self.send(name, data)
-        #self.reloadWidget()
-
-    # def setDictSettings(self, var, d):
-        # for k,v in d.iteritems():
-            # if type(v) is dict and 'redRGUIObject' in v.keys():
-                # var[k].loadSettings(v['redRGUIObject'])
-                # var[k].setDefaultState(v['redRGUIObject'])
-            # elif type(v) is dict:
-                # self.setDictSettings(d[k],v)
-                
-    # def setListSettings(self, var, d):
-        # for v in d:
-            # if type(v) is list and 'redRGUIObject' in v.keys():
-                # var[k].loadSettings(v['redRGUIObject'])
-                # var[k].setDefaultState(v['redRGUIObject'])
-            # elif type(v) is list:
-                # self.setListSettings(d[k],v)
-
     def recursiveSetSetting(self,var,d):
         print 'recursiveSetSetting'
         
@@ -474,11 +438,6 @@ class OWRpy(OWWidget,RSession):
         
     def loadCustomSettings(self,settings=None):
         pass
-
-
-    # def onSaveSession(self):
-        # print 'save session'
-        # self.loadSavedSession = value
 
     def saveSettingsStr(self):
         
@@ -531,33 +490,6 @@ class OWRpy(OWWidget,RSession):
             file = os.path.join(self.widgetSettingsDir, self._widgetInfo.fileName + ".ini")
         # print file
         return file
-
-    # Loads settings from string str which is compatible with cPickle
-    # def loadSettingsStr(self, str):
-        # if str == None or str == "":
-            # return
-        # settings = cPickle.loads(str)
-        # self.setSettings(settings)
-    # return settings in string format compatible with cPickle
-        
-    
-    # def saveGlobalSettings(self):
-        # print 'get global settings'
-        # settings = {}
-        # default = ['windowState','documentationState']
-        # if hasattr(self, "globalSettingsList"):
-            # self.globalSettingsList.extend(default)
-        # else:
-            # self.globalSettingsList =  default
-            
-        # for name in self.globalSettingsList:
-            # try:
-                # settings[name] = {}
-                # settings[name]['pythonObject'] =  self.getdeepattr(name)
-            # except:
-                # print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-        # return settings
-    
     # save global settings
     def saveGlobalSettings(self, file = None):
         # print 'owrpy save settings'
@@ -581,16 +513,7 @@ class OWRpy(OWWidget,RSession):
             file = open(file, "w")
             cPickle.dump(settings, file)
 
-            
-    
-    
-    
-    
     def onDeleteWidget(self, suppress = 0):
-        # for k in self.Rvariables:
-            # print self.Rvariables[k]
-            # self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', 'setRData')     #### I don't know why this block was added again up here.
-
         if suppress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
             return
 

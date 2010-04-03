@@ -31,6 +31,8 @@ class RedRScatterplot(OWRpy):
         self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
         self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
         self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''], callback = self.plot)
+        self.replotCheckbox = redRGUI.checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
+        self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
         self.paintLegend = redRGUI.textEdit(self.GUIDialog)
         self.paintLegend.hide()
         
@@ -56,7 +58,7 @@ class RedRScatterplot(OWRpy):
                 names.insert(0, '')
                 self.paintCMSelector.update(names)
                 
-                self.plot()
+                self.plot(newZoom = False)
                 
             except:
                 pass
@@ -137,10 +139,7 @@ class RedRScatterplot(OWRpy):
             except:
                 self.subsetCMClass.clear()
                 self.X.setText('Failed')
-            #self.subsetCMClass.addItems(self.R('levels(as.factor('+self.cm+'[,"'+cmSelector+'"]))'))
-            
-
-    def plot(self):
+    def plot(self, newZoom = True):
         # populate the cm class columns
         #cmSelector = str(self.subsetCMSelector.currentText())
         #cmClass = str(self.subsetCMClass.currentText())
@@ -227,8 +226,8 @@ class RedRScatterplot(OWRpy):
             self.graph.points("MyData", xData = xData, yData = yData)
             self.xData += xData
             self.yData += yData
-
-        self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+        if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
+            self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
     def sendMe(self):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)
@@ -237,7 +236,7 @@ class RedRScatterplot(OWRpy):
         # custom function to replot the data that is in the scatterplot
         self.plot()
     def widgetDelete(self):
-        if self.cm:
+        if self.cm and self.Rvariables['Plot'] in self.R('colnames('+self.cm+')', wantType = 'list'):
             self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
             self.sendRefresh()
     def setColor(self, colorint):
