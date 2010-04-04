@@ -153,57 +153,84 @@ class RedRScatterplot(OWRpy):
         if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
             self.paintLegend.clear()
             self.paintLegend.show()
-            pc = 0
+            
             if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
                 d = self.data
                 vectorClass = self.R('class('+self.data+'[,\''+paintClass+'\'])')
+                print vectorClass
                 if vectorClass in ['character']: 
                     QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
                     print vectorClass
                     return
                     
                 elif vectorClass in ['numeric']:
-                    numericLevels = True
+                    levelType = 'numeric'
+                    levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))', wantType = 'list')
+                elif vectorClass in ['logical']:
+                    levelType = 'logical'
+                    levels = ['NA', 'FALSE', 'TRUE']
                 else:
-                    numericLevels = False
-                levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))')
+                    levelType = 'other'
+                    levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))', wantType = 'list')
             else: # we made it this far so the data must be in the cm
                 d = self.cm                
                 vectorClass = self.R('class('+self.cm+'[,\''+paintClass+'\'])')                
+                print vectorClass
                 if vectorClass in ['character']: 
                     QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
                     print vectorClass                    
                     return
                 elif vectorClass in ['numeric']:
-                    numericLevels = True
+                    levelType = 'numeric'
+                    levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')
+                elif vectorClass in ['logical']:
+                    levelType = 'logical'
+                    levels = ['NA', 'FALSE', 'TRUE']
                 else:
-                    numericLevels = False
-                levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
-            print levels            
-            color = 0
+                    levelType = 'other'
+                    levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
+            #print levels            
+            
+            if len(levels) > 50:
+                runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
+                if runMe == QMessageBox.No: return
+            pc = 0
+            xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
+            yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             self.paintLegend.insertHtml('<h5>Color Legend</h5>')
             self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
             for p in levels:
+                print p
                 # collect the color
-                lColor = self.setColor(color)
+                if levelType not in ['logical', 'numeric']:
+                    pc = self.R('match(\''+p+'\', levels(as.factor('+d+'[,\''+paintClass+'\'])))', silent = True)
+                lColor = self.setColor(pc)
                 self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
-                color += 1
                 # generate the subset
-                if not numericLevels:
-                    subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
-                else: 
+                if levelType == 'logical':
+                    if p == 'TRUE':
+                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
+                    elif p == 'FALSE':
+                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
+                    else:
+                        subset = '(is.na('+d+'[,\''+paintClass+'\']))'
+                elif levelType == 'numeric': 
                     subset = '('+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
+                else:
+                    subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
                 # make a list of points
                 # check if the column is a factor
-                if self.R('class('+self.data+'[,\''+str(xCol)+'\'])') in ['factor']:
-                    xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
+                if xDataClass in ['factor']:
+                    xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
                 else:
                     xData = self.R(self.data+'['+subset+',\''+str(xCol)+'\']', wantType = 'list')
-                if self.R('class('+self.data+'[,\''+str(yCol)+'\'])') in ['factor']:
-                    yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
+                if yDataClass in ['factor']:
+                    yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
                 else:
                     yData = self.R(self.data+'['+subset+',\''+str(yCol)+'\']', wantType = 'list')
-                
+                if len(xData) == 0 or len(yData) == 0:
+                    pc += 1
+                    continue
                 self.graph.points("MyData", xData = xData, yData = yData, brushColor = pc, penColor=pc)
                 self.xData += xData
                 self.yData += yData
@@ -214,11 +241,11 @@ class RedRScatterplot(OWRpy):
         else:
             self.paintLegend.hide()
             # check if the column is a factor
-            if self.R('class('+self.data+'[,\''+str(xCol)+'\'])') in ['factor']:
+            if xDataClass in ['factor']:
                 xData = self.R('match('+self.data+'[,\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
             else:
                 xData = self.R(self.data+'[,\''+str(xCol)+'\']', wantType = 'list')
-            if self.R('class('+self.data+'[,\''+str(yCol)+'\'])') in ['factor']:
+            if yDataClass in ['factor']:
                 yData = self.R('match('+self.data+'[,\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
             else:
                 yData = self.R(self.data+'[,\''+str(yCol)+'\']', wantType = 'list')
