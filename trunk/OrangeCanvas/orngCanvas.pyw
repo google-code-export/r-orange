@@ -86,7 +86,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.setStatusBar(MyStatusBar(self))
                 
-        self.widgetRegistry = orngRegistry.readCategories()
+        self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         self.updateStyle()
         
         # create toolbar
@@ -99,7 +99,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.setCentralWidget(self.schema)
         self.schema.setFocus()
 
-        orngTabs.constructCategoriesPopup(self)
+        
 
         # create menu
         self.initMenu()
@@ -111,15 +111,6 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
         self.toolbar.addSeparator()
-        # w = QWidget()
-        # w.setLayout(QHBoxLayout())
-        
-        # items = ["Tool box", "Tree view", "Tabs without labels", "Tabs with labels"]
-        # ind = max(len(items)-1, self.settings["widgetListType"])
-        # OWGUI.comboBox(w, self.settings, "widgetListType", label = "Style:", orientation = "horizontal", items = items, callback = self.createWidgetsToolbar, debuggingEnabled = 0)
-        # self.toolbar.addWidget(w)
-        
-        # self.toolbar.addSeparator()
 
         w = QWidget()
         w.setLayout(QHBoxLayout())
@@ -129,7 +120,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
-        self.createWidgetsToolbar()
+        self.createWidgetsToolbar() # also creates the categories popup
         self.readShortcuts()
         self.readRecentFiles()
 
@@ -183,11 +174,12 @@ class OrangeCanvasDlg(QMainWindow):
             if QMessageBox.warning(self,'Red Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
                 import webbrowser
                 webbrowser.open("http://sourceforge.net/projects/numpy/")
-        if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".ows": # do we need to load a schema, this happens if you open a saved session.
+        if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".rrs": # do we need to load a schema, this happens if you open a saved session.
             self.schema.loadDocument(sys.argv[-1])
 
         
     def createWidgetsToolbar(self):
+        orngTabs.constructCategoriesPopup(self)
         if self.widgetsToolBar:
             if self.widgetsToolBar.isFloating():
                 float = True
@@ -215,7 +207,7 @@ class OrangeCanvasDlg(QMainWindow):
         #self.tabs.createFavoriteWidgetTabs(self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
         if not self.settings.get("showWidgetToolbar", True): 
             self.widgetsToolBar.hide()
-
+        
 
 
     def readShortcuts(self):
@@ -316,14 +308,14 @@ class OrangeCanvasDlg(QMainWindow):
             #self.debugModeButton.setChecked(False)
             self.output.debugMode = 1
     def importSchema(self):
-        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.ows)")
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs)")
         if name.isEmpty():
             return
         self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
         self.addToRecentMenu(str(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.ows)")
+        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs)")
         if name.isEmpty():
             return
         self.schema.clear()
@@ -331,7 +323,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.addToRecentMenu(str(name))
 
     def menuItemOpenFreeze(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.ows)")
+        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.rrs)")
         if name.isEmpty():
             return
         self.schema.clear()

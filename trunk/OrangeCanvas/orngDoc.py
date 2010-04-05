@@ -435,11 +435,11 @@ class SchemaDoc(QWidget):
     def saveDocumentAs(self):
         print 'saveDocumentAs'
         
-        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.ows)")
+        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.rrs)")
         if not name or name == None: return False
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == "": return False
-        if os.path.splitext(str(name))[1].lower() != ".ows": name = os.path.splitext(str(name))[0] + ".ows"
+        if os.path.splitext(str(name))[1].lower() != ".rrs": name = os.path.splitext(str(name))[0] + ".rrs"
         return self.save(str(name),tmp=False)
         
 
@@ -535,7 +535,7 @@ class SchemaDoc(QWidget):
             doc.unlink()
             
         
-        if os.path.splitext(filename)[1].lower() == ".ows":
+        if os.path.splitext(filename)[1].lower() == ".rrs":
             (self.schemaPath, self.schemaName) = os.path.split(filename)
             self.canvasDlg.settings["saveSchemaDir"] = self.schemaPath
             self.canvasDlg.addToRecentMenu(filename)
@@ -556,7 +556,7 @@ class SchemaDoc(QWidget):
         qApp.setOverrideCursor(Qt.WaitCursor)
         failureText = ""
         
-        if os.path.splitext(filename)[1].lower() == ".ows":
+        if os.path.splitext(filename)[1].lower() == ".rrs":
             self.schemaPath, self.schemaName = os.path.split(filename)
             self.canvasDlg.setCaption(caption or self.schemaName)
         try:

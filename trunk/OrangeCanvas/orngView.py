@@ -38,7 +38,7 @@ class SchemaView(QGraphicsView):
     # ###########################################
     def containsOWSFile(self, name):
         name = name.strip("\x00")
-        return name.lower().endswith(".ows")
+        return name.lower().endswith(".rrs")
 
     def dragEnterEvent(self, ev):
         if self.containsOWSFile(str(ev.mimeData().data("FileName"))):

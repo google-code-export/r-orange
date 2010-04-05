@@ -1,5 +1,7 @@
 from table import table
 from RSession import RSession
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 class Rtable(table):
     def __init__(self,widget,Rdata=None, rows = 0, columns = 0,sortable=False, selectionMode = -1, addToLayout = 1):
@@ -11,9 +13,22 @@ class Rtable(table):
     
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         print 'in Rtable set'
+        #data = self.R.R('as.matrix(' + Rdata + ')', wantType = 'array')
+        
         data = self.R.R('as.data.frame(' + Rdata + ')')
         self.Rdata = Rdata
-        self.setTable(data)
+        #self.setTable(data)
+        rowCount = self.R.R('length('+Rdata+'[,1])')
+        columnCount = self.R.R('length('+Rdata+'[1,])')
+        self.setRowCount(int(rowCount))
+        self.setColumnCount(int(columnCount))
+        for j in range(0, int(columnCount)):
+            print 'loaded '+str(j+1)+' of '+str(columnCount)+' columns'
+            colData = self.R.R(Rdata+'[,'+str(j+1)+']', wantType = 'list')
+            for i in range(0, int(rowCount)):
+                newItem = QTableWidgetItem(str(colData[i]))
+                self.setItem(i, j, newItem)
+                
         if setColHeaders: self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
         if setRowHeaders: self.setVerticalHeaderLabels(self.R.R('rownames(' +self.Rdata+')'))
     def getSettings(self):

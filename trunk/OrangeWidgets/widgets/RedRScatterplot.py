@@ -237,8 +237,9 @@ class RedRScatterplot(OWRpy):
                 pc += 1
             self.paintLegend.insertHtml('</table>')
         # make the plot
-        
         else:
+            xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
+            yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             self.paintLegend.hide()
             # check if the column is a factor
             if xDataClass in ['factor']:

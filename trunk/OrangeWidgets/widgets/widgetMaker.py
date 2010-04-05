@@ -298,8 +298,8 @@ class widgetMaker(OWRpy):
             self.commitFunction += "\t\t\tinjection.append(string)\n"
         self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("
-        if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("
+        if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
+        self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("
         else:
             self.commitFunction += "'"+self.functionName.text()+"("
         for element in self.functionInputs.keys():
