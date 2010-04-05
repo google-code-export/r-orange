@@ -58,27 +58,22 @@ class table(widgetState,QTableWidget):
         
     def getSettings(self):
     
-    def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
-        print 'in Rtable set'
-        data = self.R.R('as.matrix(' + Rdata + ')', wantType = 'array')
-        
-        self.Rdata = Rdata
-        self.setTable(data)
-        if setColHeaders: self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
-        if setRowHeaders: self.setVerticalHeaderLabels(self.R.R('rownames(' +self.Rdata+')'))
-    def getSettings(self):
-        r = table.getSettings(self)
-        del r['data']
-        r['Rdata'] = self.Rdata
+        r = {'data': self.data,'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
+        if self.oldSortingIndex:
+            r['sortIndex'] = self.oldSortingIndex
+            r['order'] = self.oldSortingOrder
+            
+        # print r
         return r
     def loadSettings(self,data):
-        #print data
-        self.setRTable(data['Rdata'])
-        
+        # print data
+        self.setTable(data['data'])
+        # print 'start'
+        # print data
         if 'sortIndex' in data.keys():
             # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
-        #print 'aaaaaaaaatable#########################'
+        print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             # print 'table#########################'
             for i in data['selection']:
@@ -87,5 +82,22 @@ class table(widgetState,QTableWidget):
             
                 #self.selectRow(i[0])
             
-        
-  
+    def delete(self):
+        # rows = self.rowCount()
+        # columns = self.columnCount()
+        # for i in range(0, rows):
+            # for j in range(0, columns):
+                # try:
+                    # item = self.item(i, j)
+                    # if type(item) == PyQt4.QtGui.QTableWidgetItem:
+                        #print type(item)
+                        # sip.delete(item)
+                # except: pass
+                # try:
+                    # widget = self.cellWidget(i, j)
+                    # if widget:
+                        #print type(widget)
+                        # sip.delete(widget)
+                # except: pass
+                
+        sip.delete(self)
