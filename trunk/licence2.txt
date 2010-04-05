@@ -1,29 +1,38 @@
-RedR is a visual interface for R written in Python based on the Orange library (discribed below) written by Kyle R. Covington and Anup Parikh.
+Red-R is a visual interface for R written in Python based on the Orange library (described below) written by Kyle R. Covington and Anup Parikh.
 
-The RedR developers would like to thank the Orange developers and contributors for their help and contributions to this project.
+The Red-R developers would like to thank the Orange developers and contributors for their help and contributions to this project.
 
-RedR is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Red-R is open source (that is the source files are available to you); you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-RedR is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+Red-R is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-RedR Widgets and Canvas are based on Qt. If you intend to use them, you should also read and agree with Trolltech's Q Public License (see http://www.trolltech.com/licenses/qpl.html).
+Red-R makes extensive use of RPy (http://rpy.sourceforge.net/index.html) and we would like to thank the developers of RPy for their work in making this interface.
 
-RedR contains orngCRS module written by Aleks Jakulin (http://www.stat.columbia.edu/~jakulin/).
+Red-R contains an embedded copy of R you must also agree with the license terms of R to install.  These can be found in the R\doc folder of the R distribution.  Also some packages may come preinstalled with this version in your R directory.  If you are not sure that you agree with these licenses then you should not install this software.
 
-RedR also contains SOM_PAK (SOM Programming Team of the Helsinki University of Technology, Laboratory of Computer and Information Science, Rakentajanaukio 2 C, SF-02150 Espoo, FINLAND)
+Red-R Widgets and Canvas are based on Qt. If you intend to use them, you should also read and agree with Trolltech's Q Public License (see http://www.trolltech.com/licenses/qpl.html).
 
-RedR contains libsvm and qhull, which are distributed under the following copyright notices:
+Red-R contains orngCRS module written by Aleks Jakulin (http://www.stat.columbia.edu/~jakulin/).
 
-Random numbers in RedR are computed with Shaw Cookus' implementation of Mersenne twister. CRC 32 is computed by the code published at http://www.createwindow.com/programming/crc32/ by Richard A. Ellingson.
+Red-R also contains SOM_PAK (SOM Programming Team of the Helsinki University of Technology, Laboratory of Computer and Information Science, Rakentajanaukio 2 C, SF-02150 Espoo, FINLAND)
 
-Certain features of the RedR updater use the pysvn package (http://pysvn.tigris.org/) whose licence is included below.
+Red-R contains libsvm and qhull, which are distributed under the following copyright notices:
 
-You have downloaded a beta-test version of this software.  As such this version is designed to aid the developers in solving common problems that may be occuring within this software.  From time to time your system may send updates to facilities opperated by the developers or persons or agents that they appoint.  You may not be prompted when this infromaiton is sent to these facilities.  Only infromation concerning the opperation of RedR will be sent.  No personal infromation will be transmitted.  If you do not wish for this to occur, please do not use this software and use a stable production version.  By agreeing to this licence and these terms you agree to send data concerning RedR performance to the developers as indicated above.
+At some time random numbers in Red-R were computed with Shaw Cookus' implementation of Mersenne twister. CRC 32 is computed by the code published at http://www.createwindow.com/programming/crc32/ by Richard A. Ellingson.
 
-In compliance with section 2 of the GNU licence of the programs contained herin modifications have been made to the packages contained within the Orange packages.  No modifications to other components were made as of the wrighting of this installer or distribution (19 September 2009) by the authors.  Third parties may have made modifications that the authors are not aware of prior to the inclusion of other packages or programs into this distribution.  The authors are not responsible for these changes.  Programs and packages outside of the Orange packages are installed using thier own installers and the user must accept their licence agreements as they appear in order to use this software.  In general, these programs, packages, and components come with NO WARANTY which may be explained in more detail in their respective sections.  The licence agreement for Orange follows the licence for RedR below.
+Certain features of the Red-R updater use the pysvn package (http://pysvn.tigris.org/) whose license is included below.
 
+You have downloaded a beta-test version of this software.  As such this version is designed to aid the developers in solving common problems that may be occurring within this software.  From time to time your system may send updates to facilities operated by the developers or persons or agents that they appoint.  You may not be prompted when this information is sent to these facilities.  Only information concerning the operation of Red-R will be sent.  No personal information will be transmitted.  If you do not wish for this to occur, please do not use this software and use a stable production version.  By agreeing to this license and these terms you agree to send data concerning Red-R performance to the developers as indicated above.
 
----- (begin GNU licence) ----
+In compliance with section 2 of the GNU license of the programs contained herein modifications have been made to the packages contained within the Orange packages.  Additionally some modifications may have been made to RPy functions.  Third parties may have made modifications that the authors are not aware of prior to the inclusion of other packages or programs into this distribution.  The authors are not responsible for these changes.  Programs and packages outside of the Orange packages are installed using their own installers and the user must accept their license agreements as they appear in order to use this software.  In general, these programs, packages, and components come with NO WARANTY which may be explained in more detail in their respective sections.  The license agreement for Orange follows the license for Red-R below.
+
+Red-R contains PIL (http://www.pythonware.com/products/pil/) you must agree with the PIL license.
+
+Red-R contains pywin.  The pywin license is included below.
+
+By agreeing to this license you agree to all licenses of all software accompanying this distribution.
+
+---- (begin GNU license) ----
 
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
@@ -365,8 +374,8 @@ consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
 
----- (end GNU licence) ----
----- (begin Orange licence and copyright notice) ----
+---- (end GNU license) ----
+---- (begin Orange license and copyright notice) ----
 Orange is a component based machine learning library for Python developed at Laboratory of Artificial Intelligence, Faculty of Computer and Information Science, University of Ljubljana, Slovenia.
 
 Orange is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
@@ -499,9 +508,14 @@ and redistributed under the following conditions:
 
 ---- (end SOM_PAK copyright) ----------
 
----- (end Orange licence and copyright notice) ----
+---- (end Orange license and copyright notice) ----
 
----- (Begin pysvn licence) ----
+---- (Begin RPy license block) ----
+
+% $Id: defs.texi 300 2006-03-25 01:35:37Z warnes $ % % ***** BEGIN LICENSE BLOCK ***** % Version: MPL 1.1/GPL 2.0/LGPL 2.1 % % The contents of this file are subject to the Mozilla Public License Version % 1.1 (the "License"); you may not use this file except in compliance with % the License. You may obtain a copy of the License at % http://www.mozilla.org/MPL/ % % Software distributed under the License is distributed on an "AS IS" basis, % WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License % for the specific language governing rights and limitations under the % License. % % The Original Code is the RPy python module. % % The Initial Developer of the Original Code is Walter Moreira. % Portions created by the Initial Developer are Copyright (C) 2002 % the Initial Developer. All Rights Reserved. % % Contributor(s): % Gregory R. Warnes <greg AT warnes DOT net> (Maintainer) % % Alternatively, the contents of this file may be used under the terms of % either the GNU General Public License Version 2 or later (the "GPL"), or % the GNU Lesser General Public License Version 2.1 or later (the "LGPL"), % in which case the provisions of the GPL or the LGPL are applicable instead % of those above. If you wish to allow use of your version of this file only % under the terms of either the GPL or the LGPL, and not to allow others to % use your version of this file under the terms of the MPL, indicate your % decision by deleting the provisions above and replace them with the notice % and other provisions required by the GPL or the LGPL. If you do not delete % the provisions above, a recipient may use your version of this file under % the terms of any one of the MPL, the GPL or the LGPL. % % ***** END LICENSE BLOCK *****
+
+---- (end RPy license block) ----
+---- (Begin pysvn license) ----
 
 =================================================================
 Copyright (C) 2003-2007 Barry A. Scott. All rights reserved.
@@ -551,4 +565,54 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 =================================================================
 
---- (End pysvn licence) ---
+--- (End pysvn license) ---
+
+---- (BEGIN PIL LICENSE) ----
+
+The Python Imaging Library (PIL) is
+
+    Copyright © 1997-2006 by Secret Labs AB
+    Copyright © 1995-2006 by Fredrik Lundh
+
+By obtaining, using, and/or copying this software and/or its associated documentation, you agree that you have read, understood, and will comply with the following terms and conditions:
+
+Permission to use, copy, modify, and distribute this software and its associated documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appears in all copies, and that both that copyright notice and this permission notice appear in supporting documentation, and that the name of Secret Labs AB or the author not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
+
+SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+---- (End PIL LICENSE) ----
+
+---- (BEGIN pywin LICENSE) ----
+
+Unless stated in the specfic source file, this work is
+Copyright (c) 1994-2008, Mark Hammond 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions 
+are met:
+
+Redistributions of source code must retain the above copyright notice, 
+this list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright 
+notice, this list of conditions and the following disclaimer in 
+the documentation and/or other materials provided with the distribution.
+
+Neither name of Mark Hammond nor the name of contributors may be used 
+to endorse or promote products derived from this software without 
+specific prior written permission. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+
+---- (end pywin license) ----

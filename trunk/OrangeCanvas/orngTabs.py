@@ -792,20 +792,22 @@ def constructCategoriesPopup(canvasDlg):
             categoriesPopup.catActions.append(catmenu) # put the catmenu in the categoriespopup
             insertChildActions(canvasDlg, catmenu, categoriesPopup, itab)
             insertWidgets(canvasDlg, catmenu, categoriesPopup, str(itab.getAttribute('name'))) 
-                
+    #print canvasDlg.settings["WidgetTabs"]
     for category, show in canvasDlg.settings["WidgetTabs"]:
         if not show or not canvasDlg.widgetRegistry.has_key(category):
             continue
         catmenu = categoriesPopup.addMenu(category)
         categoriesPopup.catActions.append(catmenu)
+        #print canvasDlg.widgetRegistry[category]
         for widgetInfo in sorted(canvasDlg.widgetRegistry[category].values(), key=lambda x:x.priority):
             icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
             act = catmenu.addAction(icon, widgetInfo.name)
             
             act.widgetInfo = widgetInfo
             act.category = catmenu
-            categoriesPopup.allActions.append(act)
-
+            #categoriesPopup.allActions.append(act)
+    
+    ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
     ####
     try:
@@ -852,7 +854,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                     
                     act.widgetInfo = widgetInfo
                     act.category = catmenu
-                    #categoriesPopup.allActions.append(act)
+                    categoriesPopup.allActions.append(act)
                     
                     
             except: pass

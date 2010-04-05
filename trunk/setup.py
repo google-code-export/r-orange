@@ -1,10 +1,12 @@
 import os, sys
 from distutils.core import setup
 import py2exe
-sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\')
-sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\OrangeCanvas\\')
-sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\OrangeWidgets\\')
-sys.path.insert(0, 'C:\\Users\\anup\\Documents\\red\\redR-dist\\R\\bin')
+
+base = 'C:\\Python26\\Lib\\site-packages\\redR1.5'
+sys.path.insert(0, base)
+sys.path.insert(0, os.path.join(base,'OrangeCanvas'))
+sys.path.insert(0, os.path.join(base,'OrangeWidgets'))
+sys.path.insert(0, os.path.join(base,'R','bin'))
 
 Mydata_files = [
 #('', ['C:\\Program Files (x86)\\R\\R-2.7.0\\bin\\R.dll']),
@@ -39,7 +41,7 @@ setup(name="Red-R",
       author_email="anup.parikh@gmail.com",
       url="http://www.red-r.org",
       license="GNU General Public License (GPL)",
-      data_files = Mydata_files,
+#      data_files = Mydata_files,
       windows=["OrangeCanvas/orngCanvas.pyw"],
       options={"py2exe": {
       "skip_archive": True, 
