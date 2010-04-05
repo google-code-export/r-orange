@@ -140,8 +140,8 @@ class readFile(OWRpy):
         self.scroll.setWidget(self.columnTypes)
         #self.columnTypes.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
         self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
-        self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Preferred ,QSizePolicy.Preferred ))
-        self.columnTypes.layout().setAlignment(Qt.AlignTop)
+        self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
+        self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.setFileList()
 
     def loadCustomSettings(self,settings):
@@ -282,10 +282,7 @@ class readFile(OWRpy):
 
     def updateScan(self):
         if self.rowNamesCombo.count() == 0:
-            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')')
-            if type(self.colNames) is str:
-                #colNames = [str(c) for c in range(1, int(self.R('length('+self.Rvariables['dataframe_org']+'[1,])')))]
-                self.colNames = [self.colNames]
+            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
             self.rowNamesCombo.clear()
             self.rowNamesCombo.addItem('NULL')
             self.rowNamesCombo.addItems(self.colNames)
@@ -293,26 +290,26 @@ class readFile(OWRpy):
         # print self.R(self.Rvariables['dataframe_org'])
         # return
         
-        # data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-        # + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))')
+        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
+        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
+        rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
         #print data
-        # txt = self.html_table(data)
+        txt = self.html_table(data,rownames)
         # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
-        try:
-            txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',
-            processingNotice=True, showException=False)
-            self.scanarea.setText(txt)
-        except:
-            QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
-            QMessageBox.Ok + QMessageBox.Default)
-            return
+        # try:
+            #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
+        # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
+        
+        self.scanarea.setText(txt)
+        # except:
+            # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+            # QMessageBox.Ok + QMessageBox.Default)
+            # return
             
         
         
         if len(self.colClasses) ==0:
-            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))')
-            if type(self.colClasses) is str:
-                self.colClasses = [self.colClasses]
+            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
             self.myColClasses = self.colClasses
         
         if len(self.dataTypes) ==0:
@@ -345,10 +342,14 @@ class readFile(OWRpy):
         #print self.rowNamesCombo.currentIndex()
         self.updateScan()
         
-    def html_table(self,lol):
+    def html_table(self,lol,rownames):
         s = '<table border="1" cellpadding="3">'
-        for sublist in lol:
-            s+= '  <tr><td>'
+        s+= '  <tr><td>Rownames</td><td><b>'
+        s+= '    </b></td><td><b>'.join(lol[0])
+        s+= '  </b></td></tr>'
+        
+        for row, sublist in zip(rownames,lol[1:]):
+            s+= '  <tr><td><b>' +row + '</b></td><td>'
             s+= '    </td><td>'.join(sublist)
             s+= '  </td></tr>'
         s+= '</table>'
