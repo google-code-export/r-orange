@@ -308,14 +308,14 @@ class OrangeCanvasDlg(QMainWindow):
             #self.debugModeButton.setChecked(False)
             self.output.debugMode = 1
     def importSchema(self):
-        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs)")
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; All Files (*.*)")
         if name.isEmpty():
             return
         self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
         self.addToRecentMenu(str(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs)")
+        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; All Files (*.*)")
         if name.isEmpty():
             return
         self.schema.clear()

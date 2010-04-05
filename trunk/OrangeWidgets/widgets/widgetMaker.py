@@ -214,7 +214,7 @@ class widgetMaker(OWRpy):
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
 
         self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
-        if 'Allow Output' in self.functionAllowOutput.getChecked():
+        if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
             self.initCode += '\t\tself.data = {}\n'
         # set's the default's of the fields
@@ -294,12 +294,12 @@ class widgetMaker(OWRpy):
         self.commitFunction += "\t\tinjection = []\n"
         for element in self.fieldList.keys():
             self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
-            self.commitFunction += "\t\t\tstring = '"+element+"='+str(self.RFunctionParam"+ element +"_lineEdit.text())\n"
+            self.commitFunction += "\t\t\tstring = '"+element+"=\''+str(self.RFunctionParam"+ element +"_lineEdit.text())+'\''\n"
             self.commitFunction += "\t\t\tinjection.append(string)\n"
         self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("
         if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
-        self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("
+            self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("
         else:
             self.commitFunction += "'"+self.functionName.text()+"("
         for element in self.functionInputs.keys():

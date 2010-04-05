@@ -435,7 +435,7 @@ class SchemaDoc(QWidget):
     def saveDocumentAs(self):
         print 'saveDocumentAs'
         
-        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Orange Widget Schema (*.rrs)")
+        name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Red-R Widget Schema (*.rrs)")
         if not name or name == None: return False
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == "": return False
@@ -549,7 +549,7 @@ class SchemaDoc(QWidget):
         
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
-                QMessageBox.critical(self, 'Orange Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
+                QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
             return
 
         # set cursor

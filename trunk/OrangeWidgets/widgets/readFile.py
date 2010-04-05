@@ -149,17 +149,35 @@ class readFile(OWRpy):
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings['dataTypes'])
-        if 'dataTypes' not in settings.keys():
-            return
-        for k,l,c in zip(range(len(self.colNames)),self.colNames,settings['dataTypes']['list']):
-            s = redRGUI.comboBox(self.columnTypes,items=[],orientation='horizontal',callback=self.updateColClasses)
-            s.loadSettings(c['redRGUIObject'])
-            s.setMinimumWidth(100)
-            q = redRGUI.widgetLabel(self.columnTypes,label=l)
-            self.columnTypes.layout().addWidget(s,k,1)
-            self.columnTypes.layout().addWidget(q,k,0)
-            self.dataTypes.append(s)
-
+        # if 'dataTypes' not in settings.keys():
+            # return
+        # for k,l,c in zip(range(len(self.colNames)),self.colNames,settings['dataTypes']['list']):
+            # s = redRGUI.comboBox(self.columnTypes,items=[],orientation='horizontal',callback=self.updateColClasses)
+            # print c
+            # if 'list' in c.keys():
+                # print c['list']
+                # if type(c['list']) in [list]:
+                    # for listItem in c['list']:
+                        # if 'redRGUIObject' in listItem.keys():
+                            
+            # if 'redRGUIObject' not in c.keys(): return
+            # s.loadSettings(c['redRGUIObject'])
+            # s.setMinimumWidth(100)
+            # q = redRGUI.widgetLabel(self.columnTypes,label=l)
+            # self.columnTypes.layout().addWidget(s,k,1)
+            # self.columnTypes.layout().addWidget(q,k,0)
+            # self.dataTypes.append(s)
+            
+        # print the classes of the columns from self.myColClasses
+        for i in range(len(self.myColClasses)):
+            s = redRGUI.comboBox(self.columnTypes, items = ['factor','numeric','character','integer','logical'], orientation = 'horizontal', callback = self.updateColClasses)
+            index = s.findText(self.myColClasses[i])
+            if index != -1:
+                s.setCurrentIndex(index)
+            s.setEnabled(False)
+            q = redRGUI.widgetLabel(self.columnTypes,label=self.colNames[i])
+            self.columnTypes.layout().addWidget(s, i, 1)
+            self.columnTypes.layout().addWidget(q, i, 0)
         
     def setFileList(self):
         if self.recentFiles == None: self.recentFiles = []
