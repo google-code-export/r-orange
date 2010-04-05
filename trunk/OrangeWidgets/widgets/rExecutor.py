@@ -22,7 +22,7 @@ class rExecutor(OWRpy):
         self.loadSettings()
         
         self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
-        self.outputs = [('R.object', RvarClasses.RVariable), ('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector)]
+        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector), ('R.object', RvarClasses.RVariable)]
         #self.breakme()
         
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
@@ -50,7 +50,8 @@ class rExecutor(OWRpy):
         self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout(), callback = self.runR, width = -1)
         self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         processbutton = redRGUI.button(runbox, label = "&Run", callback = self.runR, width=100)
-
+        statusBox = redRGUI.groupBox(rightArea, label = "Status")
+        self.sendStatus = redRGUI.widgetLabel(statusBox, 'Nothing Sent')
         self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
         self.status = redRGUI.widgetLabel(self.dataBox, "No Input")
         
@@ -86,22 +87,29 @@ class rExecutor(OWRpy):
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass == 'numeric': # we have a numeric vector as the object
                 self.rSend('R Vector', self.sendt)
+                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
                 self.rSend('R Vector', self.sendt)
+                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
                 self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
                 self.sendt['cm'] = 'cm_'+self.sendt['data']
                 self.rSend('R Data Frame', self.sendt)
+                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
                 self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
                 self.sendt['cm'] = 'cm_'+self.sendt['data']
                 self.rSend('R Data Frame', self.sendt)
+                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
                 self.rSend('R List', self.sendt)
+                self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
                 self.rSend('R.object', self.sendt)
+                self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
             self.rSend('R.object', self.sendt)
+            self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):
         self.R('txt<-"R error occured" #Benign error in case a real error occurs')
         self.R('txt<-capture.output('+str(self.command.text())+')')

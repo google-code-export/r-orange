@@ -253,7 +253,7 @@ class DataExplorer(OWRpy):
         self.table.setRowCount(min([int(dims[0]), 500])+2) # set up the row and column counts of the table
         self.table.setColumnCount(min([int(dims[1]), 500])+1)
         tableData = self.R('as.matrix('+self.currentDataTransformation+')') # collect all of the table data into an objec
-        tableData = numpy.array(tableData) # make the conversion to a numpy object for subsetting
+        #tableData = numpy.array(tableData) # make the conversion to a numpy object for subsetting
         #print tableData
         colClasses = []
         for i in range(0, dims[1]):
@@ -292,10 +292,10 @@ class DataExplorer(OWRpy):
                 elif j > 0 and i> 1:
                     if dims[0] == 1: # there is only one row
                         ci = QTableWidgetItem(str(tableData[j-1]))
-                    elif dims[1] == 1:
+                    elif dims[1] == 1: # there is only one colum
                         ci = QTableWidgetItem(str(tableData[i-2]))
                     else:
-                        ci = QTableWidgetItem(str(tableData[i-2, j-1])) # need to catch the case that there might not be multiple rows or columns
+                        ci = QTableWidgetItem(str(tableData[i-2][j-1])) # need to catch the case that there might not be multiple rows or columns
                     self.table.setItem(i, j, ci)
         self.table.resizeColumnsToContents()
     def showDialog(self, k):

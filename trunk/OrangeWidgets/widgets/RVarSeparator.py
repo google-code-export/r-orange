@@ -24,11 +24,13 @@ class RVarSeparator(OWRpy):
         
         self.help.setHtml('The R Variable Separator is used to separate variables from a loaded R session.  Connecting the R Loader widget to this widget will display a list of available variables in the local environment to which the session was loaded.  Clicking on an element in the list will send that element on to downstream widgets.  One should take note of the class of the element that is sent as this will specify the output connection of the data.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         self.varBox = redRGUI.listBox(self.controlArea, label = 'Variables', callback = self.separate)
+        self.sendStatus = redRGUI.widgetLabel(self.controlArea, '')
         #self.status = redRGUI.widgetLabel(self.controlArea, 'status', 'No data to parse')
     
     def process(self, data):
         self.envName = ''
         self.sendthis = {}
+        self.sendStatus.setText('')
         if data and 'data' in data:
             dataList = self.R('local(ls(), '+data['data']+')')
             if type(dataList) == type([]):
@@ -56,29 +58,35 @@ class RVarSeparator(OWRpy):
             if thisdataclass == 'numeric': # we have a numeric vector as the object
                 self.rSend('R Vector', self.sendthis)
                 self.status.setText('Numeric vector sent')
+                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
                 self.rSend('R Vector', self.sendthis)
                 self.status.setText('Character vector sent')
+                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
                 self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
                 self.sendthis['cm'] = self.Rvariables['separator_cm']
                 self.sendthis['parent'] = self.sendthis['data']
                 self.rSend('R Data Frame', self.sendthis)
                 self.status.setText('Data frame sent')
+                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
                 self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
                 self.sendthis['cm'] = self.Rvariables['separator_cm']
                 self.sendthis['parent'] = self.sendthis['data']
                 self.rSend('R Data Frame', self.sendthis)
                 self.status.setText('Matrix sent')
+                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
                 self.rSend('R List', self.sendthis)
                 self.status.setText('List sent')
+                self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
                 self.rSend('R.object', self.sendthis)
                 self.status.setText('Ambiguous class sent')
+                self.sendStatus.setText(thisdata+' sent through the R Object channel')
             
         else:
             self.rSend('R.object', self.sendthis)
             self.status.setText('Ambiguous class sent')
-            
+            self.sendStatus.setText(thisdata+' sent through the R Object channel')

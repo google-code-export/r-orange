@@ -10,7 +10,6 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-import RRGUI 
 class RLoader(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
