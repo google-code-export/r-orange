@@ -394,6 +394,7 @@ class OWRpy(OWWidget,RSession):
                 if 'redRGUIObject' in v.keys():
                     getattr(self, k).loadSettings(v['redRGUIObject'])
                     getattr(self, k).setDefaultState(v['redRGUIObject'])
+                    qApp.setOverrideCursor(Qt.WaitCursor)
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     # print 'dict',len(var),len(v['dict'])

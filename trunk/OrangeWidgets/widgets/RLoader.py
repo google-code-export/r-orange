@@ -19,6 +19,7 @@ class RLoader(OWRpy):
         self.outputs = [('R Session', RvarClasses.RSession)]
         self.setRvariableNames(['sessionEnviron'])
         OWGUI.button(self.controlArea, self, 'Load Session', callback = self.loadSession)
+        self.infoa = redRGUI.widgetLabel(self.controlArea, '')
     def loadSession(self):
         # open a dialog to pick a file and load it.
         self.R(self.Rvariables['sessionEnviron']+'<-new.env()') # make a new environment for the data
@@ -30,5 +31,6 @@ class RLoader(OWRpy):
         self.R('load('+file+', '+self.Rvariables['sessionEnviron']+')') #load the saved session into a protective environment
         
         # logic to handle exceptions to loading
+        self.infoa.setText('Data loaded from '+str(file)+'. Please use the R Variable Separator widget to extract your data.')
         self.rSend('R Session', {'data':self.Rvariables['sessionEnviron']})
         self.status.setText('Session loaded from memory, please use the variable separator to parse the widget output.')

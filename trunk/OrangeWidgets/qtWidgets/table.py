@@ -70,6 +70,8 @@ class table(widgetState,QTableWidget):
         self.setTable(data['data'])
         # print 'start'
         # print data
+        # the overrideCursor was reset by setTable so we need to reset it to the wait cursos
+        qApp.setOverrideCursor(Qt.WaitCursor)
         if 'sortIndex' in data.keys():
             # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
