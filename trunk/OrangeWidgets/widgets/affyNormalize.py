@@ -121,9 +121,9 @@ class affyNormalize(OWRpy):
             print 'error'
 
         
-        self.bgcmethselector.addItems(self.R('bgcorrect.methods'))
-        self.pmcorrectselector.addItems(self.R('pmcorrect.methods'))
-        self.summethselector.addItems(self.R('express.summary.stat.methods'))
+        self.bgcmethselector.addItems(self.R('bgcorrect.methods()'))
+        self.pmcorrectselector.addItems(self.R('pmcorrect.methods()'))
+        self.summethselector.addItems(self.R('express.summary.stat.methods()'))
         
     
     def selectMethodChanged(self):
