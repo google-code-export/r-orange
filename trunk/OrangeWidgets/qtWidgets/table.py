@@ -26,27 +26,26 @@ class table(widgetState,QTableWidget):
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
         
-    def setTable(self, data, rownames = None, colnames = None):
+    def setTable(self, data):
         print 'in table set'
         if data==None:
             return
-        self.data = data # expect a numpy array as the input
+        self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
         self.clear()
-        rowcount = len(data[0:, 0])
-        colcount = len(data[0, 0:])
-        self.setRowCount(rowcount)
-        self.setColumnCount(colcount)
-        if rownames != None:
-            self.setVerticalHeaderLabels(rownames)
-        if colnames != None:
-            self.setHorizontalHeaderLabels(colnames)
-        for i in range(0, rowcount):
-            for j in range(0, colcount):
-                newitem = QTableWidgetItem(str(data[i, j]))
-                self.setItem(i, j, newitem)
-                
+        self.setRowCount(len(data[data.keys()[0]]))
+        self.setColumnCount(len(data.keys()))
+
+        n = 0
+        for key in data:
+            m = 0
+            for item in data[key]:
+                newitem = QTableWidgetItem(str(item))
+                self.setItem(m, n, newitem)
+                m += 1
+            n += 1
+        
         qApp.restoreOverrideCursor()
 
     def sort(self, index):
@@ -59,22 +58,27 @@ class table(widgetState,QTableWidget):
         
     def getSettings(self):
     
-        r = {'data': self.data,'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
-        if self.oldSortingIndex:
-            r['sortIndex'] = self.oldSortingIndex
-            r['order'] = self.oldSortingOrder
-            
-        # print r
+    def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
+        print 'in Rtable set'
+        data = self.R.R('as.matrix(' + Rdata + ')', wantType = 'array')
+        
+        self.Rdata = Rdata
+        self.setTable(data)
+        if setColHeaders: self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
+        if setRowHeaders: self.setVerticalHeaderLabels(self.R.R('rownames(' +self.Rdata+')'))
+    def getSettings(self):
+        r = table.getSettings(self)
+        del r['data']
+        r['Rdata'] = self.Rdata
         return r
     def loadSettings(self,data):
-        # print data
-        self.setTable(data['data'])
-        # print 'start'
-        # print data
+        #print data
+        self.setRTable(data['Rdata'])
+        
         if 'sortIndex' in data.keys():
             # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
-        print 'aaaaaaaaatable#########################'
+        #print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             # print 'table#########################'
             for i in data['selection']:
@@ -83,22 +87,5 @@ class table(widgetState,QTableWidget):
             
                 #self.selectRow(i[0])
             
-    def delete(self):
-        # rows = self.rowCount()
-        # columns = self.columnCount()
-        # for i in range(0, rows):
-            # for j in range(0, columns):
-                # try:
-                    # item = self.item(i, j)
-                    # if type(item) == PyQt4.QtGui.QTableWidgetItem:
-                        #print type(item)
-                        # sip.delete(item)
-                # except: pass
-                # try:
-                    # widget = self.cellWidget(i, j)
-                    # if widget:
-                        #print type(widget)
-                        # sip.delete(widget)
-                # except: pass
-                
-        sip.delete(self)
+        
+  

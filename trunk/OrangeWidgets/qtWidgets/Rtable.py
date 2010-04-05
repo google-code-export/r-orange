@@ -11,8 +11,7 @@ class Rtable(table):
     
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         print 'in Rtable set'
-        data = self.R.R('as.matrix(' + Rdata + ')', wantType = 'array')
-        
+        data = self.R.R('as.data.frame(' + Rdata + ')')
         self.Rdata = Rdata
         self.setTable(data)
         if setColHeaders: self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
