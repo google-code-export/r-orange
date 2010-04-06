@@ -150,7 +150,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'] = OWGUIEx.lineEditHint(self.criteriaDialogList[j-1]['dialog'], None, None
                         #, callback = lambda i = i, j = j: self.columnLineEditHintAccepted(i, j))
                         )
-                        self.criteriaDialogList[j-1]['cw'].minTextLength = 3
+                        self.criteriaDialogList[j-1]['cw'].minTextLength = 2
                         cBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         lBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         redRGUI.button(cBox, "&Commit", callback = lambda k = j-1: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
@@ -165,7 +165,8 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['widgetLabel'] = redRGUI.textEdit(self.criteriaDialogList[j-1]['dialog'], '')
                         self.criteriaDialogList[j-1]['criteriaCollection'] = ''
                         #cw.setItems(self.R('as.vector('+self.currentDataTransformation+'[,'+str(j-1)+'])'))
-                        self.criteriaDialogList[j-1]['cw'].setItems(self.R(self.orriginalData+'[,'+str(j)+']'))
+                        
+                        self.criteriaDialogList[j-1]['cw'].setItems(self.R('t(as.matrix('+self.orriginalData+'[,'+str(j)+']))', wantType = 'list'))
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Moves to the selected text, but does not subset')
                         
                     elif thisClass in ['numeric', 'logical', 'integer']:
@@ -207,7 +208,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'].minTextLength = 3
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Subsets based on the elements from a factor column.  These columns contain repeating elements such as "apple", "apple", "banana", "banana".')
                         #print self.R('levels('+self.currentDataTransformation+'[,'+str(j-1)+'])')
-                        self.criteriaDialogList[j-1]['cw'].setItems(self.R('levels('+self.orriginalData+'[,'+str(j)+'])'))
+                        self.criteriaDialogList[j-1]['cw'].setItems(self.R('levels('+self.orriginalData+'[,'+str(j)+'])', wantType = 'list'))
                         cBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         lBox = redRGUI.widgetBox(self.criteriaDialogList[j-1]['dialog'], orientation = 'horizontal')
                         redRGUI.button(cBox, "&Commit", callback = lambda k = j-1: self.commitCriteriaDialog(k), tooltip = 'Commit the criteria to the table and repopulate') # commit the seleciton criteria to the criteriaList
@@ -351,7 +352,7 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append(item['criteriaCollection'])
+                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&'+item['criteriaCollection']+')')
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
@@ -366,7 +367,7 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append(item['criteriaCollection'])
+                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&'+item['criteriaCollection']+')')
                 #self.criteriaList.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table

@@ -273,6 +273,7 @@ class SchemaDoc(QWidget):
             #print str(forceInSignals) 
             #print str(forceOutSignals)
             #print 'adding widget '+caption
+            if widgetInfo.name == 'dummy': print 'Loading dummy step 2'
             newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
         except:
@@ -383,9 +384,12 @@ class SchemaDoc(QWidget):
 
     # return a new widget instance of a widget with filename "widgetName"
     def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
+        if widgetFileName == 'dummy': print 'Loading dummy step 1a'
         for category in self.canvasDlg.widgetRegistry.keys():
             for name, widget in self.canvasDlg.widgetRegistry[category].items():
-                if widget.fileName == widgetFileName:  
+                if widget.fileName == widgetFileName: 
+                    if widgetFileName == 'dummy':
+                        print 'Loading dummy step 1'
                     #print str(forceInSignals) + 'force in signals'
                     #print str(forceOutSignals) + 'force out signals'
                     return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
@@ -601,11 +605,12 @@ class SchemaDoc(QWidget):
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                     if not tempWidget:
+                        #print settings
                         print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
                         # we must build a fake widget this will involve getting the inputs and outputs and joining 
                         #them at the widget creation 
                         
-                        step.tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
                         
                         if not tempWidget:
                             #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
@@ -683,7 +688,7 @@ class SchemaDoc(QWidget):
             for widget in self.widgets:
                 widget.instance.restoreWidgetStatus()
         qApp.restoreOverrideCursor()  
-            
+        qApp.setOverrideCursor(Qt.ArrowCursor)    
     # save document as application
     def saveDocumentAsApp(self, asTabs = 1):
         # get filename

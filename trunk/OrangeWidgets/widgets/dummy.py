@@ -17,15 +17,22 @@ class dummy(OWRpy):
         print str(forceInSignals) +' and ' + str(forceOutSignals) + ' appending to dummy'
         if forceInSignals: 
             import RvarClasses
-            for a in forceInSignals:
-                print 'Appending ' + str(a) + ' in dummy'
-                
-                self.inputs.append((a, RvarClasses.RVariable, None))
+            for (a, b) in [signal for signal in forceInSignals]:
+                print 'Appending ' + str(a) + ' in dummy to the '+b+' signal'
+                if b == 'Data Frame': bc = RvarClasses.RDataFrame
+                elif b == 'List': bc = RvarClasses.RList
+                elif b == 'Vector': bc = RvarClasses.RVector
+                else: bc = RvarClasses.RVariable
+                self.inputs.append((a, bc, None))
         if forceOutSignals:
             import RvarClasses
-            for a in forceOutSignals:
-                print 'Appending ' +str(a)+' in dummy'
-                self.outputs.append((a, RvarClasses.RVariable))
+            for (a, b) in [signal for signal in  forceOutSignals]:
+                print 'Appending ' +str(a)+' in dummy using the '+b+' signal'
+                if b == 'Data Frame': bc = RvarClasses.RDataFrame
+                elif b == 'List': bc = RvarClasses.RList
+                elif b == 'Vector': bc = RvarClasses.RVector
+                else: bc = RvarClasses.RVariable
+                self.outputs.append((a, bc))
         print self.inputs
         print self.outputs
             

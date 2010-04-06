@@ -148,7 +148,9 @@ class CanvasLine(QGraphicsLineItem):
 # # CANVAS WIDGET
 # #######################################
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
-    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = {}, forceInSignals = None, forceOutSignals = None):
+    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = {}, forceInSignals = None, forceOutSignals = None):        
+
+        
         # import widget class and create a class instance
         #print str(forceInSignals)
         #print str(forceOutSignals)
@@ -166,6 +168,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         
         
         if widgetInfo.fileName == 'dummy': 
+            print 'Loading dummy step 3'
             self.instance.__init__(signalManager = signalManager, 
             forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
         else: self.instance.__init__(signalManager = signalManager)
@@ -193,10 +196,36 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
         QGraphicsRectItem.__init__(self, None, canvas)
         self.signalManager = signalManager
+        
+        if widgetInfo.fileName == 'dummy': # we need to add the inputs and outputs
+            print widgetInfo.__dict__['inputs']
+            try:
+                i = 0
+                for (a, b, c) in self.instance.inputs:
+                    b = forceInSignals[i][1]
+                    print b
+                    if b == 'Data Frame': bc = 'RvarClasses.RDataFrame'
+                    elif b == 'List': bc = 'RvarClasses.RList'
+                    elif b == 'Vector': bc = 'RvarClasses.RVector'
+                    else: bc = 'RvarClasses.RVariable'
+                    sig = InputSignal(a, bc, None)
+                    widgetInfo.__dict__['inputs'].append(sig)
+                    i += 1
+                o = 0
+                for (a, b) in self.instance.outputs:
+                    b = forceOutSignals[o][1]
+                    print b
+                    if b == 'Data Frame': bc = 'RvarClasses.RDataFrame'
+                    elif b == 'List': bc = 'RvarClasses.RList'
+                    elif b == 'Vector': bc = 'RvarClasses.RVector'
+                    else: bc = 'RvarClasses.RVariable'
+                    sig = OutputSignal(a, bc)
+                    widgetInfo.__dict__['outputs'].append()
+                print widgetInfo.__dict__['inputs']
+                print widgetInfo.__dict__['outputs']
+            except:
+                print 'There was an error loading the inputs and outputs'
         self.widgetInfo = widgetInfo
-        #self.widgetInfo.inputs = [(orngSignalManager.InputSignal(a,b,c)) for a,b,c in self.instance.inputs]
-        #self.widgetInfo.outputs = [(orngSignalManager.OutputSignal(a,b)) for a,b in self.instance.outputs]
-
         self.canvas = canvas
         self.view = view
         self.canvasDlg = canvasDlg

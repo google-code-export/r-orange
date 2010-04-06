@@ -58,35 +58,35 @@ class RVarSeparator(OWRpy):
             if thisdataclass == 'numeric': # we have a numeric vector as the object
                 self.rSend('R Vector', self.sendthis)
                 self.status.setText('Numeric vector sent')
-                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
+                self.sendStatus.setText('Data sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
                 self.rSend('R Vector', self.sendthis)
                 self.status.setText('Character vector sent')
-                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
+                self.sendStatus.setText('Data sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
                 self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
                 self.sendthis['cm'] = self.Rvariables['separator_cm']
                 self.sendthis['parent'] = self.sendthis['data']
                 self.rSend('R Data Frame', self.sendthis)
                 self.status.setText('Data frame sent')
-                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
+                self.sendStatus.setText('Data sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
                 self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
                 self.sendthis['cm'] = self.Rvariables['separator_cm']
                 self.sendthis['parent'] = self.sendthis['data']
                 self.rSend('R Data Frame', self.sendthis)
                 self.status.setText('Matrix sent')
-                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
+                self.sendStatus.setText('Data sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
                 self.rSend('R List', self.sendthis)
                 self.status.setText('List sent')
-                self.sendStatus.setText(thisdata+' sent through the R List channel')
+                self.sendStatus.setText('Data sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
                 self.rSend('R.object', self.sendthis)
                 self.status.setText('Ambiguous class sent')
-                self.sendStatus.setText(thisdata+' sent through the R Object channel')
+                self.sendStatus.setText('Data sent through the R Object channel')
             
         else:
             self.rSend('R.object', self.sendthis)
             self.status.setText('Ambiguous class sent')
-            self.sendStatus.setText(thisdata+' sent through the R Object channel')
+            self.sendStatus.setText('Data sent through the R Object channel')

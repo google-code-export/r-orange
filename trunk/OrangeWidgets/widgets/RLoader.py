@@ -20,15 +20,17 @@ class RLoader(OWRpy):
         self.setRvariableNames(['sessionEnviron'])
         OWGUI.button(self.controlArea, self, 'Load Session', callback = self.loadSession)
         self.infoa = redRGUI.widgetLabel(self.controlArea, '')
-    def loadSession(self):
+    def loadSession(self, file = None):
         # open a dialog to pick a file and load it.
         self.R(self.Rvariables['sessionEnviron']+'<-new.env()') # make a new environment for the data
         if file == None and ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
-            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "RData (*.RData)"))
+            file = QFileDialog.getOpenFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "RData (*.RData)")
         elif file == None: 
-            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "RData (*.RData)"))
+            file = QFileDialog.getOpenFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "RData (*.RData)")
         if file.isEmpty(): return
-        self.R('load('+file+', '+self.Rvariables['sessionEnviron']+')') #load the saved session into a protective environment
+        file = str(os.path.abspath(file))
+        file = file.replace('\\', '/')
+        self.R('load(\''+file+'\', '+self.Rvariables['sessionEnviron']+')') #load the saved session into a protective environment
         
         # logic to handle exceptions to loading
         self.infoa.setText('Data loaded from '+str(file)+'. Please use the R Variable Separator widget to extract your data.')
