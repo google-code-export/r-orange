@@ -179,7 +179,7 @@ class RedRScatterplot(OWRpy):
                     levels = ['NA', 'FALSE', 'TRUE']
                 else:
                     levelType = 'other'
-                    levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))', wantType = 'list')
+                    levels = self.R('levels(as.factor(na.omit('+self.data+'[,\''+paintClass+'\'])))', wantType = 'list')
             else: # we made it this far so the data must be in the cm
                 d = self.cm                
                 vectorClass = self.R('class('+self.cm+'[,\''+paintClass+'\'])')                
@@ -196,7 +196,7 @@ class RedRScatterplot(OWRpy):
                     levels = ['FALSE', 'TRUE']
                 else:
                     levelType = 'other'
-                    levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
+                    levels = self.R('levels(as.factor(na.omit('+self.cm+'[,\''+paintClass+'\'])))', wantType = 'list')    
             #print levels            
             
             if len(levels) > 50:
@@ -207,7 +207,7 @@ class RedRScatterplot(OWRpy):
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             self.paintLegend.insertHtml('<h5>Color Legend</h5>')
             self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
-            levels.insert(0, 'NA')
+            levels.append('NA')
             for p in levels:
                 print p
                 # collect the color

@@ -352,7 +352,7 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&'+item['criteriaCollection']+')')
+                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&('+item['criteriaCollection']+'))')
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
@@ -367,7 +367,7 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&'+item['criteriaCollection']+')')
+                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&('+item['criteriaCollection']+'))')
                 #self.criteriaList.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
