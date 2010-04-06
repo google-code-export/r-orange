@@ -417,6 +417,13 @@ class redRGraph(QwtPlot,widgetState):
         curve.setSymbol(newSymbol)
         curve.setStyle(style)
             #curve.setPen(QPen(penColor, lineWidth))
+        # check the data to make sure that it will be able to be set into the curve
+        for item in xData:
+            if type(item) not in [int, float, long]:
+                return None
+        for item in yData:
+            if type(item) not in [int, float, long]:
+                return None
         curve.setData(xData, yData)
         curve.attach(self)
         
@@ -875,6 +882,9 @@ class redRGraph(QwtPlot,widgetState):
 
     # return two lists of 0's and 1's whether each point in (xData, yData) is selected or not
     def getSelectedPoints(self, xData = None, yData = None, validData = None):
+        
+        
+        
         if xData == None:
             xData = self.xData
         if yData == None:
@@ -883,8 +893,10 @@ class redRGraph(QwtPlot,widgetState):
         if validData == None:
             validData = []
             for i in range(len(xData)):
-                validData.append(1)
-        
+                if type(xData[i]) in [int, float, long] and type(yData[i]) in [int, float, long]:
+                    validData.append(1)
+                else:
+                    validData.append(0)
         import numpy
         total = numpy.zeros(len(xData))
         for curve in self.selectionCurveList:

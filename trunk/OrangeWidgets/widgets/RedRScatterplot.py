@@ -12,6 +12,7 @@ import redRGUI
 import OWToolbars
 import re
 import textwrap, numpy
+from PyQt4.QtGui import *
 
 class RedRScatterplot(OWRpy):
     
@@ -44,10 +45,17 @@ class RedRScatterplot(OWRpy):
         plotarea.layout().addWidget(self.graph)
         self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
         self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self, self.zoomSelectToolbarBox, self.graph)
+        redRGUI.button(self.bottomAreaRight, label = "Print", callback = self.printGraph, tooltip = 'Print your selection to the default printer')
         redRGUI.button(self.bottomAreaRight, label = "Select", callback = self.showSelected, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
         
         self.resize(600, 500)
         self.move(300, 25)
+    def printGraph(self):
+        printer = QPrinter()
+        printerDialog = QPrintDialog(printer)
+        printerDialog.exec_()
+        print printer
+        self.graph.print_(printer)
     def refresh(self):
         if self.cm != None:
             try:
@@ -163,7 +171,7 @@ class RedRScatterplot(OWRpy):
                     print vectorClass
                     return
                     
-                elif vectorClass in ['numeric']:
+                elif vectorClass in ['numeric', 'integer']:
                     levelType = 'numeric'
                     levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))', wantType = 'list')
                 elif vectorClass in ['logical']:
@@ -180,12 +188,12 @@ class RedRScatterplot(OWRpy):
                     QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
                     print vectorClass                    
                     return
-                elif vectorClass in ['numeric']:
+                elif vectorClass in ['numeric', 'integer']:
                     levelType = 'numeric'
                     levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')
                 elif vectorClass in ['logical']:
                     levelType = 'logical'
-                    levels = ['NA', 'FALSE', 'TRUE']
+                    levels = ['FALSE', 'TRUE']
                 else:
                     levelType = 'other'
                     levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')    
@@ -199,25 +207,29 @@ class RedRScatterplot(OWRpy):
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             self.paintLegend.insertHtml('<h5>Color Legend</h5>')
             self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
+            levels.insert(0, 'NA')
             for p in levels:
                 print p
                 # collect the color
-                if levelType not in ['logical', 'numeric']:
+                if levelType not in ['logical', 'numeric'] and p != 'NA':
                     pc = self.R('match(\''+p+'\', levels(as.factor('+d+'[,\''+paintClass+'\'])))', silent = True)
+                elif levelType not in ['logical', 'numeric'] and p == 'NA':
+                    pc = 0
                 lColor = self.setColor(pc)
                 self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
                 # generate the subset
-                if levelType == 'logical':
-                    if p == 'TRUE':
-                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
-                    elif p == 'FALSE':
-                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
+                if p != 'NA':
+                    if levelType == 'logical':
+                        if p == 'TRUE':
+                            subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
+                        elif p == 'FALSE':
+                            subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
+                    elif levelType == 'numeric': 
+                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
                     else:
-                        subset = '(is.na('+d+'[,\''+paintClass+'\']))'
-                elif levelType == 'numeric': 
-                    subset = '('+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
-                else:
-                    subset = '('+d+'[,\''+paintClass+'\'] == \''+p+'\')'
+                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == \''+p+'\')'
+                elif p == 'NA':
+                    subset = '(is.na('+d+'[,\''+paintClass+'\']))'
                 # make a list of points
                 # check if the column is a factor
                 if xDataClass in ['factor']:

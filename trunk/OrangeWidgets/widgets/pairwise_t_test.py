@@ -48,8 +48,8 @@ class pairwise_t_test(OWRpy):
     def commitFunction(self):
         if self.indata == '': return
         if self.RFunctionParam_x.currentText() == self.RFunctionParam_g.currentText(): return
-        self.R('attach('+self.indata+')')
-        self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+str(self.RFunctionParam_x.currentText())+',pool_sd='+str(self.RFunctionParam_pool_sd.currentText())+',g='+str(self.RFunctionParam_g.currentText())+',p.adjust.method=\''+str(self.RFunctionParam_p_adjust_method.currentText())+'\')')
+        #self.R('attach('+self.indata+')')
+        self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+self.indata+'[,\''+str(self.RFunctionParam_x.currentText())+'\'],pool_sd='+str(self.RFunctionParam_pool_sd.currentText())+',g='+self.indata+'[,\''+str(self.RFunctionParam_g.currentText())+'\'],p.adjust.method=\''+str(self.RFunctionParam_p_adjust_method.currentText())+'\')')
         self.R('detach()')
         self.R('txt<-capture.output('+self.Rvariables['pairwise.t.test']+')')
         self.RoutputWindow.clear()

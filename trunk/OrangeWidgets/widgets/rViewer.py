@@ -17,7 +17,7 @@ class rViewer(OWRpy):
         self.RFunctionParam_data = None
         self.loadSettings()
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        self.showAll = redRGUI.checkBox(self.controlArea, buttons = ['Show All'])
+        self.showAll = redRGUI.checkBox(self.controlArea, buttons = ['Show All Rows', 'Show All Columns'])
         OWGUI.button(self.bottomAreaRight, self, "Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printViewer)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
@@ -38,8 +38,12 @@ class rViewer(OWRpy):
         if not self.RFunctionParam_data:
             self.RoutputWindow.setHtml('No data connected to show.')
             return
-        if self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All' not in self.showAll.getChecked():
+        if self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked() and 'Show All Columns' not in self.showAll.getChecked():
+            self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,1:5])') #only need to see the first 5 rows of the data.
+        elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked():
             self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,])') #only need to see the first 5 rows of the data.
+        elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Columns' not in self.showAll.getChecked():
+            self.R('txt<-capture.output('+self.RFunctionParam_data+'[,1:5])') #only need to see the first 5 rows of the data.
         else:
             self.R('txt<-capture.output('+self.RFunctionParam_data+')')
         self.RoutputWindow.clear()
