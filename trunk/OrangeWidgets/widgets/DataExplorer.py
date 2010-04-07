@@ -42,7 +42,7 @@ class DataExplorer(OWRpy):
         self.table = redRGUI.table(self.tableArea)
         redRGUI.button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
         self.dimsInfoArea = redRGUI.widgetLabel(self.bottomAreaCenter, '')
-        
+        self.table.setAlternatingRowColors(True)
         ######## Row Column Dialog ########
         self.rowcolDialog = QDialog()
         self.rowcolDialog.setBaseSize(350, 500)

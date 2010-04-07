@@ -372,12 +372,14 @@ class OrangeCanvasDlg(QMainWindow):
 
         recentDocs = recentDocs[:9]
         self.settings["RecentFiles"] = recentDocs
-
+        print recentDocs, 'Recent Docs'
         for i in range(len(recentDocs)):
             shortName = "&" + str(i+1) + " " + os.path.basename(recentDocs[i])
-            self.menuRecent.addAction(shortName, lambda: self.openRecentFile(i+1))
+            self.menuRecent.addAction(shortName, lambda k = i+1: self.openRecentFile(k))
+            print 'Added doc ', shortName, ' to position ', i
 
     def openRecentFile(self, index):
+        print 'Loading recent file at index ', index, ':', self.settings["RecentFiles"][index-1]
         if len(self.settings["RecentFiles"]) >= index:
             self.schema.clear()
             self.schema.loadDocument(self.settings["RecentFiles"][index-1])

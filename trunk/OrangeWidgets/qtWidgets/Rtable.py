@@ -2,6 +2,7 @@ from table import table
 from RSession import RSession
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import numpy
 
 class Rtable(table):
     def __init__(self,widget,Rdata=None, rows = 0, columns = 0,sortable=False, selectionMode = -1, addToLayout = 1):
@@ -22,7 +23,7 @@ class Rtable(table):
         for j in range(0, int(columnCount)):
             #print 'loaded '+str(j+1)+' of '+str(columnCount)+' columns'
             colData = self.R.R('t(as.matrix('+Rdata+'[,'+str(j+1)+']))', wantType = 'list')
-            print colData
+
             for i in range(0, int(rowCount)):
                 newItem = QTableWidgetItem(str(colData[i]))
                 self.setItem(i, j, newItem)

@@ -66,40 +66,13 @@ class table(widgetState,QTableWidget):
         # print r
         return r
     def loadSettings(self,data):
-        # print data
         self.setTable(data['data'])
-        # print 'start'
-        # print data
-        # the overrideCursor was reset by setTable so we need to reset it to the wait cursos
-        qApp.setOverrideCursor(Qt.WaitCursor)
         if 'sortIndex' in data.keys():
-            # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
         print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
-            # print 'table#########################'
             for i in data['selection']:
-                # print i
                 self.setItemSelected(self.item(i[0],i[1]),True)
-            
-                #self.selectRow(i[0])
-            
+
     def delete(self):
-        # rows = self.rowCount()
-        # columns = self.columnCount()
-        # for i in range(0, rows):
-            # for j in range(0, columns):
-                # try:
-                    # item = self.item(i, j)
-                    # if type(item) == PyQt4.QtGui.QTableWidgetItem:
-                        #print type(item)
-                        # sip.delete(item)
-                # except: pass
-                # try:
-                    # widget = self.cellWidget(i, j)
-                    # if widget:
-                        #print type(widget)
-                        # sip.delete(widget)
-                # except: pass
-                
         sip.delete(self)

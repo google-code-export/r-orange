@@ -417,7 +417,7 @@ class OWRpy(OWWidget,RSession):
                 if 'redRGUIObject' in v.keys():
                     getattr(self, k).loadSettings(v['redRGUIObject'])
                     getattr(self, k).setDefaultState(v['redRGUIObject'])
-                    qApp.setOverrideCursor(Qt.WaitCursor)
+                
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     # print 'dict',len(var),len(v['dict'])
@@ -436,6 +436,7 @@ class OWRpy(OWWidget,RSession):
                 print '-'*60
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
+            
         if '_customSettings' in self.redRGUIObjects.keys():
             self.loadCustomSettings(self.redRGUIObjects['_customSettings'])
         else:
@@ -443,6 +444,8 @@ class OWRpy(OWWidget,RSession):
         
         for (name, data) in self.sentItems:
             self.send(name, data)
+        self.needsProcessingHandler(self, 0)
+        qApp.restoreOverrideCursor()
     def recursiveSetSetting(self,var,d):
         # print 'recursiveSetSetting'
         

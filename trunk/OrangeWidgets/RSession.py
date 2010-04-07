@@ -34,7 +34,7 @@ class RSession():
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
 
-    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None):
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = 0):
 
         qApp.setOverrideCursor(Qt.WaitCursor)
 
@@ -88,6 +88,9 @@ class RSession():
         elif wantType == 'list':
             if type(output) in [str, int, float, bool]:
                 return [output]
+            elif type(output) in [list, numpy.ndarray] and len(output) == 1 and not listOfLists:
+                output = output[0]
+                return output
             else:
                 return output
         elif wantType == 'dict':

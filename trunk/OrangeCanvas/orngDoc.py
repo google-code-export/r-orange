@@ -687,7 +687,8 @@ class SchemaDoc(QWidget):
         if self.canvasDlg.settings["saveWidgetsPosition"]:
             for widget in self.widgets:
                 widget.instance.restoreWidgetStatus()
-        qApp.restoreOverrideCursor()      
+        qApp.restoreOverrideCursor() 
+        qApp.restoreOverrideCursor()         
     # save document as application
     def saveDocumentAsApp(self, asTabs = 1):
         # get filename
