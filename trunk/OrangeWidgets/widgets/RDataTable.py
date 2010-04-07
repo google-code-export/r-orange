@@ -41,50 +41,44 @@ class RDataTable(OWRpy):
         self.distColorRgb = (220,220,220, 255)
         self.distColor = QColor(*self.distColorRgb)
         self.locale = QLocale()
-        
+        self.currentLinks = {}
         #R modifications
         
-        self.delim = 0
-        self.currentData = ''
+        self.currentData = None
         self.dataTableIndex = {}
         self.supressTabClick = False
         self.mylink = ''
         self.link = {}
         self.loadSettings()
 
-        #tabs
-        self.tabWidgeta = redRGUI.tabWidget(self.GUIDialog)
+        #The settings
         
+
+        self.advancedOptions = redRGUI.widgetBox(self.GUIDialog)
+        self.GUIDialog.layout().setAlignment(self.advancedOptions,Qt.AlignTop)
         
         
         #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
-        saveTab = self.tabWidgeta.createTabPage('Save Data')
-        redRGUI.widgetLabel(saveTab, label="Saves the current table to a file.")
-        redRGUI.button(saveTab, label="Set File", callback = self.chooseDirectory)
-        self.fileName = redRGUI.widgetLabel(saveTab, label="")
+        #saveTab = self.tabWidgeta.createTabPage('Save Data')
+        saveTab = redRGUI.groupBox(self.advancedOptions,label='Save Data',orientation='horizontal')
+        #redRGUI.widgetLabel(saveTab, label="Saves the current table to a file.")
+        #redRGUI.button(saveTab, label="Set File", callback = self.chooseDirectory)
+        #self.fileName = redRGUI.widgetLabel(saveTab, label="")
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', 
-        items = ['Tab', 'Space', 'Comma'], orientation = 0)
-        redRGUI.button(saveTab, label="Write To File", callback=self.writeFile,
-        tooltip = "Write the table to a text file")
+        items = ['Tab', 'Space', 'Comma'], orientation = 'horizontal')
+        save = redRGUI.button(saveTab, label="Save As File", callback=self.writeFile,
+        tooltip = "Write the table to a text file.")
+        saveTab.layout().setAlignment(save,Qt.AlignRight)
 
-        # print 'asdfasdf'
-        
-        #print self.widgetFilename
         #links:
-        linksTab = self.tabWidgeta.createTabPage('Link Data')
-                #OWGUI.widgetLabel(infoBox, "Links:")
-                
+        linksTab = redRGUI.groupBox(self.advancedOptions, 'Links to Websites')        
         self.linkListBox = redRGUI.listBox(linksTab)
         self.linkListBox.setSelectionMode(QAbstractItemView.MultiSelection)
-        redRGUI.lineEdit(linksTab, label = 'Custom Link:')
+        self.customLink = redRGUI.lineEdit(linksTab, label = 'Add Link:')
+        b = redRGUI.button(linksTab, label = 'Add',callback=self.addCustomLink)
+        linksTab.layout().setAlignment(b,Qt.AlignRight)
         
-        #save box
-        # settings box
-        self.tableBox = redRGUI.groupBox(self.controlArea, label = 'Data Table')
-        self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        boxSettings = redRGUI.groupBox(self.GUIDialog, label = "Settings")
-        
-        resizeColsBox = redRGUI.groupBox(boxSettings, orientation="horizontal")
+        resizeColsBox = redRGUI.groupBox(self.advancedOptions, orientation="horizontal")
         redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
         redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
         tooltip = "Increase the width of the columns", width=30)
@@ -92,59 +86,18 @@ class RDataTable(OWRpy):
         tooltip = "Decrease the width of the columns", width=30)
         redRGUI.rubber(resizeColsBox)
 
+        #The table
+        self.tableBox = redRGUI.groupBox(self.controlArea, label = 'Data Table')
+        self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #boxSettings = redRGUI.groupBox(self.advancedOptions, label = "Settings")
+        
+
         # self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", 
         # callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
         self.table = redRGUI.Rtable(self.tableBox)
         #self.resize(700,500)
         #self.move(300, 25)
-        
-    def chooseDirectory(self):
-        #self.R('setwd(choose.dir())')
-        name = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'), "Normal text file (*.txt)"))
-        self.fileName.setText(name)
-    def writeFile(self):
-        if self.delim == 0: #'tab'
-            sep = '\t'
-        elif self.delim == 1:
-            sep = ' '
-        elif self.delim == 2:
-            sep = ','
-        self.R('write.table('+self.currentData+',file="'+str(self.fileName.text())+'", quote = FALSE, sep="'+sep+'")')
-    def changeColor(self):
-        color = QColorDialog.getColor(self.distColor, self)
-        if color.isValid():
-            self.distColorRgb = color.getRgb()
-            self.updateColor()
-
-    def updateColor(self):
-        self.distColor = QColor(*self.distColorRgb)
-        w = self.colButton.width()-8
-        h = self.colButton.height()-8
-        pixmap = QPixmap(w, h)
-        painter = QPainter()
-        painter.begin(pixmap)
-        painter.fillRect(0,0,w,h, QBrush(self.distColor))
-        painter.end()
-        self.colButton.setIcon(QIcon(pixmap))
-
-    def increaseColWidth(self):
-        table = self.table
-        for col in range(table.columnCount()):
-            w = table.columnWidth(col)
-            table.setColumnWidth(col, w + 10)
-
-    def decreaseColWidth(self):
-        table = self.table
-        for col in range(table.columnCount()):
-            w = table.columnWidth(col)
-            minW = table.sizeHintForColumn(col)
-            table.setColumnWidth(col, max(w - 10, minW))
-
-    def RWidgetReload(self):
-        print 'on load data table'
-        self.processSignals()
-   
 
     def dataset(self, dataset, id=None):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
@@ -188,24 +141,82 @@ class RDataTable(OWRpy):
         RclickedRow = int(val.row())+1
         
         for item in self.linkListBox.selectedItems():
-            print item.text()
-            print str(self.currentLinks)
-            text = self.currentLinks[str(item.text())]
-            col = text[text.find('{')+1:text.find('}')]
+            #print item.text()
+            #print str(self.currentLinks)
+            url = self.currentLinks[str(item.text())]
+            col = url[url.find('{')+1:url.find('}')]
             if col == 0 or col == 'row': #special cases for looking into rownames
                 cellVal = self.R('rownames('+table+')['+str(RclickedRow)+']')
             else:
                 cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
-            self.rsession('shell.exec("'+text.replace('{'+col+'}', str(cellVal))+'")')
+            url = url.replace('{'+col+'}', str(cellVal))
+            #print url
+            import webbrowser
+            webbrowser.open_new_tab(url)
         
         
-        if self.mylink != '': #the user put in a link
-            col = self.mylink[self.mylink.find('{')+1:self.mylink.find('}')]
-            cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
-            self.rsession('shell.exec("'+self.mylink.replace('{'+col+'}', str(cellVal))+'")')
-            pass
-    # Writes data into table, adjusts the column width.
+        # if self.mylink != '': #the user put in a link
+            # col = self.mylink[self.mylink.find('{')+1:self.mylink.find('}')]
+            # cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
+            # self.rsession('shell.exec("'+self.mylink.replace('{'+col+'}', str(cellVal))+'")')
+            # pass
+
+
+    def addCustomLink(self):
+        url = str(self.customLink.text())
+        self.linkListBox.addItem(url)
+        self.currentLinks[url] = url
+        self.customLink.clear()
+        
+    def writeFile(self):
     
+        if not self.currentData: return;
+        name = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'),
+        "Text file (*.txt *.csv *.tab);; All Files (*.*)")
+        if name.isEmpty(): return
+
+        if self.separator.currentText() == 'Tab': #'tab'
+            sep = '\t'
+        elif self.separator.currentText() == 'Space':
+            sep = ' '
+        elif self.separator.currentText() == 'Comma':
+            sep = ','
+        self.R('write.table('+self.currentData+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
+    def changeColor(self):
+        color = QColorDialog.getColor(self.distColor, self)
+        if color.isValid():
+            self.distColorRgb = color.getRgb()
+            self.updateColor()
+
+    def updateColor(self):
+        self.distColor = QColor(*self.distColorRgb)
+        w = self.colButton.width()-8
+        h = self.colButton.height()-8
+        pixmap = QPixmap(w, h)
+        painter = QPainter()
+        painter.begin(pixmap)
+        painter.fillRect(0,0,w,h, QBrush(self.distColor))
+        painter.end()
+        self.colButton.setIcon(QIcon(pixmap))
+
+    def increaseColWidth(self):
+        table = self.table
+        for col in range(table.columnCount()):
+            w = table.columnWidth(col)
+            table.setColumnWidth(col, w + 10)
+
+    def decreaseColWidth(self):
+        table = self.table
+        for col in range(table.columnCount()):
+            w = table.columnWidth(col)
+            minW = table.sizeHintForColumn(col)
+            table.setColumnWidth(col, max(w - 10, minW))
+
+    def RWidgetReload(self):
+        print 'on load data table'
+        self.processSignals()
+   
+    # Writes data into table, adjusts the column width.
     def setTable(self, table, data):
         if data==None:
             return

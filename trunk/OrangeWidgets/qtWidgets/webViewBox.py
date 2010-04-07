@@ -24,7 +24,10 @@ class webViewBox(QtWebKit.QWebView,widgetState):
             except: pass 
     
     def followLink(self, url):
-        self.load(QUrl(url))
+        import webbrowser
+        #print str(url)
+        #print url.toString()
+        webbrowser.open_new_tab(url.toString())
 
     def sizeHint(self):
         return QSize(10,10)

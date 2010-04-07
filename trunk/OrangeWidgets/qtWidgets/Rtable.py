@@ -20,7 +20,7 @@ class Rtable(table):
         self.setRowCount(int(rowCount))
         self.setColumnCount(int(columnCount))
         for j in range(0, int(columnCount)):
-            print 'loaded '+str(j+1)+' of '+str(columnCount)+' columns'
+            #print 'loaded '+str(j+1)+' of '+str(columnCount)+' columns'
             colData = self.R.R('t(as.matrix('+Rdata+'[,'+str(j+1)+']))', wantType = 'list')
             print colData
             for i in range(0, int(rowCount)):
