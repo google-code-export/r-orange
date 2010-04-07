@@ -185,9 +185,11 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
-            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'['+isNot+'rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',]')
+            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'['+isNot+'rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
         elif self.rowcolBox.getChecked() == 'Column':
-            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+']')
+            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
+        if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
+            self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
                 
         self.dataParent['data'] = self.Rvariables['rowcolSelector']
         self.rSend('Data Table', self.dataParent)

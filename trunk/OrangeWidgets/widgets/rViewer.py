@@ -23,11 +23,11 @@ class rViewer(OWRpy):
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
     
     def printViewer(self):
-        # thisPrinter = QPrinter()
-        # printer = QPrintDialog(thisPrinter)
+        thisPrinter = QPrinter()
+        printer = QPrintDialog(thisPrinter)
         # print str(printer)
         # printer.open()
-        self.RoutputWindow.print_(QPrinter())
+        self.RoutputWindow.print_(thisPrinter)
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data["data"]
@@ -39,11 +39,19 @@ class rViewer(OWRpy):
             self.RoutputWindow.setHtml('No data connected to show.')
             return
         if self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked() and 'Show All Columns' not in self.showAll.getChecked():
-            self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,1:5])') #only need to see the first 5 rows of the data.
+            dims = self.R('dim('+self.RFunctionParam_data+')')
+            if dims[0] > 5 and dims[1] > 5:
+                self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,1:5])') #only need to see the first 5 rows of the data.
+            elif dims[0] > 5:
+                self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,])')
         elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked():
             self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,])') #only need to see the first 5 rows of the data.
         elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Columns' not in self.showAll.getChecked():
-            self.R('txt<-capture.output('+self.RFunctionParam_data+'[,1:5])') #only need to see the first 5 rows of the data.
+            dims = self.R('dim('+self.RFunctionParam_data+')')
+            if dims[1] > 5:
+                self.R('txt<-capture.output('+self.RFunctionParam_data+'[,1:5])') #only need to see the first 5 rows of the data.
+            else:
+                self.R('txt<-capture.output('+self.RFunctionParam_data+')')
         else:
             self.R('txt<-capture.output('+self.RFunctionParam_data+')')
         self.RoutputWindow.clear()

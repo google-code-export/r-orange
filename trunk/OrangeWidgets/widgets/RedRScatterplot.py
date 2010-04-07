@@ -267,7 +267,13 @@ class RedRScatterplot(OWRpy):
             self.xData += xData
             self.yData += yData
         if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
-            self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+            xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
+            yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
+            if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
+                self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+            else:
+                print type(min(self.xData))
+                print type(min(self.yData))
     def sendMe(self):
         data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)

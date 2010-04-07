@@ -13,18 +13,16 @@ class Rtable(table):
     
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         print 'in Rtable set'
-        #data = self.R.R('as.matrix(' + Rdata + ')', wantType = 'array')
         
-        data = self.R.R('as.data.frame(' + Rdata + ')')
         self.Rdata = Rdata
-        #self.setTable(data)
         rowCount = self.R.R('length('+Rdata+'[,1])')
         columnCount = self.R.R('length('+Rdata+'[1,])')
         self.setRowCount(int(rowCount))
         self.setColumnCount(int(columnCount))
         for j in range(0, int(columnCount)):
             print 'loaded '+str(j+1)+' of '+str(columnCount)+' columns'
-            colData = self.R.R(Rdata+'[,'+str(j+1)+']', wantType = 'list')
+            colData = self.R.R('t(as.matrix('+Rdata+'[,'+str(j+1)+']))', wantType = 'list')
+            print colData
             for i in range(0, int(rowCount)):
                 newItem = QTableWidgetItem(str(colData[i]))
                 self.setItem(i, j, newItem)

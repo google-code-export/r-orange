@@ -32,7 +32,7 @@ class t(OWRpy):
     def commitFunction(self):
         if self.x == '': return
         
-        self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+str(self.RFunctionParam_x)+'))')
+        self.R(self.Rvariables['t']+'<-as.matrix(t(x='+str(self.RFunctionParam_x)+'))')
         self.R(self.Rvariables['t_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['t']+'))')
         
         self.data['data'] = self.Rvariables['t']
