@@ -294,7 +294,7 @@ class widgetMaker(OWRpy):
         self.commitFunction += "\t\tinjection = []\n"
         for element in self.fieldList.keys():
             self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
-            self.commitFunction += "\t\t\tstring = '"+element+"=\''+str(self.RFunctionParam"+ element +"_lineEdit.text())+'\''\n"
+            self.commitFunction += "\t\t\tstring = '"+element+"=\\\''+str(self.RFunctionParam"+ element +"_lineEdit.text())+'\\\''\n"
             self.commitFunction += "\t\t\tinjection.append(string)\n"
         self.commitFunction += "\t\tinj = ','.join(injection)\n"
         self.commitFunction += "\t\tself.R("

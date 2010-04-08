@@ -138,7 +138,7 @@ class listBox(QListWidget,widgetState):
         # print 'saving list box'
         items = []
         selected = []
-        for i in xrange(self.count()):
+        for i in range(self.count()):
             # print i
             items.append(str(self.item(i).text()))
             if self.isItemSelected(self.item(i)):

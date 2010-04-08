@@ -16,18 +16,21 @@ class Rtable(table):
         print 'in Rtable set'
         
         self.Rdata = Rdata
-        rowCount = self.R.R('length('+Rdata+'[,1])')
-        columnCount = self.R.R('length('+Rdata+'[1,])')
-        self.setRowCount(int(rowCount))
-        self.setColumnCount(int(columnCount))
-        for j in range(0, int(columnCount)):
-            #print 'loaded '+str(j+1)+' of '+str(columnCount)+' columns'
-            colData = self.R.R('t(as.matrix('+Rdata+'[,'+str(j+1)+']))', wantType = 'list')
-
-            for i in range(0, int(rowCount)):
-                newItem = QTableWidgetItem(str(colData[i]))
-                self.setItem(i, j, newItem)
-                
+        dims = self.R.R('dim('+Rdata+')')
+        #rowCount = self.R.R('length('+Rdata+'[,1])')
+        #columnCount = self.R.R('length('+Rdata+'[1,])')
+        self.setRowCount(dims[0])
+        self.setColumnCount(dims[1])
+        tableData = self.R.R('as.matrix('+Rdata+')', wantType = 'list', listOfLists = True)
+        for j in range(0, int(dims[1])):
+            for i in range(0, int(dims[0])):
+                if dims[0] == 1: # there is only one row
+                    ci = QTableWidgetItem(str(tableData[j]))
+                elif dims[1] == 1: # there is only one colum
+                    ci = QTableWidgetItem(str(tableData[i]))
+                else:
+                    ci = QTableWidgetItem(str(tableData[i][j])) # need to catch the case that there might not be multiple rows or columns
+                self.setItem(i, j, ci)
         if setColHeaders: self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
         if setRowHeaders: self.setVerticalHeaderLabels(self.R.R('rownames(' +self.Rdata+')'))
     def getSettings(self):

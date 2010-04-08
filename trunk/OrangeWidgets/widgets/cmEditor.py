@@ -81,7 +81,7 @@ class cmEditor(OWRpy):
         # clen = self.R('length('+self.data+'[1,])')
         # self.colCount = clen+1
         # self.dataTable.setColumnCount(clen+1)
-        colnames = self.R('colnames('+self.data+')')
+        colnames = self.R('colnames('+self.data+')', wantType = 'list')
         # if type(colnames) == type(''):
             # colnames = [colnames]
         if colnames != 'NULL':  
@@ -219,9 +219,7 @@ class cmEditor(OWRpy):
         self.rSend('Data Table', self.savedData)
         self.rSend('CM', {'data':self.savedData['cm'], 'cm':self.savedData['cm'], 'parent':self.savedData['data']})
         #self.savedData['cm'] = self.Rvariables['table']
-    def onLoadSavedSession(self):
-        if self.R('exists("'+self.Rvariables['table']+'")'):
-            self.rSend('Data Table', {'data':self.Rvariables['table']})
+    def loadCustomSettings(self,settings=None):
         self.processDF(self.savedData)
        
             

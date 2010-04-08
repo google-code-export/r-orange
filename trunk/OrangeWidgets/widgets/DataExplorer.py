@@ -254,8 +254,6 @@ class DataExplorer(OWRpy):
         self.table.setRowCount(min([int(dims[0]), 500])+2) # set up the row and column counts of the table
         self.table.setColumnCount(min([int(dims[1]), 500])+1)
         tableData = self.R('as.matrix('+self.currentDataTransformation+')') # collect all of the table data into an objec
-        #tableData = numpy.array(tableData) # make the conversion to a numpy object for subsetting
-        #print tableData
         colClasses = []
         for i in range(0, dims[1]):
             colClasses.append(self.R('class('+self.currentDataTransformation+')', silent = True))

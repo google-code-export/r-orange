@@ -179,13 +179,16 @@ class OWRpy(OWWidget,RSession):
         
     def onShow(self):
         print 'in onShow'
-        if self.hasAdvancedOptions:
-            self.leftDockButton.setChecked(self.leftDockState)
-            self.showLeftDock()
-        if self.rightDock.isFloating():
-            self.rightDock.show()
-        if hasattr(self, "leftDock") and self.leftDock.isFloating():
-            self.leftDock.show()
+        try:
+            if self.hasAdvancedOptions:
+                self.leftDockButton.setChecked(self.leftDockState)
+                self.showLeftDock()
+            if self.rightDock.isFloating():
+                self.rightDock.show()
+            if hasattr(self, "leftDock") and self.leftDock.isFloating():
+                self.leftDock.show()
+        except:
+            print 'Some problem with loading advanced options and docks, you will see the default'
 
         
         if 'state' in self.windowState.keys():

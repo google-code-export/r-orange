@@ -25,8 +25,9 @@ class rViewer(OWRpy):
     def printViewer(self):
         thisPrinter = QPrinter()
         printer = QPrintDialog(thisPrinter)
-        # print str(printer)
-        # printer.open()
+        if printer.exec_() == QDialog.Rejected:
+            print 'Printing Rejected'
+            return
         self.RoutputWindow.print_(thisPrinter)
     def processdata(self, data):
         if data:

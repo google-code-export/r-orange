@@ -262,5 +262,6 @@ class dataEntry(OWRpy):
             self.makeCM(self.Rvariables['table_cm'], self.Rvariables['table'])
             self.newData = {'data': self.Rvariables['table'], 'parent': self.Rvariables['table'], 'cm': self.Rvariables['table_cm']}
         self.rSend('Data Table', self.newData)
-       
+    def loadCustomSettings(self,settings=None):
+        self.processDF(self.newData)
             

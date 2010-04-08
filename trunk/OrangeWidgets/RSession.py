@@ -34,7 +34,7 @@ class RSession():
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
 
-    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = 0):
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
 
         qApp.setOverrideCursor(Qt.WaitCursor)
 

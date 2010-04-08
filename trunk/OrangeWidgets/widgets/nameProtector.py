@@ -63,22 +63,24 @@ class nameProtector(OWRpy):
     def dfCommit(self):
         if self.data == '': return
         if len(self.nameProtectDFcheckBox.getChecked()) == 0 and str(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
+        newData = self.parentData.copy()
         if 'Make New Data Object' in self.newDataDFcheckBox.getChecked():
-            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+self.parentData['data'])
-            self.R(self.Rvariables['newDataFromNameProtector_cm']+'<-'+self.parentData['cm'])
-            self.parentData['cm'] = self.Rvariables['newDataFromNameProtector_cm']
+            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData['data'])
+            newData['data'] = self.Rvariables['newDataFromNameProtector']
+            self.R(self.Rvariables['newDataFromNameProtector_cm']+'<-'+newData['cm'])
+            newData['cm'] = self.Rvariables['newDataFromNameProtector_cm']
             self.data = self.Rvariables['newDataFromNameProtector']
 
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
             self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))')
-            self.R('rownames('+self.parentData['cm']+') <- rownames('+self.data+')')
+            self.R('rownames('+newData['cm']+') <- rownames('+self.data+')')
             
         if str(self.namesProtectDFcomboBox.currentText()) != '':
             self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+str(self.namesProtectDFcomboBox.currentText())+'\'])')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))')
         
-        self.rSend("Data Frame", self.parentData)
+        self.rSend("Data Frame", newData)
         
     def vCommit(self): # make protected names for a vector
         if self.data == '': return

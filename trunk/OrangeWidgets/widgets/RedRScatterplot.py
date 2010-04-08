@@ -53,7 +53,10 @@ class RedRScatterplot(OWRpy):
     def printGraph(self):
         printer = QPrinter()
         printerDialog = QPrintDialog(printer)
-        printerDialog.exec_()
+
+        if printerDialog.exec_() == QDialog.Rejected: 
+            print 'Printing Rejected'
+            return
         print printer
         self.graph.print_(printer)
     def refresh(self):

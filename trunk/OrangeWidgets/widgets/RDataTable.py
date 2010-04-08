@@ -113,13 +113,13 @@ class RDataTable(OWRpy):
             self.data = data
             tableData = dataset['data']
             if 'link' in dataset:
-                #self.link[str(id)] = dataset['link']
-                print 'setting link as '+str(self.link[str(id)])
+                self.link = dataset['link']
+                print 'setting link as '+str(self.link)
                 self.linkListBox.clear()
-                if str(id) in self.link:
-                    for key in self.link[str(id)].keys():
-                        self.linkListBox.addItem(key)
-                    self.currentLinks = self.link[str(id)]
+                
+                for key in self.link.keys():
+                    self.linkListBox.addItem(key)
+                self.currentLinks = self.link
             
             else: 
                 linkData = None

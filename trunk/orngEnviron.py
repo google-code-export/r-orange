@@ -58,6 +58,8 @@ def __getDirectoryNames():
     # else:
         # bufferDir = os.path.join(outputDir, "buffer")
 
+
+    orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
         
     orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     

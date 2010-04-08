@@ -40,7 +40,7 @@ class mergeR(OWRpy):
         
         infoBox = redRGUI.groupBox(self.controlArea, "Info")
         self.infoa = redRGUI.widgetLabel(infoBox, "No Data Loaded")
-        
+        infoBox.hide()
         layk = QWidget(self)
         self.controlArea.layout().addWidget(layk)
         grid = QGridLayout()
@@ -56,30 +56,10 @@ class mergeR(OWRpy):
         grid.addWidget(pickB, 0,1)
         self.colB = redRGUI.listBox(pickB, callback = self.setcolB)
         
-        
-        #runbox = redRGUI.widgetBox(self.controlArea, "Run")
-        #redRGUI.button(runbox, self, "Run", callback = self.run)
-        
-        # ## Other options
-        otherBox = redRGUI.groupBox(self.controlArea, "Binding", orientation = 'horizontal')
-        self.forceMergeAll = redRGUI.checkBox(otherBox, buttons=["Force Merger"])
-        self.colBindButton = redRGUI.button(otherBox, "Bind By Columns", callback = self.colBind)
-        self.rowBindButton = redRGUI.button(otherBox, "Bind By Rows", callback = self.rowBind)
-        self.colBindButton.setEnabled(False)
-        self.rowBindButton.setEnabled(False)
+
         self.mergeLikeThis = redRGUI.checkBox(self.bottomAreaRight, buttons = ['Always Merge Like This'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
         redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.run)
         
-    def onLoadSavedSession(self):
-        
-        self.processSignals()
-        try:
-
-            self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + self.colAsel + '")-1'))
-            self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + self.colBsel + '")-1'))
-            self.sendMe()
-        except:
-            self.sendMe(kill=True)
     def processA(self, data):
         #print 'processA'
         if data:
@@ -150,16 +130,20 @@ class mergeR(OWRpy):
                 h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
             else: h = None
             # make a temp variable that is the combination of the parent frame and the cm for the parent.
-            if self.R('rownames('+self.dataA+') == rownames('+self.dataParentA['cm']+')') == 'TRUE':
-                self.R('tmpa<-cbind('+self.dataA+','+self.dataParentA['cm']+')')
-                self.R('tmpb<-cbind('+self.dataB+','+self.dataParentB['cm']+')')
-                useCM = True
+            if 'cm' in self.dataParentA.keys(): # check that there is a cm to use and if not ignore.
+                if 'FALSE' in self.R('rownames('+self.dataA+') == rownames('+self.dataParentA['cm']+')', wantType = 'list'):
+                    self.R('tmpa<-cbind('+self.dataA+','+self.dataParentA['cm']+')')
+                    self.R('tmpb<-cbind('+self.dataB+','+self.dataParentB['cm']+')')
+                    useCM = True
+                else:
+                    QMessageBox.information(self, 'Red-R Canvas','Your Class Manager (CM) doesn\'t match your sample names.\nUse the Class Manager Editor to check this and manipulate your data to have a CM that fits your data.\nThis Widget will procede with no CM and make new ones for you.',  QMessageBox.Ok + QMessageBox.Default)
+                    self.R('tmpa<-cbind('+self.dataA+')')
+                    self.R('tmpb<-cbind('+self.dataB+')')
+                    useCM = False
             else:
-                QMessageBox.information(self, 'Red-R Canvas','Your Class Manager (CM) doesn\'t match your sample names.\nUse the Class Manager Editor to check this and manipulate your data to have a CM that fits your data.\nThis Widget will procede with no CM and make new ones for you.',  QMessageBox.Ok + QMessageBox.Default)
                 self.R('tmpa<-cbind('+self.dataA+')')
                 self.R('tmpb<-cbind('+self.dataB+')')
                 useCM = False
-            
             if useCM:
                 if self.colAsel == None and self.colBsel == None and type(h) is str: 
                     self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + h + '")-1'))
@@ -263,35 +247,9 @@ class mergeR(OWRpy):
     def setcolA(self):
         try:
             self.colAsel = str(self.colA.selectedItems()[0].text())
-            self.run()
         except: return
     def setcolB(self):
         try:
             self.colBsel = str(self.colB.selectedItems()[0].text())
-            self.run()
         except: return
     
-    def rowBind(self):
-        try:
-            if self.forceMergeAll.isChecked() == 0:
-                self.R('tmp<-colnames('+self.dataB+') %in% colnames('+self.dataA+')')
-                self.R('tmp2<-'+self.dataB+'[,!tmp]')
-                self.R(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', tmp2)')
-                self.R('rm(tmp); rm(tmp2)')
-            else:
-                self.R(self.Rvariables['merged_dataAll']+'<-cbind('+self.dataA+', '+self.dataB+')')
-            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
-        except:
-            self.infoa.setText("Merger Failed. Be sure data is connected")
-    def colBind(self):
-        try:
-            if self.forceMergeAll.isChecked() == 0:
-                self.R('tmp<-rownames('+self.dataB+') %in% rownames('+self.dataA+')')
-                self.R('tmp2<-'+self.dataB+'[!tmp,]')
-                self.R(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', tmp2)')
-                self.R('rm(tmp); rm(tmp2)')
-            else:
-                self.R(self.Rvariables['merged_dataAll']+'<-rbind('+self.dataA+', '+self.dataB+')')
-            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll']})
-        except:
-            self.infoa.setText("Merger Failed. Be sure data is connected")
