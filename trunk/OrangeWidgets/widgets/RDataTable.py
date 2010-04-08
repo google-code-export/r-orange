@@ -58,7 +58,10 @@ class RDataTable(OWRpy):
         self.GUIDialog.layout().setAlignment(self.advancedOptions,Qt.AlignTop)
         
         
-        #infoBox = OWGUI.widgetBox(self.controlArea, "Save Table")
+        self.infoBox = redRGUI.groupBox(self.advancedOptions, label="Data Information")
+        self.infoBox.setHidden(True)
+
+        self.rowColCount = redRGUI.widgetLabel(self.infoBox)
         #saveTab = self.tabWidgeta.createTabPage('Save Data')
         saveTab = redRGUI.groupBox(self.advancedOptions,label='Save Data',orientation='horizontal')
         #redRGUI.widgetLabel(saveTab, label="Saves the current table to a file.")
@@ -124,6 +127,9 @@ class RDataTable(OWRpy):
             #self.showMetas[id] = (True, [])
             #self.dataTableIndex[id] = dataset
             self.currentData = dataset['data']
+            dim = self.R('dim(' + dataset['data'] + ')')
+            self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
+            self.infoBox.setHidden(False)
 
             #if id in self.link: #start the block for assignment of link data attributes
             self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
