@@ -2,25 +2,28 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path
 import OWGUI
+import orngEnviron
 
-dir = os.path.dirname(__file__) + "/icons/"
-dlg_zoom = dir + "Dlg_zoom.png"
-dlg_zoom_selection = dir + "Dlg_zoom_selection.png"
-dlg_pan = dir + "Dlg_pan_hand.png"
-dlg_select = dir + "Dlg_arrow.png"
-dlg_rect = dir + "Dlg_rect.png"
-dlg_poly = dir + "Dlg_poly.png"
-dlg_zoom_extent = dir + "Dlg_zoom_extent.png"
-dlg_undo = dir + "Dlg_undo.png"
-dlg_clear = dir + "Dlg_clear.png"
-dlg_send = dir + "Dlg_send.png"
-dlg_browseRectangle = dir + "Dlg_browseRectangle.png"
-dlg_browseCircle = dir + "Dlg_browseCircle.png"
 
-dlg_zoom_selection = dir + "Dlg_zoom_selection.png"
-dlg_pan = dir + "Dlg_pan_hand.png"
-dlg_select = dir + "Dlg_arrow.png"
-dlg_zoom_extent = dir + "dlg_zoom_extent.png"
+dir = os.path.abspath(orngEnviron.directoryNames["widgetDir"]+'/icons/')
+print str(dir), 'widget Dir for OWToolbars'
+dlg_zoom = os.path.join(dir , "Dlg_zoom.png")
+dlg_zoom_selection = os.path.join(dir ,  "Dlg_zoom_selection.png")
+dlg_pan = os.path.join(dir , "Dlg_pan_hand.png")
+dlg_select = os.path.join(dir , "Dlg_arrow.png")
+dlg_rect = os.path.join(dir , "Dlg_rect.png")
+dlg_poly = os.path.join(dir , "Dlg_poly.png")
+dlg_zoom_extent = os.path.join(dir , "Dlg_zoom_extent.png")
+dlg_undo = os.path.join(dir , "Dlg_undo.png")
+dlg_clear = os.path.join(dir ,  "Dlg_clear.png")
+dlg_send = os.path.join(dir ,  "Dlg_send.png")
+dlg_browseRectangle = os.path.join(dir , "Dlg_browseRectangle.png")
+dlg_browseCircle = os.path.join(dir ,  "Dlg_browseCircle.png")
+
+dlg_zoom_selection = os.path.join(dir ,  "Dlg_zoom_selection.png")
+dlg_pan = os.path.join(dir ,  "Dlg_pan_hand.png")
+dlg_select = os.path.join(dir ,  "Dlg_arrow.png")
+dlg_zoom_extent = os.path.join(dir ,  "dlg_zoom_extent.png")
 
 
 def createButton(parent, text, action = None, icon = None, toggle = 0):
@@ -55,7 +58,7 @@ class ZoomSelectToolbar(QGroupBox):
                  ("Polygon selection", "buttonSelectPoly", "activatePolygonSelection", QIcon(dlg_poly), Qt.CrossCursor, 1),
                  ("Remove last selection", "buttonRemoveLastSelection", "removeLastSelection", QIcon(dlg_undo), None, 0),
                  ("Remove all selections", "buttonRemoveAllSelections", "removeAllSelections", QIcon(dlg_clear), None, 0),
-                 ("Send selections", "buttonSendSelections", "sendData", QIcon(dlg_send), None, 0),
+                 #("Send selections", "buttonSendSelections", "sendData", QIcon(dlg_send), None, 0),
                  ("Zoom to extent", "buttonZoomExtent", "zoomExtent", QIcon(dlg_zoom_extent), None, 0),
                  ("Zoom selection", "buttonZoomSelection", "zoomSelection", QIcon(dlg_zoom_selection), None, 0)
                 )

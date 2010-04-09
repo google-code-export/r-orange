@@ -25,6 +25,7 @@ class RedRScatterplot(OWRpy):
         self.outputs = [('Scatterplot Output', RvarClasses.RDataFrame)]
         self.data = None
         self.parent = None
+        self.dataParent = {}
         self.cm = None
         self.loadSettings()
 
@@ -82,29 +83,36 @@ class RedRScatterplot(OWRpy):
             # subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
         #else: 
         if self.R('rownames('+self.data+')') != None:
-           subset = 'rownames('+self.data+')'
+            subset = 'rownames('+self.data+')'
         else:
-           subset = ''
+            subset = ''
         xData = self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')
         yData = self.R('as.matrix(t('+self.data+'[,\''+str(self.yColumnSelector.currentText())+'\']))')
         if type(xData) in [numpy.ndarray]:
-           xData = xData[0]
-           yData = yData[0]
+            print type(xData), 'Data type'   
+        
+            xData = xData[0]
+            print xData
+        if type(yData) in [numpy.ndarray]:
+            yData = yData[0]
+            print(yData)
         print type(xData), 'Data type'   
         print xData
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
         if self.cm == None or self.cm == '':
-           newData = self.dataParent.copy()
-           newData['data'] = self.data+'[c('+str(selected)[1:-1]+'),]'
-           self.rSend('Scatterplot Output', newData)
+            newData = self.dataParent.copy()
+            newData['data'] = self.data+'[c('+str(selected)[1:-1]+'),]'
+            self.rSend('Scatterplot Output', newData)
         else:
-           self.R(self.cm+'[,"'+self.Rvariables['Plot']+'"]<-rep(0, length('+self.cm+'[,1]))')
-           self.R(self.cm+'[rownames('+self.data+'),"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
-           self.sendMe()
+            self.R(self.cm+'[,"'+self.Rvariables['Plot']+'"]<-rep(0, length('+self.cm+'[,1]))')
+            self.R(self.cm+'[rownames('+self.data+'),"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
+            self.sendMe()
         
     def gotX(self, data):
         if data:
             self.data = data['data']
+            if 'parent' not in data:
+                data['parent'] = data['data']
             self.parent = data['parent']
             self.dataParent = data.copy()
             if 'cm' in data:
@@ -278,7 +286,9 @@ class RedRScatterplot(OWRpy):
                 print type(min(self.xData))
                 print type(min(self.yData))
     def sendMe(self):
-        data = {'data': self.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        print self.parent
+        print self.cm
+        data = {'data': self.dataParent['parent']+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
     def loadCustomSettings(self, settings = None):

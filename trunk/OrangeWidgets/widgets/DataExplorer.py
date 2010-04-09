@@ -136,11 +136,12 @@ class DataExplorer(OWRpy):
                 # orriginalData_matrix = self.R('as.matrix('+self.orriginalData+')')
                 # orriginalData_matrix = numpy.array(orriginalData_matrix)
                 for j in range(1, len(self.colnames)+1):
+                    
                     thisClass = self.R('class('+self.orriginalData+'[,'+str(j)+'])', silent = True)
                         
                         # append the information into a series of dialogs that reside in a list, these will be searched when a button is pressed on the table.
-                    print thisClass
-                    if thisClass in ['character']: # we want to show the element but not add it to the criteria
+                    
+                    if thisClass in ['character', 'AsIs']: # we want to show the element but not add it to the criteria
                         # the jth selection criteria needs to be a character selection
                         self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})
                         self.criteriaDialogList[j-1]['colname'] = self.orriginalColumnNames[j-1]
@@ -170,6 +171,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['cw'].setToolTip('Moves to the selected text, but does not subset')
                         
                     elif thisClass in ['numeric', 'logical', 'integer']:
+                        
                         self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})
                         self.criteriaDialogList[j-1]['colname'] = self.orriginalColumnNames[j-1]
                         self.criteriaDialogList[j-1]['dialog'].hide()
@@ -223,7 +225,14 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['widgetLabel'] = redRGUI.textEdit(self.criteriaDialogList[j-1]['dialog'], '')
                         #self.criteriaDialogList[j-1]['widgetLabel'].insertHtml(oldcriteriaList[j-1])
                         self.criteriaDialogList[j-1]['criteriaCollection'] = ''
-                        
+                    else:
+                        print 'This class is an unsupported type'
+                        self.criteriaDialogList.insert(j-1, {'dialog':QDialog()})               
+                        self.criteriaDialogList[j-1]['colname'] = self.orriginalColumnNames[j-1]
+                        self.criteriaDialogList[j-1]['dialog'].hide()
+                        self.criteriaDialogList[j-1]['dialog'].setLayout(QVBoxLayout())
+                        self.criteriaDialogList[j-1]['dialog'].setWindowTitle(self.captionTitle+' '+self.colnames[j-1]+' Seleciton')
+                        self.criteriaDialogList[j-1]['cw'] = redRGUI.widgetLabel(self.criteriaDialogList[j-1]['dialog'], 'Unsupported column type subsetting is disabled')
             else:
                 dims = self.R('dim('+self.data+')')
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')

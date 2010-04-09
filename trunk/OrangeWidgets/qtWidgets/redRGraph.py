@@ -10,6 +10,7 @@ from OWBaseWidget import unisetattr
 from OWColorPalette import *      # color palletes, ...
 from OWGraphTools import *      # user defined curves, ...
 import OWToolbars
+import numpy
 from redRGUI import widgetState
 
 NOTHING = 0
@@ -882,22 +883,22 @@ class redRGraph(QwtPlot,widgetState):
 
     # return two lists of 0's and 1's whether each point in (xData, yData) is selected or not
     def getSelectedPoints(self, xData = None, yData = None, validData = None):
-        
-        
-        
+
         if xData == None:
             xData = self.xData
         if yData == None:
             yData = self.yData
-            
+        import numpy
         if validData == None:
             validData = []
             for i in range(len(xData)):
-                if type(xData[i]) in [int, float, long] and type(yData[i]) in [int, float, long]:
+                if type(xData[i]) in [int, float, long, numpy.float64] and type(yData[i]) in [int, float, long, numpy.float64]:
                     validData.append(1)
+                    print type(xData[i]), type(yData[i])
                 else:
+                    print type(xData[i])
                     validData.append(0)
-        import numpy
+
         total = numpy.zeros(len(xData))
         for curve in self.selectionCurveList:
             total += curve.getSelectedPoints(xData, yData, validData)
