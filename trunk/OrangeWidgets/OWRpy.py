@@ -58,7 +58,7 @@ class OWRpy(OWWidget,RSession):
         
         #start widget GUI
         
-        
+        self.printButton = redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printWidget)
         ### status bar ###
         self.statusBar = QStatusBar()
         self.statusBar.setLayout(QHBoxLayout())
@@ -359,6 +359,18 @@ class OWRpy(OWWidget,RSession):
             print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
             print str(d)
             return False
+    def printWidget(self, printer = None):
+        ## establish a printer that will print the widget
+        if not printer:
+            printer = QPrinter()
+            printDialog = QPrintDialog(printer)
+            if printDialog.exec_() == QDialog.Rejected: 
+                print 'Printing Rejected'
+                return
+        #painter = QPainter(printer)
+        self.render(printer)
+        
+            
     def returnSettings(self,var):
         settings = {}
         if var.__class__.__name__ in redRGUI.qtWidgets:
