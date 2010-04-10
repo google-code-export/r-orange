@@ -234,7 +234,7 @@ class RedRScatterplot(OWRpy):
                         if p == 'TRUE':
                             subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
                         elif p == 'FALSE':
-                            subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
+                            subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == FALSE)'
                     elif levelType == 'numeric': 
                         subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
                     else:
@@ -278,8 +278,7 @@ class RedRScatterplot(OWRpy):
             self.xData += xData
             self.yData += yData
         if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
-            xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
-            yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
+             
             if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
                 self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
             else:
