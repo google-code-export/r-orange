@@ -131,12 +131,12 @@ class mergeR(OWRpy):
             else: h = None
             # make a temp variable that is the combination of the parent frame and the cm for the parent.
             if 'cm' in self.dataParentA.keys(): # check that there is a cm to use and if not ignore.
-                if 'FALSE' in self.R('rownames('+self.dataA+') == rownames('+self.dataParentA['cm']+')', wantType = 'list'):
+                if 'FALSE' not in self.R('rownames('+self.dataA+') == rownames('+self.dataParentA['cm']+')', wantType = 'list') and 'NA' not in self.R('rownames('+self.dataA+') == rownames('+self.dataParentA['cm']+')', wantType = 'list'):
                     self.R('tmpa<-cbind('+self.dataA+','+self.dataParentA['cm']+')')
                     self.R('tmpb<-cbind('+self.dataB+','+self.dataParentB['cm']+')')
                     useCM = True
                 else:
-                    QMessageBox.information(self, 'Red-R Canvas','Your Class Manager (CM) doesn\'t match your sample names.\nUse the Class Manager Editor to check this and manipulate your data to have a CM that fits your data.\nThis Widget will procede with no CM and make new ones for you.',  QMessageBox.Ok + QMessageBox.Default)
+                    QMessageBox.information(self, 'Red-R Canvas','Problem with classification data from other widgets.\nPrevious classifications will not be available.',  QMessageBox.Ok + QMessageBox.Default)
                     self.R('tmpa<-cbind('+self.dataA+')')
                     self.R('tmpb<-cbind('+self.dataB+')')
                     useCM = False
