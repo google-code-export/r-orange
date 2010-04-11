@@ -78,7 +78,7 @@ class RDataTable(OWRpy):
         self.linkListBox = redRGUI.listBox(linksTab)
         self.linkListBox.setSelectionMode(QAbstractItemView.MultiSelection)
         self.customLink = redRGUI.lineEdit(linksTab, label = 'Add Link:')
-        b = redRGUI.button(linksTab, label = 'Add',callback=self.addCustomLink)
+        b = redRGUI.button(linksTab, label = 'Add', tooltip = 'Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.', callback=self.addCustomLink)
         linksTab.layout().setAlignment(b,Qt.AlignRight)
         
         resizeColsBox = redRGUI.groupBox(self.advancedOptions, orientation="horizontal")

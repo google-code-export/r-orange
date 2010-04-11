@@ -550,12 +550,17 @@ class SchemaDoc(QWidget):
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         print 'document load called'
         #self.clear()
-        
+        qApp.loadingProgressBar = QProgressDialog()
+        qApp.loadingProgressBar.show()
+        #thisLabel = QLabel()
+        #qApp.loadingProgressBar.setLabel(thisLabel)
+        qApp.loadingProgressBar.setLabelText('Loading '+str(filename))
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
                 QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
             return
-
+            qApp.loadingProgressBar.hide()
+            qApp.loadingProgressBar.close()
         # set cursor
         qApp.setOverrideCursor(Qt.WaitCursor)
         failureText = ""
@@ -567,9 +572,16 @@ class SchemaDoc(QWidget):
             import re
             import RSession
             RSession = RSession.RSession()
+            qApp.loadingProgressBar.setLabelText('Converting Current Widgets')
+            qApp.loadingProgressBar.setMaximum(len(self.widgets)+1)
+            qApp.loadingProgressBar.setValue(0)
+            lpb = 0
             for widget in self.widgets: # convert the caption names so there are no conflicts
                 widget.caption += 'A'
-            
+                lpb += 1
+                qApp.loadingProgressBar.setValue(lpb)
+                
+            qApp.loadingProgressBar.setLabelText('Loading Schema Data, please wait')
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
@@ -587,6 +599,10 @@ class SchemaDoc(QWidget):
             # read widgets
             # read widgets
             loadedOk = 1
+            qApp.loadingProgressBar.setLabelText('Loading Widgets')
+            qApp.loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
+            qApp.loadingProgressBar.setValue(0)
+            lpb = 0
             for widget in widgets.getElementsByTagName("widget"):
                 try:
                     name = widget.getAttribute("widgetName")
@@ -623,7 +639,8 @@ class SchemaDoc(QWidget):
                     print '-'*60
                     traceback.print_exc(file=sys.stdout)
                     print '-'*60        
-
+                lpb += 1
+                qApp.loadingProgressBar.setValue(lpb)
             if not importBlank: # a normal load of the session
                 pass
             else:
@@ -631,6 +648,10 @@ class SchemaDoc(QWidget):
 
             #read lines
             lineList = lines.getElementsByTagName("channel")
+            qApp.loadingProgressBar.setLabelText('Loading Lines')
+            qApp.loadingProgressBar.setMaximum(len(lineList)+1)
+            qApp.loadingProgressBar.setValue(0)
+            lpb = 0
             for line in lineList:
                 inCaption = line.getAttribute("inWidgetCaption")
                 outCaption = line.getAttribute("outWidgetCaption")
@@ -648,8 +669,11 @@ class SchemaDoc(QWidget):
                 for (outName, inName) in signalList:
                     self.addLink(outWidget, inWidget, outName, inName, enabled)
                 qApp.processEvents()
+                lpb += 1
+                qApp.loadingProgressBar.setValue(lpb)
         finally:
             qApp.restoreOverrideCursor()
+            
 
         for widget in self.widgets: widget.updateTooltip()
         self.canvas.update()
@@ -658,13 +682,11 @@ class SchemaDoc(QWidget):
 
         if not loadedOk:
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
-
-        # print 'process new signal'  # removed so that signals aren't processed, this isn't needed when we import a scema
-        # if self.widgets:
-            # self.signalManager.processNewSignals(self.widgets[0].instance)  
-        #print 'finish process'
-        #print 'start onload' # we do want to reload the settings of the widgets
-        #print 'Widget list ' + str(self.widgets) + ' (orngDoc.py)'
+        
+        qApp.loadingProgressBar.setLabelText('Loading Widget Data')
+        qApp.loadingProgressBar.setMaximum(len(self.widgets)+1)
+        qApp.loadingProgressBar.setValue(0)
+        lpb = 0
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo.fileName
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
@@ -680,7 +702,8 @@ class SchemaDoc(QWidget):
                 SignalManager.loadSavedSession = False
                 QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo.fileName, 
                 QMessageBox.Ok + QMessageBox.Default)
-
+            lpb += 1
+            qApp.loadingProgressBar.setValue(lpb)
         print 'done on load'
 
         # do we want to restore last position and size of the widget
@@ -688,7 +711,9 @@ class SchemaDoc(QWidget):
             for widget in self.widgets:
                 widget.instance.restoreWidgetStatus()
         qApp.restoreOverrideCursor() 
-        qApp.restoreOverrideCursor()         
+        qApp.restoreOverrideCursor()
+        qApp.loadingProgressBar.hide()
+        qApp.loadingProgressBar.close()
     # save document as application
     def saveDocumentAsApp(self, asTabs = 1):
         # get filename

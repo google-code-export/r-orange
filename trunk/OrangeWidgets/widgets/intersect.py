@@ -20,9 +20,8 @@ class intersect(OWRpy):
         self.inputs = [("y", RvarClasses.RVector, self.processy),("x", RvarClasses.RVector, self.processx)]
         self.outputs = [("intersect Output", RvarClasses.RVector)]
         
-        self.help.setHtml('<small>Returns the intersection (common elements) between two vectors.  Elements of data tables can be converted to vectors by selecting their column in Row Col Picker or their rownames in Rownames.</small>')
+        self.help.setHtml('<small>Returns the intersection (common elements) between two vectors.  Elements of data tables can be converted to vectors by selecting their column in Row Col Picker or their rownames in Rownames. Associated data of X will be sent forward and the data of Y will be lost to downstream widgets.</small>')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.bottomAreaLeft, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "Intersect Output")
         self.resize(500, 200)
     def processy(self, data):
@@ -35,7 +34,7 @@ class intersect(OWRpy):
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
-            self.data = data.copy()
+            #self.data = data.copy()
             self.commitFunction()
         else:
             self.RFunctionParam_x = ''
@@ -50,10 +49,4 @@ class intersect(OWRpy):
         self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+str(tmp)+'</pre>')
         self.data["data"] = self.Rvariables["intersect"]
         self.rSend("intersect Output", self.data)
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("y", self.RFunctionParam_y)])
-        self.reportSettings("Input Settings",[("x", self.RFunctionParam_x)])
-        self.reportRaw(self.Rvariables["intersect"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+

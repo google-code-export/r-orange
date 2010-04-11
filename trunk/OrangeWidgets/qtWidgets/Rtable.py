@@ -31,8 +31,12 @@ class Rtable(table):
                 else:
                     ci = QTableWidgetItem(str(tableData[i][j])) # need to catch the case that there might not be multiple rows or columns
                 self.setItem(i, j, ci)
-        if setColHeaders: self.setHorizontalHeaderLabels(self.R.R('colnames(' +self.Rdata+ ')'))
-        if setRowHeaders: self.setVerticalHeaderLabels(self.R.R('rownames(' +self.Rdata+')'))
+        colnames = self.R.R('colnames(' +self.Rdata+ ')', wantType = 'list')
+        for i in range(len(colnames)):
+            colnames[i] = colnames[i] + ' (' + str(i+1) +')'
+        rownames = self.R.R('rownames(' +self.Rdata+')', wantType = 'list')
+        if setColHeaders: self.setHorizontalHeaderLabels(colnames)
+        if setRowHeaders: self.setVerticalHeaderLabels(rownames)
     def getSettings(self):
         r = table.getSettings(self)
         del r['data']

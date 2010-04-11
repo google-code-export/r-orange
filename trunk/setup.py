@@ -49,7 +49,7 @@ setup(name="Red-R",
       # "bundle_files": 3, 
       "includes": ["sip",'OWRpy','OWColorPalette','win32api',
       'OWGraphTools','OWReport','OWToolbars','PyQt4.Qwt5','PyQt4.QtSvg','_rpy2091'],
-      'dll_excludes' : ['powrprof.dll']
+      'dll_excludes' : ['powrprof.dll', 'API-MS-Win-Core-LocalRegistry_L1-1-0.dll', 'API-MS-Core-ProcessThreads-L1-1-0.dll', 'API-MS-Win-Security-Base-L1-1-0.dll', 'R.dll', 'Rblas.dll', 'Rgraphapp.dll', 'Rinconv.dll', 'Rzlib.dll', 'tcl85.dll', 'tk85.dll']
       }})
 
       
