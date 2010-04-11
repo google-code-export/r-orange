@@ -551,6 +551,8 @@ class SchemaDoc(QWidget):
         print 'document load called'
         #self.clear()
         qApp.loadingProgressBar = QProgressDialog()
+        qApp.loadingProgressBar.setWindowTitle('Loading '+str(filename))
+        
         qApp.loadingProgressBar.show()
         #thisLabel = QLabel()
         #qApp.loadingProgressBar.setLabel(thisLabel)
