@@ -525,7 +525,7 @@ class OrangeCanvasDlg(QMainWindow):
                 widget.instance._owWarning   = self.settings["owWarning"]
                 widget.instance._owError     = self.settings["owError"]
                 widget.instance._owShowStatus= self.settings["owShow"]
-                widget.instance.updateStatusBarState()
+                # widget.instance.updateStatusBarState()
                 widget.resetWidgetSize()
                 widget.updateWidgetState()
                 

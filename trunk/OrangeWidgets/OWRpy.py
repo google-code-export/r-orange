@@ -311,14 +311,6 @@ class OWRpy(OWWidget,RSession):
     
         
 #############widget specific settings#####################
-    # def getdeepattr(self, attr, **argkw):
-        # try:
-            # return reduce(lambda o, n: getattr(o, n, None),  attr.split("."), self)
-        # except:
-            # if argkw.has_key("default"):
-                # return argkw[default]
-            # else:
-                # raise AttributeError, "'%s' has no attribute '%s'" % (self, attr)
 
     def getGlobalSettingsFile(self, file=None):
         # print 'getSettingsFile in owbasewidget'

@@ -124,7 +124,7 @@ class OWWidget(OWBaseWidget):
         
         
         self.GUIDialogDialog = None
-        
+        self.leftDockState = False
         if self.hasAdvancedOptions:
             self.leftDock=QDockWidget('Advanced Options')
             self.leftDock.setObjectName('leftDock')
@@ -329,16 +329,6 @@ class OWWidget(OWBaseWidget):
             self.setWindowTitle(caption)
 
 
-    # status bar handler functions
-    def createPixmapWidget(self, parent, iconName):
-        w = QLabel(parent)
-        parent.layout().addWidget(w)
-        w.setFixedSize(16, 16)
-        w.hide()
-        if os.path.exists(iconName):
-            w.setPixmap(QPixmap(iconName))
-        return w
-
     def setInformation(self, id = 0, text = None):
         self.setState("Info", id, text)
         #self.setState("Warning", id, text)
@@ -397,145 +387,6 @@ class OWWidget(OWBaseWidget):
         return changed
 
 
-
-    def updateStatusBarState(self):
-        if not hasattr(self, "widgetStatusArea"):
-            return
-        if self._owShowStatus and (self.widgetState["Warning"] != {} or self.widgetState["Error"] != {}):
-            self.widgetStatusArea.show()
-        else:
-            self.widgetStatusArea.hide()
-
-    def setStatusBarText(self, text, timeout=5000):
-        if hasattr(self, "widgetStatusBar"):
-            self.widgetStatusBar.showMessage(" " + text, timeout)
-
-    def reportAndFinish(self):
-        self.sendReport()
-        self.finishReport()
-        
-    def startReport(self, name=None, needDirectory=False):
-        if self.__reportData is not None:
-            print "Cannot open a new report when an old report is still active"
-            return False
-        self.reportName = name or self.windowTitle()
-        self.__reportData = "Repot Date: %s <br>" % date.today()
-        if needDirectory:
-            return OWReport.report.createDirectory()
-        else:
-            return True
-
-    def reportSection(self, title):
-        if self.__reportData is None:
-            self.startReport()
-        self.__reportData += "\n\n<h2>%s</h2>\n\n" % title
-
-    def reportSubsection(self, title):
-        if self.__reportData is None:
-            self.startReport()
-        self.__reportData += "\n\n  <h3>%s</h3>\n\n" % title
-
-    def reportList(self, items):
-        if self.__reportData is None:
-            self.startReport()
-        self.startReportList()
-        for item in items:
-            self.addToReportList(item)
-        self.finishReportList()
-
-    def getUniqueFileName(self, patt):
-        return OWReport.report.getUniqueFileName(patt)
-
-    def getUniqueImageName(self, nm="img"):
-        return OWReport.report.getUniqueFileName(nm + "%06i" + ".png")
-
-    def reportImage(self, filenameOrFunc, *args):
-        if self.__reportData is None:
-            self.startReport()
-            
-        if type(filenameOrFunc) in [str, unicode]:
-            self.__reportData += '    <IMG src="%s"/>\n' % filenameOrFunc
-        else:
-            sfn, ffn = self.getUniqueImageName()
-            filenameOrFunc(ffn, *args)
-            self.reportImage(sfn)
-
-
-    def startReportList(self):
-        if self.__reportData is None:
-            self.startReport()
-        self.__reportData += "    <UL>\nR"
-
-    def addToReportList(self, item):
-        self.__reportData += "      <LI>%s</LI>\n" % item
-
-    def finishReportList(self):
-        self.__reportData += "    </UL>\n"
-
-    def reportSettings(self, sectionName="", settingsList=None, closeList=True):
-        if sectionName:
-            self.reportSection(sectionName)
-        elif self.__reportData is None:
-            self.startReport()
-        self.__reportData += "    <ul>%s</ul>\n" % "".join("<b>%s: </b>%s<br/>" % item for item in settingsList if item) 
-
-    def reportRaw(self, text):
-        if self.__reportData is None:
-            self.startReport()
-        self.__reportData += text
-
-    def prepareDataReport(self, data, listAttributes=True, exampleCount=True):
-        if data:
-            res = []
-            if exampleCount:
-                res.append(("Examples", str(len(data))))
-            if listAttributes:
-                if data.domain.attributes:
-                    res.append(("Attributes", "%i %s" % ( 
-                                len(data.domain.attributes), 
-                                 "(%s%s)" % (", ".join(x.name for foo, x in zip(xrange(30), data.domain.attributes)), "..." if len(data.domain.attributes) > 30 else "")
-                              )))
-                else:
-                    res.append(("Attributes", "0"))
-                metas = data.domain.getmetas()
-                if metas:
-                  if len(metas) <= 100:
-                      res.append(("Meta attributes", "%i (%s)" % (len(metas), ", ".join(x.name for x in metas.values()))))
-                  else:
-                      res.append(("Meta attributes", str(len(metas))))
-                res.append(("Class", data.domain.classVar.name if data.domain.classVar else "<none>"))
-            return res
-            
-    def reportData(self, settings, sectionName="Data", ifNone="None", listAttributes = True, exampleCount=True):
-        haveSettings = False
-        try:
-            haveSettings = isinstance(settings, list) and len(settings[0])==2
-        except:
-            pass
-        if not haveSettings:
-            settings = self.prepareDataReport(settings, listAttributes, exampleCount)
-        if not self.__reportData:
-            self.startReport()
-        if sectionName is not None:
-            self.reportSection(sectionName)
-        if settings:
-            self.reportSettings("", settings)
-        elif ifNone is not None:
-            self.reportRaw(ifNone)
-        
-
-       
-    def finishReport(self):
-        if self.__reportData is not None:
-            OWReport.ReportWindow(self.reportName, self.__reportData or "")
-            self.__reportData = None
-
-    def showReport(self):
-        self.reportView = OWReport.RedRReport()
-        
-        self.reportView.show()
-        #self.reportView.reportView.show()
-        self.reportView.reportView.setHtml(self.__reportData)
 if __name__ == "__main__":
     a = QApplication(sys.argv)
     ow = OWWidget()

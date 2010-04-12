@@ -398,9 +398,9 @@ class readFile(OWRpy):
         self.reportRaw(self.fileInfo.toHtml())
         #self.finishReport()
         
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+    # def sendReport(self):
+        # self.compileReport()
+        # self.showReport()
         
         
     
