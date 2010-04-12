@@ -193,6 +193,7 @@ class OWRpy(OWWidget,RSession):
                 self.redRGUIObjects[k] = v;
     def onLoadSavedSession(self):
         # print 'in onLoadSavedSession'
+        qApp.setOverrideCursor(Qt.WaitCursor)
         for k,v in self.redRGUIObjects.iteritems():
             # print str(k)+ ' in onLoadSavedSession widget attribute'
             # pp.pprint(v)

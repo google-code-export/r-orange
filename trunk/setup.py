@@ -42,11 +42,12 @@ setup(name="Red-R",
       url="http://www.red-r.org",
       license="GNU General Public License (GPL)",
 #      data_files = Mydata_files,
-      windows=["OrangeCanvas/orngCanvas.pyw"],
+      windows=["OrangeCanvas/red-RCanvas.pyw"],
       options={"py2exe": {
       "skip_archive": True, 
       # "compressed": True, 
-      # "bundle_files": 3, 
+      # "bundle_files": 3,
+      "excludes": ['R', "Tkconstants","Tkinter","tcl"],
       "includes": ["sip",'OWRpy','OWColorPalette','win32api',
       'OWGraphTools','OWReport','OWToolbars','PyQt4.Qwt5','PyQt4.QtSvg','_rpy2091'],
       'dll_excludes' : ['powrprof.dll', 'API-MS-Win-Core-LocalRegistry_L1-1-0.dll', 'API-MS-Core-ProcessThreads-L1-1-0.dll', 'API-MS-Win-Security-Base-L1-1-0.dll', 'R.dll', 'Rblas.dll', 'Rgraphapp.dll', 'Rinconv.dll', 'Rzlib.dll', 'tcl85.dll', 'tk85.dll', 'R\*']
@@ -58,7 +59,7 @@ setup(name="Red-R",
 # from cx_Freeze import setup, Executable
 
 # executables = [
-        # Executable("OrangeCanvas/orngCanvas.pyw",base = "Win32GUI"),
+        # Executable("OrangeCanvas/red-RCanvas.pyw",base = "Win32GUI"),
 # ]
 
 # buildOptions = dict(

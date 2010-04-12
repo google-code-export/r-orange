@@ -542,11 +542,13 @@ class SchemaDoc(QWidget):
         return True
     # load a scheme with name "filename"
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
+        import orngEnviron
         print 'document load called'
         #self.clear()
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
         loadingProgressBar = QProgressDialog()
+        loadingProgressBar.setWindowIcon(QIcon(os.path.join(orngEnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
         loadingProgressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
         loadingProgressBar.setWindowTitle('Loading '+str(os.path.basename(filename)))
         loadingProgressBar.show()
@@ -569,7 +571,7 @@ class SchemaDoc(QWidget):
             import RSession
             RSession = RSession.RSession()
             loadingProgressBar.setLabelText('Converting Current Widgets')
-            loadingProgressBar.setMaximum(len(self.widgets)+1)
+            loadingProgressBar.setMaximum(len(self.widgets))
             loadingProgressBar.setValue(0)
             lpb = 0
             for widget in self.widgets: # convert the caption names so there are no conflicts
@@ -596,7 +598,7 @@ class SchemaDoc(QWidget):
             # read widgets
             loadedOk = 1
             loadingProgressBar.setLabelText('Loading Widgets')
-            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
+            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget")))
             loadingProgressBar.setValue(0)
             lpb = 0
             for widget in widgets.getElementsByTagName("widget"):
@@ -645,7 +647,7 @@ class SchemaDoc(QWidget):
             #read lines
             lineList = lines.getElementsByTagName("channel")
             loadingProgressBar.setLabelText('Loading Lines')
-            loadingProgressBar.setMaximum(len(lineList)+1)
+            loadingProgressBar.setMaximum(len(lineList))
             loadingProgressBar.setValue(0)
             lpb = 0
             for line in lineList:
@@ -680,7 +682,7 @@ class SchemaDoc(QWidget):
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
         
         loadingProgressBar.setLabelText('Loading Widget Data')
-        loadingProgressBar.setMaximum(len(self.widgets)+1)
+        loadingProgressBar.setMaximum(len(self.widgets))
         loadingProgressBar.setValue(0)
         lpb = 0
         for widget in self.widgets:

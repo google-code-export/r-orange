@@ -9,6 +9,7 @@ from PyQt4.QtGui import *
 
 #from OWContexts import *
 import sys, time, random, user, os, os.path, cPickle, copy, orngMisc
+import RvarClasses
 #import orange
 import orngDebugging
 from string import *
@@ -235,6 +236,16 @@ class OWBaseWidget(QMainWindow):
                     try:
                         
                         for (value, id, nameFrom) in signalData:
+                            ### block to convert to higher data type
+                            if issubclass(signal[1], RvarClasses.RVector): # the deepest of the common types
+                                value['data'] = value['data']
+                            elif issubclass(signal[1], RvarClasses.RDataFrame): # the data frame type is a child of list
+                                value['data'] = 'as.data.frame('+value['data']+')'
+                            elif issubclass(signal[1], RvarClasses.RList): # the list type is the most general of the group types
+                                value['data'] = 'as.list('+value['data']+')'
+                            else:
+                                pass 
+                            ### end block
                             
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)

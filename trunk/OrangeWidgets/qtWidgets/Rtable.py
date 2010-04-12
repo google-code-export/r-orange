@@ -26,8 +26,8 @@ class Rtable(table):
             for i in range(0, int(dims[0])):
                 if dims[0] == 1: # there is only one row
                     ci = QTableWidgetItem(str(tableData[j]))
-                elif dims[1] == 1: # there is only one colum
-                    ci = QTableWidgetItem(str(tableData[i]))
+                # elif dims[1] == 1: # there is only one colum
+                    # ci = QTableWidgetItem(str(tableData[i]))
                 else:
                     ci = QTableWidgetItem(str(tableData[i][j])) # need to catch the case that there might not be multiple rows or columns
                 self.setItem(i, j, ci)

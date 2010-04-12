@@ -27,7 +27,6 @@ class rownames(OWRpy):
         self.RFunctionParamprefix_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "prefix:")
         self.RFunctionParamdo_NULL_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "do_NULL:")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
@@ -48,11 +47,4 @@ class rownames(OWRpy):
         self.R(self.Rvariables['rownames']+'<-rownames(x='+str(self.RFunctionParam_x)+','+inj+')')
         self.data["data"] = self.Rvariables["rownames"]
         self.rSend("rownames Output", self.data)
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("x", self.RFunctionParam_x)])
-        self.reportSettings('Function Settings', [('prefix',str(self.RFunctionParamprefix_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('do_NULL',str(self.RFunctionParamdo_NULL_lineEdit.text()))])
-        self.reportRaw(self.Rvariables["rownames"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+
