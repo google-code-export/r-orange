@@ -811,13 +811,13 @@ class redRGraph(QwtPlot,widgetState):
         elif e.button() == Qt.RightButton:
             if self.state == ZOOMING:
                 ok = self.zoomOut()
-                if not ok:
-                    self.removeLastSelection()
-                    return
+                # if not ok:
+                    # self.removeLastSelection()
+                    # return
 
             elif self.state == SELECT_RECTANGLE:
                 ok = self.removeLastSelection()      # remove the rectangle
-                if not ok: self.zoomOut()
+                # if not ok: self.zoomOut()
 
             elif self.state == SELECT_POLYGON:
                 if self.tempSelectionCurve:
@@ -830,7 +830,7 @@ class redRGraph(QwtPlot,widgetState):
                     self.replot()
                 else:
                     ok = self.removeLastSelection()
-                    if not ok: self.zoomOut()
+                    # if not ok: self.zoomOut()
 
 
 

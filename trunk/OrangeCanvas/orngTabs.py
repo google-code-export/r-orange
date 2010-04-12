@@ -679,6 +679,7 @@ class CanvasPopup(QMenu):
     def __init__(self, canvasDlg):
         QMenu.__init__(self, canvasDlg)
         self.allActions = []
+        self.widgetActionNameList = []
         self.catActions = []
         self.quickActions = []
         self.candidates = []
@@ -854,7 +855,9 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                     
                     act.widgetInfo = widgetInfo
                     act.category = catmenu
-                    categoriesPopup.allActions.append(act)
+                    if not widgetInfo.name in categoriesPopup.widgetActionNameList:
+                        categoriesPopup.allActions.append(act)
+                        categoriesPopup.widgetActionNameList.append(widgetInfo.name)
                     
                     
             except: pass

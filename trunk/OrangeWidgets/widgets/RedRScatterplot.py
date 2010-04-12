@@ -36,7 +36,6 @@ class RedRScatterplot(OWRpy):
         self.replotCheckbox = redRGUI.checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
         self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
         self.paintLegend = redRGUI.textEdit(self.GUIDialog)
-        self.paintLegend.hide()
         
         # plot area
         plotarea = redRGUI.groupBox(self.controlArea, label = "Graph")
@@ -168,10 +167,14 @@ class RedRScatterplot(OWRpy):
         self.xData = []
         self.yData = []
         if xCol == yCol: return
+        self.graph.setXaxisTitle(str(xCol))
+        self.graph.setYLaxisTitle(str(yCol))
+        self.graph.setShowXaxisTitle(True)
+        self.graph.setShowYLaxisTitle(True)
         self.graph.clear()
+        print paintClass
         if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
             self.paintLegend.clear()
-            self.paintLegend.show()
             
             if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
                 d = self.data
@@ -261,9 +264,12 @@ class RedRScatterplot(OWRpy):
             self.paintLegend.insertHtml('</table>')
         # make the plot
         else:
+            self.paintLegend.clear()
+            self.paintLegend.insertHtml('<h5>Color Legend</h5><table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
+            lColor = self.setColor(1)
+            self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">All</td></tr></table>')
             xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
-            self.paintLegend.hide()
             # check if the column is a factor
             if xDataClass in ['factor']:
                 xData = self.R('match('+self.data+'[,\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
@@ -277,6 +283,8 @@ class RedRScatterplot(OWRpy):
             self.graph.points("MyData", xData = xData, yData = yData)
             self.xData += xData
             self.yData += yData
+        ## make a fake call to the zoom to repaint the points and to add some interest to the graph
+            
         if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
              
             if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
@@ -284,6 +292,7 @@ class RedRScatterplot(OWRpy):
             else:
                 print type(min(self.xData))
                 print type(min(self.yData))
+        self.graph.replot()
     def sendMe(self):
         print self.parent
         print self.cm

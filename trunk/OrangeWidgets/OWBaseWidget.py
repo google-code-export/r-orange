@@ -236,6 +236,10 @@ class OWBaseWidget(QMainWindow):
                     try:
                         
                         for (value, id, nameFrom) in signalData:
+                            if value == None:
+                                for output in self.outputs:
+                                    self.send(output[0], None)
+                                continue
                             ### block to convert to higher data type
                             if issubclass(signal[1], RvarClasses.RVector): # the deepest of the common types
                                 value['data'] = value['data']
@@ -258,9 +262,7 @@ class OWBaseWidget(QMainWindow):
                                 self.printEvent("ProcessSignals: Calling %s with %s (%s, %s)" % (handler, value, nameFrom, id), eventVerbosity = 2)
                                 if processHandler:
                                     handler(value, (widgetFrom, nameFrom, id))
-                            if value == None:
-                                for output in self.outputs:
-                                    self.send(output[0], None)
+                            
                     except:
                         type, val, traceback = sys.exc_info()
                         sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets

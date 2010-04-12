@@ -19,8 +19,11 @@ class percentileClassifier(OWRpy):
         self.outputs = [('Data Frame', RvarClasses.RDataFrame)]
         
         ### GUI ###
-        self.percentile_lineEdit = redRGUI.lineEdit(self.controlArea, label= 'Percentile')
-        self.colNames_combo = redRGUI.comboBox(self.controlArea, label = 'Column Names')
+        self.colNames_listBox = redRGUI.listBox(self.controlArea, label = 'Column Names:')
+        self.colNames_listBox.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.percentile_spinBox = redRGUI.spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100)
+        self.percentile_lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
+        self.outputWindow = redRGUI.textEdit(self.controlArea, label = 'Output Summary')
         
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commit)
         
@@ -28,7 +31,9 @@ class percentileClassifier(OWRpy):
         if data:
             self.data = data['data']
             self.dataParent = data.copy()
-            self.colNames_combo.update(self.R('colnames('+self.data+')'))
+            self.colNames_listBox.update(self.R('colnames('+self.data+')'))
+            self.outputWindow.clear()
+            self.commit()
         else:
             self.data = ''
             self.dataParent = {}
@@ -37,14 +42,33 @@ class percentileClassifier(OWRpy):
         
     def commit(self):
         # set a column where the classes are either greater than or less than the xth percentile of the selected column
-        
-        if self.data == '': return
-        if self.dataParent == {}: return
-        percentile = str(self.percentile_lineEdit.text())
-        column = str(self.colNames_combo.currentText())
-        length = self.R('length(na.omit('+self.data+'[,\''+column+'\']))')
-        self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data+'[!is.na('+self.data+'[,\''+column+'\']),]')
-        self.R(self.Rvariables['percentileClassifier_df'] + '$' + self.Rvariables['percentileClassifier'] + '<-' + self.Rvariables['percentileClassifier_df'] + '[,\''+column+'\'] > sort('+self.Rvariables['percentileClassifier_df']+'[,\''+column+'\'])['+str(percentile)+'/100*'+str(length)+']')
+        self.outputWindow.clear()
+        if self.data == '': 
+            self.outputWindow.insertHtml('No data to work with')
+            return
+        if self.dataParent == {}: 
+            self.outputWindow.insertHtml('No data to work with')
+            return
+        items = self.colNames_listBox.selectedItems()
+        if len(items) == 0: 
+            self.outputWindow.insertHtml('No items selected in the Column Names box')
+            return
+        percentile = [str(self.percentile_spinBox.value())]
+        if str(self.percentile_lineEdit.text()) not in ['', ' ']:
+            lineText = str(self.percentile_lineEdit.text())
+            lineText.replace(' ', '')
+            percentile = lineText.split(',')
+        self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data)
+        self.outputWindow.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>')
+        for percent in percentile:
+            for item in items:
+                
+                column = str(item.text())
+                length = self.R('length(na.omit('+self.data+'[,\''+column+'\']))')
+                
+                self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+str(percent).strip(' ')+'/100*'+str(length)+']')
+                self.outputWindow.insertHtml('<tr><td width="50%">' + column+'_'+str(percent)+'percentile</td><td width="50%">'+str(self.R('sum(as.numeric('+self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile))'))+'</td></tr>')
+        self.outputWindow.insertHtml('</table>')
         self.dataParent['data'] = self.Rvariables['percentileClassifier_df']
         self.dataParent['parent'] = self.Rvariables['percentileClassifier_df']
         self.rSend('Data Frame', self.dataParent)
