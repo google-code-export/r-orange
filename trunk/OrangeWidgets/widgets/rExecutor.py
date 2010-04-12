@@ -98,6 +98,7 @@ class rExecutor(OWRpy):
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
                 self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
+                self.sendt['data'] = 'as.data.frame('+self.sendt['data']+')'
                 self.sendt['cm'] = 'cm_'+self.sendt['data']
                 self.rSend('R Data Frame', self.sendt)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
