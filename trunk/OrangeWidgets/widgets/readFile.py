@@ -49,6 +49,9 @@ class readFile(OWRpy):
         options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         area.layout().setAlignment(options,Qt.AlignTop)
         
+        self.setInformation(1,'asdfasdf')
+        self.setWarning(2,'aaaaaaaaaaaasdfasdf')
+        self.setWarning(3,'aaaaaaaaaaaasdfasdf')
         
         #options.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         
@@ -203,6 +206,9 @@ class readFile(OWRpy):
         self.scanNewFile()
 
     def scanNewFile(self):
+        self.removeInformation()
+        self.removeWarning()
+
         for i in self.columnTypes.findChildren(QWidget):
             i.setHidden(True)
           
@@ -221,7 +227,7 @@ class readFile(OWRpy):
         self.loadFile(scan=True)
     def scanFile(self):
         self.loadFile(scan=True)
-        
+
         
     def loadFile(self,scan=False):
         

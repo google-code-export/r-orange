@@ -12,7 +12,8 @@ import OWReport
 from datetime import date
 
 class OWWidget(OWBaseWidget):
-    def __init__(self, parent=None, signalManager=None, title="Orange Widget", wantGraph=False, wantStatusBar=False, savePosition=True, wantMainArea=0, noReport=False, showSaveGraph=1, resizingEnabled=1, **args):
+    def __init__(self, parent=None, signalManager=None, title="Orange Widget", 
+    savePosition=True, wantGUIDialog = 0, resizingEnabled=1, **args):
         """
         Initialization
         Parameters:
@@ -20,44 +21,314 @@ class OWWidget(OWBaseWidget):
             wantGraph - displays a save graph button or not
         """
 
-        OWBaseWidget.__init__(self, parent, signalManager, title, savePosition=savePosition, resizingEnabled=resizingEnabled, **args)
+        OWBaseWidget.__init__(self, parent, signalManager, title,resizingEnabled=resizingEnabled, **args)
 
-        
+        self.windowState = {}
+        self.savePosition = True
+        self.hasAdvancedOptions = wantGUIDialog
+
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        self.topWidgetPart = OWGUI.widgetBox(self, orientation="vertical", margin=0)
-        self.topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        self.setCentralWidget(self.topWidgetPart)
-             
-        # self.defaultLeftArea = OWGUI.widgetBox(self.topWidgetPart, orientation='vertical', margin=0)
-        # self.defaultLeftArea.setMaximumSize(200, 800)
-        # self.defaultLeftArea.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
-        
-        # self.leftWidgetPart = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=0)
-
-        # if wantMainArea:
-            # self.leftWidgetPart.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.MinimumExpanding))
-            # self.leftWidgetPart.updateGeometry()
-            # self.mainArea = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", sizePolicy=QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding), margin=0)
-            # self.mainArea.layout().setMargin(4)
-            # self.mainArea.updateGeometry()
-        
-        self.controlArea = OWGUI.widgetBox(self.topWidgetPart, orientation="vertical", margin=wantMainArea and 0 or 4)
-        #self.controlArea.setMinimumWidth(200)
+        topWidgetPart = redRGUI.widgetBox(self, orientation="vertical", margin=0)
+        topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self.setCentralWidget(topWidgetPart)
+        self.controlArea = redRGUI.widgetBox(topWidgetPart, orientation="vertical", margin=4)
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.bottomArea = OWGUI.widgetBox(self.topWidgetPart, orientation="horizontal", margin=wantMainArea and 0 or 4)
-        self.bottomAreaLeft = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
-        self.bottomAreaCenter = OWGUI.widgetBox(self.bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed), orientation = 'horizontal')
-        self.bottomAreaRight = OWGUI.widgetBox(self.bottomArea, orientation = 'horizontal')
-        self.space = self.controlArea
+        bottomArea = redRGUI.widgetBox(topWidgetPart, orientation="horizontal", margin=4)
+        self.bottomAreaLeft = redRGUI.widgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaCenter = redRGUI.widgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        orientation = 'horizontal')
+        self.bottomAreaRight = redRGUI.widgetBox(bottomArea, orientation = 'horizontal')
+        #start widget GUI
+        
+        
+        ### status bar ###
+        self.statusBar = QStatusBar()
+        self.statusBar.setLayout(QHBoxLayout())
+        self.statusBar.setSizeGripEnabled(False)
+        
+        self.setStatusBar(self.statusBar)
+        
+        self.status = redRGUI.widgetLabel(self.statusBar, '')
+        self.status.setText('Processing not yet performed.')
+        self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.statusBar.addWidget(self.status,4)
+        #self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
+        # self.statusBar.setStyleSheet("QLabel { border-top: 2px solid red; } ")
 
+        ### Right Dock ###
+        minWidth = 200
+        self.rightDock=QDockWidget('Documentation')
+        self.rightDock.setObjectName('rightDock')
+        self.connect(self.rightDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
+        self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.rightDock.setMinimumWidth(minWidth)
+        
+        self.rightDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        
+        
+        self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
+        self.rightDockArea.setMinimumWidth(minWidth)
+        self.rightDockArea.setMinimumHeight(150)
+        self.rightDockArea.layout().setMargin(4)
+        self.rightDockArea.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.rightDock.setWidget(self.rightDockArea)
 
         
-    def grip1Clicked(self):
-        print 'asdfasdfa'
+        ### help ####
+        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.helpBox.setMinimumHeight(50)
+        self.helpBox.setMinimumWidth(minWidth)
+        self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        
+        url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo.fullName)
+        self.help = redRGUI.webViewBox(self.helpBox)
+        self.help.load(QUrl(url))
+        self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        
+        
+        ### notes ####
+        self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.notesBox.setMinimumWidth(minWidth)
+        self.notesBox.setMinimumHeight(50)
+        self.notesBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        redRGUI.widgetLabel(self.notesBox, label="Notes:")
+
+        self.notes = redRGUI.textEdit(self.notesBox)
+        self.notes.setMinimumWidth(minWidth)
+        self.notes.setMinimumHeight(50)
+        self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+
+        ### R output ####        
+        self.ROutputBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.ROutputBox.setMinimumHeight(50)
+        redRGUI.widgetLabel(self.ROutputBox, label="R code executed in this widget:")
+
+        self.ROutput = redRGUI.textEdit(self.ROutputBox)
+        self.ROutput.setMinimumWidth(minWidth)
+        self.ROutput.setMinimumHeight(50)
+        self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        
+        self.documentationState = {'helpBox':True,'notesBox':True,'ROutputBox':True}
+        self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Help',toggleButton=True, callback = self.updateDocumentationDock)
+        self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
+        self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
+        self.printButton = redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printWidget)
+        self.statusBar.addPermanentWidget(self.showHelpButton)
+        self.statusBar.addPermanentWidget(self.showNotesButton)
+        self.statusBar.addPermanentWidget(self.showROutputButton)
+        self.statusBar.addPermanentWidget(self.printButton)
+        
+        
+        self.GUIDialogDialog = None
+        
+        if self.hasAdvancedOptions:
+            self.leftDock=QDockWidget('Advanced Options')
+            self.leftDock.setObjectName('leftDock')
+            self.connect(self.leftDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
+            self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+            self.leftDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+            self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
+            self.GUIDialog = redRGUI.widgetBox(self.leftDock,orientation='vertical')
+            self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+            self.leftDock.setWidget(self.GUIDialog)
+            self.leftDockButton = redRGUI.button(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
+            self.statusBar.insertPermanentWidget(1,self.leftDockButton)
+            self.leftDockState = True
+  
+
+    def updateDock(self,ev):
+        #print self.windowTitle()
+        if self.rightDock.isFloating():
+            self.rightDock.setWindowTitle(self.windowTitle() + ' Documentation')
+        else:
+            self.rightDock.setWindowTitle('Documentation')
+        if hasattr(self, "leftDock"): 
+            if self.leftDock.isFloating():
+                self.leftDock.setWindowTitle(self.windowTitle() + ' Advanced Options')
+            else:
+                self.leftDock.setWindowTitle('Advanced Options')
+
     
+    def showLeftDock(self):
+        print 'in updatedock left', self.leftDockButton.isChecked()
+        
+        if self.leftDockButton.isChecked():
+            self.leftDock.show()
+            self.leftDockState = True
+        else:
+            self.leftDock.hide()
+            self.leftDockState = False
+    
+        
+
+
+    def updateDocumentationDock(self):
+        print 'in updatedock right'
+        
+        if self.showHelpButton.isChecked():
+            self.helpBox.show()
+            self.documentationState['helpBox'] = True
+        else:
+            self.helpBox.hide()
+            self.documentationState['helpBox'] = False
+        
+        if self.showNotesButton.isChecked():
+            self.notesBox.show()
+            self.documentationState['notesBox'] = True
+        else:
+            self.notesBox.hide()
+            self.documentationState['notesBox'] = False
+
+        if self.showROutputButton.isChecked():
+            self.ROutputBox.show()
+            self.documentationState['ROutputBox'] = True
+        else:
+            self.ROutputBox.hide()
+            self.documentationState['ROutputBox'] = False
+        
+        # print self.documentationState.values()
+        if True in self.documentationState.values():
+            self.rightDock.show()
+            # print 'resize t'
+            # self.resize(10,10)
+            # self.updateGeometry()
+        else:
+            # print 'hide'
+            self.rightDock.hide()
+        
+
+    def saveWidgetWindowState(self):
+        self.windowState["geometry"] = self.saveGeometry()
+        self.windowState["state"] = self.saveState()
+        self.windowState['pos'] = self.pos()
+        self.windowState['size'] = self.size()
+        #self.saveGlobalSettings()
+    def closeEvent(self, event):
+        print 'in owrpy close'
+        if self.rightDock.isFloating():
+            self.rightDock.hide()
+        if hasattr(self, "leftDock") and self.leftDock.isFloating():
+            self.leftDock.hide()
+        
+        for i in self.findChildren(QDialog):
+            i.setHidden(True)
+        self.saveWidgetWindowState()
+        self.saveGlobalSettings()
+        self.customCloseEvent()
+
+        
+    def customCloseEvent(self):
+        pass
+
+    # when widget is resized, save new width and height into widgetWidth and widgetHeight. some widgets can put this two
+    # variables into settings and last widget shape is restored after restart
+    def resizeEvent(self, ev):
+        QMainWindow.resizeEvent(self, ev)
+        if self.savePosition:
+            # print 'resizeevent'
+            # self.widgetWidth = self.width()
+            # self.widgetHeight = self.height()
+            self.saveWidgetWindowState()
+
+    # when widget is moved, save new x and y position into widgetXPosition and widgetYPosition. some widgets can put this two
+    # variables into settings and last widget position is restored after restart
+    def moveEvent(self, ev):
+        QMainWindow.moveEvent(self, ev)
+        if self.savePosition:
+            # print 'moveevent'
+            # self.widgetXPosition = self.frameGeometry().x()
+            # self.widgetYPosition = self.frameGeometry().y()
+            self.saveWidgetWindowState()
+
+
+
+    # override the default show function.
+    # after show() we must call processEvents because show puts some LayoutRequests in queue
+    # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
+    def show(self):
+        
+        # print 'owbasewidget show'
+        print 'in onShow'
+
+        
+        if 'state' in self.windowState.keys():
+            self.restoreState(self.windowState['state'])
+        if 'geometry' in self.windowState.keys():
+            self.restoreGeometry(self.windowState['geometry'])
+       
+        if 'size' in self.windowState.keys():
+            self.resize(self.windowState['size'])
+        if 'pos' in self.windowState.keys():
+            self.move(self.windowState['pos'])
+
+        if self.hasAdvancedOptions:
+            self.leftDockButton.setChecked(self.leftDockState)
+            self.showLeftDock()
+
+        self.showHelpButton.setChecked(self.documentationState['helpBox'])
+        self.showNotesButton.setChecked(self.documentationState['notesBox'])
+        self.showROutputButton.setChecked(self.documentationState['ROutputBox'])
+        self.updateDocumentationDock()
+        
+        self.hide()
+        QMainWindow.show(self)
+        qApp.processEvents()
+
+
+    def getIconNames(self, iconName):
+        if type(iconName) == list:      # if canvas sent us a prepared list of valid names, just return those
+            return iconName
+        
+        names = []
+        name, ext = os.path.splitext(iconName)
+        for num in [16, 32, 42, 60]:
+            names.append("%s_%d%s" % (name, num, ext))
+        fullPaths = []
+        for paths in [(self.widgetDir, name), (self.widgetDir, "icons", name), (os.path.dirname(sys.modules[self.__module__].__file__), "icons", name)]:
+            for name in names + [iconName]:
+                fname = os.path.join(*paths)
+                if os.path.exists(fname):
+                    fullPaths.append(fname)
+            if fullPaths != []:
+                break
+
+        if len(fullPaths) > 1 and fullPaths[-1].endswith(iconName):
+            fullPaths.pop()     # if we have the new icons we can remove the default icon
+        return fullPaths
+    
+
+    def setWidgetIcon(self, iconName):
+        iconNames = self.getIconNames(iconName)
+            
+        icon = QIcon()
+        for name in iconNames:
+            pix = QPixmap(name)
+            icon.addPixmap(pix)
+#            frame = QPixmap(os.path.join(self.widgetDir, "icons/frame.png"))
+#            icon = QPixmap(iconName)
+#            result = QPixmap(icon.size())
+#            painter = QPainter()
+#            painter.begin(result)
+#            painter.drawPixmap(0,0, frame)
+#            painter.drawPixmap(0,0, icon)
+#            painter.end()
+
+        self.setWindowIcon(icon)
+        
+
+
+    def setCaption(self, caption):
+        if self.parent != None and isinstance(self.parent, QTabWidget):
+            self.parent.setTabText(self.parent.indexOf(self), caption)
+        else:
+            self.captionTitle = caption     # we have to save caption title in case progressbar will change it
+            self.setWindowTitle(caption)
+
+
     # status bar handler functions
     def createPixmapWidget(self, parent, iconName):
         w = QLabel(parent)
@@ -68,36 +339,64 @@ class OWWidget(OWBaseWidget):
             w.setPixmap(QPixmap(iconName))
         return w
 
-    def setState(self, stateType, id, text):
-        stateChanged = OWBaseWidget.setState(self, stateType, id, text)
-        if not stateChanged or not hasattr(self, "widgetStatusArea"):
-            return
+    def setInformation(self, id = 0, text = None):
+        self.setState("Info", id, text)
+        #self.setState("Warning", id, text)
 
-        iconsShown = 0
-        #for state, widget, icon, use in [("Info", self._infoWidget, self._owInfo), ("Warning", self._warningWidget, self._owWarning), ("Error", self._errorWidget, self._owError)]:
-        for state, widget, use in [("Warning", self._warningWidget, self._owWarning), ("Error", self._errorWidget, self._owError)]:
-            if not widget: continue
-            if use and self.widgetState[state] != {}:
-                widget.setToolTip("\n".join(self.widgetState[state].values()))
-                widget.show()
-                iconsShown = 1
-            else:
-                widget.setToolTip("")
-                widget.hide()
+    def setWarning(self, id = 0, text = ""):
+        self.setState("Warning", id, text)
+        #self.setState("Info", id, text)        # if we want warning just set information
 
-        if iconsShown:
-            self.statusBarIconArea.show()
+    def setError(self, id = 0, text = ""):
+        self.setState("Error", id, text)
+    
+    def removeInformation(self,id=None):
+        if id == None:
+            print 'remove information'
+            self.setState("Info", self.widgetState['Info'].keys())
         else:
-            self.statusBarIconArea.hide()
-
-        #if (stateType == "Info" and self._owInfo) or (stateType == "Warning" and self._owWarning) or (stateType == "Error" and self._owError):
-        if (stateType == "Warning" and self._owWarning) or (stateType == "Error" and self._owError):
-            if text:
-                self.setStatusBarText(stateType + ": " + text)
+            self.setState("Info", id)
+    
+    def removeWarning(self,id=None):
+        if id == None:
+            self.setState("Warning", self.widgetState['Warning'].keys())
+        else:
+            self.setState("Warning", id)
+            
+    def removeError(self,id=None):
+        if id == None:
+            self.setState("Error", self.widgetState['Error'].keys())
+        else:
+            self.setState("Error", id)
+            
+    def setState(self, stateType, id, text =None):
+        changed = 0
+        if type(id) == list:
+            for val in id:
+                if self.widgetState[stateType].has_key(val):
+                    self.widgetState[stateType].pop(val)
+                    print 'pop',val
+                    changed = 1
+        else:
+            if type(id) == str:
+                text = id; id = 0       # if we call information(), warning(), or error() function with only one parameter - a string - then set id = 0
+            if not text:
+                if self.widgetState[stateType].has_key(id):
+                    self.widgetState[stateType].pop(id)
+                    changed = 1
             else:
-                self.setStatusBarText("")
-        self.updateStatusBarState()
-        #qApp.processEvents()
+                self.widgetState[stateType][id] = text
+                changed = 1
+
+        if changed:
+            if self.widgetStateHandler:
+                self.widgetStateHandler()
+            elif text: # and stateType != "Info":
+                self.printEvent(stateType + " - " + text)
+            #qApp.processEvents()
+        return changed
+
+
 
     def updateStatusBarState(self):
         if not hasattr(self, "widgetStatusArea"):

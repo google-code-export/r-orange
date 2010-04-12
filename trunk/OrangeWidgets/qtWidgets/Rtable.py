@@ -14,7 +14,7 @@ class Rtable(table):
     
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         print 'in Rtable set'
-        
+        self.setHidden(True)
         self.Rdata = Rdata
         dims = self.R.R('dim('+Rdata+')')
         #rowCount = self.R.R('length('+Rdata+'[,1])')
@@ -37,6 +37,7 @@ class Rtable(table):
         rownames = self.R.R('rownames(' +self.Rdata+')', wantType = 'list')
         if setColHeaders: self.setHorizontalHeaderLabels(colnames)
         if setRowHeaders: self.setVerticalHeaderLabels(rownames)
+        self.setHidden(False)
     def getSettings(self):
         r = table.getSettings(self)
         del r['data']

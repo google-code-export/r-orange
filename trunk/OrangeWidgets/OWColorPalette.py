@@ -57,7 +57,7 @@ class ColorPixmap (QIcon):
 
 # a widget that can be used to select the colors to be used
 class ColorPaletteDlg(OWBaseWidget):
-    def __init__(self,parent, caption = "Color Palette", callback = None, modal  = TRUE):
+    def __init__(self,parent, caption = "Color Palette", callback = None, modal  = True):
         OWBaseWidget.__init__(self, None, None, caption, modal = modal)
         self.setLayout(QVBoxLayout(self))
         self.layout().setMargin(4)

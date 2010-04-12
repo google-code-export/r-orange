@@ -4,7 +4,8 @@ import RvarClasses
 import RAffyClasses
 import threading, sys
 import orngEnviron
-import MyQMoviePlayer
+# import MyQMoviePlayer
+
 import re
 from PyQt4.QtCore import *
 from OWWidget import *
@@ -23,9 +24,10 @@ class RSession():
     # rsem = threading.Semaphore(value = 1)
     # occupied = 0
     Rhistory = '<code>'
-    def __init__(self):
+    def __init__(self,uniqueWidgetNumber):
         # rpy.__init__(self)
         self.device = {}
+        self.uniqueWidgetNumber = uniqueWidgetNumber
         # self.RPackages = []
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
@@ -119,7 +121,48 @@ class RSession():
                 return output
         else:
             return output
-                
+    
+    def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
+        #print str(qApp.canvasDlg.settings)
+        if file == None and ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "PDF (*.PDF)"))
+        elif file == None: 
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "PDF (*.PDF)"))
+        if file.isEmpty(): return
+        if file: qApp.canvasDlg.settings['HomeFolder'] = os.path.split(file)[0]
+        self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
+        self.R(query, 'setRData')
+        self.R('dev.off()')
+        self.status.setText('File saved as \"'+file+'\"')
+        self.notes.setCursorToEnd()
+        self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
+    
+    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
+        # check that a device is currently used by this widget
+        # print 'the devNumber is'+str(devNumber)
+        # print str(self.device)
+        if str(devNumber) in self.device:
+            print 'dev exists'
+            actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
+            if actdev == 1: #there were no decives present and a new one has been created.
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+            if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
+                print 'dev not in R'
+                self.R('dev.off()')
+                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+                print str(self.device)
+        else:
+            print 'make new dev for this'
+            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
+            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+        #self.require_librarys(['playwith', 'RGtk2'])
+        
+        #self.R('playwith('+query+')', 'setRData')
+        self.R(query, 'setRData')
+        self.needsProcessingHandler(self, 0)
+        
+
     def require_librarys(self,librarys, force = False):
         libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
         

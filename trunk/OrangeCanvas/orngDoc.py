@@ -45,7 +45,6 @@ class SchemaDoc(QWidget):
         if res == QMessageBox.Yes:
             newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
             self.RVariableRemoveSupress = 1
-            self.synchronizeContexts()
             #if self.canvasDlg.settings["autoSaveSchemasOnClose"] and self.widgets != []:
             # if self.widgets != []:
                 # self.save(os.path.join(self.canvasDlg.canvasSettingsDir, "lastSchema.tmp"))
@@ -102,11 +101,8 @@ class SchemaDoc(QWidget):
         if os.path.exists(tempName):
             os.remove(tempName)
 
-    # called to properly close all widget contexts
-    def synchronizeContexts(self):
-        for widget in self.widgets[::-1]:
-            widget.instance.synchronizeContexts()
 
+            
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
     def addLine(self, outWidget, inWidget, enabled = True):
@@ -328,8 +324,8 @@ class SchemaDoc(QWidget):
             newwidget.show()
             newwidget.updateTooltip()
             newwidget.setProcessing(1)
-            if self.canvasDlg.settings["saveWidgetsPosition"]:
-                newwidget.instance.restoreWidgetPosition()
+            # if self.canvasDlg.settings["saveWidgetsPosition"]:
+                # newwidget.instance.restoreWidgetPosition()
             newwidget.setProcessing(0)
             orngHistory.logAddWidget(self.schemaID, id(newwidget), (newwidget.widgetInfo.category, newwidget.widgetInfo.name), newwidget.x(), newwidget.y())
         except:
@@ -452,9 +448,20 @@ class SchemaDoc(QWidget):
         import RSession
         RSession = RSession.RSession()
         # return
+
         print 'start save schema'
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
+        pos = self.canvasDlg.pos()
+        size = self.canvasDlg.size()
+        progressBar = QProgressDialog()
+        progressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
+        progressBar.setWindowTitle('Saving '+str(os.path.basename(filename)))
+        progressBar.setLabelText('Saving '+str(os.path.basename(filename)))
+        progressBar.setMaximum(len(self.widgets)+2)
+        progress = 0
+        progressBar.setValue(progress)
+        progressBar.show()
         
         # create xml document
         doc = Document()
@@ -476,29 +483,11 @@ class SchemaDoc(QWidget):
             temp.setAttribute("yPos", str(int(widget.y())) )
             temp.setAttribute("caption", widget.caption)
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
-            #temp.setAttribute("InSignals", widget.instance.inputs) # saves the inputs and outputs in case of failure to find the parent widget.  In this case a dummy is put in it's place and the loading can continue
-            #temp.setAttribute("OutSignals", widget.instance.outputs)
-            # if not tmp:
-                # widget.instance.onSaveSession()
-            # print 'looking for settingsstr'
-            #try:
-            # print widget.instance.saveSettingsStr
-            #print widget.caption
-            # try:
-                # widget.instance.saveSettingsStr()
-            # except:
-                # print 'a', sys.exc_info()[0] 
             print 'save in orngDoc ' + str(widget.caption)
+            progress += 1
+            progressBar.setValue(progress)
             settingsDict[widget.caption] = widget.instance.saveSettingsStr()
-            # return
-            # print 'got str orngDoc'
-            # print str(settingsDict[widget.caption]) + '\n\n settings Dict (orngDoc)'
-            # except:
-                # settingsDict[widget.caption] = None
-                #sprint str(widget.caption) + 'failed to save some settings'
             widgets.appendChild(temp)
-
-        
 
         #save connections
         for line in self.lines:
@@ -512,6 +501,8 @@ class SchemaDoc(QWidget):
         settings.setAttribute("settingsDictionary", str(settingsDict))      
         
         xmlText = doc.toprettyxml()
+        progress += 1
+        progressBar.setValue(progress)
 
         if not tmp:
             tempschema = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
@@ -544,25 +535,28 @@ class SchemaDoc(QWidget):
             self.canvasDlg.settings["saveSchemaDir"] = self.schemaPath
             self.canvasDlg.addToRecentMenu(filename)
             self.canvasDlg.setCaption(self.schemaName)
-        
+        progress += 1
+        progressBar.setValue(progress)
+        progressBar.close()
+
         return True
     # load a scheme with name "filename"
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         print 'document load called'
         #self.clear()
-        qApp.loadingProgressBar = QProgressDialog()
-        qApp.loadingProgressBar.setWindowTitle('Loading '+str(filename))
-        
-        qApp.loadingProgressBar.show()
-        #thisLabel = QLabel()
-        #qApp.loadingProgressBar.setLabel(thisLabel)
-        qApp.loadingProgressBar.setLabelText('Loading '+str(filename))
+        pos = self.canvasDlg.pos()
+        size = self.canvasDlg.size()
+        loadingProgressBar = QProgressDialog()
+        loadingProgressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
+        loadingProgressBar.setWindowTitle('Loading '+str(os.path.basename(filename)))
+        loadingProgressBar.show()
+        loadingProgressBar.setLabelText('Loading '+str(filename))
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
                 QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
             return
-            qApp.loadingProgressBar.hide()
-            qApp.loadingProgressBar.close()
+            loadingProgressBar.hide()
+            loadingProgressBar.close()
         # set cursor
         qApp.setOverrideCursor(Qt.WaitCursor)
         failureText = ""
@@ -574,16 +568,16 @@ class SchemaDoc(QWidget):
             import re
             import RSession
             RSession = RSession.RSession()
-            qApp.loadingProgressBar.setLabelText('Converting Current Widgets')
-            qApp.loadingProgressBar.setMaximum(len(self.widgets)+1)
-            qApp.loadingProgressBar.setValue(0)
+            loadingProgressBar.setLabelText('Converting Current Widgets')
+            loadingProgressBar.setMaximum(len(self.widgets)+1)
+            loadingProgressBar.setValue(0)
             lpb = 0
             for widget in self.widgets: # convert the caption names so there are no conflicts
                 widget.caption += 'A'
                 lpb += 1
-                qApp.loadingProgressBar.setValue(lpb)
+                loadingProgressBar.setValue(lpb)
                 
-            qApp.loadingProgressBar.setLabelText('Loading Schema Data, please wait')
+            loadingProgressBar.setLabelText('Loading Schema Data, please wait')
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
@@ -601,9 +595,9 @@ class SchemaDoc(QWidget):
             # read widgets
             # read widgets
             loadedOk = 1
-            qApp.loadingProgressBar.setLabelText('Loading Widgets')
-            qApp.loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
-            qApp.loadingProgressBar.setValue(0)
+            loadingProgressBar.setLabelText('Loading Widgets')
+            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
+            loadingProgressBar.setValue(0)
             lpb = 0
             for widget in widgets.getElementsByTagName("widget"):
                 try:
@@ -642,7 +636,7 @@ class SchemaDoc(QWidget):
                     traceback.print_exc(file=sys.stdout)
                     print '-'*60        
                 lpb += 1
-                qApp.loadingProgressBar.setValue(lpb)
+                loadingProgressBar.setValue(lpb)
             if not importBlank: # a normal load of the session
                 pass
             else:
@@ -650,9 +644,9 @@ class SchemaDoc(QWidget):
 
             #read lines
             lineList = lines.getElementsByTagName("channel")
-            qApp.loadingProgressBar.setLabelText('Loading Lines')
-            qApp.loadingProgressBar.setMaximum(len(lineList)+1)
-            qApp.loadingProgressBar.setValue(0)
+            loadingProgressBar.setLabelText('Loading Lines')
+            loadingProgressBar.setMaximum(len(lineList)+1)
+            loadingProgressBar.setValue(0)
             lpb = 0
             for line in lineList:
                 inCaption = line.getAttribute("inWidgetCaption")
@@ -672,7 +666,7 @@ class SchemaDoc(QWidget):
                     self.addLink(outWidget, inWidget, outName, inName, enabled)
                 qApp.processEvents()
                 lpb += 1
-                qApp.loadingProgressBar.setValue(lpb)
+                loadingProgressBar.setValue(lpb)
         finally:
             qApp.restoreOverrideCursor()
             
@@ -685,9 +679,9 @@ class SchemaDoc(QWidget):
         if not loadedOk:
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
         
-        qApp.loadingProgressBar.setLabelText('Loading Widget Data')
-        qApp.loadingProgressBar.setMaximum(len(self.widgets)+1)
-        qApp.loadingProgressBar.setValue(0)
+        loadingProgressBar.setLabelText('Loading Widget Data')
+        loadingProgressBar.setMaximum(len(self.widgets)+1)
+        loadingProgressBar.setValue(0)
         lpb = 0
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo.fileName
@@ -705,195 +699,19 @@ class SchemaDoc(QWidget):
                 QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo.fileName, 
                 QMessageBox.Ok + QMessageBox.Default)
             lpb += 1
-            qApp.loadingProgressBar.setValue(lpb)
+            loadingProgressBar.setValue(lpb)
         print 'done on load'
 
         # do we want to restore last position and size of the widget
         if self.canvasDlg.settings["saveWidgetsPosition"]:
             for widget in self.widgets:
-                widget.instance.restoreWidgetStatus()
+                widget.instance.show()
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
-        qApp.loadingProgressBar.hide()
-        qApp.loadingProgressBar.close()
+        loadingProgressBar.hide()
+        loadingProgressBar.close()
     # save document as application
-    def saveDocumentAsApp(self, asTabs = 1):
-        # get filename
-        extension = sys.platform == "win32" and ".pyw" or ".py"
-        appName = (os.path.splitext(self.schemaName)[0] or "Schema") + extension
-        appPath = os.path.exists(self.canvasDlg.settings["saveApplicationDir"]) and self.canvasDlg.settings["saveApplicationDir"] or self.schemaPath
-        qname = QFileDialog.getSaveFileName(self, "Save File as Application", os.path.join(appPath, appName) , "Orange Scripts (*%s)" % extension)
-        if qname.isEmpty(): return
-        (appPath, appName) = os.path.split(str(qname))
-        appNameWithoutExt = os.path.splitext(appName)[0]
-        if os.path.splitext(appName)[1].lower() not in [".py", ".pyw"]: appName = appNameWithoutExt + extension
-        self.canvasDlg.settings["saveApplicationDir"] = appPath
 
-        saveDlg = saveApplicationDlg(None)
-
-        # add widget captions
-        for instance in self.signalManager.widgets:
-            widget = None
-            for i in range(len(self.widgets)):
-                if self.widgets[i].instance == instance: saveDlg.insertWidgetName(self.widgets[i].caption)
-
-        if saveDlg.exec_() == QDialog.Rejected:
-            return
-
-        #format string with file content
-        t = "    "  # instead of tab
-        n = "\n"
-
-        start = """#This file is automatically created by Orange Canvas and containing an Orange schema
-
-import orngEnviron
-import orngDebugging
-import sys, os, cPickle, orange, orngSignalManager, OWGUI
-from OWBaseWidget import *
-
-class GUIApplication(OWBaseWidget):
-    def __init__(self,parent=None):
-        self.signalManager = orngSignalManager.SignalManager()
-        OWBaseWidget.__init__(self, title = '%s', signalManager = self.signalManager)
-        self.widgets = {}
-        self.loadSettings()
-        """ % (appNameWithoutExt)
-
-        if asTabs == 1:
-            start += """
-        self.tabs = QTabWidget(self)
-        self.setLayout(QVBoxLayout())
-        self.layout().addWidget(self.tabs)
-        self.resize(800,600)"""
-        else:
-            start += """
-        self.setLayout(QVBoxLayout())
-        self.box = OWGUI.widgetBox(self, 'Widgets')"""
-
-
-        links = "# add widget signals\n"+t+t + "self.signalManager.setFreeze(1)\n" +t+t
-        widgetParameters = ""
-
-        # gui for shown widgets
-        for widgetName in saveDlg.shownWidgetList:    # + saveDlg.hiddenWidgetList
-            if widgetName != "[Separator]":
-                widget = None
-                for i in range(len(self.widgets)):
-                    if self.widgets[i].caption == widgetName: widget = self.widgets[i]
-
-                shown = widgetName in saveDlg.shownWidgetList
-                widgetParameters += "self.createWidget('%s', '%s', '%s', %d, self.signalManager)\n" % (widget.widgetInfo.fileName, widget.widgetInfo.icon, widget.caption, shown) +t+t
-            else:
-                if not asTabs:
-                    widgetParameters += "self.box.layout().addSpacing(10)\n" +t+t
-
-        for line in self.lines:
-            if not line.getEnabled(): continue
-            for (outName, inName) in line.getSignals():
-                links += "self.signalManager.addLink( self.widgets['" + line.outWidget.caption+ "'], self.widgets['" + line.inWidget.caption+ "'], '" + outName + "', '" + inName + "', 1)\n" +t+t
-
-        links += "self.signalManager.setFreeze(0)\n" +t+t
-        if not asTabs:
-            widgetParameters += """
-        box2 = OWGUI.widgetBox(self, 1)
-        exitButton = OWGUI.button(box2, self, "Exit", callback = self.accept)
-        self.layout().addStretch(100)"""
-
-        if asTabs:
-            guiText = "OWGUI.createTabPage(self.tabs, caption, widget)"
-        else:
-            guiText = "OWGUI.button(self.box, self, caption, callback = widget.reshow)"
-
-        progress = """
-        statusBar = QStatusBar(self)
-        self.layout().addWidget(statusBar)
-        self.caption = QLabel('', statusBar)
-        self.caption.setMaximumWidth(230)
-        self.progress = QProgressBar(statusBar)
-        self.progress.setMaximumWidth(100)
-        self.status = QLabel("", statusBar)
-        self.status.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
-        statusBar.addWidget(self.progress)
-        statusBar.addWidget(self.caption)
-        statusBar.addWidget(self.status)"""
-
-        handlerFuncts = """
-    def createWidget(self, fname, iconName, caption, shown, signalManager):
-        widgetSettings = cPickle.loads(self.strSettings[caption])
-        m = __import__(fname)
-        widget = m.__dict__[fname].__new__(m.__dict__[fname], _settingsFromSchema = widgetSettings)
-        widget.__init__(signalManager=signalManager)
-        widget.setEventHandler(self.eventHandler)
-        widget.setProgressBarHandler(self.progressHandler)
-        widget.setWidgetIcon(iconName)
-        widget.setWindowTitle(caption)
-        self.signalManager.addWidget(widget)
-        self.widgets[caption] = widget
-        if shown: %s
-        for dlg in getattr(widget, "wdChildDialogs", []):
-            dlg.setEventHandler(self.eventHandler)
-            dlg.setProgressBarHandler(self.progressHandler)
-
-    def eventHandler(self, text, eventVerbosity = 1):
-        if orngDebugging.orngVerbosity >= eventVerbosity:
-            self.status.setText(text)
-
-    def progressHandler(self, widget, val):
-        if val < 0:
-            self.caption.setText("<nobr>Processing: <b>" + str(widget.captionTitle) + "</b></nobr>")
-            self.progress.setValue(0)
-        elif val >100:
-            self.caption.setText("")
-            self.progress.reset()
-        else:
-            self.progress.setValue(val)
-            self.update()
-
-    def loadSettings(self):
-        try:
-            file = open("%s", "r")
-            self.strSettings = cPickle.load(file)
-            file.close()
-
-        except:
-            print "unable to load settings"
-            pass
-
-    def closeEvent(self, ev):
-        OWBaseWidget.closeEvent(self, ev)
-        if orngDebugging.orngDebuggingEnabled: return
-        strSettings = {}
-        for (name, widget) in self.widgets.items():
-            widget.synchronizeContexts()
-            strSettings[name] = widget.saveSettingsStr()
-            widget.close()
-        file = open("%s", "w")
-        cPickle.dump(strSettings, file)
-        file.close()
-
-if __name__ == "__main__":
-    application = QApplication(sys.argv)
-    ow = GUIApplication()
-    ow.show()
-    # comment the next line if in debugging mode and are interested only in output text in 'signalManagerOutput.txt' file
-    application.exec_()
-        """ % (guiText, appNameWithoutExt + ".sav", appNameWithoutExt + ".sav")
-
-
-        #save app
-        f = open(os.path.join(appPath, appName), "wt")
-        f.write(start + n+n+t+t+ widgetParameters + n+t+t + progress + n+n+t+t + links + n + handlerFuncts)
-        f.close()
-
-        # save widget settings
-        list = {}
-        for widget in self.widgets:
-            list[widget.caption] = widget.instance.saveSettingsStr()
-
-        f = open(os.path.join(appPath, appNameWithoutExt) + ".sav", "wt")
-        cPickle.dump(list, f)
-        f.close
-        
         
     def dumpWidgetVariables(self):
         for widget in self.widgets:

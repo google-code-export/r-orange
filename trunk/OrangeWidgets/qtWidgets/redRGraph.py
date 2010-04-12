@@ -6,7 +6,7 @@ from PyQt4.Qwt5 import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, time
-from OWBaseWidget import unisetattr
+# from OWBaseWidget import unisetattr
 from OWColorPalette import *      # color palletes, ...
 from OWGraphTools import *      # user defined curves, ...
 import OWToolbars
@@ -120,8 +120,8 @@ class redRGraph(QwtPlot,widgetState):
         self._cursor = cursor
         self.canvas().setCursor(cursor)
 
-    def __setattr__(self, name, value):
-        unisetattr(self, name, value, QwtPlot)
+    # def __setattr__(self, name, value):
+        # unisetattr(self, name, value, QwtPlot)
 
     # call to update dictionary with settings
     def updateSettings(self, **settings):

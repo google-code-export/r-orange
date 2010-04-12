@@ -7,7 +7,6 @@
 <priority>10</priority>
 """
 from OWRpy import * 
-import OWGUI 
 import redRGUI
 class rViewer(OWRpy): 
     settingsList = []
@@ -17,9 +16,10 @@ class rViewer(OWRpy):
         self.RFunctionParam_data = None
         self.loadSettings()
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        self.showAll = redRGUI.checkBox(self.controlArea, buttons = ['Show All Rows', 'Show All Columns'])
-        OWGUI.button(self.bottomAreaRight, self, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printViewer)
+        self.showAll = redRGUI.checkBox(self.bottomAreaRight, 
+        buttons = ['Show All Rows', 'Show All Columns'],orientation="horizontal")
+        redRGUI.button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
+        redRGUI.button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
     
     def printViewer(self):

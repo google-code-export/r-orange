@@ -251,8 +251,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.errorIcon.hide()
 
         # do we want to restore last position and size of the widget
-        if self.canvasDlg.settings["saveWidgetsPosition"]:
-            self.instance.restoreWidgetPosition()
+        # if self.canvasDlg.settings["saveWidgetsPosition"]:
+            # self.instance.restoreWidgetPosition()
 
 
     def resetWidgetSize(self):

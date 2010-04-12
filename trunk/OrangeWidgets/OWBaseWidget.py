@@ -1,4 +1,4 @@
-# modifications by Kyle R Covington and Anup Parikh
+# Major modifications Anup Parikh
 # OWWidget.py
 # Orange Widget
 # A General Orange Widget, from which all the Orange Widgets are derived
@@ -15,99 +15,7 @@ from string import *
 from orngSignalManager import *
 import OWGUI
 
-ERROR = 0
-WARNING = 1
 
-TRUE=1
-FALSE=0
-
-def unisetattr(self, name, value, grandparent):
-    # print 'unisetattr called'
-    # print name
-    # if 'GUIelement_' in name: #the name has a GUIelement_ distinction so we need to reset the widget to the desired settings
-        # name = name.replace('GUIelement_', '')
-        # self.updateWidget(name, value)
-        # return
-        
-    if "." in name:
-        names = name.split(".")
-        lastname = names.pop()
-        obj = reduce(lambda o, n: getattr(o, n, None),  names, self)
-    else:
-        lastname, obj = name, self
-
-    if not obj:
-        print "unable to set setting ", name, " to value ", value
-    else:
-        if hasattr(grandparent, "__setattr__") and isinstance(obj, grandparent):
-            grandparent.__setattr__(obj, lastname,  value)
-        else:
-            obj.__dict__[lastname] = value
-
-    controlledAttributes = getattr(self, "controlledAttributes", None)
-    controlCallback = controlledAttributes and controlledAttributes.get(name, None)
-    if controlCallback:
-        for callback in controlCallback:
-            callback(value)
-#        controlCallback(value)
-
-    # controlled things (checkboxes...) never have __attributeControllers
-    else:
-        if hasattr(self, "__attributeControllers"):
-            for controller, myself in self.__attributeControllers.keys():
-                if getattr(controller, myself, None) != self:
-                    del self.__attributeControllers[(controller, myself)]
-                    continue
-
-                controlledAttributes = getattr(controller, "controlledAttributes", None)
-                if controlledAttributes:
-                    fullName = myself + "." + name
-
-                    controlCallback = controlledAttributes.get(fullName, None)
-                    if controlCallback:
-                        for callback in controlCallback:
-                            callback(value)
-
-                    else:
-                        lname = fullName + "."
-                        dlen = len(lname)
-                        for controlled in controlledAttributes.keys():
-                            if controlled[:dlen] == lname:
-                                self.setControllers(value, controlled[dlen:], controller, fullName)
-                                # no break -- can have a.b.c.d and a.e.f.g; needs to set controller for all!
-
-
-    # if there are any context handlers, call the fastsave to write the value into the context
-    ## Context handler deprecated
-    # if hasattr(self, "contextHandlers") and hasattr(self, "currentContexts"):
-        # for contextName, contextHandler in self.contextHandlers.items():
-            # contextHandler.fastSave(self.currentContexts.get(contextName), self, name, value)
-
-
-
-
-class ControlledAttributesDict(dict):
-    def __init__(self, master):
-        self.master = master
-
-    def __setitem__(self, key, value):
-        if not self.has_key(key):
-            dict.__setitem__(self, key, [value])
-        else:
-            dict.__getitem__(self, key).append(value)
-        self.master.setControllers(self.master, key, self.master, "")
-
-
-
-##################
-# this definitions are needed only to define ExampleTable as subclass of ExampleTableWithClass
-#from orange import ExampleTable
-
-class AttributeList(list):
-    pass
-
-class ExampleList(list):
-    pass
 
 class OWBaseWidget(QMainWindow):
     def __new__(cls, *arg, **args):
@@ -129,12 +37,9 @@ class OWBaseWidget(QMainWindow):
         return self
 
 
-    def __init__(self, parent = None, signalManager = None, title="RedR BaseWidget", modal=FALSE, savePosition = False, resizingEnabled = 1, **args):
+    def __init__(self, parent = None, signalManager = None, title="RedR BaseWidget", 
+    modal=False, resizingEnabled = 1, **args):
         # do we want to save widget position and restore it on next load
-        self.windowState = {}
-        self.savePosition = savePosition
-        if savePosition:
-            self.settingsList = getattr(self, "settingsList", []) + ["widgetWidth", "widgetHeight", "widgetXPosition", "widgetYPosition", "widgetShown"]
 
         if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
         else:               QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
@@ -159,7 +64,7 @@ class OWBaseWidget(QMainWindow):
         self.linksIn = {}      # signalName : (dirty, widgetFrom, handler, signalData)
         self.linksOut = {}       # signalName: (signalData, id)
         self.connections = {}   # dictionary where keys are (control, signal) and values are wrapper instances. Used in connect/disconnect
-        self.controlledAttributes = ControlledAttributesDict(self)
+        # self.controlledAttributes = ControlledAttributesDict(self)
         self.progressBarHandler = None  # handler for progress bar events
         self.processingHandler = None   # handler for processing events
         self.eventHandler = None
@@ -169,11 +74,6 @@ class OWBaseWidget(QMainWindow):
 
         self.widgetStateHandler = None
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
-
-        ## context handlers deprecated
-        # if hasattr(self, "contextHandlers"):
-            # for contextHandler in self.contextHandlers.values():
-                # contextHandler.initLocalContext(self)
 
 
     # uncomment this when you need to see which events occured
@@ -186,160 +86,6 @@ class OWBaseWidget(QMainWindow):
         return QMainWindow.event(self, e)
     """
 
-    def getIconNames(self, iconName):
-        if type(iconName) == list:      # if canvas sent us a prepared list of valid names, just return those
-            return iconName
-        
-        names = []
-        name, ext = os.path.splitext(iconName)
-        for num in [16, 32, 42, 60]:
-            names.append("%s_%d%s" % (name, num, ext))
-        fullPaths = []
-        for paths in [(self.widgetDir, name), (self.widgetDir, "icons", name), (os.path.dirname(sys.modules[self.__module__].__file__), "icons", name)]:
-            for name in names + [iconName]:
-                fname = os.path.join(*paths)
-                if os.path.exists(fname):
-                    fullPaths.append(fname)
-            if fullPaths != []:
-                break
-
-        if len(fullPaths) > 1 and fullPaths[-1].endswith(iconName):
-            fullPaths.pop()     # if we have the new icons we can remove the default icon
-        return fullPaths
-    
-
-    def setWidgetIcon(self, iconName):
-        iconNames = self.getIconNames(iconName)
-            
-        icon = QIcon()
-        for name in iconNames:
-            pix = QPixmap(name)
-            icon.addPixmap(pix)
-#            frame = QPixmap(os.path.join(self.widgetDir, "icons/frame.png"))
-#            icon = QPixmap(iconName)
-#            result = QPixmap(icon.size())
-#            painter = QPainter()
-#            painter.begin(result)
-#            painter.drawPixmap(0,0, frame)
-#            painter.drawPixmap(0,0, icon)
-#            painter.end()
-
-        self.setWindowIcon(icon)
-        
-
-    # ##############################################
-    def createAttributeIconDict(self):
-        return OWGUI.getAttributeIcons()
-
-    def isDataWithClass(self, data, wantedVarType = None):
-        self.error([1234, 1235])
-        if not data:
-            return 0
-        if not data.domain.classVar:
-            self.error(1234, "A data set with a class attribute is required.")
-            return 0
-        # if wantedVarType and data.domain.classVar.varType != wantedVarType:
-            # self.error(1235, "Unable to handle %s class." % (data.domain.classVar.varType == orange.VarTypes.Discrete and "discrete" or "continuous"))
-            # return 0
-        return 1
-
-    # call processEvents(), but first remember position and size of widget in case one of the events would be move or resize
-    # call this function if needed in __init__ of the widget
-    def safeProcessEvents(self):
-        keys = ["widgetXPosition", "widgetYPosition", "widgetShown", "widgetWidth", "widgetHeight"]
-        vals = [(key, getattr(self, key, None)) for key in keys]
-        qApp.processEvents()
-        for (key, val) in vals:
-            if val != None:
-                setattr(self, key, val)
-
-
-    # this function is called at the end of the widget's __init__ when the widgets is saving its position and size parameters
-    def restoreWidgetPosition(self):
-        if self.savePosition:
-            if getattr(self, "widgetXPosition", None) != None and getattr(self, "widgetYPosition", None) != None:
-                print self.captionTitle, "restoring position", self.widgetXPosition, self.widgetYPosition
-                self.move(self.widgetXPosition, self.widgetYPosition)
-            if getattr(self,"widgetWidth", None) != None and getattr(self,"widgetHeight", None) != None:
-                print self.captionTitle, "restoring position2", self.widgetWidth, self.widgetHeight
-                self.resize(self.widgetWidth, self.widgetHeight)
-
-    # this is called in canvas when loading a schema. it opens the widgets that were shown when saving the schema
-    def restoreWidgetStatus(self):
-        if self.savePosition and getattr(self, "widgetShown", None):
-            self.show()
-
-    # when widget is resized, save new width and height into widgetWidth and widgetHeight. some widgets can put this two
-    # variables into settings and last widget shape is restored after restart
-    def resizeEvent(self, ev):
-        QMainWindow.resizeEvent(self, ev)
-        if self.savePosition:
-            # print 'resizeevent'
-            self.widgetWidth = self.width()
-            self.widgetHeight = self.height()
-
-
-    # when widget is moved, save new x and y position into widgetXPosition and widgetYPosition. some widgets can put this two
-    # variables into settings and last widget position is restored after restart
-    def moveEvent(self, ev):
-        QMainWindow.moveEvent(self, ev)
-        if self.savePosition:
-            # print 'moveevent'
-            self.widgetXPosition = self.frameGeometry().x()
-            self.widgetYPosition = self.frameGeometry().y()
-
-
-    # set widget state to hidden
-    def hideEvent(self, ev):
-        QMainWindow.hideEvent(self, ev)
-        if self.savePosition:
-            self.widgetShown = 0
-
-    # override the default show function.
-    # after show() we must call processEvents because show puts some LayoutRequests in queue
-    # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
-    def show(self):
-        
-        # print 'owbasewidget show'
-        
-        
-        # print self.windowState.keys()
-        self.onShow()
-        QMainWindow.show(self)
-        
-        # if self.rightDock.isFloating():
-            # self.rightDock.show()
-        # if hasattr(self, "leftDock") and self.leftDock.isFloating():
-            # self.leftDock.show()
- 
-        qApp.processEvents()
-
-    # set widget state to shown
-    def showEvent(self, ev):
-        QMainWindow.showEvent(self, ev)
-        if self.savePosition:
-            self.widgetShown = 1
-
-    def setCaption(self, caption):
-        if self.parent != None and isinstance(self.parent, QTabWidget):
-            self.parent.setTabText(self.parent.indexOf(self), caption)
-        else:
-            self.captionTitle = caption     # we have to save caption title in case progressbar will change it
-            self.setWindowTitle(caption)
-
-    # put this widget on top of all windows
-    def reshow(self): #show the widgets
-        x,y = getattr(self, "widgetXPosition", None), getattr(self, "widgetYPosition", None)
-        self.hide()
-        if x != None and y != None:
-            self.move(x,y)
-        self.show()
-        # if self.GUIDialogDialog != None:
-            # self.showGUIDialog()
-            
-        #self.raise_()
-
-
     def send(self, signalName, value, id = None):
         if not self.hasOutputName(signalName):
             print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
@@ -351,16 +97,6 @@ class OWBaseWidget(QMainWindow):
 
         self.signalManager.send(self, signalName, value, id)
 
-
-
-        
-    # this function is only intended for derived classes to send appropriate signals when all settings are loaded
-    def activateLoadedSettings(self):
-        print 'activateLoadedSettings'
-
-    # reimplemented in other widgets
-    def setOptions(self):
-        pass
 
     # does widget have a signal with name in inputs
     def hasInputName(self, name):
@@ -652,96 +388,6 @@ class OWBaseWidget(QMainWindow):
 #            e.ignore()
         else:
             QMainWindow.keyPressEvent(self, e)
-
-    def information(self, id = 0, text = None):
-        self.setState("Info", id, text)
-        #self.setState("Warning", id, text)
-
-    def warning(self, id = 0, text = ""):
-        self.setState("Warning", id, text)
-        #self.setState("Info", id, text)        # if we want warning just set information
-
-    def error(self, id = 0, text = ""):
-        self.setState("Error", id, text)
-
-    def setState(self, stateType, id, text):
-        changed = 0
-        if type(id) == list:
-            for val in id:
-                if self.widgetState[stateType].has_key(val):
-                    self.widgetState[stateType].pop(val)
-                    changed = 1
-        else:
-            if type(id) == str:
-                text = id; id = 0       # if we call information(), warning(), or error() function with only one parameter - a string - then set id = 0
-            if not text:
-                if self.widgetState[stateType].has_key(id):
-                    self.widgetState[stateType].pop(id)
-                    changed = 1
-            else:
-                self.widgetState[stateType][id] = text
-                changed = 1
-
-        if changed:
-            if self.widgetStateHandler:
-                self.widgetStateHandler()
-            elif text: # and stateType != "Info":
-                self.printEvent(stateType + " - " + text)
-            #qApp.processEvents()
-        return changed
-
-    def synchronizeContexts(self):
-        # if hasattr(self, "contextHandlers"):
-            # for contextName, handler in self.contextHandlers.items():
-                # context = self.currentContexts.get(contextName, None)
-                # if context:
-                    # handler.settingsFromWidget(self, context)
-                    
-        pass
-
-    def openContext(self, contextName="", *arg):
-        # if not self._useContexts:
-            # return
-        # handler = self.contextHandlers[contextName]
-        # context = handler.openContext(self, *arg)
-        # if context:
-            # self.currentContexts[contextName] = context
-        pass
-
-    def closeContext(self, contextName=""):
-        # if not self._useContexts:
-            # return
-        # curcontext = self.currentContexts.get(contextName)
-        # if curcontext:
-            # self.contextHandlers[contextName].closeContext(self, curcontext)
-            # del self.currentContexts[contextName]
-            
-        pass
-
-    def settingsToWidgetCallback(self, handler, context):
-        pass
-
-    def settingsFromWidgetCallback(self, handler, context):
-        pass
-
-    def setControllers(self, obj, controlledName, controller, prefix):
-        while obj:
-            if prefix:
-#                print "SET CONTROLLERS: %s %s + %s" % (obj.__class__.__name__, prefix, controlledName)
-                if obj.__dict__.has_key("attributeController"):
-                    obj.__dict__["__attributeControllers"][(controller, prefix)] = True
-                else:
-                    obj.__dict__["__attributeControllers"] = {(controller, prefix): True}
-
-            parts = controlledName.split(".", 1)
-            if len(parts) < 2:
-                break
-            obj = getattr(obj, parts[0], None)
-            prefix += parts[0]
-            controlledName = parts[1]
-
-    def __setattr__(self, name, value):
-        return unisetattr(self, name, value, QMainWindow)
 
 
 
