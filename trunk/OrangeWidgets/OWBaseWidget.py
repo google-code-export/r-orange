@@ -242,7 +242,7 @@ class OWBaseWidget(QMainWindow):
                             elif issubclass(signal[1], RvarClasses.RDataFrame): # the data frame type is a child of list
                                 value['data'] = 'as.data.frame('+value['data']+')'
                             elif issubclass(signal[1], RvarClasses.RList): # the list type is the most general of the group types
-                                value['data'] = 'as.list('+value['data']+')'
+                                value['data'] = 'as.list(as.data.frame('+value['data']+'))' # first convert to data frame to handle the matrix case
                             else:
                                 pass 
                             ### end block
