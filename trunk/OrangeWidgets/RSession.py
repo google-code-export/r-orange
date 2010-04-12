@@ -23,11 +23,20 @@ class RSession():
     # lock = threading.Lock()
     # rsem = threading.Semaphore(value = 1)
     # occupied = 0
+    uniqueWidgetNumber = 0
+
     Rhistory = '<code>'
-    def __init__(self,uniqueWidgetNumber):
+    def __init__(self):
         # rpy.__init__(self)
+        RSession.uniqueWidgetNumber += 1
+        ctime = str(time.time())
+        self.variable_suffix = '_' + str(RSession.uniqueWidgetNumber) + '_' + ctime
+        #keep all R variable name in this dict
+        self.Rvariables = {}
+        self.setRvariableNames(['title'])
+
         self.device = {}
-        self.uniqueWidgetNumber = uniqueWidgetNumber
+        #self.uniqueWidgetNumber = RSession.uniqueWidgetNumber
         # self.RPackages = []
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
@@ -35,6 +44,22 @@ class RSession():
         #self.settingsList = ['variable_suffix','loadingSavedSession']
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
+    def setRvariableNames(self,names):
+        
+        #names.append('loadSavedSession')
+        for x in names:
+            self.Rvariables[x] = x + self.variable_suffix
+    def makeCM(self, Variable, Parent):
+        if self.R('rownames('+Parent+')') != 'NULL':
+            self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
+        else:
+            self.R(Variable+'<-data.frame(row.names = c('+','.join(range(1, int(self.R('length('+Parent+'[,1])'))))+'))')
+    def addToCM(self, colname = 'tmepColname', CM = None, values = None):
+        if CM == None: return
+        if values == None: return
+        if type(values) == type([]):
+            values = 'c('+','.join(values)+')'
+        self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
 
     def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
 
@@ -149,12 +174,12 @@ class RSession():
             if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
                 print 'dev not in R'
                 self.R('dev.off()')
-                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
+                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(RSession.uniqueWidgetNumber), 'setRData') # starts a new device 
                 self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
                 print str(self.device)
         else:
             print 'make new dev for this'
-            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
+            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(RSession.uniqueWidgetNumber), 'setRData') # starts a new device 
             self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
         #self.require_librarys(['playwith', 'RGtk2'])
         

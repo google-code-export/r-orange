@@ -41,9 +41,7 @@
             <Description>Dose Response</Description>
         </group>        
     </group>
-    <group name="Finance">
-        <Description>Finance</Description>
-    </group>        
+
     <group name="Prototypes">
         <Description>Prototypes</Description>
     </group>        

@@ -6,6 +6,8 @@
 
 from OWBaseWidget import *
 import redRGUI 
+from PyQt4 import QtWebKit
+import urllib
 
 # remove the try-except after reporting is ready for deployment
 import OWReport

@@ -5,7 +5,6 @@
 #
 
 from OWWidget import *
-from PyQt4 import QtWebKit
 from RSession import *
 import redRGUI 
 import inspect, os
@@ -14,7 +13,6 @@ import numpy
 import RvarClasses
 import RAffyClasses
 import threading, sys
-import urllib
 import pprint
 import cPickle
 import re
@@ -23,23 +21,16 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 class OWRpy(OWWidget,RSession):   
-    uniqueWidgetNumber = 0
     
     def __init__(self,parent=None, signalManager=None, 
     title="R Widget", wantGUIDialog = 0, **args):
         
-        OWRpy.uniqueWidgetNumber += 1
         OWWidget.__init__(self, parent=parent, signalManager=signalManager, title=title,wantGUIDialog=wantGUIDialog, **args)
-        RSession.__init__(self,uniqueWidgetNumber = OWRpy.uniqueWidgetNumber)
+        RSession.__init__(self)
         
         #The class variable is used to create the unique names in R
         
         
-        ctime = str(time.time())
-        self.variable_suffix = '_' + str(OWRpy.uniqueWidgetNumber) + '_' + ctime
-        #keep all R variable name in this dict
-        self.Rvariables = {}
-        self.setRvariableNames(['title'])
         self.redRGUIObjects = {}
         #collect the sent items
         self.sentItems = []
@@ -47,14 +38,6 @@ class OWRpy(OWWidget,RSession):
         #dont save these variables
         self.blackList= ['blackList','redRGUIObjects','windowState']
         
-        
-        
-
-    def setRvariableNames(self,names):
-        
-        #names.append('loadSavedSession')
-        for x in names:
-            self.Rvariables[x] = x + self.variable_suffix
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send'
@@ -67,17 +50,6 @@ class OWRpy(OWWidget,RSession):
             self.needsProcessingHandler(self, 1)
         self.sentItems.append((name, variable))
         self.status.setText('Data sent.')
-    def makeCM(self, Variable, Parent):
-        if self.R('rownames('+Parent+')') != 'NULL':
-            self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
-        else:
-            self.R(Variable+'<-data.frame(row.names = c('+','.join(range(1, int(self.R('length('+Parent+'[,1])'))))+'))')
-    def addToCM(self, colname = 'tmepColname', CM = None, values = None):
-        if CM == None: return
-        if values == None: return
-        if type(values) == type([]):
-            values = 'c('+','.join(values)+')'
-        self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
     
     
     def getSettings(self, alsoContexts = True):
