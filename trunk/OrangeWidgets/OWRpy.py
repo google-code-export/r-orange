@@ -64,7 +64,7 @@ class OWRpy(OWWidget,RSession):
         for att in allAtts:
             if att in self.blackList:
                 continue
-            #print 'frist att: ' + att
+            print 'frist att: ' + att
             if re.search('^_', att):
                 continue
             var = getattr(self, att)
@@ -288,8 +288,8 @@ class OWRpy(OWWidget,RSession):
     def getGlobalSettingsFile(self, file=None):
         # print 'getSettingsFile in owbasewidget'
         if file==None:
-            file = os.path.join(self.widgetSettingsDir, self._widgetInfo.fileName + ".ini")
-        # print file
+            file = os.path.join(self.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
+        #print 'getSettingsFile', file
         return file
 
     
@@ -347,14 +347,3 @@ class OWRpy(OWWidget,RSession):
 
         
 ###########################################
-    def printWidget(self, printer = None):
-        ## establish a printer that will print the widget
-        if not printer:
-            printer = QPrinter()
-            printDialog = QPrintDialog(printer)
-            if printDialog.exec_() == QDialog.Rejected: 
-                print 'Printing Rejected'
-                return
-        #painter = QPainter(printer)
-        self.render(printer)
-    

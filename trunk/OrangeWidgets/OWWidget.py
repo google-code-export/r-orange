@@ -28,7 +28,6 @@ class OWWidget(OWBaseWidget):
         self.windowState = {}
         self.savePosition = True
         self.hasAdvancedOptions = wantGUIDialog
-
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
@@ -85,11 +84,11 @@ class OWWidget(OWBaseWidget):
         self.helpBox.setMinimumHeight(50)
         self.helpBox.setMinimumWidth(minWidth)
         self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        
-        url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo.fullName)
-        self.help = redRGUI.webViewBox(self.helpBox)
-        self.help.load(QUrl(url))
-        self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        if hasattr(self,'_widgetInfo'):
+            url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo['fullName'])
+            self.help = redRGUI.webViewBox(self.helpBox)
+            self.help.load(QUrl(url))
+            self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
         
         ### notes ####
@@ -141,6 +140,17 @@ class OWWidget(OWBaseWidget):
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.leftDockState = True
   
+    def printWidget(self, printer = None):
+        ## establish a printer that will print the widget
+        if not printer:
+            printer = QPrinter()
+            printDialog = QPrintDialog(printer)
+            if printDialog.exec_() == QDialog.Rejected: 
+                print 'Printing Rejected'
+                return
+        #painter = QPainter(printer)
+        self.render(printer)
+    
 
     def updateDock(self,ev):
         #print self.windowTitle()

@@ -31,6 +31,8 @@ class OWBaseWidget(QMainWindow):
         self._owError = 1           # do we want to see errors
         self._owShowStatus = 0      # do we want to see warnings and errors in status bar area of the widget
         self._guiElements = []      # used for automatic widget debugging
+
+        
         for key in args:
             if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_category", "_settingsFromSchema"]:
                 self.__dict__[key] = args[key]        # we cannot use __dict__.update(args) since we can have many other

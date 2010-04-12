@@ -164,15 +164,16 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         _useContexts = canvasDlg.settings["useContexts"],
         _category = widgetInfo.category,
         _settingsFromSchema = widgetSettings)
-        self.instance._widgetInfo = widgetInfo
-        
+        #self.instance.__dict__['widgetInfo'] = widgetInfo
+        self.instance.__dict__['_widgetInfo'] = {'fullName':widgetInfo.fullName, 'fileName':widgetInfo.fileName }
         
         if widgetInfo.fileName == 'dummy': 
             print 'Loading dummy step 3'
-            self.instance.__init__(signalManager = signalManager, 
+            self.instance.__init__(signalManager = signalManager,
             forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
         else: self.instance.__init__(signalManager = signalManager)
         #self.instance.__init__(signalManager=signalManager)
+        
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget
         self.isProcessing = 0   # is this widget currently processing signals
         self.needsProcessing = 0 # is this widget in need of processing data

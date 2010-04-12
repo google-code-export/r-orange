@@ -688,7 +688,7 @@ class SchemaDoc(QWidget):
         loadingProgressBar.setValue(0)
         lpb = 0
         for widget in self.widgets:
-            print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo.fileName
+            print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
             
                 SignalManager.loadSavedSession = True
@@ -700,7 +700,7 @@ class SchemaDoc(QWidget):
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
                 SignalManager.loadSavedSession = False
-                QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo.fileName, 
+                QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo['fileName'], 
                 QMessageBox.Ok + QMessageBox.Default)
             lpb += 1
             loadingProgressBar.setValue(lpb)
