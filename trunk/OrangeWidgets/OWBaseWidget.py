@@ -242,6 +242,8 @@ class OWBaseWidget(QMainWindow):
                             elif issubclass(signal[1], RvarClasses.RDataFrame): # the data frame type is a child of list
                                 value['data'] = 'as.data.frame('+value['data']+')'
                             elif issubclass(signal[1], RvarClasses.RList): # the list type is the most general of the group types
+                                if self.R('class('+value['data']+')') in ['list']:
+                                    value['data'] = 'as.data.frame('+value['data']+')'  # need to coerce to a data frame so we can get it into the list
                                 value['data'] = 'as.list('+value['data']+')'
                             else:
                                 pass 
