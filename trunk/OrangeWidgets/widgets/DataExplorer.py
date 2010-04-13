@@ -237,11 +237,11 @@ class DataExplorer(OWRpy):
                 dims = self.R('dim(as.data.frame('+self.data+'))')
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')
                 if int(dims[0]) > 500 and int(dims[1]) > 500:
-                    self.currentDataTransformation = self.data+'[1:500, 1:500]'
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:500, 1:500])' ## wrap in an as.data.frame so that there aren't errors with vectors.
                 elif int(dims[0]) > 500:
-                    self.currentDataTransformation = self.data+'[1:500,]'
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:500,])'
                 elif int(dims[1]) > 500:
-                    self.currentDataTransformation = self.data+'[,1:500]'
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[,1:500])'
                 else:
                     self.currentDataTransformation = self.data
                 ######## Set the table for the data ######
@@ -381,7 +381,7 @@ class DataExplorer(OWRpy):
         # join these together into a single call across the columns
         newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         print self.criteriaList
-        if 'cm' in self.dataParent:
+        if 'cm' in self.dataParent and self.dataParent['cm'] != None:
             if len(self.criteriaList) > 0:
                 self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
                 newData = self.dataParent.copy()

@@ -46,5 +46,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-rownames(x='+str(self.RFunctionParam_x)+','+inj+')')
         self.data["data"] = self.Rvariables["rownames"]
+        self.data.pop('cm')
+        self.data['parent'] = self.Rvariables['rownames']
         self.rSend("rownames Output", self.data)
 
