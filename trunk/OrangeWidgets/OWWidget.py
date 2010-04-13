@@ -149,7 +149,13 @@ class OWWidget(OWBaseWidget):
                 print 'Printing Rejected'
                 return
         #painter = QPainter(printer)
-        self.render(printer)
+        painter = QPainter(printer)
+        self.render(painter)
+        painter.setBrushOrigin(0, int(self.height())+20)
+        self.ROutput.document().drawContents(painter)
+        painter.setBrushOrigin(0, int(self.height()+self.ROutput.height()+40))
+        self.notes.document().drawContents(painter)
+        painter.end()
     
 
     def updateDock(self,ev):

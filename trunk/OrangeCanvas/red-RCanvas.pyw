@@ -16,7 +16,14 @@ import user, orngMisc
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags = 0):
         QMainWindow.__init__(self, parent)
+        import orngEnviron
+        logo = QPixmap(os.path.join(orngEnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+        splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
+        splashWindow.setMask(logo.mask())
+        splashWindow.show()
         
+        splashWindow.showMessage("Initializing Canvas", Qt.AlignHCenter + Qt.AlignBottom)
+            
         self.debugMode = 1        # print extra output for debuging
         self.setWindowTitle("Red Canvas")
         self.windows = []    # list of id for windows in Window menu
@@ -28,7 +35,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.originalPalette = QApplication.palette()
 
         self.__dict__.update(orngEnviron.directoryNames)
-        
+        splashWindow.showMessage("Setting Directories", Qt.AlignHCenter + Qt.AlignBottom)
         self.defaultPic = os.path.join(self.picsDir, "Unknown.png")
         self.defaultBackground = os.path.join(self.picsDir, "frame.png")
         canvasPicsDir  = os.path.join(self.canvasDir, "icons")
@@ -64,11 +71,13 @@ class OrangeCanvasDlg(QMainWindow):
             self.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
         
         # output window
+        splashWindow.showMessage("Settings Output Window", Qt.AlignHCenter + Qt.AlignBottom)
         self.output = orngOutput.OutputWindow(self)
         self.output.catchException(1)
         self.output.catchOutput(1)
 
         # create error and warning icons
+        splashWindow.showMessage("Settings Error Messages and Icons", Qt.AlignHCenter + Qt.AlignBottom)
         informationIconName = os.path.join(canvasPicsDir, "information.png")
         warningIconName = os.path.join(canvasPicsDir, "warning.png")
         errorIconName = os.path.join(canvasPicsDir, "error.png")
@@ -85,7 +94,7 @@ class OrangeCanvasDlg(QMainWindow):
             print "Unable to load all necessary icons. Please reinstall Red-R."
 
         self.setStatusBar(MyStatusBar(self))
-                
+        splashWindow.showMessage("Setting Registry", Qt.AlignHCenter + Qt.AlignBottom)
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         self.updateStyle()
         
@@ -102,6 +111,7 @@ class OrangeCanvasDlg(QMainWindow):
         
 
         # create menu
+        splashWindow.showMessage("Creating Menu", Qt.AlignHCenter + Qt.AlignBottom)
         self.initMenu()
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
@@ -125,7 +135,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.readRecentFiles()
 
         
-        
+        splashWindow.showMessage("Setting States", Qt.AlignHCenter + Qt.AlignBottom)
         if 'windowState' in self.settings.keys():
             self.restoreState(self.settings['windowState'])
         if 'geometry' in self.settings.keys():
@@ -168,15 +178,13 @@ class OrangeCanvasDlg(QMainWindow):
         
         # show message box if no numpy
         qApp.processEvents()
-        try:
-            import numpy
-        except:
-            if QMessageBox.warning(self,'Red Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
-                import webbrowser
-                webbrowser.open("http://sourceforge.net/projects/numpy/")
+        
         if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".rrs": # do we need to load a schema, this happens if you open a saved session.
+            splashWindow.showMessage("Loading Schema", Qt.AlignHCenter + Qt.AlignBottom)
             self.schema.loadDocument(sys.argv[-1])
 
+        splashWindow.hide()
+        splashWindow.close()
         
     def createWidgetsToolbar(self):
         orngTabs.constructCategoriesPopup(self)
@@ -352,12 +360,21 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocumentAsApp(asTabs = 1)
 
     def menuItemPrinter(self):
-        try:
-            printer = QPrinter() # must instantiate before setting, otherwise get a system crash !!!!
-            painter = QPainter(printer)
-            self.schema.canvas.render(painter)
-        except:
-            print "Error in printing the schema"
+        #try:
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer)
+        if printDialog.exec_() == QDialog.Rejected: 
+            print 'Printing Rejected'
+            return 
+        # must instantiate before setting, otherwise get a system crash !!!!
+        print 'Printing Started'
+        painter = QPainter(printer)
+        self.schema.canvas.render(painter)
+        painter.end()
+        for widget in self.schema.widgets:
+            widget.instance.printWidget(printer = printer)
+        #except:
+            #print "Error in printing the schema"
         
 
     def readRecentFiles(self):

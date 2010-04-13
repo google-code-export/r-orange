@@ -85,7 +85,7 @@ class diffExp(OWRpy):
         box = redRGUI.widgetBox(boxVal)
         grid2.addWidget(box, 0, 0)
         self.functionBox = redRGUI.RFormulaEntry(box)
-        self.funcitonBox.outcomeVariable.hide() #don't need to see the outcome variable
+        self.functionBox.outcomeVariable.hide() #don't need to see the outcome variable
         # self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
         # buttonsBox = redRGUI.widgetBox(self, "Commands")
         # grid2.addWidget(buttonsBox, 0,1)
