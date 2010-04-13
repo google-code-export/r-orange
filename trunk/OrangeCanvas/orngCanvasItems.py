@@ -444,15 +444,15 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     def paint(self, painter, option, widget = None):
         if self.isProcessing:
             color = self.canvasDlg.widgetActiveColor
-        elif self.needsProcessing == True:
-            color = Qt.red
+        # elif self.needsProcessing == True:
+            # color = Qt.red
         elif self.selected:
             if (self.view.findItemTypeCount(self.canvas.collidingItems(self), CanvasWidget) > 0):       # the position is invalid if it is already occupied by a widget 
                 color = Qt.red
             else:                    color = self.canvasDlg.widgetSelectedColor
         
 
-        if self.isProcessing or self.selected or self.needsProcessing:
+        if self.isProcessing or self.selected:
             painter.setPen(QPen(color))
             painter.drawRect(-3, -3, self.widgetSize.width()+6, self.widgetSize.height()+6)
 

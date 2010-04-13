@@ -260,7 +260,7 @@ class SignalManager:
         if enabled:
             for key in widgetFrom.linksOut[signalNameFrom].keys():
                 widgetTo.updateNewSignalData(widgetFrom, signalNameTo, widgetFrom.linksOut[signalNameFrom][key], key, signalNameFrom)
-                widgetTo.setInformation(0, 'Data not processed')
+                widgetTo.setInformation(id = 'dataNotSent', text = 'Data not processed')
 
         # reorder widgets if necessary
         if self.widgets.index(widgetFrom) > self.widgets.index(widgetTo):

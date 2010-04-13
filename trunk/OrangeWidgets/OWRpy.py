@@ -45,11 +45,12 @@ class OWRpy(OWWidget,RSession):
         try:
             self.send(name, variable)
             if updateSignalProcessingManager:
-                try:
-                    self.removeInformaiton(0)
-                except: pass
+                #try:
+                self.removeInformation(id = 'dataNotSent')
+                #except: 
+                #    print 'Failed to remove information', self.widgetState
         except:
-            self.setInformation(0, 'Failed to send data')
+            self.setInformation(id = 'dataNotSent', text = 'Failed to send data')
         self.sentItems.append((name, variable))
         self.status.setText('Data sent.')
     

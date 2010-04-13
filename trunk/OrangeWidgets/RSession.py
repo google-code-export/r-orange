@@ -202,10 +202,7 @@ class RSession():
         else:
             #print qApp.canvasDlg.settings['CRANrepos']
             self.R('local({r <- getOption("repos"); r["CRAN"] <- "' + qApp.canvasDlg.settings['CRANrepos'] + '"; options(repos=r)})')
-            
-            
-        
-        
+
         for library in librarys:
             if library in installedRPackages:
                 self.R('require(' + library + ', lib.loc="' + libPath + '")')

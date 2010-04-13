@@ -380,8 +380,8 @@ class OWWidget(OWBaseWidget):
                     print 'pop',val
                     changed = 1
         else:
-            if type(id) == str:
-                text = id; id = 0       # if we call information(), warning(), or error() function with only one parameter - a string - then set id = 0
+            #if type(id) == str:
+                #text = id; id = 0       # if we call information(), warning(), or error() function with only one parameter - a string - then set id = 0
             if not text:
                 if self.widgetState[stateType].has_key(id):
                     self.widgetState[stateType].pop(id)

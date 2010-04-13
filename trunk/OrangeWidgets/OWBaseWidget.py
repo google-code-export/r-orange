@@ -238,22 +238,25 @@ class OWBaseWidget(QMainWindow):
                     try:
                         
                         for (oldValue, id, nameFrom) in signalData:
-                            value = oldValue.copy()
-                            if value == None:
-                                for output in self.outputs:
-                                    self.send(output[0], None)
-                                continue
-                            ### block to convert to higher data type
-                            if issubclass(signal[1], RvarClasses.RVector): # the deepest of the common types
-                                value['data'] = value['data']
-                            elif issubclass(signal[1], RvarClasses.RDataFrame): # the data frame type is a child of list
-                                value['data'] = 'as.data.frame('+value['data']+')'
-                            elif issubclass(signal[1], RvarClasses.RList): # the list type is the most general of the group types
-                                if self.R('class('+value['data']+')') in ['list']:
-                                    value['data'] = 'as.data.frame('+value['data']+')'  # need to coerce to a data frame so we can get it into the list
-                                value['data'] = 'as.list('+value['data']+')'
+                            if type(oldValue) == dict:
+                                value = oldValue.copy()
+                                if value == None:
+                                    for output in self.outputs:
+                                        self.send(output[0], None)
+                                    continue
+                                ### block to convert to higher data type
+                                if issubclass(signal[1], RvarClasses.RVector): # the deepest of the common types
+                                    value['data'] = value['data']
+                                elif issubclass(signal[1], RvarClasses.RDataFrame): # the data frame type is a child of list
+                                    value['data'] = 'as.data.frame('+value['data']+')'
+                                elif issubclass(signal[1], RvarClasses.RList): # the list type is the most general of the group types
+                                    if self.R('class('+value['data']+')') in ['list']:
+                                        value['data'] = 'as.data.frame('+value['data']+')'  # need to coerce to a data frame so we can get it into the list
+                                    value['data'] = 'as.list('+value['data']+')'
+                                else:
+                                    pass
                             else:
-                                pass 
+                                value = oldValue
                             ### end block
                             
                             if self.signalIsOnlySingleConnection(key):
@@ -267,8 +270,8 @@ class OWBaseWidget(QMainWindow):
                                     handler(value, (widgetFrom, nameFrom, id))
                             
                     except:
-                        type, val, traceback = sys.exc_info()
-                        sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
+                        thistype, val, traceback = sys.exc_info()
+                        sys.excepthook(thistype, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 
                     if processHandler:

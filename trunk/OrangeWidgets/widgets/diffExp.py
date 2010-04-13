@@ -54,19 +54,19 @@ class diffExp(OWRpy):
         box = redRGUI.widgetBox(boxVal, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(box, 0,1)
         processButton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset, width=150)
-        self.arrays = redRGUI.listBox(box, self, callback = self.printSelected)
+        self.arrays = redRGUI.listBox(box, label = 'Available Samples', callback = self.printSelected)
         setAbutton = redRGUI.button(box, "Switch Class", callback = self.switchClass, width = 200)
         self.infoa = redRGUI.widgetLabel(box, "No arrays selected")
         self.infob = redRGUI.widgetLabel(box, "Setting Class A")
         
         selecteda = redRGUI.widgetBox(self.controlArea,sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(selecteda, 0,0)
-        self.selectedArrays = redRGUI.listBox(selecteda, self)
+        self.selectedArrays = redRGUI.listBox(selecteda, label = 'Class A Samples')
         clearaButton = redRGUI.button(selecteda, "Clear",callback = self.clearA, width = 200)
         
         selectedb = redRGUI.widgetBox(self.controlArea,sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding))
         grid.addWidget(selectedb, 0,2)
-        self.selectedArraysB = redRGUI.listBox(selectedb, self)
+        self.selectedArraysB = redRGUI.listBox(selectedb, label = 'Class B Samples')
         clearbButton = redRGUI.button(selectedb, "Clear", callback = self.clearB, width = 200)
         self.valuesStack.addWidget(boxVal)
         # end valstack 0
@@ -85,6 +85,7 @@ class diffExp(OWRpy):
         box = redRGUI.widgetBox(boxVal)
         grid2.addWidget(box, 0, 0)
         self.functionBox = redRGUI.RFormulaEntry(box)
+        self.funcitonBox.outcomeVariable.hide() #don't need to see the outcome variable
         # self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
         # buttonsBox = redRGUI.widgetBox(self, "Commands")
         # grid2.addWidget(buttonsBox, 0,1)
