@@ -237,7 +237,8 @@ class OWBaseWidget(QMainWindow):
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
                         
-                        for (value, id, nameFrom) in signalData:
+                        for (oldValue, id, nameFrom) in signalData:
+                            value = oldValue.copy()
                             if value == None:
                                 for output in self.outputs:
                                     self.send(output[0], None)

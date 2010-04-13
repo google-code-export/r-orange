@@ -45,12 +45,13 @@ class OWRpy(OWWidget,RSession):
         try:
             self.send(name, variable)
             if updateSignalProcessingManager:
-                self.needsProcessingHandler(self, 0)
+                try:
+                    self.removeInformaiton(0)
+                except: pass
         except:
-            self.needsProcessingHandler(self, 1)
+            self.setInformation(0, 'Failed to send data')
         self.sentItems.append((name, variable))
         self.status.setText('Data sent.')
-    
     
     def getSettings(self, alsoContexts = True):
         # print 'moving to save'
@@ -230,7 +231,7 @@ class OWRpy(OWWidget,RSession):
         
         for (name, data) in self.sentItems:
             self.send(name, data)
-        self.needsProcessingHandler(self, 0)
+        #self.needsProcessingHandler(self, 0)
         qApp.restoreOverrideCursor()
     def recursiveSetSetting(self,var,d):
         # print 'recursiveSetSetting'

@@ -112,7 +112,7 @@ class DataExplorer(OWRpy):
                 print 'Colnames are '+str(self.orriginalColumnNames)
                 self.dataParent = data.copy()
                 # first get some info about the table so we can put that into the current table.
-                dims = self.R('dim('+self.data+')')
+                dims = self.R('dim('+self.data+')') #self data should be a data.frame
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')
                 ##### Block to set the currentDataTransformation #######
                 if (int(dims[0]) == 0) or (int(dims[1]) == 0):
@@ -234,7 +234,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['dialog'].setWindowTitle(self.captionTitle+' '+self.colnames[j-1]+' Seleciton')
                         self.criteriaDialogList[j-1]['cw'] = redRGUI.widgetLabel(self.criteriaDialogList[j-1]['dialog'], 'Unsupported column type subsetting is disabled')
             else:
-                dims = self.R('dim('+self.data+')')
+                dims = self.R('dim(as.data.frame('+self.data+'))')
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')
                 if int(dims[0]) > 500 and int(dims[1]) > 500:
                     self.currentDataTransformation = self.data+'[1:500, 1:500]'
@@ -257,11 +257,15 @@ class DataExplorer(OWRpy):
         # a set of recurring cellWidgets that we will use for the column settings
         #
         # get the dims to set the data
-        dims = self.R('dim('+self.currentDataTransformation+')') 
+        dims = self.R('dim(as.data.frame('+self.currentDataTransformation+'))') # coerce the data to a data frame just in case. 
         
         # set the row and column count
-        self.table.setRowCount(min([int(dims[0]), 500])+2) # set up the row and column counts of the table
-        self.table.setColumnCount(min([int(dims[1]), 500])+1)
+        if dims != None:
+            self.table.setRowCount(min([int(dims[0]), 500])+2) # set up the row and column counts of the table
+            self.table.setColumnCount(min([int(dims[1]), 500])+1)
+        else: #one column data frames will be converted to vectors so dim will fail, put a catch so this will not throw an error.
+            self.table.setRowCount(500+2) # set up the row and column counts of the table
+            self.table.setColumnCount(1+1)
         tableData = self.R('as.matrix('+self.currentDataTransformation+')') # collect all of the table data into an objec
         colClasses = []
         for i in range(0, dims[1]):
@@ -300,8 +304,6 @@ class DataExplorer(OWRpy):
                 elif j > 0 and i> 1:
                     if dims[0] == 1: # there is only one row
                         ci = QTableWidgetItem(str(tableData[j-1]))
-                    elif dims[1] == 1: # there is only one colum
-                        ci = QTableWidgetItem(str(tableData[i-2]))
                     else:
                         ci = QTableWidgetItem(str(tableData[i-2][j-1])) # need to catch the case that there might not be multiple rows or columns
                     self.table.setItem(i, j, ci)
@@ -313,7 +315,7 @@ class DataExplorer(OWRpy):
         cw = self.criteriaDialogList[k]['cw']
         text = str(cw.text())
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\"'+colName+'\"] == \''+text+'\')'
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent['parent']+')[,\"'+colName+'\"] == \''+text+'\')'
         
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
@@ -325,7 +327,7 @@ class DataExplorer(OWRpy):
             self.status.setText('Please make a logical statement beginning with either \'==\', \'>\', or \'<\'')
             return
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'('+self.dataParent['parent']+'[,\''+colName+'\']'+text+')'
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent['parent']+')[,\''+colName+'\']'+text+')'
         
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
@@ -363,7 +365,7 @@ class DataExplorer(OWRpy):
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
-        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
+        newData = {'data':'as.data.frame('+self.orriginalData+'['+'&'.join(self.criteriaList)+',])'} # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):

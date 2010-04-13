@@ -50,7 +50,10 @@ class apply(OWRpy):
                         injection.append(string)
                 inj = ','.join(injection)
                 self.R(self.Rvariables['apply']+'<-apply(X='+str(self.RFunctionParam_X)+','+inj+')')
-                
+                if 'Rows' in self.RFunctionParamMARGIN_radioButtons.getChecked():
+                    self.R(self.Rvariables['apply']+'<-cbind('+self.Rvariables['apply']+', rownames('+str(self.RFunctionParam_X)+'))')
+                else:
+                    self.R(self.Rvariables['apply']+'<-cbind('+self.Rvariables['apply']+', colnames('+str(self.RFunctionParam_X)+'))')
                 self.data["data"] = self.Rvariables["apply"]
                 
                 if self.R('class('+self.Rvariables['apply']+')') in ['vector', 'character', 'numeric']:

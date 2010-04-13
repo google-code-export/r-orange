@@ -49,9 +49,6 @@ class readFile(OWRpy):
         options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         area.layout().setAlignment(options,Qt.AlignTop)
         
-        self.setInformation(1,'asdfasdf')
-        self.setWarning(2,'aaaaaaaaaaaasdfasdf')
-        self.setWarning(3,'aaaaaaaaaaaasdfasdf')
         
         #options.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         

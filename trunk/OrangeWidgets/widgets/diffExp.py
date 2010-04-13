@@ -135,10 +135,6 @@ class diffExp(OWRpy):
     
     def process(self, data):
         lib = self.require_librarys(['affy','gcrma','limma'])
-        if not lib: 
-            self.require_librarys(['affy', 'gcrma', 'limma'], force = True)
-            print 'Error occured during library loading'
-            return
         self.arrays.clear()
         self.selectedArrays.clear()
         self.selectedArraysB.clear()
