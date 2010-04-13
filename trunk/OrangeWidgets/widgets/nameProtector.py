@@ -1,8 +1,8 @@
 """
-<name>Name Protector</name>
+<name>Rename Rowss or Columns</name>
 <discription>R does not handle attachment of column names that begin with integers.  This is usually handled by R functions that read in data however some precompiled data escapes this protection.</discription>
 <author>Kyle R. Covington</author>
-<tags>Data Manipulation</tags>
+<tags>R</tags>
 <RFunctions>base:make.names</RFunctions>
 <icon>icons/RExecutor.PNG</icon>
 <priority>4010</priority>

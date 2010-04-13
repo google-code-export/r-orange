@@ -1,5 +1,5 @@
 """
-<name>multdrc</name>
+<name>Multi Dose Response</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>drc:multdrc,stats:anova</RFunctions>
 <tags>Dose Response</tags>

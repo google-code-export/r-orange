@@ -1,8 +1,8 @@
 """
-<name>rownames</name>
+<name>Get Rownames</name>
 
 <description>Returns a vector of rownames coresponding to the row names of a data table.</description>
-<tags>Data Manipulation</tags>
+<tags>Subsetting</tags>
 <icon>icons/readfile.png</icon>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>base:rownames</RFunctions>

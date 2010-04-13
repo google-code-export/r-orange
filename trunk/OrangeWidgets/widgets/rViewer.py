@@ -1,8 +1,8 @@
 """
-<name>R viewer</name>
+<name>View R Output</name>
 <author>Kyle R. Covington</author>
 <description>Shows the output of an R variable, equivalent to typing the variable name in the R Executor</description>
-<tags>Data Exploration and Visualization</tags>
+<tags>R</tags>
 <icon>icons/rexecutor.png</icon>
 <priority>10</priority>
 """

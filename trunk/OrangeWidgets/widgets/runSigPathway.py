@@ -36,27 +36,22 @@ class runSigPathway(OWRpy):
         self.newdata = {}
         self.dboptions = ''
         self.subtable = {}
-
+        self.noFile() # run the file manager to get all the needed files.
         #GUI
         mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         leftArea = redRGUI.widgetBox(mainArea, sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding))
         rightArea = redRGUI.widgetBox(mainArea)
         info = redRGUI.groupBox(leftArea, "Info")
         
-        self.infoa = redRGUI.widgetLabel(info, "No data connected yet.")
         self.infob = redRGUI.widgetLabel(info, '')
-        self.infoc = redRGUI.widgetLabel(info, '')
-        
-        
+ 
         sigPathOptions = redRGUI.groupBox(leftArea, "Options", sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
         self.minNPS = redRGUI.lineEdit(sigPathOptions, '20', 'Min Genes in Pathway:')
         self.maxNPS = redRGUI.lineEdit(sigPathOptions, '500', 'Max Genes in Pathway:')
-        self.pAnnotlist = redRGUI.comboBox(sigPathOptions, label = "Pathway Annotation File:", items = []) #Gets the availiable pathway annotation files.
-        self.chiptype = redRGUI.lineEdit(sigPathOptions, '', label = "Chiptype")
+        self.pAnnotlist = redRGUI.comboBox(sigPathOptions, label = "Pathway Annotation File:", items = self.availablePaths, callback = self.loadpAnnot) #Gets the availiable pathway annotation files.
+        self.chiptype = redRGUI.lineEdit(sigPathOptions, '', label = "Chiptype", toolTip = 'If no chip type was detected you can input the chip type here.\nBe careful that you put the chip type in exactly as it would be specified in Read CEL Files.\nOtherwise you will likely get an error!!', callback = self.getChiptype)
         self.npath = redRGUI.lineEdit(sigPathOptions, '25', label = 'Number of Pathways')
-        self.pAnnotlist.setEnabled(False)
         self.getNewAnnotButton = redRGUI.button(sigPathOptions, label = "New Annotation File", callback = self.noFile, width = 200)
-        redRGUI.button(sigPathOptions, label='Load pathway file', callback = self.loadpAnnot, width = 200)
         redRGUI.button(self.bottomAreaRight, 'Run', callback = self.runPath, width = 200)
         #redRGUI.button(sigPathOptions, 'Show Table', callback = self.tableShow, width = 200)
         self.usedb = redRGUI.checkBox(sigPathOptions, buttons = ['Use Annotation Database'])
@@ -66,56 +61,51 @@ class runSigPathway(OWRpy):
         self.pathinfoA = redRGUI.widgetLabel(self.pathtable, "")
         self.table1 = redRGUI.table(self.pathtable) # change the table while processing
         self.table2 = redRGUI.table(self.pathtable) #change the table while processing
-        #self.splitCanvas.addWidget(self.table1)
-        #self.splitCanvas.addWidget(self.table2)
         
-    # def onLoadSavedSession(self):
-        # try:
-            # varexists1 = self.R('exists("'+'sigpath_'+self.vs+'")')
-            # if self.clickedRow != None:
-                # varexists2 = self.R('exists("'+'sigpath_'+self.vs+'$list.gPS[['+str(self.clickedRow)+']]'+'")') #should trigger an exception if it doesn't exist
-            # if varexists1:
-                # self.runPath(reload = 1)
-                # self.sendMe(palist = False)
-            # else:
-                # return
-        # except:
-            # pass
-
+        
+        
     def loadpAnnot(self):
-        self.R('load(choose.files())') # change this to Qt format
+        file = str(self.pAnnotlist.currentText())
+        rrdir = os.path.split(qApp.canvasDlg.canvasDir)[0]
+        destpath = os.path.join(rrdir, 'R', 'doc', 'geneSets')
+        fileFull = os.path.abspath(os.path.join(destpath, file, '.RData'))
+        fileFull = fileFull.replace('\\', '//')
+        self.R('load('+fileFull+')')
         self.pAnnots = 'G'
-        # ## give some output as to what file the annotations are comming from
-    def setFileFolder(self):
-        self.wd = self.R('choose.dir()') # change this to Qt format
-    
+        self.infob.setText('Annotation file loaded')
+
     def process(self, data): #collect a preprocessed file for pathway analysis
         self.require_librarys(['sigPathway'])
         if data:
+            try:
+                self.removeWarning(id = 'NoData')
+            except: pass
             self.olddata = data
             self.data = data['data']
             self.pAnnotlist.setEnabled(True)
-            self.infoa.setText("Data connected")
+            self.chiptype.clear()
             if 'eset' in data:
                 self.affy = data['eset']
                 self.chiptype.setText(self.R('annotation('+self.affy+')'))
+                self.chiptype.setEnabled(False)
                 self.usedb.setChecked(['Use Annotation Database'])
                 self.getChiptype()
             elif 'affy' in data:
                 self.affy = data['affy']
                 self.chiptype.setText(self.R('annotation('+self.affy+')'))
+                self.chiptype.setEnabled(False)
                 self.usedb.setChecked(['Use Annotation Database'])
                 self.getChiptype()
             else:
                 self.infob.setText("No Chip Type Info Available. \n Please input.")
+                self.chiptype.setEnabled(True)
             if str(self.chiptype.text()) != '':
                 self.infob.setText('Your chip type is '+str(self.chiptype.text()))
             if 'classes' in self.olddata:
                 self.phenotype = self.olddata['classes']
             else: return
-                #self.R('data.entry(colnames('+self.data+'), cla'+self.vs+'=NULL)')
-                #self.phenotype = 'cla'+self.vs
-        else: return
+        else: 
+            self.setWarning(id = 'NoData', text = 'No data was found in your connection')
     def processPathAnnot(self, data): #connect a processed annotation file if removed, re-enable the choose file function
         if data:
             self.pAnnots = data['data']
@@ -125,50 +115,50 @@ class runSigPathway(OWRpy):
             self.wdline.setEnabled(True)
             self.wdfilebutton.setEnabled(True)
     def getChiptype(self):
-        if 'Use Annotation Database' in self.usedb.getChecked():
-            
-            lib = self.require_librarys([str(self.chiptype.text() + '.db')]) # require the libraries, these are in the biocLite repository so if fails we need to run a special algorithm to get the packages
-            self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
-            self.infob.setText("Chip type loaded")
-            
-            #self.infob.setText("There was an exception")
-            if not lib: self.noDbFile() #try to get the db file
+        if 'Use Annotation Database' in self.usedb.getChecked(): 
+            try:
+                self.require_librarys([str(self.chiptype.text() + '.db')]) # require the libraries, these are in the biocLite repository so if fails we need to run a special algorithm to get the packages
+                self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
+                self.infob.setText("Chip type loaded")
+            except:
+                self.infob.setText('Chip type was not loaded successfully')
         else: return
     
-    def noFile(self):
-        self.R('shell.exec("http://chip.org/~ppark/Supplements/PNAS05.html")') #open website for more pathways
-        self.infoa.setText("Please select the file that coresponds to your array type and save.") #send the user a message to download the appropriate pathway.
-        self.infob.setText("Once you have saved the array please press the update button.") #prompt the user to update the pathway list
+    def noFile(self): # download all available files from "http://chip.org/~ppark/Supplements/PNAS05.html" and put them into the \R\doc\geneSets folder in the Red-R dir.
+        print 'Entered noFile to get files'
+        rrdir = os.path.split(qApp.canvasDlg.canvasDir)[0]
+        print rrdir
         
-    def updatePaths(self):
-        if self.wd == '':
-            self.infob.setText("You must specify a working directory!")
-        else:
-            try:
-                olddir = os.getcwd()
-                os.chdir(self.wd)
-                self.pAnnotlist.update(glob.glob("*.RData"))
-                os.chdir(olddir)
-            except:
-                self.infob.setText("There was a problem accessing your directory, please confirm that it is correct.")
-        
-    def noDbFile(self):
-        try:
-            self.R('source("http://bioconductor.org/biocLite.R")')
-            self.R('biocLite("'+str(self.chiptype.text())+'")')
-            self.R('biocLite("'+str(self.chiptype.text())+'.db")')
-            self.require_librarys([str(self.chiptype.text()), str(self.chiptype.text() + '.db')])
-            #r('require("'+self.chiptype+'")')
-            #r('require("'+self.chiptype+'.db")')
-            self.infob.setText("Chip type downloaded and loaded")
-            self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
-        except: 
-            self.infoa.setText("Unable to include the .db file, please check that you are connected to the internet and that your .db file is available.")
-            self.infob.setText("Your chip type appears to be "+str(self.chiptype.text())+".")
-            self.dboptions = ''
-            
+        destpath = os.path.join(rrdir, 'R', 'doc', 'geneSets')
+        # if doesn't exist make the directory
+        print destpath
+        neededFiles = []
+        for file in ['GenesetsU430v2', 'GenesetsU74av2', 'GenesetsU95av2', 'GenesetsU133a', 'GenesetsU133plus2']:
+            if not os.path.isfile(os.path.abspath(os.path.join(destpath, file+'.RData'))):
+                neededFiles.append(file)
+                print 'Requiring ', file
+            else:
+                self.availablePaths.append(file)
+                print 'Found ', file
+        print neededFiles, len(neededFiles), len(neededFiles)>0
+        if len(neededFiles) > 0:
+            import urllib
+            progressBar = QProgressDialog()
+            progressBar.setCancelButtonText(QString())
+            progressBar.setLabelText('Loading required annotation data')
+            progressBar.setMaximum(5)
+            progressBar.setValue(0)
+            progressBar.setWindowTitle('Loading')
+            pbv = 0
+            opener = urllib.FancyURLopener()
+            for geneSet in ['GenesetsU430v2', 'GenesetsU74av2', 'GenesetsU95av2', 'GenesetsU133a', 'GenesetsU133plus2']:
+                #try:
+                opener.retrieve(url = 'http://chip.org/~ppark/Supplements/PNAS05/%s.RData' % geneSet, filename = os.path.abspath(os.path.join(destpath, geneSet+'.RData')))
+                # except: 
+                    # print 'Exception
+                pbv += 1
+                progressBar.setValue(pbv)
 
-        
     def runPath(self, reload = 0):
         if self.data == '': return
         if not reload:

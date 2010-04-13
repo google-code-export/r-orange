@@ -1,5 +1,5 @@
 """
-<name>Present calls with panp</name>
+<name>Present Calls</name>
 <description>Calculates differential expression of genes from an eSet object</description>
 <tags>Microarray</tags>
 <RFunctions>panp:pa.calls</RFunctions>

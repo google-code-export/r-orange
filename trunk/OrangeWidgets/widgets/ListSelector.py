@@ -1,5 +1,5 @@
 """
-<name>List Selector</name>
+<name>List Selection</name>
 <description>Allows viewing of a list and picks parts of a list and sends them.</description>
 <tags>Data Exploration and Visualization</tags>
 <RFunctions>base:list</RFunctions>

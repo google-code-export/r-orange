@@ -1,5 +1,5 @@
 """
-<name>Melt Data Frame</name>
+<name>Reshape Data</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <tags>Data Manipulation</tags>
 <RFunctions>reshape:melf</RFunctions>

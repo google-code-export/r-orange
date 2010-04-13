@@ -1,5 +1,5 @@
 """
-<name>ED</name>
+<name>Effective Dose</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>drc:ED</RFunctions>
 <tags>Dose Response</tags>
