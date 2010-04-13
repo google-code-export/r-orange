@@ -609,8 +609,8 @@ class SchemaDoc(QWidget):
                     print 'Name: '+str(name)+' (orngDoc.py)'
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                     try:
-                        if 'RPackages' in settings.keys():
-                            RSession.require_librarys(settings['RPackages']['pythonObject'])
+                        if 'requiredRLibraries' in settings.keys():
+                            RSession.require_librarys(settings['requiredRLibraries']['pythonObject'])
                     except: 
                         import traceback,sys
                         print '-'*60

@@ -29,7 +29,7 @@ class ReadCEL(OWRpy):
         
         #set R variable names
         self.setRvariableNames(['eset','folder', 'cm'])
-        
+        self.asdf
         #signals
         self.inputs = None 
         self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]

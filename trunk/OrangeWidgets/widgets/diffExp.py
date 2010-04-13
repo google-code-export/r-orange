@@ -135,7 +135,7 @@ class diffExp(OWRpy):
     
     
     def process(self, data):
-        lib = self.require_librarys(['affy','gcrma','limma'])
+        self.require_librarys(['affy','gcrma','limma'])
         self.arrays.clear()
         self.selectedArrays.clear()
         self.selectedArraysB.clear()

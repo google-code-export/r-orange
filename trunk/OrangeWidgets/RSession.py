@@ -34,10 +34,10 @@ class RSession():
         #keep all R variable name in this dict
         self.Rvariables = {}
         self.setRvariableNames(['title'])
-
+        self.requiredRLibraries = []
         self.device = {}
         #self.uniqueWidgetNumber = RSession.uniqueWidgetNumber
-        # self.RPackages = []
+        #self.RPackages = []
         #self.loadSavedSession = False
         #self.loadingSavedSession = False
         #print 'set load ssaved '
@@ -206,14 +206,16 @@ class RSession():
         for library in librarys:
             if library in installedRPackages:
                 self.R('require(' + library + ', lib.loc="' + libPath + '")')
+                
             else:
                 try:
                     self.R('setRepositories(ind=1:7)')
                     self.R('install.packages("' + library + '", lib="' + libPath + '")')
                     self.R('require(' + library + ', lib.loc="' + libPath + '")')
+                    
                 except:
                     print 'Library load failed. This widget will not work!!!'
-
+        self.requiredRLibraries.extend(librarys)
 
 
 class RSessionThread(QThread):
