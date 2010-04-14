@@ -50,7 +50,7 @@ class OWRpy(OWWidget,RSession):
                 #except: 
                 #    print 'Failed to remove information', self.widgetState
         except:
-            self.setInformation(id = 'dataNotSent', text = 'Failed to send data')
+            self.setError(id = 'dataNotSent', text = 'Failed to send data')
         self.sentItems.append((name, variable))
         self.status.setText('Data sent.')
     

@@ -548,7 +548,6 @@ class SchemaDoc(QWidget):
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         import orngEnviron
         print 'document load called'
-        ldp += 1
         #self.clear()
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
