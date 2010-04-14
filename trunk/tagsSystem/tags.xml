@@ -7,11 +7,11 @@
     </group>
     <group name="Data Manipulation">
         <Description>Widgets for data manipulation</Description>
-        <group name="Data Classification">
-            <Description>Widgets that classify data</Description>
-        </group>
     </group>
-    <group name="Table Subsetting">
+    <group name="Data Classification">
+        <Description>Widgets that classify data</Description>
+    </group>
+    <group name="Subsetting">
         <Description>Tools for subsetting tables</Description>
     </group>
     <group name="R">

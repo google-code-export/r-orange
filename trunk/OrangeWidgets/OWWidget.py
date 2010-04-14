@@ -142,6 +142,8 @@ class OWWidget(OWBaseWidget):
   
     def printWidget(self, printer = None):
         ## establish a printer that will print the widget
+
+
         if not printer:
             printer = QPrinter()
             printDialog = QPrintDialog(printer)
