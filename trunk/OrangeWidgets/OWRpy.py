@@ -36,7 +36,7 @@ class OWRpy(OWWidget,RSession):
         self.sentItems = []
         
         #dont save these variables
-        self.blackList= ['blackList','redRGUIObjects','windowState']
+        self.blackList.extend(['blackList','redRGUIObjects','windowState'])
         
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
@@ -55,18 +55,22 @@ class OWRpy(OWWidget,RSession):
         self.status.setText('Data sent.')
     
     def getSettings(self, alsoContexts = True):
-        # print 'moving to save'
+        print 'moving to save'
         import re
         settings = {}
         allAtts = self.__dict__
         self.blackList.extend(RSession().__dict__.keys())
-        self.blackList.extend(OWWidget().__dict__.keys())
-        #print 'all atts:', allAtts
+        #self.blackList.extend(OWWidget().__dict__.keys())
+        # print 'all atts:', allAtts
         # try:
+        self.progressBarInit()
+        i = 0
         for att in allAtts:
             if att in self.blackList:
                 continue
-            print 'frist att: ' + att
+            i += 1
+            self.progressBarAdvance(i)
+            # print 'frist att: ' + att
             if re.search('^_', att):
                 continue
             var = getattr(self, att)
@@ -111,6 +115,7 @@ class OWRpy(OWWidget,RSession):
             #print 'Saving inputs and outputs failed.  This widget will not be reloaded by a dummyWidget!'
         #print str(settings) + ' (OWRpy.py)'
         #print 'My settings are ' + str(settings)
+        self.progressBarFinished()
         return settings
     def saveCustomSettings(self):
         pass
@@ -193,12 +198,17 @@ class OWRpy(OWWidget,RSession):
                 self.__setattr__(k, v['pythonObject'])
             else:
                 self.redRGUIObjects[k] = v;
+        
     def onLoadSavedSession(self):
-        # print 'in onLoadSavedSession'
+        print 'in onLoadSavedSession'
         qApp.setOverrideCursor(Qt.WaitCursor)
+        self.progressBarInit()
+        i = 0
         for k,v in self.redRGUIObjects.iteritems():
             # print str(k)+ ' in onLoadSavedSession widget attribute'
             # pp.pprint(v)
+            i += 1
+            self.progressBarAdvance(i)
             if not hasattr(self,k):
                 continue
             try:
@@ -225,6 +235,7 @@ class OWRpy(OWWidget,RSession):
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
             
+        self.progressBarAdvance(i+1)
         if '_customSettings' in self.redRGUIObjects.keys():
             self.loadCustomSettings(self.redRGUIObjects['_customSettings'])
         else:
@@ -234,6 +245,8 @@ class OWRpy(OWWidget,RSession):
             self.send(name, data)
         #self.needsProcessingHandler(self, 0)
         qApp.restoreOverrideCursor()
+        self.progressBarFinished()
+
     def recursiveSetSetting(self,var,d):
         # print 'recursiveSetSetting'
         
@@ -283,6 +296,7 @@ class OWRpy(OWWidget,RSession):
         if settings:
             # if hasattr(self, "settingsList"):
             self.setSettings(settings)
+
     
         
 #############widget specific settings#####################

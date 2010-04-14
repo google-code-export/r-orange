@@ -39,7 +39,6 @@ class readFile(OWRpy):
         self.inputs = None
         self.outputs = [("data.frame", RvarClasses.RDataFrame)]
         #GUI
-        
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         #area.layout().setAlignment(Qt.AlignTop)

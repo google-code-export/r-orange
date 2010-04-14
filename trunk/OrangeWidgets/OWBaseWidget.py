@@ -77,7 +77,7 @@ class OWBaseWidget(QMainWindow):
 
         self.widgetStateHandler = None
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
-
+        self.blackList = self.__dict__.keys()
 
     # uncomment this when you need to see which events occured
     """

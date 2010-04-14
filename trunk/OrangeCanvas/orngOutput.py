@@ -167,9 +167,10 @@ class OutputWindow(QDialog):
     def exceptionHandler(self, type, value, tracebackInfo):
         if self.canvasDlg.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
-
-
-
+        # print 'exceptionHandler'
+        # traceback.extract_tb(tracebackInfo)
+        # print tracebackInfo
+        # traceback.print_exception(type,value,tracebackInfo)
         # t = localtime()
         # text = "<nobr>Unhandled exception of type %s occured at %d:%02d:%02d:</nobr><br><nobr>Traceback:</nobr><br>\n" % ( self.getSafeString(type.__name__), t[3],t[4],t[5])
 
@@ -194,7 +195,7 @@ class OutputWindow(QDialog):
             # text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
         # text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
         text =  '-'*60
-        text += '\n' + traceback.format_exc() 
+        text += '\n' + ''.join(traceback.format_tb(tracebackInfo)) 
         text +=  '\n' + '-'*60 + '\n'       
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the

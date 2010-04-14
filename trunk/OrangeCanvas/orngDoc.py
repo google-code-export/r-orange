@@ -459,7 +459,7 @@ class SchemaDoc(QWidget):
         progressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
         progressBar.setWindowTitle('Saving '+str(os.path.basename(filename)))
         progressBar.setLabelText('Saving '+str(os.path.basename(filename)))
-        progressBar.setMaximum(len(self.widgets)+len(self.lines)+2)
+        progressBar.setMaximum(len(self.widgets)+len(self.lines)+3)
         progress = 0
         progressBar.setValue(progress)
         progressBar.show()
@@ -515,6 +515,9 @@ class SchemaDoc(QWidget):
             print 'saving image...'
             import RSession
             RSession = RSession.RSession()
+            progressBar.setLabelText('Saving Data...')
+            progress += 1
+            progressBar.setValue(progress)
 
             RSession.R('save.image("' + tempR + '")')
             zout = zipfile.ZipFile(filename, "w")
@@ -545,6 +548,7 @@ class SchemaDoc(QWidget):
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         import orngEnviron
         print 'document load called'
+        ldp += 1
         #self.clear()
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
@@ -572,14 +576,8 @@ class SchemaDoc(QWidget):
             import re
             import RSession
             RSession = RSession.RSession()
-            loadingProgressBar.setLabelText('Converting Current Widgets')
-            loadingProgressBar.setMaximum(len(self.widgets))
-            loadingProgressBar.setValue(0)
-            lpb = 0
             for widget in self.widgets: # convert the caption names so there are no conflicts
                 widget.caption += 'A'
-                lpb += 1
-                loadingProgressBar.setValue(lpb)
                 
             loadingProgressBar.setLabelText('Loading Schema Data, please wait')
             zfile = zipfile.ZipFile( str(filename), "r" )
@@ -600,7 +598,7 @@ class SchemaDoc(QWidget):
             # read widgets
             loadedOk = 1
             loadingProgressBar.setLabelText('Loading Widgets')
-            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget")))
+            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
             loadingProgressBar.setValue(0)
             lpb = 0
             for widget in widgets.getElementsByTagName("widget"):
@@ -612,7 +610,6 @@ class SchemaDoc(QWidget):
                         if 'requiredRLibraries' in settings.keys():
                             RSession.require_librarys(settings['requiredRLibraries']['pythonObject'])
                     except: 
-                        import traceback,sys
                         print '-'*60
                         traceback.print_exc(file=sys.stdout)
                         print '-'*60        
@@ -620,6 +617,7 @@ class SchemaDoc(QWidget):
                         
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                    
                     if not tempWidget:
                         #print settings
                         print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
@@ -635,7 +633,6 @@ class SchemaDoc(QWidget):
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
                 except:
                     print 'Error occured during widget loading'
-                    import traceback,sys
                     print '-'*60
                     traceback.print_exc(file=sys.stdout)
                     print '-'*60        
@@ -648,10 +645,13 @@ class SchemaDoc(QWidget):
 
             #read lines
             lineList = lines.getElementsByTagName("channel")
-            loadingProgressBar.setLabelText('Loading Lines')
-            loadingProgressBar.setMaximum(len(lineList))
-            loadingProgressBar.setValue(0)
-            lpb = 0
+            # loadingProgressBar.setLabelText('Loading Lines')
+            # loadingProgressBar.setMaximum(len(lineList))
+            # loadingProgressBar.setValue(0)
+            # lpb = 0
+            
+            SignalManager.loadSavedSession = True
+
             for line in lineList:
                 inCaption = line.getAttribute("inWidgetCaption")
                 outCaption = line.getAttribute("outWidgetCaption")
@@ -669,8 +669,9 @@ class SchemaDoc(QWidget):
                 for (outName, inName) in signalList:
                     self.addLink(outWidget, inWidget, outName, inName, enabled)
                 qApp.processEvents()
-                lpb += 1
-                loadingProgressBar.setValue(lpb)
+                # lpb += 1
+                # loadingProgressBar.setValue(lpb)
+            SignalManager.loadSavedSession = False
         finally:
             qApp.restoreOverrideCursor()
             
@@ -690,10 +691,7 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-            
-                SignalManager.loadSavedSession = True
                 widget.instance.onLoadSavedSession()
-                SignalManager.loadSavedSession = False
             except:
                 import traceback,sys
                 print '-'*60
@@ -704,6 +702,7 @@ class SchemaDoc(QWidget):
                 QMessageBox.Ok + QMessageBox.Default)
             lpb += 1
             loadingProgressBar.setValue(lpb)
+            
         print 'done on load'
 
         # do we want to restore last position and size of the widget

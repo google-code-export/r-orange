@@ -44,6 +44,9 @@ class RSession():
         #self.settingsList = ['variable_suffix','loadingSavedSession']
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
+        
+        
+
     def setRvariableNames(self,names):
         
         #names.append('loadSavedSession')

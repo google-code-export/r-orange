@@ -260,7 +260,7 @@ class SignalManager:
         if enabled:
             for key in widgetFrom.linksOut[signalNameFrom].keys():
                 widgetTo.updateNewSignalData(widgetFrom, signalNameTo, widgetFrom.linksOut[signalNameFrom][key], key, signalNameFrom)
-                if len(widgetTo.outputs) != 0: # don't show an info if there aren't any outputs to show
+                if len(widgetTo.outputs) != 0 and not self.loadSavedSession: # don't show an info if there aren't any outputs to show
                     widgetTo.setInformation(id = 'dataNotSent', text = 'Data not processed')
 
         # reorder widgets if necessary
