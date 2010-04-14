@@ -44,15 +44,15 @@ class OWRpy(OWWidget,RSession):
         
         try:
             self.send(name, variable)
-            if updateSignalProcessingManager:
+            # if updateSignalProcessingManager:
                 #try:
-                self.removeInformation(id = 'dataNotSent')
+            self.removeInformation(id = 'dataNotSent')
+            self.sentItems.append((name, variable))
+            self.status.setText('Data sent.')
                 #except: 
                 #    print 'Failed to remove information', self.widgetState
         except:
             self.setError(id = 'dataNotSent', text = 'Failed to send data')
-        self.sentItems.append((name, variable))
-        self.status.setText('Data sent.')
     
     def getSettings(self, alsoContexts = True):
         print 'moving to save'
@@ -62,6 +62,7 @@ class OWRpy(OWWidget,RSession):
         self.blackList.extend(RSession().__dict__.keys())
         #self.blackList.extend(OWWidget().__dict__.keys())
         # print 'all atts:', allAtts
+        print 'blackList', self.blackList
         # try:
         self.progressBarInit()
         i = 0
@@ -70,7 +71,7 @@ class OWRpy(OWWidget,RSession):
                 continue
             i += 1
             self.progressBarAdvance(i)
-            # print 'frist att: ' + att
+            print 'frist att: ' + att
             if re.search('^_', att):
                 continue
             var = getattr(self, att)

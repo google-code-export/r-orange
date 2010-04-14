@@ -616,7 +616,8 @@ class SchemaDoc(QWidget):
                         
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
-                    
+                    tempWidget.updateWidgetState()
+                    tempWidget.instance.setLoadingSavedSession(True)
                     if not tempWidget:
                         #print settings
                         print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
@@ -649,7 +650,7 @@ class SchemaDoc(QWidget):
             # loadingProgressBar.setValue(0)
             # lpb = 0
             
-            SignalManager.loadSavedSession = True
+            
 
             for line in lineList:
                 inCaption = line.getAttribute("inWidgetCaption")
@@ -666,11 +667,12 @@ class SchemaDoc(QWidget):
 
                 signalList = eval(signals)
                 for (outName, inName) in signalList:
+                    
                     self.addLink(outWidget, inWidget, outName, inName, enabled)
                 qApp.processEvents()
                 # lpb += 1
                 # loadingProgressBar.setValue(lpb)
-            SignalManager.loadSavedSession = False
+            
         finally:
             qApp.restoreOverrideCursor()
             
@@ -696,7 +698,6 @@ class SchemaDoc(QWidget):
                 print '-'*60
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
-                SignalManager.loadSavedSession = False
                 QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo['fileName'], 
                 QMessageBox.Ok + QMessageBox.Default)
             lpb += 1
@@ -707,6 +708,7 @@ class SchemaDoc(QWidget):
         # do we want to restore last position and size of the widget
         if self.canvasDlg.settings["saveWidgetsPosition"]:
             for widget in self.widgets:
+                widget.instance.setLoadingSavedSession(False)
                 widget.instance.show()
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()

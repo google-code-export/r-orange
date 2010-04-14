@@ -72,7 +72,7 @@ class SignalManager:
     links = {}      # dicionary. keys: widgetFrom, values: (widgetTo1, signalNameFrom1, signalNameTo1, enabled1), (widgetTo2, signalNameFrom2, signalNameTo2, enabled2)
     freezing = 0            # do we want to process new signal immediately
     signalProcessingInProgress = 0 # this is set to 1 when manager is propagating new signal values
-    loadSavedSession = False
+    # loadSavedSession = False
     def __init__(self, *args):
         self.debugFile = None
         self.verbosity = 1 #orngDebugging.orngVerbosity
@@ -260,8 +260,8 @@ class SignalManager:
         if enabled:
             for key in widgetFrom.linksOut[signalNameFrom].keys():
                 widgetTo.updateNewSignalData(widgetFrom, signalNameTo, widgetFrom.linksOut[signalNameFrom][key], key, signalNameFrom)
-                if len(widgetTo.outputs) != 0 and not self.loadSavedSession: # don't show an info if there aren't any outputs to show
-                    widgetTo.setInformation(id = 'dataNotSent', text = 'Data not processed')
+                # if len(widgetTo.outputs) != 0 and not self.loadSavedSession: # don't show an info if there aren't any outputs to show
+                    # widgetTo.setInformation(id = 'dataNotSent', text = 'Data not processed')
 
         # reorder widgets if necessary
         if self.widgets.index(widgetFrom) > self.widgets.index(widgetTo):
@@ -313,7 +313,7 @@ class SignalManager:
                     self.links[widgetFrom].remove((widget, signalFrom, signalTo, enabled))
                     if not self.freezing and not self.signalProcessingInProgress and not close: 
                         self.processNewSignals(widgetFrom)
-                        print 'processing signals'
+                        #print 'processing signals'
         widgetTo.removeInputConnection(widgetFrom, signalNameTo)
 
 
@@ -386,12 +386,13 @@ class SignalManager:
         for i in range(index, len(self.widgets)):
             if self.widgets[i].needProcessing:
                 try:
-                    if self.loadSavedSession:
-                        print ' signal manager loading session'
-                        self.widgets[i].processSignals(processHandler = False)
-                    else:
-                        print ' signal manager not loading session'
-                        self.widgets[i].processSignals(processHandler = True)
+                    # if self.loadSavedSession:
+                        # print ' signal manager loading session'
+                        # self.widgets[i].processSignals(processHandler = False)
+                    # else:
+                        # print ' signal manager not loading session'
+                        # self.widgets[i].processSignals(processHandler = True)
+                  self.widgets[i].processSignals()
                     
                 except:
                     type, val, traceback = sys.exc_info()

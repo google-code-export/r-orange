@@ -25,6 +25,9 @@ class OWWidget(OWBaseWidget):
 
         OWBaseWidget.__init__(self, parent, signalManager, title,resizingEnabled=resizingEnabled, **args)
 
+        self.widgetStateHandler = None
+        self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
+
         self.windowState = {}
         self.savePosition = True
         self.hasAdvancedOptions = wantGUIDialog
@@ -348,6 +351,9 @@ class OWWidget(OWBaseWidget):
             self.captionTitle = caption     # we have to save caption title in case progressbar will change it
             self.setWindowTitle(caption)
 
+
+    def setWidgetStateHandler(self, handler):
+        self.widgetStateHandler = handler
 
     def setInformation(self, id = 0, text = None):
         self.setState("Info", id, text)

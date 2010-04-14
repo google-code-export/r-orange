@@ -74,9 +74,8 @@ class OWBaseWidget(QMainWindow):
         self.callbackDeposit = []
         self.startTime = time.time()    # used in progressbar
         self.closing = False # is the widget closing, if so don't process any signals
+        self.loadSavedSession = False # is the widget closing, if so don't process any signals
 
-        self.widgetStateHandler = None
-        self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
         self.blackList = self.__dict__.keys()
 
     # uncomment this when you need to see which events occured
@@ -214,10 +213,15 @@ class OWBaseWidget(QMainWindow):
         pass
 
     # signal manager calls this function when all input signals have updated the data
-    def processSignals(self,processHandler = True):
+    def setLoadingSavedSession(self,state):
+        print 'setting setloadingSavedSession', state
+        self.loadSavedSession = state
+    def processSignals(self):
         print 'processing Signals'
         if self.closing == True:
             return
+        #print 'loadSavedSession', self.loadSavedSession
+        processHandler = not self.loadSavedSession
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
         self.working = 1
@@ -285,6 +289,8 @@ class OWBaseWidget(QMainWindow):
             
         self.working = 0
         self.needProcessing = 0
+        if len(self.outputs) !=0 and not self.loadSavedSession:
+            self.setInformation(id = 'dataNotSent', text = 'Data not processed')
 
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):
@@ -354,8 +360,6 @@ class OWBaseWidget(QMainWindow):
     def setEventHandler(self, handler):
         self.eventHandler = handler
 
-    def setWidgetStateHandler(self, handler):
-        self.widgetStateHandler = handler
 
 
     # if we are in debug mode print the event into the file
