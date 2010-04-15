@@ -39,9 +39,11 @@ class Rtable(table):
         if setRowHeaders: self.setVerticalHeaderLabels(rownames)
         self.setHidden(False)
     def getSettings(self):
+        print 'save Rtable'
         r = table.getSettings(self)
         del r['data']
         r['Rdata'] = self.Rdata
+        print r
         return r
     def loadSettings(self,data):
         #print data

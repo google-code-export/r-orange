@@ -34,6 +34,7 @@ class checkBox(widgetBox,widgetState):
     def setChecked(self,ids):
         for i in self.buttons.buttons():
             if i.text() in ids: i.setChecked(True)
+            else: i.setChecked(False)
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
@@ -46,8 +47,8 @@ class checkBox(widgetBox,widgetState):
         r = {'checked': self.getChecked()}
         return r
     def loadSettings(self,data):
-        # print 'radioButtons loadSettings'
-        # print data
+        print 'checkBox loadSettings'
+        print data
         self.setChecked(data['checked'])
         
         # return

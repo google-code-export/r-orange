@@ -378,14 +378,6 @@ class SchemaView(QGraphicsView):
                 widget.update()
                 return
               
-    def needsProcessingHandler(self, widgetInstance, value):
-        for widget in self.doc.widgets:
-            if widget.instance == widgetInstance:
-                widget.setNeedsProcessing(value)
-                self.repaint()
-                widget.update()
-                return
-
     # ###########################################
     # misc functions regarding item selection
     # ###########################################

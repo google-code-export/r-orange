@@ -136,9 +136,6 @@ class RDataTable(OWRpy):
             self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
             self.table.setRTable(dataset['data'])
-
-            self.needsProcessingHandler(self, 0)
-
         self.supressTabClick = False
             
     def itemClicked(self, val, table):

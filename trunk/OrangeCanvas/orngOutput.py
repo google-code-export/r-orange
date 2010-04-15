@@ -169,38 +169,44 @@ class OutputWindow(QDialog):
             self.canvasDlg.menuItemShowOutputWindow()
         # print 'exceptionHandler'
         # traceback.extract_tb(tracebackInfo)
-        # print tracebackInfo
-        # traceback.print_exception(type,value,tracebackInfo)
-        # t = localtime()
-        # text = "<nobr>Unhandled exception of type %s occured at %d:%02d:%02d:</nobr><br><nobr>Traceback:</nobr><br>\n" % ( self.getSafeString(type.__name__), t[3],t[4],t[5])
+        # print type, value
+        #traceback.print_exception(type,value,tracebackInfo)
+        t = localtime()
+        text = "<nobr>Unhandled exception of type %s occured at %d:%02d:%02d:</nobr><br><nobr>Traceback:</nobr><br>\n" % ( self.getSafeString(type.__name__), t[3],t[4],t[5])
 
         
-        # if self.canvasDlg.settings["printExceptionInStatusBar"]:
-            # self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %d:%02d:%02d. See output window for details." % ( str(type) , t[3],t[4],t[5]))
+        if self.canvasDlg.settings["printExceptionInStatusBar"]:
+            self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %d:%02d:%02d. See output window for details." % ( str(type) , t[3],t[4],t[5]))
 
-        # TO DO:repair this code to shown full traceback. when 2 same errors occur, only the first one gets full traceback, the second one gets only 1 item
-        # list = traceback.extract_tb(tracebackInfo, 10)
-        # space = "&nbsp; "
-        # totalSpace = space
-        # for i in range(len(list)):
-            # (file, line, funct, code) = list[i]
-            # if code == None: continue
-            # (dir, filename) = os.path.split(file)
-            # text += "<nobr>" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b></nobr><br>\n" % (self.getSafeString(funct))
-            # text += "<nobr>" + totalSpace + "Code: " + code + "</nobr><br>\n"
-            # totalSpace += space
-
-        # lines = traceback.format_exception_only(type, value)
-        # for line in lines[:-1]:
-            # text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
-        # text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
-        text =  '-'*60
-        text += '\n' + ''.join(traceback.format_tb(tracebackInfo)) 
-        text +=  '\n' + '-'*60 + '\n'       
+        #TO DO:repair this code to shown full traceback. when 2 same errors occur, only the first one gets full traceback, the second one gets only 1 item
+        list = traceback.extract_tb(tracebackInfo, 10)
+        #print list
+        space = "&nbsp; "
+        totalSpace = space
+        #print range(len(list))
+        for i in range(len(list)):
+            # print list[i]
+            (file, line, funct, code) = list[i]
+            #print 'code', code
+            
+            (dir, filename) = os.path.split(file)
+            text += "<nobr>" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b></nobr><br>\n" % (self.getSafeString(funct))
+            if code != None:
+                text += "<nobr>" + totalSpace + "Code: " + code + "</nobr><br>\n"
+            totalSpace += space
+        #print '-'*60, text
+        lines = traceback.format_exception_only(type, value)
+        for line in lines[:-1]:
+            text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
+        text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
+        # text =  '-'*60
+        # text += '\n' + ''.join(traceback.format_tb(tracebackInfo)) 
+        # text += '\n' + ''.join(traceback.format_tb(tracebackInfo)) 
+        # text +=  '\n' + '-'*60 + '\n'       
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
-        self.textOutput.insertPlainText(text)                                  # then append the text
+        self.textOutput.insertHtml(text)                                  # then append the text
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
 
         if self.canvasDlg.settings["writeLogFile"]:

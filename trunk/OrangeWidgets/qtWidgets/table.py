@@ -30,6 +30,7 @@ class table(widgetState,QTableWidget):
         print 'in table set'
         if data==None:
             return
+        self.setHidden(True)
         self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
@@ -46,6 +47,7 @@ class table(widgetState,QTableWidget):
                 m += 1
             n += 1
         
+        self.setHidden(False)
         qApp.restoreOverrideCursor()
 
     def sort(self, index):

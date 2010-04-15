@@ -9,6 +9,7 @@ from xml.dom.minidom import Document, parse
 import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
+
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
 import pprint
@@ -609,6 +610,7 @@ class SchemaDoc(QWidget):
                         if 'requiredRLibraries' in settings.keys():
                             RSession.require_librarys(settings['requiredRLibraries']['pythonObject'])
                     except: 
+                        import sys, traceback
                         print '-'*60
                         traceback.print_exc(file=sys.stdout)
                         print '-'*60        
@@ -632,6 +634,7 @@ class SchemaDoc(QWidget):
                             loadedOk = 0
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
                 except:
+                    import sys, traceback
                     print 'Error occured during widget loading'
                     print '-'*60
                     traceback.print_exc(file=sys.stdout)

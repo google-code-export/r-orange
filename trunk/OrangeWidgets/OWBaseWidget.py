@@ -71,12 +71,10 @@ class OWBaseWidget(QMainWindow):
         self.progressBarHandler = None  # handler for progress bar events
         self.processingHandler = None   # handler for processing events
         self.eventHandler = None
-        self.callbackDeposit = []
-        self.startTime = time.time()    # used in progressbar
         self.closing = False # is the widget closing, if so don't process any signals
         self.loadSavedSession = False # is the widget closing, if so don't process any signals
 
-        self.blackList = self.__dict__.keys()
+        self.dontSaveList = self.__dict__.keys()
 
     # uncomment this when you need to see which events occured
     """
@@ -311,32 +309,32 @@ class OWBaseWidget(QMainWindow):
                     if not found:
                         self.linksIn[signalName][i] = (1, widget, handler, self.linksIn[signalName][i][3] + [(value, id, signalNameFrom)])
         self.needProcessing = 1
-        self.needsProcessingHandler(self, 1)
+        
 
 
     # ############################################
     # PROGRESS BAR FUNCTIONS
     def progressBarInit(self):
         self.progressBarValue = 0
-        self.startTime = time.time()
-        self.setWindowTitle(self.captionTitle + " (0% complete)")
+        # self.startTime = time.time()
+        # self.setWindowTitle(self.captionTitle + " (0% complete)")
         if self.progressBarHandler:
             self.progressBarHandler(self, 0)
 
     def progressBarSet(self, value):
-        if value > 0:
-            self.progressBarValue = value
-            usedTime = max(1, time.time() - self.startTime)
-            totalTime = (100.0*usedTime)/float(value)
-            remainingTime = max(0, totalTime - usedTime)
-            h = int(remainingTime/3600)
-            min = int((remainingTime - h*3600)/60)
-            sec = int(remainingTime - h*3600 - min*60)
-            if h > 0: text = "%(h)d:%(min)02d:%(sec)02d" % vars()
-            else:     text = "%(min)d:%(sec)02d" % vars()
-            self.setWindowTitle(self.captionTitle + " (%(value).2f%% complete, remaining time: %(text)s)" % vars())
-        else:
-            self.setWindowTitle(self.captionTitle + " (0% complete)" )
+        # if value > 0:
+        self.progressBarValue = value
+            # usedTime = max(1, time.time() - self.startTime)
+            # totalTime = (100.0*usedTime)/float(value)
+            # remainingTime = max(0, totalTime - usedTime)
+            # h = int(remainingTime/3600)
+            # min = int((remainingTime - h*3600)/60)
+            # sec = int(remainingTime - h*3600 - min*60)
+            # if h > 0: text = "%(h)d:%(min)02d:%(sec)02d" % vars()
+            # else:     text = "%(min)d:%(sec)02d" % vars()
+            # self.setWindowTitle(self.captionTitle + " (%(value).2f%% complete, remaining time: %(text)s)" % vars())
+        # else:
+            # self.setWindowTitle(self.captionTitle + " (0% complete)" )
         if self.progressBarHandler: self.progressBarHandler(self, value)
         qApp.processEvents()
 
@@ -344,7 +342,7 @@ class OWBaseWidget(QMainWindow):
         self.progressBarSet(self.progressBarValue+value)
 
     def progressBarFinished(self):
-        self.setWindowTitle(self.captionTitle)
+        # self.setWindowTitle(self.captionTitle)
         if self.progressBarHandler: self.progressBarHandler(self, 101)
 
     # handler must be a function, that receives 2 arguments. First is the widget instance, the second is the value between -1 and 101
@@ -354,8 +352,6 @@ class OWBaseWidget(QMainWindow):
     def setProcessingHandler(self, handler):
         self.processingHandler = handler
         
-    def setNeedsProcessingHandler(self, handler): # added by KRC
-        self.needsProcessingHandler = handler
 
     def setEventHandler(self, handler):
         self.eventHandler = handler

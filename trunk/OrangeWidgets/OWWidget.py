@@ -116,7 +116,7 @@ class OWWidget(OWBaseWidget):
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
-        self.documentationState = {'helpBox':True,'notesBox':True,'ROutputBox':True}
+        self.windowState['documentationState'] = {'helpBox':True,'notesBox':True,'ROutputBox':True}
         self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Help',toggleButton=True, callback = self.updateDocumentationDock)
         self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
         self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
@@ -128,7 +128,7 @@ class OWWidget(OWBaseWidget):
         
         
         self.GUIDialogDialog = None
-        self.leftDockState = False
+        self.windowState['leftDockState'] = False
         if self.hasAdvancedOptions:
             self.leftDock=QDockWidget('Advanced Options')
             self.leftDock.setObjectName('leftDock')
@@ -141,7 +141,7 @@ class OWWidget(OWBaseWidget):
             self.leftDock.setWidget(self.GUIDialog)
             self.leftDockButton = redRGUI.button(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
-            self.leftDockState = True
+            self.windowState['leftDockState'] = True
   
     def printWidget(self, printer = None):
         ## establish a printer that will print the widget
@@ -181,10 +181,10 @@ class OWWidget(OWBaseWidget):
         
         if self.leftDockButton.isChecked():
             self.leftDock.show()
-            self.leftDockState = True
+            self.windowState['leftDockState'] = True
         else:
             self.leftDock.hide()
-            self.leftDockState = False
+            self.windowState['leftDockState'] = False
     
         
 
@@ -194,27 +194,27 @@ class OWWidget(OWBaseWidget):
         
         if self.showHelpButton.isChecked():
             self.helpBox.show()
-            self.documentationState['helpBox'] = True
+            self.windowState['documentationState']['helpBox'] = True
         else:
             self.helpBox.hide()
-            self.documentationState['helpBox'] = False
+            self.windowState['documentationState']['helpBox'] = False
         
         if self.showNotesButton.isChecked():
             self.notesBox.show()
-            self.documentationState['notesBox'] = True
+            self.windowState['documentationState']['notesBox'] = True
         else:
             self.notesBox.hide()
-            self.documentationState['notesBox'] = False
+            self.windowState['documentationState']['notesBox'] = False
 
         if self.showROutputButton.isChecked():
             self.ROutputBox.show()
-            self.documentationState['ROutputBox'] = True
+            self.windowState['documentationState']['ROutputBox'] = True
         else:
             self.ROutputBox.hide()
-            self.documentationState['ROutputBox'] = False
+            self.windowState['documentationState']['ROutputBox'] = False
         
-        # print self.documentationState.values()
-        if True in self.documentationState.values():
+        # print self.windowState['documentationState'].values()
+        if True in self.windowState['documentationState'].values():
             self.rightDock.show()
             # print 'resize t'
             # self.resize(10,10)
@@ -289,12 +289,12 @@ class OWWidget(OWBaseWidget):
             self.move(self.windowState['pos'])
 
         if self.hasAdvancedOptions:
-            self.leftDockButton.setChecked(self.leftDockState)
+            self.leftDockButton.setChecked(self.windowState['leftDockState'])
             self.showLeftDock()
-
-        self.showHelpButton.setChecked(self.documentationState['helpBox'])
-        self.showNotesButton.setChecked(self.documentationState['notesBox'])
-        self.showROutputButton.setChecked(self.documentationState['ROutputBox'])
+        
+        self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
+        self.showNotesButton.setChecked(self.windowState['documentationState']['notesBox'])
+        self.showROutputButton.setChecked(self.windowState['documentationState']['ROutputBox'])
         self.updateDocumentationDock()
         
         self.hide()

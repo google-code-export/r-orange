@@ -41,7 +41,7 @@ class dataEntry(OWRpy):
         box = redRGUI.groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
-        self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount+1)
+        self.dataTable = redRGUI.Rtable(box, Rdata = None, rows = self.rowCount+1, columns = self.colCount+1)
 
         self.dataTable.show()
         upcell = QTableWidgetItem()
@@ -64,45 +64,47 @@ class dataEntry(OWRpy):
         else:
             return
     def populateTable(self):
-        self.dataTable.clear()
-        rownames = self.R('rownames('+self.data+')')
-        rlen = self.R('length('+self.data+'[,1])')
-        self.dataTable.setRowCount(rlen+1)
-        self.rowCount = rlen+1
+        self.dataTable.setRTable('cbind(rownames=rownames('+self.data+'),'+self.data+')')
+        # return
+        # self.dataTable.clear()
+        # rownames = self.R('rownames('+self.data+')')
+        # rlen = self.R('length('+self.data+'[,1])')
+        # self.dataTable.setRowCount(rlen+1)
+        # self.rowCount = rlen+1
         
-        print str(rownames)
-        if rownames != 'NULL':
-            row = 1
-            for name in rownames:
-                newitem = QTableWidgetItem(str(name))
-                self.dataTable.setItem(row,0,newitem)
-                row += 1
-            self.rowHeaders.setChecked(['Use Row Headers'])
-        clen = self.R('length('+self.data+'[1,])')
-        self.colCount = clen+1
-        self.dataTable.setColumnCount(clen+1)
-        colnames = self.R('colnames('+self.data+')')
-        if type(colnames) == type(''):
-            colnames = [colnames]
-        if colnames != 'NULL':  
-            col = 1
-            for name in colnames:
-                newitem = QTableWidgetItem(str(name))
-                self.dataTable.setItem(0, col, newitem)
-                col += 1
-            self.rowHeaders.setChecked(['Use Column Headers'])
-        data = self.R(self.data)
-        col = 1
-        for name in colnames:
+        # print str(rownames)
+        # if rownames != 'NULL':
+            # row = 1
+            # for name in rownames:
+                # newitem = QTableWidgetItem(str(name))
+                # self.dataTable.setItem(row,0,newitem)
+                # row += 1
+            # self.rowHeaders.setChecked(['Use Row Headers'])
+        # clen = self.R('length('+self.data+'[1,])')
+        # self.colCount = clen+1
+        # self.dataTable.setColumnCount(clen+1)
+        # colnames = self.R('colnames('+self.data+')')
+        # if type(colnames) == type(''):
+            # colnames = [colnames]
+        # if colnames != 'NULL':  
+            # col = 1
+            # for name in colnames:
+                # newitem = QTableWidgetItem(str(name))
+                # self.dataTable.setItem(0, col, newitem)
+                # col += 1
+            # self.rowHeaders.setChecked(['Use Column Headers'])
+        # data = self.R(self.data)
+        # col = 1
+        # for name in colnames:
            
-            for i in range(1, rlen+1):
-                newitem = QTableWidgetItem(str(data[name][i-1])) # must correct for the different indexis of R and python
-                self.dataTable.setItem(i, col, newitem)
-            col += 1
-        upcell = QTableWidgetItem()
-        upcell.setBackgroundColor(Qt.gray)
-        upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
-        self.dataTable.setItem(0,0,upcell)
+            # for i in range(1, rlen+1):
+                # newitem = QTableWidgetItem(str(data[name][i-1])) # must correct for the different indexis of R and python
+                # self.dataTable.setItem(i, col, newitem)
+            # col += 1
+        # upcell = QTableWidgetItem()
+        # upcell.setBackgroundColor(Qt.gray)
+        # upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
+        # self.dataTable.setItem(0,0,upcell)
         # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
@@ -263,5 +265,6 @@ class dataEntry(OWRpy):
             self.newData = {'data': self.Rvariables['table'], 'parent': self.Rvariables['table'], 'cm': self.Rvariables['table_cm']}
         self.rSend('Data Table', self.newData)
     def loadCustomSettings(self,settings=None):
-        self.processDF(self.newData)
+        if settings and 'newData' in settings.keys():
+            self.processDF(self.newData)
             

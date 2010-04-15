@@ -36,8 +36,10 @@ class OWRpy(OWWidget,RSession):
         self.sentItems = []
         
         #dont save these variables
-        self.blackList.extend(['blackList','redRGUIObjects','windowState'])
         
+        self.defaultGlobalSettingsList = ['windowState']
+        self.dontSaveList.extend(self.defaultGlobalSettingsList)
+        self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList'])
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send'
@@ -59,15 +61,15 @@ class OWRpy(OWWidget,RSession):
         import re
         settings = {}
         allAtts = self.__dict__
-        self.blackList.extend(RSession().__dict__.keys())
-        #self.blackList.extend(OWWidget().__dict__.keys())
+        self.dontSaveList.extend(RSession().__dict__.keys())
+        #self.dontSaveList.extend(OWWidget().__dict__.keys())
         # print 'all atts:', allAtts
-        print 'blackList', self.blackList
+        print 'dontSaveList', self.dontSaveList
         # try:
         self.progressBarInit()
         i = 0
         for att in allAtts:
-            if att in self.blackList:
+            if att in self.dontSaveList:
                 continue
             i += 1
             self.progressBarAdvance(i)
@@ -201,7 +203,7 @@ class OWRpy(OWWidget,RSession):
                 self.redRGUIObjects[k] = v;
         
     def onLoadSavedSession(self):
-        print 'in onLoadSavedSession'
+        # print 'in onLoadSavedSession'
         qApp.setOverrideCursor(Qt.WaitCursor)
         self.progressBarInit()
         i = 0
@@ -244,7 +246,7 @@ class OWRpy(OWWidget,RSession):
         
         for (name, data) in self.sentItems:
             self.send(name, data)
-        #self.needsProcessingHandler(self, 0)
+        
         qApp.restoreOverrideCursor()
         self.progressBarFinished()
 
@@ -314,11 +316,11 @@ class OWRpy(OWWidget,RSession):
     def saveGlobalSettings(self, file = None):
         print 'owrpy global save settings'
         settings = {}
-        default = ['windowState','documentationState','leftDockState']
+        
         if hasattr(self, "globalSettingsList"):
-            self.globalSettingsList.extend(default)
+            self.globalSettingsList.extend(self.defaultGlobalSettingsList)
         else:
-            self.globalSettingsList =  default
+            self.globalSettingsList =  self.defaultGlobalSettingsList
             
         for name in self.globalSettingsList:
             try:

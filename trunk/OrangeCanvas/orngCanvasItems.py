@@ -189,7 +189,6 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         
         self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
         self.instance.setProcessingHandler(view.processingHandler)
-        self.instance.setNeedsProcessingHandler(view.needsProcessingHandler)
         self.instance.setWidgetStateHandler(self.updateWidgetState)
         self.instance.setEventHandler(canvasDlg.output.widgetEvents)
         self.instance.setWidgetIcon(canvasDlg.getFullWidgetIconName(widgetInfo))

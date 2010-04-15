@@ -182,6 +182,7 @@ class RSession():
             self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
         self.R(query, 'setRData')
         
+        
 
     def require_librarys(self,librarys, force = False):
         libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
