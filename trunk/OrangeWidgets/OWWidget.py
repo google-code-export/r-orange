@@ -291,7 +291,7 @@ class OWWidget(OWBaseWidget):
         if 'pos' in self.windowState.keys():
             self.move(self.windowState['pos'])
 
-        if self.hasAdvancedOptions:
+        if self.hasAdvancedOptions and ('leftDockState' in self.windowState):
             self.leftDockButton.setChecked(self.windowState['leftDockState'])
             self.showLeftDock()
         

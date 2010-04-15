@@ -46,7 +46,8 @@ class intersect(OWRpy):
         
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse =" \n")')
-        self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+str(tmp)+'</pre>')
-        self.data["data"] = self.Rvariables["intersect"]
-        self.rSend("intersect Output", self.data)
+        self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+str(tmp)+'</pre>')        
+        newData = RvarClasses.RVector(data = self.Rvariables["intersect"])
+        
+        self.rSend("intersect Output", newData)
 

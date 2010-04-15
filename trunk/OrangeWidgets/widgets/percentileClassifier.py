@@ -69,6 +69,6 @@ class percentileClassifier(OWRpy):
                 self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+str(percent).strip(' ')+'/100*'+str(length)+']')
                 self.outputWindow.insertHtml('<tr><td width="50%">' + column+'_'+str(percent)+'percentile</td><td width="50%">'+str(self.R('sum(as.numeric('+self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile))'))+'</td></tr>')
         self.outputWindow.insertHtml('</table>')
-        self.dataParent['data'] = self.Rvariables['percentileClassifier_df']
-        self.dataParent['parent'] = self.Rvariables['percentileClassifier_df']
+        newData = self.dataParent.copy()
+        newData.data = self.Rvariables['percentileClassifier_df']
         self.rSend('Data Frame', self.dataParent)

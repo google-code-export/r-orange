@@ -104,16 +104,16 @@ class RDataTable(OWRpy):
 
     def dataset(self, dataset, id=None):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
-        #print 'got data'
-        #print data
+        print 'got data'
+        print dataset
         self.supressTabClick = True
         if dataset != None:  # can be an empty table!
             self.table.show()
             data = {}
             self.data = data
             tableData = dataset['data']
-            if 'link' in dataset:
-                self.link = dataset['link']
+            if 'link' in dataset.dictAttrs:
+                self.link = dataset.dictAttrs['link']
                 print 'setting link as '+str(self.link)
                 self.linkListBox.clear()
                 
@@ -127,7 +127,7 @@ class RDataTable(OWRpy):
             #self.showMetas[id] = (True, [])
             #self.dataTableIndex[id] = dataset
             self.currentData = dataset['data']
-            dim = self.R('dim(' + dataset['data'] + ')')
+            dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
             self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
             self.infoBox.setHidden(False)
 
@@ -156,14 +156,6 @@ class RDataTable(OWRpy):
             #print url
             import webbrowser
             webbrowser.open_new_tab(url)
-        
-        
-        # if self.mylink != '': #the user put in a link
-            # col = self.mylink[self.mylink.find('{')+1:self.mylink.find('}')]
-            # cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
-            # self.rsession('shell.exec("'+self.mylink.replace('{'+col+'}', str(cellVal))+'")')
-            # pass
-
 
     def addCustomLink(self):
         url = str(self.customLink.text())

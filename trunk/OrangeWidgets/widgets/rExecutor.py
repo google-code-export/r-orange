@@ -82,6 +82,7 @@ class rExecutor(OWRpy):
         self.sendt = {'data':str(self.command.text()), 'parent':str(self.command.text())}
         thisdata = self.sendt['data']
         thisdataclass = self.R('class('+thisdata+')')
+        # use upclassing to convert to RvarClasses class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
             self.rSend('R.object', self.sendt)
         elif thisdataclass.__class__.__name__ == 'str':

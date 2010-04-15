@@ -103,5 +103,10 @@ class Heatmap(OWRpy):
         
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
         self.Rplot('plot('+self.Rvariables['hclust']+')', devNumber = 1)
-        self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')
-        self.rSend("Cluster Subset List", {'data':self.Rvariables['heatsubset'], 'kill':kill, 'cluster':self.Rvariables['hclust']})
+        self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
+        
+        newData = RvarClasses.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
+        hclust = RvarClasses.RVariable(data = self.Rvariables['hclust'])
+        newData['kill'] = kill
+        newData['cluster'] = hclust
+        self.rSend("Cluster Subset List", newData)

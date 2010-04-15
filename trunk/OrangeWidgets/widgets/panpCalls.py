@@ -44,16 +44,6 @@ class panpCalls(OWRpy):
         self.percentA.setText('20')
         processbutton = redRGUI.button(self.bottomAreaRight, "Process eSet", callback = self.processEset)
         
-
-    # def onLoadSavedSession(self):
-        # may want to check if the Rvariable exists
-        # print 'onload panp'
-        # if self.R('exists("'+self.Rvariables['peset']+'")'):
-            # self.status.setText('Processed')
-            # self.senddata = self.data.copy()
-            # self.senddata['data'] = self.Rvariables['peset']
-            # self.senddata['eset'] = self.eset
-            # self.rSend('Present Gene Signal Matrix', self.senddata)
         
     def process(self, dataset):
         print 'on procress panp'
@@ -85,6 +75,6 @@ class panpCalls(OWRpy):
         self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
         self.status.setText('Processed')
         self.senddata = self.data.copy()
-        self.senddata['data'] = self.Rvariables['peset']
-        self.senddata['eset'] = self.eset
+        self.senddata.data = self.Rvariables['peset']
+        self.senddata.dictAttrs['eset'] = self.eset
         self.rSend('Present Gene Signal Matrix', self.senddata)

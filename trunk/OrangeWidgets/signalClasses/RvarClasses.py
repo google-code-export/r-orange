@@ -34,11 +34,11 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
     def __setitem__(self, item, value):
         self.dictAttrs[item] = value
         
-    def class_call(self):
+    def getClass_call(self):
         return 'class('+self.data+')'
         
-    def class_data(self):
-        return self.R(self.class_call(), silent = True)
+    def getClass_data(self):
+        return self.R(self.getClass_call(), silent = True)
         
     def plotObject(self, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
         try:
@@ -50,6 +50,33 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         newVariable = RVariable(self.data, self.parent)
         newVariable['dictAttrs'] = self.dictAttrs
         return newVariable
+    def _simpleOutput(self, subsetting = ''):
+        text = 'R Data Variable Name: '+self.data+'\n\n'
+        return text
+    def _fullOutput(self, subsetting = ''):
+        text = self._simpleOutput()+'\n\n'
+        text += 'R Data Variable Value: '+self.getAttrOutput_data(self.data, subsetting)+'\n\n'
+        text += 'R Parent Variable Name: '+self.parent+'\n\n'
+        text += 'R Parent Variable Value: '+self.getAttrOutput_data(self.parent, subsetting)+'\n\n'
+        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        return text
+    def getAttrOutput_call(self, item, subsetting = ''):
+        print item, subsetting
+        call = 'paste(capture.output('+self.__getitem__(item)+subsetting+'), collapse = "\n")'
+        return call
+    def getAttrOutput_data(self, item, subsetting = ''):
+        return self.R(self.getAttrOutput_call(item = item, subsetting = subsetting))
+    def getSimpleOutput(self, subsetting = ''):
+        # return the text for a simple output of this variable
+        text = 'Simple Output\n\n'
+        text += 'Class: '+self.getClass_data()+'\n\n'
+        text += self._simpleOutput(subsetting)
+        return text
+    def getFullOutput(self, subsetting = ''):
+        text = 'Full Output\n\n'
+        text += 'Class: '+self.getClass_data()+'\n\n'
+        text += self._fullOutput(subsetting)
+        return text
 class RList(RVariable):
     def __init__(self, data, parent = None):
         RVariable.__init__(self, data = data, parent = parent)
@@ -58,14 +85,21 @@ class RList(RVariable):
         newVariable = RList(self.data, self.parent)
         newVariable['dictAttrs'] = self.dictAttrs
         return newVariable
-
+    def _fullOutput(self, subsetting = ''):
+        text = self._simpleOutput()+'\n\n'
+        text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'
+        text += 'R Data Variable Size: '+str(self.getLength_data())+' Elements\n\n'
+        text += 'R Parent Variable Name: '+self.parent+'\n\n'
+        text += 'R Parent Variable Value: '+self.getAttrOutput_data('parent', subsetting)+'\n\n'
+        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        return text
     def names_call(self):
         return 'names('+self.data+')'
     def names_data(self):
         return self.R(self.names_call(), silent = True)
-    def length_call(self):
+    def getLength_call(self):
         return 'length('+self.data+')'
-    def length_data(self):
+    def getLength_data(self):
         return self.R(self.length_call(), silent = True)
     def getItem_call(self, item):
         if type(item) in [int, float, long]:
@@ -98,7 +132,7 @@ class RList(RVariable):
         output = self.R(self.getDims_call(), wantType = 'list', silent = True)
         if output != None:
             return output
-        else: return []
+        else: return [0, 0]
     def getNames_call(self):
         return 'names('+self.data+')'
     def getNames_data(self):
@@ -106,7 +140,7 @@ class RList(RVariable):
         if output != None:
             return output
         else:
-            return []
+            return range(1, self.getDims_data()[0])
 class RDataFrame(RList):
     def __init__(self, data, parent = None, cm = None):
         RList.__init__(self, data = data, parent = parent)
@@ -127,6 +161,21 @@ class RDataFrame(RList):
         newVariable = RDataFrame(self.data, self.parent, self.cm)
         newVariable['dictAttrs'] = self.dictAttrs
         return newVariable
+    def getSimpleOutput(self, subsetting = '[1:5, 1:5]'):
+        # return the text for a simple output of this variable
+        text = 'Simple Output\n\n'
+        text += 'Class: '+self.getClass_data()+'\n\n'
+        text += self._simpleOutput(subsetting)
+        return text
+    def _fullOutput(self, subsetting = ''):
+        text = self._simpleOutput()+'\n\n'
+        text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'
+        dims = self.getDims_data()
+        text += 'R Data Variable Size: '+str(dims[0])+' Rows and '+str(dims[1])+' Columns\n\n'
+        text += 'R Parent Variable Name: '+self.parent+'\n\n'
+        text += 'R Parent Variable Value: '+self.getAttrOutput_data('parent', subsetting)+'\n\n'
+        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        return text
     def getRownames_call(self):
         return 'rownames('+self.data+')'
     def getRownames_data(self):
@@ -176,6 +225,25 @@ class RDataFrame(RList):
         else:
             cr = ''
         return self.data+'['+rr+','+cr+']'
+    def getRowData_call(self, item):
+        if type(item) in [int, float, long]:
+            item = int(item)
+            return self.data+'['+str(item)+',]'
+        elif type(item) in [str]:
+            return self.data+'[\''+str(item)+'\',]'
+        elif type(item) in [list]:
+            newItemList = []
+            for i in item:
+                if type(i) in [int, float, long]:
+                    newItemList.append(str(int(i)))
+                elif type(i) in [str]:
+                    newItemList.append('\"'+str(i)+'\"')
+            return self.data+'[c('+str(newItemList)[1:-1]+'),]'
+        else:
+            return self.data #just return all of the data and hope the widget picks up from there
+    def getRowData_data(self, item):
+        output = self.R(self.getRowData_call(item), wantType = 'list', silent = True)
+        return output
 class RVector(RDataFrame):
     def __init__(self, data, parent = None, cm = None):
         #if not cm: # we should give a cm to the 
@@ -185,6 +253,13 @@ class RVector(RDataFrame):
         newVariable = RVector(self.data, self.parent, self.cm)
         newVariable['dictAttrs'] = self.dictAttrs
         return newVariable
+    def getSimpleOutput(self, subsetting = '[1:5]'):
+        # return the text for a simple output of this variable
+        text = 'Simple Output\n\n'
+        text += 'Class: '+self.getClass_data()+'\n\n'
+        text += self._simpleOutput(subsetting)
+        return text
+    
     def getColumnnames_call(self):
         return self.getNames_call()
     def getColumnnames_data(self):

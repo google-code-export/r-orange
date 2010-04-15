@@ -49,8 +49,8 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         if data:
             self.data = data['data']
             self.dataParent = data.copy()
-            r = self.R('rownames('+self.data+')')
-            c = self.R('colnames('+self.data+')')
+            r =  self.R(self.dataParent.getRownames_call())
+            c =  self.R(self.dataParent.getColumnnames_call())
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
                 if type(r) == list:
                     self.attributes.update(r)
@@ -108,10 +108,8 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% '+self.ssv+']')
                 
         self.makeCM(self.Rvariables['rowcolSelector_cm'], self.Rvariables['rowcolSelector'])
-        self.dataParent['cm'] = self.Rvariables['rowcolSelector_cm']
-        self.dataParent['parent'] = self.Rvariables['rowcolSelector']
-        self.dataParent['data'] = self.Rvariables['rowcolSelector']
-        self.rSend('Data Table', self.dataParent)
+        newData = RvarClasses.RDataFrame(data = self.Rvariables['rowcolSelector'], cm = self.Rvariables['rowcolSelector_cm'], parent = self.Rvariables['rowcolSelector'])
+        self.rSend('Data Table', newData)
                 
         
         self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')
@@ -122,23 +120,16 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         if self.data == None: return
         
         
-        if self.rowcolBox.getChecked() == 'Row': #if we are selecting rows
-            if self.namesPresent:
-                name = '"'+str(item.text())+'"'
-            else:
-                name = str(item.text())
+        if self.rowcolBox.getChecked() == 'Row': #if we are selecting row
+            name = str(item.text())
             self.attName = name
-            self.R('t<-'+self.data+'[,'+name+']') # set a temp variable for the selections made.
+            self.R('t<-'+self.dataParent.getItem_call(name)) # set a temp variable for the selections made.
             c = self.R('class(t)')
             self.classifyData(c)
 
         elif self.rowcolBox.getChecked() == 'Column': # if we are selecting columns
-            if self.namesPresent:
-                name = '"'+item.text()+'"'
-            else:
-                name = item.text()
-                
-            self.R('t<-'+self.data+'['+name+',]')
+            name = item.text()    
+            self.R('t<-'+self.dataParent.getRowData_call(name))
             c = self.R('class(t)')
             self.classifyData(c)
 
@@ -191,8 +182,9 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
                 
-        self.dataParent['data'] = self.Rvariables['rowcolSelector']
-        self.rSend('Data Table', self.dataParent)
+        newData = self.dataParent.copy()
+        newData.data = self.Rvariables['rowcolSelector']
+        self.rSend('Data Table', newData)
                 
         
         self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')

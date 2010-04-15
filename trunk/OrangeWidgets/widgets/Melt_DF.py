@@ -65,9 +65,10 @@ class Melt_DF(OWRpy):
             ivStr = ''
             
         self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data='+str(self.RFunctionParam_data)+',na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')')
-        self.data['data'] = self.Rvariables["melt.data.frame"]
+        # copy the RvarClasses class and send the newData
+        newData = self.data.copy()
+        newData.data = self.Rvariables["melt.data.frame"]
         self.makeCM(self.Rvariables['melt.data.frame.cm'], self.Rvariables['melt.data.frame'])
-        
-        self.data['cm'] = self.Rvariables['melt.data.frame.cm']
-        self.data['parent'] = self.Rvariables['melt.data.frame']
-        self.rSend("melt.data.frame Output", self.data)
+        newData.cm = self.Rvariables['melt.data.frame.cm']
+        newData.parent = self.Rvariables['melt.data.frame']
+        self.rSend("melt.data.frame Output", newData)

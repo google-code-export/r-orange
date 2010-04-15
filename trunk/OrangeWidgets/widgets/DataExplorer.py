@@ -378,28 +378,18 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append('(!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])&('+item['criteriaCollection']+'))')
-                #self.criteriaList.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
-        # join these together into a single call across the columns
-        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
+                self.criteriaList.append('(!is.na('+self.dataParent.parent+'[,\''+item['colname']+'\'])&('+item['criteriaCollection']+'))')
+
         print self.criteriaList
-        if 'cm' in self.dataParent and self.dataParent['cm'] != None:
-            if len(self.criteriaList) > 0:
-                self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
-                newData = self.dataParent.copy()
-                newData['data'] = self.orriginalData+'['+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+' == 1,]'
-                self.rSend('Data Subset', newData)
-            else:
-                self.rSend('Data Subset', self.dataParent.copy())
-            self.status.setText('Data Sent')
+        if len(self.criteriaList) > 0:
+            self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-'+'&'.join(self.criteriaList))
+            newData = self.dataParent.copy()
+            newData.data = self.dataParent.parent+'['+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+' == 1,]'
+            self.rSend('Data Subset', newData)
         else:
-            if len(self.criteriaList) > 0:
-                newData = self.dataParent.copy()
-                newData['data'] = self.orriginalData+'['+'&'.join(self.criteriaList)+',]'
-                self.rSend('Data Subset', newData)
-            else:
-                self.rSend('Data Subset', self.dataParent.copy())
-            self.status.setText('Data Sent')
+            self.rSend('Data Subset', self.dataParent.copy())
+        self.status.setText('Data Sent')
+        
         self.sendRefresh()
     def loadCustomSettings(self,settings=None):
         # custom function for reloading the widget

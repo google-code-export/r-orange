@@ -114,30 +114,22 @@ class RedRScatterplot(OWRpy):
                 data['parent'] = data['data']
             self.parent = data['parent']
             self.dataParent = data.copy()
-            if 'cm' in data:
-                self.cm = data['cm']
-                self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
-                self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
-                cmColNames = self.R('colnames('+self.cm+')')
-                #print cmColNames
-                if type(cmColNames) == type(''): cmColNames = [cmColNames]
-                if cmColNames == 'NULL': cmColNames = []
-                #print cmColNames
-                cmColNames.insert(0, ' ')
-                # self.subsetCMSelector.update(cmColNames)
-                # print cmColNames
-                cmColNames.extend(self.R('colnames('+self.data+')'))
-                self.paintCMSelector.update(cmColNames)
-                print cmColNames
-            else:
-                self.cm = ''            
-                cmColNames = self.R('colnames('+self.data+')')
-                print cmColNames
-                if type(cmColNames) == type(''): cmColNames = [cmColNames]
-                if cmColNames == 'NULL': cmColNames = []
-                print cmColNames.insert(0, '')
-                self.paintCMSelector.update(cmColNames)
-                print cmColNames
+
+            self.cm = data['cm']
+            self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
+            self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
+            cmColNames = self.R('colnames('+self.cm+')')
+            #print cmColNames
+            if type(cmColNames) == type(''): cmColNames = [cmColNames]
+            if cmColNames == 'NULL': cmColNames = []
+            #print cmColNames
+            cmColNames.insert(0, ' ')
+            # self.subsetCMSelector.update(cmColNames)
+            # print cmColNames
+            cmColNames.extend(self.R('colnames('+self.data+')'))
+            self.paintCMSelector.update(cmColNames)
+            print cmColNames
+
             # set some of the plot data
             self.xColumnSelector.update(self.R('colnames('+self.data+')'))
             self.yColumnSelector.update(self.R('colnames('+self.data+')'))
@@ -294,9 +286,8 @@ class RedRScatterplot(OWRpy):
                 print type(min(self.yData))
         self.graph.replot()
     def sendMe(self):
-        print self.parent
-        print self.cm
-        data = {'data': self.dataParent['parent']+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', 'parent':self.parent, 'cm':self.cm} # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+
+        data = RvarClasses.RDataFrame(data = self.dataParent.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', parent = self.parent, cm = self.cm) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
     def loadCustomSettings(self, settings = None):

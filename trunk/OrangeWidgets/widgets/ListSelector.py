@@ -45,6 +45,7 @@ class ListSelector(OWRpy):
     def sendSelection(self):
         print self.names.selectedItems()[0]
         self.R(self.Rvariables['listelement']+'<-'+self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]')
+        # use RvarClasses converter in OWWidget to convert to the RvarClasses class
         myclass = self.R('class('+self.Rvariables['listelement']+')')
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])

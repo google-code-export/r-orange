@@ -86,19 +86,7 @@ class diffExp(OWRpy):
         grid2.addWidget(box, 0, 0)
         self.functionBox = redRGUI.RFormulaEntry(box)
         self.functionBox.outcomeVariable.hide() #don't need to see the outcome variable
-        # self.phenoVarListBox = redRGUI.listBox(box, self, callback = self.phenoVarListBoxItemClicked)
-        # buttonsBox = redRGUI.widgetBox(self, "Commands")
-        # grid2.addWidget(buttonsBox, 0,1)
-        # self.plusButton = redRGUI.button(buttonsBox, "And", callback = self.plusButtonClicked)
-        # self.plusButton.setEnabled(False)
-        # self.colonButton = redRGUI.button(buttonsBox, "Interacting With", callback = self.colonButtonClicked)
-        # self.colonButton.setEnabled(False)
-        # self.starButton = redRGUI.button(buttonsBox, "Together and Interacting", callback = self.starButtonClicked)
-        # self.starButton.setEnabled(False)
-        # self.processEsetButton = redRGUI.button(buttonsBox, "Commit", callback = self.processEset)
-        # self.processEsetButton.setEnabled(False)
         
-        # self.modelText = redRGUI.widgetLabel(boxVal, "Model: ")
         self.valuesStack.addWidget(boxVal)
         
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
@@ -140,7 +128,7 @@ class diffExp(OWRpy):
         self.selectedArrays.clear()
         self.selectedArraysB.clear()
         self.data = '' #clear the data
-        self.olddata = {'data':''} # clear the send signal
+        self.olddata = None # clear the send signal
         for output in self.outputs:
             self.rSend(output[0], None, 0) #start the killing cascade.
         if data:
@@ -183,11 +171,13 @@ class diffExp(OWRpy):
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
             self.R(self.Rvariables['results']+'<-eBayes(fit)')
             self.newdata = self.olddata.copy()
-        self.newdata['data']=self.Rvariables['results']
-        self.newdata['classes'] = self.Rvariables['classes']
+        self.newdata.data=self.Rvariables['results']
+        self.newdata.dictAttrs['classes'] = self.Rvariables['classes']
         self.makeCM(self.Rvariables['diffExp_cm'], self.Rvariables['results']) # assign the CM of this widget.  This is the moment of creation of this CM.  
-        self.newdata['cm'] = self.Rvariables['diffExp_cm']
-        self.newdata['parent'] = self.Rvariables['results']
+        self.newdata.cm = self.Rvariables['diffExp_cm']
+        self.newdata.parent = self.Rvariables['results']
+        
+        
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1

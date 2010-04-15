@@ -46,7 +46,6 @@ class multdrc(OWRpy):
         self.RFunctionParamtype_lineEdit =  redRGUI.lineEdit(self.GUIDialog, label = "type:")
         self.RFunctionParamlogDose_lineEdit =  redRGUI.lineEdit(self.advancedTab,  label = "logDose:")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.anovaTextArea = redRGUI.textEdit(self.controlArea)
     def processdata(self, data):
         self.require_librarys(["drc"]) 
@@ -129,32 +128,13 @@ class multdrc(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['multdrc']+'<-multdrc(data='+str(self.RFunctionParam_data)+','+inj+')')
-        self.data["data"] = self.Rvariables["multdrc"]
-        self.rSend("multdrc Output", self.data)
+        
+        newData = self.data.copy()
+        newData.data = self.Rvariables["multdrc"]
+
+        self.rSend("multdrc Output", newData)
         self.anovaTextArea.clear()
         self.R('txt<-capture.output(anova('+self.Rvariables["multdrc"]+'))')
         tmp = self.R('paste(txt, collapse ="\n")')
         self.anovaTextArea.insertHtml('Check that the p-value of this output is greater that 0.05.  The p-value indicates goodness of fit of the data to the specified model.  Significantly different fits violate the assumptions of the model and make comparisons unreliable.  If you have a significant p-value please change the model in the model box above.  <br><pre>'+tmp+'</pre>')
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
-        self.reportSettings('Function Settings', [('hetvar',str(self.RFunctionParamhetvar_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('na_action',str(self.RFunctionParamna_action_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('fct',str(self.RFunctionParamfct_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('collapse',str(self.RFunctionParamcollapse_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('cm',str(self.RFunctionParamcm_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('fctList',str(self.RFunctionParamfctList_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('bcAdd',str(self.RFunctionParambcAdd_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('curve',str(self.RFunctionParamcurve_comboBox.currentText()))])
-        self.reportSettings('Function Settings', [('boxcox',str(self.RFunctionParamboxcox_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('varPower',str(self.RFunctionParamvarPower_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('formula',str(self.RFunctionParam_formula))])
-        self.reportSettings('Function Settings', [('control',str(self.RFunctionParamcontrol_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('weights',str(self.RFunctionParamweights_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('startVal',str(self.RFunctionParamstartVal_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('robust',str(self.RFunctionParamrobust_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('type',str(self.RFunctionParamtype_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('logDose',str(self.RFunctionParamlogDose_lineEdit.text()))])
-        self.reportRaw(self.Rvariables["multdrc"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+   

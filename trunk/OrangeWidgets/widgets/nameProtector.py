@@ -66,9 +66,9 @@ class nameProtector(OWRpy):
         newData = self.parentData.copy()
         if 'Make New Data Object' in self.newDataDFcheckBox.getChecked():
             self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData['data'])
-            newData['data'] = self.Rvariables['newDataFromNameProtector']
+            newData.data = self.Rvariables['newDataFromNameProtector']
             self.R(self.Rvariables['newDataFromNameProtector_cm']+'<-'+newData['cm'])
-            newData['cm'] = self.Rvariables['newDataFromNameProtector_cm']
+            newData.cm = self.Rvariables['newDataFromNameProtector_cm']
             self.data = self.Rvariables['newDataFromNameProtector']
 
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():

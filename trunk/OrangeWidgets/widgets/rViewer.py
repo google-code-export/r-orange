@@ -32,6 +32,7 @@ class rViewer(OWRpy):
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data["data"]
+            self.data = data
             self.commitFunction()
 
     
@@ -39,22 +40,30 @@ class rViewer(OWRpy):
         if not self.RFunctionParam_data:
             self.RoutputWindow.setHtml('No data connected to show.')
             return
-        if self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked() and 'Show All Columns' not in self.showAll.getChecked():
-            dims = self.R('dim('+self.RFunctionParam_data+')')
+        if self.data.getClass_data() in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked() and 'Show All Columns' not in self.showAll.getChecked():
+            dims = self.data.getDims_data()
             if dims[0] > 5 and dims[1] > 5:
-                self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,1:5])') #only need to see the first 5 rows of the data.
+                text = self.data.getFullOutput(subsetting = '[1:5, 1:5]')
             elif dims[0] > 5:
-                self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,])')
-        elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked():
-            self.R('txt<-capture.output('+self.RFunctionParam_data+'[1:5,])') #only need to see the first 5 rows of the data.
+                text = self.data.getFullOutput(subsetting = '[1:5,]')
+            elif dims[1] > 5:
+                text = seld.data.getFullOutput(subsetting = '[,1:5]')
+            else:
+                text = seld.data.getFullOutput(subsetting = '')
+        elif self.data.getClass_data() in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked():
+            dims = self.data.getDims_data()
+            if dims[0] > 5:
+                text = self.data.getFullOutput(subsetting = '[1:5,]')#only need to see the first 5 rows of the data.
+            else:
+                text = seld.data.getFullOutput(subsetting = '')
         elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Columns' not in self.showAll.getChecked():
             dims = self.R('dim('+self.RFunctionParam_data+')')
             if dims[1] > 5:
-                self.R('txt<-capture.output('+self.RFunctionParam_data+'[,1:5])') #only need to see the first 5 rows of the data.
+                text = self.data.getFullOutput(subsetting = '[,1:5]')#only need to see the first 5 cols of the data.
             else:
-                self.R('txt<-capture.output('+self.RFunctionParam_data+')')
+                text = seld.data.getFullOutput(subsetting = '')
         else:
-            self.R('txt<-capture.output('+self.RFunctionParam_data+')')
+            text = self.data.getFullOutput(subsetting = '')
         self.RoutputWindow.clear()
-        tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.setHtml('<pre>'+tmp+'</pre>')
+        
+        self.RoutputWindow.setHtml('<pre>'+text+'</pre>')

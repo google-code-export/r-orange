@@ -26,7 +26,6 @@ class apply(OWRpy):
                 self.RFunctionParamFUN_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Function:", text = '')
                 self.RFunctionParamMARGIN_radioButtons =  redRGUI.radioButtons(self.standardTab,  label = "Margin:", buttons = ['Rows', 'Columns'])
                 redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-                redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         def processX(self, data):
                 if data:
                         self.RFunctionParam_X=data["data"]
@@ -59,15 +58,6 @@ class apply(OWRpy):
                 if self.R('class('+self.Rvariables['apply']+')') in ['vector', 'character', 'numeric']:
                     self.R(self.Rvariables['apply']+'<-data.frame('+self.Rvariables['apply']+', rownames('+self.RFunctionParam_X+'), row.names = rownames('+self.RFunctionParam_X+'))')
                 self.makeCM(self.Rvariables['apply_cm'], self.Rvariables['apply'])
-                self.data['cm'] = self.Rvariables['apply_cm']
-                self.data['parent'] = self.Rvariables['apply']
-                self.data['data'] = self.Rvariables['apply']
-                self.rSend("apply Output", self.data)
-        def compileReport(self):
-                self.reportSettings("Input Settings",[("X", self.RFunctionParam_X)])
-                self.reportSettings('Function Settings', [('FUN',str(self.RFunctionParamFUN_lineEdit.text()))])
-                self.reportSettings('Function Settings', [('MARGIN',str(self.RFunctionParamMARGIN_lineEdit.text()))])
-                self.reportRaw(self.Rvariables["apply"])
-        def sendReport(self):
-                self.compileReport()
-                self.showReport()
+                newData = RvarClasses.RDataFrame(data = self.Rvariables['apply'], cm = self.Rvariables['apply_cm'], parent = self.Rvariables['apply'])
+
+                self.rSend("apply Output", newData)

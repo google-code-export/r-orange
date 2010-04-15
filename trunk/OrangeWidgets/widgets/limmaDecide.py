@@ -77,16 +77,13 @@ class limmaDecide(OWRpy):
             self.runbutton.setEnabled(False)
             self.pickGroup.setEnabled(False)
             return
-        if 'data' in dataset:
-            self.data = dataset['data']
-            self.ebdata = dataset
-            self.status.setText("Data connected")
-            self.runbutton.setEnabled(True)
-            #self.pickGroup.setEnabled(True)
-        else:   
-            self.status.setText("No data element in recieved data")
-            self.runbutton.setEnabled(False)
-            self.pickGroup.setEnabled(False)
+        
+        self.data = dataset['data']
+        self.ebdata = dataset
+        self.status.setText("Data connected")
+        self.runbutton.setEnabled(True)
+        #self.pickGroup.setEnabled(True)
+        
     def runAnalysis(self):
         #self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
         if self.data == '': 
@@ -143,11 +140,11 @@ class limmaDecide(OWRpy):
             self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
             self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
             self.newdata = self.olddata.copy()
-            self.newdata['data']=self.Rvariables['eset_sub']
+            self.newdata.data = self.Rvariables['eset_sub']
             self.makeCM(self.Rvariables['cm'], self.Rvariables['eset_sub']) # moment of creation of this cm
-            self.newdata['cm'] = self.Rvariables['cm']
-            if 'classes' in self.ebdata:
-                self.newdata['classes'] = self.ebdata['classes']
+            self.newdata.cm = self.Rvariables['cm']
+            if 'classes' in self.ebdata.dictAttrs.keys():
+                self.newdata.dictAttrs['classes'] = self.ebdata.dictAttrs['classes']
             self.rSend("Expression Subset", self.newdata)
         else:
             self.setWarning(id = 'subsetIMpossible', text = 'Can\'t send subset because data is not available')

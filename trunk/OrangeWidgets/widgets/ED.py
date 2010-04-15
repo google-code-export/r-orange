@@ -27,7 +27,6 @@ class ED(OWRpy):
         self.RFunctionParamlevel_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Confidence Interval:", text = '0.95', toolTip = 'The confidence interval to use with the Confidence Function.')
         self.RFunctionParamtype_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "type:", text = '')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         self.require_librarys(["drc"]) 
@@ -57,15 +56,8 @@ class ED(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.data["data"] = self.Rvariables["ED"]
-        self.rSend("ED Output", self.data)
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("object", self.RFunctionParam_object)])
-        self.reportSettings('Function Settings', [('respLev',str(self.RFunctionParamrespLev_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('ci',str(self.RFunctionParamci_lineEdit.currentText()))])
-        self.reportSettings('Function Settings', [('type',str(self.RFunctionParamtype_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('level',str(self.RFunctionParamlevel_lineEdit.text()))])
-        self.reportRaw(self.Rvariables["ED"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+        
+        newData = self.data.copy()
+        newData.data = self.Rvariables["ED"]
+        self.rSend("ED Output", newData)
+    
