@@ -145,29 +145,6 @@ class readFile(OWRpy):
 
     def loadCustomSettings(self,settings):
         print 'loadCustomSettings readfile'
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings['dataTypes'])
-        # if 'dataTypes' not in settings.keys():
-            # return
-        # for k,l,c in zip(range(len(self.colNames)),self.colNames,settings['dataTypes']['list']):
-            # s = redRGUI.comboBox(self.columnTypes,items=[],orientation='horizontal',callback=self.updateColClasses)
-            # print c
-            # if 'list' in c.keys():
-                # print c['list']
-                # if type(c['list']) in [list]:
-                    # for listItem in c['list']:
-                        # if 'redRGUIObject' in listItem.keys():
-                            
-            # if 'redRGUIObject' not in c.keys(): return
-            # s.loadSettings(c['redRGUIObject'])
-            # s.setMinimumWidth(100)
-            # q = redRGUI.widgetLabel(self.columnTypes,label=l)
-            # self.columnTypes.layout().addWidget(s,k,1)
-            # self.columnTypes.layout().addWidget(q,k,0)
-            # self.dataTypes.append(s)
-            
-        # print the classes of the columns from self.myColClasses
         for i in range(len(self.myColClasses)):
             s = redRGUI.comboBox(self.columnTypes, items = ['factor','numeric','character','integer','logical'], orientation = 'horizontal', callback = self.updateColClasses)
             index = s.findText(self.myColClasses[i])
@@ -384,8 +361,9 @@ class readFile(OWRpy):
         self.R(self.Rvariables['cm'] + '<- data.frame(row.names = rownames('
         +self.Rvariables['dataframe_org']+'))')
         self.updateGUI()
-        sendData = {'data':self.Rvariables['dataframe_org'], 
-        'parent':self.Rvariables['dataframe_org'], 'cm':self.Rvariables['cm']}
+        #sendData = {'data':self.Rvariables['dataframe_org'], 
+        #'parent':self.Rvariables['dataframe_org'], 'cm':self.Rvariables['cm']}
+        sendData = RvarClasses.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'], cm = self.Rvariables['cm'])
         self.rSend("data.frame", sendData)
         
     def compileReport(self):

@@ -18,6 +18,8 @@ class Heatmap(OWRpy):
         self.setRvariableNames(['heatsubset', 'hclust'])
         self.plotOnConnect = 0
         self.plotdata = ''
+        
+        self.loadSettings()
         self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.processMatrix)]
         self.outputs = [("Cluster Subset List", RvarClasses.RList)]
         

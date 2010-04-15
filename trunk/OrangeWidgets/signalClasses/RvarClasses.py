@@ -1,5 +1,7 @@
 # Kyle R Covington
-from RSession import RSession
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from RSessionThread import Rcommand
 
 class RVariable: # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None):
@@ -11,9 +13,14 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
             parent = data
         self.parent = parent
         self.dictAttrs = {}
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
+        commandOutput = None
+        try:
+            commandOutput = Rcommand(query = query, callType = callType, processingNotice = processingNotice, silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
+        except:
+            print 'R exception occurred'
         
-        # import R
-        self.R = RSession()
+        return commandOutput
     def __getitem__(self, item):
         try:
             attr = getattr(self, item)

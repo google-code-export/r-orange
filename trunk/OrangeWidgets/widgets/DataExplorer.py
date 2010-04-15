@@ -112,7 +112,9 @@ class DataExplorer(OWRpy):
                 print 'Colnames are '+str(self.orriginalColumnNames)
                 self.dataParent = data.copy()
                 # first get some info about the table so we can put that into the current table.
-                dims = self.R('dim('+self.data+')') #self data should be a data.frame
+                #dims = self.R('dim('+self.data+')') #self data should be a data.frame
+                print self.dataParent.getDims_call()
+                dims = self.dataParent.getDims_data()
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')
                 ##### Block to set the currentDataTransformation #######
                 if (int(dims[0]) == 0) or (int(dims[1]) == 0):
