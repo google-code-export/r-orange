@@ -1,6 +1,5 @@
 """
 <name>Get Rownames</name>
-
 <description>Returns a vector of rownames coresponding to the row names of a data table.</description>
 <tags>Subsetting</tags>
 <icon>icons/readfile.png</icon>

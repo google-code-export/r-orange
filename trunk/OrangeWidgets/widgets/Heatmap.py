@@ -28,6 +28,9 @@ class Heatmap(OWRpy):
         redRGUI.button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
         redRGUI.button(infobox, label = 'Save as PDF', callback = self.saveAsPDF)
         redRGUI.button(infobox, label = 'Identify', callback = self.identify, width=200)
+        self.startSaturation = redRGUI.spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
+        self.endSaturation = redRGUI.spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
+        self.colorTypeCombo = redRGUI.comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
         self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
         self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
@@ -43,7 +46,12 @@ class Heatmap(OWRpy):
             colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
         else:
             colClasses = ''
-        self.savePDF('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= topo.colors(50)'+ colClasses+')')
+        colorType = str(self.colorTypeCombo.currentText())
+        if colorType == 'rainbow':
+            col = 'rainbow(50, start = '+str(self.startSaturation.value()/100)+', end = '+str(self.endSaturation.value()/100)+')'
+        else:
+            col = colorType+'(50)'
+        self.savePDF('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
         #self.stats.setText('File Saved')
     def processMatrix(self, data =None):
         
@@ -69,8 +77,16 @@ class Heatmap(OWRpy):
             colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
         else:
             colClasses = ''
-        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= topo.colors(50)'+ colClasses+')', 3, 4)
-        
+        colorType = str(self.colorTypeCombo.currentText())
+        if colorType == 'rainbow':
+            start = float(float(self.startSaturation.value())/100)
+            end = float(float(self.endSaturation.value())/100)
+            print start, end
+            col = 'rainbow(50, start = '+str(start)+', end = '+str(end)+')'
+        else:
+            col = colorType+'(50)'
+        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')', 3, 4)
+        self.Rplot('pie(1:50, labels = c(\'Low\', 2:49, \'High\'), col = '+col+')', devNumber = 2)
         
     def rowvChoiceprocess(self):
         if self.plotdata:

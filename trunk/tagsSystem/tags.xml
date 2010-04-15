@@ -12,6 +12,7 @@
         <Description>Widgets that classify data</Description>
     </group>
     <group name="Subsetting">
+    <group name="Subsetting">
         <Description>Tools for subsetting tables</Description>
     </group>
     <group name="R">

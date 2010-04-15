@@ -1,14 +1,14 @@
 import os, numpy
 import time
-import RvarClasses
-import RAffyClasses
+#import RvarClasses
+#import RAffyClasses
 import threading, sys
 import orngEnviron
 # import MyQMoviePlayer
 
 import re
 from PyQt4.QtCore import *
-from OWWidget import *
+#from OWWidget import *
 
 if sys.platform=="win32":
     from rpy_options import set_options
@@ -31,17 +31,11 @@ class RSession():
         RSession.uniqueWidgetNumber += 1
         ctime = str(time.time())
         self.variable_suffix = '_' + str(RSession.uniqueWidgetNumber) + '_' + ctime
-        #keep all R variable name in this dict
         self.Rvariables = {}
         self.setRvariableNames(['title'])
         self.requiredRLibraries = []
         self.device = {}
-        #self.uniqueWidgetNumber = RSession.uniqueWidgetNumber
-        #self.RPackages = []
-        #self.loadSavedSession = False
-        #self.loadingSavedSession = False
-        #print 'set load ssaved '
-        #self.settingsList = ['variable_suffix','loadingSavedSession']
+        
         self.packagesLoaded = 0
         self.RSessionThread = RSessionThread()
         
@@ -165,7 +159,7 @@ class RSession():
         self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
-    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0):
+    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
         # check that a device is currently used by this widget
         # print 'the devNumber is'+str(devNumber)
         # print str(self.device)
@@ -183,12 +177,10 @@ class RSession():
         else:
             print 'make new dev for this'
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(RSession.uniqueWidgetNumber), 'setRData') # starts a new device 
+            if type(mfrow) == list:
+                self.R('par(mfrow = c('+str(mfrow[0])+','+str(mfrow[1])+'))')
             self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-        #self.require_librarys(['playwith', 'RGtk2'])
-        
-        #self.R('playwith('+query+')', 'setRData')
         self.R(query, 'setRData')
-        self.needsProcessingHandler(self, 0)
         
 
     def require_librarys(self,librarys, force = False):

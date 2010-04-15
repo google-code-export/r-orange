@@ -158,7 +158,7 @@ class mergeR(OWRpy):
                     self.R(self.Rvariables['merged_dataBA_cm_']+'<-tmpba[,(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+'),colnames('+self.dataParentB['cm']+')))]')        
                     self.R('rownames('+self.Rvariables['merged_dataBA']+')<-'+self.Rvariables['merged_dataBA']+'$Row.names')
                     self.R('rownames('+self.Rvariables['merged_dataBA_cm_']+')<-'+self.Rvariables['merged_dataBA']+'$Row.names')
-                    self.R('tmpall<-merge(tmpa, tmpb)')
+                    self.R('tmpall<-merge(tmpa, tmpb, all.x = TRUE, all.y = TRUE)')
                     self.R(self.Rvariables['merged_dataAll']+'<-tmpall[,!(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+'),colnames('+self.dataParentB['cm']+')))]')
                     self.R(self.Rvariables['merged_dataAll_cm_']+'<-tmpall[,(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+'),colnames('+self.dataParentB['cm']+')))]')
                     self.R('rownames('+self.Rvariables['merged_dataAll']+')<-'+self.Rvariables['merged_dataAll']+'$Row.names')
@@ -178,7 +178,7 @@ class mergeR(OWRpy):
                     self.R(self.Rvariables['merged_dataBA_cm_']+'<-tmpba[,(colnames(tmpba) %in% c(colnames('+self.dataParentA['cm']+'),colnames('+self.dataParentB['cm']+')))]')        
                     self.R('rownames('+self.Rvariables['merged_dataBA']+')<-'+self.Rvariables['merged_dataBA']+'$Row.names')
                     self.R('rownames('+self.Rvariables['merged_dataBA_cm_']+')<-'+self.Rvariables['merged_dataBA']+'$Row.names')
-                    self.R('tmpall<-merge(tmpa, tmpb,by.x='+cas+', by.y='+cbs+')')
+                    self.R('tmpall<-merge(tmpa, tmpb,by.x='+cas+', by.y='+cbs+', all.x = TRUE, all.y = TRUE)')
                     self.R(self.Rvariables['merged_dataAll']+'<-tmpall[,!(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+'),colnames('+self.dataParentB['cm']+')))]')
                     self.R(self.Rvariables['merged_dataAll_cm_']+'<-tmpall[,(colnames(tmpall) %in% c(colnames('+self.dataParentA['cm']+'),colnames('+self.dataParentB['cm']+')))]')
                     self.R('rownames('+self.Rvariables['merged_dataAll']+')<-'+self.Rvariables['merged_dataAll']+'$Row.names')
@@ -196,7 +196,7 @@ class mergeR(OWRpy):
                     self.R(self.Rvariables['merged_dataBA_cm_']+'data.frame(row.names = rownames('+self.Rvariables['merged_dataBA']+'))')        
 
                     #self.R('tmpall<-merge(tmpa, tmpb)')
-                    self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb)')
+                    self.R(self.Rvariables['merged_dataAll']+'<-merge(tmpa, tmpb, all.x = TRUE, all.y = TRUE)')
                     self.R(self.Rvariables['merged_dataAll_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAll']+'))')
                     
                     
@@ -209,7 +209,7 @@ class mergeR(OWRpy):
                     self.R(self.Rvariables['merged_dataAB_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAB']+'))')
                     self.R('tmpba<-merge(tmpa, tmpb,by.x='+cas+', by.y='+cbs+',all.y=T)')
                     self.R(self.Rvariables['merged_dataBA_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataBA']+'))')
-                    self.R('tmpall<-merge(tmpa, tmpb,by.x='+cas+', by.y='+cbs+')')
+                    self.R('tmpall<-merge(tmpa, tmpb,by.x='+cas+', by.y='+cbs+', all.x = TRUE, all.y=TRUE)')
                     self.R(self.Rvariables['merged_dataAll_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['merged_dataAll']+'))')
                     
             

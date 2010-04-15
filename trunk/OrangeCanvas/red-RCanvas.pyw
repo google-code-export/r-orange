@@ -371,6 +371,8 @@ class OrangeCanvasDlg(QMainWindow):
         painter = QPainter(printer)
         self.schema.canvas.render(painter)
         painter.end()
+        if asdf:
+            pass
         for widget in self.schema.widgets:
             widget.instance.printWidget(printer = printer)
         #except:
