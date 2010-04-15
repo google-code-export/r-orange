@@ -1,7 +1,7 @@
 # R Signal Thread
 ## Controls the execution of R funcitons into the underlying R session
 
-import sys, orngEnviron, numpy
+import sys, os, orngEnviron, numpy
 
 if sys.platform=="win32":
     from rpy_options import set_options
@@ -81,7 +81,26 @@ def Rcommand(query, callType = 'getRData', processingNotice=False, silent = Fals
             return output
     else:
         return output
-            
+
+def require_librarys(librarys, repository = 'http://cran.r-project.org'):
+        libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
+        installedRPackages = Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
+        
+        Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
+
+        for library in librarys:
+            if library in installedRPackages:
+                Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
+                
+            else:
+                try:
+                    Rcommand('setRepositories(ind=1:7)')
+                    Rcommand('install.packages("' + library + '", lib="' + libPath + '")')
+                    Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
+                    
+                except:
+                    print 'Library load failed'
+        
 class RSessionThread(QThread):
     def __init__(self, parent = None):
         QThread.__init__(self, None)

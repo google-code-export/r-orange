@@ -4,6 +4,7 @@ import threading, sys
 import orngEnviron
 from OWWidget import *
 from RSessionThread import Rcommand
+from RSessionThread import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -117,35 +118,10 @@ class RSession():
         
         
 
-    def require_librarys(self,librarys, force = False):
-        libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
+    def require_librarys(self, librarys, repository = None):
+        if not repository and 'CRANrepos' in qApp.canvasDlg.settings.keys():
+            repository = qApp.canvasDlg.settings['CRANrepos']
         
-        
-        #if self.packagesLoaded == 0:
-        installedRPackages = self.R('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
-        # print installedRPackages
-        # print type(installedRPackages)
-        print self.R('getOption("repos")')
-        if 'CRANrepos' not in qApp.canvasDlg.settings.keys():
-            qApp.canvasDlg.settings['CRANrepos'] = 'http://cran.r-project.org'
-        else:
-            #print qApp.canvasDlg.settings['CRANrepos']
-            self.R('local({r <- getOption("repos"); r["CRAN"] <- "' + qApp.canvasDlg.settings['CRANrepos'] + '"; options(repos=r)})')
-
-        for library in librarys:
-            if library in installedRPackages:
-                self.R('require(' + library + ', lib.loc="' + libPath + '")')
-                
-            else:
-                try:
-                    self.R('setRepositories(ind=1:7)')
-                    self.R('install.packages("' + library + '", lib="' + libPath + '")')
-                    self.R('require(' + library + ', lib.loc="' + libPath + '")')
-                    
-                except:
-                    print 'Library load failed. This widget will not work!!!'
+        print 'Loading required librarys'
+        require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
-
-
-
-    

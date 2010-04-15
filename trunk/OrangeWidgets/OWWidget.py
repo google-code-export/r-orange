@@ -191,6 +191,9 @@ class OWWidget(OWBaseWidget):
 
     def updateDocumentationDock(self):
         print 'in updatedock right'
+        if 'documentationState' not in self.windowState.keys():
+            self.windowState['documentationState'] = {}
+        
         
         if self.showHelpButton.isChecked():
             self.helpBox.show()
@@ -292,9 +295,10 @@ class OWWidget(OWBaseWidget):
             self.leftDockButton.setChecked(self.windowState['leftDockState'])
             self.showLeftDock()
         
-        self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
-        self.showNotesButton.setChecked(self.windowState['documentationState']['notesBox'])
-        self.showROutputButton.setChecked(self.windowState['documentationState']['ROutputBox'])
+        if 'documentationState' in self.windowState.keys():
+            self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
+            self.showNotesButton.setChecked(self.windowState['documentationState']['notesBox'])
+            self.showROutputButton.setChecked(self.windowState['documentationState']['ROutputBox'])
         self.updateDocumentationDock()
         
         self.hide()

@@ -47,13 +47,18 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         except:
             print 'Exception occured'
     def copy(self):
-        return RVariable(self.data, self.parent)
+        newVariable = RVariable(self.data, self.parent)
+        newVariable['dictAttrs'] = self.dictAttrs
+        return newVariable
 class RList(RVariable):
     def __init__(self, data, parent = None):
         RVariable.__init__(self, data = data, parent = parent)
         
     def copy(self):
-        return RList(self.data, self.parent)
+        newVariable = RList(self.data, self.parent)
+        newVariable['dictAttrs'] = self.dictAttrs
+        return newVariable
+
     def names_call(self):
         return 'names('+self.data+')'
     def names_data(self):
@@ -119,7 +124,9 @@ class RDataFrame(RList):
                     self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1, length('+self.data+'[1,]))))')
         self.cm = 'cm_'+self.data
     def copy(self):
-        return RDataFrame(self.data, self.parent, self.cm)
+        newVariable = RDataFrame(self.data, self.parent, self.cm)
+        newVariable['dictAttrs'] = self.dictAttrs
+        return newVariable
     def getRownames_call(self):
         return 'rownames('+self.data+')'
     def getRownames_data(self):
@@ -175,7 +182,9 @@ class RVector(RDataFrame):
             #cm = self.R('cm_'+data+'<-data.frame(row.names = make.names(rep(1, length('+data+'))))')
         RDataFrame.__init__(self, data = data, parent = parent, cm = cm)
     def copy(self):
-        return RVector(self.data, self.parent, self.cm)
+        newVariable = RVector(self.data, self.parent, self.cm)
+        newVariable['dictAttrs'] = self.dictAttrs
+        return newVariable
     def getColumnnames_call(self):
         return self.getNames_call()
     def getColumnnames_data(self):

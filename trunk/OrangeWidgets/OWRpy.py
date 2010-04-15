@@ -43,7 +43,17 @@ class OWRpy(OWWidget,RSession):
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send'
-        
+        # funciton for upclassing variables that are send as dictionaries
+        for i in self.outputs:
+            if i[0] == name: # this is the channel that you are sending from 
+                if type(variable) == dict: # if we havent converted this already
+                    if issubclass(i[1], RvarClasses.RDataFrame): 
+                        newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
+                        newvariable['dictAttrs'] = variable
+                    else:
+                        newvariable = i[1](data = variable['data'], parent = variable['parent'])
+                        newvariable['dictAttrs'] = variable
+                    variable = newvariable
         try:
             self.send(name, variable)
             # if updateSignalProcessingManager:
