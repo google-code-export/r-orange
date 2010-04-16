@@ -11,7 +11,7 @@ import inspect, os
 import time
 import numpy
 import RvarClasses
-import RAffyClasses
+# import RvarClasses
 import threading, sys
 import pprint
 import cPickle
@@ -45,8 +45,13 @@ class OWRpy(OWWidget,RSession):
         print 'send'
         # funciton for upclassing variables that are send as dictionaries
         for i in self.outputs:
+            #print 'i', i
             if i[0] == name: # this is the channel that you are sending from 
+                #print 'type',name, variable,type(variable)
                 if type(variable) == dict: # if we havent converted this already
+                    #print 'in send dict', issubclass(i[1], RvarClasses.RDataFrame)
+                    #print i[1]
+                    
                     if issubclass(i[1], RvarClasses.RDataFrame): 
                         newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
                         newvariable['dictAttrs'] = variable
@@ -54,7 +59,10 @@ class OWRpy(OWWidget,RSession):
                         newvariable = i[1](data = variable['data'], parent = variable['parent'])
                         newvariable['dictAttrs'] = variable
                     variable = newvariable
+                break
         try:
+            print 'send==============',name 
+            print 'variable',variable, variable.__class__
             self.send(name, variable)
             # if updateSignalProcessingManager:
                 #try:
@@ -112,7 +120,7 @@ class OWRpy(OWWidget,RSession):
         if self.outputs and len(self.outputs) != 0:
             aoutputs = []
             for (a,b) in [output for output in self.outputs]:
-                print 'Output type', type(b)
+                # print 'Output type', type(b)
                 if issubclass(b, RvarClasses.RDataFrame):
                     bc = 'Data Frame'
                 elif issubclass(b, RvarClasses.RVector):
@@ -158,8 +166,8 @@ class OWRpy(OWWidget,RSession):
         elif isinstance(d, RvarClasses.RVariable):
             return True
         else: 
-            print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
-            print str(d)
+            print 'Type ' + str(d) + ' is not supported at the moment..'
+            print 
             return False
         
             

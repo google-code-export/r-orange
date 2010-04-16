@@ -712,7 +712,7 @@ class SchemaDoc(QWidget):
         if self.canvasDlg.settings["saveWidgetsPosition"]:
             for widget in self.widgets:
                 widget.instance.setLoadingSavedSession(False)
-                widget.instance.show()
+                #widget.instance.show()
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
         loadingProgressBar.hide()

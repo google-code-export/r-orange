@@ -1,12 +1,12 @@
 from table import table
-from RSession import RSession
+from RSessionThread import Rcommand
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy
 
 class Rtable(table):
     def __init__(self,widget,Rdata=None, rows = 0, columns = 0,sortable=False, selectionMode = -1, addToLayout = 1):
-        self.R = RSession()
+        self.R = Rcommand
         table.__init__(self,widget,sortable=sortable,selectionMode = selectionMode,addToLayout=addToLayout)
 
         if Rdata:

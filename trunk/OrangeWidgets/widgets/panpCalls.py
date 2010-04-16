@@ -8,7 +8,7 @@
 """
 from OWRpy import *
 import redRGUI
-import RAffyClasses
+import RvarClasses
 
 class panpCalls(OWRpy):
 
@@ -29,7 +29,7 @@ class panpCalls(OWRpy):
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         self.loadSettings()
 
-        self.inputs = [("Normalized Affybatch", RAffyClasses.RAffyBatch, self.process)]
+        self.inputs = [("Normalized Affybatch", RvarClasses.RAffyBatch, self.process)]
         self.outputs = [("Present Gene Signal Matrix", RvarClasses.RDataFrame)]
         
         
@@ -47,20 +47,20 @@ class panpCalls(OWRpy):
         
     def process(self, dataset):
         print 'on procress panp'
+        
         self.require_librarys(['affy','gcrma','limma','matchprobes','panp'])
+        
         for output in self.outputs:
             self.rSend(output[0], None, 0)
+        
         if dataset == None: 
             self.status.setText("Blank data recieved")
+        
         if dataset:
-            self.data = dataset.copy()
-            if 'data' in self.data:
-                self.eset = self.data['data']
-                self.status.setText("Data Received")
-            else:
-                self.status.setText("Processing imposible, not of eset or affybatch type")
+            self.eset = self.data['data']
+            self.status.setText("Data Received")
         else:
-            self.status.setText("Processing imposible, not of eset or affybatch type")
+            self.status.setText("Processing impossible, not of eset or affybatch type")
             
     def processEset(self):
         if self.eset == '': return

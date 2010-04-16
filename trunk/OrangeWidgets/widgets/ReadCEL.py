@@ -10,7 +10,7 @@
 from OWRpy import *
 #import OWGUI
 import redRGUI, os
-import RAffyClasses
+import RvarClasses
 
 
 class ReadCEL(OWRpy):
@@ -31,7 +31,7 @@ class ReadCEL(OWRpy):
         self.setRvariableNames(['eset','folder', 'cm'])
         #signals
         self.inputs = None 
-        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RAffyClasses.Eset)]
+        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RvarClasses.Eset)]
         
 
 

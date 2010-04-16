@@ -38,7 +38,7 @@ class diffExp(OWRpy):
         
         #GUI
         self.boxIndices = {}
-        self.blackList.append('boxIndices')
+        self.dontSaveList.append('boxIndices')
         self.valuesStack = QStackedWidget(self)
         self.controlArea.layout().addWidget(self.valuesStack)
         

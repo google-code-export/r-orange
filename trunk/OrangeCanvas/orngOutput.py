@@ -117,7 +117,8 @@ class OutputWindow(QDialog):
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
         self.textOutput.insertPlainText(Text)                                  # then append the text
-
+        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         if Text[-1:] == "\n":
             if self.canvasDlg.settings["printOutputInStatusBar"]:
                 self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
@@ -157,12 +158,6 @@ class OutputWindow(QDialog):
             # conn.close()
         # else:
             # return
-        
-    def printException(self):
-        import traceback, sys
-        print '-'*60
-        traceback.print_exc(file=sys.stdout)
-        print '-'*60        
         
     def exceptionHandler(self, type, value, tracebackInfo):
         if self.canvasDlg.settings["focusOnCatchException"]:
@@ -207,6 +202,7 @@ class OutputWindow(QDialog):
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
         self.textOutput.insertHtml(text)                                  # then append the text
+        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
 
         if self.canvasDlg.settings["writeLogFile"]:

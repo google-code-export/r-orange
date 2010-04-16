@@ -9,7 +9,7 @@
 
 from OWRpy import *
 import redRGUI
-import RAffyClasses
+import RvarClasses
 
 class plotAffy(OWRpy):
     settingsList = ['irows', 'icols', 'qcsProcessed']
@@ -28,7 +28,7 @@ class plotAffy(OWRpy):
         #set R variable names
         #self.setRvariableNames()
 
-        self.inputs = [("Affybatch", RAffyClasses.Eset, self.init)]
+        self.inputs = [("Affybatch", RvarClasses.Eset, self.init)]
         self.outputs = None
         
         self.testLineEdit = ""

@@ -10,7 +10,7 @@
 
 from OWRpy import *
 # import OWGUI
-import RAffyClasses
+import RvarClasses
 import redRGUI 
 
 
@@ -35,9 +35,9 @@ class affyNormalize(OWRpy):
         self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals
-        self.inputs = [("Eset", RAffyClasses.Eset, self.process)]
+        self.inputs = [("Eset", RvarClasses.Eset, self.process)]
         self.outputs = [("Normalized Expression Matrix", RvarClasses.RDataFrame),
-        ("Normalized AffyBatch", RAffyClasses.RAffyBatch)]
+        ("Normalized AffyBatch", RvarClasses.RAffyBatch)]
 
         
         #the GUI
@@ -104,6 +104,7 @@ class affyNormalize(OWRpy):
                 
         try: 
             print str(dataset['data'])
+            print dataset.__class__
             self.data = str(dataset['data'])
             self.newdata = dataset.copy()
             

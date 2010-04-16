@@ -362,6 +362,7 @@ class readFile(OWRpy):
         +self.Rvariables['dataframe_org']+'))')
         self.updateGUI()
         sendData = RvarClasses.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'], cm = self.Rvariables['cm'])
+        #sendData = RvarClasses.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'], cm = self.Rvariables['cm'])
         self.rSend("data.frame", sendData)
         
     def compileReport(self):

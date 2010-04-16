@@ -3,8 +3,9 @@ import time
 import threading, sys
 import orngEnviron
 from OWWidget import *
-from RSessionThread import Rcommand
-from RSessionThread import require_librarys
+import RSessionThread
+# from RSessionThread import Rcommand
+# from RSessionThread import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -63,7 +64,7 @@ class RSession():
         histquery = histquery.replace('>', '&gt;')
         histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
         self.Rhistory += histquery + '</code><br><code>'
-        commandOutput = Rcommand(query = query, callType = callType, processingNotice = processingNotice, silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
+        commandOutput = RSessionThread.Rcommand(query = query, callType = callType, processingNotice = processingNotice, silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
         
         #except: 
         #    print 'R exception occurred'
@@ -123,5 +124,5 @@ class RSession():
             repository = qApp.canvasDlg.settings['CRANrepos']
         
         print 'Loading required librarys'
-        require_librarys(librarys = librarys, repository = repository)
+        RSessionThread.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)

@@ -1,0 +1,94 @@
+# Kyle R Covington
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from RSessionThread import Rcommand
+import glob,os.path,orngEnviron
+class RVariable: # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
+    def __init__(self, data, parent = None):
+        # set the variables
+        if not data:
+            raise Exception()
+        self.data = data
+        if not parent:
+            parent = data
+        self.parent = parent
+        self.dictAttrs = {}
+        self.R = Rcommand
+        
+    def __getitem__(self, item):
+        try:
+            attr = getattr(self, item)
+        except:
+            try:
+                attr = self.dictAttrs[item]
+            except:
+                attr = None
+        return attr
+    
+    def __setitem__(self, item, value):
+        self.dictAttrs[item] = value
+     
+    def keys(self):
+        return self.dictAttrs.keys()
+    def getClass_call(self):
+        return 'class('+self.data+')'
+        
+    def getClass_data(self):
+        return self.R(self.getClass_call(), silent = True)
+        
+    def plotObject(self, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
+        try:
+            query = 'plot('+self.data+')'
+            self.Rplot(query = query, dwidth = dwidth, dheight = dheight, devNumber = devNumber, mfrow = mfrow)
+        except:
+            print 'Exception occured'
+    def copy(self):
+        newVariable = RVariable(self.data, self.parent)
+        newVariable['dictAttrs'] = self.dictAttrs
+        return newVariable
+    def _simpleOutput(self, subsetting = ''):
+        text = 'R Data Variable Name: '+self.data+'\n\n'
+        return text
+    def _fullOutput(self, subsetting = ''):
+        text = self._simpleOutput()+'\n\n'
+        text += 'R Data Variable Value: '+self.getAttrOutput_data(self.data, subsetting)+'\n\n'
+        text += 'R Parent Variable Name: '+self.parent+'\n\n'
+        text += 'R Parent Variable Value: '+self.getAttrOutput_data(self.parent, subsetting)+'\n\n'
+        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        return text
+    def getAttrOutput_call(self, item, subsetting = ''):
+        print item, subsetting
+        call = 'paste(capture.output('+self.__getitem__(item)+subsetting+'), collapse = "\n")'
+        return call
+    def getAttrOutput_data(self, item, subsetting = ''):
+        return self.R(self.getAttrOutput_call(item = item, subsetting = subsetting))
+    def getSimpleOutput(self, subsetting = ''):
+        # return the text for a simple output of this variable
+        text = 'Simple Output\n\n'
+        text += 'Class: '+self.getClass_data()+'\n\n'
+        text += self._simpleOutput(subsetting)
+        return text
+    def getFullOutput(self, subsetting = ''):
+        text = 'Full Output\n\n'
+        text += 'Class: '+self.getClass_data()+'\n\n'
+        text += self._fullOutput(subsetting)
+        return text
+      
+        
+def forname(modname, classname):
+    ''' Returns a class of "classname" from module "modname". '''
+    module = __import__(modname)
+    classobj = getattr(module, classname)
+    return classobj
+
+RVariableClasses = []
+current_module = __import__(__name__)
+
+
+for filename in glob.iglob(os.path.join(orngEnviron.directoryNames['widgetDir'] + '/signalClasses', "*.py")):
+    if os.path.isdir(filename) or os.path.islink(filename):
+        continue
+    #print filename
+    signalClasses = os.path.basename(filename).split('.')[0]
+    RVariableClasses.append(signalClasses)
+    setattr(current_module, signalClasses,forname(signalClasses,signalClasses))
