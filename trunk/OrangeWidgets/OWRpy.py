@@ -51,7 +51,11 @@ class OWRpy(OWWidget,RSession):
                 if type(variable) == dict: # if we havent converted this already
                     #print 'in send dict', issubclass(i[1], RvarClasses.RDataFrame)
                     #print i[1]
-                    
+                    print '\n'*5
+                    print '='*60
+                    print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
+                    print '='*60
+                    print '\n'*5
                     if issubclass(i[1], RvarClasses.RDataFrame): 
                         newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
                         newvariable['dictAttrs'] = variable
