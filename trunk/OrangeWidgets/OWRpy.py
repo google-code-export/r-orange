@@ -155,6 +155,8 @@ class OWRpy(OWWidget,RSession):
                 return True
         elif type(d) in [type(None), str, int, float, bool, numpy.float64]:
             return True
+        elif isinstance(d, RvarClasses.RVariable):
+            return True
         else: 
             print 'This type is not supported at the moment, if you would like it to be and think that this is a mistake contact the developers so they can add it to the list.'
             print str(d)
