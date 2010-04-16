@@ -2,7 +2,6 @@
 ## Controls the execution of R funcitons into the underlying R session
 
 import sys, os, orngEnviron, numpy
-
 if sys.platform=="win32":
     from rpy_options import set_options
     #set_options(RHOME=os.environ['RPATH'])
@@ -13,24 +12,33 @@ else: # need this because linux doesn't need to use the RPATH
     
 import rpy
 from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
+mutex = QMutex()
 def Rcommand(query, processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
     rst = RSessionThread()
+
     output = None
     
     if not silent:
         print query
-
+    gotLock = mutex.tryLock()
+    if not gotLock:
+        print 'Thread was locked!!!  Returning None.'
+        return
+        
     try:
         output = rst.run(query)
     except rpy.RPyRException as inst:
         print inst
+        mutex.unlock()
         # print showException
         #self.status.setText('Error occured!!')
+
         raise rpy.RPyRException(str(inst))
         return None # now processes can catch potential errors
         
-    
+    mutex.unlock()
     if wantType == None:
         return output
     elif wantType == 'list':
