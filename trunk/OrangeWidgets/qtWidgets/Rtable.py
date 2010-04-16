@@ -1,5 +1,5 @@
 from table import table
-from RSessionThread import Rcommand
+from RSession import Rcommand
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy
@@ -16,12 +16,12 @@ class Rtable(table):
         print 'in Rtable set'
         self.setHidden(True)
         self.Rdata = Rdata
-        dims = self.R.R('dim('+Rdata+')')
-        #rowCount = self.R.R('length('+Rdata+'[,1])')
-        #columnCount = self.R.R('length('+Rdata+'[1,])')
+        dims = self.R('dim('+Rdata+')')
+        #rowCount = self.R('length('+Rdata+'[,1])')
+        #columnCount = self.R('length('+Rdata+'[1,])')
         self.setRowCount(dims[0])
         self.setColumnCount(dims[1])
-        tableData = self.R.R('as.matrix('+Rdata+')', wantType = 'list', listOfLists = True)
+        tableData = self.R('as.matrix('+Rdata+')', wantType = 'list', listOfLists = True)
         for j in range(0, int(dims[1])):
             for i in range(0, int(dims[0])):
                 if dims[0] == 1: # there is only one row
@@ -31,10 +31,10 @@ class Rtable(table):
                 else:
                     ci = QTableWidgetItem(str(tableData[i][j])) # need to catch the case that there might not be multiple rows or columns
                 self.setItem(i, j, ci)
-        colnames = self.R.R('colnames(' +self.Rdata+ ')', wantType = 'list')
+        colnames = self.R('colnames(' +self.Rdata+ ')', wantType = 'list')
         for i in range(len(colnames)):
             colnames[i] = colnames[i] + ' (' + str(i+1) +')'
-        rownames = self.R.R('rownames(' +self.Rdata+')', wantType = 'list')
+        rownames = self.R('rownames(' +self.Rdata+')', wantType = 'list')
         if setColHeaders: self.setHorizontalHeaderLabels(colnames)
         if setRowHeaders: self.setVerticalHeaderLabels(rownames)
         self.setHidden(False)

@@ -1,7 +1,7 @@
 # Kyle R Covington
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from RSessionThread import Rcommand
+from RSession import Rcommand
 import glob,os.path,orngEnviron
 class RVariable: # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None, checkVal = False):

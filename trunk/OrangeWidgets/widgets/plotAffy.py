@@ -70,7 +70,7 @@ class plotAffy(OWRpy):
             
             #try: 
             self.Rplot('') # make a false call to the plot window just to initialize
-            self.rsession('par(mfrow=c('+str(self.irows.text())+','+str(self.icols.text())+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
+            self.R('par(mfrow=c('+str(self.irows.text())+','+str(self.icols.text())+'))') #get the values that are in the irows and icols and put them into the par(mfrow...) function in r
             self.R('image('+self.data+')')
         else:
             self.status.setText("No data connected.")
@@ -90,7 +90,7 @@ class plotAffy(OWRpy):
         self.require_librarys(['simpleaffy'])
         if self.data =='': return
         if self.qcsProcessed == 0:
-            self.rsession(self.Rvariables['qcs']+'<-qc('+self.data+')')
+            self.R(self.Rvariables['qcs']+'<-qc('+self.data+')')
         self.R('plot('+self.Rvariables['qcs']+')')
         self.qcsProcessed = 1
         

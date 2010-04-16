@@ -446,9 +446,6 @@ class SchemaDoc(QWidget):
 
     # save the file
     def save(self, filename = None,tmp = True):
-        import RSession
-        RSession = RSession.RSession()
-        # return
 
         print 'start save schema'
         if filename == None:
@@ -514,13 +511,11 @@ class SchemaDoc(QWidget):
             file.close()
             doc.unlink()
             print 'saving image...'
-            import RSession
-            RSession = RSession.RSession()
             progressBar.setLabelText('Saving Data...')
             progress += 1
             progressBar.setValue(progress)
 
-            RSession.R('save.image("' + tempR + '")')
+            RSession.Rcommand('save.image("' + tempR + '")')
             zout = zipfile.ZipFile(filename, "w")
             for fname in [tempschema,tempR]:
                 zout.write(fname)
@@ -574,8 +569,6 @@ class SchemaDoc(QWidget):
             self.canvasDlg.setCaption(caption or self.schemaName)
         try:
             import re
-            import RSession
-            RSession = RSession.RSession()
             for widget in self.widgets: # convert the caption names so there are no conflicts
                 widget.caption += 'A'
                 
@@ -586,7 +579,7 @@ class SchemaDoc(QWidget):
                 if re.search('tempSchema.tmp',os.path.basename(name)):
                     doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
                 else:
-                    RSession.R('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
+                    RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
             schema = doc.firstChild
             widgets = schema.getElementsByTagName("widgets")[0]
             lines = schema.getElementsByTagName("channels")[0]
@@ -608,7 +601,8 @@ class SchemaDoc(QWidget):
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                     try:
                         if 'requiredRLibraries' in settings.keys():
-                            RSession.require_librarys(settings['requiredRLibraries']['pythonObject'])
+                            if 'CRANrepos' in qApp.canvasDlg.settings.keys():
+                                RSession.require_librarys(settings['requiredRLibraries']['pythonObject'],repository=qApp.canvasDlg.settings['CRANrepos'])
                     except: 
                         import sys, traceback
                         print '-'*60

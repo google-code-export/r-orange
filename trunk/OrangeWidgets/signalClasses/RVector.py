@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from RSessionThread import Rcommand
+from RSession import Rcommand
 from RDataFrame import *
 class RVector(RDataFrame):
     def __init__(self, data, parent = None, cm = None, checkVal = True):

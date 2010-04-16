@@ -3,58 +3,22 @@
 # Orange Widget
 # A General Orange Widget, from which all the Orange Widgets are derived
 #
-import orngEnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
-#from OWContexts import *
-import sys, time, random, user, os, os.path, cPickle, copy, orngMisc
 import RvarClasses
-#import orange
-import orngDebugging
 from string import *
 from orngSignalManager import *
-import OWGUI
 
 
 
-class OWBaseWidget(QMainWindow):
-    def __new__(cls, *arg, **args):
-        self = QMainWindow.__new__(cls)
-
-        #print "arg", arg
-        #print "args: ", args
-        self.currentContexts = {}   # the "currentContexts" MUST be the first thing assigned to a widget
-        self._useContexts = 1       # do you want to use contexts
-        self._owInfo = 1            # currently disabled !!!
-        self._owWarning = 1         # do we want to see warnings
-        self._owError = 1           # do we want to see errors
-        self._owShowStatus = 0      # do we want to see warnings and errors in status bar area of the widget
-        self._guiElements = []      # used for automatic widget debugging
-
-        
-        for key in args:
-            if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_category", "_settingsFromSchema"]:
-                self.__dict__[key] = args[key]        # we cannot use __dict__.update(args) since we can have many other
-
-        return self
-
-
-    def __init__(self, parent = None, signalManager = None, title="RedR BaseWidget", 
-    modal=False, resizingEnabled = 1, **args):
+class widgetSignals():
+    def __init__(self, parent = None, signalManager = None):
         # do we want to save widget position and restore it on next load
-
-        if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
-        else:               QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
-
-        # directories are better defined this way, otherwise .ini files get written in many places
-        self.__dict__.update(orngEnviron.directoryNames)
-
-        self.setCaption(title.replace("&","")) # used for widget caption
+        
 
         # number of control signals, that are currently being processed
         # needed by signalWrapper to know when everything was sent
-        self.parent = parent
+        # self.parent = parent
         self.needProcessing = 0     # used by signalManager
         if not signalManager: self.signalManager = globalSignalManager        # use the global instance of signalManager  - not advised
         else:                 self.signalManager = signalManager              # use given instance of signal manager
@@ -68,23 +32,13 @@ class OWBaseWidget(QMainWindow):
         self.linksOut = {}       # signalName: (signalData, id)
         self.connections = {}   # dictionary where keys are (control, signal) and values are wrapper instances. Used in connect/disconnect
         # self.controlledAttributes = ControlledAttributesDict(self)
-        self.progressBarHandler = None  # handler for progress bar events
-        self.processingHandler = None   # handler for processing events
-        self.eventHandler = None
         self.closing = False # is the widget closing, if so don't process any signals
         self.loadSavedSession = False # is the widget closing, if so don't process any signals
+        self.sentItems = []
+        self.eventHandler = None
 
         self.dontSaveList = self.__dict__.keys()
 
-    # uncomment this when you need to see which events occured
-    """
-    def event(self, e):
-        #eventDict = dict([(0, 'None'), (1, 'Timer'), (2, 'MouseButtonPress'), (3, 'MouseButtonRelease'), (4, 'MouseButtonDblClick'), (5, 'MouseMove'), (6, 'KeyPress'), (7, 'KeyRelease'), (8, 'FocusIn'), (9, 'FocusOut'), (10, 'Enter'), (11, 'Leave'), (12, 'Paint'), (13, 'Move'), (14, 'Resize'), (15, 'Create'), (16, 'Destroy'), (17, 'Show'), (18, 'Hide'), (19, 'Close'), (20, 'Quit'), (21, 'Reparent'), (22, 'ShowMinimized'), (23, 'ShowNormal'), (24, 'WindowActivate'), (25, 'WindowDeactivate'), (26, 'ShowToParent'), (27, 'HideToParent'), (28, 'ShowMaximized'), (30, 'Accel'), (31, 'Wheel'), (32, 'AccelAvailable'), (33, 'CaptionChange'), (34, 'IconChange'), (35, 'ParentFontChange'), (36, 'ApplicationFontChange'), (37, 'ParentPaletteChange'), (38, 'ApplicationPaletteChange'), (40, 'Clipboard'), (42, 'Speech'), (50, 'SockAct'), (51, 'AccelOverride'), (60, 'DragEnter'), (61, 'DragMove'), (62, 'DragLeave'), (63, 'Drop'), (64, 'DragResponse'), (70, 'ChildInserted'), (71, 'ChildRemoved'), (72, 'LayoutHint'), (73, 'ShowWindowRequest'), (80, 'ActivateControl'), (81, 'DeactivateControl'), (1000, 'User')])
-        eventDict = dict([(0, "None"), (130, "AccessibilityDescription"), (119, "AccessibilityHelp"), (86, "AccessibilityPrepare"), (114, "ActionAdded"), (113, "ActionChanged"), (115, "ActionRemoved"), (99, "ActivationChange"), (121, "ApplicationActivated"), (122, "ApplicationDeactivated"), (36, "ApplicationFontChange"), (37, "ApplicationLayoutDirectionChange"), (38, "ApplicationPaletteChange"), (35, "ApplicationWindowIconChange"), (68, "ChildAdded"), (69, "ChildPolished"), (71, "ChildRemoved"), (40, "Clipboard"), (19, "Close"), (82, "ContextMenu"), (52, "DeferredDelete"), (60, "DragEnter"), (62, "DragLeave"), (61, "DragMove"), (63, "Drop"), (98, "EnabledChange"), (10, "Enter"), (150, "EnterEditFocus"), (124, "EnterWhatsThisMode"), (116, "FileOpen"), (8, "FocusIn"), (9, "FocusOut"), (97, "FontChange"), (159, "GraphicsSceneContextMenu"), (164, "GraphicsSceneDragEnter"), (166, "GraphicsSceneDragLeave"), (165, "GraphicsSceneDragMove"), (167, "GraphicsSceneDrop"), (163, "GraphicsSceneHelp"), (160, "GraphicsSceneHoverEnter"), (162, "GraphicsSceneHoverLeave"), (161, "GraphicsSceneHoverMove"), (158, "GraphicsSceneMouseDoubleClick"), (155, "GraphicsSceneMouseMove"), (156, "GraphicsSceneMousePress"), (157, "GraphicsSceneMouseRelease"), (168, "GraphicsSceneWheel"), (18, "Hide"), (27, "HideToParent"), (127, "HoverEnter"), (128, "HoverLeave"), (129, "HoverMove"), (96, "IconDrag"), (101, "IconTextChange"), (83, "InputMethod"), (6, "KeyPress"), (7, "KeyRelease"), (89, "LanguageChange"), (90, "LayoutDirectionChange"), (76, "LayoutRequest"), (11, "Leave"), (151, "LeaveEditFocus"), (125, "LeaveWhatsThisMode"), (88, "LocaleChange"), (153, "MenubarUpdated"), (43, "MetaCall"), (102, "ModifiedChange"), (4, "MouseButtonDblClick"), (2, "MouseButtonPress"), (3, "MouseButtonRelease"), (5, "MouseMove"), (109, "MouseTrackingChange"), (13, "Move"), (12, "Paint"), (39, "PaletteChange"), (131, "ParentAboutToChange"), (21, "ParentChange"), (75, "Polish"), (74, "PolishRequest"), (123, "QueryWhatsThis"), (14, "Resize"), (117, "Shortcut"), (51, "ShortcutOverride"), (17, "Show"), (26, "ShowToParent"), (50, "SockAct"), (112, "StatusTip"), (100, "StyleChange"), (87, "TabletMove"), (92, "TabletPress"), (93, "TabletRelease"), (171, "TabletEnterProximity"), (172, "TabletLeaveProximity"), (1, "Timer"), (120, "ToolBarChange"), (110, "ToolTip"), (78, "UpdateLater"), (77, "UpdateRequest"), (111, "WhatsThis"), (118, "WhatsThisClicked"), (31, "Wheel"), (132, "WinEventAct"), (24, "WindowActivate"), (103, "WindowBlocked"), (25, "WindowDeactivate"), (34, "WindowIconChange"), (105, "WindowStateChange"), (33, "WindowTitleChange"), (104, "WindowUnblocked"), (126, "ZOrderChange"), (169, "KeyboardLayoutChange"), (170, "DynamicPropertyChange")])
-        if eventDict.has_key(e.type()):
-            print str(self.windowTitle()), eventDict[e.type()]
-        return QMainWindow.event(self, e)
-    """
 
     def send(self, signalName, value, id = None):
         if not self.hasOutputName(signalName):
@@ -214,6 +168,46 @@ class OWBaseWidget(QMainWindow):
     def setLoadingSavedSession(self,state):
         print 'setting setloadingSavedSession', state
         self.loadSavedSession = state
+    
+    
+    def rSend(self, name, variable, updateSignalProcessingManager = 1):
+        print 'send'
+        # funciton for upclassing variables that are send as dictionaries
+        for i in self.outputs:
+            #print 'i', i
+            if i[0] == name: # this is the channel that you are sending from 
+                #print 'type',name, variable,type(variable)
+                if type(variable) == dict: # if we havent converted this already
+                    #print 'in send dict', issubclass(i[1], RvarClasses.RDataFrame)
+                    #print i[1]
+                    print '\n'*5
+                    print '='*60
+                    print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
+                    print '='*60
+                    print '\n'*5
+                    if issubclass(i[1], RvarClasses.RDataFrame): 
+                        newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
+                        newvariable['dictAttrs'] = variable
+                    else:
+                        newvariable = i[1](data = variable['data'], parent = variable['parent'])
+                        newvariable['dictAttrs'] = variable
+                    variable = newvariable
+                break
+        try:
+            print 'send==============',name 
+            print 'variable',variable, variable.__class__
+            self.send(name, variable)
+            # if updateSignalProcessingManager:
+                #try:
+            self.removeInformation(id = 'dataNotSent')
+            self.sentItems.append((name, variable))
+            self.status.setText('Data sent.')
+                #except: 
+                #    print 'Failed to remove information', self.widgetState
+        except:
+            self.setError(id = 'dataNotSent', text = 'Failed to send data')
+    
+
     def processSignals(self):
         print 'processing Signals'
         if self.closing == True:
@@ -240,10 +234,13 @@ class OWBaseWidget(QMainWindow):
                     try:
                         
                         for (oldValue, id, nameFrom) in signalData:
-                            value = oldValue.copy()
-                            if not value.__class__ == signal[1]:
-                                print value.__class__
-                                value = value.convertToClass(signal[1])
+                            if oldValue == None:
+                                value = oldValue
+                            else:
+                                value = oldValue.copy()
+                                if not value.__class__ == signal[1]:
+                                    print value.__class__
+                                    value = value.convertToClass(signal[1])
                             
                             ### end block
                             if self.signalIsOnlySingleConnection(key):
@@ -296,48 +293,6 @@ class OWBaseWidget(QMainWindow):
         self.needProcessing = 1
         
 
-
-    # ############################################
-    # PROGRESS BAR FUNCTIONS
-    def progressBarInit(self):
-        self.progressBarValue = 0
-        # self.startTime = time.time()
-        # self.setWindowTitle(self.captionTitle + " (0% complete)")
-        if self.progressBarHandler:
-            self.progressBarHandler(self, 0)
-
-    def progressBarSet(self, value):
-        # if value > 0:
-        self.progressBarValue = value
-            # usedTime = max(1, time.time() - self.startTime)
-            # totalTime = (100.0*usedTime)/float(value)
-            # remainingTime = max(0, totalTime - usedTime)
-            # h = int(remainingTime/3600)
-            # min = int((remainingTime - h*3600)/60)
-            # sec = int(remainingTime - h*3600 - min*60)
-            # if h > 0: text = "%(h)d:%(min)02d:%(sec)02d" % vars()
-            # else:     text = "%(min)d:%(sec)02d" % vars()
-            # self.setWindowTitle(self.captionTitle + " (%(value).2f%% complete, remaining time: %(text)s)" % vars())
-        # else:
-            # self.setWindowTitle(self.captionTitle + " (0% complete)" )
-        if self.progressBarHandler: self.progressBarHandler(self, value)
-        qApp.processEvents()
-
-    def progressBarAdvance(self, value):
-        self.progressBarSet(self.progressBarValue+value)
-
-    def progressBarFinished(self):
-        # self.setWindowTitle(self.captionTitle)
-        if self.progressBarHandler: self.progressBarHandler(self, 101)
-
-    # handler must be a function, that receives 2 arguments. First is the widget instance, the second is the value between -1 and 101
-    def setProgressBarHandler(self, handler):
-        self.progressBarHandler = handler
-
-    def setProcessingHandler(self, handler):
-        self.processingHandler = handler
-        
-
     def setEventHandler(self, handler):
         self.eventHandler = handler
 
@@ -349,57 +304,3 @@ class OWBaseWidget(QMainWindow):
         if self.eventHandler:
             self.eventHandler(self.captionTitle + ": " + text, eventVerbosity)
 
-    def openWidgetHelp(self):
-        if self.orangeDir:
-#            try:
-#                import win32help
-#                if win32help.HtmlHelp(0, "%s/doc/catalog.chm::/catalog/%s/%s.htm" % (orangedir, self._category, self.__class__.__name__[2:]), win32help.HH_DISPLAY_TOPIC):
-#                    return
-#            except:
-#                pass
-
-#===============================================================================
-#            from PyQt4 import QtWebKit
-#            qApp.helpWindow = helpWindow = QtWebKit.QWebView()
-#            print "file://%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:])
-#            helpWindow.load(QUrl("file:///%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:])))
-#            helpWindow.show()
-#===============================================================================
-            qApp.canvasDlg.helpWindow.showHelpFor(self, True)
-            return
-            try:
-                import webbrowser
-                webbrowser.open("file://%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:]), 0, 1)
-                return
-            except:
-                pass
-
-        try:
-            import webbrowser
-            webbrowser.open("http://www.ailab.si/orange/doc/widgets/catalog/%s/%s.htm" % (self._category, self.__class__.__name__[2:]))
-            return
-        except:
-            pass
-
-    def focusInEvent(self, *ev):
-        #print "focus in"
-        #if qApp.canvasDlg.settings["synchronizeHelp"]:  on ubuntu: pops up help window on first widget focus for every widget   
-        #    qApp.canvasDlg.helpWindow.showHelpFor(self, True)
-        QMainWindow.focusInEvent(self, *ev)
-        
-    
-    def keyPressEvent(self, e):
-        if e.key() in (Qt.Key_Help, Qt.Key_F1):
-            self.openWidgetHelp()
-#            e.ignore()
-        else:
-            QMainWindow.keyPressEvent(self, e)
-
-
-
-if __name__ == "__main__":
-    a=QApplication(sys.argv)
-    oww=OWBaseWidget()
-    oww.show()
-    a.exec_()
-    oww.saveGlobalSettings()

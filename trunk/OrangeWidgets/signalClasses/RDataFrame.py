@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from RSessionThread import Rcommand
+from RSession import Rcommand
 from RList import *
 
 class RDataFrame(RList):

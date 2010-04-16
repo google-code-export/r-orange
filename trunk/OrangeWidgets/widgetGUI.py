@@ -4,16 +4,35 @@
 # A General Orange Widget, from which all the Orange Widgets are derived
 #
 
-from OWBaseWidget import *
 import redRGUI 
 from PyQt4 import QtWebKit
-import urllib
+import urllib, os
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
-# remove the try-except after reporting is ready for deployment
-import OWReport
 from datetime import date
 
-class OWWidget(OWBaseWidget):
+class widgetGUI(QMainWindow):
+    def __new__(cls, *arg, **args):
+        self = QMainWindow.__new__(cls)
+        
+        #print "arg", arg
+        #print "args: ", args
+        self.currentContexts = {}   # the "currentContexts" MUST be the first thing assigned to a widget
+        self._useContexts = 1       # do you want to use contexts
+        self._owInfo = 1            # currently disabled !!!
+        self._owWarning = 1         # do we want to see warnings
+        self._owError = 1           # do we want to see errors
+        self._owShowStatus = 0      # do we want to see warnings and errors in status bar area of the widget
+        self._guiElements = []      # used for automatic widget debugging
+
+        
+        for key in args:
+            if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_category", "_settingsFromSchema"]:
+                self.__dict__[key] = args[key]        # we cannot use __dict__.update(args) since we can have many other
+
+        return self
+
     def __init__(self, parent=None, signalManager=None, title="Orange Widget", 
     savePosition=True, wantGUIDialog = 0, resizingEnabled=1, **args):
         """
@@ -23,7 +42,18 @@ class OWWidget(OWBaseWidget):
             wantGraph - displays a save graph button or not
         """
 
-        OWBaseWidget.__init__(self, parent, signalManager, title,resizingEnabled=resizingEnabled, **args)
+        if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
+        else:               QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
+
+        # directories are better defined this way, otherwise .ini files get written in many places
+        #self.__dict__.update(orngEnviron.directoryNames)
+
+        self.setCaption(title.replace("&","")) # used for widget caption
+
+
+        self.progressBarHandler = None  # handler for progress bar events
+        self.processingHandler = None   # handler for processing events
+
 
         self.widgetStateHandler = None
         self.widgetState = {"Info":{}, "Warning":{}, "Error":{}}
@@ -143,6 +173,16 @@ class OWWidget(OWBaseWidget):
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
+    # uncomment this when you need to see which events occured
+    """
+    def event(self, e):
+        #eventDict = dict([(0, 'None'), (1, 'Timer'), (2, 'MouseButtonPress'), (3, 'MouseButtonRelease'), (4, 'MouseButtonDblClick'), (5, 'MouseMove'), (6, 'KeyPress'), (7, 'KeyRelease'), (8, 'FocusIn'), (9, 'FocusOut'), (10, 'Enter'), (11, 'Leave'), (12, 'Paint'), (13, 'Move'), (14, 'Resize'), (15, 'Create'), (16, 'Destroy'), (17, 'Show'), (18, 'Hide'), (19, 'Close'), (20, 'Quit'), (21, 'Reparent'), (22, 'ShowMinimized'), (23, 'ShowNormal'), (24, 'WindowActivate'), (25, 'WindowDeactivate'), (26, 'ShowToParent'), (27, 'HideToParent'), (28, 'ShowMaximized'), (30, 'Accel'), (31, 'Wheel'), (32, 'AccelAvailable'), (33, 'CaptionChange'), (34, 'IconChange'), (35, 'ParentFontChange'), (36, 'ApplicationFontChange'), (37, 'ParentPaletteChange'), (38, 'ApplicationPaletteChange'), (40, 'Clipboard'), (42, 'Speech'), (50, 'SockAct'), (51, 'AccelOverride'), (60, 'DragEnter'), (61, 'DragMove'), (62, 'DragLeave'), (63, 'Drop'), (64, 'DragResponse'), (70, 'ChildInserted'), (71, 'ChildRemoved'), (72, 'LayoutHint'), (73, 'ShowWindowRequest'), (80, 'ActivateControl'), (81, 'DeactivateControl'), (1000, 'User')])
+        eventDict = dict([(0, "None"), (130, "AccessibilityDescription"), (119, "AccessibilityHelp"), (86, "AccessibilityPrepare"), (114, "ActionAdded"), (113, "ActionChanged"), (115, "ActionRemoved"), (99, "ActivationChange"), (121, "ApplicationActivated"), (122, "ApplicationDeactivated"), (36, "ApplicationFontChange"), (37, "ApplicationLayoutDirectionChange"), (38, "ApplicationPaletteChange"), (35, "ApplicationWindowIconChange"), (68, "ChildAdded"), (69, "ChildPolished"), (71, "ChildRemoved"), (40, "Clipboard"), (19, "Close"), (82, "ContextMenu"), (52, "DeferredDelete"), (60, "DragEnter"), (62, "DragLeave"), (61, "DragMove"), (63, "Drop"), (98, "EnabledChange"), (10, "Enter"), (150, "EnterEditFocus"), (124, "EnterWhatsThisMode"), (116, "FileOpen"), (8, "FocusIn"), (9, "FocusOut"), (97, "FontChange"), (159, "GraphicsSceneContextMenu"), (164, "GraphicsSceneDragEnter"), (166, "GraphicsSceneDragLeave"), (165, "GraphicsSceneDragMove"), (167, "GraphicsSceneDrop"), (163, "GraphicsSceneHelp"), (160, "GraphicsSceneHoverEnter"), (162, "GraphicsSceneHoverLeave"), (161, "GraphicsSceneHoverMove"), (158, "GraphicsSceneMouseDoubleClick"), (155, "GraphicsSceneMouseMove"), (156, "GraphicsSceneMousePress"), (157, "GraphicsSceneMouseRelease"), (168, "GraphicsSceneWheel"), (18, "Hide"), (27, "HideToParent"), (127, "HoverEnter"), (128, "HoverLeave"), (129, "HoverMove"), (96, "IconDrag"), (101, "IconTextChange"), (83, "InputMethod"), (6, "KeyPress"), (7, "KeyRelease"), (89, "LanguageChange"), (90, "LayoutDirectionChange"), (76, "LayoutRequest"), (11, "Leave"), (151, "LeaveEditFocus"), (125, "LeaveWhatsThisMode"), (88, "LocaleChange"), (153, "MenubarUpdated"), (43, "MetaCall"), (102, "ModifiedChange"), (4, "MouseButtonDblClick"), (2, "MouseButtonPress"), (3, "MouseButtonRelease"), (5, "MouseMove"), (109, "MouseTrackingChange"), (13, "Move"), (12, "Paint"), (39, "PaletteChange"), (131, "ParentAboutToChange"), (21, "ParentChange"), (75, "Polish"), (74, "PolishRequest"), (123, "QueryWhatsThis"), (14, "Resize"), (117, "Shortcut"), (51, "ShortcutOverride"), (17, "Show"), (26, "ShowToParent"), (50, "SockAct"), (112, "StatusTip"), (100, "StyleChange"), (87, "TabletMove"), (92, "TabletPress"), (93, "TabletRelease"), (171, "TabletEnterProximity"), (172, "TabletLeaveProximity"), (1, "Timer"), (120, "ToolBarChange"), (110, "ToolTip"), (78, "UpdateLater"), (77, "UpdateRequest"), (111, "WhatsThis"), (118, "WhatsThisClicked"), (31, "Wheel"), (132, "WinEventAct"), (24, "WindowActivate"), (103, "WindowBlocked"), (25, "WindowDeactivate"), (34, "WindowIconChange"), (105, "WindowStateChange"), (33, "WindowTitleChange"), (104, "WindowUnblocked"), (126, "ZOrderChange"), (169, "KeyboardLayoutChange"), (170, "DynamicPropertyChange")])
+        if eventDict.has_key(e.type()):
+            print str(self.windowTitle()), eventDict[e.type()]
+        return QMainWindow.event(self, e)
+    """
+
     def printWidget(self, printer = None):
         ## establish a printer that will print the widget
 
@@ -185,9 +225,6 @@ class OWWidget(OWBaseWidget):
         else:
             self.leftDock.hide()
             self.windowState['leftDockState'] = False
-    
-        
-
 
     def updateDocumentationDock(self):
         print 'in updatedock right'
@@ -349,11 +386,11 @@ class OWWidget(OWBaseWidget):
 
 
     def setCaption(self, caption):
-        if self.parent != None and isinstance(self.parent, QTabWidget):
-            self.parent.setTabText(self.parent.indexOf(self), caption)
-        else:
-            self.captionTitle = caption     # we have to save caption title in case progressbar will change it
-            self.setWindowTitle(caption)
+        # if self.parent != None and isinstance(self.parent, QTabWidget):
+            # self.parent.setTabText(self.parent.indexOf(self), caption)
+        # else:
+        self.captionTitle = caption     # we have to save caption title in case progressbar will change it
+        self.setWindowTitle(caption)
 
 
     def setWidgetStateHandler(self, handler):
@@ -411,10 +448,98 @@ class OWWidget(OWBaseWidget):
         if changed:
             if self.widgetStateHandler:
                 self.widgetStateHandler()
-            elif text: # and stateType != "Info":
-                self.printEvent(stateType + " - " + text)
+            # elif text: # and stateType != "Info":
+                # self.printEvent(stateType + " - " + text)
             #qApp.processEvents()
         return changed
+
+    def openWidgetHelp(self):
+        if self.orangeDir:
+#            try:
+#                import win32help
+#                if win32help.HtmlHelp(0, "%s/doc/catalog.chm::/catalog/%s/%s.htm" % (orangedir, self._category, self.__class__.__name__[2:]), win32help.HH_DISPLAY_TOPIC):
+#                    return
+#            except:
+#                pass
+
+#===============================================================================
+#            from PyQt4 import QtWebKit
+#            qApp.helpWindow = helpWindow = QtWebKit.QWebView()
+#            print "file://%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:])
+#            helpWindow.load(QUrl("file:///%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:])))
+#            helpWindow.show()
+#===============================================================================
+            qApp.canvasDlg.helpWindow.showHelpFor(self, True)
+            return
+            try:
+                import webbrowser
+                webbrowser.open("file://%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:]), 0, 1)
+                return
+            except:
+                pass
+
+        try:
+            import webbrowser
+            webbrowser.open("http://www.ailab.si/orange/doc/widgets/catalog/%s/%s.htm" % (self._category, self.__class__.__name__[2:]))
+            return
+        except:
+            pass
+    
+    def keyPressEvent(self, e):
+        if e.key() in (Qt.Key_Help, Qt.Key_F1):
+            self.openWidgetHelp()
+#            e.ignore()
+        else:
+            QMainWindow.keyPressEvent(self, e)
+
+    def focusInEvent(self, *ev):
+        #print "focus in"
+        #if qApp.canvasDlg.settings["synchronizeHelp"]:  on ubuntu: pops up help window on first widget focus for every widget   
+        #    qApp.canvasDlg.helpWindow.showHelpFor(self, True)
+        QMainWindow.focusInEvent(self, *ev)
+        
+    # ############################################
+    # PROGRESS BAR FUNCTIONS
+    def progressBarInit(self):
+        self.progressBarValue = 0
+        # self.startTime = time.time()
+        # self.setWindowTitle(self.captionTitle + " (0% complete)")
+        if self.progressBarHandler:
+            self.progressBarHandler(self, 0)
+
+    def progressBarSet(self, value):
+        # if value > 0:
+        self.progressBarValue = value
+            # usedTime = max(1, time.time() - self.startTime)
+            # totalTime = (100.0*usedTime)/float(value)
+            # remainingTime = max(0, totalTime - usedTime)
+            # h = int(remainingTime/3600)
+            # min = int((remainingTime - h*3600)/60)
+            # sec = int(remainingTime - h*3600 - min*60)
+            # if h > 0: text = "%(h)d:%(min)02d:%(sec)02d" % vars()
+            # else:     text = "%(min)d:%(sec)02d" % vars()
+            # self.setWindowTitle(self.captionTitle + " (%(value).2f%% complete, remaining time: %(text)s)" % vars())
+        # else:
+            # self.setWindowTitle(self.captionTitle + " (0% complete)" )
+        if self.progressBarHandler: self.progressBarHandler(self, value)
+        qApp.processEvents()
+
+    def progressBarAdvance(self, value):
+        self.progressBarSet(self.progressBarValue+value)
+
+    def progressBarFinished(self):
+        # self.setWindowTitle(self.captionTitle)
+        if self.progressBarHandler: self.progressBarHandler(self, 101)
+
+    # handler must be a function, that receives 2 arguments. First is the widget instance, the second is the value between -1 and 101
+    def setProgressBarHandler(self, handler):
+        self.progressBarHandler = handler
+
+    def setProcessingHandler(self, handler):
+        self.processingHandler = handler
+        
+
+
 
 
 if __name__ == "__main__":
@@ -422,3 +547,4 @@ if __name__ == "__main__":
     ow = OWWidget()
     ow.show()
     a.exec_()
+    ow.saveGlobalSettings()

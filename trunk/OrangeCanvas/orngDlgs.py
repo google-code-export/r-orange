@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from orngCanvasItems import MyCanvasText
 import OWGUI, sys, os 
-#from RSession import *
+import RSession
 import redRGUI
 
 # this class is needed by signalDialog to show widgets and lines
@@ -554,10 +554,8 @@ class CanvasOptionsDlg(QDialog):
         # R Settings Tab
         rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
         # get a data frame (dict) of r libraries
-        import RSession
-        RSession = RSession.RSession()
 
-        self.libs = RSession.R('getCRANmirrors()')
+        self.libs = RSession.Rcommand('getCRANmirrors()')
         # place a listBox in the widget and fill it with a list of mirrors
         self.libListBox = redRGUI.listBox(rlibrariesBox, label = 'Mirrors', items = self.libs['Name'], callback = self.setMirror)
         self.libInfo = redRGUI.widgetLabel(rlibrariesBox, '')
@@ -567,9 +565,7 @@ class CanvasOptionsDlg(QDialog):
         # print 'setMirror'
         item = self.libListBox.currentRow()
         self.settings['CRANrepos'] = str(self.libs['URL'][item])
-        import RSession
-        RSession = RSession.RSession()
-        RSession.R('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')
+        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')
         print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
     def accept(self):

@@ -4,360 +4,125 @@
 # Should include all the functionally need to connect Orange to R 
 #
 
-from OWWidget import *
-from RSession import *
-import redRGUI 
-import inspect, os
-import time
-import numpy
-import RvarClasses
-# import RvarClasses
-import threading, sys
-import pprint
-import cPickle
-import re
+from widgetGUI import *
+from widgetSignals import *
+import RSession
+from session import *
+from PyQt4.QtGui import *
 
-pp = pprint.PrettyPrinter(indent=4)
-
-
-class OWRpy(OWWidget,RSession):   
+class OWRpy(widgetGUI,widgetSignals,session):   
+    uniqueWidgetNumber = 0
     
     def __init__(self,parent=None, signalManager=None, 
     title="R Widget", wantGUIDialog = 0, **args):
-        
-        OWWidget.__init__(self, parent=parent, signalManager=signalManager, title=title,wantGUIDialog=wantGUIDialog, **args)
-        RSession.__init__(self)
-        
-        #The class variable is used to create the unique names in R
+        widgetGUI.__init__(self, parent=parent, signalManager=signalManager, title=title,wantGUIDialog=wantGUIDialog, **args)
+        widgetSignals.__init__(self, parent, signalManager)
+        session.__init__(self)
         
         
-        self.redRGUIObjects = {}
-        #collect the sent items
-        self.sentItems = []
+        OWRpy.uniqueWidgetNumber += 1
+        ctime = str(time.time())
+        self.variable_suffix = '_' + str(OWRpy.uniqueWidgetNumber) + '_' + ctime
+        self.Rvariables = {}
+        self.setRvariableNames(['title'])
+        self.requiredRLibraries = []
+        self.device = {}
+        self.Rhistory = '<code>'
+        self.packagesLoaded = 0
         
-        #dont save these variables
         
-        self.defaultGlobalSettingsList = ['windowState']
-        self.dontSaveList.extend(self.defaultGlobalSettingsList)
-        self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList'])
         
-    def rSend(self, name, variable, updateSignalProcessingManager = 1):
-        print 'send'
-        # funciton for upclassing variables that are send as dictionaries
-        for i in self.outputs:
-            #print 'i', i
-            if i[0] == name: # this is the channel that you are sending from 
-                #print 'type',name, variable,type(variable)
-                if type(variable) == dict: # if we havent converted this already
-                    #print 'in send dict', issubclass(i[1], RvarClasses.RDataFrame)
-                    #print i[1]
-                    print '\n'*5
-                    print '='*60
-                    print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
-                    print '='*60
-                    print '\n'*5
-                    if issubclass(i[1], RvarClasses.RDataFrame): 
-                        newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
-                        newvariable['dictAttrs'] = variable
-                    else:
-                        newvariable = i[1](data = variable['data'], parent = variable['parent'])
-                        newvariable['dictAttrs'] = variable
-                    variable = newvariable
-                break
-        try:
-            print 'send==============',name 
-            print 'variable',variable, variable.__class__
-            self.send(name, variable)
-            # if updateSignalProcessingManager:
-                #try:
-            self.removeInformation(id = 'dataNotSent')
-            self.sentItems.append((name, variable))
-            self.status.setText('Data sent.')
-                #except: 
-                #    print 'Failed to remove information', self.widgetState
-        except:
-            self.setError(id = 'dataNotSent', text = 'Failed to send data')
-    
-    def getSettings(self, alsoContexts = True):
-        print 'moving to save'
-        import re
-        settings = {}
-        allAtts = self.__dict__
-        self.dontSaveList.extend(RSession().__dict__.keys())
-        #self.dontSaveList.extend(OWWidget().__dict__.keys())
-        # print 'all atts:', allAtts
-        print 'dontSaveList', self.dontSaveList
-        # try:
-        self.progressBarInit()
-        i = 0
-        for att in allAtts:
-            if att in self.dontSaveList:
-                continue
-            i += 1
-            self.progressBarAdvance(i)
-            print 'frist att: ' + att
-            if re.search('^_', att):
-                continue
-            var = getattr(self, att)
-            settings[att] = self.returnSettings(var)
-        # except:
-            # print 'Exception occured in saving settings'
-            # print sys.exc_info()[0]
-        settings['_customSettings'] = self.saveCustomSettings()
-        
-        #try:
-        if self.inputs and len(self.inputs) != 0:
-            ainputs = []
-            for (a, b, c) in [input for input in self.inputs]:
-                
-                if issubclass(b, RvarClasses.RDataFrame):
-                    bc = 'Data Frame'
-                elif issubclass(b, RvarClasses.RVector):
-                    bc = 'Vector'
-                elif issubclass(b, RvarClasses.RList):
-                    bc = 'List'
-                else:
-                    bc = 'Variable'
-                ainputs.append((a, bc))
-            settings['inputs'] = ainputs
-        else: settings['inputs'] = None
-        if self.outputs and len(self.outputs) != 0:
-            aoutputs = []
-            for (a,b) in [output for output in self.outputs]:
-                # print 'Output type', type(b)
-                if issubclass(b, RvarClasses.RDataFrame):
-                    bc = 'Data Frame'
-                elif issubclass(b, RvarClasses.RVector):
-                    bc = 'Vector'
-                elif issubclass(b, RvarClasses.RList):
-                    bc = 'List'
-                else:
-                    bc = 'Variable'
-                aoutputs.append((a, bc))
-            settings['outputs'] = aoutputs
-        else: settings['outputs'] = None
-        #except:
-            #print 'Saving inputs and outputs failed.  This widget will not be reloaded by a dummyWidget!'
-        #print str(settings) + ' (OWRpy.py)'
-        #print 'My settings are ' + str(settings)
-        self.progressBarFinished()
-        return settings
-    def saveCustomSettings(self):
-        pass
-    def isPickleable(self,d):
-        import re
-        #if isinstance(d,QObject):
-        # print str(type(d))
-        if re.search('PyQt4|OWGUIEx|OWToolbars',str(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
-            # print 'QT object NOT Pickleable'
-            return False
-        elif type(d) in [list, dict, tuple]:
-            #ok = True
-            if type(d) in [list, tuple]:
-                for i in d:
-                    if self.isPickleable(i) == False:
-                        #ok = False
-                        return False
-                return True
-            elif type(d) in [dict]:
-                for k in d.keys():
-                    if self.isPickleable(d[k]) == False:
-                        #ok = False
-                        return False
-                return True
-        elif type(d) in [type(None), str, int, float, bool, numpy.float64]:
-            return True
-        elif isinstance(d, RvarClasses.RVariable):
-            return True
-        else: 
-            print 'Type ' + str(d) + ' is not supported at the moment..'
-            print 
-            return False
-        
-            
-    def returnSettings(self,var):
-        settings = {}
-        if var.__class__.__name__ in redRGUI.qtWidgets:
-            #print 'getting gui settings for:' + att + '\n\n'
-            try:
-                v = {}
-                v = var.getSettings()
-                if v == None:
-                    v = var.getDefaultState()
-                else:
-                    v.update(var.getDefaultState())
-            except: 
-                v = var.getDefaultState()
-                import traceback
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60        
 
-            settings['redRGUIObject'] = {}
-            if v: settings['redRGUIObject'] = v
-        elif self.isPickleable(var):
-            settings['pythonObject'] =  var
-        #elif type(var) in [str, int, float, bool]:
-        #   settings = var
-        elif type(var) in [list]:
-           settings['list'] = []
-           for i in var:
-               settings['list'].append(self.returnSettings(i))
-        elif type(var) is dict:
-           #print var
-           settings['dict'] = {}
-           for k,v in var.iteritems():
-               settings['dict'][k] = self.returnSettings(v)
-        else:
-            settings = None
-        return settings
-    def setSettings(self,settings):
-        # print 'on set settings'
-        self.redRGUIObjects = {}
-        for k,v in settings.iteritems():
-            if k in ['inputs', 'outputs']: continue
-            if v == None:
-                continue
-            # elif k =='_customSettings':
-                # self.__setattr__(k, v)
-            elif 'pythonObject' in v.keys(): 
-                # print k
-                self.__setattr__(k, v['pythonObject'])
-            else:
-                self.redRGUIObjects[k] = v;
+    def setRvariableNames(self,names):
         
-    def onLoadSavedSession(self):
-        # print 'in onLoadSavedSession'
+        #names.append('loadSavedSession')
+        for x in names:
+            self.Rvariables[x] = x + self.variable_suffix
+    def makeCM(self, Variable, Parent):
+        if self.R('rownames('+Parent+')') != 'NULL':
+            self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
+        else:
+            self.R(Variable+'<-data.frame(row.names = c('+','.join(range(1, int(self.R('length('+Parent+'[,1])'))))+'))')
+    def addToCM(self, colname = 'tmepColname', CM = None, values = None):
+        if CM == None: return
+        if values == None: return
+        if type(values) == type([]):
+            values = 'c('+','.join(values)+')'
+        self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
+
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
         qApp.setOverrideCursor(Qt.WaitCursor)
-        self.progressBarInit()
-        i = 0
-        for k,v in self.redRGUIObjects.iteritems():
-            # print str(k)+ ' in onLoadSavedSession widget attribute'
-            # pp.pprint(v)
-            i += 1
-            self.progressBarAdvance(i)
-            if not hasattr(self,k):
-                continue
+        #try:
+        if processingNotice:
+            self.status.setText('Processing Started...')
+        histquery = query
+        histquery = histquery.replace('<', '&lt;') #convert for html
+        histquery = histquery.replace('>', '&gt;')
+        histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
+        self.Rhistory += histquery + '</code><br><code>'
+        commandOutput = RSession.Rcommand(query = query, processingNotice = processingNotice, 
+        silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
+        
+        #except: 
+        #    print 'R exception occurred'
+        self.processing = False
+        if processingNotice:
+            self.status.setText('Processing complete.')
+            #self.progressBarFinished()
+        if not silent:
             try:
-                if 'redRGUIObject' in v.keys():
-                    getattr(self, k).loadSettings(v['redRGUIObject'])
-                    getattr(self, k).setDefaultState(v['redRGUIObject'])
-                
-                elif 'dict' in v.keys():
-                    var = getattr(self, k)
-                    # print 'dict',len(var),len(v['dict'])
-                    if len(var) != len(v['dict']): continue
-                    self.recursiveSetSetting(var,v['dict'])
-                elif 'list' in v.keys():
-                    var = getattr(self, k)
-                    # print 'list',len(var),len(v['list'])
-                    if len(var) != len(v['list']): continue
-                    self.recursiveSetSetting(var,v['list'])
-            except:
-                print 'Error occured in loading data self.'+str(k)
-                
-                pp.pprint(v)
-                import traceback,sys
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60        
-            
-        self.progressBarAdvance(i+1)
-        if '_customSettings' in self.redRGUIObjects.keys():
-            self.loadCustomSettings(self.redRGUIObjects['_customSettings'])
-        else:
-            self.loadCustomSettings(self.redRGUIObjects)
-        
-        for (name, data) in self.sentItems:
-            self.send(name, data)
-        
+                self.ROutput.setCursorToEnd()
+                self.ROutput.append(str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
+            except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
-        self.progressBarFinished()
-
-    def recursiveSetSetting(self,var,d):
-        # print 'recursiveSetSetting'
-        
-        if type(var) in [list,tuple]:
-            for k in xrange(len(d)):
-                if type(d[k]) is dict and 'redRGUIObject' in d[k].keys():
-                    var[k].loadSettings(d[k]['redRGUIObject'])
-                    var[k].setDefaultState(d[k]['redRGUIObject'])
-                else:
-                    self.recursiveSetSetting(var[k],d[k])
-        elif type(var) is dict:
-            for k,v in d.iteritems():
-                if type(v) is dict and 'redRGUIObject' in v.keys():
-                    var[k].loadSettings(v['redRGUIObject'])
-                    var[k].setDefaultState(v['redRGUIObject'])
-                else:
-                    self.recursiveSetSetting(var[k],d[k])
-        
-    def loadCustomSettings(self,settings=None):
-        pass
-
-    def saveSettingsStr(self):
-        # print 'saveSettingsStr called'
-        settings = self.getSettings()
-        try:
-            return cPickle.dumps(settings)
-        except: 
-            print "ERROR in Pickle", sys.exc_info()[0] 
-            pass
-
-    def loadSettings(self, file = None):
-        
-        file = self.getGlobalSettingsFile(file)
-        settings = {}
-        if file:
-            try:
-                file = open(file, "r")
-                settings = cPickle.load(file)
-            except:
-                settings = None
-
-        if hasattr(self, "_settingsFromSchema"):
-            if settings: settings.update(self._settingsFromSchema)
-            else:        settings = self._settingsFromSchema
-
-        # can't close everything into one big try-except since this would mask all errors in the below code
-        if settings:
-            # if hasattr(self, "settingsList"):
-            self.setSettings(settings)
-
+        return commandOutput
+    def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
+        #print str(qApp.canvasDlg.settings)
+        if file == None and ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "PDF (*.PDF)"))
+        elif file == None: 
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "PDF (*.PDF)"))
+        if file.isEmpty(): return
+        if file: qApp.canvasDlg.settings['HomeFolder'] = os.path.split(file)[0]
+        self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
+        self.R(query, 'setRData')
+        self.R('dev.off()')
+        self.status.setText('File saved as \"'+file+'\"')
+        self.notes.setCursorToEnd()
+        self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
-        
-#############widget specific settings#####################
-
-    def getGlobalSettingsFile(self, file=None):
-        # print 'getSettingsFile in owbasewidget'
-        if file==None:
-            file = os.path.join(self.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
-        #print 'getSettingsFile', file
-        return file
-
-    
-    # save global settings
-    def saveGlobalSettings(self, file = None):
-        print 'owrpy global save settings'
-        settings = {}
-        
-        if hasattr(self, "globalSettingsList"):
-            self.globalSettingsList.extend(self.defaultGlobalSettingsList)
+    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
+        # check that a device is currently used by this widget
+        # print 'the devNumber is'+str(devNumber)
+        # print str(self.device)
+        if str(devNumber) in self.device:
+            print 'dev exists'
+            actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
+            if actdev == 1: #there were no decives present and a new one has been created.
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+            if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
+                print 'dev not in R'
+                self.R('dev.off()')
+                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(RSession.uniqueWidgetNumber), 'setRData') # starts a new device 
+                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+                print str(self.device)
         else:
-            self.globalSettingsList =  self.defaultGlobalSettingsList
-            
-        for name in self.globalSettingsList:
-            try:
-                settings[name] = {}
-                settings[name]['pythonObject'] =  getattr(self,name)
-            except:
-                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-        if settings:
-            file = self.getGlobalSettingsFile(file)
-            file = open(file, "w")
-            cPickle.dump(settings, file)
+            print 'make new dev for this'
+            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(RSession.uniqueWidgetNumber), 'setRData') # starts a new device 
+            if type(mfrow) == list:
+                self.R('par(mfrow = c('+str(mfrow[0])+','+str(mfrow[1])+'))')
+            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
+        self.R(query, 'setRData')
+        
+        
 
-#############widget specific settings#####################
+    def require_librarys(self, librarys, repository = None):
+        if not repository and 'CRANrepos' in qApp.canvasDlg.settings.keys():
+            repository = qApp.canvasDlg.settings['CRANrepos']
+        
+        print 'Loading required librarys'
+        RSession.require_librarys(librarys = librarys, repository = repository)
+        self.requiredRLibraries.extend(librarys)
 
     def onDeleteWidget(self, suppress = 0):
         if suppress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
