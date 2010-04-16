@@ -13,7 +13,6 @@ class kruskal_test(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.require_librarys(["stats"]) 
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
@@ -30,6 +29,7 @@ class kruskal_test(OWRpy):
         redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
+        self.require_librarys(["stats"]) 
         self.RoutputWindow.clear()
         self.status.setText('New data recieved')
         if data:

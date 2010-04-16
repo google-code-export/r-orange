@@ -17,8 +17,6 @@ class runSigPathway(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
-        self.require_librarys(['sigPathway'])
-        
         
         self.vs = self.variable_suffix
         self.setRvariableNames(['data', 'affy', 'pAnnots',  'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType', 'sigpath'])
@@ -40,7 +38,7 @@ class runSigPathway(OWRpy):
         self.loadSettings()
         self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Pathway Annotation List", RvarClasses.RDataFrame, self.processPathAnnot), ('Phenotype Vector', RvarClasses.RVector, self.phenotypeConnected)]
         self.outputs = [("Pathway Analysis File", RvarClasses.RDataFrame), ("Pathway Annotation List", RvarClasses.RDataFrame), ("Pathway List", RvarClasses.RDataFrame)]
-        #GUI
+#GUI
         mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         leftArea = redRGUI.widgetBox(mainArea, sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding))
         rightArea = redRGUI.widgetBox(mainArea)
@@ -78,7 +76,7 @@ class runSigPathway(OWRpy):
         self.infob.setText('Annotation file loaded')
 
     def process(self, data): #collect a preprocessed file for pathway analysis
-        
+        self.require_librarys(['sigPathway'])
         if data:
             try:
                 self.removeWarning(id = 'NoData')

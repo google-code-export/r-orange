@@ -774,9 +774,4 @@ def main(argv = None):
     app.closeAllWindows()
 
 if __name__ == "__main__":
-    try:
-        import psyco
-        psyco.full()
-    except:
-        pass
     sys.exit(main())

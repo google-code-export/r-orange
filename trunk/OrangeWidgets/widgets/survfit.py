@@ -16,7 +16,6 @@ class survfit(OWRpy):
         
         self.setRvariableNames(["survfit"])
         self.data = {}
-        self.require_librarys(['survival'])
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", RvarClasses.RVariable, self.processdata), ('Model Fit', SurvivalClasses.SurvFit, self.processfit)]
@@ -31,7 +30,7 @@ class survfit(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaLeft, "Report", callback = self.sendReport)
     def processfit(self, data):
-        
+        self.require_librarys(['survival'])
         if data:
             self.times.clear()
             self.event.clear()
@@ -41,7 +40,7 @@ class survfit(OWRpy):
             self.data["data"] = self.Rvariables["survfit"]
             self.rSend("survfit Output", self.data)
     def processdata(self, data):
-        
+        self.require_librarys(["survival"]) 
         if data:
             self.RFunctionParam_data=data["data"]
             colnames = self.R('colnames('+self.RFunctionParam_data+')')

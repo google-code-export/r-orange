@@ -52,6 +52,7 @@ class OWRpy(widgetGUI,widgetSignals,session):
         self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
 
     def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
+        
         qApp.setOverrideCursor(Qt.WaitCursor)
         #try:
         if processingNotice:
@@ -128,6 +129,7 @@ class OWRpy(widgetGUI,widgetSignals,session):
         
 
     def require_librarys(self, librarys, repository = None):
+        qApp.setOverrideCursor(Qt.WaitCursor)
         if not repository and 'CRANrepos' in qApp.canvasDlg.settings.keys():
             repository = qApp.canvasDlg.settings['CRANrepos']
         
@@ -141,7 +143,7 @@ class OWRpy(widgetGUI,widgetSignals,session):
                 break
         RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
-
+        qApp.restoreOverrideCursor()
     def onDeleteWidget(self, suppress = 0):
         if suppress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
             return

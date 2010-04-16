@@ -13,7 +13,6 @@ class ED(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["ED"])
         self.data = {}
-        self.require_librarys(["drc"]) 
         self.loadSettings() 
         self.RFunctionParam_object = ''
         self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
@@ -30,7 +29,7 @@ class ED(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
-        
+        self.require_librarys(["drc"]) 
         if data:
             self.RFunctionParam_object=data["data"]
             self.data = data.copy()

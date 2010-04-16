@@ -15,7 +15,6 @@ class Melt_DF(OWRpy):
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
-        self.require_librarys(['reshape'])
         self.loadSettings()
         self.inputs = [("data", RvarClasses.RDataFrame, self.processdata)]
         self.outputs = [("melt.data.frame Output", RvarClasses.RDataFrame)]
@@ -32,7 +31,7 @@ class Melt_DF(OWRpy):
         self.commitFunction()
     def processdata(self, data):
         if data:
-            
+            self.require_librarys(['reshape'])
             self.RFunctionParam_data=data["data"]
             self.data = data.copy()
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
@@ -41,6 +40,7 @@ class Melt_DF(OWRpy):
 
             self.commitFunction()
     def commitFunction(self):
+        self.require_librarys(['reshape'])
         if self.RFunctionParam_na_rm == 0: pna = 'TRUE'
         else: pna = 'FALSE'
         if self.RFunctionParam_data == '': return

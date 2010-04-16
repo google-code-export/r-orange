@@ -15,7 +15,6 @@ class multdrc(OWRpy):
         self.setRvariableNames(["multdrc"])
         self.data = {}
         self.colNames = []
-        self.require_librarys(["drc"]) 
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.RFunctionParam_formula = ''
@@ -49,7 +48,7 @@ class multdrc(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.anovaTextArea = redRGUI.textEdit(self.controlArea)
     def processdata(self, data):
-
+        self.require_librarys(["drc"]) 
         if data:
             self.RFunctionParam_data=data["data"]
             self.data = data.copy()

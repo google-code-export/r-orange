@@ -23,7 +23,6 @@ class plotAffy(OWRpy):
         self.qcsProcessed = 0
         self.data = ''
         self.dataset = {}
-        self.require_librarys(['affy'])
         self.loadSettings()
 
         #set R variable names
@@ -50,7 +49,7 @@ class plotAffy(OWRpy):
         #testlineButton = redRGUI.button(optionsa, self, "test line edit", callback = self.test, width = 200)
         
         
-    def loadCustomSettings(self,settings):
+    def loadCustomSettings(self,settings=None):
         print 'load affy plot'
         self.processSignals()
         
@@ -66,7 +65,7 @@ class plotAffy(OWRpy):
     
     def process(self):
         #required librarys
-        
+        self.require_librarys(['affy'])
         if self.data != '':
             
             #try: 
@@ -80,7 +79,7 @@ class plotAffy(OWRpy):
     
     def myboxplot(self):
         #required librarys
-        
+        self.require_librarys(['affy'])
         if self.data == '':return
         #try:
         self.Rplot('boxplot('+self.data+')')
