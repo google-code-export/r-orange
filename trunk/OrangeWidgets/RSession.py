@@ -16,12 +16,11 @@ from PyQt4.QtCore import *
 
 def Rcommand(query, processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
     rst = RSessionThread()
-    
     output = None
     
     if not silent:
         print query
-        
+
     try:
         output = rst.run(query)
     except rpy.RPyRException as inst:
@@ -91,11 +90,16 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                     print 'Library load failed'
         
 class RSessionThread(QThread):
+    queue = 0
     def __init__(self, parent = None):
         QThread.__init__(self, None)
         #self.command = ''
     def run(self, query):
-        #print 'asdf11 +' + query
+        if RSessionThread.queue > 0:
+            print 'multiple concurrent calls to R\n'*10
+            return
+        RSessionThread.queue +=1
+        #print 'asdf11 +' + str(RSessionThread.queue)
         output = rpy.r(query)
-
+        RSessionThread.queue -=1
         return output
