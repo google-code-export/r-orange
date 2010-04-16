@@ -47,21 +47,21 @@ class rViewer(OWRpy):
             elif dims[0] > 5:
                 text = self.data.getFullOutput(subsetting = '[1:5,]')
             elif dims[1] > 5:
-                text = seld.data.getFullOutput(subsetting = '[,1:5]')
+                text = self.data.getFullOutput(subsetting = '[,1:5]')
             else:
-                text = seld.data.getFullOutput(subsetting = '')
+                text = self.data.getFullOutput(subsetting = '')
         elif self.data.getClass_data() in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked():
             dims = self.data.getDims_data()
             if dims[0] > 5:
                 text = self.data.getFullOutput(subsetting = '[1:5,]')#only need to see the first 5 rows of the data.
             else:
-                text = seld.data.getFullOutput(subsetting = '')
+                text = self.data.getFullOutput(subsetting = '')
         elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Columns' not in self.showAll.getChecked():
             dims = self.R('dim('+self.RFunctionParam_data+')')
             if dims[1] > 5:
                 text = self.data.getFullOutput(subsetting = '[,1:5]')#only need to see the first 5 cols of the data.
             else:
-                text = seld.data.getFullOutput(subsetting = '')
+                text = self.data.getFullOutput(subsetting = '')
         else:
             text = self.data.getFullOutput(subsetting = '')
         self.RoutputWindow.clear()

@@ -1,11 +1,13 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSessionThread import Rcommand
-from RList import RList
+from RList import *
 
 class RDataFrame(RList):
-    def __init__(self, data, parent = None, cm = None):
-        RList.__init__(self, data = data, parent = parent)
+    def __init__(self, data, parent = None, cm = None, checkVal = True):
+        RList.__init__(self, data = data, parent = parent, checkVal = False)
+        if checkVal and self.getClass_data() != 'data.frame':
+            raise Exception # there this isn't the right kind of data for me to get !!!!!
         if cm: 
             self.cm = cm
         else: # we only need to do this if a cm was not provided for us.
@@ -19,6 +21,26 @@ class RDataFrame(RList):
                 else:
                     self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1, length('+self.data+'[1,]))))')
         self.cm = 'cm_'+self.data
+        
+    def convertToClass(self, varClass):
+        if varClass == RList:
+            return self._convertToList()
+        elif varClass == RVariable:
+            return self._convertToVariable()
+        else:
+            raise Exception
+    def _convertToList(self):
+        newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
+        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs['cm'] = self.cm
+        return newData
+        
+    def _convertToVariable(self):
+        newData = RVariable(data = self.data, parent = self.parent)
+        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs['cm'] = self.cm
+        return newData
+        
     def copy(self):
         newVariable = RDataFrame(self.data, self.parent, self.cm)
         newVariable['dictAttrs'] = self.dictAttrs

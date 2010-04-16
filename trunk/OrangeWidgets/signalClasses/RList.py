@@ -3,9 +3,10 @@ from PyQt4.QtGui import *
 from RSessionThread import Rcommand
 from RvarClasses import RVariable
 class RList(RVariable):
-    def __init__(self, data, parent = None):
-        RVariable.__init__(self, data = data, parent = parent)
-        
+    def __init__(self, data, parent = None, checkVal = True):
+        RVariable.__init__(self, data = data, parent = parent, checkVal = False)
+        if checkVal and self.getClass_data() != 'list':
+            raise Exception
     def copy(self):
         newVariable = RList(self.data, self.parent)
         newVariable['dictAttrs'] = self.dictAttrs
@@ -18,6 +19,16 @@ class RList(RVariable):
         text += 'R Parent Variable Value: '+self.getAttrOutput_data('parent', subsetting)+'\n\n'
         text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
         return text
+    def convertToClass(self, varClass):
+        if varClass == RVariable:
+            return self._convertToVariable()
+        else:
+            raise Exception
+    def _convertToVariable(self):
+        newData = RVariable(data = self.data, parent = self.parent)
+        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs['cm'] = self.cm
+        return newData
     def names_call(self):
         return 'names('+self.data+')'
     def names_data(self):
