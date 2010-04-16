@@ -110,8 +110,6 @@ class RedRScatterplot(OWRpy):
     def gotX(self, data):
         if data:
             self.data = data['data']
-            if 'parent' not in data:
-                data['parent'] = data['data']
             self.parent = data['parent']
             self.dataParent = data.copy()
 
@@ -119,18 +117,16 @@ class RedRScatterplot(OWRpy):
             self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
             self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
             cmColNames = self.R('colnames('+self.cm+')')
-            #print cmColNames
+
             if type(cmColNames) == type(''): cmColNames = [cmColNames]
             if cmColNames == 'NULL': cmColNames = []
-            #print cmColNames
+
             cmColNames.insert(0, ' ')
-            # self.subsetCMSelector.update(cmColNames)
-            # print cmColNames
             cmColNames.extend(self.R('colnames('+self.data+')'))
             self.paintCMSelector.update(cmColNames)
             print cmColNames
 
-            # set some of the plot data
+
             self.xColumnSelector.update(self.R('colnames('+self.data+')'))
             self.yColumnSelector.update(self.R('colnames('+self.data+')'))
             

@@ -9,7 +9,7 @@ class RList(RVariable):
             raise Exception
     def copy(self):
         newVariable = RList(self.data, self.parent)
-        newVariable['dictAttrs'] = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs
         return newVariable
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
@@ -25,10 +25,10 @@ class RList(RVariable):
         else:
             raise Exception
     def _convertToVariable(self):
-        newData = RVariable(data = self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
-        newData.dictAttrs['cm'] = self.cm
-        return newData
+        # newData = RVariable(data = self.data, parent = self.parent)
+        # newData.dictAttrs = self.dictAttrs
+        # newData.dictAttrs['cm'] = self.cm
+        return self.copy()
     def names_call(self):
         return 'names('+self.data+')'
     def names_data(self):

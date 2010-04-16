@@ -88,12 +88,10 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         print self.rowcolBox.getChecked()
         if self.dataParent: self.setWidget(self.dataParent)
     def setSubsettingVector(self, data):
-        if 'data' in data:
-            self.subOnAttachedButton.setEnabled(True)
-            self.ssv = data['data']
-            self.ssvdata = data
-        else:
-            return
+        if data == None: return
+        self.subOnAttachedButton.setEnabled(True)
+        self.ssv = data['data']
+        self.ssvdata = data
         
     def subOnAttached(self):
         if self.data == None or self.data == '': return

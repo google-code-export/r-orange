@@ -50,14 +50,17 @@ class ListSelector(OWRpy):
         print 'myclass',myclass
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
-            self.rSend('R Data Frame', RvarClasses.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm']))
+            newData = RvarClasses.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
+            self.rSend('R Data Frame', newData)
             print 'Sent Data Frame'
         elif myclass == 'list':
-            #self.rSend('R List', {'data':self.Rvariables['listelement']})
-            self.rSend('R List',RvarClasses.RList(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement']))
+            newData = RvarClasses.RList(data = self.Rvariables['listelement'])
+            self.rSend('R List', newData)
             print 'Sent List'
-        elif myclass in ['vector','character','factor','numeric','integer']:
-            self.rSend('R Vector',RvarClasses.RVector(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm']))
+        elif myclass in ['vector', 'character', 'factor', 'logical']:
+            newData = RvarClasses.RVector(data = self.Rvariables['listelement'])
+            self.rSend('R Vector', newData)
             print 'Sent Vector'
-            
-            
+        else:
+            newData = RvarClasses.RVariable(data = self.Rvariables['listelement'])
+            self.rSend('R Variable', newData)

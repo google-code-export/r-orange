@@ -14,7 +14,7 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         self.parent = parent
         self.dictAttrs = {}
         self.R = Rcommand
-        
+        self.reserved = ['data', 'parent', 'R', 'dictAttrs']
     def __getitem__(self, item):
         try:
             attr = getattr(self, item)
@@ -26,6 +26,8 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         return attr
     
     def __setitem__(self, item, value):
+        if item in self.reserved:
+            raise Exception
         self.dictAttrs[item] = value
      
     def keys(self):
@@ -36,15 +38,15 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
     def getClass_data(self):
         return self.R(self.getClass_call(), silent = True)
         
-    def plotObject(self, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
-        try:
-            query = 'plot('+self.data+')'
-            self.Rplot(query = query, dwidth = dwidth, dheight = dheight, devNumber = devNumber, mfrow = mfrow)
-        except:
-            print 'Exception occured'
+    # def plotObject(self, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
+        # try:
+            # query = 'plot('+self.data+')'
+            # self.Rplot(query = query, dwidth = dwidth, dheight = dheight, devNumber = devNumber, mfrow = mfrow)
+        # except:
+            # print 'Exception occured'
     def copy(self):
         newVariable = RVariable(self.data, self.parent)
-        newVariable['dictAttrs'] = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs
         return newVariable
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'

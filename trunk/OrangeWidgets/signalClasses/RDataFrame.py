@@ -9,19 +9,22 @@ class RDataFrame(RList):
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception # there this isn't the right kind of data for me to get !!!!!
         if cm: 
+            print 'CM found'
             self.cm = cm
         else: # we only need to do this if a cm was not provided for us.
+            ## This may raise an exception if the data is a subset of some other data (contains [] of $) widgets should only not send a cm if they are certain that a conversion will occur without probelms.
             rownames = self.R('rownames('+self.data+')')
             if rownames != None:
                 self.R('cm_'+self.data+'<-data.frame(row.names = rownames('+self.data+'))')
             else:
                 thisClass = self.R('class('+self.data+')')
                 if thisClass not in ['data.frame', 'matrix', 'array']: # arrays are technically not allowed but there is the possibility of a two dimentional array that is not coerced to a matrix.
-                    self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1, length('+self.data+'))))')
+                    self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1:length('+self.data+'))))')
                 else:
-                    self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1, length('+self.data+'[1,]))))')
-        self.cm = 'cm_'+self.data
-        
+                    self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1:length('+self.data+'[1,]))))')
+            self.cm = 'cm_'+self.data
+        print RVariable
+        self.reserved.append('cm')
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()
@@ -30,20 +33,21 @@ class RDataFrame(RList):
         else:
             raise Exception
     def _convertToList(self):
+        #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
         newData.dictAttrs = self.dictAttrs
         newData.dictAttrs['cm'] = self.cm
         return newData
         
     def _convertToVariable(self):
-        newData = RVariable(data = self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
-        newData.dictAttrs['cm'] = self.cm
-        return newData
+        # newData = RVariable(data = self.data, parent = self.parent)
+        # newData.dictAttrs = self.dictAttrs
+        # newData.dictAttrs['cm'] = self.cm
+        return self.copy()
         
     def copy(self):
         newVariable = RDataFrame(self.data, self.parent, self.cm)
-        newVariable['dictAttrs'] = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs
         return newVariable
     def getSimpleOutput(self, subsetting = '[1:5, 1:5]'):
         # return the text for a simple output of this variable

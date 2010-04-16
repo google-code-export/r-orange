@@ -113,28 +113,22 @@ class diffExp(OWRpy):
     def phenoProcess(self, data):
         if not data: return
         
-        if 'data' in data: # make sure that there is data there 
-            self.phenoData = data['data']
-            colnames = self.R('colnames('+self.phenoData+')')
-            self.functionBox.addItems(colnames)
-            self.valuesStack.setCurrentWidget(self.boxIndices[1])
-        else:
-            self.phenoData = ''
-            self.valuesStack.setCurrentWidget(self.boxIndices[0])
-    
-    
+        
+        self.phenoData = data['data']
+        colnames = self.R('colnames('+self.phenoData+')')
+        self.functionBox.addItems(colnames)
+        self.valuesStack.setCurrentWidget(self.boxIndices[1])
+
     def process(self, data):
         
         self.arrays.clear()
         self.selectedArrays.clear()
         self.selectedArraysB.clear()
         self.data = '' #clear the data
-        self.olddata = None # clear the send signal
         for output in self.outputs:
             self.rSend(output[0], None, 0) #start the killing cascade.
         if data:
             self.data = data['data']
-            self.olddata = data.copy()
             self.samplenames = self.R('colnames('+self.data+')') #collect the sample names to make the differential matrix
 
             if self.samplenames is str:
@@ -170,14 +164,11 @@ class diffExp(OWRpy):
                 self.R(self.Rvariables['subset']+ '<-' +self.data)
                 
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
-            self.R(self.Rvariables['results']+'<-eBayes(fit)')
-            self.newdata = self.olddata.copy()
-        self.newdata.data=self.Rvariables['results']
-        self.newdata.dictAttrs['classes'] = self.Rvariables['classes']
+            self.R(self.Rvariables['results']+'<-as.data.frame(eBayes(fit))')
+            
         self.makeCM(self.Rvariables['diffExp_cm'], self.Rvariables['results']) # assign the CM of this widget.  This is the moment of creation of this CM.  
-        self.newdata.cm = self.Rvariables['diffExp_cm']
-        self.newdata.parent = self.Rvariables['results']
-        
+        self.newdata = RvarClasses.RDataFrame(data = self.Rvariables['results'], cm = self.Rvariables['diffExp_cm']) 
+        self.newdata.dictAttrs['classes'] = self.Rvariables['classes']
         
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')

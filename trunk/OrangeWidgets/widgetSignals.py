@@ -236,7 +236,9 @@ class widgetSignals():
                         for (oldValue, id, nameFrom) in signalData:
                             if oldValue == None:
                                 value = oldValue
-                            else:
+                            else: # the value had better be one of our RvarClasses
+                                if not isinstance(oldValue, RvarClasses.RVariable):
+                                    raise Exception
                                 value = oldValue.copy()
                                 if not value.__class__ == signal[1]:
                                     print value.__class__
