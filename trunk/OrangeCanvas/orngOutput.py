@@ -173,7 +173,8 @@ class OutputWindow(QDialog):
         if self.canvasDlg.settings["printExceptionInStatusBar"]:
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %d:%02d:%02d. See output window for details." % ( str(type) , t[3],t[4],t[5]))
 
-        #TO DO:repair this code to shown full traceback. when 2 same errors occur, only the first one gets full traceback, the second one gets only 1 item
+        
+
         list = traceback.extract_tb(tracebackInfo, 10)
         #print list
         space = "&nbsp; "
@@ -187,6 +188,9 @@ class OutputWindow(QDialog):
             (dir, filename) = os.path.split(file)
             text += "<nobr>" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b></nobr><br>\n" % (self.getSafeString(funct))
             if code != None:
+                code = code.replace('<', '&lt;') #convert for html
+                code = code.replace('>', '&gt;')
+                code = code.replace("\t", "\x5ct") # convert \t to unicode \t
                 text += "<nobr>" + totalSpace + "Code: " + code + "</nobr><br>\n"
             totalSpace += space
         #print '-'*60, text
@@ -197,7 +201,8 @@ class OutputWindow(QDialog):
         # text =  '-'*60
         # text += '\n' + ''.join(traceback.format_tb(tracebackInfo)) 
         # text += '\n' + ''.join(traceback.format_tb(tracebackInfo)) 
-        # text +=  '\n' + '-'*60 + '\n'       
+        # text +=  '\n' + '-'*60 + '\n' 
+
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text

@@ -22,6 +22,7 @@ class ReadCEL(OWRpy):
         self.recentFiles = ['Select Directory']
         self.path = os.path.abspath('/')
         self.methodcombo = 0
+        self.require_librarys(['affy'])
         self.loadSettings()
         # make sure that there is an escape option for the file selection 
         # if '' not in self.recentFiles:
@@ -81,7 +82,7 @@ class ReadCEL(OWRpy):
         dir = self.recentFiles[self.filecombo.currentIndex()].replace('\\', '\\\\')
         self.status.setText("Your data is processing")
         #required librarys
-        self.require_librarys(['affy'])
+        
         if self.numArrays.getChecked() == 'Less than 40':
             self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path="'+dir+'")','setRData',True)
             self.status.setText("Your data has been processed with ReadAffy.")

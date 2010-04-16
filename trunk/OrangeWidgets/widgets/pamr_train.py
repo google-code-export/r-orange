@@ -22,7 +22,8 @@ class pamr_train(OWRpy):
 		self.RFunctionParam_threshold_scale = "NULL"
 		self.RFunctionParam_threshold = "NULL"
 		self.RFunctionParam_sign_contrast = "both"
-		self.loadSettings() 
+		self.require_librarys(["pamr"]) 
+        self.loadSettings() 
 		self.RFunctionParam_data = ''
 		self.RFunctionParam_gene_subset = ''
 		self.inputs = [("data", RvarClasses.RVariable, self.processdata),("gene_subset", RvarClasses.RVariable, self.processgene_subset)]
@@ -47,12 +48,12 @@ class pamr_train(OWRpy):
 		redRGUI.button(self.controlArea, label="Commit", callback = self.commitFunction)
 		redRGUI.button(self.controlArea, label="Report", callback = self.sendReport)
 	def processdata(self, data):
-		self.require_librarys(["pamr"]) 
+		
 		if data:
 			self.RFunctionParam_data=data["data"]
 			self.commitFunction()
 	def processgene_subset(self, data):
-		self.require_librarys(["pamr"]) 
+		
 		if data:
 			self.RFunctionParam_gene_subset=data["data"]
 			self.commitFunction()

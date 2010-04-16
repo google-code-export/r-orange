@@ -25,7 +25,7 @@ class panpCalls(OWRpy):
         self.looseCut = '0.02'
         self.tightCut = '0.01'
         self.percentA = '20'
-        
+        self.require_librarys(['affy','gcrma','limma','matchprobes','panp'])
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         self.loadSettings()
 
@@ -48,7 +48,7 @@ class panpCalls(OWRpy):
     def process(self, dataset):
         print 'on procress panp'
         
-        self.require_librarys(['affy','gcrma','limma','matchprobes','panp'])
+        
         
         for output in self.outputs:
             self.rSend(output[0], None, 0)

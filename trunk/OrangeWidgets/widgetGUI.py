@@ -301,11 +301,11 @@ class widgetGUI(QMainWindow):
     # variables into settings and last widget position is restored after restart
     def moveEvent(self, ev):
         QMainWindow.moveEvent(self, ev)
-        if self.savePosition:
-            # print 'moveevent'
+        #if self.savePosition:
+            #print 'moveevent'
             # self.widgetXPosition = self.frameGeometry().x()
             # self.widgetYPosition = self.frameGeometry().y()
-            self.saveWidgetWindowState()
+            #self.saveWidgetWindowState()
 
 
 

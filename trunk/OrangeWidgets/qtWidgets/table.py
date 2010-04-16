@@ -71,7 +71,7 @@ class table(widgetState,QTableWidget):
         self.setTable(data['data'])
         if 'sortIndex' in data.keys():
             self.sortByColumn(data['sortIndex'],data['order'])
-        print 'aaaaaaaaatable#########################'
+        #print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             for i in data['selection']:
                 self.setItemSelected(self.item(i[0],i[1]),True)

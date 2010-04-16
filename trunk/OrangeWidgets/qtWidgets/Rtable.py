@@ -8,12 +8,14 @@ class Rtable(table):
     def __init__(self,widget,Rdata=None, rows = 0, columns = 0,sortable=False, selectionMode = -1, addToLayout = 1):
         self.R = Rcommand
         table.__init__(self,widget,sortable=sortable,selectionMode = selectionMode,addToLayout=addToLayout)
-
-        if Rdata:
-            self.setRTable(Rdata)
+        self.Rdata = None
+        self.setRTable(Rdata)
     
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         print 'in Rtable set'
+        if not Rdata:
+            return
+
         self.setHidden(True)
         self.Rdata = Rdata
         dims = self.R('dim('+Rdata+')')
@@ -39,11 +41,11 @@ class Rtable(table):
         if setRowHeaders: self.setVerticalHeaderLabels(rownames)
         self.setHidden(False)
     def getSettings(self):
-        print 'save Rtable'
+        #print 'save Rtable'
         r = table.getSettings(self)
         del r['data']
         r['Rdata'] = self.Rdata
-        print r
+        #print r
         return r
     def loadSettings(self,data):
         #print data

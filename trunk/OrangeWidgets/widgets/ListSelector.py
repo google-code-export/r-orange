@@ -38,7 +38,7 @@ class ListSelector(OWRpy):
                 print names
             self.names.update(names)
         else:
-            self.name.clear()
+            self.names.clear()
             for signal in self.outputs:
                 self.rSend(signal[0], None)
                 
@@ -47,13 +47,17 @@ class ListSelector(OWRpy):
         self.R(self.Rvariables['listelement']+'<-'+self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]')
         # use RvarClasses converter in OWWidget to convert to the RvarClasses class
         myclass = self.R('class('+self.Rvariables['listelement']+')')
+        print 'myclass',myclass
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
-            self.rSend('R Data Frame', {'data':self.Rvariables['listelement'], 'parent':self.Rvariables['listelement'], 'cm':self.Rvariables['cm']})
+            self.rSend('R Data Frame', RvarClasses.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm']))
             print 'Sent Data Frame'
         elif myclass == 'list':
-            self.rSend('R List', {'data':self.Rvariables['listelement']})
+            #self.rSend('R List', {'data':self.Rvariables['listelement']})
+            self.rSend('R List',RvarClasses.RList(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement']))
             print 'Sent List'
-        elif myclass == 'vector' or myclass == 'character':
-            self.rSend('R Vector', {'data':self.Rvariables['listelement']})
+        elif myclass in ['vector','character','factor','numeric','integer']:
+            self.rSend('R Vector',RvarClasses.RVector(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm']))
             print 'Sent Vector'
+            
+            

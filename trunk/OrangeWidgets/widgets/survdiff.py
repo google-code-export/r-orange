@@ -16,6 +16,7 @@ class survdiff(OWRpy):
         self.setRvariableNames(["survdiff"])
         self.data = {}
         self.formula = ''
+        self.require_librarys(["survival"]) 
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
@@ -33,7 +34,7 @@ class survdiff(OWRpy):
         redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(hbox, label = "RoutputWindow")
     def processdata(self, data):
-        self.require_librarys(["survival"]) 
+        
         if data:
             self.RFunctionParam_data=data["data"]
             self.data = data.copy()

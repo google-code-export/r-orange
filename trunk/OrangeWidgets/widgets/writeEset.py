@@ -12,7 +12,7 @@ import redRGUI
 class writeEset(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Sample Data")
-        
+        self.require_librarys(['affy'])
         self.inputs = [("Affybatch", RvarClasses.RVariable, self.nothingb)]
         self.outputs = None
         
@@ -31,7 +31,7 @@ class writeEset(OWRpy):
         else: return
             
     def write(self):
-        self.require_librarys(['affy'])
+        
         if self.data == None or self.data == '':
             self.infoa.setText("Data has not been loaded yet")
             return

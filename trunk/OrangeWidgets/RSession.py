@@ -27,11 +27,8 @@ def Rcommand(query, processingNotice=False, silent = False, showException=True, 
     except rpy.RPyRException as inst:
         print inst
         # print showException
-        if showException:
-            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
-            QMessageBox.Ok + QMessageBox.Default)
         #self.status.setText('Error occured!!')
-        raise rpy.RPyRException
+        raise rpy.RPyRException(str(inst))
         return None # now processes can catch potential errors
         
     
@@ -71,10 +68,12 @@ def Rcommand(query, processingNotice=False, silent = False, showException=True, 
             return output
     else:
         return output
-
+def getInstalledLibraries():
+    libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
+    return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
-        installedRPackages = Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
+        installedRPackages = getInstalledLibraries()
         
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
 

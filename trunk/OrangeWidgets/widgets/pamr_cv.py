@@ -12,6 +12,7 @@ class pamr_cv(OWRpy):
         self.setRvariableNames(["pamr.cv"])
         self.RFunctionParam_folds = "NULL"
         self.RFunctionParam_nfold = "NULL"
+        self.require_librarys(["pamr"]) 
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.RFunctionParam_fit = ''
@@ -27,12 +28,10 @@ class pamr_cv(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
     def processdata(self, data):
-        self.require_librarys(["pamr"]) 
         if data:
             self.RFunctionParam_data=data["data"]
             self.commitFunction()
     def processfit(self, data):
-        self.require_librarys(["pamr"]) 
         if data:
             self.RFunctionParam_fit=data["data"]
             self.commitFunction()

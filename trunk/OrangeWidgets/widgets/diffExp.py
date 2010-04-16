@@ -25,6 +25,7 @@ class diffExp(OWRpy):
         self.processingComplete = 0
         self.newdata = {}
         self.olddata = {}
+        self.require_librarys(['affy','gcrma','limma'])
         self.loadSettings()
         
         self.setRvariableNames(['results','classes','subset', 'diffExp_cm'])
@@ -111,7 +112,7 @@ class diffExp(OWRpy):
             self.infob.setText("Setting Class A")
     def phenoProcess(self, data):
         if not data: return
-        lib = self.require_librarys(['affy','gcrma','limma'])
+        
         if 'data' in data: # make sure that there is data there 
             self.phenoData = data['data']
             colnames = self.R('colnames('+self.phenoData+')')
@@ -123,7 +124,7 @@ class diffExp(OWRpy):
     
     
     def process(self, data):
-        self.require_librarys(['affy','gcrma','limma'])
+        
         self.arrays.clear()
         self.selectedArrays.clear()
         self.selectedArraysB.clear()

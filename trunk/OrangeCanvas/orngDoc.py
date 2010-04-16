@@ -602,7 +602,11 @@ class SchemaDoc(QWidget):
                     try:
                         if 'requiredRLibraries' in settings.keys():
                             if 'CRANrepos' in qApp.canvasDlg.settings.keys():
-                                RSession.require_librarys(settings['requiredRLibraries']['pythonObject'],repository=qApp.canvasDlg.settings['CRANrepos'])
+                                repo = qApp.canvasDlg.settings['CRANrepos']
+                            else:
+                                repo = None
+                            loadingProgressBar.setLabelText('Downloading Required R Packages. This may take a while...')
+                            RSession.require_librarys(settings['requiredRLibraries']['pythonObject'], repository=repo)
                     except: 
                         import sys, traceback
                         print '-'*60

@@ -33,9 +33,6 @@ class rExecutor(OWRpy):
         self.box = redRGUI.groupBox(self.GUIDialog, "R Executor")
         self.infob = redRGUI.widgetLabel(self.box, "")
         
-        varbutton = redRGUI.button(self.box, "Recieved", callback = self.putrecieved, width = 150)
-        history = redRGUI.button(self.box, "RHistory", callback = self.putRHistory, width = 150)
-        redRGUI.button(self.box, "Clear Output", callback = self.clearOutput)
         self.infoa = redRGUI.widgetLabel(self.box, "")
         # grid
         area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
@@ -58,15 +55,18 @@ class rExecutor(OWRpy):
         self.metadataBox = redRGUI.widgetBox(leftArea, "Metadata")
         self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
         self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
+        varbutton = redRGUI.button(leftArea, "Recieved", callback = self.putrecieved, width = 150)
+        history = redRGUI.button(leftArea, "RHistory", callback = self.putRHistory, width = 150)
+        redRGUI.button(leftArea, "Clear Output", callback = self.clearOutput)
 
         self.thistext = redRGUI.textEdit(rightArea)
 
         #sendbox = redRGUI.groupBox(leftArea, "Send Box")
         #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
         sendbutton = redRGUI.button(runbox, label = "&Send", tooltip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
-        self.resize(700,500)
-        self.move(300, 25)
-        self.autoShowDialog = 0
+        #self.resize(700,500)
+        #self.move(300, 25)
+        #self.autoShowDialog = 0
         
     def clearOutput(self):
         self.thistext.clear()

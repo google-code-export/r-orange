@@ -9,6 +9,7 @@ from widgetSignals import *
 import RSession
 from session import *
 from PyQt4.QtGui import *
+import rpy
 
 class OWRpy(widgetGUI,widgetSignals,session):   
     uniqueWidgetNumber = 0
@@ -60,9 +61,19 @@ class OWRpy(widgetGUI,widgetSignals,session):
         histquery = histquery.replace('>', '&gt;')
         histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
         self.Rhistory += histquery + '</code><br><code>'
-        commandOutput = RSession.Rcommand(query = query, processingNotice = processingNotice, 
-        silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
-        
+        try:
+            commandOutput = RSession.Rcommand(query = query, processingNotice = processingNotice, 
+            silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
+        except rpy.RPyRException as inst:
+            #print 'asdfasdfasdf', inst
+            qApp.restoreOverrideCursor()
+            if showException:
+                QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
+                QMessageBox.Ok + QMessageBox.Default)
+            
+            raise rpy.RPyRException
+            return None # now processes can catch potential errors
+
         #except: 
         #    print 'R exception occurred'
         self.processing = False
@@ -121,6 +132,13 @@ class OWRpy(widgetGUI,widgetSignals,session):
             repository = qApp.canvasDlg.settings['CRANrepos']
         
         print 'Loading required librarys'
+        for i in librarys:
+            if not i in RSession.getInstalledLibraries():
+                print 'need to download'
+                QMessageBox.information(self, 'R Packages','We need to download R packages for this widget to work.',  
+                QMessageBox.Ok + QMessageBox.Default)
+
+                break
         RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
 

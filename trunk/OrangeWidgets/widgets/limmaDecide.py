@@ -24,6 +24,7 @@ class limmaDecide(OWRpy):
         self.eset = None
         self.sending = None
         self.modelProcessed = 0
+        self.require_librarys(['affy', 'limma'])
         self.loadSettings()
         
         self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm'])
@@ -67,7 +68,7 @@ class limmaDecide(OWRpy):
     def showModelGroupDialog(self):
         self.modelGroupDialog.show()
     def process(self, dataset):
-        self.require_librarys(['affy', 'limma'])
+        
         self.data = '' # protect from using obsolete data
         self.removeWarning()
         for output in self.outputs:

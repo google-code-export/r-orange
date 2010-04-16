@@ -13,6 +13,7 @@ class na_omit(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["na.omit"])
         self.data = {}
+        self.require_librarys(["base"]) 
         self.loadSettings() 
         self.RFunctionParam_object = ''
         self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
@@ -26,7 +27,7 @@ class na_omit(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
     def processobject(self, data):
-        self.require_librarys(["base"]) 
+        
         if data:
             self.RFunctionParam_object=data["data"]
             self.data = data.copy()
