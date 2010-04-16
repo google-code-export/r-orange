@@ -32,7 +32,7 @@ class diffExp(OWRpy):
         
 
         self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Phenotype Data", RvarClasses.RDataFrame, self.phenoProcess)]
-        self.outputs = [("eBayes fit", RvarClasses.RList)]
+        self.outputs = [("eBayes fit", RvarClasses.RMArrayLM), ('eBayes data frame', RvarClasses.RDataFrame)]
         
         self.samplenames = None #names of the samples (as a python object) to be used for generating the differential expression matrix
         self.classA = True #a container to maintain which list to add the arrays to
@@ -164,12 +164,15 @@ class diffExp(OWRpy):
                 self.R(self.Rvariables['subset']+ '<-' +self.data)
                 
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
-            self.R(self.Rvariables['results']+'<-as.data.frame(eBayes(fit))')
+            self.R(self.Rvariables['results']+'<-eBayes(fit)')
             
-        self.makeCM(self.Rvariables['diffExp_cm'], self.Rvariables['results']) # assign the CM of this widget.  This is the moment of creation of this CM.  
-        self.newdata = RvarClasses.RDataFrame(data = self.Rvariables['results'], cm = self.Rvariables['diffExp_cm']) 
-        self.newdata.dictAttrs['classes'] = self.Rvariables['classes']
+        self.makeCM(self.Rvariables['diffExp_cm'], 'as.data.frame('+self.Rvariables['results']+')') # assign the CM of this widget.  This is the moment of creation of this CM.  
+        newdata = RvarClasses.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')', cm = self.Rvariables['diffExp_cm']) 
+        newdata.dictAttrs['classes'] = self.Rvariables['classes']
+        self.rSend('eBayes data frame', newdata)
         
+        self.newdata = RvarClasses.RMArrayLM(data = self.Rvariables['results'])
+        self.newdata.dictAttrs['classes'] = self.Rvariables['classes']
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1
