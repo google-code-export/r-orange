@@ -14,31 +14,24 @@ import rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-mutex = QMutex()
-def Rcommand(query, processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
-    rst = RSessionThread()
 
-    output = None
+def Rcommand(query, processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
     
+    output = None
+    rst = RSessionThread()
     if not silent:
         print query
-    gotLock = mutex.tryLock()
-    if not gotLock:
-        print 'Thread was locked!!!  Returning None.'
-        return
         
     try:
         output = rst.run(query)
     except rpy.RPyRException as inst:
         print inst
-        mutex.unlock()
         # print showException
         #self.status.setText('Error occured!!')
 
         raise rpy.RPyRException(str(inst))
         return None # now processes can catch potential errors
         
-    mutex.unlock()
     if wantType == None:
         return output
     elif wantType == 'list':
@@ -96,18 +89,29 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                     
                 except:
                     print 'Library load failed'
-        
+
+mutex = QMutex()
 class RSessionThread(QThread):
-    queue = 0
+    
     def __init__(self, parent = None):
         QThread.__init__(self, None)
         #self.command = ''
+        self.queue = 0
     def run(self, query):
-        if RSessionThread.queue > 0:
-            print 'multiple concurrent calls to R\n'*10
+        locked = mutex.tryLock()
+        if not locked:
+            print 'Session is currently locked'
+            print self
             return
-        RSessionThread.queue +=1
+        print 'aquired the locker'
         #print 'asdf11 +' + str(RSessionThread.queue)
+        if self.queue > 0:
+            mutex.unlock()
+            print 'The mutex failed to protect, returning None'
+            return None
+        self.queue += 1
         output = rpy.r(query)
-        RSessionThread.queue -=1
+        mutex.unlock()
+        self.queue -= 1
         return output
+        
