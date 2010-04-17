@@ -28,7 +28,11 @@ class OrangeCanvasDlg(QMainWindow):
         self.originalPalette = QApplication.palette()
 
         self.__dict__.update(orngEnviron.directoryNames)
-        
+        logo = QPixmap(os.path.join(orngEnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+        splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
+        splashWindow.setMask(logo.mask())
+        splashWindow.show()
+        splashWindow.showMessage("Settings Icons", Qt.AlignHCenter + Qt.AlignBottom)
         self.defaultPic = os.path.join(self.picsDir, "Unknown.png")
         self.defaultBackground = os.path.join(self.picsDir, "frame.png")
         canvasPicsDir  = os.path.join(self.canvasDir, "icons")
@@ -51,7 +55,7 @@ class OrangeCanvasDlg(QMainWindow):
         #self.settings['HomeFolder'] = str(os.path.abspath('/Python25/Lib/site-packages/redR1.5/Projects'))
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
-
+        splashWindow.showMessage("Loading Settings", Qt.AlignHCenter + Qt.AlignBottom)
         self.loadSettings()
         #print self.settings
      
@@ -64,11 +68,13 @@ class OrangeCanvasDlg(QMainWindow):
             self.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
         
         # output window
+        splashWindow.showMessage("Setting Outputs", Qt.AlignHCenter + Qt.AlignBottom)
         self.output = orngOutput.OutputWindow(self)
         self.output.catchException(1)
         self.output.catchOutput(1)
 
         # create error and warning icons
+        splashWindow.showMessage("Setting Icons", Qt.AlignHCenter + Qt.AlignBottom)
         informationIconName = os.path.join(canvasPicsDir, "information.png")
         warningIconName = os.path.join(canvasPicsDir, "warning.png")
         errorIconName = os.path.join(canvasPicsDir, "error.png")
@@ -90,6 +96,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.updateStyle()
         
         # create toolbar
+        splashWindow.showMessage("Creating Toolbar", Qt.AlignHCenter + Qt.AlignBottom)
         self.toolbar = self.addToolBar("Toolbar")
         self.toolbar.setOrientation(Qt.Horizontal)
         if not self.settings.get("showToolbar", True): self.toolbar.hide()
@@ -102,6 +109,7 @@ class OrangeCanvasDlg(QMainWindow):
         
 
         # create menu
+        splashWindow.showMessage("Creating Menu", Qt.AlignHCenter + Qt.AlignBottom)
         self.initMenu()
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
@@ -125,7 +133,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.readRecentFiles()
 
         
-        
+        splashWindow.showMessage("Setting States", Qt.AlignHCenter + Qt.AlignBottom)
         if 'windowState' in self.settings.keys():
             self.restoreState(self.settings['windowState'])
         if 'geometry' in self.settings.keys():
@@ -167,6 +175,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         
         # show message box if no numpy
+        splashWindow.showMessage("Processing Events", Qt.AlignHCenter + Qt.AlignBottom)
         qApp.processEvents()
         try:
             import numpy

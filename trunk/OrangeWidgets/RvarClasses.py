@@ -44,6 +44,13 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
             # self.Rplot(query = query, dwidth = dwidth, dheight = dheight, devNumber = devNumber, mfrow = mfrow)
         # except:
             # print 'Exception occured'
+    def saveSettings(self):
+        return {'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
+        
+    def loadSettings(self, settings):
+        self.data = settings['data']
+        self.parent = settings['parent']
+        self.dictAttrs = settings['dictAttrs']
     def copy(self):
         newVariable = RVariable(self.data, self.parent)
         newVariable.dictAttrs = self.dictAttrs
@@ -75,7 +82,8 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         text += 'Class: '+self.getClass_data()+'\n\n'
         text += self._fullOutput(subsetting)
         return text
-      
+    def _convertToVariable(self):
+        return self.copy()
         
 def forname(modname, classname):
     ''' Returns a class of "classname" from module "modname". '''

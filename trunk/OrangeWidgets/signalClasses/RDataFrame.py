@@ -1,10 +1,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RList import *
+from RRectangularData import *
 
-class RDataFrame(RList):
+class RDataFrame(RList, RRectangularData):
     def __init__(self, data, parent = None, cm = None, checkVal = True):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
+        RRectangularData.__init__(self, data = data, parent = parent, cm = cm, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception # there this isn't the right kind of data for me to get !!!!!
         if cm: 
@@ -22,15 +24,17 @@ class RDataFrame(RList):
                 else:
                     self.R('cm_'+self.data+'<-data.frame(row.names = make.names(rep(1:length('+self.data+'[1,]))))')
             self.cm = 'cm_'+self.data
-        print RVariable
-        self.reserved.append('cm')
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()
         elif varClass == RVariable:
             return self._convertToVariable()
+        elif varClass == RRectangularData:
+            return self._convertToRectangularData()
         else:
             raise Exception
+    def _convertToRectangularData(self):
+        return self.copy()
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
@@ -38,14 +42,9 @@ class RDataFrame(RList):
         newData.dictAttrs['cm'] = self.cm
         return newData
         
-    def _convertToVariable(self):
-        # newData = RVariable(data = self.data, parent = self.parent)
-        # newData.dictAttrs = self.dictAttrs
-        # newData.dictAttrs['cm'] = self.cm
-        return self.copy()
         
     def copy(self):
-        newVariable = RDataFrame(self.data, self.parent, self.cm)
+        newVariable = RDataFrame(data = self.data, parent = self.parent, cm = self.cm)
         newVariable.dictAttrs = self.dictAttrs
         return newVariable
     def getSimpleOutput(self, subsetting = '[1:5, 1:5]'):

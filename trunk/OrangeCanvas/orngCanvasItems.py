@@ -114,7 +114,9 @@ class CanvasLine(QGraphicsLineItem):
         signals = []
         for (inWidgetInstance, outName, inName, X) in self.signalManager.links.get(self.outWidget.instance, []):
             if inWidgetInstance == self.inWidget.instance:
+                
                 signals.append((outName, inName))
+        print 'Signals collected, ', signals
         return signals
 
     def paint(self, painter, option, widget = None):

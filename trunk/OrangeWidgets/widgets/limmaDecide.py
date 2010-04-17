@@ -30,7 +30,7 @@ class limmaDecide(OWRpy):
         
         #self.sendMe()
         
-        self.inputs = [("eBayes fit", RvarClasses.RVariable, self.process), ('NormalizedAffybatch', RvarClasses.RDataFrame, self.processeset)]
+        self.inputs = [("eBayes fit", RvarClasses.RModelFit, self.process), ('NormalizedAffybatch', RvarClasses.RDataFrame, self.processeset)]
         self.outputs = [("Expression Subset", RvarClasses.RDataFrame), ("Gene Change Table", RvarClasses.RDataFrame)]
         
         #GUI

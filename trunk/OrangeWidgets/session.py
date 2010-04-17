@@ -134,6 +134,10 @@ class session():
 
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
+        elif isinstance(var, RvarClasses.RVariable):
+            
+            settings['RvarClassesObject'] = var.saveSettings()
+            print 'Saving RvarClassesObject ', settings['RvarClassesObject']
         elif self.isPickleable(var):
             settings['pythonObject'] =  var
         #elif type(var) in [str, int, float, bool]:
@@ -162,11 +166,17 @@ class session():
             elif 'pythonObject' in v.keys(): 
                 # print k
                 self.__setattr__(k, v['pythonObject'])
+            elif 'RvarClassesObject' in v.keys():
+                print 'Setting RvarClassesObject'
+                varClass = self.setRvarClass(v['RvarClassesObject'])
+                self.__setattr__(k, varClass)
+                #var = getattr(self, k)
+                #self.setRvarClass(var, v['RvarClassesObject'])
             else:
                 self.redRGUIObjects[k] = v;
         
     def onLoadSavedSession(self):
-        # print 'in onLoadSavedSession'
+        print 'in onLoadSavedSession'
         qApp.setOverrideCursor(Qt.WaitCursor)
         self.progressBarInit()
         i = 0
@@ -193,6 +203,7 @@ class session():
                     # print 'list',len(var),len(v['list'])
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
+                
             except:
                 print 'Error occured in loading data self.'+str(k)
                 pp = pprint.PrettyPrinter(indent=4)
@@ -214,6 +225,19 @@ class session():
         qApp.restoreOverrideCursor()
         self.progressBarFinished()
 
+    def setRvarClass(self, d):
+        className = d['class'].split('.')
+        print className
+        className = className[1]
+        print 'setting ', className
+        var = getattr(RvarClasses, className)(data = d['data'])
+        for key in d.keys():
+            if key == 'class': continue
+            print 'setting ', key
+            subvar = getattr(var, key) 
+            subvar = d[key]
+        return var
+            
     def recursiveSetSetting(self,var,d):
         # print 'recursiveSetSetting'
         
