@@ -102,8 +102,8 @@ class redRGraph(QwtPlot,widgetState):
 
         # uncomment this if you want to use printer friendly symbols
         #self.curveSymbols = [QwtSymbol.Ellipse, QwtSymbol.XCross, QwtSymbol.Triangle, QwtSymbol.Cross, QwtSymbol.Diamond, QwtSymbol.DTriangle, QwtSymbol.Rect, QwtSymbol.UTriangle, QwtSymbol.LTriangle, QwtSymbol.RTriangle]
-        self.contPalette = ColorPaletteGenerator(numberOfColors = -1)
-        self.discPalette = ColorPaletteGenerator()
+        #self.contPalette = ColorPaletteGenerator(numberOfColors = -1)
+        #self.discPalette = ColorPaletteGenerator()
 
         # when using OWGraph we can define functions that will receive mouse move, press, release events. these functions
         # HAVE TO RETURN whether the signal was handled, or you also want to use default OWGraph handler
