@@ -14,59 +14,78 @@ import rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-
+mutex = QMutex()
 def Rcommand(query, processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
     
+    unlocked = mutex.tryLock()
+    if not unlocked:
+        print 'R Session is LOCKED.  Please re-run your widget.'
+        return
+        
+    
     output = None
-    rst = RSessionThread()
     if not silent:
         print query
         
     try:
-        output = rst.run(query)
+        output = rpy.r(query)
     except rpy.RPyRException as inst:
         print inst
         # print showException
         #self.status.setText('Error occured!!')
-
+        mutex.unlock()
         raise rpy.RPyRException(str(inst))
+        
         return None # now processes can catch potential errors
         
+    
     if wantType == None:
+        mutex.unlock()
         return output
     elif wantType == 'list':
         if type(output) in [str, int, float, bool]:
+            mutex.unlock() 
             return [output]
         elif type(output) in [list, numpy.ndarray] and len(output) == 1 and not listOfLists:
             output = output[0]
+            mutex.unlock()
             return output
         else:
+            mutex.unlock()
             return output
     elif wantType == 'dict':
         if type(output) == type(''):
+            mutex.unlock()
             return {'output':[output]}
         elif type(output) == type([]):
+            mutex.unlock()
             return {'output': output}
         else:
+            mutex.unlock()
             return output
     elif wantType == 'array': # want a numpy array
         if type(output) == list:
             output = numpy.array(output)
+            mutex.unlock()
             return output
         elif type(output) in [str, int, float, bool]:
             output = numpy.array([output])
+            mutex.unlock()
             return output
         elif type(output) == dict:
             newOutput = []
             for key in output.keys():
                 newOutput.append(output[key])
+            mutex.unlock()
             return newOutput
         elif type(output) in [numpy.ndarray]:
+            mutex.unlock()
             return output
         else:
             print type(output), 'Non normal type, please add to RSession array logic'
             return output
     else:
+        mutex.unlock()
         return output
 def getInstalledLibraries():
     libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
@@ -90,28 +109,3 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 except:
                     print 'Library load failed'
 
-mutex = QMutex()
-class RSessionThread(QThread):
-    
-    def __init__(self, parent = None):
-        QThread.__init__(self, None)
-        #self.command = ''
-        self.queue = 0
-    def run(self, query):
-        locked = mutex.tryLock()
-        if not locked:
-            print 'Session is currently locked'
-            print self
-            return
-        print 'aquired the locker'
-        #print 'asdf11 +' + str(RSessionThread.queue)
-        if self.queue > 0:
-            mutex.unlock()
-            print 'The mutex failed to protect, returning None'
-            return None
-        self.queue += 1
-        output = rpy.r(query)
-        mutex.unlock()
-        self.queue -= 1
-        return output
-        
