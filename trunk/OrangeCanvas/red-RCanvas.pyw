@@ -762,12 +762,60 @@ class OrangeQApplication(QApplication):
     def __init__(self, *args):
         QApplication.__init__(self, *args)
         
+import sys, os, orngEnviron, numpy
+if sys.platform=="win32":
+    from rpy_options import set_options
+    #set_options(RHOME=os.environ['RPATH'])
+    set_options(RHOME=orngEnviron.directoryNames['RDir'])
+else: # need this because linux doesn't need to use the RPATH
+    print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
+
+    
+import rpy
+from multiprocessing.managers import BaseManager
+from multiprocessing import freeze_support
+import Queue
 
 
+class Rclass():
+    # def __init__(self):
+        # MyManager.register('get_queue')
+        # m = MyManager(address=('127.0.0.1', 50000), authkey='abracadabra')
+        # m.connect()
+        # self.queue = m.get_queue()
+    def R(self, query):
+        out = rpy.r(query)
+        return out
+        # MyManager.register('get_queue')
+        # manager = MyManager(address=('localhost', 50000), authkey='abracadabra')
+        # manager.connect()      
+        # self.queue = manager.get_queue()
+        # print self.queue
+        # self.queue.put(out)
+        # return out
+
+class MyManager(BaseManager):
+    pass
+
+
+# class QueueManager(BaseManager): pass
+# QueueManager.register('get_queue', callable=lambda:queue)
+# m = QueueManager(address=('', 50000), authkey='abracadabra')
+# s = m.get_server()
+# s.serve_forever()
+# qApp.queue = Queue.Queue()
+# def q():
+    # return qApp.queue
 def main(argv = None):
     if argv == None:
         argv = sys.argv
-
+    qApp.rpy = rpy
+    MyManager.register('Rclass', Rclass)
+    # MyManager.register('get_queue', callable=q)
+    manager = MyManager(address=('localhost', 5000), authkey='abracadabra')
+    # manager.get_server().serve_forever()
+    manager.start()
+    qApp.R = manager.Rclass()
     app = OrangeQApplication(sys.argv)
     QCoreApplication.setOrganizationName("Red-r");
     QCoreApplication.setOrganizationDomain("red-r.com");
@@ -780,7 +828,9 @@ def main(argv = None):
         if arg == "-reload":
             dlg.menuItemOpenLastSchema()
     app.exec_()
+    manager.shutdown()
     app.closeAllWindows()
 
 if __name__ == "__main__":
+    freeze_support()
     sys.exit(main())

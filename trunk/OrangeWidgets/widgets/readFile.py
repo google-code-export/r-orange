@@ -34,6 +34,9 @@ class readFile(OWRpy):
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'cm', 'parent'])
         
+        
+        #self.R('for(i in 1:1e8) {  }')
+        # self.R('ls()')
         # raise Exception('asdf')
         #signals
         self.inputs = None
