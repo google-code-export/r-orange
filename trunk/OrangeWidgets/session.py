@@ -1,4 +1,4 @@
-import os, cPickle, numpy, pprint, re
+import os, cPickle, numpy, pprint, re, sys
 import orngEnviron
 import RvarClasses
 from PyQt4.QtCore import *
@@ -43,7 +43,8 @@ class session():
             # print 'Exception occured in saving settings'
             # print sys.exc_info()[0]
         settings['_customSettings'] = self.saveCustomSettings()
-        
+        tempSentItems = self.processSentItems()
+        settings['sentItems'] = {'sentItemsList':tempSentItems}
         #try:
         if self.inputs and len(self.inputs) != 0:
             ainputs = []
@@ -116,6 +117,7 @@ class session():
             
     def returnSettings(self,var):
         settings = {}
+        
         if var.__class__.__name__ in redRGUI.qtWidgets:
             #print 'getting gui settings for:' + att + '\n\n'
             try:
@@ -138,6 +140,7 @@ class session():
             
             settings['RvarClassesObject'] = var.saveSettings()
             print 'Saving RvarClassesObject ', settings['RvarClassesObject']
+        
         elif self.isPickleable(var):
             settings['pythonObject'] =  var
         #elif type(var) in [str, int, float, bool]:
@@ -154,6 +157,11 @@ class session():
         else:
             settings = None
         return settings
+    def processSentItems(self):
+        sentItemsList = []
+        for (sentDataName, sentDataObject) in self.sentItems:
+            sentItemsList.append((sentDataName, sentDataObject.saveSettings()))
+        return sentItemsList
     def setSettings(self,settings):
         # print 'on set settings'
         self.redRGUIObjects = {}
@@ -203,7 +211,8 @@ class session():
                     # print 'list',len(var),len(v['list'])
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
-                
+                elif 'sentItemsList' in v.keys():
+                    self.setSentItemsList(v['sentItemsList'])
             except:
                 print 'Error occured in loading data self.'+str(k)
                 pp = pprint.PrettyPrinter(indent=4)
@@ -224,7 +233,11 @@ class session():
         
         qApp.restoreOverrideCursor()
         self.progressBarFinished()
-
+    def setSentItemsList(self, d):
+        # set the sentItems in the widget
+        for (sentItemName, sentItemDict) in d:
+            print 'setting ', sentItemName, 'to', sentItemDict
+            self.sentItems.append((sentItemName, self.setRvarClass(sentItemDict)))
     def setRvarClass(self, d):
         className = d['class'].split('.')
         print className
