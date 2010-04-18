@@ -14,3 +14,7 @@ class RModelFit(RList):
         newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
         newData.dictAttrs = self.dictAttrs
         return newData
+    def copy(self):
+        newVariable = RModelFit(data = self.data, parent = self.parent, cm = self.cm)
+        newVariable.dictAttrs = self.dictAttrs
+        return newVariable

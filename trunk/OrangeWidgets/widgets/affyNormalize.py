@@ -35,9 +35,8 @@ class affyNormalize(OWRpy):
         self.setRvariableNames(['normalized_affybatch','folder'])
         
         #signals
-        self.inputs = [("Eset", RvarClasses.Eset, self.process)]
-        self.outputs = [("Normalized Expression Matrix", RvarClasses.RDataFrame),
-        ("Normalized AffyBatch", RvarClasses.RAffyBatch)]
+        self.inputs = [("Eset", RvarClasses.REset, self.process)]
+        self.outputs = [("Normalized AffyBatch", RvarClasses.REset)]
 
         
         #the GUI
@@ -122,9 +121,9 @@ class affyNormalize(OWRpy):
             print 'error'
 
         
-        self.bgcmethselector.addItems(self.R('bgcorrect.methods()'))
-        self.pmcorrectselector.addItems(self.R('pmcorrect.methods()'))
-        self.summethselector.addItems(self.R('express.summary.stat.methods()'))
+        self.bgcmethselector.update(self.R('bgcorrect.methods()'))
+        self.pmcorrectselector.update(self.R('pmcorrect.methods()'))
+        self.summethselector.update(self.R('express.summary.stat.methods()'))
         
     
     def selectMethodChanged(self):
@@ -161,10 +160,8 @@ class affyNormalize(OWRpy):
                 self.normselector.setEnabled(True)
 
     def toSend(self):
-        self.newdata['data'] = 'exprs('+self.Rvariables['normalized_affybatch']+')'
-        self.newdata['eset'] = self.Rvariables['normalized_affybatch']
-        self.rSend("Normalized Expression Matrix", self.newdata)
-        self.newdata2 = self.newdata.copy()
-        self.newdata2['data'] = self.Rvariables['normalized_affybatch']
-        self.rSend("Normalized AffyBatch", self.newdata2)
+        newData = RvarClasses.REset(data = self.Rvariables['normalized_affybatch'])
+        newData.dictAttrs = self.newdata.dictAttrs
+        self.rSend("Normalized AffyBatch", self.newdata)
+        
     

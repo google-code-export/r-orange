@@ -31,7 +31,7 @@ class ReadCEL(OWRpy):
         self.setRvariableNames(['eset','folder', 'cm'])
         #signals
         self.inputs = None 
-        self.outputs = [("Expression Matrix", RvarClasses.RDataFrame), ("Eset", RvarClasses.Eset)]
+        self.outputs = [("Eset", RvarClasses.RAffybatch)]
         
 
 
@@ -94,8 +94,5 @@ class ReadCEL(OWRpy):
         
     
     def sendMe(self):
-        out = {'data':'exprs('+self.Rvariables['eset']+')', 'eset':self.Rvariables['eset'], 'cm':self.Rvariables['cm'], 'parent':'exprs('+self.Rvariables['eset']+')'}
-        self.rSend("Expression Matrix", out)
-        out2 = out.copy()
-        out2['data'] = str(self.Rvariables['eset'])
+        out2 = REset(data = str(self.Rvariables['eset']))
         self.rSend("Eset", out2)

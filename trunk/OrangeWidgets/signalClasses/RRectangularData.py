@@ -10,7 +10,7 @@ class RRectangularData(RVariable):
             #raise Exception # there this isn't the right kind of data for me to get !!!!!
         self.cm = cm
         self.reserved.append('cm')
-    def copy(self, thisClass):
-        newVariable = thisClass(self.data, self.parent, self.cm)
+    def copy(self):
+        newVariable = RRectangularData(self.data, self.parent, self.cm)
         newVariable.dictAttrs = self.dictAttrs
         return newVariable

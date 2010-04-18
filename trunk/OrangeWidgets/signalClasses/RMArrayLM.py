@@ -13,3 +13,7 @@ class RMArrayLM(RList):
         return self.data+'$Intercept'
     def getIntercept_data(self):
         return self.R(self.getIntercept_call(), silent = True, wantType = 'list')
+    def copy(self):
+        newData = RMArrayLM(data = self.data, parent = self.parent, cm = self.cm)
+        newData.dictAttrs = self.dictAttrs
+        return newData

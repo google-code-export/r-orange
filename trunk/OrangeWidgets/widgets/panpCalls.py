@@ -29,8 +29,8 @@ class panpCalls(OWRpy):
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         self.loadSettings()
 
-        self.inputs = [("Normalized Affybatch", RvarClasses.RAffyBatch, self.process)]
-        self.outputs = [("Present Gene Signal Matrix", RvarClasses.RDataFrame)]
+        self.inputs = [("Normalized Affybatch", RvarClasses.REset, self.process)]
+        self.outputs = [("Present Gene Signal Matrix", RvarClasses.RMatrix)]
         
         
         #GUI
@@ -70,11 +70,11 @@ class panpCalls(OWRpy):
         self.R(self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"','setRData', True)
         self.R(self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)','setRData', True)
         self.R(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+str(self.percentA.text())+'/100','setRData', True)
-        self.R(self.Rvariables['peset']+'<-as.data.frame(exprs('+self.eset+')[' + self.Rvariables['Present'] + ',])','setRData',True)
+        self.R(self.Rvariables['peset']+'<-exprs('+self.eset+')[' + self.Rvariables['Present'] + ',]','setRData',True)
         self.R('colnames('+self.Rvariables['peset']+') <- colnames(exprs('+self.eset+'))')
         self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
         self.status.setText('Processed')
-        self.senddata = self.data.copy()
-        self.senddata.data = self.Rvariables['peset']
+        self.senddata = RvarClasses.RMatrix(data = self.Rvariables['peset'])
+        self.senddata.dictAttrs = self.data.dictAttrs
         self.senddata.dictAttrs['eset'] = self.eset
         self.rSend('Present Gene Signal Matrix', self.senddata)

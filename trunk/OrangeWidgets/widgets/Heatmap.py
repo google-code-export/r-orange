@@ -20,7 +20,7 @@ class Heatmap(OWRpy):
         self.plotdata = ''
         
         self.loadSettings()
-        self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.processMatrix)]
+        self.inputs = [("Expression Matrix", RvarClasses.RRectangularData, self.processMatrix)]
         self.outputs = [("Cluster Subset List", RvarClasses.RList)]
         
         self.rowvChoice = None
@@ -59,8 +59,8 @@ class Heatmap(OWRpy):
         
         if data:
             self.plotdata = data['data']
-            if 'classes' in data:
-                self.classes = data['classes']
+            if 'classes' in data.dictAttrs:
+                self.classes = data.dictAttrs['classes']
                 self.showClasses.setEnabled(True)
             else:
                 self.classes = 'rep(0, length('+self.plotdata+'[1,]))'
@@ -96,7 +96,7 @@ class Heatmap(OWRpy):
             col = 'rainbow(10, start = '+str(start)+', end = '+str(end)+')'
         else:
             col = colorType+'(10)'
-        self.Rplot('pie(1:50, labels = c(\'Low\', 2:49, \'High\'), col = '+col+')', devNumber = 2)
+        self.Rplot('pie(1:10, labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2)
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -114,7 +114,6 @@ class Heatmap(OWRpy):
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
         newData = RvarClasses.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
-        hclust = RvarClasses.RVariable(data = self.Rvariables['hclust'])
-        newData['kill'] = kill
-        newData['cluster'] = hclust
+        hclust = RvarClasses.RModelFit(data = self.Rvariables['hclust'])
+        newData.dictAttrs['cluster'] = hclust
         self.rSend("Cluster Subset List", newData)
