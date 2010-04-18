@@ -18,12 +18,12 @@ class Heatmap(OWRpy):
         self.setRvariableNames(['heatsubset', 'hclust'])
         self.plotOnConnect = 0
         self.plotdata = ''
-        
+        self.rowvChoice = None
         self.loadSettings()
         self.inputs = [("Expression Matrix", RvarClasses.RRectangularData, self.processMatrix)]
         self.outputs = [("Cluster Subset List", RvarClasses.RList)]
         
-        self.rowvChoice = None
+
         
         #GUI
         infobox = redRGUI.groupBox(self.controlArea, label = "Options")
@@ -32,6 +32,7 @@ class Heatmap(OWRpy):
         redRGUI.button(infobox, label = 'Identify', callback = self.identify, width=200)
         self.startSaturation = redRGUI.spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = redRGUI.spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
+        self.endSaturation.setValue(30)
         self.colorTypeCombo = redRGUI.comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
         self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
         self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
@@ -96,7 +97,7 @@ class Heatmap(OWRpy):
             col = 'rainbow(10, start = '+str(start)+', end = '+str(end)+')'
         else:
             col = colorType+'(10)'
-        self.Rplot('pie(1:10, labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2)
+        self.Rplot('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2)
         
     def rowvChoiceprocess(self):
         if self.plotdata:

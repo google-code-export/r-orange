@@ -79,38 +79,31 @@ class rExecutor(OWRpy):
         self.command.setText(tmp)
     def sendThis(self):
         
-        self.sendt = {'data':str(self.command.text()), 'parent':str(self.command.text())}
-        thisdata = self.sendt['data']
-        thisdataclass = self.R('class('+thisdata+')')
+        thisdataclass = self.R('class('+str(self.command.text())+')')
         # use upclassing to convert to RvarClasses class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
             self.rSend('R.object', self.sendt)
         elif thisdataclass.__class__.__name__ == 'str':
-            if thisdataclass == 'numeric': # we have a numeric vector as the object
-                self.rSend('R Vector', self.sendt)
+            if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
+                newData = RvarClasses.RVector(data = str(self.command.text()))
+                self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
-            elif thisdataclass == 'character': #we have a character vector as the object
-                self.rSend('R Vector', self.sendt)
-                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
-            elif thisdataclass == 'data.frame': # the object is a data.frame
-                self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
-                self.sendt['cm'] = 'cm_'+self.sendt['data']
-                self.rSend('R Data Frame', self.sendt)
-                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
-            elif thisdataclass == 'matrix': # the object is a matrix
-                self.R('cm_'+self.sendt['data']+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
-                self.sendt['data'] = 'as.data.frame('+self.sendt['data']+')'
-                self.sendt['cm'] = 'cm_'+self.sendt['data']
-                self.rSend('R Data Frame', self.sendt)
+            elif thisdataclass in ['data.frame', 'matrix']: # the object is a data.frame
+                self.R('cm_'+str(self.command.text())+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
+                newData = RvarClasses.RRectangularData(data = str(self.command.text()), cm = 'cm_'+str(self.command.text()))
+                self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
-                self.rSend('R List', self.sendt)
+                newData = RvarClasses.RList(data = str(self.command.text()))
+                self.rSend('R List', newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                self.rSend('R.object', self.sendt)
+                newData = RvarClasses.RVariable(data = str(self.command.text()))
+                self.rSend('R.object', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
-            self.rSend('R.object', self.sendt)
+            newData = RvarClasses.RVariable(data = str(self.command.text()))
+            self.rSend('R.object', newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):
         self.R('txt<-"R error occured" #Benign error in case a real error occurs')

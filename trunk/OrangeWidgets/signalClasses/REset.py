@@ -3,12 +3,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RList import *
-from RRectangulrData import *
+from RRectangularData import *
 
-class REset(RList, RRectangulrData):
+class REset(RList, RRectangularData):
     def __init__(self, data, parent = None, checkVal = True):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
-        RRectangulrData.__init__(self, data = data, parent = parent, checkVal = False)
+        RRectangularData.__init__(self, data = data, parent = parent, checkVal = False)
         
         self.dictAttrs['affybatch'] = self.data
     def copy(self):
