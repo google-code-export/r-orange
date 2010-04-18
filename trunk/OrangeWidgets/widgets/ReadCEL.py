@@ -31,7 +31,7 @@ class ReadCEL(OWRpy):
         self.setRvariableNames(['eset','folder', 'cm'])
         #signals
         self.inputs = None 
-        self.outputs = [("Eset", RvarClasses.RAffybatch)]
+        self.outputs = [("Eset", RvarClasses.REset)]
         
 
 

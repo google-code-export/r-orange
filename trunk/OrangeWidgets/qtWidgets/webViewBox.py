@@ -8,13 +8,13 @@ from PyQt4 import QtWebKit
 class webViewBox(QtWebKit.QWebView,widgetState):
     def __init__(self,widget,label=None,url=None,orientation='vertical'):
         QtWebKit.QWebView.__init__(self,widget)
-        
-        if label:
-            hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(hb, label)
-            hb.layout().addWidget(self)
-        else:
-            widget.layout().addWidget(self)
+        if widget:
+            if label:
+                hb = widgetBox(widget,orientation=orientation)
+                widgetLabel(hb, label)
+                hb.layout().addWidget(self)
+            else:
+                widget.layout().addWidget(self)
         
         self.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         self.connect(self, SIGNAL('linkClicked(QUrl)'), self.followLink)

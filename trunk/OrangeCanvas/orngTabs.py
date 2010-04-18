@@ -8,7 +8,7 @@ import os.path, sys
 from string import strip, count, replace
 import orngDoc, orngOutput, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
-import OWGUIEx
+import OWGUIEx, redRGUI
 import orngEnviron
 import xml.dom.minidom
 
@@ -517,7 +517,12 @@ class WidgetTree(WidgetListBase, QDockWidget):
         # must make a widget container to hold the search area and the widget tree
         self.containerWidget = QWidget()
         tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
-        self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
+        #self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
+        self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
+        self.widgetSuggestEdit.caseSensitive = 0
+        self.widgetSuggestEdit.matchAnywhere = 1
+        self.widgetSuggestEdit.autoSizeListWidget = 1
+        
         self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
         #self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
         #tmpBoxLayout.insertWidget(0, CanvasPopup)
@@ -657,7 +662,11 @@ class CanvasWidgetAction(QWidgetAction):
         self.parent = parent
         self.actions = actions
         
-        self.widgetSuggestEdit = OWGUIEx.lineEditHint(self.parent, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, callback = self.callback, autoSizeListWidget = 1)
+        self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
+        self.widgetSuggestEdit.caseSensitive = 0
+        self.widgetSuggestEdit.matchAnywhere = 1
+        self.widgetSuggestEdit.autoSizeListWidget = 1
+        
         self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in actions]) # sets the icon and the names of the widgets that are available when we start to type.  In this case actions are the widgets
         self.widgetSuggestEdit.setStyleSheet(""" QLineEdit { background: #fffff0; border: 1px solid orange} """)
         self.widgetSuggestEdit.listWidget.setStyleSheet(""" QListView { background: #fffff0; } QListView::item {padding: 3px 0px 3px 0px} QListView::item:selected { color: white; background: blue;} """)
@@ -862,5 +871,66 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                     
             except: pass
 #        
-#    
-#    
+class SearchBox(redRGUI.lineEditHint):
+    def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+        redRGUI.lineEditHint.__init__(self, widget = widget, label = label, orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
+        self.searchBox = redRGUI.SearchDialog()
+        QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
+            
+    def eventFilter(self, object, ev):
+        try: # a wrapper that prevents problems for the listbox debigging should remove this
+            if object != self.listWidget and object != self:
+                
+                return 0
+            if ev.type() == QEvent.MouseButtonPress:
+                self.listWidget.hide()
+                return 1
+                    
+            consumed = 0
+            if ev.type() == QEvent.KeyPress:
+                consumed = 1
+                if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
+                    print 'Return pressed'
+                    self.doneCompletion()
+                elif ev.key() == Qt.Key_Escape:
+                    self.listWidget.hide()
+                    #self.setFocus()
+                elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
+                    
+                    self.listWidget.setFocus()
+                    self.listWidget.event(ev)
+                else:
+                    #self.setFocus()
+                    self.event(ev)
+            return consumed
+        except: return 0
+    
+    def doneCompletion(self, *args):
+        if self.listWidget.hasFocus():
+            if self.listWidget.isVisible():
+                if len(args) == 1:  itemText = str(args[0].text())
+                else:               itemText = str(self.listWidget.currentItem().text())
+                last = self.getLastTextItem()
+                self.setText(str(self.text()).rstrip(last) + itemText)
+                self.listWidget.hide()
+                self.setFocus()
+            if self.callbackOnComplete:
+                QTimer.singleShot(0, self.callbackOnComplete)
+                #self.callbackOnComplete()
+        else:
+            itemText = str(self.text())
+            print 'Searching '+itemText+' on Red-R.org'
+            self.searchBox.show()
+            url = 'http://www.red-r.org/?s='+itemText
+            self.searchBox.updateUrl(url)
+        
+    def searchDialog(self):
+        if str(self.text()) in self.itemsAsStrings:
+            return
+            
+        else:
+            itemText = str(self.text())
+            print 'Searching '+itemText+' on Red-R.org'
+            self.searchBox.show()
+            url = 'http://www.red-r.org/?s='+itemText
+            self.searchBox.updateUrl(url)

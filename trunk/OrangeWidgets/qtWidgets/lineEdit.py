@@ -9,16 +9,16 @@ from PyQt4.QtGui import *
 class lineEdit(QLineEdit,widgetState):
     def __init__(self,widget,text='', label=None,orientation='horizontal', toolTip = None,  width = 0, callback = None, **args):
         QLineEdit.__init__(self,widget)
-        
-        if label:
-            hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(hb, label)
-            if width != -1:
-                sb = widgetBox(hb)
-                sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            hb.layout().addWidget(self)
-        else:
-            widget.layout().addWidget(self)
+        if widget:
+            if label:
+                hb = widgetBox(widget,orientation=orientation)
+                widgetLabel(hb, label)
+                if width != -1:
+                    sb = widgetBox(hb)
+                    sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                hb.layout().addWidget(self)
+            else:
+                widget.layout().addWidget(self)
         if toolTip: self.setToolTip(toolTip)
         if width == 0:
             self.setMaximumWidth(175)

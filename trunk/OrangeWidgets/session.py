@@ -237,13 +237,24 @@ class session():
         # set the sentItems in the widget
         for (sentItemName, sentItemDict) in d:
             print 'setting ', sentItemName, 'to', sentItemDict
-            self.sentItems.append((sentItemName, self.setRvarClass(sentItemDict)))
-    def setRvarClass(self, d):
+            self.sentItems.append((sentItemName, self.setRvarClass(sentItemDict, sentItemName)))
+    def setRvarClass(self, d, sentItemName):
         className = d['class'].split('.')
         print className
         className = className[1]
         print 'setting ', className
-        var = getattr(RvarClasses, className)(data = d['data'])
+        try: # try to reload the output class from the RvarClasses
+            var = getattr(RvarClasses, className)(data = d['data'])
+        except: # if it doesn't exist we need to set the class something so we look to the inputs.
+            var = None
+            for (name, att) in self.outputs:
+                if name == sentItemName:
+                    var = att(data = d['data'])
+            if var == None: raise Exception
+        finally: # something is really wrong we need to set some kind of data so let's set it to the RvarClasses.RVariable
+            var = RvarClasses.RVariable(data = d['data'])
+            
+        
         for key in d.keys():
             if key == 'class': continue
             print 'setting ', key

@@ -93,13 +93,14 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
     return output
 def getInstalledLibraries():
     libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
-    return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
+    return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
         installedRPackages = getInstalledLibraries()
         
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
-
+        if type(librarys) == str: # convert to list if it isn't already
+            librarys = [librarys]
         for library in librarys:
             if library in installedRPackages:
                 Rcommand('require(' + library + ', lib.loc="' + libPath + '")')

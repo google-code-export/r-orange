@@ -370,14 +370,7 @@ class widgetGUI(QMainWindow):
         for name in iconNames:
             pix = QPixmap(name)
             icon.addPixmap(pix)
-#            frame = QPixmap(os.path.join(self.widgetDir, "icons/frame.png"))
-#            icon = QPixmap(iconName)
-#            result = QPixmap(icon.size())
-#            painter = QPainter()
-#            painter.begin(result)
-#            painter.drawPixmap(0,0, frame)
-#            painter.drawPixmap(0,0, icon)
-#            painter.end()
+
 
         self.setWindowIcon(icon)
         
@@ -452,36 +445,21 @@ class widgetGUI(QMainWindow):
         return changed
 
     def openWidgetHelp(self):
-        if self.orangeDir:
-#            try:
-#                import win32help
-#                if win32help.HtmlHelp(0, "%s/doc/catalog.chm::/catalog/%s/%s.htm" % (orangedir, self._category, self.__class__.__name__[2:]), win32help.HH_DISPLAY_TOPIC):
-#                    return
-#            except:
-#                pass
-
-#===============================================================================
-#            from PyQt4 import QtWebKit
-#            qApp.helpWindow = helpWindow = QtWebKit.QWebView()
-#            print "file://%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:])
-#            helpWindow.load(QUrl("file:///%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:])))
-#            helpWindow.show()
-#===============================================================================
-            qApp.canvasDlg.helpWindow.showHelpFor(self, True)
-            return
-            try:
-                import webbrowser
-                webbrowser.open("file://%s/doc/widgets/catalog/%s/%s.htm" % (self.orangeDir, self._category, self.__class__.__name__[2:]), 0, 1)
-                return
-            except:
-                pass
 
         try:
             import webbrowser
-            webbrowser.open("http://www.ailab.si/orange/doc/widgets/catalog/%s/%s.htm" % (self._category, self.__class__.__name__[2:]))
+            url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo['fullName'])
+            webbrowser.open(url, 0, 1)
             return
         except:
             pass
+
+        # try:
+            # import webbrowser
+            # webbrowser.open("http://www.ailab.si/orange/doc/widgets/catalog/%s/%s.htm" % (self._category, self.__class__.__name__[2:]))
+            # return
+        # except:
+            # pass
     
     def keyPressEvent(self, e):
         if e.key() in (Qt.Key_Help, Qt.Key_F1):

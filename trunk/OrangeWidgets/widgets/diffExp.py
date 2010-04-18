@@ -112,11 +112,13 @@ class diffExp(OWRpy):
             self.infob.setText("Setting Class A")
     def phenoProcess(self, data):
         if not data: return
-        
+        if not self.data == '' and self.R('intersect(rownames('+data['data']+'), colnames('+self.data+'))') == None:
+            self.infoa.setText('No intersect between the phenoData and the expression data.\nPhenoData ignored.')
+            return
         
         self.phenoData = data['data']
         colnames = self.R('colnames('+self.phenoData+')')
-        self.functionBox.addItems(colnames)
+        self.functionBox.update(colnames)
         self.valuesStack.setCurrentWidget(self.boxIndices[1])
 
     def process(self, data):
@@ -137,6 +139,11 @@ class diffExp(OWRpy):
                 for v in self.samplenames:
                     self.arrays.addItem(v)
                 #self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
+            
+            if not self.phenoData == '' and self.R('intersect(rownames('+self.phenoData+'), colnames('+self.data+'))') == None:
+                self.infoa.setText('No intersect between the phenoData and the expression data.\nPhenoData ignored.')
+                self.valuesStack.setCurrentWidget(self.boxIndices[0])
+                return
 
     def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
         if self.data == '': return
@@ -160,7 +167,7 @@ class diffExp(OWRpy):
                 self.R('cvect<-data.frame(type=1, class='+self.Rvariables['classes']+')') 
                 self.R('design<-model.matrix(~class, cvect)')
             else: #someone attached phenoData so lets use that to make the design
-                self.R('design<-model.matrix(~'+self.functionBox.Formula()[1]+', '+self.phenoData+')')
+                self.R('design<-model.matrix(~'+self.functionBox.Formula()[1]+', '+self.phenoData+'[colnames('+self.data+'),])')
                 self.R(self.Rvariables['subset']+ '<-' +self.data)
                 
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
