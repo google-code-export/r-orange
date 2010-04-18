@@ -63,8 +63,7 @@ class OWRpy(widgetGUI,widgetSignals,session):
         histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
         self.Rhistory += histquery + '</code><br><code>'
         try:
-            commandOutput = RSession.Rcommand(query = query, processingNotice = processingNotice, 
-            silent = silent, showException = showException, wantType = wantType, listOfLists = listOfLists)
+            commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except rpy.RPyRException as inst:
             #print 'asdfasdfasdf', inst
             qApp.restoreOverrideCursor()

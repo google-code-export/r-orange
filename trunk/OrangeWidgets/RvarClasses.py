@@ -29,7 +29,9 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         if item in self.reserved:
             raise Exception
         self.dictAttrs[item] = value
-     
+    def __str__(self):
+        ## print output for the class
+        return 'Class: '+str(self.__class__)+'\nData: '+self.data+'\nParent: '+self.parent+'Attributes: '+str(self.dictAttrs)
     def keys(self):
         return self.dictAttrs.keys()
     def getClass_call(self):

@@ -33,7 +33,7 @@ class widgetGUI(QMainWindow):
 
         return self
 
-    def __init__(self, parent=None, signalManager=None, title="Orange Widget", 
+    def __init__(self, parent=None, signalManager=None, title="Red-R Widget", 
     savePosition=True, wantGUIDialog = 0, resizingEnabled=1, **args):
         """
         Initialization
@@ -185,8 +185,6 @@ class widgetGUI(QMainWindow):
 
     def printWidget(self, printer = None):
         ## establish a printer that will print the widget
-
-
         if not printer:
             printer = QPrinter()
             printDialog = QPrintDialog(printer)
@@ -196,11 +194,11 @@ class widgetGUI(QMainWindow):
         #painter = QPainter(printer)
         painter = QPainter(printer)
         self.render(painter)
-        painter.setBrushOrigin(0, int(self.height())+20)
-        self.ROutput.document().drawContents(painter)
-        painter.setBrushOrigin(0, int(self.height()+self.ROutput.height()+40))
-        self.notes.document().drawContents(painter)
+        tempDoc = QTextEdit()
+        tempDoc.setText('R Output:</br>'+self.ROutput.toHtml()+'</br> Notes: </br>'+self.notes.toHtml())
+        tempDoc.render(printer)
         painter.end()
+        
     
 
     def updateDock(self,ev):
@@ -508,19 +506,7 @@ class widgetGUI(QMainWindow):
             self.progressBarHandler(self, 0)
 
     def progressBarSet(self, value):
-        # if value > 0:
         self.progressBarValue = value
-            # usedTime = max(1, time.time() - self.startTime)
-            # totalTime = (100.0*usedTime)/float(value)
-            # remainingTime = max(0, totalTime - usedTime)
-            # h = int(remainingTime/3600)
-            # min = int((remainingTime - h*3600)/60)
-            # sec = int(remainingTime - h*3600 - min*60)
-            # if h > 0: text = "%(h)d:%(min)02d:%(sec)02d" % vars()
-            # else:     text = "%(min)d:%(sec)02d" % vars()
-            # self.setWindowTitle(self.captionTitle + " (%(value).2f%% complete, remaining time: %(text)s)" % vars())
-        # else:
-            # self.setWindowTitle(self.captionTitle + " (0% complete)" )
         if self.progressBarHandler: self.progressBarHandler(self, value)
         qApp.processEvents()
 

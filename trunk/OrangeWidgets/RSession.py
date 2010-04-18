@@ -15,7 +15,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 mutex = QMutex()
-def Rcommand(query, processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
+def Rcommand(query, silent = False, wantType = None, listOfLists = True):
     
     unlocked = mutex.tryLock()
     if not unlocked:
@@ -40,53 +40,44 @@ def Rcommand(query, processingNotice=False, silent = False, showException=True, 
         
     
     if wantType == None:
-        mutex.unlock()
-        return output
+        pass
     elif wantType == 'list':
         if type(output) in [str, int, float, bool]:
-            mutex.unlock() 
-            return [output]
+            output =  [output]
         elif type(output) in [list, numpy.ndarray] and len(output) == 1 and not listOfLists:
             output = output[0]
-            mutex.unlock()
-            return output
+            
         else:
-            mutex.unlock()
-            return output
+            pass
     elif wantType == 'dict':
         if type(output) == type(''):
-            mutex.unlock()
-            return {'output':[output]}
+            output =  {'output':[output]}
         elif type(output) == type([]):
-            mutex.unlock()
-            return {'output': output}
+            
+            output = {'output': output}
         else:
-            mutex.unlock()
-            return output
+            pass
     elif wantType == 'array': # want a numpy array
         if type(output) == list:
             output = numpy.array(output)
-            mutex.unlock()
-            return output
+            
         elif type(output) in [str, int, float, bool]:
             output = numpy.array([output])
-            mutex.unlock()
-            return output
+            
         elif type(output) == dict:
             newOutput = []
             for key in output.keys():
                 newOutput.append(output[key])
-            mutex.unlock()
-            return newOutput
+            output = newOutput
         elif type(output) in [numpy.ndarray]:
-            mutex.unlock()
-            return output
+            pass
         else:
             print type(output), 'Non normal type, please add to RSession array logic'
-            return output
+            
     else:
-        mutex.unlock()
-        return output
+        pass
+    mutex.unlock()
+    return output
 def getInstalledLibraries():
     libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
     return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])')
