@@ -10,6 +10,7 @@ else: # need this because linux doesn't need to use the RPATH
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
     
+    
 import rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
