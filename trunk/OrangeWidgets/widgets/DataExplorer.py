@@ -31,7 +31,7 @@ class DataExplorer(OWRpy):
         self.setRvariableNames(['dataExplorer'])
         self.loadSettings()
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
+        self.inputs = [('Data Table', RvarClasses.RRectangularData, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
         
         # a special section that sets when the shift key is heald or not 

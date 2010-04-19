@@ -26,7 +26,8 @@ class RVector(RDataFrame):
         newData.dictAttrs = self.dictAttrs
         newData.dictAttrs['cm'] = self.cm
         return newData
-        
+    def _convertToRectangularData(self):
+        return self._convertToDataFrame()
     def _convertToDataFrame(self):
         # self.R('data_frame_of_'+self.data+'<-as.data.frame('+self.data+')')
         # self.R('colnames(data_frame_of_'+self.data+')<-c(\''+self.data+'\')')

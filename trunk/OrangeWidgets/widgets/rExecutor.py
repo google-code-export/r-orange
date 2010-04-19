@@ -126,9 +126,15 @@ class rExecutor(OWRpy):
             self.rSend(output[0], None, 0)
         self.data = ''
         if data:
-            self.data = str(data['data'])
+            self.data = str(data.data)
             self.olddata = data
-            for key in self.olddata.keys():
+            if self.olddata.data:
+                self.metadataLB.addItem('data')
+            if self.olddata.parent:
+                self.metadataLB.addItem('parent')
+            if self.olddata.cm:
+                self.metadataLB.addItem('cm')
+            for key in self.olddata.dictAttrs.keys():
                 self.metadataLB.addItem(key)
             self.infob.setText(self.data)
             # logic to handle assignment of the data elements

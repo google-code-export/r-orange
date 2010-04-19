@@ -236,23 +236,26 @@ class session():
     def setSentItemsList(self, d):
         # set the sentItems in the widget
         for (sentItemName, sentItemDict) in d:
-            print 'setting ', sentItemName, 'to', sentItemDict
-            self.sentItems.append((sentItemName, self.setRvarClass(sentItemDict, sentItemName)))
-    def setRvarClass(self, d, sentItemName):
+            print 'setting sent items', sentItemName, 'to', sentItemDict
+            self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName)))
+    
+    def setSentRvarClass(self, d, sentItemName):
         className = d['class'].split('.')
         print className
         className = className[1]
         print 'setting ', className
         try: # try to reload the output class from the RvarClasses
             var = getattr(RvarClasses, className)(data = d['data'])
-        except: # if it doesn't exist we need to set the class something so we look to the inputs.
-            var = None
-            for (name, att) in self.outputs:
-                if name == sentItemName:
-                    var = att(data = d['data'])
-            if var == None: raise Exception
-        finally: # something is really wrong we need to set some kind of data so let's set it to the RvarClasses.RVariable
-            var = RvarClasses.RVariable(data = d['data'])
+        except: # if it doesn't exist we need to set the class something so we look to the outputs. 
+            try:
+                var = None
+                for (name, att) in self.outputs:
+                    if name == sentItemName:
+                        var = att(data = d['data'])
+                if var == None: raise Exception
+            except: # something is really wrong we need to set some kind of data so let's set it to the RvarClasses.RVariable
+                print 'something is really wrong we need to set some kind of data so let\'s set it to the RvarClasses.RVariable'
+                var = RvarClasses.RVariable(data = d['data'])
             
         
         for key in d.keys():
@@ -262,6 +265,22 @@ class session():
             subvar = d[key]
         return var
             
+    def setRvarClass(self, d):
+        className = d['class'].split('.')
+        print className
+        className = className[1]
+        print 'setting ', className
+        #try: # try to reload the output class from the RvarClasses
+        var = getattr(RvarClasses, className)(data = d['data'])
+        # finally: # something is really wrong we need to set some kind of data so let's set it to the RvarClasses.RVariable
+            # print 'Class name not found, setting to a variable'
+            # var = RvarClasses.RVariable(data = d['data'])
+        for key in d.keys():
+            if key == 'class': continue
+            print 'setting ', key
+            subvar = getattr(var, key) 
+            subvar = d[key]
+        return var
     def recursiveSetSetting(self,var,d):
         # print 'recursiveSetSetting'
         

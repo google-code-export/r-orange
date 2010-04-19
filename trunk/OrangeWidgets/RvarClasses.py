@@ -86,7 +86,8 @@ class RVariable: # parent class of all RvarClasses.  This class holds base funct
         return text
     def _convertToVariable(self):
         return self.copy()
-        
+    def convertToClass(self, varClass):
+        return self.copy()
 def forname(modname, classname):
     ''' Returns a class of "classname" from module "modname". '''
     module = __import__(modname)

@@ -21,8 +21,8 @@ class RedRScatterplot(OWRpy):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
-        self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
-        self.outputs = [('Scatterplot Output', RvarClasses.RDataFrame)]
+        self.inputs = [('x', RvarClasses.RRectangularData, self.gotX)]
+        self.outputs = [('Scatterplot Output', RvarClasses.RRectangularData)]
         self.data = None
         self.parent = None
         self.dataParent = {}
@@ -109,11 +109,11 @@ class RedRScatterplot(OWRpy):
         
     def gotX(self, data):
         if data:
-            self.data = data['data']
-            self.parent = data['parent']
+            self.data = data.data
+            self.parent = data.parent
             self.dataParent = data.copy()
 
-            self.cm = data['cm']
+            self.cm = data.cm
             self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
             self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
             cmColNames = self.R('colnames('+self.cm+')')
@@ -283,7 +283,7 @@ class RedRScatterplot(OWRpy):
         self.graph.replot()
     def sendMe(self):
 
-        data = RvarClasses.RDataFrame(data = self.dataParent.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', parent = self.parent, cm = self.cm) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        data = RvarClasses.RRectangularData(data = self.dataParent.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', parent = self.parent, cm = self.cm) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
     def loadCustomSettings(self, settings = None):
