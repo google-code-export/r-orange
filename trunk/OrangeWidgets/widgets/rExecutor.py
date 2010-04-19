@@ -80,16 +80,18 @@ class rExecutor(OWRpy):
     def sendThis(self):
         
         thisdataclass = self.R('class('+str(self.command.text())+')')
+        thisdata = str(self.command.text())
         # use upclassing to convert to RvarClasses class
-        if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic
-            self.rSend('R.object', self.sendt)
+        if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
+            newData = RvarClasses.RVariable(data = str(self.command.text()))
+            self.rSend('R.object', newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
                 newData = RvarClasses.RVector(data = str(self.command.text()))
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame', 'matrix']: # the object is a data.frame
-                self.R('cm_'+str(self.command.text())+'<-data.frame(row.names = rownames('+self.sendt['data']+'))')
+                self.R('cm_'+str(self.command.text())+'<-data.frame(row.names = rownames('+str(self.command.text())+'))')
                 newData = RvarClasses.RRectangularData(data = str(self.command.text()), cm = 'cm_'+str(self.command.text()))
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')

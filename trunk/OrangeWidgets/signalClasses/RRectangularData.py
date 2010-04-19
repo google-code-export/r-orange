@@ -14,3 +14,13 @@ class RRectangularData(RVariable):
         newVariable = RRectangularData(self.data, self.parent, self.cm)
         newVariable.dictAttrs = self.dictAttrs
         return newVariable
+    def convertToClass(self, varClass):
+        if varClass == RVariable:
+            return self._convertToVariable()
+        else:
+            raise Exception
+    def _convertToVariable(self):
+        # newData = RVariable(data = self.data, parent = self.parent)
+        # newData.dictAttrs = self.dictAttrs
+        # newData.dictAttrs['cm'] = self.cm
+        return self.copy()

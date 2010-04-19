@@ -33,12 +33,12 @@ class plot(OWRpy):
     def processx(self, data):
         if data:
             self.data = data
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.data
             self.commitFunction()
     def saveAsPDF(self):
         if self.RFunctionParam_x == '': return
         injection = []
-        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data:
+        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
             injection.append('pch=rownames('+self.RFunctionParam_x+')')
         if self.RFunctionParam_main.text() != '':
             injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
@@ -59,7 +59,7 @@ class plot(OWRpy):
         #if self.RFunctionParam_y == '': return
         if self.RFunctionParam_x == '': return
         injection = []
-        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data:
+        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
             injection.append('pch=rownames('+self.RFunctionParam_x+')')
         if self.RFunctionParam_main.text() != '':
             injection.append('main = "'+self.RFunctionParam_main.text()+'"')
