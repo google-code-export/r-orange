@@ -2,7 +2,7 @@
     <group name="Data Input">
         <Description>Widgets for Importing data into redR</Description>
     </group>
-    <group name="Data Exploration and Visualization">
+    <group name="View Data">
         <Description>Sets of widgets for looking at data</Description>
     </group>
     <group name="Data Manipulation">

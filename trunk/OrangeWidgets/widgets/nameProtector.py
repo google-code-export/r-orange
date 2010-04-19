@@ -1,5 +1,5 @@
 """
-<name>Rename Rowss or Columns</name>
+<name>Rename Rows or Columns</name>
 <discription>R does not handle attachment of column names that begin with integers.  This is usually handled by R functions that read in data however some precompiled data escapes this protection.</discription>
 <author>Kyle R. Covington</author>
 <tags>R</tags>

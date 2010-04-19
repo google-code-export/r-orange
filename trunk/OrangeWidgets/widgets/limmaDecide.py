@@ -1,5 +1,5 @@
 """
-<name>Signigicance Criteria</name>
+<name>Significance Criteria</name>
 <description>Calculates differential expression of genes from an eSet object</description>
 <tags>Microarray</tags>
 <RFunctions>limma:decideTests</RFunctions>
