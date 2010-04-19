@@ -17,7 +17,7 @@ def __getDirectoryNames():
         orangeVer = "orange"
 
     canvasDir = os.path.join(orangeDir, "OrangeCanvas")
-    RDir = os.path.join(orangeDir, "R")
+    RDir = os.path.join(os.path.split(orangeDir)[0], "R")
     widgetDir = os.path.join(orangeDir, "OrangeWidgets")
     tagsDir = os.path.join(orangeDir, "tagsSystem")
     picsDir = os.path.join(widgetDir, "icons")
