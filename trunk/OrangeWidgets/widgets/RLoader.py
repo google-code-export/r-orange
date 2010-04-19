@@ -36,3 +36,6 @@ class RLoader(OWRpy):
         self.infoa.setText('Data loaded from '+str(file)+'. Please use the R Variable Separator widget to extract your data.')
         self.rSend('R Session', {'data':self.Rvariables['sessionEnviron']})
         self.status.setText('Session loaded from memory, please use the variable separator to parse the widget output.')
+        
+    def customWidgetDelete(self):
+        self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { rm(local(ls(), ' + self.Rvariables['sessionEnviron'] + '), envir = '+self.Rvariables['sessionEnviron']+' }')

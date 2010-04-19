@@ -362,6 +362,7 @@ class SchemaDoc(QWidget):
         self.canvasDlg.setCaption()
         for widget in self.widgets[::-1]:   
             self.removeWidget(widget, saveTempDoc = False, close = close)   # remove widgets from last to first
+        RSession.Rcommand('rm(list = ls())')
         self.canvas.update()
         self.saveTempDoc()
 
