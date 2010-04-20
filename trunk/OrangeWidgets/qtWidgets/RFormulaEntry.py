@@ -73,10 +73,7 @@ class RFormulaEntry(groupBox, widgetState):
         self.updateEnabled(1)
         
     def Formula(self):
-        if str(self.outcomeVariable.currentText()) in str(self.modelLineEdit.text()):
-            return None
-        else:
-            return (str(self.outcomeVariable.currentText()), str(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
+        return (str(self.outcomeVariable.currentText()), str(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
     def getSettings(self):
         itemsText = []
         for item in self.elementsListBox.items():

@@ -18,7 +18,7 @@ class session():
         self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList'])
 
     def getSettings(self, alsoContexts = True):
-        print 'moving to save'
+        print 'moving to save'+str(self.captionTitle)
         import re
         settings = {}
         allAtts = self.__dict__
@@ -160,7 +160,13 @@ class session():
     def processSentItems(self):
         sentItemsList = []
         for (sentDataName, sentDataObject) in self.sentItems:
-            sentItemsList.append((sentDataName, sentDataObject.saveSettings()))
+            if sentDataObject == None: 
+                sentItemsList.append((sentDataName, None))
+            elif type(sentDataObject) == dict:
+                sentItemsList.append((sentDataName, sentDataObject))
+                print sentDataName, 'still set to a dict, change this!!!'
+            else:
+                sentItemsList.append((sentDataName, sentDataObject.saveSettings()))
         return sentItemsList
     def setSettings(self,settings):
         # print 'on set settings'

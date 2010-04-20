@@ -87,7 +87,6 @@ class diffExp(OWRpy):
         grid2.addWidget(box, 0, 0)
         self.functionBox = redRGUI.RFormulaEntry(box)
         self.functionBox.outcomeVariable.hide() #don't need to see the outcome variable
-        
         self.valuesStack.addWidget(boxVal)
         
         self.valuesStack.setCurrentWidget(self.boxIndices[0])
@@ -167,7 +166,10 @@ class diffExp(OWRpy):
                 self.R('cvect<-data.frame(type=1, class='+self.Rvariables['classes']+')') 
                 self.R('design<-model.matrix(~class, cvect)')
             else: #someone attached phenoData so lets use that to make the design
-                self.R('design<-model.matrix(~'+self.functionBox.Formula()[1]+', '+self.phenoData+'[colnames('+self.data+'),])')
+                print self.functionBox.Formula()[1]
+                print self.phenoData
+                print self.data
+                self.R('design<-model.matrix(1~'+self.functionBox.Formula()[1]+', '+self.phenoData+'[colnames('+self.data+'),])')
                 self.R(self.Rvariables['subset']+ '<-' +self.data)
                 
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')

@@ -44,6 +44,13 @@ class widgetSignals():
         if not self.hasOutputName(signalName):
             print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
 
+        ##remove sent items from the sentItems List if they have already been sent
+        # i = 0
+        # for (itemName, value) in self.sentItems:
+            # if itemName == signalName:
+                # self.sentItems.pop(i)
+            # i += 1
+        # end block
         if self.linksOut.has_key(signalName):
             self.linksOut[signalName][id] = value
         else:

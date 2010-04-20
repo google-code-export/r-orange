@@ -26,7 +26,7 @@ class limmaDecide(OWRpy):
         self.modelProcessed = 0
         self.loadSettings()
         
-        self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm'])
+        self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm', 'gcm_matrix'])
         
         #self.sendMe()
         
@@ -73,6 +73,7 @@ class limmaDecide(OWRpy):
         for output in self.outputs:
             self.rSend(output[0], None, 0) #start the killing cascade for all outputs
         if dataset == None:
+            print dataset
             self.status.setText("Blank data recieved")
             self.runbutton.setEnabled(False)
             self.pickGroup.setEnabled(False)
@@ -92,7 +93,8 @@ class limmaDecide(OWRpy):
         #run the analysis using the parameters selected or input
         self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod.currentText())+'", adjust.method="'+str(self.adjmethods.currentText())+'", p.value='+str(self.pval.text())+', lfc='+str(self.foldchange.text())+')')
         #self.infoa.setText("Gene Matrix Processed and sent!")
-        self.sending = {'data':self.Rvariables['gcm']}
+        self.R(self.Rvariables['gcm_matrix']+'<-as.matrix('+self.Rvariables['gcm']+')')
+        self.sending = RvarClasses.RMatrix(data = self.Rvariables['gcm_matrix'])
         self.rSend("Gene Change Matrix", self.sending)
         self.groupNames = self.R('colnames('+self.Rvariables['gcm']+')', wantType = 'list')
         #if len(self.groupNames) > 2:

@@ -7,7 +7,13 @@ from RList import *
 class RModelFit(RList):
     def __init__(self, data, parent = None, checkVal = True):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
-        
+    def convertToClass(self, varClass):
+        if varClass == RVariable:
+            return self._convertToVariable()
+        elif varClass == RModelFit:
+            self.copy()
+        else:
+            raise Exception
     def _convertToModelFit(self):
         return self.copy()
     def _convertToList(self):
