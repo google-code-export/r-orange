@@ -94,5 +94,5 @@ class ReadCEL(OWRpy):
         
     
     def sendMe(self):
-        out2 = REset(data = str(self.Rvariables['eset']))
+        out2 = RvarClasses.REset(data = str(self.Rvariables['eset']))
         self.rSend("Eset", out2)
