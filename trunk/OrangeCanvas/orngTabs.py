@@ -517,8 +517,8 @@ class WidgetTree(WidgetListBase, QDockWidget):
         # must make a widget container to hold the search area and the widget tree
         self.containerWidget = QWidget()
         tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
-        self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
-        # self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
+        #self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
+        self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
         self.widgetSuggestEdit.caseSensitive = 0
         self.widgetSuggestEdit.matchAnywhere = 1
         self.widgetSuggestEdit.autoSizeListWidget = 1
@@ -904,24 +904,17 @@ class SearchBox(redRGUI.lineEditHint):
             return consumed
         except: return 0
     
-    def doneCompletion(self, *args):
-        if self.listWidget.hasFocus():
-            if self.listWidget.isVisible():
-                if len(args) == 1:  itemText = str(args[0].text())
-                else:               itemText = str(self.listWidget.currentItem().text())
-                last = self.getLastTextItem()
-                self.setText(str(self.text()).rstrip(last) + itemText)
-                self.listWidget.hide()
-                self.setFocus()
-            if self.callbackOnComplete:
-                QTimer.singleShot(0, self.callbackOnComplete)
-                #self.callbackOnComplete()
-        else:
-            itemText = str(self.text())
-            print 'Searching '+itemText+' on Red-R.org'
-            self.searchBox.show()
-            url = 'http://www.red-r.org/?s='+itemText
-            self.searchBox.updateUrl(url)
+    # def doneCompletion(self, *args):
+        # if self.listWidget.isVisible():
+            # if len(args) == 1:  itemText = str(args[0].text())
+            # else:               itemText = str(self.listWidget.currentItem().text())
+            # last = self.getLastTextItem()
+            # self.setText(str(self.text()).rstrip(last) + itemText)
+            # self.listWidget.hide()
+            # self.setFocus()
+        # if self.callbackOnComplete:
+            # QTimer.singleShot(0, self.callbackOnComplete)
+            #self.callbackOnComplete()
         
     def searchDialog(self):
         if str(self.text()) in self.itemsAsStrings:

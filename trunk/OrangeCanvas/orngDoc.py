@@ -756,7 +756,7 @@ class SchemaDoc(QWidget):
             dep = dep.strip(' ')
             if not os.path.isfile(os.path.join(self.directoryNames['orangeDir'], dep)):
                 print 'Downloading dependencies', dep
-                if not os.path.
+                if not os.path.isdir(os.path.abspath(os.path.join(self.directoryNames['orangeDir'], 'temp'))):
                     os.mkdir(os.path.join(self.directoryNames['orangeDir'], 'temp'))
                 fileExt = os.path.split(dep)[1]
                 newPackage = os.path.join(self.directoryNames['orangeDir'], 'temp', fileExt)
