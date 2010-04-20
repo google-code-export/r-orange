@@ -362,9 +362,18 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuItemPrinter(self):
         try:
-            printer = QPrinter() # must instantiate before setting, otherwise get a system crash !!!!
+            printer = QPrinter()
+            printDialog = QPrintDialog(printer)
+            if printDialog.exec_() == QDialog.Rejected: 
+                print 'Printing Rejected'
+                return
             painter = QPainter(printer)
             self.schema.canvas.render(painter)
+            painter.end()
+            for widget in self.schema.widgets:
+                try:
+                    widget.instance.printWidget(printer)                
+                except: pass
         except:
             print "Error in printing the schema"
         

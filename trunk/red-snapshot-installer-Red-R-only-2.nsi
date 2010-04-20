@@ -4,12 +4,14 @@
 ;General
 
   ;Name and file
-  Name "Red-R 1.7.Snapshot-2010-04-18"
-  OutFile "Red-R-1.7-Snapshot-2010-04-18.exe"
+  ;!define $SSVERSION "2010-04-20"
+  Name "Red-R 1.7.Nightly-2010-04-20"
+  OutFile "Red-R-1.7-Nightly-2010-04-20.exe"
 
 ;--------------------------------
 ; Defines
 !define RVERSION "Red-R1.7.Snapshot-2010-04-18" ;                                           ;;; Change this when a new version is made
+!define Red-RDIR C:\Python26\Lib\site-packages\redR1.5
 
 ;---------------------------------
   ;Default installation folder
@@ -35,13 +37,12 @@ Var AdminInstall
 !insertmacro MUI_LANGUAGE "English"
 
 Section "" ;this is the section that will install Red-R and all of it's files
-	ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
-	StrCmp $0 "" 0 +2
-	  ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
-	StrCmp $0 "" not_installed_before 0
-
-	IfFileExists "$0\red-r\settings" 0 not_installed_before
-		ask_remove_old:
+	IfFileExists "$INSTDIR\${RVERSION}\*" ask_remove_old
+    
+    not_installed_before:
+    MessageBox MB_OK "No Red-R data detected.  Please install the full version and not the code only version.$\r$\n$\r$\nYou may then install this version as an update." /SD IDOK IDOK done_install
+    
+    ask_remove_old:
 		MessageBox MB_YESNOCANCEL "Another version of Red-R has been found on the computer.$\r$\nDo you want to keep the existing settings for canvas and widgets?$\r$\n$\r$\nYou can usually safely answer 'Yes'; in case of problems, re-run this installation." /SD IDYES IDYES dont_remove_settings IDNO remove_old_settings
 			MessageBox MB_YESNO "Abort the installation?" IDNO ask_remove_old
 				Quit
@@ -54,9 +55,6 @@ Section "" ;this is the section that will install Red-R and all of it's files
     
 	SetOutPath $INSTDIR\${RVERSION}
 	File /r /x .svn /x *.pyc /x settings /x R /x *.nsi "${Red-RDIR}\*"
-    
-    IfFileExists $INSTDIR\R\README.${RVER}.* done_install; better evaluate to true
-    not_installed_before:
-    MessageBox MB_OK "No Red-R data detected.  Please install the full version and not the code only version.$\r$\n$\r$\nYou may then install this version as an update." /SD IDOK
+   
     done_install:
     SectionEnd
