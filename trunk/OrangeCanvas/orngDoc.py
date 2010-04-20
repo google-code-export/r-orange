@@ -737,11 +737,60 @@ class SchemaDoc(QWidget):
 
                 
     def loadRRW(self, filename):
-        pass # funcitons for loading the rrw file.
+        print 'Loading RRW file.  This will update your system.'
+        
+        f = open(filename, 'r')
+
+        #print str(f)
+        
+        mainTabs = xml.dom.minidom.parse(f)
+        f.close() 
+        
+        version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
+        if self.version not in version:
+            print 'Warning, this widget does not work with your current version.  Please update!!'
+            return
+            
+        dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
+        for dep in dependencies.split(','):
+            dep = dep.strip(' ')
+            if not os.path.isfile(os.path.join(self.directoryNames['orangeDir'], dep)):
+                print 'Downloading dependencies', dep
+                if not os.path.
+                    os.mkdir(os.path.join(self.directoryNames['orangeDir'], 'temp'))
+                fileExt = os.path.split(dep)[1]
+                newPackage = os.path.join(self.directoryNames['orangeDir'], 'temp', fileExt)
+                self.urlOpener.retrieve('http://www.red-r.org/packages/'+fileExt, newPackage)
+                self.loadRRW(newPackage)
+                ### go to website, get the file, and repleat this process until success
+                
+        fileDirName = self.getXMLText(mainTabs.getElementsByTagName('FileDirectoryStucture')[0].childNodes)
+        code = self.getXMLText(mainTabs.getElementsByTagName('FileData')[0].childNodes)
+        
+        file = open(os.path.abspath(os.path.join(self.directoryNames['orangeDir'], fileDirName)), "wt")
+        file.write(code)
+        file.close()
+        
+        # get the examples if there are anything
+        examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
+        for example in examples.split(','):
+            example = example.strip(' ')
+            if not os.path.isfile(os.path.join(self.directoryNames['orangeDir'],'Examples', example)):
+                print 'Downloading example file', example
+                fileExt = os.path.split(example)[1]
+                newExample = os.path.join(self.directoryNames['orangeDir'], 'Examples', fileExt)
+                self.urlOpener.retrieve('http://www.red-r.org/Examples/'+fileExt, newExample)
+        os.remove(filename)
+        print 'Package loaded successfully'
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()
-
+    def getXMLText(self, nodelist):
+        rc = ''
+        for node in nodelist:
+            if node.nodeType == node.TEXT_NODE:
+                rc = rc + node.data
+        return rc
     def keyPressEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         if e.key() > 127:
