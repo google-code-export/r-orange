@@ -248,7 +248,7 @@ class widgetSignals():
                                     raise Exception
                                 value = oldValue.copy()
                                 if not value.__class__ == signal[1]:
-                                    print value.__class__
+                                    print 'CONVERSION of ', value.__class__
                                     value = value.convertToClass(signal[1])
                             
                             ### end block

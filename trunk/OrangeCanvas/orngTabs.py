@@ -517,8 +517,8 @@ class WidgetTree(WidgetListBase, QDockWidget):
         # must make a widget container to hold the search area and the widget tree
         self.containerWidget = QWidget()
         tmpBoxLayout = QBoxLayout(QBoxLayout.TopToBottom, self.containerWidget)
-        #self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
-        self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
+        self.widgetSuggestEdit = OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1, callback = self.callback)
+        # self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
         self.widgetSuggestEdit.caseSensitive = 0
         self.widgetSuggestEdit.matchAnywhere = 1
         self.widgetSuggestEdit.autoSizeListWidget = 1
@@ -880,7 +880,6 @@ class SearchBox(redRGUI.lineEditHint):
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this
             if object != self.listWidget and object != self:
-                
                 return 0
             if ev.type() == QEvent.MouseButtonPress:
                 self.listWidget.hide()

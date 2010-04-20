@@ -217,7 +217,9 @@ class SchemaDoc(QWidget):
         ok = self.signalManager.addLink(outWidget.instance, inWidget.instance, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)
-            QMessageBox.warning( None, "Orange Canvas", "Unable to add link. Something is really wrong; try restarting Orange Canvas.", QMessageBox.Ok + QMessageBox.Default )
+            QMessageBox.information( self, "Orange Canvas", "Unable to add link. Something is really wrong; try restarting Orange Canvas.", QMessageBox.Ok + QMessageBox.Default )
+            
+
             return 0
         else:
             orngHistory.logAddLink(self.schemaID, outWidget, inWidget, outSignalName)
@@ -647,7 +649,7 @@ class SchemaDoc(QWidget):
 
             #read lines
             lineList = lines.getElementsByTagName("channel")
-            # loadingProgressBar.setLabelText('Loading Lines')
+            loadingProgressBar.setLabelText('Loading Lines')
             # loadingProgressBar.setMaximum(len(lineList))
             # loadingProgressBar.setValue(0)
             # lpb = 0

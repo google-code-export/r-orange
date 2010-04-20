@@ -132,7 +132,7 @@ class rExecutor(OWRpy):
                 self.metadataLB.addItem('data')
             if self.olddata.parent:
                 self.metadataLB.addItem('parent')
-            if self.olddata.cm:
+            if hasattr(self.olddata,'cm') and self.olddata.cm:
                 self.metadataLB.addItem('cm')
             for key in self.olddata.dictAttrs.keys():
                 self.metadataLB.addItem(key)

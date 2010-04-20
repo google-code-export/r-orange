@@ -6,7 +6,7 @@ import orngEnviron
 
 
 dir = os.path.abspath(orngEnviron.directoryNames["widgetDir"]+'/icons/')
-print str(dir), 'widget Dir for OWToolbars'
+
 dlg_zoom = os.path.join(dir , "Dlg_zoom.png")
 dlg_zoom_selection = os.path.join(dir ,  "Dlg_zoom_selection.png")
 dlg_pan = os.path.join(dir , "Dlg_pan_hand.png")

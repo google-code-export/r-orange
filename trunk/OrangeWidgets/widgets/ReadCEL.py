@@ -28,10 +28,10 @@ class ReadCEL(OWRpy):
             # self.recentFiles.insert(0, '')
         
         #set R variable names
-        self.setRvariableNames(['eset','folder', 'cm'])
+        self.setRvariableNames(['affyBatch','folder', 'cm'])
         #signals
         self.inputs = None 
-        self.outputs = [("Eset", RvarClasses.REset)]
+        self.outputs = [("affyBatch", RvarClasses.RAffyBatch)]
         
 
 
@@ -83,16 +83,16 @@ class ReadCEL(OWRpy):
         #required librarys
         self.require_librarys(['affy'])
         if self.numArrays.getChecked() == 'Less than 40':
-            self.R(self.Rvariables['eset']+'<-ReadAffy(celfile.path="'+dir+'")','setRData',True)
+            self.R(self.Rvariables['affyBatch']+'<-ReadAffy(celfile.path="'+dir+'")','setRData',True)
             self.status.setText("Your data has been processed with ReadAffy.")
         else:
             self.status.setText("This may take several minutes")
-            self.R(self.Rvariables['eset']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
+            self.R(self.Rvariables['affyBatch']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
             self.status.setText("Data preprocessed with justRMA.")
-        self.R(self.Rvariables['cm']+'<-data.frame(row.names = colnames(exprs('+self.Rvariables['eset']+')))') # in this case the cm should be the colnames, not the rownames as is usual
+        self.R(self.Rvariables['cm']+'<-data.frame(row.names = colnames(exprs('+self.Rvariables['affyBatch']+')))') # in this case the cm should be the colnames, not the rownames as is usual
         self.sendMe()
         
     
     def sendMe(self):
-        out2 = RvarClasses.REset(data = str(self.Rvariables['eset']))
-        self.rSend("Eset", out2)
+        out2 = RvarClasses.RAffyBatch(data = str(self.Rvariables['affyBatch']))
+        self.rSend("affyBatch", out2)

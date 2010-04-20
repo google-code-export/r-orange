@@ -32,11 +32,11 @@ class affyNormalize(OWRpy):
         
         
         #set R variable names
-        self.setRvariableNames(['normalized_affybatch','folder'])
+        self.setRvariableNames(['normalized_Eset'])
         
         #signals
-        self.inputs = [("Eset", RvarClasses.REset, self.process)]
-        self.outputs = [("Normalized AffyBatch", RvarClasses.REset)]
+        self.inputs = [("AffyBatch", RvarClasses.RAffyBatch, self.process)]
+        self.outputs = [("Normalized Eset", RvarClasses.REset)]
 
         
         #the GUI
@@ -76,13 +76,13 @@ class affyNormalize(OWRpy):
         if self.data == '': return
         self.status.setText('Processing')
         if self.selMethBox.getChecked() == 'RMA':
-            self.R(self.Rvariables['normalized_affybatch']+'<-rma('+self.data+')',True) #makes the rma normalization
+            self.R(self.Rvariables['normalized_Eset']+'<-rma('+self.data+')',True) #makes the rma normalization
             self.norminfo = 'Normalized with RMA'
         if self.selMethBox.getChecked() == 'MAS5':
-            self.R(self.Rvariables['normalized_affybatch']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
+            self.R(self.Rvariables['normalized_Eset']+'<-mas5('+self.data+')',True) #makes the mas5 normalization
             self.norminfo = 'Normalized with MAS5'
         if self.selMethBox.getChecked() == 'Custom':
-            self.R(self.Rvariables['normalized_affybatch']+'<-expresso('+self.data+', bg.correct='+self.bgcorrectselector.currentText()+', bgcorrect.method="'+self.bgcmethselector.currentText()+'", pmcorrect.method="'+self.pmcorrectselector.currentText()+'", summary.method="'+self.summethselector.currentText()+'")',True)
+            self.R(self.Rvariables['normalized_Eset']+'<-expresso('+self.data+', bg.correct='+self.bgcorrectselector.currentText()+', bgcorrect.method="'+self.bgcmethselector.currentText()+'", pmcorrect.method="'+self.pmcorrectselector.currentText()+'", summary.method="'+self.summethselector.currentText()+'")',True)
             self.norminfo = 'Normalized by: Background Correction:'+self.bgcorrectselector.currentText()+', Method:'+self.bgcmethselector.currentText()+', Perfect Match Correct Method: '+self.pmcorrectselector.currentText()+', Summary Method: '+self.summethselector.currentText()
         self.toSend()
         self.status.setText(self.norminfo)
@@ -98,14 +98,15 @@ class affyNormalize(OWRpy):
     def process(self, dataset):
         #required librarys
 
-        self.rSend("Normalized Expression Matrix", None) #start the killing cascade because normalization is required
-        self.rSend("Normalized AffyBatch", None) #start the killing cascade because normalization is required
+        # self.rSend("Normalized Expression Matrix", None) #start the killing cascade because normalization is required
+        self.rSend("Normalized Eset", None) #start the killing cascade because normalization is required
                 
         try: 
-            print str(dataset['data'])
-            print dataset.__class__
+            # print str(dataset['data'])
+            # print dataset.__class__
+            print dataset
             self.data = str(dataset['data'])
-            self.newdata = dataset.copy()
+            self.oldData = dataset
             
             if self.R('length(exprs('+self.data+')[1,])') > 10:
                 self.selectMethod = 2
@@ -160,8 +161,8 @@ class affyNormalize(OWRpy):
                 self.normselector.setEnabled(True)
 
     def toSend(self):
-        newData = RvarClasses.REset(data = self.Rvariables['normalized_affybatch'])
-        newData.dictAttrs = self.newdata.dictAttrs
-        self.rSend("Normalized AffyBatch", self.newdata)
+        newData = RvarClasses.REset(data = self.Rvariables['normalized_Eset'])
+        newData.dictAttrs = self.oldData.dictAttrs
+        self.rSend("Normalized Eset", newData)
         
     
