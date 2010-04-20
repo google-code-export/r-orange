@@ -545,7 +545,13 @@ class SchemaDoc(QWidget):
         return True
     # load a scheme with name "filename"
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
+        
         import orngEnviron
+        ### .rrw functionality
+        if filename.split('.')[-1] == 'rrw':
+            self.loadRRW(filename)
+            return # we don't need to load anything else, we are not really loading a rrs file. 
+        ###
         print 'document load called'
         #self.clear()
         pos = self.canvasDlg.pos()
@@ -729,6 +735,9 @@ class SchemaDoc(QWidget):
             for val in v:
                 self.canvasDlg.output.write("%s = %s" % (val, getattr(widget.instance, val)))
 
+                
+    def loadRRW(self, filename):
+        pass # funcitons for loading the rrw file.
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()
