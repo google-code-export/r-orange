@@ -62,9 +62,11 @@ class RedRScatterplot(OWRpy):
     def refresh(self):
         if self.cm != None:
             try:
-                names = self.R('colnames('+self.cm+')')
-                if type(names) == str:
+                names = self.R('names('+self.cm+')')
+                if type(names) == str and names != None and names != 'NULL':
                     names = [names]
+                else:
+                    names = []
                 names += self.R('colnames('+self.data+')')
                 names.insert(0, '')
                 self.paintCMSelector.update(names)
@@ -98,14 +100,10 @@ class RedRScatterplot(OWRpy):
         print type(xData), 'Data type'   
         print xData
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
-        if self.cm == None or self.cm == '':
-            newData = self.dataParent.copy()
-            newData['data'] = self.data+'[c('+str(selected)[1:-1]+'),]'
-            self.rSend('Scatterplot Output', newData)
-        else:
-            self.R(self.cm+'[,"'+self.Rvariables['Plot']+'"]<-rep(0, length('+self.cm+'[,1]))')
-            self.R(self.cm+'[rownames('+self.data+'),"'+self.Rvariables['Plot']+'"]<-c('+str(selected)[1:-1]+')')
-            self.sendMe()
+
+        self.R(self.cm+'$'+self.Rvariables['Plot']+'<-rownames('+self.data+'[as.logical(c('+str(selected)[1:-1]+')),])')
+        print 
+        self.sendMe()
         
     def gotX(self, data):
         if data:
@@ -114,12 +112,10 @@ class RedRScatterplot(OWRpy):
             self.dataParent = data.copy()
 
             self.cm = data.cm
-            self.R(self.Rvariables['Plot']+'<-rep(0, length('+self.parent+'[,1]))')
-            self.R(self.cm+'<-cbind('+self.cm+','+self.Rvariables['Plot']+')')
-            cmColNames = self.R('colnames('+self.cm+')')
-
+            cmColNames = self.R('names('+self.cm+')')
+            if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
             if type(cmColNames) == type(''): cmColNames = [cmColNames]
-            if cmColNames == 'NULL': cmColNames = []
+            
 
             cmColNames.insert(0, ' ')
             cmColNames.extend(self.R('colnames('+self.data+')'))
@@ -127,24 +123,12 @@ class RedRScatterplot(OWRpy):
             print cmColNames
 
 
-            self.xColumnSelector.update(self.R('colnames('+self.data+')'))
-            self.yColumnSelector.update(self.R('colnames('+self.data+')'))
+            self.xColumnSelector.update(self.R('colnames('+self.data+')', wantType = 'list'))
+            self.yColumnSelector.update(self.R('colnames('+self.data+')', wantType = 'list'))
             
 
             self.plot()
-    def populateCM(self):
-    
-        return
-        cmSelector = self.subsetCMSelector.currentText()
-        
-        if cmSelector != ' ':
-            command = "levels(as.factor("+self.cm+"[,"+str(self.subsetCMSelector.currentIndex())+"]))"
-            try:
-                self.R('tmp<-'+command) # must assign to a temp variable because otherwise R fails in the background.  This problem should be reported, and may be fixed in later Rpy releases.
-                self.subsetCMClass.update(self.R('tmp'))
-            except:
-                self.subsetCMClass.clear()
-                self.X.setText('Failed')
+
     def plot(self, newZoom = True):
         # populate the cm class columns
         #cmSelector = str(self.subsetCMSelector.currentText())
@@ -163,7 +147,7 @@ class RedRScatterplot(OWRpy):
         print paintClass
         if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
             self.paintLegend.clear()
-            
+            subset = []
             if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
                 d = self.data
                 vectorClass = self.R('class('+self.data+'[,\''+paintClass+'\'])')
@@ -176,41 +160,45 @@ class RedRScatterplot(OWRpy):
                 elif vectorClass in ['numeric', 'integer']:
                     levelType = 'numeric'
                     levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))', wantType = 'list')
-                elif vectorClass in ['logical']:
-                    levelType = 'logical'
-                    levels = ['NA', 'FALSE', 'TRUE']
-                else:
-                    levelType = 'other'
-                    levels = self.R('levels(as.factor(na.omit('+self.data+'[,\''+paintClass+'\'])))', wantType = 'list')
-            else: # we made it this far so the data must be in the cm
-                d = self.cm                
-                vectorClass = self.R('class('+self.cm+'[,\''+paintClass+'\'])')                
-                print vectorClass
-                if vectorClass in ['character']: 
-                    QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
-                    print vectorClass                    
-                    return
-                elif vectorClass in ['numeric', 'integer']:
-                    levelType = 'numeric'
-                    levels = self.R('levels(as.factor('+self.cm+'[,\''+paintClass+'\']))', wantType = 'list')
+                    if len(levels) > 50:
+                        runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
+                        if runMe == QMessageBox.No: return
+                        
+                    for level in levels:
+                        subset.append((level, self.data+'[,\''+paintClass+'\'] == '+level))
                 elif vectorClass in ['logical']:
                     levelType = 'logical'
                     levels = ['FALSE', 'TRUE']
+                    for level in levels:
+                        subset.append((level, '!is.na('+self.data+') & '+self.data+'[,\''+paintClass+'\'] == '+level))
+                    subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
+                    levels.append('NA')
                 else:
                     levelType = 'other'
-                    levels = self.R('levels(as.factor(na.omit('+self.cm+'[,\''+paintClass+'\'])))', wantType = 'list')    
-            #print levels            
+                    levels = self.R('levels(as.factor(na.omit('+self.data+'[,\''+paintClass+'\'])))', wantType = 'list')
+                    if len(levels) > 50:
+                        runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
+                        if runMe == QMessageBox.No: return
+                    for level in levels:
+                        subset.append((level, '!is.na('+self.data+') & '+self.data+'[,\''+paintClass+'\'] == \''+level+'\''))
+                    subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
+                    levels.append('NA')
+            else: # we made it this far so the data must be in the cm
+                d = self.cm # be mindful that the cm is a list and should be subset as such
+                # in this case we need to subset on the rownames making groups that are either in or out of the set, so these cm's will only be 1 or 0
+                levels = [0, 1]
+                levelType = 'logical'
+                subset.append(('In Class', '!(rownames('+self.data+' %in% '+self.cm+'$'+paintClass+'))'))
+                subset.append(('Not in Class', '!(rownames('+self.data+' %in% '+self.cm+'$'+paintClass+'))'))
             
-            if len(levels) > 50:
-                runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
-                if runMe == QMessageBox.No: return
+            
             pc = 0
             xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             self.paintLegend.insertHtml('<h5>Color Legend</h5>')
             self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
             levels.append('NA')
-            for p in levels:
+            for (p, subset) in subset:
                 print p
                 # collect the color
                 if levelType not in ['logical', 'numeric'] and p != 'NA':
@@ -220,19 +208,6 @@ class RedRScatterplot(OWRpy):
                 lColor = self.setColor(pc)
                 self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
                 # generate the subset
-                if p != 'NA':
-                    if levelType == 'logical':
-                        if p == 'TRUE':
-                            subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == TRUE)'
-                        elif p == 'FALSE':
-                            subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == FALSE)'
-                    elif levelType == 'numeric': 
-                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == as.numeric('+p+'))'
-                    else:
-                        subset = '(!is.na('+d+'[,\''+paintClass+'\']) & '+d+'[,\''+paintClass+'\'] == \''+p+'\')'
-                elif p == 'NA':
-                    subset = '(is.na('+d+'[,\''+paintClass+'\']))'
-                # make a list of points
                 # check if the column is a factor
                 if xDataClass in ['factor']:
                     xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
@@ -283,7 +258,7 @@ class RedRScatterplot(OWRpy):
         self.graph.replot()
     def sendMe(self):
 
-        data = RvarClasses.RRectangularData(data = self.dataParent.parent+'['+self.cm+'[,"'+self.Rvariables['Plot']+'"] == 1,]', parent = self.parent, cm = self.cm) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        data = RvarClasses.RRectangularData(data = self.dataParent.parent+'['+self.cm+'$'+self.Rvariables['Plot']+',]', parent = self.parent, cm = self.cm) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
     def loadCustomSettings(self, settings = None):

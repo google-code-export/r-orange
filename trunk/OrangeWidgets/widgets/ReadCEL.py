@@ -89,7 +89,7 @@ class ReadCEL(OWRpy):
             self.status.setText("This may take several minutes")
             self.R(self.Rvariables['affyBatch']+'<-justRMA(celfile.path='+self.Rvariables['folder']+')','setRData',True)
             self.status.setText("Data preprocessed with justRMA.")
-        self.R(self.Rvariables['cm']+'<-data.frame(row.names = colnames(exprs('+self.Rvariables['affyBatch']+')))') # in this case the cm should be the colnames, not the rownames as is usual
+        self.R(self.Rvariables['cm']+'<-list()') # in this case the cm should be the colnames, not the rownames as is usual
         self.sendMe()
         
     

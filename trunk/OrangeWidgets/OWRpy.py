@@ -39,11 +39,8 @@ class OWRpy(widgetGUI,widgetSignals,session):
         #names.append('loadSavedSession')
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
-    def makeCM(self, Variable, Parent):
-        if self.R('rownames('+Parent+')') != 'NULL':
-            self.R(Variable+'<-data.frame(row.names = rownames('+Parent+'))')
-        else:
-            self.R(Variable+'<-data.frame(row.names = c('+','.join(range(1, int(self.R('length('+Parent+'[,1])'))))+'))')
+    def makeCM(self, Variable):
+        self.R(Variable+'<-list()')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):
         if CM == None: return
         if values == None: return

@@ -361,8 +361,7 @@ class readFile(OWRpy):
         self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
     def commit(self):
-        self.R(self.Rvariables['cm'] + '<- data.frame(row.names = rownames('
-        +self.Rvariables['dataframe_org']+'))')
+        self.R(self.Rvariables['cm'] + '<- list()')
         self.updateGUI()
         sendData = RvarClasses.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'], cm = self.Rvariables['cm'])
         #sendData = RvarClasses.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'], cm = self.Rvariables['cm'])

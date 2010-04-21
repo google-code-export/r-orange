@@ -19,6 +19,7 @@ class rExecutor(OWRpy):
         self.sendthis = ''
         self.sendt = {}
         self.dfselected = None
+        self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
         self.loadSettings()
         
         self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
@@ -87,12 +88,13 @@ class rExecutor(OWRpy):
             self.rSend('R.object', newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
-                newData = RvarClasses.RVector(data = str(self.command.text()))
+                self.R(self.Rvariables['rExecutor_cm']+'<-list()')
+                newData = RvarClasses.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame', 'matrix']: # the object is a data.frame
-                self.R('cm_'+str(self.command.text())+'<-data.frame(row.names = rownames('+str(self.command.text())+'))')
-                newData = RvarClasses.RRectangularData(data = str(self.command.text()), cm = 'cm_'+str(self.command.text()))
+                self.R(self.Rvariables['rExecutor_cm']+'<-list()')
+                newData = RvarClasses.RRectangularData(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list

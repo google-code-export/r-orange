@@ -8,7 +8,18 @@ class RRectangularData(RVariable):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)
         #if checkVal and self.getClass_data() != 'data.frame':
             #raise Exception # there this isn't the right kind of data for me to get !!!!!
-        self.cm = cm
+        if cm == None:
+            try:
+                # make a new cm
+                rownames = self.R('rownames('+self.data+')', wantType = 'list')
+                if rownames[0] == None or rownames[0] == 'NULL':
+                    self.R('rownames('+self.data+')<-make.names(range(1, length('+self.data+'[,1])))')
+                    rownames = self.R('rownames('+self.data+')')
+                self.cm = 'cm_'+self.data
+            except:
+                self.cm = None
+        else:
+            self.cm = cm
         self.reserved.append('cm')
     def copy(self):
         newVariable = RRectangularData(data = self.data, parent = self.parent, cm = self.cm)
