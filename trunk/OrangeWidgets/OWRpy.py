@@ -141,6 +141,9 @@ class OWRpy(widgetGUI,widgetSignals,session):
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()
     def onDeleteWidget(self, suppress = 0):
+        for k in self.Rvariables:
+            #print self.Rvariables[k]
+            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         try:
             #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
             for device in self.device.keys():
@@ -154,9 +157,6 @@ class OWRpy(widgetGUI,widgetSignals,session):
         if suppress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
             return
 
-        for k in self.Rvariables:
-            #print self.Rvariables[k]
-            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
         
         
     

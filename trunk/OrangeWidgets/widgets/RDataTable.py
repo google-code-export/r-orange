@@ -109,7 +109,9 @@ class RDataTable(OWRpy):
         self.supressTabClick = True
         if dataset != None:  # can be an empty table!
             if dataset.__class__ != RvarClasses.RDataFrame:
-                # we convert to a data.frame so that we can do other things with the data, this will give rownames and colnames even if the matrix or other rectangular data doesn't have them.
+                # we convert to a data.frame so that we can do other things with the data, 
+                # this will give rownames and colnames even if the matrix or other rectangular data doesn't have them.
+                
                 dataset = RvarClasses.RDataFrame(data = dataset.data, parent = dataset.parent, cm = dataset.cm)
             self.table.show()
             data = {}

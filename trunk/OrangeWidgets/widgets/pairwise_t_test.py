@@ -50,10 +50,11 @@ class pairwise_t_test(OWRpy):
         if self.RFunctionParam_x.currentText() == self.RFunctionParam_g.currentText(): return
         #self.R('attach('+self.indata+')')
         self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+self.indata+'[,\''+str(self.RFunctionParam_x.currentText())+'\'],pool_sd='+str(self.RFunctionParam_pool_sd.currentText())+',g='+self.indata+'[,\''+str(self.RFunctionParam_g.currentText())+'\'],p.adjust.method=\''+str(self.RFunctionParam_p_adjust_method.currentText())+'\')')
-        self.R('detach()')
+        # self.R('detach()')
         self.R('txt<-capture.output('+self.Rvariables['pairwise.t.test']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        print tmp
+        #print tmp
         self.RoutputWindow.insertPlainText(tmp)
-        self.rSend("pairwise.t.test Output", {"data":self.Rvariables["pairwise.t.test"]})
+        out = RvarClasses.RVariable(data=self.Rvariables["pairwise.t.test"])
+        self.rSend("pairwise.t.test Output", out)

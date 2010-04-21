@@ -8,7 +8,6 @@
 """
 from OWRpy import * 
 import redRGUI 
-import SurvivalClasses
 class survfit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,8 +17,8 @@ class survfit(OWRpy):
         self.data = {}
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata), ('Model Fit', SurvivalClasses.SurvFit, self.processfit)]
-        self.outputs = [("survfit Output", SurvivalClasses.SurvFit)]
+        self.inputs = [("data", RvarClasses.RVariable, self.processdata), ('Model Fit', RvarClasses.RModelFit, self.processfit)]
+        self.outputs = [("survfit Output", RvarClasses.RModelFit)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         formulaBox = redRGUI.widgetBox(self.controlArea)
@@ -28,7 +27,7 @@ class survfit(OWRpy):
         self.groupings = redRGUI.comboBox(formulaBox, label = 'Groupings', toolTip = 'The column that specifies the groupings of the data.\nThis is optional.')
         self.RFunctionParamweights_lineEdit =  redRGUI.lineEdit(self.GUIDialog,  label = "weights:", text = '', toolTip = 'The weights applied to the data, should be in the form c(weight1, weight2, ...).')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.bottomAreaLeft, "Report", callback = self.sendReport)
+        #redRGUI.button(self.bottomAreaLeft, "Report", callback = self.sendReport)
     def processfit(self, data):
         self.require_librarys(['survival'])
         if data:
@@ -37,8 +36,8 @@ class survfit(OWRpy):
             self.groupings.clear()
             self.data = data.copy()
             self.R(self.Rvariables['survfit']+'<-survfit('+data['data']+')')
-            self.data["data"] = self.Rvariables["survfit"]
-            self.rSend("survfit Output", self.data)
+            self.out = RvarClasses.RModelFit(data=self.Rvariables["survfit"])
+            self.rSend("survfit Output", self.out)
     def processdata(self, data):
         self.require_librarys(["survival"]) 
         if data:
@@ -64,8 +63,8 @@ class survfit(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['survfit']+'<-survfit(data='+str(self.RFunctionParam_data)+','+inj+')')
-        self.data["data"] = self.Rvariables["survfit"]
-        self.rSend("survfit Output", self.data)
+        self.out = RvarClasses.RModelFit(data=self.Rvariables["survfit"])
+        self.rSend("survfit Output", self.out)
     def compileReport(self):
         self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
         self.reportSettings('Function Settings', [('formula',self.formula)])

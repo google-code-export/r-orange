@@ -64,8 +64,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetActiveColor   = QColor(*self.settings["widgetActiveColor"])
         self.lineColor           = QColor(*self.settings["lineColor"])
 
-        if not self.settings.has_key("WidgetTabs") or self.settings["WidgetTabs"] == []:
-            self.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
+        # if not self.settings.has_key("WidgetTabs") or self.settings["WidgetTabs"] == []:
+            # self.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
         
         # output window
         splashWindow.showMessage("Setting Outputs", Qt.AlignHCenter + Qt.AlignBottom)
@@ -306,7 +306,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar = QMenuBar(self)
         self.menuBar.addMenu(self.menuFile)
         self.menuBar.addMenu(self.menuOptions)
-        self.menuBar.addMenu(self.widgetPopup)
+        # self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
     def setDebugMode(self):
