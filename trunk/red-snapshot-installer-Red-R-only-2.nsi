@@ -6,7 +6,7 @@
   ;Name and file
   ;!define $SSVERSION "2010-04-20"
   Name "Red-R 1.7.Nightly-2010-04-20"
-  OutFile "Red-R-1.7-Nightly-2010-04-20.exe"
+  OutFile "Red-R-1.7-Nightly.exe"
 
 ;--------------------------------
 ; Defines

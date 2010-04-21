@@ -324,7 +324,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.addToRecentMenu(str(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; All Files (*.*)")
+        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; Red-R Widget (*.rrw);; All Files (*.*)")
         if name.isEmpty():
             return
         self.schema.clear()

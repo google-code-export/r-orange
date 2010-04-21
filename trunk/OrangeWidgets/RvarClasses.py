@@ -3,6 +3,38 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
 import glob,os.path,orngEnviron
+
+class BaseRedRVariable:
+    def __init__(self, data):
+        self.data = data
+        self.dictAttrs = {}
+        self.reserved = ['data', 'dictAttrs']
+        
+    def __getitem__(self, item):
+        try:
+            attr = getattr(self, item)
+        except:
+            try:
+                attr = self.dictAttrs[item]
+            except:
+                attr = None
+        return attr
+    
+    def __setitem__(self, item, value):
+        if item in self.reserved:
+            raise Exception
+        self.dictAttrs[item] = value
+    def __str__(self):
+        ## print output for the class
+        return 'Class: '+str(self.__class__)+'\nData: '+self.data+'\nAttributes: '+str(self.dictAttrs)
+    def convertToClass(self, varClass):
+        return self.copy()
+    def keys(self):
+        return self.dictAttrs.keys()
+    def copy(self):
+        newVariable = BaseRedRVariable(data = self.data)
+        newVariable.dictAttrs = self.dictAttrs
+        return newVariable
 class RVariable: # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None, checkVal = False):
         # set the variables

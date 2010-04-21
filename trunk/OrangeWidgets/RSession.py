@@ -6,6 +6,7 @@ if sys.platform=="win32":
     from rpy_options import set_options
     #set_options(RHOME=os.environ['RPATH'])
     set_options(RHOME=orngEnviron.directoryNames['RDir'])
+    set_options(VERBOSE=False)
 else: # need this because linux doesn't need to use the RPATH
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 

@@ -6,6 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys, os, os.path, traceback
 from xml.dom.minidom import Document, parse
+import xml.dom.minidom
 import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
@@ -20,7 +21,7 @@ class SchemaDoc(QWidget):
         QWidget.__init__(self, *args)
         self.canvasDlg = canvasDlg
         self.ctrlPressed = 0
-
+        self.version = '1.5'
         self.lines = []                         # list of orngCanvasItems.CanvasLine items
         self.widgets = []                       # list of orngCanvasItems.CanvasWidget items
         self.signalManager = SignalManager()    # signal manager to correctly process signals
@@ -754,20 +755,22 @@ class SchemaDoc(QWidget):
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' ')
-            if not os.path.isfile(os.path.join(self.directoryNames['orangeDir'], dep)):
+            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir, dep)):
                 print 'Downloading dependencies', dep
-                if not os.path.isdir(os.path.abspath(os.path.join(self.directoryNames['orangeDir'], 'temp'))):
-                    os.mkdir(os.path.join(self.directoryNames['orangeDir'], 'temp'))
+                if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.orangeDir, 'temp'))):
+                    os.mkdir(os.path.join(self.canvasDlg.orangeDir, 'temp'))
                 fileExt = os.path.split(dep)[1]
-                newPackage = os.path.join(self.directoryNames['orangeDir'], 'temp', fileExt)
+                newPackage = os.path.join(self.canvasDlg.orangeDir, 'temp', fileExt)
                 self.urlOpener.retrieve('http://www.red-r.org/packages/'+fileExt, newPackage)
                 self.loadRRW(newPackage)
                 ### go to website, get the file, and repleat this process until success
                 
         fileDirName = self.getXMLText(mainTabs.getElementsByTagName('FileDirectoryStucture')[0].childNodes)
-        code = self.getXMLText(mainTabs.getElementsByTagName('FileData')[0].childNodes)
+        code = mainTabs.getElementsByTagName('FileData')[0]
+        code = code.toxml()
+        code = code.strip('</FileData>')
         
-        file = open(os.path.abspath(os.path.join(self.directoryNames['orangeDir'], fileDirName)), "wt")
+        file = open(os.path.abspath(os.path.join(self.canvasDlg.orangeDir, fileDirName)), "wt")
         file.write(code)
         file.close()
         
@@ -775,10 +778,10 @@ class SchemaDoc(QWidget):
         examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
         for example in examples.split(','):
             example = example.strip(' ')
-            if not os.path.isfile(os.path.join(self.directoryNames['orangeDir'],'Examples', example)):
+            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir,'Examples', example)):
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
-                newExample = os.path.join(self.directoryNames['orangeDir'], 'Examples', fileExt)
+                newExample = os.path.join(self.canvasDlg.orangeDir, 'Examples', fileExt)
                 self.urlOpener.retrieve('http://www.red-r.org/Examples/'+fileExt, newExample)
         os.remove(filename)
         print 'Package loaded successfully'
