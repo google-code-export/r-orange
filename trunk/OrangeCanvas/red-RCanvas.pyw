@@ -64,8 +64,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetActiveColor   = QColor(*self.settings["widgetActiveColor"])
         self.lineColor           = QColor(*self.settings["lineColor"])
 
-        # if not self.settings.has_key("WidgetTabs") or self.settings["WidgetTabs"] == []:
-            # self.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
+        if not self.settings.has_key("WidgetTabs") or self.settings["WidgetTabs"] == []:
+            self.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
         
         # output window
         splashWindow.showMessage("Setting Outputs", Qt.AlignHCenter + Qt.AlignBottom)
@@ -158,8 +158,8 @@ class OrangeCanvasDlg(QMainWindow):
             self.move(self.settings['pos'])
 
 
-        self.helpWindow = orngHelp.HelpWindow(self)
-        self.reportWindow = OWReport.ReportWindow()
+        # self.helpWindow = orngHelp.HelpWindow(self)
+        # self.reportWindow = OWReport.ReportWindow()
         
         self.show()
 
@@ -688,12 +688,12 @@ class OrangeCanvasDlg(QMainWindow):
             
             ce.accept()
             
-            self.helpWindow.close()
-            self.reportWindow.close()
+            # self.helpWindow.close()
+            # self.reportWindow.close()
         else:
             ce.ignore()
         
-        self.reportWindow.removeTemp()
+        # self.reportWindow.removeTemp()
         
         self.saveSettings()
 

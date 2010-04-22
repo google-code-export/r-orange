@@ -80,7 +80,7 @@ class widgetSignals():
         for output in self.outputs:
             if output[0] == signalName: return output[1]
         return None
-
+    
     # ########################################################################
     def connect(self, control, signal, method):
         wrapper = SignalWrapper(self, method)
@@ -192,12 +192,12 @@ class widgetSignals():
                     print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
                     print '='*60
                     print '\n'*5
-                    if issubclass(i[1], RvarClasses.RDataFrame): 
-                        newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
-                        newvariable['dictAttrs'] = variable
-                    else:
-                        newvariable = i[1](data = variable['data'], parent = variable['parent'])
-                        newvariable['dictAttrs'] = variable
+                    # if issubclass(i[1], RvarClasses.RDataFrame): 
+                        # newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
+                        # newvariable['dictAttrs'] = variable
+                    # else:
+                    newvariable = i[1](data = variable['data'], parent = variable['parent'])
+                    newvariable['dictAttrs'] = variable
                     variable = newvariable
                 break
         try:
@@ -215,6 +215,21 @@ class widgetSignals():
             self.setError(id = 'dataNotSent', text = 'Failed to send data')
     
 
+    # def isConnectionPossible(outputs,inputs):
+        # print 'isConnectionPossible'
+        # canConnect = 0
+        # for outtype in outputs:
+            # if True in [issubclass(outtype, intype)  for intype in inputs]:
+                # print 'is subtype'
+                # canConnect = 1
+                # break
+            # elif True in [intype in outtype.conversions for intype in inputs]:
+                # print 'can convert '
+                # canConnect = 1
+                # break
+
+        # return canConnect
+        
     def processSignals(self):
         print 'processing Signals'
         if self.closing == True:

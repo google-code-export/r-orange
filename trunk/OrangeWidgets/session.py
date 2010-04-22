@@ -45,41 +45,6 @@ class session():
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
-        #try:
-        if self.inputs and len(self.inputs) != 0:
-            ainputs = []
-            for (a, b, c) in [input for input in self.inputs]:
-                
-                if issubclass(b, RvarClasses.RDataFrame):
-                    bc = 'Data Frame'
-                elif issubclass(b, RvarClasses.RVector):
-                    bc = 'Vector'
-                elif issubclass(b, RvarClasses.RList):
-                    bc = 'List'
-                else:
-                    bc = 'Variable'
-                ainputs.append((a, bc))
-            settings['inputs'] = ainputs
-        else: settings['inputs'] = None
-        if self.outputs and len(self.outputs) != 0:
-            aoutputs = []
-            for (a,b) in [output for output in self.outputs]:
-                # print 'Output type', type(b)
-                if issubclass(b, RvarClasses.RDataFrame):
-                    bc = 'Data Frame'
-                elif issubclass(b, RvarClasses.RVector):
-                    bc = 'Vector'
-                elif issubclass(b, RvarClasses.RList):
-                    bc = 'List'
-                else:
-                    bc = 'Variable'
-                aoutputs.append((a, bc))
-            settings['outputs'] = aoutputs
-        else: settings['outputs'] = None
-        #except:
-            #print 'Saving inputs and outputs failed.  This widget will not be reloaded by a dummyWidget!'
-        #print str(settings) + ' (OWRpy.py)'
-        #print 'My settings are ' + str(settings)
         self.progressBarFinished()
         return settings
     def saveCustomSettings(self):

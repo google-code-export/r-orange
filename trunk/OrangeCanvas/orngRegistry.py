@@ -62,13 +62,10 @@ def readCategories():
         print "The following widgets could not be imported and will not be available: " + ", ".join(widgetsWithError)
     return categories
 
-
-re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
-re_outputs = re.compile(r'[ \t]+self.outputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
-
 hasErrors = False
 splashWindow = None
 widgetsWithError = []
+
 
 def readWidgets(directory, category, cachedWidgetDescriptions):
     import sys, imp
@@ -128,8 +125,7 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
                              time = datetime,
                              fileName = widgname,
                              fullName = filename,
-                             inputList = inputList, outputList = outputList,
-                             #inputClasses = inputClasses, outputClasses = outputClasses
+                             inputList = inputList, outputList = outputList
                              )
     
             for attr, deflt in (("contact>", "") , ("icon>", "icons/Unknown.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
@@ -164,6 +160,9 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
             widgetsWithError.append(widgname)
         
     return widgets
+
+re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
+re_outputs = re.compile(r'[ \t]+self.outputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
 
 
 re_tuple = re.compile(r"\(([^)]+)\)")

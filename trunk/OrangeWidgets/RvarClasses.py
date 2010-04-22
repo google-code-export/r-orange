@@ -36,7 +36,7 @@ class BaseRedRVariable:
         newVariable.dictAttrs = self.dictAttrs
         return newVariable
 
-class RVariable(BaseRedRVariable): # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
+class RVariable(): # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None, checkVal = False):
         # set the variables
         if not data:
