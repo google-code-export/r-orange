@@ -93,9 +93,12 @@ class rExecutor(OWRpy):
                 newData = RvarClasses.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
-            elif thisdataclass in ['data.frame', 'matrix']: # the object is a data.frame
-                self.R(self.Rvariables['rExecutor_cm']+'<-list()')
-                newData = RvarClasses.RRectangularData(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
+            elif thisdataclass in ['data.frame']:
+                newData = RvarClasses.RDataFrame(data = str(self.command.text()))
+                self.rSend('R Data Frame', newData)
+                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
+            elif thisdataclass in ['matrix']:
+                newData = RvarClasses.RMatrix(data = str(self.command.text()))
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list

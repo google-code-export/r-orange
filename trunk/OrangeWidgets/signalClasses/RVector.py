@@ -16,7 +16,7 @@ class RVector(RMatrix):
             return self._convertToVariable()
         elif varClass == RDataFrame:
             return self._convertToDataFrame()
-        elif varClass == RMatrix()
+        elif varClass == RMatrix():
             return self._convertToMatrix()
         elif varClass == RVector:
             return self.copy()

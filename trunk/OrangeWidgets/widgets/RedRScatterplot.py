@@ -20,9 +20,9 @@ class RedRScatterplot(OWRpy):
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
-        self.setRvariableNames(['Plot'])
-        self.inputs = [('x', RvarClasses.RRectangularData, self.gotX)]
-        self.outputs = [('Scatterplot Output', RvarClasses.RRectangularData)]
+        self.setRvariableNames(['Plot', 'Plot_cm'])
+        self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
+        self.outputs = [('Scatterplot Output', RvarClasses.RDataFrame)]
         self.data = None
         self.parent = None
         self.dataParent = {}
@@ -101,7 +101,7 @@ class RedRScatterplot(OWRpy):
         print xData
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
 
-        self.R(self.cm+'$'+self.Rvariables['Plot']+'<-rownames('+self.data+'[as.logical(c('+str(selected)[1:-1]+')),])')
+        self.R(self.cm+'$'+self.Rvariables['Plot']+'<-list(True = rownames('+self.data+'[as.logical(c('+str(selected)[1:-1]+')),]), False = rownames('+self.data+'[!as.logical(c('+str(selected)[1:-1]+')),]))')
         print 
         self.sendMe()
         
@@ -111,10 +111,17 @@ class RedRScatterplot(OWRpy):
             self.parent = data.parent
             self.dataParent = data.copy()
 
-            self.cm = data.cm
-            cmColNames = self.R('names('+self.cm+')')
-            if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
-            if type(cmColNames) == type(''): cmColNames = [cmColNames]
+            if 'cm' in self.dataParent.dictAttrs.keys():
+                print self.dataParent.dictAttrs['cm']
+                self.cm = self.dataParent.dictAttrs['cm'][0]
+                cmColNames = self.R('names('+self.cm+')')
+                if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
+                if type(cmColNames) == type(''): cmColNames = [cmColNames]
+            else:
+                self.dataParent.dictAttrs['cm'] = (self.Rvariables['Plot_cm'], 'RedRScatterplot', 'Created in RedRScatterplot because no Class Manager was detected', None)
+                self.cm = self.Rvariables['Plot_cm']
+                self.R(self.cm+'<-list()')
+                cmColNames = []
             
 
             cmColNames.insert(0, ' ')
@@ -186,10 +193,11 @@ class RedRScatterplot(OWRpy):
             else: # we made it this far so the data must be in the cm
                 d = self.cm # be mindful that the cm is a list and should be subset as such
                 # in this case we need to subset on the rownames making groups that are either in or out of the set, so these cm's will only be 1 or 0
-                levels = [0, 1]
-                levelType = 'logical'
-                subset.append(('In Class', '!(rownames('+self.data+' %in% '+self.cm+'$'+paintClass+'))'))
-                subset.append(('Not in Class', '!(rownames('+self.data+' %in% '+self.cm+'$'+paintClass+'))'))
+                levels = self.R('names('+self.cm+'$'+paintClass+')', wantType = 'list')
+                for level in levels:
+                    levelType = 'cm'
+                    subset.append((level, '(rownames('+self.data+') %in% '+self.cm+'$'+paintClass+'$'+level+')'))
+                    
             
             
             pc = 0
@@ -197,14 +205,15 @@ class RedRScatterplot(OWRpy):
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             self.paintLegend.insertHtml('<h5>Color Legend</h5>')
             self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
-            levels.append('NA')
             for (p, subset) in subset:
                 print p
                 # collect the color
-                if levelType not in ['logical', 'numeric'] and p != 'NA':
+                if levelType not in ['logical', 'numeric', 'cm'] and p != 'NA':
                     pc = self.R('match(\''+p+'\', levels(as.factor('+d+'[,\''+paintClass+'\'])))', silent = True)
                 elif levelType not in ['logical', 'numeric'] and p == 'NA':
                     pc = 0
+                elif levelType in ['cm']:
+                    pc = self.R('match(\''+p+'\', names('+d+'$'+paintClass+'))')
                 lColor = self.setColor(pc)
                 self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
                 # generate the subset
@@ -217,6 +226,9 @@ class RedRScatterplot(OWRpy):
                     yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
                 else:
                     yData = self.R(self.data+'['+subset+',\''+str(yCol)+'\']', wantType = 'list')
+                print xData
+                print yData
+                
                 if len(xData) == 0 or len(yData) == 0:
                     pc += 1
                     continue
@@ -258,7 +270,8 @@ class RedRScatterplot(OWRpy):
         self.graph.replot()
     def sendMe(self):
 
-        data = RvarClasses.RRectangularData(data = self.dataParent.parent+'['+self.cm+'$'+self.Rvariables['Plot']+',]', parent = self.parent, cm = self.cm) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        data = RvarClasses.RDataFrame(data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.parent) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        data.dictAttrs = self.dataParent.dictAttrs
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
     def loadCustomSettings(self, settings = None):

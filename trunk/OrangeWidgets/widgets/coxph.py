@@ -78,7 +78,7 @@ class coxph(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = RvarClasses.RSurvFit(data = self.Rvariables['coxph']
+        newData = RvarClasses.RSurvFit(data = self.Rvariables['coxph'])
         newData.dictAttrs = self.data.dictAttrs  # copy the dictionary
         self.rSend("coxph Output", self.data)
 
