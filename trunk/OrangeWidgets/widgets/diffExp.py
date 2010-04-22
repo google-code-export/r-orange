@@ -171,17 +171,16 @@ class diffExp(OWRpy):
                 print self.data
                 self.R('design<-model.matrix(1~'+self.functionBox.Formula()[1]+', '+self.phenoData+'[colnames('+self.data+'),])')
                 self.R(self.Rvariables['subset']+ '<-' +self.data)
-                
+                self.R(self.Rvariables['classes']+'<-as.data.frame(design)')
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
             self.R(self.Rvariables['results']+'<-eBayes(fit)')
-            
-        self.makeCM(self.Rvariables['diffExp_cm'], 'as.data.frame('+self.Rvariables['results']+')') # assign the CM of this widget.  This is the moment of creation of this CM.  
-        newdata = RvarClasses.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')', cm = self.Rvariables['diffExp_cm']) 
-        newdata.dictAttrs['classes'] = self.Rvariables['classes']
+
+        newdata = RvarClasses.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')') 
+        newdata.dictAttrs['classes'] = (self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression', None)
         self.rSend('eBayes data frame', newdata)
         
         self.newdata = RvarClasses.RMArrayLM(data = self.Rvariables['results'])
-        self.newdata.dictAttrs['classes'] = self.Rvariables['classes']
+        self.newdata.dictAttrs['classes'] = (self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression', None)
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1

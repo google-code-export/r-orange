@@ -57,7 +57,6 @@ class apply(OWRpy):
                 
                 if self.R('class('+self.Rvariables['apply']+')') in ['vector', 'character', 'numeric']:
                     self.R(self.Rvariables['apply']+'<-data.frame('+self.Rvariables['apply']+', rownames('+self.RFunctionParam_X+'), row.names = rownames('+self.RFunctionParam_X+'))')
-                self.makeCM(self.Rvariables['apply_cm'], self.Rvariables['apply'])
-                newData = RvarClasses.RDataFrame(data = self.Rvariables['apply'], cm = self.Rvariables['apply_cm'], parent = self.Rvariables['apply'])
+                newData = RvarClasses.RDataFrame(data = self.Rvariables['apply'], parent = self.Rvariables['apply'])
 
                 self.rSend("apply Output", newData)

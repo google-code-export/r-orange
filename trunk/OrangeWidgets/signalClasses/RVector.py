@@ -1,14 +1,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
-from RDataFrame import *
-class RVector(RDataFrame):
-    def __init__(self, data, parent = None, cm = None, checkVal = True):
-        #if not cm: # we should give a cm to the 
-            #cm = self.R('cm_'+data+'<-data.frame(row.names = make.names(rep(1, length('+data+'))))')
-        RDataFrame.__init__(self, data = data, parent = parent, cm = cm, checkVal = False)
+from RMatrix import *
+class RVector(RMatrix):
+    def __init__(self, data, parent = None, checkVal = True):
+        RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
     def copy(self):
-        newVariable = RVector(self.data, self.parent, self.cm)
+        newVariable = RVector(data = self.data, parent = self.parent)
         newVariable.dictAttrs = self.dictAttrs
         return newVariable
     def convertToClass(self, varClass):
@@ -18,27 +16,31 @@ class RVector(RDataFrame):
             return self._convertToVariable()
         elif varClass == RDataFrame:
             return self._convertToDataFrame()
+        elif varClass == RMatrix()
+            return self._convertToMatrix()
+        elif varClass == RVector:
+            return self.copy()
         else:
             raise Exception
+    def _convertToMatrix(self):
+        newData = RMatrix(data = 'as.matrix('+self.data+')')
+        newData.dictAttrs = self.dictAttrs
+        return newData
     def _convertToList(self):
         self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))')
         newData = RList(data = 'list_of_'+self.data, parent = self.parent)
         newData.dictAttrs = self.dictAttrs
-        newData.dictAttrs['cm'] = self.cm
         return newData
     def _convertToRectangularData(self):
         return self._convertToDataFrame()
     def _convertToDataFrame(self):
         # self.R('data_frame_of_'+self.data+'<-as.data.frame('+self.data+')')
         # self.R('colnames(data_frame_of_'+self.data+')<-c(\''+self.data+'\')')
-        newData = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent, cm = self.cm)
+        newData = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
         newData.dictAttrs = self.dictAttrs
         return newData
         
     def _convertToVariable(self):
-        # newData = RVariable(data = self.data, parent = self.parent)
-        # newData.dictAttrs = self.dictAttrs
-        # newData.dictAttrs['cm'] = self.cm
         return self.copy()
         
     def getSimpleOutput(self, subsetting = '[1:5]'):

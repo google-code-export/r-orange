@@ -8,7 +8,6 @@
 """
 from OWRpy import * 
 import redRGUI 
-import SurvivalClasses
 class coxph(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,7 +17,7 @@ class coxph(OWRpy):
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        self.outputs = [("coxph Output", SurvivalClasses.SurvFit)]
+        self.outputs = [("coxph Output", RvarClasses.RCoxphFit)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         hbox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
@@ -36,7 +35,6 @@ class coxph(OWRpy):
         self.RFunctionParammodel_lineEdit =  redRGUI.lineEdit(self.advancedTab,  label = "model:", text = 'FALSE')
         self.RFunctionParammethod_comboBox = redRGUI.comboBox(self.standardTab, label = "method:", items = ['efron', 'breslow', 'exact'])
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(hbox, label = "RoutputWindow")
     def processdata(self, data):
         self.require_librarys(["survival"]) 
@@ -80,19 +78,7 @@ class coxph(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.data["data"] = self.Rvariables["coxph"]
+        newData = RvarClasses.RSurvFit(data = self.Rvariables['coxph']
+        newData.dictAttrs = self.data.dictAttrs  # copy the dictionary
         self.rSend("coxph Output", self.data)
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
-        self.reportSettings('Function Settings', [('robust',str(self.RFunctionParamrobust_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('singular_ok',str(self.RFunctionParamsingular_ok_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('weights',str(self.RFunctionParamweights_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('formula',str(self.RFunctionParamformula_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('y',str(self.RFunctionParamy_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('x',str(self.RFunctionParamx_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('model',str(self.RFunctionParammodel_lineEdit.text()))])
-        self.reportSettings('Function Settings', [('method',str(self.RFunctionParammethod_lineEdit.text()))])
-        self.reportRaw(self.Rvariables["coxph"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+

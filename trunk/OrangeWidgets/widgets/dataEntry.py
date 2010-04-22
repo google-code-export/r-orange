@@ -217,12 +217,12 @@ class dataEntry(OWRpy):
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
-        if 'cm' in self.savedData.keys():
-            self.newData = self.savedData.copy()
-            self.newData['data'] = self.Rvariables['table']
-        else:
-            self.makeCM(self.Rvariables['table_cm'], self.Rvariables['table'])
-            self.newData = RvarClasses.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'], cm = self.Rvariables['table_cm'])
+        
+        # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
+        self.newData = RvarClasses.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
+        self.newData.dictAttrs = self.savedData.dictAttrs
+        if 'cm' in self.newData.dictAttrs.keys():
+            self.newData.dictAttrs.pop('cm')
         self.rSend('Data Table', self.newData)
     def loadCustomSettings(self,settings=None):
         if settings and 'newData' in settings.keys():

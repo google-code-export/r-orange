@@ -20,7 +20,7 @@ class Heatmap(OWRpy):
         self.plotdata = ''
         self.rowvChoice = None
         self.loadSettings()
-        self.inputs = [("Expression Matrix", RvarClasses.RRectangularData, self.processMatrix)]
+        self.inputs = [("Expression Matrix", RvarClasses.RRectangularData, self.processMatrix), ('Classes Data', RvarClasses.RDataFrame, self.processClasses)]
         self.outputs = [("Cluster Subset List", RvarClasses.RList)]
         
 
@@ -34,6 +34,7 @@ class Heatmap(OWRpy):
         self.endSaturation = redRGUI.spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
         self.colorTypeCombo = redRGUI.comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        self.classesDropdown = redRGUI.comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
         self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
@@ -61,7 +62,7 @@ class Heatmap(OWRpy):
         if data:
             self.plotdata = data['data']
             if 'classes' in data.dictAttrs:
-                self.classes = data.dictAttrs['classes']
+                self.classes = data.dictAttrs['classes'][0]
                 self.showClasses.setEnabled(True)
             else:
                 self.classes = 'rep(0, length('+self.plotdata+'[1,]))'
@@ -72,10 +73,18 @@ class Heatmap(OWRpy):
                 self.makePlot()
         else: 
             self.Rplot('par(mfrow=c(1,1))')
-
+    def processClasses(self, data):
+        if data:
+            self.classesData = data.data
+            self.classesDropdown.update(self.R('colnames('+data.data+')', wantType = 'list'))
+        else:
+            self.classesDropdown.clear()
+            self.classesData = ''
     def makePlot(self):
         if self.plotdata == '': return
         self.status.setText("You are plotting "+self.plotdata)
+        if str(self.classesDropdown.currentText()) != '':
+            self.classes = self.classesData+'$'+str(self.classesDropdown.currentText())
         if self.classes and ('Show Classes' in self.showClasses.getChecked()):
             colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
         else:

@@ -79,10 +79,12 @@ class limmaDecide(OWRpy):
             self.pickGroup.setEnabled(False)
             return
         
-        self.data = dataset['data']
+        self.data = dataset.data
         self.ebdata = dataset
         self.status.setText("Data connected")
         self.runbutton.setEnabled(True)
+        if 'eset' in dataset.dictAttrs.keys():
+            self.processeset(dataset.dictAttrs['eset'][0])
         #self.pickGroup.setEnabled(True)
         
     def runAnalysis(self):
@@ -143,11 +145,10 @@ class limmaDecide(OWRpy):
             self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
             self.newdata = self.olddata.copy()
             self.newdata.data = self.Rvariables['eset_sub']
-            self.makeCM(self.Rvariables['cm'], self.Rvariables['eset_sub']) # moment of creation of this cm
-            self.newdata.cm = self.Rvariables['cm']
             if 'classes' in self.ebdata.dictAttrs.keys():
                 self.newdata.dictAttrs['classes'] = self.ebdata.dictAttrs['classes']
+                self.newdata.dictAttrs['classes'][2] += 'Copied in Significance Criteria because this data was found in the incomming model fit, potential channel switching has occured.  These data should be considered carefully.'
             self.rSend("Expression Subset", self.newdata)
         else:
-            self.setWarning(id = 'subsetIMpossible', text = 'Can\'t send subset because data is not available')
+            self.setWarning(id = 'subsetIMpossible', text = 'Can\'t send subset because expression data is not available')
             return 

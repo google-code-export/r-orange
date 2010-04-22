@@ -11,13 +11,13 @@ class RModelFit(RList):
         if varClass == RVariable:
             return self._convertToVariable()
         elif varClass == RModelFit:
-            self.copy()
+            return self.copy()
         else:
-            raise Exception
+            raise Exception, '%s Not A Known Type' % str(varClass)
     def _convertToModelFit(self):
         return self.copy()
     def _convertToList(self):
-        newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
+        newData = RList(data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
         newData.dictAttrs = self.dictAttrs
         return newData
     def copy(self):
