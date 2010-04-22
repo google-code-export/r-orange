@@ -106,41 +106,43 @@ class RDataTable(OWRpy):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         print 'got data'
         print dataset
+        if not dataset:
+            return
         self.supressTabClick = True
-        if dataset != None:  # can be an empty table!
-            if dataset.__class__ != RvarClasses.RDataFrame:
+        # if dataset != None:  # can be an empty table!
+            # if dataset.__class__ != RvarClasses.RDataFrame:
                 # we convert to a data.frame so that we can do other things with the data, 
                 # this will give rownames and colnames even if the matrix or other rectangular data doesn't have them.
                 
-                dataset = RvarClasses.RDataFrame(data = dataset.data, parent = dataset.parent, cm = dataset.cm)
-            self.table.show()
-            data = {}
-            self.data = data
-            tableData = dataset['data']
-            if 'link' in dataset.dictAttrs:
-                self.link = dataset.dictAttrs['link']
-                print 'setting link as '+str(self.link)
-                self.linkListBox.clear()
-                
-                for key in self.link.keys():
-                    self.linkListBox.addItem(key)
-                self.currentLinks = self.link
+                # dataset = RvarClasses.RDataFrame(data = dataset.data, parent = dataset.parent, cm = dataset.cm)
+        self.table.show()
+        data = {}
+        self.data = data
+        tableData = dataset['data']
+        if 'link' in dataset.dictAttrs:
+            self.link = dataset.dictAttrs['link']
+            print 'setting link as '+str(self.link)
+            self.linkListBox.clear()
             
-            else: 
-                linkData = None
-                print 'no link data detected'
-            #self.showMetas[id] = (True, [])
-            #self.dataTableIndex[id] = dataset
-            self.currentData = dataset['data']
-            dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
-            self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
-            self.infoBox.setHidden(False)
+            for key in self.link.keys():
+                self.linkListBox.addItem(key)
+            self.currentLinks = self.link
+        
+        else: 
+            linkData = None
+            print 'no link data detected'
+        #self.showMetas[id] = (True, [])
+        #self.dataTableIndex[id] = dataset
+        self.currentData = dataset['data']
+        dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
+        self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
+        self.infoBox.setHidden(False)
 
-            #if id in self.link: #start the block for assignment of link data attributes
-            self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
-            self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        #if id in self.link: #start the block for assignment of link data attributes
+        self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-            self.table.setRTable(dataset['data'])
+        self.table.setRTable(dataset['data'])
         self.supressTabClick = False
             
     def itemClicked(self, val, table):

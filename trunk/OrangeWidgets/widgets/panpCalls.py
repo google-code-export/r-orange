@@ -49,18 +49,14 @@ class panpCalls(OWRpy):
         print 'on procress panp'
         
         self.require_librarys(['affy','gcrma','limma','matchprobes','panp'])
-        
-        for output in self.outputs:
-            self.rSend(output[0], None, 0)
-        
+
         if dataset == None: 
             self.status.setText("Blank data recieved")
-        
-        if dataset:
+        else:
+            print dataset
+            self.data = dataset
             self.eset = self.data['data']
             self.status.setText("Data Received")
-        else:
-            self.status.setText("Processing impossible, not of eset or affybatch type")
             
     def processEset(self):
         if self.eset == '': return
