@@ -299,7 +299,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetPopup = QMenu("Widget", self)
         self.widgetPopup.addAction( "Open",  self.schema.canvasView.openActiveWidget)
         self.widgetPopup.addSeparator()
-        rename = self.widgetPopup.addAction( "&Rename", self.schema.canvasView.renameActiveWidget, Qt.Key_F2)
+        #rename = self.widgetPopup.addAction( "&Rename", self.schema.canvasView.renameActiveWidget, Qt.Key_F2)
         delete = self.widgetPopup.addAction("Remove", self.schema.canvasView.removeActiveWidget, Qt.Key_Delete)
         self.widgetPopup.setEnabled(0)
 

@@ -37,17 +37,23 @@ class dataEntry(OWRpy):
         #self.colHeaders.setChecked(['Use Column Headers'])
         self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
         redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
-
+        
+        self.columnDialog = QDialog()
+        self.columnDialog.setLayout(QVBoxLayout())
+        self.columnDialog.hide()
+        self.columnNameLineEdit = redRGUI.lineEdit(self.columnDialog, label = 'Column Name:')
+        redRGUI.button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
+        redRGUI.button(self.bottomAreaRight, "Add Column", callback = self.columnDialog.show)
         box = redRGUI.groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.Rtable(box, Rdata = None, rows = self.rowCount+1, columns = self.colCount+1)
 
         self.dataTable.show()
-        upcell = QTableWidgetItem()
-        upcell.setBackgroundColor(Qt.gray)
-        upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
-        self.dataTable.setItem(0,0,upcell)
+        # upcell = QTableWidgetItem()
+        # upcell.setBackgroundColor(Qt.gray)
+        # upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
+        # self.dataTable.setItem(0,0,upcell)
         # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
@@ -56,16 +62,29 @@ class dataEntry(OWRpy):
         self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
         self.resize(700,500)
         self.move(300, 25)
+    def commitNewColumn(self):
+        labels = []
+        for i in range(self.colCount):
+            item = self.dataTable.horizontalHeaderItem(i)
+            labels.append(item.text())
+        labels.append(str(self.columnNameLineEdit.text()))
+        self.dataTable.setColumnCount(self.colCount+1)
+        self.dataTable.setHorizontalHeaderLabels(labels)
+        self.colCount += 1
+        self.columnNameLineEdit.clear()
+        self.columnDialog.hide()
     def processDF(self, data):
-        if data and ('data' in data.keys()):
-            self.data = data['data']
+        if data:
+            self.data = data.data
             self.savedData = data.copy()
             self.populateTable()
         else:
             return
     def populateTable(self):
         self.dataTable.setRTable('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
-        
+        dims = self.R('dim('+self.data+')', wantType = 'list')
+        self.colCount = dims[1]+1
+        self.rowCount = dims[0]
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
     def cellClicked(self, row, col):
@@ -81,9 +100,6 @@ class dataEntry(OWRpy):
         if row > self.rowCount-3: #bump up the number of cells to keep up with the needs of the table
             self.dataTable.setRowCount(self.rowCount+3)
             self.rowCount += 3
-        if col > self.colCount-3:
-            self.dataTable.setColumnCount(self.colCount+3)
-            self.colCount += 3
         if row > self.maxRow: self.maxRow = row #update the extremes of the row and cols
         if col > self.maxCol: self.maxCol = col
         self.dataTable.setCurrentCell(row+1, col)
@@ -139,7 +155,7 @@ class dataEntry(OWRpy):
             coli = range(0, self.maxCol+1)
         else:
 
-            rowi = range(trange.topRow(), trange.bottomRow()+1)
+            rowi = range(trange.topRow(), trange.bottomRow())
             coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
         if self.dataTable.item(rowi[0], coli[0]) == None: 
@@ -150,7 +166,7 @@ class dataEntry(OWRpy):
         colnames = {}        
         if 'Use Row Headers' in self.rowHeaders.getChecked():
             
-            for i in rowi[1:]:
+            for i in rowi:
                 item = self.dataTable.item(i, coli[0])
                 if item != None:
                     thisText = item.text()
@@ -163,14 +179,14 @@ class dataEntry(OWRpy):
 
         if 'Use Column Headers' in self.rowHeaders.getChecked():
             for j in coli:
-                item = self.dataTable.item(rowi[0], j)
+                item = self.dataTable.horizontalHeaderItem(j)
                 if item != None:
                     thisText = item.text()
                 else: thisText = '"'+str(j)+'"'
                 if thisText == None or thisText == '':
                     thisText = '"'+str(j)+'"'
+                thisText = thisText.split(' ')[0]
                 colnames[str(j)] = (str(thisText))
-            rowi = rowi[1:] #index up the row count
 
         rinsertion = []
         
@@ -213,6 +229,9 @@ class dataEntry(OWRpy):
         if len(rownames) > 0:
             rname = []
             for i in rowi:
+                print i
+                print str(i)
+
                 rname.append(rownames[str(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 

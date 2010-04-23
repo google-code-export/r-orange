@@ -30,7 +30,7 @@ class RDataTable(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
-        self.inputs = [("Rectangular Data", RvarClasses.RRectangularData, self.dataset)]
+        self.inputs = [("Rectangular Data", RvarClasses.RDataFrame, self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation
