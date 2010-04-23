@@ -23,7 +23,7 @@ class rExecutor(OWRpy):
         self.loadSettings()
         
         self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
-        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector), ('R.object', RvarClasses.RVariable)]
+        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector), ('R.object', RvarClasses.RVariable), ('R Matrix', RvarClasses.RMatrix)]
         #self.breakme()
         
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
@@ -99,7 +99,7 @@ class rExecutor(OWRpy):
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:
                 newData = RvarClasses.RMatrix(data = str(self.command.text()))
-                self.rSend('R Data Frame', newData)
+                self.rSend('R Matrix', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
                 newData = RvarClasses.RList(data = str(self.command.text()))

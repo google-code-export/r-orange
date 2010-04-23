@@ -368,6 +368,8 @@ class SchemaDoc(QWidget):
         RSession.Rcommand('rm(list = ls())')
         self.canvas.update()
         self.saveTempDoc()
+        if close:
+            RSession.Rcommand('quit("no")') # close the entire session dropping anything that was open in case it was left by something else, makes the closing much cleaner than just loosing the session.
 
     def enableAllLines(self):
         for line in self.lines:
