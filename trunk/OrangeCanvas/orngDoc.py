@@ -13,7 +13,7 @@ import RSession
 
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
-import pprint
+import pprint, urllib
 pp = pprint.PrettyPrinter(indent=4)
 
 class SchemaDoc(QWidget):
@@ -37,7 +37,7 @@ class SchemaDoc(QWidget):
         self.layout().setMargin(0)
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
-
+        self.urlOpener = urllib.FancyURLopener()
 
     # we are about to close document
     # ask the user if he is sure
@@ -759,7 +759,7 @@ class SchemaDoc(QWidget):
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' ')
-            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir, dep)):
+            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir, dep)) and dep != 'None':
                 print 'Downloading dependencies', dep
                 if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.orangeDir, 'temp'))):
                     os.mkdir(os.path.join(self.canvasDlg.orangeDir, 'temp'))
@@ -773,8 +773,13 @@ class SchemaDoc(QWidget):
         code = mainTabs.getElementsByTagName('FileData')[0]
         code = code.toxml()
         code = code.strip('</FileData>')
+        code = code.replace('&quot;', '\"')
         
-        file = open(os.path.abspath(os.path.join(self.canvasDlg.orangeDir, fileDirName)), "wt")
+        newFileDirectory = os.path.join(str(self.canvasDlg.orangeDir), str(fileDirName.strip('/')))
+        print newFileDirectory
+        print str(self.canvasDlg.orangeDir)
+        print str(fileDirName.strip('/'))
+        file = open(newFileDirectory, "wt")
         file.write(code)
         file.close()
         
@@ -782,11 +787,14 @@ class SchemaDoc(QWidget):
         examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
         for example in examples.split(','):
             example = example.strip(' ')
-            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir,'Examples', example)):
+            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir,'Examples', example)) and example != 'None':
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
                 newExample = os.path.join(self.canvasDlg.orangeDir, 'Examples', fileExt)
                 self.urlOpener.retrieve('http://www.red-r.org/Examples/'+fileExt, newExample)
+                
+        ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
+        
         os.remove(filename)
         print 'Package loaded successfully'
     def keyReleaseEvent(self, e):

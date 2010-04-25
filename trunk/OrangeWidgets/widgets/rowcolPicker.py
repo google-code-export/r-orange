@@ -25,13 +25,13 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         self.loadSettings()
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.setWidget), ('Subsetting Vector', RvarClasses.RVector, self.setSubsettingVector)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame), ('Reduced Vector', RvarClasses.RVector)]
+        self.outputs = [('Data Table', RvarClasses.RDataFrame), ('Not Data Table', RvarClasses.RDataFrame), ('Reduced Vector', RvarClasses.RVector)]
         
         self.help.setHtml('<small>The Row Column Selection widget allows one to select subsets of Data Tables.  If complex selections are required simply link many of these widgets together.  It may be useful to also consider using the Merge Data Table widget or the Melt widget when using this widget to but the data into the proper shape for later analysis.  The sections of this widget are:<br>Select by row or column<br><nbsp>- Allows you to select either rows or columns that match a certain criteria.  For example if you pick to select rows you will select based on criteria that are in the columns.<br>Attributes<br><nbsp>- Attributes are the names of the attributes that have the criteria that you will be selecting on, for example if you want to pick all rows that have a value greater than 5 in the second column the second column would be your attribute.<br>Logical<br><nbsp>- This section discribes the logic that should be applied to the selection, for example should the attribute be less than, greater than, equal to, or in a selection list.  "NOT" is also available.<br><br>One can also select based on an attached subsetting vector.  This will look for matches in the subsetting vector to values that are in your selected attribute.  This can be useful when dealing with "lists" of things that can be coerced into vectors.<br><br>This widget will send either a Data Table or a Vector depending on the dimention of your selection.')
         #set the gui
         box = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         self.rowcolBox = redRGUI.radioButtons(box, 'The names come from:', ['Row', 'Column'], callback=self.rowcolButtonSelected)
-        self.ISNOT = redRGUI.comboBox(box, items = ['IS', 'IS NOT'])
+        #self.ISNOT = redRGUI.comboBox(box, items = ['IS', 'IS NOT'])
         self.attributes = redRGUI.listBox(box, label='Attributes')
         self.attributes.setSelectionMode(QAbstractItemView.MultiSelection)
         
@@ -96,19 +96,21 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
     def subOnAttached(self):
         if self.data == None or self.data == '': return
         
-        if self.ISNOT.currentText() == 'IS': isNot = ''
-        elif self.ISNOT.currentText() == 'IS NOT': isNot = '!' 
-        
         
         if self.rowcolBox.getChecked() == 'Row':
-            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'['+isNot+'rownames('+self.data+')'+' %in% '+self.ssv+',]')
+            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+',]')
+            self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+',]')
         elif self.rowcolBox.getChecked() == 'Column':
-            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% '+self.ssv+']')
+            self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,colnames('+self.data+')'+' %in% '+self.ssv+']')
+            self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+' %in% '+self.ssv+']')
                 
-        self.makeCM(self.Rvariables['rowcolSelector_cm'], self.Rvariables['rowcolSelector'])
-        newData = RvarClasses.RDataFrame(data = self.Rvariables['rowcolSelector'], cm = self.Rvariables['rowcolSelector_cm'], parent = self.Rvariables['rowcolSelector'])
+        #self.makeCM(self.Rvariables['rowcolSelector_cm'], self.Rvariables['rowcolSelector'])
+        newData = RvarClasses.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData.dictAttrs = self.dataParent.dictAttrs.copy()
         self.rSend('Data Table', newData)
-                
+        newDataNot = RvarClasses.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot.dictAttrs = self.dataParent.dictAttrs.copy()
+        self.rSend('Not Data Table', newDataNot)
         
         self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')
         tmp = self.R('paste(txt, collapse ="\n")')
@@ -174,15 +176,28 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'['+isNot+'rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
+            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
+            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])')
         elif self.rowcolBox.getChecked() == 'Column':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,'+isNot+'colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
+            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
+            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
-                
+            newVector = RvarClasses.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+            newVector.dictAttrs = self.dataParent.dictAttrs.copy()
+            self.rSend('Reduced Vector', newVector)
+        if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
+            self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c('+','.join(selectedDFItems)+')')
+            newVector = RvarClasses.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
+            newVector.dictAttrs = self.dataParent.dictAttrs.copy()
+            self.rSend('Reduced Vector', newVector)
+            
         newData = self.dataParent.copy()
         newData.data = self.Rvariables['rowcolSelector']
         self.rSend('Data Table', newData)
+        newDataNot = self.dataParent.copy()
+        newDataNot.data = self.Rvariables['rowcolSelectorNot']
+        self.rSend('Not Data Table', newDataNot)
                 
         
         self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')

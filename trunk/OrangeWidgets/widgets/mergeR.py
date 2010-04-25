@@ -189,7 +189,7 @@ class mergeR(OWRpy):
                 newDataBA.dictAttrs['cm'] = ('cm_'+self.Rvariables['merged_dataBA'], 'Merge', 'Class Managers combined from data entering Merge.', None)
             self.rSend("Merged Examples B+A", newDataBA)
             self.rSend("Merged Examples A+B", newDataAB)
-            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll'], 'cm': 'cm_'self.Rvariables['merged_dataAll_cm_'], 'parent':self.Rvariables['merged_dataAll']})
+            self.rSend("Merged Examples All", newDataAll)
     
     def setcolA(self):
         try:
