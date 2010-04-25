@@ -72,7 +72,7 @@ class session():
                 return True
         elif type(d) in [type(None), str, int, float, bool, numpy.float64]:
             return True
-        elif isinstance(d, RvarClasses.RVariable):
+        elif isinstance(d, RvarClasses.BaseRedRVariable):
             return True
         else: 
             print 'Type ' + str(d) + ' is not supported at the moment..'
@@ -101,7 +101,7 @@ class session():
 
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
-        elif isinstance(var, RvarClasses.RVariable):
+        elif isinstance(var, RvarClasses.BaseRedRVariable):
             
             settings['RvarClassesObject'] = var.saveSettings()
             print 'Saving RvarClassesObject ', settings['RvarClassesObject']

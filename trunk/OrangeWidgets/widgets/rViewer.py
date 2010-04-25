@@ -34,6 +34,10 @@ class rViewer(OWRpy):
             self.RFunctionParam_data=data["data"]
             self.data = data
             self.commitFunction()
+        else:
+            self.RFunctionParam_data = ''
+            self.data = None
+            self.commitFunction()
 
     
     def commitFunction(self):

@@ -26,9 +26,9 @@ class RMArrayLM(RModelFit):
             raise Exception
     def copy(self):
         newData = RMArrayLM(data = self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
     def _convertToList(self):
         newData = RList(data = 'as.list(as.data.frame('+self.data+'))', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData

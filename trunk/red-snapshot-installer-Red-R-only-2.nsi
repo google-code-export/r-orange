@@ -5,18 +5,21 @@
 
   ;Name and file
   ;!define $SSVERSION "2010-04-20"
-  Name "Red-R 1.7.Nightly-2010-04-20"
+  Name "Red-R 1.7.Nightly"
   OutFile "Red-R-1.7-Nightly.exe"
 
 ;--------------------------------
 ; Defines
-!define RVERSION "Red-R1.7.Snapshot-2010-04-18" ;                                           ;;; Change this when a new version is made
+!define RVERSION "Red-R1.7.Snapshot-ND" ;                                           ;;; Change this when a new version is made
 !define Red-RDIR C:\Python26\Lib\site-packages\redR1.5
 
 ;---------------------------------
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\Red-R" ;"C:\Program Files\Red-R"
+  ;InstallDir "$PROGRAMFILES\Red-R" ;"C:\Program Files\Red-R"
 
+  ; install to the last RedRDir
+  InstallDirRegKey HKCU "Red R Canvas\RedRDir" ""
+  
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
 
@@ -37,21 +40,11 @@ Var AdminInstall
 !insertmacro MUI_LANGUAGE "English"
 
 Section "" ;this is the section that will install Red-R and all of it's files
-	IfFileExists "$INSTDIR\${RVERSION}\*" ask_remove_old
+	IfFileExists "$INSTDIR\R\*" has_R
     
-    not_installed_before:
     MessageBox MB_OK "No Red-R data detected.  Please install the full version and not the code only version.$\r$\n$\r$\nYou may then install this version as an update." /SD IDOK IDOK done_install
     
-    ask_remove_old:
-		MessageBox MB_YESNOCANCEL "Another version of Red-R has been found on the computer.$\r$\nDo you want to keep the existing settings for canvas and widgets?$\r$\n$\r$\nYou can usually safely answer 'Yes'; in case of problems, re-run this installation." /SD IDYES IDYES dont_remove_settings IDNO remove_old_settings
-			MessageBox MB_YESNO "Abort the installation?" IDNO ask_remove_old
-				Quit
-
-		remove_old_settings:
-		RmDir /R "$0\red-r\settings"
-
-	
-    dont_remove_settings:
+    has_R:
     
 	SetOutPath $INSTDIR\${RVERSION}
 	File /r /x .svn /x *.pyc /x settings /x R /x *.nsi "${Red-RDIR}\*"

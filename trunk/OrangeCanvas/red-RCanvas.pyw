@@ -306,7 +306,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar = QMenuBar(self)
         self.menuBar.addMenu(self.menuFile)
         self.menuBar.addMenu(self.menuOptions)
-        # self.menuBar.addMenu(self.widgetPopup)
+        self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
     def setDebugMode(self):

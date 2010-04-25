@@ -11,7 +11,7 @@ class REset(RList, RMatrix):
         
     def copy(self):
         newData = REset(data = self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
     def convertToClass(self, varClass):
         if varClass == RList:
@@ -26,17 +26,17 @@ class REset(RList, RMatrix):
             raise Exception, '%s Not A Defined Conversion Type' % str(varClass)
     def _convertToMatrix(self):
         newData = RMatrix(data = 'exprs('+self.data+')')
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a conversion to rectangular data', None)
         return newData
     def _convertToDataFrame(self):
         newData = RRectangularData(data = 'as.data.frame(exprs('+self.data+'))')
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a conversion to rectangular data', None)
         return newData
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a copy to rectangular data', None)
         return newData

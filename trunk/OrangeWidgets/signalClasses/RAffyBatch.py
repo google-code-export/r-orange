@@ -5,7 +5,7 @@ class RAffyBatch(RVariable):
         RVariable.__init__(self, data = data)
     def copy(self):
         newVariable = RAffyBatch(self.data)
-        newVariable.dictAttrs = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable
     def convertToClass(self, varClass):
         if varClass == RVariable:

@@ -610,7 +610,9 @@ class SchemaDoc(QWidget):
                 try:
                     name = widget.getAttribute("widgetName")
                     print 'Name: '+str(name)+' (orngDoc.py)'
+                    print settingsDict[widget.getAttribute("caption")]
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
+                    
                     try:
                         if 'requiredRLibraries' in settings.keys():
                             if 'CRANrepos' in qApp.canvasDlg.settings.keys():

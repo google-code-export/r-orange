@@ -31,7 +31,7 @@ class DataExplorer(OWRpy):
         self.setRvariableNames(['dataExplorer'])
         self.loadSettings()
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', RvarClasses.RRectangularData, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
+        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
         
         # a special section that sets when the shift key is heald or not 
@@ -105,12 +105,16 @@ class DataExplorer(OWRpy):
             #print self.colnames
             if newData == True:
                 self.orriginalData = data['data']
+                
                 self.criteriaDialogList = []
                 self.criteriaList = []
                 self.orriginalRowNames = self.rownames
                 self.orriginalColumnNames = self.colnames
                 print 'Colnames are '+str(self.orriginalColumnNames)
                 self.dataParent = data.copy()
+                if 'cm' not in self.dataParent.dictAttrs.keys():
+                    self.R('cm_'+self.Rvariables['dataExplorer']+'<-list()')
+                    self.dataParent.dictAttrs['cm'] = ('cm_'+self.Rvariables['dataExplorer'], 'Row Filtering', 'Class Manager added to the data by Row Filtering, the data did not have a class manager before this.', None)
                 # first get some info about the table so we can put that into the current table.
                 #dims = self.R('dim('+self.data+')') #self data should be a data.frame
                 print self.dataParent.getDims_call()
@@ -382,9 +386,9 @@ class DataExplorer(OWRpy):
 
         print self.criteriaList
         if len(self.criteriaList) > 0:
-            self.R(self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+')]))')
+            self.R(self.dataParent.dictAttrs['cm']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+')]))')
             newData = self.dataParent.copy()
-            newData.data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'[True],]'
+            newData.data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'$True,]'
             self.rSend('Data Subset', newData)
         else:
             self.rSend('Data Subset', self.dataParent.copy())

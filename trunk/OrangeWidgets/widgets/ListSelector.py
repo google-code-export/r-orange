@@ -20,7 +20,7 @@ class ListSelector(OWRpy):
         self.data = None
         self.loadSettings()
         self.inputs = [('R List', RvarClasses.RList, self.process)]
-        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList)]
+        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList), ('R Variable', RvarClasses.RVariable)]
         
         #GUI
         box = redRGUI.groupBox(self.controlArea, "List Data")
@@ -56,7 +56,7 @@ class ListSelector(OWRpy):
             newData = RvarClasses.RList(data = self.Rvariables['listelement'])
             self.rSend('R List', newData)
             print 'Sent List'
-        elif myclass in ['vector', 'character', 'factor', 'logical']:
+        elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric']:
             newData = RvarClasses.RVector(data = self.Rvariables['listelement'])
             self.rSend('R Vector', newData)
             print 'Sent Vector'

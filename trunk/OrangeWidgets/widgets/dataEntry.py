@@ -16,7 +16,7 @@ class dataEntry(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 10
-        self.colCount = 10
+        self.colCount = 0
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
         self.classes = None
@@ -48,6 +48,7 @@ class dataEntry(OWRpy):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         self.dataTable = redRGUI.Rtable(box, Rdata = None, rows = self.rowCount+1, columns = self.colCount+1)
+        self.dataTable.setHorizontalHeaderLabels(['Rownames'])
 
         self.dataTable.show()
         # upcell = QTableWidgetItem()

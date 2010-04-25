@@ -19,7 +19,13 @@ class BaseRedRVariable:
             except:
                 attr = None
         return attr
-    
+    def saveSettings(self):
+        return {'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
+        
+    def loadSettings(self, settings):
+        self.data = settings['data']
+        self.parent = settings['parent']
+        self.dictAttrs = settings['dictAttrs']
     def __setitem__(self, item, value):
         if item in self.reserved:
             raise Exception
@@ -33,10 +39,10 @@ class BaseRedRVariable:
         return self.dictAttrs.keys()
     def copy(self):
         newVariable = BaseRedRVariable(data = self.data)
-        newVariable.dictAttrs = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable
 
-class RVariable(): # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
+class RVariable(BaseRedRVariable): # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None, checkVal = False):
         # set the variables
         if not data:
@@ -79,16 +85,10 @@ class RVariable(): # parent class of all RvarClasses.  This class holds base fun
             # self.Rplot(query = query, dwidth = dwidth, dheight = dheight, devNumber = devNumber, mfrow = mfrow)
         # except:
             # print 'Exception occured'
-    def saveSettings(self):
-        return {'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
-        
-    def loadSettings(self, settings):
-        self.data = settings['data']
-        self.parent = settings['parent']
-        self.dictAttrs = settings['dictAttrs']
+
     def copy(self):
         newVariable = RVariable(self.data, self.parent)
-        newVariable.dictAttrs = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'

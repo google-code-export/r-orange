@@ -34,7 +34,7 @@ class mergeR(OWRpy):
         self.loadSettings()
         
         #set R variable names
-        self.setRvariableNames(['merged_dataAB','merged_dataBA','merged_dataAll', 'merged_dataAB_cm_', 'merged_dataAll_cm_', 'merged_dataBA_cm_'])
+        self.setRvariableNames(['merged_dataAB','merged_dataBA','merged_dataAll'])
                 
         #GUI
         
@@ -164,12 +164,32 @@ class mergeR(OWRpy):
             self.rSend("Merged Examples All", None)
         elif self.R('exists("'+self.Rvariables['merged_dataAll']+'")'):
             # bind the cm's of the parent data together.
-            self.R(self.Rvariables['merged_dataAB_cm_'] + '<-c('+self.dataA.cm+','+self.dataB+')')
-            self.R(self.Rvariables['merged_dataAll_cm_'] + '<-c('+self.dataA.cm+','+self.dataB+')')
-            self.R(self.Rvariables['merged_dataBA_cm_'] + '<-c('+self.dataA.cm+','+self.dataB+')')
-            self.rSend("Merged Examples A+B", {'data':self.Rvariables['merged_dataAB'], 'cm':self.Rvariables['merged_dataAB_cm_'], 'parent':self.Rvariables['merged_dataAB']})
-            self.rSend("Merged Examples B+A", {'data':self.Rvariables['merged_dataBA'], 'cm':self.Rvariables['merged_dataBA_cm_'], 'parent':self.Rvariables['merged_dataBA']})
-            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll'], 'cm':self.Rvariables['merged_dataAll_cm_'], 'parent':self.Rvariables['merged_dataAll']})
+            if 'cm' in self.dataA.dictAttrs.keys() and 'cm' in self.dataB.dictAttrs.keys():
+                self.R('cm_'+self.Rvariables['merged_dataAB'] + '<-c('+self.dataA.dictAttrs['cm']+','+self.dataB.dictAttrs['cm']+')')
+                self.R('cm_'+self.Rvariables['merged_dataAll'] + '<-c('+self.dataA.dictAttrs['cm']+','+self.dataB.dictAttrs['cm']+')')
+                self.R('cm_'+self.Rvariables['merged_dataBA'] + '<-c('+self.dataA.dictAttrs['cm']+','+self.dataB.dictAttrs['cm']+')')
+                mergedCM = True
+            newDataAB = RvarClasses.RDataFrame(data = self.Rvariables['merged_dataAB'])
+            newDataAB.dictAttrs = self.dataB.dictAttrs.copy()
+            newDataAB.dictAttrs.update(self.dataA.dictAttrs) # A data takes presedence over B data
+            
+            
+            newDataBA = RvarClasses.RDataFrame(data = self.Rvariables['merged_dataBA'])
+            newDataBA.dictAttrs = self.dataB.dictAttrs.copy()
+            newDataBA.dictAttrs.update(self.dataA.dictAttrs) # A data takes presedence over B data
+            
+            
+            newDataAll = RvarClasses.RDataFrame(data = self.Rvariables['merged_dataAll'])
+            newDataAll.dictAttrs = self.dataB.dictAttrs.copy()
+            newDataAll.dictAttrs.update(self.dataA.dictAttrs) # A data takes presedence over B data
+            
+            if mergedCM:
+                newDataAll.dictAttrs['cm'] = ('cm_'+self.Rvariables['merged_dataAll'], 'Merge', 'Class Managers combined from data entering Merge.', None)
+                newDataAB.dictAttrs['cm'] = ('cm_'+self.Rvariables['merged_dataAB'], 'Merge', 'Class Managers combined from data entering Merge.', None)
+                newDataBA.dictAttrs['cm'] = ('cm_'+self.Rvariables['merged_dataBA'], 'Merge', 'Class Managers combined from data entering Merge.', None)
+            self.rSend("Merged Examples B+A", newDataBA)
+            self.rSend("Merged Examples A+B", newDataAB)
+            self.rSend("Merged Examples All", {'data':self.Rvariables['merged_dataAll'], 'cm': 'cm_'self.Rvariables['merged_dataAll_cm_'], 'parent':self.Rvariables['merged_dataAll']})
     
     def setcolA(self):
         try:

@@ -20,7 +20,7 @@ class RedRScatterplot(OWRpy):
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
-        self.setRvariableNames(['Plot', 'Plot_cm'])
+        self.setRvariableNames(['Plot'])
         self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
         self.outputs = [('Scatterplot Output', RvarClasses.RDataFrame)]
         self.data = None
@@ -118,8 +118,8 @@ class RedRScatterplot(OWRpy):
                 if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
                 if type(cmColNames) == type(''): cmColNames = [cmColNames]
             else:
-                self.dataParent.dictAttrs['cm'] = (self.Rvariables['Plot_cm'], 'RedRScatterplot', 'Created in RedRScatterplot because no Class Manager was detected', None)
-                self.cm = self.Rvariables['Plot_cm']
+                self.dataParent.dictAttrs['cm'] = ('cm_'+self.Rvariables['Plot'], 'RedRScatterplot', 'Created in RedRScatterplot because no Class Manager was detected', None)
+                self.cm = 'cm_'+self.Rvariables['Plot']
                 self.R(self.cm+'<-list()')
                 cmColNames = []
             
@@ -177,7 +177,7 @@ class RedRScatterplot(OWRpy):
                     levelType = 'logical'
                     levels = ['FALSE', 'TRUE']
                     for level in levels:
-                        subset.append((level, '!is.na('+self.data+') & '+self.data+'[,\''+paintClass+'\'] == '+level))
+                        subset.append((level, '!is.na('+self.data+'$'+paintClass+') & '+self.data+'[,\''+paintClass+'\'] == '+level))
                     subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
                     levels.append('NA')
                 else:
@@ -187,7 +187,7 @@ class RedRScatterplot(OWRpy):
                         runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
                         if runMe == QMessageBox.No: return
                     for level in levels:
-                        subset.append((level, '!is.na('+self.data+') & '+self.data+'[,\''+paintClass+'\'] == \''+level+'\''))
+                        subset.append((level, '!is.na('+self.data+'$'+paintClass+') & '+self.data+'[,\''+paintClass+'\'] == \''+level+'\''))
                     subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
                     levels.append('NA')
             else: # we made it this far so the data must be in the cm
@@ -247,13 +247,13 @@ class RedRScatterplot(OWRpy):
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             # check if the column is a factor
             if xDataClass in ['factor']:
-                xData = self.R('match('+self.data+'[,\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
+                xData = self.R('match('+self.data+'[!is.na('+self.data+'$'+str(xCol)+'),\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
             else:
-                xData = self.R(self.data+'[,\''+str(xCol)+'\']', wantType = 'list')
+                xData = self.R(self.data+'[!is.na('+self.data+'$'+str(xCol)+'),\''+str(xCol)+'\']', wantType = 'list')
             if yDataClass in ['factor']:
-                yData = self.R('match('+self.data+'[,\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
+                yData = self.R('match('+self.data+'[!is.na('+self.data+'$'+str(yCol)+'),\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
             else:
-                yData = self.R(self.data+'[,\''+str(yCol)+'\']', wantType = 'list')
+                yData = self.R(self.data+'[!is.na('+self.data+'$'+str(yCol)+'),\''+str(yCol)+'\']', wantType = 'list')
             
             self.graph.points("MyData", xData = xData, yData = yData)
             self.xData += xData

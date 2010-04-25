@@ -24,20 +24,18 @@ class RVector(RMatrix):
             raise Exception
     def _convertToMatrix(self):
         newData = RMatrix(data = 'as.matrix('+self.data+')')
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
     def _convertToList(self):
         self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))')
         newData = RList(data = 'list_of_'+self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
-    def _convertToRectangularData(self):
-        return self._convertToDataFrame()
     def _convertToDataFrame(self):
         # self.R('data_frame_of_'+self.data+'<-as.data.frame('+self.data+')')
         # self.R('colnames(data_frame_of_'+self.data+')<-c(\''+self.data+'\')')
         newData = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
         
     def _convertToVariable(self):

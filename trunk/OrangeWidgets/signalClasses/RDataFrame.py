@@ -23,13 +23,13 @@ class RDataFrame(RList):
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
         
         
     def copy(self):
         newVariable = RDataFrame(data = self.data, parent = self.parent)
-        newVariable.dictAttrs = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable
     def getSimpleOutput(self, subsetting = '[1:5, 1:5]'):
         # return the text for a simple output of this variable

@@ -18,9 +18,9 @@ class RModelFit(RList):
         return self.copy()
     def _convertToList(self):
         newData = RList(data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
-        newData.dictAttrs = self.dictAttrs
+        newData.dictAttrs = self.dictAttrs.copy()
         return newData
     def copy(self):
         newVariable = RModelFit(data = self.data, parent = self.parent)
-        newVariable.dictAttrs = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable

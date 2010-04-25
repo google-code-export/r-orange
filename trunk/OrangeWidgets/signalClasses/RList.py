@@ -9,7 +9,7 @@ class RList(RVariable):
             raise Exception
     def copy(self):
         newVariable = RList(self.data, self.parent)
-        newVariable.dictAttrs = self.dictAttrs
+        newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
