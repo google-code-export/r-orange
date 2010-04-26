@@ -20,8 +20,9 @@ class RMatrix(RDataFrame):
         newData.dictAttrs = self.dictAttrs.copy()
         return newData
     def _convertToRList(self):
-        newData = RList(data = 'as.list(as.data.frame('+self.data+')')
+        newData = RList(data = 'as.list(as.data.frame('+self.data+'))')
         newData.dictAttrs = self. dictAttrs.copy()
+        return newData
     def copy(self):
         newVariable = RMatrix(data = self.data, parent = self.parent)
         newVariable.dictAttrs = self.dictAttrs.copy()

@@ -17,14 +17,14 @@ class apply(OWRpy):
                 self.loadSettings() 
                 self.RFunctionParam_X = ''
                 self.inputs = [("X", RvarClasses.RDataFrame, self.processX)]
-                self.outputs = [("apply Output", RvarClasses.RDataFrame)]
+                self.outputs = [("apply Output", RvarClasses.RVector)]
                 
                 self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
                 box = redRGUI.tabWidget(self.controlArea)
                 self.standardTab = box.createTabPage(name = "Standard")
                 self.advancedTab = box.createTabPage(name = "Advanced")
                 self.RFunctionParamFUN_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Function:", text = '')
-                self.RFunctionParamMARGIN_radioButtons =  redRGUI.radioButtons(self.standardTab,  label = "Margin:", buttons = ['Rows', 'Columns'])
+                self.RFunctionParamMARGIN_radioButtons =  redRGUI.radioButtons(self.standardTab,  label = "Apply this across each:", buttons = ['Rows', 'Columns'])
                 redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         def processX(self, data):
                 if data:
@@ -49,14 +49,7 @@ class apply(OWRpy):
                         injection.append(string)
                 inj = ','.join(injection)
                 self.R(self.Rvariables['apply']+'<-apply(X='+str(self.RFunctionParam_X)+','+inj+')')
-                if 'Rows' in self.RFunctionParamMARGIN_radioButtons.getChecked():
-                    self.R(self.Rvariables['apply']+'<-cbind('+self.Rvariables['apply']+', rownames('+str(self.RFunctionParam_X)+'))')
-                else:
-                    self.R(self.Rvariables['apply']+'<-cbind('+self.Rvariables['apply']+', colnames('+str(self.RFunctionParam_X)+'))')
-                self.data["data"] = self.Rvariables["apply"]
                 
-                if self.R('class('+self.Rvariables['apply']+')') in ['vector', 'character', 'numeric']:
-                    self.R(self.Rvariables['apply']+'<-data.frame('+self.Rvariables['apply']+', rownames('+self.RFunctionParam_X+'), row.names = rownames('+self.RFunctionParam_X+'))')
-                newData = RvarClasses.RDataFrame(data = self.Rvariables['apply'], parent = self.Rvariables['apply'])
+                newData = RvarClasses.RVector(data = self.Rvariables['apply'])
 
                 self.rSend("apply Output", newData)

@@ -28,6 +28,7 @@ class ListSelector(OWRpy):
         
     def process(self, data):
         self.data = None
+        
         if data:
             self.data = data['data']
             names = self.R('names('+self.data+')')
@@ -37,6 +38,7 @@ class ListSelector(OWRpy):
                 print names
             self.names.update(names)
         else:
+            print 'Data connected was', data
             self.names.clear()
             for signal in self.outputs:
                 self.rSend(signal[0], None)

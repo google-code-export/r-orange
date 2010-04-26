@@ -14,7 +14,7 @@ class t(OWRpy):
     settingsList = ['sentItems']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.setRvariableNames(["t", 't_cm_'])
+        self.setRvariableNames(["t"])
         self.RFunctionParam_x = ''
         self.data={}
         self.loadSettings()
@@ -32,10 +32,8 @@ class t(OWRpy):
     def commitFunction(self):
         if self.x == '': return
         
-        self.R(self.Rvariables['t']+'<-as.matrix(t(x='+str(self.RFunctionParam_x)+'))')
-        self.R(self.Rvariables['t_cm_']+'<-data.frame(row.names = rownames('+self.Rvariables['t']+'))')
+        self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+str(self.RFunctionParam_x)+'))')
         
-        self.data['data'] = self.Rvariables['t']
-        self.data['cm'] = self.Rvariables['t_cm_']
-        self.data['parent'] = self.Rvariables['t']
-        self.rSend("t Output", self.data)
+        newData = RvarClasses.RDataFrame(data = self.Rvariables['t'])
+        newData.dictAttrs = self.data.dictAttrs.copy()
+        self.rSend("t Output", newData)

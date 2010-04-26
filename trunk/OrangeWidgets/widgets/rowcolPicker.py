@@ -21,7 +21,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1) #initialize the widget
         self.namesPresent = 0
         self.dataClass = None
-        self.setRvariableNames(['rowcolSelector', 'rowcolSelector_cm'])
+        self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
         self.loadSettings()
         
         self.inputs = [('Data Table', RvarClasses.RDataFrame, self.setWidget), ('Subsetting Vector', RvarClasses.RVector, self.setSubsettingVector)]
@@ -166,11 +166,6 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
     def subset(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None or self.data == '': return
         
-        if self.ISNOT.currentText() == 'IS': isNot = ''
-        elif self.ISNOT.currentText() == 'IS NOT': isNot = '!' 
-        
-        
-    
         selectedDFItems = []
         for name in self.attributes.selectedItems():
             selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
@@ -187,7 +182,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             newVector.dictAttrs = self.dataParent.dictAttrs.copy()
             self.rSend('Reduced Vector', newVector)
         if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
-            self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c('+','.join(selectedDFItems)+')')
+            self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))')
             newVector = RvarClasses.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
             newVector.dictAttrs = self.dataParent.dictAttrs.copy()
             self.rSend('Reduced Vector', newVector)

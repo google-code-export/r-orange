@@ -758,7 +758,7 @@ class SchemaDoc(QWidget):
             
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
-            dep = dep.strip(' ')
+            dep = dep.strip(' /')
             if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir, dep)) and dep != 'None':
                 print 'Downloading dependencies', dep
                 if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.orangeDir, 'temp'))):

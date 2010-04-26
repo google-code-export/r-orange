@@ -65,15 +65,14 @@ class nameProtector(OWRpy):
         if len(self.nameProtectDFcheckBox.getChecked()) == 0 and str(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
         newData = self.parentData.copy()
         if 'Make New Data Object' in self.newDataDFcheckBox.getChecked():
+            
+            
             self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData['data'])
-            newData.data = self.Rvariables['newDataFromNameProtector']
-            self.R(self.Rvariables['newDataFromNameProtector_cm']+'<-'+newData['cm'])
-            newData.cm = self.Rvariables['newDataFromNameProtector_cm']
+            newData = RvarClasses.RDataFrame(data = self.Rvariables['newDataFromNameProtector'])
             self.data = self.Rvariables['newDataFromNameProtector']
 
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
             self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))')
-            self.R('rownames('+newData['cm']+') <- rownames('+self.data+')')
             
         if str(self.namesProtectDFcomboBox.currentText()) != '':
             self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+str(self.namesProtectDFcomboBox.currentText())+'\'])')

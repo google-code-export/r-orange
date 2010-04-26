@@ -19,8 +19,8 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
         self.loadSettings() 
         self.RFunctionParam_x = ''
-        self.inputs = [("x", RvarClasses.RVector, self.processx)]
-        self.outputs = [("rank Output", RvarClasses.RVector)]
+        self.inputs = [("x", RvarClasses.RMatrix, self.processx)]
+        self.outputs = [("rank Output", RvarClasses.RMatrix)]
         
         self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
         box = redRGUI.tabWidget(self.controlArea)
@@ -29,7 +29,6 @@ class rank(OWRpy):
         self.RFunctionParamties_method_comboBox = redRGUI.comboBox(self.standardTab, label = "ties_method:", items = ['average', 'first', 'random', 'max', 'min'])
         #self.RFunctionParamna_last_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "na_last:")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data["data"]
@@ -47,12 +46,6 @@ class rank(OWRpy):
             # injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
-        self.rSend("rank Output", {"data":self.Rvariables["rank"]})
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("x", self.RFunctionParam_x)])
-        self.reportSettings('Function Settings', [('ties_method',str(self.RFunctionParam_ties_method))])
-        self.reportSettings('Function Settings', [('na_last',str(self.RFunctionParam_na_last))])
-        self.reportRaw(self.Rvariables["rank"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+        newData = RvarClasses.RMatrix(data = self.Rvariables['rank'])
+        self.rSend("rank Output", newData)
+

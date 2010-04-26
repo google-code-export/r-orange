@@ -126,14 +126,14 @@ class DataExplorer(OWRpy):
                     self.status.setText('There is a problem with your dataset, please check that it has at least one column and one row.')
                     return
                 
-                elif (int(dims[0]) < 500) and (int(dims[1]) < 500): # don't let the dims get too high or too low
+                elif (int(dims[0]) < 200) and (int(dims[1]) < 200): # don't let the dims get too high or too low
                     self.currentDataTransformation = self.data # there isn't any transformation to apply
-                elif not (int(dims[0]) < 500) and not (int(dims[1]) < 500): # they are both over 500
-                    self.currentDataTransformation = self.data+'[1:500, 1:500]' # we only show the first 500 rows and cols.  This will need to be subset later and we should show the row and column names in a separate dialog
-                elif not (int(dims[0]) < 500): # made it this far so there must be fewer columns than 500 but more than 500 rows
-                    self.currentDataTransformation = self.data+'[1:500,]'
-                elif not (int(dims[1]) < 500):
-                    self.currentDataTransformation = self.data+'[,1:500]'
+                elif not (int(dims[0]) < 200) and not (int(dims[1]) < 200): # they are both over 200
+                    self.currentDataTransformation = self.data+'[1:200, 1:200]' # we only show the first 200 rows and cols.  This will need to be subset later and we should show the row and column names in a separate dialog
+                elif not (int(dims[0]) < 200): # made it this far so there must be fewer columns than 200 but more than 200 rows
+                    self.currentDataTransformation = self.data+'[1:200,]'
+                elif not (int(dims[1]) < 200):
+                    self.currentDataTransformation = self.data+'[,1:200]'
                     
                 ######## End Block ##########
                 self.rowListBox.addRItems(self.rownames)
@@ -242,12 +242,12 @@ class DataExplorer(OWRpy):
             else:
                 dims = self.R('dim(as.data.frame('+self.data+'))')
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')
-                if int(dims[0]) > 500 and int(dims[1]) > 500:
-                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:500, 1:500])' ## wrap in an as.data.frame so that there aren't errors with vectors.
-                elif int(dims[0]) > 500:
-                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:500,])'
-                elif int(dims[1]) > 500:
-                    self.currentDataTransformation = 'as.data.frame('+self.data+'[,1:500])'
+                if int(dims[0]) > 200 and int(dims[1]) > 200:
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:200, 1:200])' ## wrap in an as.data.frame so that there aren't errors with vectors.
+                elif int(dims[0]) > 200:
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:200,])'
+                elif int(dims[1]) > 200:
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[,1:200])'
                 else:
                     self.currentDataTransformation = self.data
                 ######## Set the table for the data ######
@@ -261,16 +261,16 @@ class DataExplorer(OWRpy):
         ### want to set the table with the data in the currentDataTransformation object
         
         # a set of recurring cellWidgets that we will use for the column settings
-        #
+        self.table.hide()
         # get the dims to set the data
         dims = self.R('dim(as.data.frame('+self.currentDataTransformation+'))') # coerce the data to a data frame just in case. 
         
         # set the row and column count
         if dims != None:
-            self.table.setRowCount(min([int(dims[0]), 500])+2) # set up the row and column counts of the table
-            self.table.setColumnCount(min([int(dims[1]), 500])+1)
+            self.table.setRowCount(min([int(dims[0]), 200])+2) # set up the row and column counts of the table
+            self.table.setColumnCount(min([int(dims[1]), 200])+1)
         else: #one column data frames will be converted to vectors so dim will fail, put a catch so this will not throw an error.
-            self.table.setRowCount(500+2) # set up the row and column counts of the table
+            self.table.setRowCount(200+2) # set up the row and column counts of the table
             self.table.setColumnCount(1+1)
         tableData = self.R('as.matrix('+self.currentDataTransformation+')') # collect all of the table data into an objec
         colClasses = []
@@ -278,8 +278,8 @@ class DataExplorer(OWRpy):
             colClasses.append(self.R('class('+self.currentDataTransformation+')', silent = True))
             
         # start to fill the table from top to bottom, left to right.
-        for j in range(0, min([int(dims[1]), 500])+1):# the columns
-            for i in range(0, min([int(dims[0]), 500])+2): # the rows
+        for j in range(0, min([int(dims[1]), 200])+1):# the columns
+            for i in range(0, min([int(dims[0]), 200])+2): # the rows
             
                 if j == 0 and i == 0: # the data selector for the rownames
                     cb = redRGUI.button(self, "Subset Rownames", callback = self.rowcolDialog.show)
@@ -313,6 +313,7 @@ class DataExplorer(OWRpy):
                     else:
                         ci = QTableWidgetItem(str(tableData[i-2][j-1])) # need to catch the case that there might not be multiple rows or columns
                     self.table.setItem(i, j, ci)
+        self.table.show()
         self.table.resizeColumnsToContents()
     def showDialog(self, k):
         self.criteriaDialogList[k]['dialog'].show()
@@ -386,9 +387,9 @@ class DataExplorer(OWRpy):
 
         print self.criteriaList
         if len(self.criteriaList) > 0:
-            self.R(self.dataParent.dictAttrs['cm']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+')]))')
+            self.R(self.dataParent.dictAttrs['cm'][0]+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
             newData = self.dataParent.copy()
-            newData.data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.dataParent['cm']+'$'+self.Rvariables['dataExplorer']+'$True,]'
+            newData.data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.dataParent['cm'][0]+'$'+self.Rvariables['dataExplorer']+'$True,]'
             self.rSend('Data Subset', newData)
         else:
             self.rSend('Data Subset', self.dataParent.copy())

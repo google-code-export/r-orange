@@ -75,8 +75,8 @@ class rExecutor(OWRpy):
         self.command.setText(str(self.data))
         
     def insertMetaDataVar(self):
-        tmp = str(self.olddata.dictAttrs[str(self.metadataLB.selectedItems()[0].text())][0])
-        self.thistext.insertHtml(str(self.olddata.dictAttrs[str(self.metadataLB.selectedItems()[0].text())]))
+        tmp = str(self.olddata[str(self.metadataLB.selectedItems()[0].text())])
+        self.thistext.insertHtml(tmp)
         self.infoM.setText(tmp)
         self.command.setText(tmp)
     def sendThis(self):
