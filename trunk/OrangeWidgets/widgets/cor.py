@@ -17,7 +17,7 @@ class cor(OWRpy):
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.inputs = [("x", RvarClasses.RDataFrame, self.processx),("y", RvarClasses.RVector, self.processy)]
-        self.outputs = [("cor Output", RvarClasses.RModelFit)]
+        self.outputs = [("cor Output", RvarClasses.RMatrix)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
