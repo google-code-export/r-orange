@@ -1,7 +1,7 @@
 ; Include section
 !include "MUI.nsh"
 
-
+LogSet on
 ;General
   Name "Red-R 1.7"
   OutFile "C:\Users\anup\Documents\red\develop\installer\Red-R-non-developer-Snapshot-10.04.26.exe"
@@ -20,7 +20,7 @@
 !define RDIRECTORY C:\Users\anup\Documents\red\develop\installer\R ;;;; The directory of a blank R so that we don't have to deal with licence terms of R
 
 
-!define RVER "R"
+!define RVER "R-2.9.1"
 !define RVERSION Red-R1.7 ;;;; Change this when a new version is made
 
 ;---------------------------------
@@ -47,38 +47,6 @@
 
 ; languages
 !insertmacro MUI_LANGUAGE "English"
-Section Uninstall
-	MessageBox MB_YESNO "Are you sure you want to remove Red-R?" /SD IDYES IDNO abort
-	
-	; ${If} $AdminInstall = 0
-	    ; SetShellVarContext all
-	; ${Else}
-	    ; SetShellVarContext current	   
-	; ${Endif}
-    RmDir /R /REBOOTOK "$INSTDIR\${RVERSION}"
-	RmDir /R /REBOOTOK "$SMPROGRAMS\Red-R\${RVERSION}"
-
-    MessageBox MB_YESNO "Would you like to remove your Red-R ${RVERSION} settings?" /SD IDYES IDNO remove_keys
-    
-	ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
-	StrCmp $0 "" 0 +2
-	  ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
-	StrCmp $0 "" +2 0
-	  RmDir /R /REBOOTOK "$0\red-r\settings"
-	
-    remove_keys:
-
-    DeleteRegKey HKCU "SOFTWARE\Red-R\${RVERSION}"
-    DeleteRegKey HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${RVERSION}"
-	
-	Delete "$DESKTOP\Red-R Canvas ${RVERSION}.lnk"
-
-	DeleteRegKey HKEY_CLASSES_ROOT ".rrs"
-	DeleteRegKey HKEY_CLASSES_ROOT "Red R Canvas"
-
-	MessageBox MB_OK "Red-R ${RVERSION} has been successfully removed from your system.$\r$\nYou may need to reboot your machine.$\r$\n$\r$\nIf you want to use an older version of Red-R you should reinstall that version." /SD IDOK
-   abort:
-SectionEnd
 
 Section "" ;this is the section that will install Red-R and all of it's files
 	ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
@@ -145,3 +113,34 @@ Section "" ;this is the section that will install Red-R and all of it's files
 
 SectionEnd
 
+Section Uninstall
+	MessageBox MB_YESNO "Are you sure you want to remove Red-R?" /SD IDYES IDNO abort
+	
+    RmDir /r /REBOOTOK "$INSTDIR\${RVERSION}"
+	RmDir /r /REBOOTOK "$SMPROGRAMS\Red-R\${RVERSION}"
+
+    MessageBox MB_YESNO "Would you like to remove your Red-R ${RVERSION} settings?" /SD IDYES IDNO remove_keys
+    
+	ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
+	StrCmp $0 "" 0 +2
+	  ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
+	StrCmp $0 "" +2 0
+	  RmDir /r /REBOOTOK "$0\red-r\settings"
+	
+    remove_keys:
+
+    DeleteRegKey HKCU "SOFTWARE\Red-R\${RVERSION}"
+    DeleteRegKey HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${RVERSION}"
+	
+	Delete "$DESKTOP\Red-R Canvas ${RVERSION}.lnk"
+
+	DeleteRegKey HKEY_CLASSES_ROOT ".rrs"
+	DeleteRegKey HKEY_CLASSES_ROOT "Red R Canvas"
+    IfErrors jumpto_iferror
+        MessageBox MB_OK "Red-R ${RVERSION} has been successfully removed from your system.$\r$\nYou may need to reboot your machine.$\r$\n$\r$\nIf you want to use an older version of Red-R you should reinstall that version." /SD IDOK
+    
+    jumpto_iferror:
+        MessageBox MB_OK "Red-R ${RVERSION} Error!" /SD IDOK
+
+   abort:
+SectionEnd
