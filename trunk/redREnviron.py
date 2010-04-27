@@ -11,14 +11,14 @@ def __getDirectoryNames():
         # redRDir = os.path.split(os.path.abspath(orange.__file__))[0]
         pass
 
-    try:
-        orangeVer = redRDir.split(os.path.sep)[-1]
-    except:
-        orangeVer = "orange"
+    # try:
+        # orangeVer = redRDir.split(os.path.sep)[-1]
+    # except:
+        # orangeVer = "orange"
 
     canvasDir = os.path.join(redRDir, "canvas")
     RDir = os.path.join(os.path.split(redRDir)[0], "R")
-    widgetDir = os.path.join(redRDir, "OrangeWidgets")
+    widgetDir = os.path.join(redRDir, "libraries")
     tagsDir = os.path.join(redRDir, "tagsSystem")
     picsDir = os.path.join(widgetDir, "icons")
     addOnsDir = os.path.join(redRDir, "add-ons")
