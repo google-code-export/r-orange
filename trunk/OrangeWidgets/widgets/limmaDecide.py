@@ -30,8 +30,8 @@ class limmaDecide(OWRpy):
         
         #self.sendMe()
         
-        self.inputs = [("eBayes fit", RvarClasses.RModelFit, self.process), ('NormalizedAffybatch', RvarClasses.RDataFrame, self.processeset)]
-        self.outputs = [("Expression Subset", RvarClasses.RDataFrame), ("Gene Change Table", RvarClasses.RDataFrame)]
+        self.inputs = [("eBayes fit", signals.RModelFit, self.process), ('Normalized Eset', signals.RDataFrame, self.processeset)]
+        self.outputs = [("Expression Subset", signals.RDataFrame), ("Gene Change Table", signals.RDataFrame)]
         
         #GUI
         #want to have an options part, a data viewing part and a run part
@@ -96,7 +96,7 @@ class limmaDecide(OWRpy):
         self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod.currentText())+'", adjust.method="'+str(self.adjmethods.currentText())+'", p.value='+str(self.pval.text())+', lfc='+str(self.foldchange.text())+')')
         #self.infoa.setText("Gene Matrix Processed and sent!")
         self.R(self.Rvariables['gcm_matrix']+'<-as.matrix('+self.Rvariables['gcm']+')')
-        self.sending = RvarClasses.RMatrix(data = self.Rvariables['gcm_matrix'])
+        self.sending = signals.RMatrix(data = self.Rvariables['gcm_matrix'])
         self.rSend("Gene Change Matrix", self.sending)
         self.groupNames = self.R('colnames('+self.Rvariables['gcm']+')', wantType = 'list')
         #if len(self.groupNames) > 2:

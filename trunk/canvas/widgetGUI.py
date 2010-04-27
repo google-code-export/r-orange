@@ -46,7 +46,7 @@ class widgetGUI(QMainWindow):
         else:               QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
 
         # directories are better defined this way, otherwise .ini files get written in many places
-        #self.__dict__.update(orngEnviron.directoryNames)
+        #self.__dict__.update(redREnviron.directoryNames)
 
         self.setCaption(title.replace("&","")) # used for widget caption
 

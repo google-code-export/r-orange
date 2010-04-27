@@ -16,8 +16,8 @@ class cor(OWRpy):
         self.loadSettings() 
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("x", RvarClasses.RDataFrame, self.processx),("y", RvarClasses.RVector, self.processy)]
-        self.outputs = [("cor Output", RvarClasses.RMatrix)]
+        self.inputs = [("x", signals.RDataFrame, self.processx),("y", signals.RVector, self.processy)]
+        self.outputs = [("cor Output", signals.RMatrix)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
@@ -62,6 +62,6 @@ class cor(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = RvarClasses.RMatrix(data = self.Rvariables["cor"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RMatrix(data = self.Rvariables["cor"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("cor Output", newData)

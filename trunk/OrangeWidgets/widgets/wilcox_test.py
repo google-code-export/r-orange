@@ -18,8 +18,8 @@ class wilcox_test(OWRpy):
         self.loadSettings() 
         self.RFunctionParam_x = ''
         self.RFunctionParam_y = ''
-        self.inputs = [("x", RvarClasses.RVector, self.processx), ('y', RvarClasses.RVector, self.processy)]
-        self.outputs = [("wilcox.test Output", RvarClasses.RVariable)]
+        self.inputs = [("x", signals.RVector, self.processx), ('y', signals.RVector, self.processy)]
+        self.outputs = [("wilcox.test Output", signals.RVariable)]
         
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)

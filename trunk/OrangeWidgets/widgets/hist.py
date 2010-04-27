@@ -15,7 +15,7 @@ class hist(OWRpy):
         self.RFunctionParam_x = ''
         self.column = ''
         self.needsColumns = 0
-        self.inputs = [("x", RvarClasses.RVariable, self.processx)]
+        self.inputs = [("x", signals.RVariable, self.processx)]
         
         box = redRGUI.groupBox(self.controlArea, "Widget Box")
         #self.infoa = redRGUI.widgetLabel(box, "")

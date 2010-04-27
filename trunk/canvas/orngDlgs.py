@@ -372,8 +372,8 @@ class AboutDlg(QDialog):
         self.topLayout = QVBoxLayout(self)
         self.setWindowFlags(Qt.Popup)
         
-        import orngEnviron
-        logoImage = QPixmap(os.path.join(orngEnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+        import redREnviron
+        logoImage = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         logo = OWGUI.widgetLabel(self, "")
         logo.setPixmap(logoImage)
         

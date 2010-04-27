@@ -25,8 +25,8 @@ class pamr_train(OWRpy):
 		self.loadSettings() 
 		self.RFunctionParam_data = ''
 		self.RFunctionParam_gene_subset = ''
-		self.inputs = [("data", RvarClasses.RVariable, self.processdata),("gene_subset", RvarClasses.RVariable, self.processgene_subset)]
-		self.outputs = [("pamr.train Output", RvarClasses.RVariable)]
+		self.inputs = [("data", signals.RVariable, self.processdata),("gene_subset", signals.RVariable, self.processgene_subset)]
+		self.outputs = [("pamr.train Output", signals.RVariable)]
 		
 		self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
 		box = redRGUI.tabWidget(self.controlArea)

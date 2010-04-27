@@ -7,10 +7,10 @@ from PyQt4.QtGui import *
 import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.insert(0, mypath)
-import orngEnviron
+import redREnviron
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
-import user, orngMisc
+# import user
 
 
 class OrangeCanvasDlg(QMainWindow):
@@ -27,8 +27,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetsToolBar = None
         self.originalPalette = QApplication.palette()
 
-        self.__dict__.update(orngEnviron.directoryNames)
-        logo = QPixmap(os.path.join(orngEnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+        self.__dict__.update(redREnviron.directoryNames)
+        logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
         splashWindow.setMask(logo.mask())
         splashWindow.show()
@@ -281,14 +281,14 @@ class OrangeCanvasDlg(QMainWindow):
 
         localHelp = 0
         self.menuHelp = QMenu("&Help", self)
-        if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")) or os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")):
-            if os.path.exists(os.path.join(self.orangeDir, r"doc/reference/default.htm")): self.menuHelp.addAction("Red-R Help", self.menuOpenLocalOrangeHelp)
-            if os.path.exists(os.path.join(self.orangeDir, r"doc/canvas/default.htm")): self.menuHelp.addAction("Red Canvas Help", self.menuOpenLocalCanvasHelp)
+        if os.path.exists(os.path.join(self.redRDir, r"doc/reference/default.htm")) or os.path.exists(os.path.join(self.redRDir, r"doc/canvas/default.htm")):
+            if os.path.exists(os.path.join(self.redRDir, r"doc/reference/default.htm")): self.menuHelp.addAction("Red-R Help", self.menuOpenLocalOrangeHelp)
+            if os.path.exists(os.path.join(self.redRDir, r"doc/canvas/default.htm")): self.menuHelp.addAction("Red Canvas Help", self.menuOpenLocalCanvasHelp)
 
         self.menuHelp.addAction("Red-R Online Help", self.menuOpenOnlineOrangeHelp)
         #self.menuHelp.addAction("Orange Canvas Online Help", self.menuOpenOnlineCanvasHelp)
 
-        if os.path.exists(os.path.join(self.orangeDir, r"updateOrange.py")):
+        if os.path.exists(os.path.join(self.redRDir, r"updateOrange.py")):
             self.menuHelp.addSeparator()
             self.menuHelp.addAction("Check for updates", self.menuCheckForUpdates)
             
@@ -495,11 +495,11 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
-        webbrowser.open("file:///" + os.path.join(self.orangeDir, "doc/catalog/index.html"))
+        webbrowser.open("file:///" + os.path.join(self.redRDir, "doc/catalog/index.html"))
 
     def menuOpenLocalCanvasHelp(self):
         import webbrowser
-        webbrowser.open(os.path.join(self.orangeDir, "doc/canvas/default.htm"))
+        webbrowser.open(os.path.join(self.redRDir, "doc/canvas/default.htm"))
 
     def menuOpenOnlineOrangeHelp(self):
         import webbrowser
@@ -554,14 +554,14 @@ class OrangeCanvasDlg(QMainWindow):
             
             self.schema.canvasView.repaint()
         
-            import orngEnviron, orngRegistry
+            import redREnviron, orngRegistry
             if dlg.toAdd != []:
                 for (name, dir) in dlg.toAdd: 
-                    orngEnviron.registerAddOn(name, dir)
+                    redREnviron.registerAddOn(name, dir)
             
             if dlg.toRemove != []:
                 for (name, dir) in dlg.toRemove:
-                    orngEnviron.registerAddOn(name, dir, add = False)
+                    redREnviron.registerAddOn(name, dir, add = False)
             
             if dlg.toAdd != [] or dlg.toRemove != []:
                 self.widgetRegistry = orngRegistry.readCategories()
@@ -774,10 +774,10 @@ class OrangeQApplication(QApplication):
         
         
 #####################Forked verions of R##############################
-# import sys, os, orngEnviron, numpy
+# import sys, os, redREnviron, numpy
 # if sys.platform=="win32":
     # from rpy_options import set_options
-    # set_options(RHOME=orngEnviron.directoryNames['RDir'])
+    # set_options(RHOME=redREnviron.directoryNames['RDir'])
 # else: # need this because linux doesn't need to use the RPATH
     # print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 

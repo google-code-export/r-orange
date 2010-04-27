@@ -18,8 +18,8 @@ class lm(OWRpy):
         self.modelFormula = ''
         self.processingComplete = 0
         self.loadSettings()
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        self.outputs = [("lm Output", RvarClasses.RVariable)]
+        self.inputs = [("data", signals.RVariable, self.processdata)]
+        self.outputs = [("lm Output", signals.RVariable)]
         
         #GUI
         

@@ -1,5 +1,5 @@
-import RvarClasses
+import signals
 
-class SurvFit(RvarClasses.RVariable):
+class SurvFit(signals.RVariable):
     pass
     

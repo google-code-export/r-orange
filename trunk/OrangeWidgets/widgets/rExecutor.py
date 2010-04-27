@@ -22,8 +22,8 @@ class rExecutor(OWRpy):
         self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
         self.loadSettings()
         
-        self.inputs = [('R.object', RvarClasses.RVariable, self.process)]
-        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R List', RvarClasses.RList), ('R Vector', RvarClasses.RVector), ('R.object', RvarClasses.RVariable), ('R Matrix', RvarClasses.RMatrix)]
+        self.inputs = [('R.object', signals.RVariable, self.process)]
+        self.outputs = [('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable), ('R Matrix', signals.RMatrix)]
         #self.breakme()
         
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
@@ -83,34 +83,34 @@ class rExecutor(OWRpy):
         
         thisdataclass = self.R('class('+str(self.command.text())+')')
         thisdata = str(self.command.text())
-        # use upclassing to convert to RvarClasses class
+        # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
-            newData = RvarClasses.RVariable(data = str(self.command.text()))
+            newData = signals.RVariable(data = str(self.command.text()))
             self.rSend('R.object', newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
                 self.R(self.Rvariables['rExecutor_cm']+'<-list()')
-                newData = RvarClasses.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
+                newData = signals.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
-                newData = RvarClasses.RDataFrame(data = str(self.command.text()))
+                newData = signals.RDataFrame(data = str(self.command.text()))
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:
-                newData = RvarClasses.RMatrix(data = str(self.command.text()))
+                newData = signals.RMatrix(data = str(self.command.text()))
                 self.rSend('R Matrix', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
-                newData = RvarClasses.RList(data = str(self.command.text()))
+                newData = signals.RList(data = str(self.command.text()))
                 self.rSend('R List', newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                newData = RvarClasses.RVariable(data = str(self.command.text()))
+                newData = signals.RVariable(data = str(self.command.text()))
                 self.rSend('R.object', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
-            newData = RvarClasses.RVariable(data = str(self.command.text()))
+            newData = signals.RVariable(data = str(self.command.text()))
             self.rSend('R.object', newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):

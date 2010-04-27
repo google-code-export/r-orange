@@ -31,8 +31,8 @@ class diffExp(OWRpy):
         self.setRvariableNames(['results','classes','subset', 'diffExp_cm'])
         
 
-        self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Phenotype Data", RvarClasses.RDataFrame, self.phenoProcess)]
-        self.outputs = [("eBayes fit", RvarClasses.RMArrayLM), ('eBayes data frame', RvarClasses.RDataFrame)]
+        self.inputs = [("Expression Set", signals.RDataFrame, self.process), ("Phenotype Data", signals.RDataFrame, self.phenoProcess)]
+        self.outputs = [("eBayes fit", signals.RMArrayLM), ('eBayes data frame', signals.RDataFrame)]
         
         self.samplenames = None #names of the samples (as a python object) to be used for generating the differential expression matrix
         self.classA = True #a container to maintain which list to add the arrays to
@@ -175,11 +175,11 @@ class diffExp(OWRpy):
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')
             self.R(self.Rvariables['results']+'<-eBayes(fit)')
 
-        newdata = RvarClasses.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')') 
+        newdata = signals.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')') 
         newdata.dictAttrs['classes'] = (self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression', None)
         self.rSend('eBayes data frame', newdata)
         
-        self.newdata = RvarClasses.RMArrayLM(data = self.Rvariables['results'])
+        self.newdata = signals.RMArrayLM(data = self.Rvariables['results'])
         self.newdata.dictAttrs['classes'] = (self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression', None)
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')

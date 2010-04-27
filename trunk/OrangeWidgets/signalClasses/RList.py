@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
-from RvarClasses import RVariable
+from signals import RVariable
 class RList(RVariable):
     def __init__(self, data, parent = None, checkVal = True):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)

@@ -64,12 +64,12 @@ class widgetMaker(OWRpy):
         codeTab.layout().addWidget(self.codeArea)
         
     def getRvarClass_classes(self):
-        dirs = dir(RvarClasses)
+        dirs = dir(signals)
         redRClasses = []
         for thisItem in dirs:
-            attribute = getattr(RvarClasses, thisItem)
+            attribute = getattr(signals, thisItem)
             try:
-                if issubclass(attribute, RvarClasses.RVariable):
+                if issubclass(attribute, signals.RVariable):
                     redRClasses.append(thisItem)
             except: pass
         return redRClasses
@@ -81,8 +81,8 @@ class widgetMaker(OWRpy):
                 
         self.updateInputs()
     def launch(self):
-        import orngEnviron, orngRegistry
-        widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
+        import redREnviron, orngRegistry
+        widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
         path = widgetDirName +  "\\widgets\\" + self.functionName.text().replace('.', '_') + ".py"
         #print 'path:' + path
@@ -244,11 +244,11 @@ class widgetMaker(OWRpy):
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
             self.initCode += '\t\tself.inputs = ['
             for element in self.functionInputs.keys():
-                self.initCode += '("'+element+'", RvarClasses.'+self.functionInputs[element]+', self.process'+element+'),'
+                self.initCode += '("'+element+'", signals.'+self.functionInputs[element]+', self.process'+element+'),'
             self.initCode = self.initCode[:len(self.initCode)-1]
             self.initCode += ']\n'
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.initCode += '\t\tself.outputs = [("'+self.functionName.text()+' Output", RvarClasses.'+str(self.outputsCombobox.currentText())+')]\n'
+            self.initCode += '\t\tself.outputs = [("'+self.functionName.text()+' Output", signals.'+str(self.outputsCombobox.currentText())+')]\n'
         self.initCode += '\t\t\n'
         
     def makeGUI(self):
@@ -335,7 +335,7 @@ class widgetMaker(OWRpy):
         
         
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.commitFunction += '\t\tnewData = RvarClasses.'+str(self.outputsCombobox.currentText())+'(data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
+            self.commitFunction += '\t\tnewData = signals.'+str(self.outputsCombobox.currentText())+'(data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
             self.commitFunction += '\t\t#newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.\n'
             self.commitFunction += '\t\tself.rSend("'+self.functionName.text()+' Output", newData)\n'
 

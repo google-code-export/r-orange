@@ -16,8 +16,8 @@ class Melt_DF(OWRpy):
         self.RFunctionParam_data = ''
         self.data = {}
         self.loadSettings()
-        self.inputs = [("data", RvarClasses.RDataFrame, self.processdata)]
-        self.outputs = [("melt.data.frame Output", RvarClasses.RDataFrame)]
+        self.inputs = [("data", signals.RDataFrame, self.processdata)]
+        self.outputs = [("melt.data.frame Output", signals.RDataFrame)]
         
         box = redRGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_na_rm = redRGUI.comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
@@ -65,7 +65,7 @@ class Melt_DF(OWRpy):
             ivStr = ''
             
         self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', rownames('+str(self.RFunctionParam_data)+')),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')')
-        # copy the RvarClasses class and send the newData
-        newData = RvarClasses.RDataFrame(data = self.Rvariables['melt.data.frame'])
+        # copy the signals class and send the newData
+        newData = signals.RDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("melt.data.frame Output", newData)

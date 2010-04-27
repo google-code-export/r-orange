@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, glob
-import orngEnviron
+import redREnviron
 from numpy import *
 #import sys, traceback
 
@@ -36,7 +36,7 @@ qtWidgets = []
 current_module = __import__(__name__)
 
 
-for filename in glob.iglob(os.path.join(orngEnviron.directoryNames['widgetDir'] + '/qtWidgets', "*.py")):
+for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
     

@@ -16,7 +16,7 @@ class RLoader(OWRpy):
         OWRpy.__init__(self,parent, signalManager, "RLoader", wantMainArea = 0, resizingEnabled = 1)
         self.loadSettings()
         self.inputs = None
-        self.outputs = [('R Session', RvarClasses.RSession)]
+        self.outputs = [('R Session', signals.RSession)]
         self.setRvariableNames(['sessionEnviron'])
         OWGUI.button(self.controlArea, self, 'Load Session', callback = self.loadSession)
         self.infoa = redRGUI.widgetLabel(self.controlArea, '')

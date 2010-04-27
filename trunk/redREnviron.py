@@ -4,24 +4,24 @@ import os, sys, user
 def __getDirectoryNames():
     """Return a dictionary with Orange directories."""
     try:
-        orangeDir = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
-        #print orangeDir
+        redRDir = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
+        #print redRDir
     except:
         # import orange
-        # orangeDir = os.path.split(os.path.abspath(orange.__file__))[0]
+        # redRDir = os.path.split(os.path.abspath(orange.__file__))[0]
         pass
 
     try:
-        orangeVer = orangeDir.split(os.path.sep)[-1]
+        orangeVer = redRDir.split(os.path.sep)[-1]
     except:
         orangeVer = "orange"
 
-    canvasDir = os.path.join(orangeDir, "OrangeCanvas")
-    RDir = os.path.join(os.path.split(orangeDir)[0], "R")
-    widgetDir = os.path.join(orangeDir, "OrangeWidgets")
-    tagsDir = os.path.join(orangeDir, "tagsSystem")
+    canvasDir = os.path.join(redRDir, "canvas")
+    RDir = os.path.join(os.path.split(redRDir)[0], "R")
+    widgetDir = os.path.join(redRDir, "OrangeWidgets")
+    tagsDir = os.path.join(redRDir, "tagsSystem")
     picsDir = os.path.join(widgetDir, "icons")
-    addOnsDir = os.path.join(orangeDir, "add-ons")
+    addOnsDir = os.path.join(redRDir, "add-ons")
 
     if not os.path.isdir(widgetDir) or not os.path.isdir(widgetDir):
         canvasDir = None
@@ -73,14 +73,14 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
 
-    return dict([(name, vars()[name]) for name in ["orangeDir", "canvasDir", "RDir", "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
+    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "RDir", "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
 
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 
 def addOrangeDirectoriesToPath():
     """Add orange directory paths to Python path."""
-    pathsToAdd = [orangeDir]
+    pathsToAdd = [redRDir]
 
     if canvasDir <> None:
         pathsToAdd.append(canvasDir)

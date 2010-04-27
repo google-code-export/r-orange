@@ -15,7 +15,7 @@ class pamr_from_excel(OWRpy):
         self.RFunctionParam_file = ""
         self.RFunctionParam_ncols = ""
         self.loadSettings() 
-        self.outputs = [("pamr.from.excel Output", RvarClasses.RVariable)]
+        self.outputs = [("pamr.from.excel Output", signals.RVariable)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)

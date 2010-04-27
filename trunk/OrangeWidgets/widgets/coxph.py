@@ -16,8 +16,8 @@ class coxph(OWRpy):
         self.data = {}
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
-        self.outputs = [("coxph Output", RvarClasses.RCoxphFit)]
+        self.inputs = [("data", signals.RVariable, self.processdata)]
+        self.outputs = [("coxph Output", signals.RCoxphFit)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         hbox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
@@ -78,7 +78,7 @@ class coxph(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = RvarClasses.RSurvFit(data = self.Rvariables['coxph'])
+        newData = signals.RSurvFit(data = self.Rvariables['coxph'])
         newData.dictAttrs = self.data.dictAttrs  # copy the dictionary
         self.rSend("coxph Output", self.data)
 

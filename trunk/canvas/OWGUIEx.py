@@ -292,7 +292,7 @@ if __name__ == "__main__":
 ##            
 ##        widgetDir = str(category.directory)  
 ##        fullPaths = []
-##        dirs = orngEnviron.directoryNames
+##        dirs = redREnviron.directoryNames
 ##        for paths in [(dirs["picsDir"],), (dirs["widgetDir"],), (dirs["widgetDir"], "icons")]:
 ##            for name in names + [iconName]:
 ##                fname = os.path.join(*paths + (name,))
@@ -309,7 +309,7 @@ if __name__ == "__main__":
 ##    s.listWidget.setSpacing(2)
 ##    s.setStyleSheet(""" QLineEdit { background: #fffff0; border: 1px solid blue} """)
 ##    s.listWidget.setStyleSheet(""" QListView { background: #fffff0; } QListView::item {padding: 3px 0px 3px 0px} QListView::item:selected, QListView::item:hover { color: white; background: blue;} """)
-##    import orngRegistry, orngEnviron
+##    import orngRegistry, redREnviron
 ##    cats = orngRegistry.readCategories()
 ##    items = []
 ##    for cat in cats.values():

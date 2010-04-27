@@ -6,11 +6,11 @@ from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-orangeDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
-if not orangeDir in sys.path:
-    sys.path.append(orangeDir)
+redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+if not redRDir in sys.path:
+    sys.path.append(redRDir)
 
-import orngEnviron
+import redREnviron
 
 class WidgetDescription:
     def __init__(self, **attrs):
@@ -23,8 +23,8 @@ class WidgetCategory(dict):
    
 def readCategories():
     global widgetsWithError 
-    widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
-    canvasSettingsDir = os.path.realpath(orngEnviron.directoryNames["canvasSettingsDir"])
+    widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
+    canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
     cacheFilename = os.path.join(canvasSettingsDir, "cachedWidgetDescriptions.pickle")
 
     try:
@@ -41,7 +41,7 @@ def readCategories():
             directories.append((dirName, directory, ""))
 
     # read list of add-ons (in orange/add-ons as well as those additionally registered by the user)
-    for (name, dirName) in orngEnviron.addOns:
+    for (name, dirName) in redREnviron.addOns:
         addOnWidgetsDir = os.path.join(dirName, "widgets")
         if os.path.isdir(addOnWidgetsDir):
             directories.append((name, addOnWidgetsDir, addOnWidgetsDir))
@@ -96,8 +96,8 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
         widgname = os.path.splitext(fname)[0]
         try:
             if not splashWindow:
-                import orngEnviron
-                logo = QPixmap(os.path.join(orngEnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+                import redREnviron
+                logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
                 splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
                 splashWindow.setMask(logo.mask())
                 splashWindow.show()

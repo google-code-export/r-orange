@@ -19,8 +19,8 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
         self.loadSettings() 
         self.RFunctionParam_x = ''
-        self.inputs = [("x", RvarClasses.RMatrix, self.processx)]
-        self.outputs = [("rank Output", RvarClasses.RMatrix)]
+        self.inputs = [("x", signals.RMatrix, self.processx)]
+        self.outputs = [("rank Output", signals.RMatrix)]
         
         self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
         box = redRGUI.tabWidget(self.controlArea)
@@ -46,6 +46,6 @@ class rank(OWRpy):
             # injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
-        newData = RvarClasses.RMatrix(data = self.Rvariables['rank'])
+        newData = signals.RMatrix(data = self.Rvariables['rank'])
         self.rSend("rank Output", newData)
 

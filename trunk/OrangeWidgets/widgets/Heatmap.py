@@ -20,8 +20,8 @@ class Heatmap(OWRpy):
         self.plotdata = ''
         self.rowvChoice = None
         self.loadSettings()
-        self.inputs = [("Expression Matrix", RvarClasses.RDataFrame, self.processMatrix), ('Classes Data', RvarClasses.RDataFrame, self.processClasses)]
-        self.outputs = [("Cluster Subset List", RvarClasses.RList)]
+        self.inputs = [("Expression Matrix", signals.RDataFrame, self.processMatrix), ('Classes Data', signals.RDataFrame, self.processClasses)]
+        self.outputs = [("Cluster Subset List", signals.RList)]
         
 
         
@@ -123,7 +123,7 @@ class Heatmap(OWRpy):
         self.Rplot('plot('+self.Rvariables['hclust']+')', devNumber = 1)
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
-        newData = RvarClasses.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
-        hclust = RvarClasses.RModelFit(data = self.Rvariables['hclust'])
+        newData = signals.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
+        hclust = signals.RModelFit(data = self.Rvariables['hclust'])
         newData.dictAttrs['cluster'] = hclust
         self.rSend("Cluster Subset List", newData)

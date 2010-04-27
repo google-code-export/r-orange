@@ -24,8 +24,8 @@ class dataEntry(OWRpy):
         self.loadSettings()
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame)] # trace problem with outputs
+        self.inputs = [('Data Table', signals.RDataFrame, self.processDF)]
+        self.outputs = [('Data Table', signals.RDataFrame)] # trace problem with outputs
         #GUI.
         
         
@@ -239,7 +239,7 @@ class dataEntry(OWRpy):
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
-        self.newData = RvarClasses.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
+        self.newData = signals.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
         self.newData.dictAttrs = self.savedData.dictAttrs
         if 'cm' in self.newData.dictAttrs.keys():
             self.newData.dictAttrs.pop('cm')

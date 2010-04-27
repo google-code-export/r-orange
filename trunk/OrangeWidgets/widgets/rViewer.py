@@ -15,7 +15,7 @@ class rViewer(OWRpy):
         
         self.RFunctionParam_data = None
         self.loadSettings()
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
+        self.inputs = [("data", signals.RVariable, self.processdata)]
         self.showAll = redRGUI.checkBox(self.bottomAreaRight, 
         buttons = ['Show All Rows', 'Show All Columns'],orientation="horizontal")
         redRGUI.button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)

@@ -18,8 +18,8 @@ class nameProtector(OWRpy):
         self.data = ''
         self.loadSettings()
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector', 'newDataFromNameProtector_cm'])
-        self.inputs = [("Data Frame", RvarClasses.RDataFrame, self.gotDF), ("Vector", RvarClasses.RVector, self.gotV)]
-        self.outputs = [("Data Frame", RvarClasses.RDataFrame), ("Vector", RvarClasses.RVector)]
+        self.inputs = [("Data Frame", signals.RDataFrame, self.gotDF), ("Vector", signals.RVector, self.gotV)]
+        self.outputs = [("Data Frame", signals.RDataFrame), ("Vector", signals.RVector)]
         
         ### The data frame GUI
         self.dfbox = redRGUI.widgetBox(self.controlArea)
@@ -68,7 +68,7 @@ class nameProtector(OWRpy):
             
             
             self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData['data'])
-            newData = RvarClasses.RDataFrame(data = self.Rvariables['newDataFromNameProtector'])
+            newData = signals.RDataFrame(data = self.Rvariables['newDataFromNameProtector'])
             self.data = self.Rvariables['newDataFromNameProtector']
 
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():

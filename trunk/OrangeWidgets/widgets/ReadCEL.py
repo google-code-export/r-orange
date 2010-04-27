@@ -10,7 +10,7 @@
 from OWRpy import *
 #import OWGUI
 import redRGUI, os
-import RvarClasses
+import signals
 
 
 class ReadCEL(OWRpy):
@@ -31,7 +31,7 @@ class ReadCEL(OWRpy):
         self.setRvariableNames(['affyBatch','folder', 'cm'])
         #signals
         self.inputs = None 
-        self.outputs = [("affyBatch", RvarClasses.RAffyBatch)]
+        self.outputs = [("affyBatch", signals.RAffyBatch)]
         
 
 
@@ -94,5 +94,5 @@ class ReadCEL(OWRpy):
         
     
     def sendMe(self):
-        out2 = RvarClasses.RAffyBatch(data = str(self.Rvariables['affyBatch']))
+        out2 = signals.RAffyBatch(data = str(self.Rvariables['affyBatch']))
         self.rSend("affyBatch", out2)

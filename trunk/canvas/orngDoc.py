@@ -549,7 +549,7 @@ class SchemaDoc(QWidget):
     # load a scheme with name "filename"
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         
-        import orngEnviron
+        import redREnviron
         ### .rrw functionality
         if filename.split('.')[-1] == 'rrw':
             self.loadRRW(filename)
@@ -561,7 +561,7 @@ class SchemaDoc(QWidget):
         size = self.canvasDlg.size()
         loadingProgressBar = QProgressDialog()
         loadingProgressBar.setCancelButtonText(QString())
-        loadingProgressBar.setWindowIcon(QIcon(os.path.join(orngEnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
+        loadingProgressBar.setWindowIcon(QIcon(os.path.join(redREnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
         loadingProgressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
         loadingProgressBar.setWindowTitle('Loading '+str(os.path.basename(filename)))
         loadingProgressBar.show()
@@ -759,12 +759,12 @@ class SchemaDoc(QWidget):
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
-            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir, dep)) and dep != 'None':
+            if not os.path.isfile(os.path.join(self.canvasDlg.redRDir, dep)) and dep != 'None':
                 print 'Downloading dependencies', dep
-                if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.orangeDir, 'temp'))):
-                    os.mkdir(os.path.join(self.canvasDlg.orangeDir, 'temp'))
+                if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.redRDir, 'temp'))):
+                    os.mkdir(os.path.join(self.canvasDlg.redRDir, 'temp'))
                 fileExt = os.path.split(dep)[1]
-                newPackage = os.path.join(self.canvasDlg.orangeDir, 'temp', fileExt)
+                newPackage = os.path.join(self.canvasDlg.redRDir, 'temp', fileExt)
                 self.urlOpener.retrieve('http://www.red-r.org/packages/'+fileExt, newPackage)
                 self.loadRRW(newPackage)
                 ### go to website, get the file, and repleat this process until success
@@ -775,9 +775,9 @@ class SchemaDoc(QWidget):
         code = code.strip('</FileData>')
         code = code.replace('&quot;', '\"')
         
-        newFileDirectory = os.path.join(str(self.canvasDlg.orangeDir), str(fileDirName.strip('/')))
+        newFileDirectory = os.path.join(str(self.canvasDlg.redRDir), str(fileDirName.strip('/')))
         print newFileDirectory
-        print str(self.canvasDlg.orangeDir)
+        print str(self.canvasDlg.redRDir)
         print str(fileDirName.strip('/'))
         file = open(newFileDirectory, "wt")
         file.write(code)
@@ -787,10 +787,10 @@ class SchemaDoc(QWidget):
         examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
         for example in examples.split(','):
             example = example.strip(' ')
-            if not os.path.isfile(os.path.join(self.canvasDlg.orangeDir,'Examples', example)) and example != 'None':
+            if not os.path.isfile(os.path.join(self.canvasDlg.redRDir,'Examples', example)) and example != 'None':
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
-                newExample = os.path.join(self.canvasDlg.orangeDir, 'Examples', fileExt)
+                newExample = os.path.join(self.canvasDlg.redRDir, 'Examples', fileExt)
                 self.urlOpener.retrieve('http://www.red-r.org/Examples/'+fileExt, newExample)
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.

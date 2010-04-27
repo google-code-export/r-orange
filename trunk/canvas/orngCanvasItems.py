@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager
-import RvarClasses
+import signals
 ERROR = 0
 WARNING = 1
 
@@ -206,10 +206,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 for (a, b, c) in self.instance.inputs:
                     b = forceInSignals[i][1]
                     print b
-                    if b == 'Data Frame': bc = 'RvarClasses.RDataFrame'
-                    elif b == 'List': bc = 'RvarClasses.RList'
-                    elif b == 'Vector': bc = 'RvarClasses.RVector'
-                    else: bc = 'RvarClasses.RVariable'
+                    if b == 'Data Frame': bc = 'signals.RDataFrame'
+                    elif b == 'List': bc = 'signals.RList'
+                    elif b == 'Vector': bc = 'signals.RVector'
+                    else: bc = 'signals.RVariable'
                     sig = InputSignal(a, bc, None)
                     widgetInfo.__dict__['inputs'].append(sig)
                     i += 1
@@ -217,10 +217,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 for (a, b) in self.instance.outputs:
                     b = forceOutSignals[o][1]
                     print b
-                    if b == 'Data Frame': bc = 'RvarClasses.RDataFrame'
-                    elif b == 'List': bc = 'RvarClasses.RList'
-                    elif b == 'Vector': bc = 'RvarClasses.RVector'
-                    else: bc = 'RvarClasses.RVariable'
+                    if b == 'Data Frame': bc = 'signals.RDataFrame'
+                    elif b == 'List': bc = 'signals.RList'
+                    elif b == 'Vector': bc = 'signals.RVector'
+                    else: bc = 'signals.RVariable'
                     sig = OutputSignal(a, bc)
                     widgetInfo.__dict__['outputs'].append()
                 print widgetInfo.__dict__['inputs']

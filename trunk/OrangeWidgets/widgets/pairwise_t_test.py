@@ -18,8 +18,8 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_g = ""
         self.RFunctionParam_p_adjust_method = "p.adjust.methods"
         self.indata = ''
-        self.inputs = [('R Data Frame', RvarClasses.RDataFrame, self.process)]
-        self.outputs = [("pairwise.t.test Output", RvarClasses.RVariable)]
+        self.inputs = [('R Data Frame', signals.RDataFrame, self.process)]
+        self.outputs = [("pairwise.t.test Output", signals.RVariable)]
         
         box = redRGUI.widgetBox(self.controlArea)
         self.RFunctionParam_x = redRGUI.comboBox(box, label = "Values:")
@@ -56,5 +56,5 @@ class pairwise_t_test(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         #print tmp
         self.RoutputWindow.insertPlainText(tmp)
-        out = RvarClasses.RVariable(data=self.Rvariables["pairwise.t.test"])
+        out = signals.RVariable(data=self.Rvariables["pairwise.t.test"])
         self.rSend("pairwise.t.test Output", out)

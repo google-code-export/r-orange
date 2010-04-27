@@ -25,8 +25,8 @@ class cmEditor(OWRpy):
         self.loadSettings()
         self.setRvariableNames(['table'])
         
-        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processDF)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame), ('CM', RvarClasses.RDataFrame)] # trace problem with outputs
+        self.inputs = [('Data Table', signals.RDataFrame, self.processDF)]
+        self.outputs = [('Data Table', signals.RDataFrame), ('CM', signals.RDataFrame)] # trace problem with outputs
         #GUI.
         
         

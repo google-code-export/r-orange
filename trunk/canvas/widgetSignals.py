@@ -5,7 +5,7 @@
 #
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import RvarClasses
+import signals
 from string import *
 from orngSignalManager import *
 
@@ -185,14 +185,14 @@ class widgetSignals():
             if i[0] == name: # this is the channel that you are sending from 
                 #print 'type',name, variable,type(variable)
                 if type(variable) == dict: # if we havent converted this already
-                    #print 'in send dict', issubclass(i[1], RvarClasses.RDataFrame)
+                    #print 'in send dict', issubclass(i[1], signals.RDataFrame)
                     #print i[1]
                     print '\n'*5
                     print '='*60
                     print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
                     print '='*60
                     print '\n'*5
-                    # if issubclass(i[1], RvarClasses.RDataFrame): 
+                    # if issubclass(i[1], signals.RDataFrame): 
                         # newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
                         # newvariable['dictAttrs'] = variable
                     # else:
@@ -258,8 +258,8 @@ class widgetSignals():
                         for (oldValue, id, nameFrom) in signalData:
                             if oldValue == None:
                                 value = oldValue
-                            else: # the value had better be one of our RvarClasses
-                                if not isinstance(oldValue, RvarClasses.RVariable):
+                            else: # the value had better be one of our signals
+                                if not isinstance(oldValue, signals.RVariable):
                                     raise Exception
                                 value = oldValue.copy()
                                 if not value.__class__ == signal[1]:

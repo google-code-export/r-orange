@@ -21,8 +21,8 @@ class RedRScatterplot(OWRpy):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
-        self.inputs = [('x', RvarClasses.RDataFrame, self.gotX)]
-        self.outputs = [('Scatterplot Output', RvarClasses.RDataFrame)]
+        self.inputs = [('x', signals.RDataFrame, self.gotX)]
+        self.outputs = [('Scatterplot Output', signals.RDataFrame)]
         self.data = None
         self.parent = None
         self.dataParent = {}
@@ -270,7 +270,7 @@ class RedRScatterplot(OWRpy):
         self.graph.replot()
     def sendMe(self):
 
-        data = RvarClasses.RDataFrame(data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.parent) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        data = signals.RDataFrame(data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.parent) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         data.dictAttrs = self.dataParent.dictAttrs
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()

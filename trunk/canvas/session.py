@@ -1,6 +1,6 @@
 import os, cPickle, numpy, pprint, re, sys
-import orngEnviron
-import RvarClasses
+import redREnviron
+import signals
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI 
@@ -72,7 +72,7 @@ class session():
                 return True
         elif type(d) in [type(None), str, int, float, bool, numpy.float64]:
             return True
-        elif isinstance(d, RvarClasses.BaseRedRVariable):
+        elif isinstance(d, signals.BaseRedRVariable):
             return True
         else: 
             print 'Type ' + str(d) + ' is not supported at the moment..'
@@ -101,10 +101,10 @@ class session():
 
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
-        elif isinstance(var, RvarClasses.BaseRedRVariable):
+        elif isinstance(var, signals.BaseRedRVariable):
             
-            settings['RvarClassesObject'] = var.saveSettings()
-            print 'Saving RvarClassesObject ', settings['RvarClassesObject']
+            settings['signalsObject'] = var.saveSettings()
+            print 'Saving signalsObject ', settings['signalsObject']
         
         elif self.isPickleable(var):
             settings['pythonObject'] =  var
@@ -145,12 +145,12 @@ class session():
             elif 'pythonObject' in v.keys(): 
                 # print k
                 self.__setattr__(k, v['pythonObject'])
-            elif 'RvarClassesObject' in v.keys():
-                print 'Setting RvarClassesObject'
-                varClass = self.setRvarClass(v['RvarClassesObject'])
+            elif 'signalsObject' in v.keys():
+                print 'Setting signalsObject'
+                varClass = self.setRvarClass(v['signalsObject'])
                 self.__setattr__(k, varClass)
                 #var = getattr(self, k)
-                #self.setRvarClass(var, v['RvarClassesObject'])
+                #self.setRvarClass(var, v['signalsObject'])
             else:
                 self.redRGUIObjects[k] = v;
         
@@ -215,8 +215,8 @@ class session():
         print className
         className = className[1]
         print 'setting ', className
-        try: # try to reload the output class from the RvarClasses
-            var = getattr(RvarClasses, className)(data = d['data'])
+        try: # try to reload the output class from the signals
+            var = getattr(signals, className)(data = d['data'])
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
             try:
                 var = None
@@ -224,9 +224,9 @@ class session():
                     if name == sentItemName:
                         var = att(data = d['data'])
                 if var == None: raise Exception
-            except: # something is really wrong we need to set some kind of data so let's set it to the RvarClasses.RVariable
-                print 'something is really wrong we need to set some kind of data so let\'s set it to the RvarClasses.RVariable'
-                var = RvarClasses.RVariable(data = d['data'])
+            except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+                print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+                var = signals.RVariable(data = d['data'])
             
         
         for key in d.keys():
@@ -241,11 +241,11 @@ class session():
         print className
         className = className[1]
         print 'setting ', className
-        #try: # try to reload the output class from the RvarClasses
-        var = getattr(RvarClasses, className)(data = d['data'])
-        # finally: # something is really wrong we need to set some kind of data so let's set it to the RvarClasses.RVariable
+        #try: # try to reload the output class from the signals
+        var = getattr(signals, className)(data = d['data'])
+        # finally: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
             # print 'Class name not found, setting to a variable'
-            # var = RvarClasses.RVariable(data = d['data'])
+            # var = signals.RVariable(data = d['data'])
         for key in d.keys():
             if key == 'class': continue
             print 'setting ', key
@@ -309,7 +309,7 @@ class session():
     def getGlobalSettingsFile(self, file=None):
         # print 'getSettingsFile in owbasewidget'
         if file==None:
-            file = os.path.join(orngEnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
+            file = os.path.join(redREnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
         #print 'getSettingsFile', file
         return file
 

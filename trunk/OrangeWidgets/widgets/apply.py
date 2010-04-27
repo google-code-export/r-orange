@@ -16,8 +16,8 @@ class apply(OWRpy):
                 self.data = {}
                 self.loadSettings() 
                 self.RFunctionParam_X = ''
-                self.inputs = [("X", RvarClasses.RDataFrame, self.processX)]
-                self.outputs = [("apply Output", RvarClasses.RVector)]
+                self.inputs = [("X", signals.RDataFrame, self.processX)]
+                self.outputs = [("apply Output", signals.RVector)]
                 
                 self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
                 box = redRGUI.tabWidget(self.controlArea)
@@ -50,6 +50,6 @@ class apply(OWRpy):
                 inj = ','.join(injection)
                 self.R(self.Rvariables['apply']+'<-apply(X='+str(self.RFunctionParam_X)+','+inj+')')
                 
-                newData = RvarClasses.RVector(data = self.Rvariables['apply'])
+                newData = signals.RVector(data = self.Rvariables['apply'])
 
                 self.rSend("apply Output", newData)

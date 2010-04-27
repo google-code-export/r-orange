@@ -30,7 +30,7 @@ class RDataTable(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
-        self.inputs = [("Rectangular Data", RvarClasses.RDataFrame, self.dataset)]
+        self.inputs = [("Rectangular Data", signals.RDataFrame, self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation
@@ -110,11 +110,11 @@ class RDataTable(OWRpy):
             return
         self.supressTabClick = True
         # if dataset != None:  # can be an empty table!
-            # if dataset.__class__ != RvarClasses.RDataFrame:
+            # if dataset.__class__ != signals.RDataFrame:
                 # we convert to a data.frame so that we can do other things with the data, 
                 # this will give rownames and colnames even if the matrix or other rectangular data doesn't have them.
                 
-                # dataset = RvarClasses.RDataFrame(data = dataset.data, parent = dataset.parent, cm = dataset.cm)
+                # dataset = signals.RDataFrame(data = dataset.data, parent = dataset.parent, cm = dataset.cm)
         self.table.show()
         data = {}
         self.data = data

@@ -8,7 +8,7 @@
 from OWRpy import *
 import OWGUI,glob,imp
 import redRGUI
-import RvarClasses
+import signals
 
 class SandBox(OWRpy):
     def __init__(self, parent=None, signalManager=None):

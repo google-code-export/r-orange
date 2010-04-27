@@ -2,11 +2,11 @@
 # This module 
 
 import os, sys, time, smtplib
-import orngEnviron
+import redREnviron
 from orngSignalManager import OutputSignal
 
 logHistory = 1
-logFile = os.path.join(orngEnviron.directoryNames["canvasSettingsDir"], "history_v002.log")
+logFile = os.path.join(redREnviron.directoryNames["canvasSettingsDir"], "history_v002.log")
 
 if not os.path.exists(logFile):
     file = open(logFile, "w")

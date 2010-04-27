@@ -17,8 +17,8 @@ class survfit(OWRpy):
         self.data = {}
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata), ('Model Fit', RvarClasses.RModelFit, self.processfit)]
-        self.outputs = [("survfit Output", RvarClasses.RModelFit)]
+        self.inputs = [("data", signals.RVariable, self.processdata), ('Model Fit', signals.RModelFit, self.processfit)]
+        self.outputs = [("survfit Output", signals.RModelFit)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         formulaBox = redRGUI.widgetBox(self.controlArea)
@@ -36,7 +36,7 @@ class survfit(OWRpy):
             self.groupings.clear()
             self.data = data.copy()
             self.R(self.Rvariables['survfit']+'<-survfit('+data['data']+')')
-            self.out = RvarClasses.RModelFit(data=self.Rvariables["survfit"])
+            self.out = signals.RModelFit(data=self.Rvariables["survfit"])
             self.rSend("survfit Output", self.out)
     def processdata(self, data):
         self.require_librarys(["survival"]) 
@@ -63,7 +63,7 @@ class survfit(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['survfit']+'<-survfit(data='+str(self.RFunctionParam_data)+','+inj+')')
-        self.out = RvarClasses.RModelFit(data=self.Rvariables["survfit"])
+        self.out = signals.RModelFit(data=self.Rvariables["survfit"])
         self.rSend("survfit Output", self.out)
     def compileReport(self):
         self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])

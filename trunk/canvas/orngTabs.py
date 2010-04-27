@@ -9,7 +9,7 @@ from string import strip, count, replace
 import orngDoc, orngOutput, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx, redRGUI
-import orngEnviron
+import redREnviron
 import xml.dom.minidom
 
 WB_TOOLBOX = 0
@@ -288,7 +288,7 @@ class WidgetListBase:
         # populate the favorites widget, we will want to repopulate this when a widget is added
         
         try:
-            ffile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/favorites.xml')
+            ffile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/favorites.xml')
             f = open(ffile, 'r')
         except: # there was an exception, the user might not have the favorites file, we need to make one and set a default settings 
             self.insertFavoriteWidgetTab('Favorites', 1) # make a favorites tab
@@ -383,7 +383,7 @@ class WidgetListBase:
         # find tab names that are not in widgetTabList
         extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
         
-        tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tags.xml')
+        tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
         f = open(tfile, 'r')
         #print str(f)
         
@@ -786,7 +786,7 @@ def constructCategoriesPopup(canvasDlg):
     categoriesPopup.setStyleSheet(""" QMenu { background-color: #fffff0; selection-background-color: blue; } QMenu::item:disabled { color: #dddddd } QMenu::separator {height: 1px; background: #dddddd; margin-left: 3px; margin-right: 4px;}""")
     
     
-    tfile = os.path.abspath(orngEnviron.directoryNames['orangeDir'] + '/tagsSystem/tags.xml')
+    tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
     f = open(tfile, 'r')
     #print str(f)
     

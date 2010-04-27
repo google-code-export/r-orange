@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngEnviron, os
+import redREnviron, os
 
 class MyQMoviePlayer(QWidget):
     def __init__(self, parent = None, file = None, title = None):
@@ -19,7 +19,7 @@ class MyQMoviePlayer(QWidget):
         self.setLayout(main_layout)
         
         if not file:
-            self.movie = QMovie(os.path.abspath(orngEnviron.directoryNames['canvasDir'] + '/ajax-loader.GIF'), QByteArray(), self)
+            self.movie = QMovie(os.path.abspath(redREnviron.directoryNames['canvasDir'] + '/ajax-loader.GIF'), QByteArray(), self)
         else: self.movie = QMovie(file, QByteArray(), self)
         
         self.movie.setCacheMode(QMovie.CacheAll)

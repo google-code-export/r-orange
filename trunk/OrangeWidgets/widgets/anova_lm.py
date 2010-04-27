@@ -15,7 +15,7 @@ class anova_lm(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_object = ''
         self.loadSettings()
-        self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
+        self.inputs = [("object", signals.RVariable, self.processobject)]
         
         box = redRGUI.groupBox(self.controlArea, "Output")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)

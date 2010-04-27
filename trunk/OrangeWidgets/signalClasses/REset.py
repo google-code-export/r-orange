@@ -3,6 +3,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RMatrix import *
+from RDataFrame import *
 
 class REset(RList, RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
@@ -30,7 +31,7 @@ class REset(RList, RMatrix):
         newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a conversion to rectangular data', None)
         return newData
     def _convertToDataFrame(self):
-        newData = RRectangularData(data = 'as.data.frame(exprs('+self.data+'))')
+        newData = RDataFrame(data = 'as.data.frame(exprs('+self.data+'))')
         newData.dictAttrs = self.dictAttrs.copy()
         newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a conversion to rectangular data', None)
         return newData

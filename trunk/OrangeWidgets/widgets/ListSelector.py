@@ -19,8 +19,8 @@ class ListSelector(OWRpy):
         self.setRvariableNames(['cm', 'listelement'])
         self.data = None
         self.loadSettings()
-        self.inputs = [('R List', RvarClasses.RList, self.process)]
-        self.outputs = [('R Data Frame', RvarClasses.RDataFrame), ('R Vector', RvarClasses.RVector), ('R List', RvarClasses.RList), ('R Variable', RvarClasses.RVariable)]
+        self.inputs = [('R List', signals.RList, self.process)]
+        self.outputs = [('R Data Frame', signals.RDataFrame), ('R Vector', signals.RVector), ('R List', signals.RList), ('R Variable', signals.RVariable)]
         
         #GUI
         box = redRGUI.groupBox(self.controlArea, "List Data")
@@ -46,22 +46,22 @@ class ListSelector(OWRpy):
     def sendSelection(self):
         print self.names.selectedItems()[0]
         self.R(self.Rvariables['listelement']+'<-'+self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]')
-        # use RvarClasses converter in OWWidget to convert to the RvarClasses class
+        # use signals converter in OWWidget to convert to the signals class
         myclass = self.R('class('+self.Rvariables['listelement']+')')
         print 'myclass',myclass
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
-            newData = RvarClasses.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
+            newData = signals.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
             self.rSend('R Data Frame', newData)
             print 'Sent Data Frame'
         elif myclass == 'list':
-            newData = RvarClasses.RList(data = self.Rvariables['listelement'])
+            newData = signals.RList(data = self.Rvariables['listelement'])
             self.rSend('R List', newData)
             print 'Sent List'
         elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric']:
-            newData = RvarClasses.RVector(data = self.Rvariables['listelement'])
+            newData = signals.RVector(data = self.Rvariables['listelement'])
             self.rSend('R Vector', newData)
             print 'Sent Vector'
         else:
-            newData = RvarClasses.RVariable(data = self.Rvariables['listelement'])
+            newData = signals.RVariable(data = self.Rvariables['listelement'])
             self.rSend('R Variable', newData)

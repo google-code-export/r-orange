@@ -4,7 +4,6 @@
 #
 
 import sys, time
-#import orngDebugging
 
 Single = 2
 Multiple = 4
@@ -79,12 +78,6 @@ class SignalManager:
         self.stderr = sys.stderr
         
         self._seenExceptions = {}
-        #self.stdout = sys.stdout
-        #if orngDebugging.orngDebuggingEnabled:
-            #self.debugFile = open(orngDebugging.orngDebuggingFileName, "wt")
-            #sys.excepthook = self.exceptionHandler
-            #sys.stderr = self.debugFile
-            #sys.stdout = self.debugFile
 
     def setDebugMode(self, debugMode = 0, debugFileName = "signalManagerOutput.txt", verbosity = 1):
         self.verbosity = verbosity
@@ -226,8 +219,8 @@ class SignalManager:
             output = OutputSignal(*o)
             if output.name == signalNameFrom: found=1
         if not found: # this could be a dummy and we need to add the signal
-            #import RvarClasses
-            #widgetFrom.outputs.append((signalNameFrom, RvarClasses.RVariable))
+            #import signals
+            #widgetFrom.outputs.append((signalNameFrom, signals.RVariable))
             print "Error. Widget %s changed its output signals. It does not have signal %s anymore." % (str(getattr(widgetFrom, "captionTitle", "")), signalNameFrom)
             return 0
 
@@ -236,8 +229,8 @@ class SignalManager:
             input = InputSignal(*i)
             if input.name == signalNameTo: found=1
         if not found:
-            #import RvarClasses
-            #widgetTo.inputs.append((signalNameTo, RvarClasses.RVariable))
+            #import signals
+            #widgetTo.inputs.append((signalNameTo, signals.RVariable))
             print "Error. Widget %s changed its input signals. It does not have signal %s anymore." % (str(getattr(widgetTo, "captionTitle", "")), signalNameTo)
             return 0
 

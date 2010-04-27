@@ -8,7 +8,7 @@
 """
 from OWRpy import *
 import redRGUI
-import RvarClasses
+import signals
 
 class panpCalls(OWRpy):
 
@@ -29,8 +29,8 @@ class panpCalls(OWRpy):
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         self.loadSettings()
 
-        self.inputs = [("Normalized Affybatch", RvarClasses.REset, self.process)]
-        self.outputs = [("Present Gene Signal Matrix", RvarClasses.RMatrix)]
+        self.inputs = [("Normalized Eset", signals.REset, self.process)]
+        self.outputs = [("Present Gene Signal Matrix", signals.RMatrix)]
         
         
         #GUI
@@ -70,7 +70,7 @@ class panpCalls(OWRpy):
         self.R('colnames('+self.Rvariables['peset']+') <- colnames(exprs('+self.eset+'))')
         self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
         self.status.setText('Processed')
-        self.senddata = RvarClasses.RMatrix(data = self.Rvariables['peset'])
+        self.senddata = signals.RMatrix(data = self.Rvariables['peset'])
         self.senddata.dictAttrs = self.data.dictAttrs
         self.senddata.dictAttrs['eset'] = self.eset
         self.rSend('Present Gene Signal Matrix', self.senddata)

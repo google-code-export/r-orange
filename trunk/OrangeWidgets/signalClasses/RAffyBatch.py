@@ -1,4 +1,4 @@
-from RvarClasses import RVariable
+from signals import RVariable
 class RAffyBatch(RVariable):
 
     def __init__(self, data):

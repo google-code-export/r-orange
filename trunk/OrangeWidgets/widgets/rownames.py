@@ -16,8 +16,8 @@ class rownames(OWRpy):
         self.data = {}
         self.loadSettings() 
         self.RFunctionParam_x = ''
-        self.inputs = [("x", RvarClasses.RDataFrame, self.processx)]
-        self.outputs = [("rownames Output", RvarClasses.RVector)]
+        self.inputs = [("x", signals.RDataFrame, self.processx)]
+        self.outputs = [("rownames Output", signals.RVector)]
         
         self.help.setHtml('<small>Returns a vector of rownames coresponding to the row names of a data table.</small>')
         box = redRGUI.tabWidget(self.controlArea)
@@ -45,7 +45,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-rownames(x='+str(self.RFunctionParam_x)+','+inj+')')
         
-        newData = RvarClasses.RVector(data = self.Rvariables["rownames"])
+        newData = signals.RVector(data = self.Rvariables["rownames"])
 
         self.rSend("rownames Output", newData)
 

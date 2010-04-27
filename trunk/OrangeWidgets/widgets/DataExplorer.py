@@ -31,8 +31,8 @@ class DataExplorer(OWRpy):
         self.setRvariableNames(['dataExplorer'])
         self.loadSettings()
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.processData), ('Row Subset Vector', RvarClasses.RVector, self.setRowSelectVector)]
-        self.outputs = [('Data Subset', RvarClasses.RDataFrame)]
+        self.inputs = [('Data Table', signals.RDataFrame, self.processData), ('Row Subset Vector', signals.RVector, self.setRowSelectVector)]
+        self.outputs = [('Data Subset', signals.RDataFrame)]
         
         # a special section that sets when the shift key is heald or not 
         #self.shiftPressed = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.NoModifier)

@@ -3,17 +3,25 @@
 
 
 ;General
+  Name "Red-R 1.7"
+  OutFile "C:\Users\anup\Documents\red\develop\installer\Red-R-non-developer-Snapshot-10.04.26.exe"
 
   ;Name and file
-  Name "Red-R 1.7"
-  OutFile "Red-R-1.7-beta-non-developer-installer.exe"
 
 ;--------------------------------
 ; Defines
-!define Red-RDIR C:\Installer\redR1.5 ;                               ;;; change this to point to the location of the new file
-!define RVER "R-2.9.1"
-!define RDIRECTORY "C:\Installer\R\${RVER}" ;                             ;;; The directory of a blank R so that we don't have to deal with licence terms of R
-!define RVERSION Red-R1.7 ;                                           ;;; Change this when a new version is made
+!define Red-RDIR C:\Users\anup\Documents\red\develop\red
+
+!define Red-RLICENSE ${Red-RDIR}\licence2.txt 
+!define Red-RDIR_bin ${Red-RDIR}\dist
+!define Red-RDIR_canvas ${Red-RDIR}\canvas\icons
+!define Red-RDIR_widgets ${Red-RDIR}\OrangeWidgets
+!define Red-RDIR_tags ${Red-RDIR}\tagsSystem
+!define RDIRECTORY C:\Users\anup\Documents\red\develop\installer\R ;;;; The directory of a blank R so that we don't have to deal with licence terms of R
+
+
+!define RVER "R"
+!define RVERSION Red-R1.7 ;;;; Change this when a new version is made
 
 ;---------------------------------
   ;Default installation folder
@@ -24,12 +32,12 @@
 
 ;---------------------------------
 
-Var StartMenuFolder
-Var AdminInstall
+; Var StartMenuFolder
+; Var AdminInstall
 
 !define SHELLFOLDERS \
   "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
-!insertmacro MUI_PAGE_LICENSE "C:\Python26\Lib\site-packages\redR1.5\licence2.txt "
+!insertmacro MUI_PAGE_LICENSE ${Red-RLICENSE}
 !insertmacro MUI_PAGE_DIRECTORY
 
 !insertmacro MUI_PAGE_INSTFILES
@@ -40,17 +48,17 @@ Var AdminInstall
 ; languages
 !insertmacro MUI_LANGUAGE "English"
 Section Uninstall
-	MessageBox MB_YESNO "Are you sure you want to remove Red-R?$\r$\n$\r$\nThis won't remove any 3rd party software possibly installed with Red-R, such as Python or Qt,$\r$\n$\r$\nbut make sure you have not left any of your files in Red-R's directories!" /SD IDYES IDNO abort
+	MessageBox MB_YESNO "Are you sure you want to remove Red-R?" /SD IDYES IDNO abort
 	
-	${If} $AdminInstall = 0
-	    SetShellVarContext all
-	${Else}
-	    SetShellVarContext current	   
-	${Endif}
+	; ${If} $AdminInstall = 0
+	    ; SetShellVarContext all
+	; ${Else}
+	    ; SetShellVarContext current	   
+	; ${Endif}
     RmDir /R /REBOOTOK "$INSTDIR\${RVERSION}"
 	RmDir /R /REBOOTOK "$SMPROGRAMS\Red-R\${RVERSION}"
 
-    MessageBox MB_YESNO "Would you like to remove your Red-R settings?" /SD IDYES IDNO remove_keys
+    MessageBox MB_YESNO "Would you like to remove your Red-R ${RVERSION} settings?" /SD IDYES IDNO remove_keys
     
 	ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
 	StrCmp $0 "" 0 +2
@@ -93,25 +101,33 @@ Section "" ;this is the section that will install Red-R and all of it's files
 	; StrCpy $INSTDIR  "C:\Program Files\Red-R\${RVERSION}"
     ; AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess" ; required to give those with admin restrictions read write access to the files.
 	SetOutPath $INSTDIR\${RVERSION}\bin
-    File /r /x .svn ${Red-RDIR}\dist\*
+    File /r /x .svn ${Red-RDIR_bin}\*
     
-    SetOutPath $INSTDIR\${RVERSION}
-	File /r /x .svn /x settings /x *.pyc /x R /x dist /x .nsi ${Red-RDIR}\*
+    SetOutPath $INSTDIR\${RVERSION}\canvas\icons
+	File /r /x .svn /x *.pyc /x .nsi ${Red-RDIR_canvas}\*
+    
+    SetOutPath $INSTDIR\${RVERSION}\OrangeWidgets
+	File /r /x .svn /x *.pyc /x .nsi ${Red-RDIR_widgets}\*
+
+    SetOutPath $INSTDIR\${RVERSION}\tagsSystem
+	File /r /x .svn /x *.pyc /x .nsi ${Red-RDIR_tags}\*
+
     
     IfFileExists $INSTDIR\R\README.${RVER}.* has_R
-    
+
     SetOutPath $INSTDIR\R
-    File /r /x .svn "${RDIRECTORY}\*"
+    File /r /x .svn ${RDIRECTORY}\*
+    ; grant access to modify the files in this directory
+    AccessControl::GrantOnFile "$INSTDIR\R\library" "(BU)" "FullAccess" 
+    AccessControl::GrantOnFile "$INSTDIR\R\doc" "(BU)" "FullAccess" 
+
     has_R:
 
-	CreateDirectory "$SMPROGRAMS\Red-R\${RVERSION}"
-    ; grant access to modify the files in this directory
-    ; AccessControl::GrantOnFile "$INSTDIR\${RVERSION}" "(BU)" "FullAccess" ; required to give those with admin restrictions read write access to the files.
 ;------------------------
 ; Create the shortcuts    
-	;CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Red-R.lnk" "$INSTDIR\${RVERSION}\red-RCanvas.exe"
+	CreateDirectory "$SMPROGRAMS\Red-R\${RVERSION}"
 	CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Red-R Canvas.lnk" "$INSTDIR\${RVERSION}\bin\red-RCanvas.exe" "" $INSTDIR\${RVERSION}\OrangeCanvas\icons\orange.ico 0
-    CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Uninstall Red-R.lnk" "$INSTDIR\uninst ${RVERSION}.exe"
+    CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Uninstall Red-R.lnk" "$INSTDIR\${RVERSION}\uninst ${RVERSION}.exe"
 
 	CreateShortCut "$DESKTOP\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\bin\red-RCanvas.exe" "" $INSTDIR\${RVERSION}\OrangeCanvas\icons\orange.ico 0
 	
@@ -119,13 +135,13 @@ Section "" ;this is the section that will install Red-R and all of it's files
 ; Write the registry settings
 	WriteRegStr SHELL_CONTEXT "SOFTWARE\Red-R\${RVERSION}" "" "$INSTDIR\${RVERSION};$INSTDIR\${RVERSION}\OrangeWidgets$INSTDIR\${RVERSION}\OrangeCanvas"
 	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\Red-R\${RVERSION}" "DisplayName" "Red-R (remove only)"
-	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\Red-R\${RVERSION}" "UninstallString" '"$INSTDIR\uninst ${RVERSION}.exe"'
+	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\Red-R\${RVERSION}" "UninstallString" '"$INSTDIR\${RVERSION}\uninst ${RVERSION}.exe"'
 
 	WriteRegStr HKEY_CLASSES_ROOT ".rrs" "" "Red R Canvas"
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${RVERSION}\OrangeCanvas\icons\redrOWS.ico"
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$INSTDIR\${RVERSION}\bin\red-RCanvas.exe "%1"';name is appended into the sys.argv variables for opening by Red-R
     
-	WriteUninstaller "$INSTDIR\uninst ${RVERSION}.exe"
+	WriteUninstaller "$INSTDIR\${RVERSION}\uninst ${RVERSION}.exe"
 
 SectionEnd
 

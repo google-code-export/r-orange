@@ -21,7 +21,7 @@ class plot(OWRpy):
         #self.RFunctionParam_y = ''
         self.loadSettings()
         self.RFunctionParam_x = ''
-        self.inputs = [("x", RvarClasses.RVariable, self.processx)]
+        self.inputs = [("x", signals.RVariable, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:')

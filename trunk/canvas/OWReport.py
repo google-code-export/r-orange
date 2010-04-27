@@ -3,9 +3,9 @@ from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 import os, time, tempfile, shutil, urllib, zipfile, re, shutil
 import datetime
-import orngEnviron, OWGUI
+import redREnviron, OWGUI
 
-reportsDir = orngEnviron.reportsDir
+reportsDir = redREnviron.reportsDir
 report = None
 def escape(s):
     return s.replace("\\", "\\\\").replace("\n", "\\n").replace("'", "\\'")
@@ -19,7 +19,7 @@ class ReportWindow(QWidget):
     def __init__(self):
         QWidget.__init__(self)
         self.setWindowTitle("Report")
-        self.setWindowIcon(QIcon(os.path.join(orngEnviron.widgetDir, "icons/Unknown.png")))
+        self.setWindowIcon(QIcon(os.path.join(redREnviron.widgetDir, "icons/Unknown.png")))
         global report
         if not self.checkExtLibrary():
             report = None

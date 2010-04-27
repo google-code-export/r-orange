@@ -10,7 +10,7 @@
 
 from OWRpy import *
 # import OWGUI
-import RvarClasses
+import signals
 import redRGUI 
 
 
@@ -35,8 +35,8 @@ class affyNormalize(OWRpy):
         self.setRvariableNames(['normalized_Eset'])
         
         #signals
-        self.inputs = [("AffyBatch", RvarClasses.RAffyBatch, self.process)]
-        self.outputs = [("Normalized Eset", RvarClasses.REset)]
+        self.inputs = [("AffyBatch", signals.RAffyBatch, self.process)]
+        self.outputs = [("Normalized Eset", signals.REset)]
 
         
         #the GUI
@@ -161,7 +161,7 @@ class affyNormalize(OWRpy):
                 self.normselector.setEnabled(True)
 
     def toSend(self):
-        newData = RvarClasses.REset(data = self.Rvariables['normalized_Eset'])
+        newData = signals.REset(data = self.Rvariables['normalized_Eset'])
         newData.dictAttrs = self.oldData.dictAttrs
         self.rSend("Normalized Eset", newData)
         

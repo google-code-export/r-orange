@@ -135,8 +135,8 @@ class OWRpy(widgetGUI,widgetSignals,session):
                 print 'need to download'
                 QMessageBox.information(self, 'R Packages','We need to download R packages for this widget to work.',  
                 QMessageBox.Ok + QMessageBox.Default)
-
                 break
+        
         RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()

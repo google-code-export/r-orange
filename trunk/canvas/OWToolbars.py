@@ -2,10 +2,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path
 import OWGUI
-import orngEnviron
+import redREnviron
 
 
-dir = os.path.abspath(orngEnviron.directoryNames["widgetDir"]+'/icons/')
+dir = os.path.abspath(redREnviron.directoryNames["widgetDir"]+'/icons/')
 
 dlg_zoom = os.path.join(dir , "Dlg_zoom.png")
 dlg_zoom_selection = os.path.join(dir ,  "Dlg_zoom_selection.png")

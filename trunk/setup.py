@@ -2,38 +2,12 @@ import os, sys
 from distutils.core import setup
 import py2exe
 
-base = 'C:\\Python26\\Lib\\site-packages\\redR1.5'
+base = 'C:/Users/anup/Documents/red/develop/red/'
 sys.path.insert(0, base)
-sys.path.insert(0, os.path.join(base,'OrangeCanvas'))
+sys.path.insert(0, os.path.join(base,'canvas'))
 sys.path.insert(0, os.path.join(base,'OrangeWidgets'))
-sys.path.insert(0, os.path.join(base,'R','bin'))
+# sys.path.insert(0, os.path.join(base,'R','bin'))
 
-Mydata_files = [
-#('', ['C:\\Program Files (x86)\\R\\R-2.7.0\\bin\\R.dll']),
-# ('', ['C:\\Python25\\Lib\\site-packages\\_rpy2070.pyd'])#,
-('',[
-# 'C:\\Windows\\system32\\OLE32.dll'
-# ,'C:\\Windows\\system32\\OLEAUT32.dll'
-# ,'C:\\Windows\\system32\\USER32.dll'
-# ,'C:\\Windows\\system32\\IMM32.DLL'
-# ,'C:\\Windows\\system32\\SHELL32.dll'
-# ,'C:\\Windows\\system32\\KERNEL32.dll'
-# ,'C:\\Windows\\system32\\COMDLG32.DLL'
-# ,'C:\\Windows\\system32\\WSOCK32.dll'
-# ,'C:\\Windows\\system32\\COMCTL32.DLL'
-# ,'C:\\Windows\\system32\\ADVAPI32.dll'
-# ,'C:\\Windows\\system32\\CRYPT32.dll'
-# ,'C:\\Windows\\system32\\msvcrt.dll'
-# ,'C:\\Windows\\system32\\WS2_32.dll'
-# ,'C:\\Windows\\system32\\WINSPOOL.DRV'
-# ,'C:\\Windows\\system32\\GDI32.dll'
-'C:\\Python25\\Lib\\site-packages\\PyQt4\\QtSvg4.dll'
-# ,'C:\\Windows\\system32\\WINMM.DLL'
-# ,'C:\\Windows\\system32\\VERSION.dll'
-#,'C:\\Python25\\lib\\site-packages\\pysvn\\MSVCP71.dll'
-# ,'C:\\Windows\\system32\\ntdll.dll'
-# ,'C:\\Windows\\system32\\RPCRT4.dll'
-])]
 
 setup(name="Red-R",
       version="0.1",
@@ -41,8 +15,7 @@ setup(name="Red-R",
       author_email="anup.parikh@gmail.com",
       url="http://www.red-r.org",
       license="GNU General Public License (GPL)",
-#      data_files = Mydata_files,
-      windows=["OrangeCanvas/red-RCanvas.pyw"],
+      windows=["canvas/red-RCanvas.pyw"],
       options={"py2exe": {
       "skip_archive": True, 
       # "compressed": True, 

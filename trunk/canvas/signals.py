@@ -2,10 +2,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
-import glob,os.path,orngEnviron
+import glob,os.path,redREnviron
 
 class BaseRedRVariable:
     def __init__(self, data):
+        if not data:
+            raise Exception()
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']
@@ -42,37 +44,35 @@ class BaseRedRVariable:
         newVariable.dictAttrs = self.dictAttrs.copy()
         return newVariable
 
-class RVariable(BaseRedRVariable): # parent class of all RvarClasses.  This class holds base functions such as assignment and item setting
+class RVariable(BaseRedRVariable): # parent class of all signals.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None, checkVal = False):
-        # set the variables
-        if not data:
-            raise Exception()
-        self.data = data
+        
+        BaseRedRVariable.__init__(self,data)
         if not parent:
             parent = data
         self.parent = parent
-        self.dictAttrs = {}
+        # self.dictAttrs = {}
         self.R = Rcommand
         self.reserved = ['data', 'parent', 'R', 'dictAttrs']
-    def __getitem__(self, item):
-        try:
-            attr = getattr(self, item)
-        except:
-            try:
-                attr = self.dictAttrs[item]
-            except:
-                attr = None
-        return attr
+    # def __getitem__(self, item):
+        # try:
+            # attr = getattr(self, item)
+        # except:
+            # try:
+                # attr = self.dictAttrs[item]
+            # except:
+                # attr = None
+        # return attr
     
-    def __setitem__(self, item, value):
-        if item in self.reserved:
-            raise Exception
-        self.dictAttrs[item] = value
+    # def __setitem__(self, item, value):
+        # if item in self.reserved:
+            # raise Exception
+        # self.dictAttrs[item] = value
     def __str__(self):
         ## print output for the class
         return 'Class: '+str(self.__class__)+'\nData: '+self.data+'\nParent: '+self.parent+'Attributes: '+str(self.dictAttrs)
-    def keys(self):
-        return self.dictAttrs.keys()
+    # def keys(self):
+        # return self.dictAttrs.keys()
     def getClass_call(self):
         return 'class('+self.data+')'
         
@@ -121,6 +121,8 @@ class RVariable(BaseRedRVariable): # parent class of all RvarClasses.  This clas
         return self.copy()
     def convertToClass(self, varClass):
         return self.copy()
+
+
 def forname(modname, classname):
     ''' Returns a class of "classname" from module "modname". '''
     module = __import__(modname)
@@ -131,7 +133,7 @@ RVariableClasses = []
 current_module = __import__(__name__)
 
 
-for filename in glob.iglob(os.path.join(orngEnviron.directoryNames['widgetDir'] + '/signalClasses', "*.py")):
+for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/signalClasses', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
     #print filename

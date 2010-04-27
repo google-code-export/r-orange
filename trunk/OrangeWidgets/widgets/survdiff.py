@@ -18,7 +18,7 @@ class survdiff(OWRpy):
         self.formula = ''
         self.loadSettings() 
         self.RFunctionParam_data = ''
-        self.inputs = [("data", RvarClasses.RVariable, self.processdata)]
+        self.inputs = [("data", signals.RVariable, self.processdata)]
         self.outputs = [("survdiff Output", SurvivalClasses.SurvFit)]
         
         self.help.setHtml('<small>Calculates the survival differece between groups given a data table with event times, event status, and groupings.  This can perform complex comparisons including interactions.  The parameter rho can be set between 0 and 1 with With rho = 0 this is the log-rank or Mantel-Haenszel test, and with rho = 1 it is equivalent to the Peto & Peto modification of the Gehan-Wilcoxon test.</small>')

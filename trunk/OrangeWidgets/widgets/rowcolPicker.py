@@ -24,8 +24,8 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
         self.loadSettings()
         
-        self.inputs = [('Data Table', RvarClasses.RDataFrame, self.setWidget), ('Subsetting Vector', RvarClasses.RVector, self.setSubsettingVector)]
-        self.outputs = [('Data Table', RvarClasses.RDataFrame), ('Not Data Table', RvarClasses.RDataFrame), ('Reduced Vector', RvarClasses.RVector)]
+        self.inputs = [('Data Table', signals.RDataFrame, self.setWidget), ('Subsetting Vector', signals.RVector, self.setSubsettingVector)]
+        self.outputs = [('Data Table', signals.RDataFrame), ('Not Data Table', signals.RDataFrame), ('Reduced Vector', signals.RVector)]
         
         self.help.setHtml('<small>The Row Column Selection widget allows one to select subsets of Data Tables.  If complex selections are required simply link many of these widgets together.  It may be useful to also consider using the Merge Data Table widget or the Melt widget when using this widget to but the data into the proper shape for later analysis.  The sections of this widget are:<br>Select by row or column<br><nbsp>- Allows you to select either rows or columns that match a certain criteria.  For example if you pick to select rows you will select based on criteria that are in the columns.<br>Attributes<br><nbsp>- Attributes are the names of the attributes that have the criteria that you will be selecting on, for example if you want to pick all rows that have a value greater than 5 in the second column the second column would be your attribute.<br>Logical<br><nbsp>- This section discribes the logic that should be applied to the selection, for example should the attribute be less than, greater than, equal to, or in a selection list.  "NOT" is also available.<br><br>One can also select based on an attached subsetting vector.  This will look for matches in the subsetting vector to values that are in your selected attribute.  This can be useful when dealing with "lists" of things that can be coerced into vectors.<br><br>This widget will send either a Data Table or a Vector depending on the dimention of your selection.')
         #set the gui
@@ -105,10 +105,10 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+' %in% '+self.ssv+']')
                 
         #self.makeCM(self.Rvariables['rowcolSelector_cm'], self.Rvariables['rowcolSelector'])
-        newData = RvarClasses.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
         newData.dictAttrs = self.dataParent.dictAttrs.copy()
         self.rSend('Data Table', newData)
-        newDataNot = RvarClasses.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = signals.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
         newDataNot.dictAttrs = self.dataParent.dictAttrs.copy()
         self.rSend('Not Data Table', newDataNot)
         
@@ -178,12 +178,12 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
-            newVector = RvarClasses.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+            newVector = signals.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
             newVector.dictAttrs = self.dataParent.dictAttrs.copy()
             self.rSend('Reduced Vector', newVector)
         if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))')
-            newVector = RvarClasses.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
+            newVector = signals.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
             newVector.dictAttrs = self.dataParent.dictAttrs.copy()
             self.rSend('Reduced Vector', newVector)
             

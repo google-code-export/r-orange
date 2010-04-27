@@ -40,7 +40,7 @@ class readFile(OWRpy):
         # raise Exception('asdf')
         #signals
         self.inputs = None
-        self.outputs = [("data.frame", RvarClasses.RDataFrame)]
+        self.outputs = [("data.frame", signals.RDataFrame)]
         #GUI
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
@@ -362,7 +362,7 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
-        sendData = RvarClasses.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
+        sendData = signals.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("data.frame", sendData)
         
     def compileReport(self):

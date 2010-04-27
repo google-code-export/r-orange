@@ -1,11 +1,11 @@
 # R Signal Thread
 ## Controls the execution of R funcitons into the underlying R session
 
-import sys, os, orngEnviron, numpy
+import sys, os, redREnviron, numpy
 if sys.platform=="win32":
     from rpy_options import set_options
     #set_options(RHOME=os.environ['RPATH'])
-    set_options(RHOME=orngEnviron.directoryNames['RDir'])
+    set_options(RHOME=redREnviron.directoryNames['RDir'])
     set_options(VERBOSE=False)
 else: # need this because linux doesn't need to use the RPATH
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
@@ -94,10 +94,11 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
     mutex.unlock()
     return output
 def getInstalledLibraries():
-    libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
+    libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
     return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
-        libPath = os.path.join(orngEnviron.directoryNames['RDir'],'library').replace('\\','/')
+        libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
+        print libPath
         installedRPackages = getInstalledLibraries()
         
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')

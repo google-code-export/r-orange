@@ -15,8 +15,8 @@ class performance(OWRpy):
         self.data = {}
         self.loadSettings() 
         self.RFunctionParam_prediction_obj = ''
-        self.inputs = [("prediction_obj", RvarClasses.RModelFit, self.processprediction_obj)]
-        self.outputs = [("performance Output", RvarClasses.RModelFit)]
+        self.inputs = [("prediction_obj", signals.RModelFit, self.processprediction_obj)]
+        self.outputs = [("performance Output", signals.RModelFit)]
         optionItems = ['acc, Accuracy', 'err, Error', 'fpr, Flase Positive Rate', 'fall, Fallout', 'tpr, True Positive Rate', 'rec, Recall', 'sens, Sensitivity', 'fnr, False Negative Rate', 'miss, Miss', 'tnr, True Negative Rate', 'spec, Specificity', 'ppv, Positive Predictive Value', 'prec, Precision', 'npv, Negative Predictive Value', 'pcfall, Prediction Conditioned Fallout', 'pcmiss, Prediction Conditioned Miss', 'rpp, Rate of Positive Prediction', 'rnp, Rate of Negative Prediction', 'phi, Phi Correction Coefficient', 'mat, Matthews Correlation Coefficient', 'mi, Mutual Information', 'chisq, Chi Squared Test Statistic', 'odds, Odds Ratio', 'lift, Lift Value', 'f, Precision-recall F Measure ', 'rch, ROC Convex Hull', 'auc, Area Under the ROC Curve', 'prbe, Percision-Recall Break-Even Point', 'cal, Calibration Error' 'mxe, Mean Cross Entropy', 'rmse, Root Mean Squared Error', 'sar, Score Conditioned Performance Measures', 'ecost, Expected Cost', 'cost, Cost of a Classifier']
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
@@ -68,6 +68,6 @@ class performance(OWRpy):
                     
         inj = ','.join(injection)
         self.R(self.Rvariables['performance']+'<-performance(prediction.obj='+str(self.RFunctionParam_prediction_obj)+','+inj+')')
-        newData = RvarClasses.RModelFit(data = self.Rvariables["performance"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RModelFit(data = self.Rvariables["performance"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("performance Output", newData)

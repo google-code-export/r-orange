@@ -7,8 +7,7 @@ import os, urllib, sys
 import md5, cPickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-#import orange, user, orngMisc
-import orngEnviron
+import redREnviron
 
 #QMessageBox.question(None, 'RedR Update','Do you wish to update RedR?', QMessageBox.Yes, QMessageBox.No)
 
@@ -24,7 +23,7 @@ def start(lastRevproplist, versionNumber, silent = True):
         #if 'trunk' not in svnLoc:
         lists = client.ls(svnLoc)
         newPackageList = []
-        tfile = orngEnviron.directoryNames['orangeDir'] + '\\tagsSystem\\tabsList.txt'
+        tfile = redREnviron.directoryNames['redRDir'] + '\\tagsSystem\\tabsList.txt'
         f = open(tfile, 'r')
         mainTabs = f.read().split('\n')
         f.close()
@@ -46,15 +45,15 @@ def start(lastRevproplist, versionNumber, silent = True):
                 for item in packageList.selectedItems():
                     text = item.text()
                     client.export(svnLoc+'/OrangeWidgets/'+text+'/', widgetDirName, force = True, recurse = True)
-                    f = open(orngEnviron["tagsDir"]+'/tabsList.txt', 'a')
+                    f = open(redREnviron["tagsDir"]+'/tabsList.txt', 'a')
                     f.write('\n'+text)
         
     except:
         return
 
     
-    canvasDirName = os.path.realpath(orngEnviron.directoryNames["canvasDir"])
-    widgetDirName = os.path.realpath(orngEnviron.directoryNames["widgetDir"])
+    canvasDirName = os.path.realpath(redREnviron.directoryNames["canvasDir"])
+    widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
     
     
     if lastRevproplist != newRevproplist:
@@ -62,7 +61,7 @@ def start(lastRevproplist, versionNumber, silent = True):
     
 
         if res == QMessageBox.Yes:
-            #trySVNUpdate(svnLoc, os.path.realpath(orngEnviron.directoryNames["orangeDir"]))
+            #trySVNUpdate(svnLoc, os.path.realpath(redREnviron.directoryNames["redRDir"]))
             CanvasSuccess = trySVNUpdate(svnLoc + '/OrangeCanvas/', canvasDirName)
         else:
             res3 = QMessageBox.question(None, 'RedR Update', 'Do you wish to apply these updates in the future?', QMessageBox.Yes, QMessageBox.No)

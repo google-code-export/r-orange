@@ -11,6 +11,7 @@ import os, glob
 import redRGUI
 import redRGUI
 from OWRpy import *
+import redREnviron
 
 class runSigPathway(OWRpy):
     settingsList = ['clickedRow', 'vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
@@ -36,8 +37,8 @@ class runSigPathway(OWRpy):
         self.subtable = {}
         self.noFile() # run the file manager to get all the needed files.
         self.loadSettings()
-        self.inputs = [("Expression Set", RvarClasses.RDataFrame, self.process), ("Pathway Annotation List", RvarClasses.RDataFrame, self.processPathAnnot), ('Phenotype Vector', RvarClasses.RVector, self.phenotypeConnected)]
-        self.outputs = [("Pathway Analysis File", RvarClasses.RDataFrame), ("Pathway Annotation List", RvarClasses.RDataFrame), ("Pathway List", RvarClasses.RDataFrame)]
+        self.inputs = [("Expression Set", signals.RDataFrame, self.process), ("Pathway Annotation List", signals.RDataFrame, self.processPathAnnot), ('Phenotype Vector', signals.RVector, self.phenotypeConnected)]
+        self.outputs = [("Pathway Analysis File", signals.RDataFrame), ("Pathway Annotation List", signals.RDataFrame), ("Pathway List", signals.RDataFrame)]
 #GUI
         mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         leftArea = redRGUI.widgetBox(mainArea, sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding))
@@ -127,12 +128,14 @@ class runSigPathway(OWRpy):
     
     def noFile(self): # download all available files from "http://chip.org/~ppark/Supplements/PNAS05.html" and put them into the \R\doc\geneSets folder in the Red-R dir.
         print 'Entered noFile to get files'
-        rrdir = os.path.split(qApp.canvasDlg.canvasDir)[0]
+        rrdir = redREnviron.RDir
         print rrdir
         
-        destpath = os.path.join(rrdir, 'R', 'doc', 'geneSets')
+        destpath = os.path.join(rrdir, 'doc', 'geneSets')
         # if doesn't exist make the directory
         print destpath
+        if not os.path.exists(destpath):
+            os.makedirs(destpath)
         neededFiles = []
         for file in ['GenesetsU430v2', 'GenesetsU74av2', 'GenesetsU95av2', 'GenesetsU133a', 'GenesetsU133plus2']:
             if not os.path.isfile(os.path.abspath(os.path.join(destpath, file+'.RData'))):
