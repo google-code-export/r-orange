@@ -175,7 +175,10 @@ class OrangeCanvasDlg(QMainWindow):
         
         
         # show message box if no numpy
-        splashWindow.showMessage("Processing Events", Qt.AlignHCenter + Qt.AlignBottom)
+        # splashWindow.showMessage("Processing Events", Qt.AlignHCenter + Qt.AlignBottom)
+        if splashWindow:
+            splashWindow.hide()
+
         qApp.processEvents()
         try:
             import numpy
@@ -183,8 +186,8 @@ class OrangeCanvasDlg(QMainWindow):
             if QMessageBox.warning(self,'Red Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
                 import webbrowser
                 webbrowser.open("http://sourceforge.net/projects/numpy/")
-        if self.schema.widgets == [] and len(sys.argv) > 1 and os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".rrs": # do we need to load a schema, this happens if you open a saved session.
-            self.schema.loadDocument(sys.argv[-1])
+        
+        
 
         
     def createWidgetsToolbar(self):
@@ -821,9 +824,13 @@ def main(argv = None):
     dlg = OrangeCanvasDlg(app)
     qApp.canvasDlg = dlg
     dlg.show()
-    for arg in sys.argv[1:]:
-        if arg == "-reload":
-            dlg.menuItemOpenLastSchema()
+    # do we need to load a schema, this happens if you open a saved session.
+    if os.path.exists(sys.argv[-1]) and os.path.splitext(sys.argv[-1])[1].lower() == ".rrs": 
+        dlg.schema.loadDocument(sys.argv[-1])
+
+    # for arg in sys.argv[1:]:
+        # if arg == "-reload":
+            # dlg.menuItemOpenLastSchema()
     app.exec_()
     # manager.shutdown()
     app.closeAllWindows()

@@ -609,8 +609,8 @@ class SchemaDoc(QWidget):
             for widget in widgets.getElementsByTagName("widget"):
                 try:
                     name = widget.getAttribute("widgetName")
-                    print 'Name: '+str(name)+' (orngDoc.py)'
-                    print settingsDict[widget.getAttribute("caption")]
+                    #print 'Name: '+str(name)+' (orngDoc.py)'
+                    #print settingsDict[widget.getAttribute("caption")]
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                     
                     try:

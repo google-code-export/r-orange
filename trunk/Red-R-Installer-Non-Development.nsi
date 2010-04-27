@@ -3,7 +3,7 @@
 
 ;General
   Name "Red-R 1.7"
-  OutFile "C:\Users\anup\Documents\red\develop\installer\Red-R-non-developer-Snapshot-10.04.26.exe"
+  OutFile "C:\Users\anup\Documents\red\develop\installer\Red-R-non-developer-Snapshot-10.04.27.exe"
 
   ;Name and file
 
@@ -16,6 +16,7 @@
 !define Red-RDIR_canvas ${Red-RDIR}\canvas\icons
 !define Red-RDIR_widgets ${Red-RDIR}\libraries
 !define Red-RDIR_tags ${Red-RDIR}\tagsSystem
+!define Red-RDIR_examples ${Red-RDIR}\Examples
 !define RDIRECTORY C:\Users\anup\Documents\red\develop\installer\R ;;;; The directory of a blank R so that we don't have to deal with licence terms of R
 
 
@@ -130,6 +131,9 @@ Section "" ;this is the section that will install Red-R and all of it's files
 
     SetOutPath $INSTDIR\${RVERSION}\tagsSystem
 	File /r /x .svn /x *.pyc /x .nsi ${Red-RDIR_tags}\*
+
+    SetOutPath $INSTDIR\${RVERSION}\Examples
+	File /r /x .svn /x *.pyc /x .nsi ${Red-RDIR_examples}\*
 
     
     IfFileExists $INSTDIR\R\README.${RVER}.* has_R
