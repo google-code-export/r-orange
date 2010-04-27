@@ -32,6 +32,14 @@ class BaseRedRVariable:
         if item in self.reserved:
             raise Exception
         self.dictAttrs[item] = value
+    
+    def setOptionalData(self, key, creatorWidget, data, description = None, extra=None):
+        self.dictAttrs[key] = {creatorWidget: creatorWidget.windowTitle(), ##should change to a premenent identifier
+        data:data,description:description,extra:extra}
+    
+    def getOptionalData(self,key):
+        return self.dictAttrs[key]
+    
     def __str__(self):
         ## print output for the class
         return 'Class: '+str(self.__class__)+'\nData: '+self.data+'\nAttributes: '+str(self.dictAttrs)

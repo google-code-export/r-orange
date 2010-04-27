@@ -80,6 +80,7 @@ class limmaDecide(OWRpy):
             return
         
         self.data = dataset.data
+        self.olddata = dataset
         self.ebdata = dataset
         self.status.setText("Data connected")
         self.runbutton.setEnabled(True)
@@ -111,18 +112,18 @@ class limmaDecide(OWRpy):
         
         self.sendesetsubset()
         
-    def onLoadSavedSession(self):
-        if self.R('exists("'+self.Rvariables['gcm']+'")'):
-            #self.infoa.setText("Gene Matrix Processed and sent!")
-            self.sending = {'data':self.Rvariables['gcm']}
-            self.modelProcessed = 1
-            self.sendesetsubset()
-        else:
-            self.send("Gene Change Matrix",None)
-        if self.R('exists("'+self.Rvariables['eset_sub']+'")'):
-            self.rSend("Expression Subset", self.newdata)
-        else:
-            self.rSend("Expression Subset", None)
+    # def onLoadSavedSession(self):
+        # if self.R('exists("'+self.Rvariables['gcm']+'")'):
+            # self.infoa.setText("Gene Matrix Processed and sent!")
+            # self.sending = {'data':self.Rvariables['gcm']}
+            # self.modelProcessed = 1
+            # self.sendesetsubset()
+        # else:
+            # self.send("Gene Change Matrix",None)
+        # if self.R('exists("'+self.Rvariables['eset_sub']+'")'):
+            # self.rSend("Expression Subset", self.newdata)
+        # else:
+            # self.rSend("Expression Subset", None)
 
             
             
@@ -133,7 +134,7 @@ class limmaDecide(OWRpy):
             self.rSend("Expression Subset", None, 0)
         if data:
             self.eset = data['data'] #this is data from an expression matrix or data.frame
-            self.olddata = data.copy()
+            
             if self.sending != None and self.ebdata != '':
                 self.sendesetsubset()
         else: return
