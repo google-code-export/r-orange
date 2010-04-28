@@ -47,7 +47,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
     has_R:
     
 	SetOutPath $INSTDIR\${RVERSION}
-	File /r /x .svn /x *.pyc /x settings /x R /x *.nsi "${Red-RDIR}\*"
+	File /r /x *.svn /x *.pyc /x Red-RPackages /x *.nsi "${Red-RDIR}\*"
    
    
    CreateDirectory "$SMPROGRAMS\Red-R\${RVERSION}"

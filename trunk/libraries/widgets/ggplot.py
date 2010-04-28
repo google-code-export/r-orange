@@ -72,10 +72,29 @@ class ggplot(OWRpy):
         
         self.aesFill = redRGUI.comboBox(lBox, label = 'Fill Color:', items = ['', '\'red\'', '\'green\'', '\'blue\'', '\'orange\'', '\'black\'', '\'white\'', '\'yellow\'', '\'purple\''], toolTip = 'Color or attribute to place on the data')
         self.aesFill.hide()
+        
+        
+        self.plotAttLineEdit = redRGUI.lineEdit(self.controlArea, label = 'Attribute Data:', toolTip = 'Change the plot attribute data, this is an advanced function and there is no gurantee that you will be able to plot using the data that you input.', width = -1)
+        self.acceptPlotLineEdit = redRGUI.button(self.controlArea, 'Accept Attribute Data', callback = self.acceptPlotLineEditChanges)
+        self.plotAttLineEdit.hide()
+        self.acceptPlotLineEdit.hide()
         button = redRGUI.button(lBox, 'Add Layer', callback = self.addLayer)
         buttonCommit = redRGUI.button(rBox, 'Plot', callback = self.plotGGPlot)
     def setAttributeArea(self):
-        pass
+        # populate a line Edit with the data that is in the plotAtts for this selection.  Also give the user the option to delete the attribute
+        item = self.plotBox.selectedItems()[0]
+        name = str(item.text())
+        
+        plotItemData = self.plotAtts[name]['data']
+        self.plotAttLineEdit.show()
+        self.acceptPlotLineEdit.show()
+        self.plotAttLineEdit.setText(plotItemData)
+        
+    def acceptPlotLineEditChanges(self):
+        item = self.plotBox.selectedItems()[0]
+        name = str(item.text())
+        
+        self.plotAtts[name]['data'] = str(self.plotAttLineEdit.text())
     def addDataFrame(self, data):
         if data:
             self.data = data
