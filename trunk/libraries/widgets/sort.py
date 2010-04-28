@@ -5,12 +5,12 @@
 <tags>Prototypes</tags>
 <icon>icons/RExecutor.png</icon>
 """
-from OWRpy import * 
+from OWRpy import *
 import redRGUI 
 class sort(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Sort", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["sort"])
         self.data = {}
         self.loadSettings() 
