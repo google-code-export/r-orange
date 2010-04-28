@@ -49,15 +49,12 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowIcon(QIcon(canvasIconName))
             
         self.settings = {}
-        # self.settings['svnSettings'] = {}
-        # self.settings['versionNumber'] = 'Version1.0'
         self.settings['CRANrepos'] = 'http://cran.r-project.org'
-        #self.settings['HomeFolder'] = str(os.path.abspath('/Python25/Lib/site-packages/redR1.5/Projects'))
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
         splashWindow.showMessage("Loading Settings", Qt.AlignHCenter + Qt.AlignBottom)
         self.loadSettings()
-        #print self.settings
+        # print '####################################\n'*10,self.settings
      
 
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
@@ -664,6 +661,7 @@ class OrangeCanvasDlg(QMainWindow):
 
     # Saves settings to this widget's .ini file
     def saveSettings(self):
+        print 'red-r canvas saveSettings'
         filename = os.path.join(self.canvasSettingsDir, "orngCanvas.ini")
         file=open(filename, "wb")
         if self.settings["widgetListType"] == 1:        # tree view
@@ -682,15 +680,14 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings["windowState"] = self.saveState()
         self.settings['pos'] = self.pos()
         self.settings['size'] = self.size()
-
+        self.saveSettings()
+        
         closed = self.schema.close()
         if closed:
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             self.output.logFile.close()
             self.output.hide()
-            
-            ce.accept()
-            
+            ce.accept()            
             # self.helpWindow.close()
             # self.reportWindow.close()
         else:
@@ -698,7 +695,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         # self.reportWindow.removeTemp()
         
-        self.saveSettings()
+        
 
 
     def setCaption(self, caption = ""):
@@ -833,6 +830,7 @@ def main(argv = None):
             # dlg.menuItemOpenLastSchema()
     app.exec_()
     # manager.shutdown()
+    dlg.saveSettings()
     app.closeAllWindows()
 
 if __name__ == "__main__":

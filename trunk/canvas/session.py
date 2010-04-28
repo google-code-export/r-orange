@@ -300,6 +300,8 @@ class session():
         # can't close everything into one big try-except since this would mask all errors in the below code
         if settings:
             # if hasattr(self, "settingsList"):
+            # pp = pprint.PrettyPrinter(indent=3)
+            # pp.pprint(settings)
             self.setSettings(settings)
 
     

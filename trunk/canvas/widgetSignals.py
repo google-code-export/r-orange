@@ -206,13 +206,14 @@ class widgetSignals():
             self.send(name, variable)
             # if updateSignalProcessingManager:
                 #try:
-            self.removeInformation(id = 'dataNotSent')
+            self.removeInformation(id = 'attention')
+            self.removeError()
             self.sentItems.append((name, variable))
             self.status.setText('Data sent.')
                 #except: 
                 #    print 'Failed to remove information', self.widgetState
         except:
-            self.setError(id = 'dataNotSent', text = 'Failed to send data')
+            self.setError(id = 'sendError', text = 'Failed to send data')
     
 
     # def isConnectionPossible(outputs,inputs):
@@ -293,8 +294,6 @@ class widgetSignals():
             
         self.working = 0
         self.needProcessing = 0
-        if len(self.outputs) !=0 and not self.loadSavedSession:
-            self.setInformation(id = 'dataNotSent', text = 'Data not processed')
 
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):

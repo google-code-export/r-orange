@@ -615,6 +615,8 @@ class SchemaDoc(QWidget):
                     
                     try:
                         if 'requiredRLibraries' in settings.keys():
+                            print qApp.canvasDlg.settings.keys()
+                            print qApp.canvasDlg.settings['CRANrepos']
                             if 'CRANrepos' in qApp.canvasDlg.settings.keys():
                                 repo = qApp.canvasDlg.settings['CRANrepos']
                             else:

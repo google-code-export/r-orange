@@ -376,11 +376,15 @@ class SignalManager:
         self.signalProcessingInProgress = 1
 
         index = self.widgets.index(firstWidget)
+        
         for i in range(index, len(self.widgets)):
+            # print 'propagating', self.widgets[i].windowTitle(), i, index
+            # if len(self.widgets[i].outputs) !=0 and not self.widgets[i].loadSavedSession and i != index:
+                # self.widgets[i].setInformation(id = 'attention', text = 'Widget needs attention.')
+
             if self.widgets[i].needProcessing:
                 try:
-                  self.widgets[i].processSignals()
-                    
+                    self.widgets[i].processSignals()
                 except:
                     type, val, traceback = sys.exc_info()
                     sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas

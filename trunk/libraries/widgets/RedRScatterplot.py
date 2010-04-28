@@ -113,7 +113,7 @@ class RedRScatterplot(OWRpy):
 
             if 'cm' in self.dataParent.dictAttrs.keys():
                 print self.dataParent.dictAttrs['cm']
-                self.cm = self.dataParent.dictAttrs['cm']['data']
+                self.cm = self.dataParent.dictAttrs['cm'][0]
                 cmColNames = self.R('names('+self.cm+')')
                 if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
                 if type(cmColNames) == type(''): cmColNames = [cmColNames]

@@ -149,14 +149,14 @@ Section "" ;this is the section that will install Red-R and all of it's files
 ;------------------------
 ; Create the shortcuts    
 	CreateDirectory "$SMPROGRAMS\Red-R\${RVERSION}"
-	CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Red-R Canvas.lnk" "$INSTDIR\${RVERSION}\bin\red-RCanvas.exe" "" $INSTDIR\${RVERSION}\OrangeCanvas\icons\orange.ico 0
+	CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Red-R Canvas.lnk" "$INSTDIR\${RVERSION}\bin\red-RCanvas.exe" "" $INSTDIR\${RVERSION}\canvas\icons\orange.ico 0
     CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Uninstall Red-R.lnk" "$INSTDIR\${RVERSION}\uninst ${RVERSION}.exe"
 
-	CreateShortCut "$DESKTOP\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\bin\red-RCanvas.exe" "" $INSTDIR\${RVERSION}\OrangeCanvas\icons\orange.ico 0
+	CreateShortCut "$DESKTOP\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\bin\red-RCanvas.exe" "" $INSTDIR\${RVERSION}\canvas\icons\orange.ico 0
 	
 ;-------------------------
 ; Write the registry settings
-	WriteRegStr SHELL_CONTEXT "SOFTWARE\Red-R\${RVERSION}" "" "$INSTDIR\${RVERSION};$INSTDIR\${RVERSION}\OrangeWidgets$INSTDIR\${RVERSION}\OrangeCanvas"
+	; WriteRegStr SHELL_CONTEXT "SOFTWARE\Red-R\${RVERSION}" "" "$INSTDIR\${RVERSION};$INSTDIR\${RVERSION}\OrangeWidgets$INSTDIR\${RVERSION}\OrangeCanvas"
 	
 ;-------------------------
 ; Write the registry settings Uninstall
@@ -166,7 +166,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
 	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${RVERSION}" "UninstallString" '"$INSTDIR\${RVERSION}\uninst ${RVERSION}.exe"'
 
 	WriteRegStr HKEY_CLASSES_ROOT ".rrs" "" "Red R Canvas"
-	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${RVERSION}\OrangeCanvas\icons\redrOWS.ico"
+	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${RVERSION}\canvas\icons\redrOWS.ico"
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$INSTDIR\${RVERSION}\bin\red-RCanvas.exe "%1"';name is appended into the sys.argv variables for opening by Red-R
     
 	WriteUninstaller "$INSTDIR\${RVERSION}\uninst ${RVERSION}.exe"

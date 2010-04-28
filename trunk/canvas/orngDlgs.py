@@ -68,7 +68,7 @@ class CanvasOptionsDlg(QDialog):
         self.tabs.addTab(ExceptionsTab, "Exception handling")
         self.tabs.addTab(TabOrderTab, "Widget tab order")
         self.tabs.addTab(RSettings, 'R Settings')
-
+        QObject.connect(self.tabs, SIGNAL('currentChanged(int)'), self.onTabChange)
         # #################################################################
         # GENERAL TAB
         generalBox = OWGUI.widgetBox(GeneralTab, "General Options")
@@ -186,14 +186,16 @@ class CanvasOptionsDlg(QDialog):
 
         #####################################
         # R Settings Tab
-        rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
+        self.rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
+        self.libInfo = redRGUI.widgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
+        
+    def onTabChange(self,index):
+        print 'onTabChange',index
         # get a data frame (dict) of r libraries
-
         self.libs = RSession.Rcommand('getCRANmirrors()')
         # place a listBox in the widget and fill it with a list of mirrors
-        self.libListBox = redRGUI.listBox(rlibrariesBox, label = 'Mirrors', items = self.libs['Name'], callback = self.setMirror)
-        self.libInfo = redRGUI.widgetLabel(rlibrariesBox, '')
-        self.libInfo.setText('Repository URL: '+ self.settings['CRANrepos'])
+        self.libListBox = redRGUI.listBox(self.rlibrariesBox, label = 'Mirrors', 
+        items = self.libs['Name'], callback = self.setMirror)
         
     def setMirror(self):
         # print 'setMirror'
