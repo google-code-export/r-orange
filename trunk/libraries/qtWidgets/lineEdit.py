@@ -11,14 +11,16 @@ class lineEdit(QLineEdit,widgetState):
         QLineEdit.__init__(self,widget)
         if widget:
             if label:
-                hb = widgetBox(widget,orientation=orientation)
-                widgetLabel(hb, label)
+                self.hb = widgetBox(widget,orientation=orientation)
+                widgetLabel(self.hb, label)
                 if width != -1:
-                    sb = widgetBox(hb)
+                    sb = widgetBox(self.hb)
                     sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                hb.layout().addWidget(self)
+                self.hb.layout().addWidget(self)
+                self.hasLabel = True
             else:
                 widget.layout().addWidget(self)
+                self.hasLabel = False
         if toolTip: self.setToolTip(toolTip)
         if width == 0:
             self.setMaximumWidth(175)
@@ -36,6 +38,16 @@ class lineEdit(QLineEdit,widgetState):
         r = {'text': self.text()}
         # print r
         return r
+    def hide(self):
+        if self.hasLabel:
+            self.hb.hide()
+        else:
+            QLineEdit.hide(self)
+    def show(self):
+        if self.hasLabel:
+            self.hb.show()
+        else:
+            QLineEdit.show(self)
     def loadSettings(self,data):
         try:
             #print 'called load' + str(value)     

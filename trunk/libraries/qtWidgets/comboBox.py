@@ -11,12 +11,13 @@ class comboBox(QComboBox,widgetState):
         
         QComboBox.__init__(self,widget)
         if label:
-            hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(hb, label)
-            hb.layout().addWidget(self)
+            self.hb = widgetBox(widget,orientation=orientation)
+            widgetLabel(self.hb, label)
+            self.hb.layout().addWidget(self)
+            self.hasLabel = True
         else:
             widget.layout().addWidget(self)
-        
+            self.hasLabel = False
         if items:
             self.addItems([unicode(i) for i in items])
         # print callback
@@ -27,6 +28,16 @@ class comboBox(QComboBox,widgetState):
         if callback2: # more overload for other functions
             QObject.connect(self, SIGNAL('activated(int)'), callback2)
 
+    def hide(self):
+        if self.hasLabel:
+            self.hb.hide()
+        else:
+            QComboBox.hide(self)
+    def show(self):
+        if self.hasLabel:
+            self.hb.show()
+        else:
+            QComboBox.show(self)
     def getSettings(self):
         items = []
         # print 'in comboBox get'
