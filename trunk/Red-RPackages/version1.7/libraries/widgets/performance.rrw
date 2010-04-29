@@ -1,4 +1,9 @@
-"""
+<main>
+    <Version>1.5, 1.7, 2.0</Version>
+    <Dependencies>libraries/signalClasses/RROCPerformanceFit.py, libraries/signalClasses/RROCPredictionFit.py</Dependencies>
+    <FileDirectoryStucture>/libraries/widgets/performance.py</FileDirectoryStucture>
+    <menuTags>Stats/ROC Curves</menuTags>
+    <FileData>"""
 <name>performance</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>ROCR:performance</RFunctions>
@@ -71,3 +76,6 @@ class performance(OWRpy):
         newData = signals.RROCPerformanceFit(data = self.Rvariables["performance"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("performance Output", newData)
+</FileData>
+    <Examples>None</Examples>
+</main>

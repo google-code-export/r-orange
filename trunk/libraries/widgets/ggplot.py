@@ -16,7 +16,7 @@ class ggplot(OWRpy):
         self.setRvariableNames(["ggplot"])
         self.plotAtts = {} # a collection of dicts, these contain the parameters that can be set for any particular function.  The aes attribut will also be a dict, however, other parameters will be contained within this dictionary.  This essentially represents all of the data that this widget will contain.
         
-        self.require_librarys(["ggplot2"])
+        self.require_librarys(["ggplot2", "hexbin"])
         self.loadSettings()
         self.inputs = [('Input Data Frame', signals.RDataFrame, self.addDataFrame)]
         self.outputs = [('Plot colleciton', signals.RGGPlotPlot)]
@@ -123,9 +123,7 @@ class ggplot(OWRpy):
         elif str(self.aesSizeLineEdit.text()) != '':
             string = 'size ='+str(self.aesSizeLineEdit.text())
             injection.append(string)
-        if str(self.aesColour.currentText()) != '':
-            string = 'colour ='+str(self.aesColour.currentText())
-            injection.append(string)
+        
         if str(self.aesLineType.text()) != '' and self.aesLineType.isVisible():
             string = 'linetype ='+str(self.aesLineType.text())
             injection.append(string)
@@ -135,10 +133,14 @@ class ggplot(OWRpy):
         if str(self.aesLineType.text()) != '' and self.aesLineType.isVisible():
             string = 'linetype ='+str(self.aesLineType.text())
             injection.append(string)
+        
+        functionInjection = []
+        if str(self.aesColour.currentText()) != '':
+            string = 'colour ='+str(self.aesColour.currentText())
+            functionInjection.append(string)
         if str(self.aesFill.currentText()) != '' and self.aesFill.isVisible():
             string = 'fill = '+str(self.aesFill.currentText())
-            injection.append(string)
-        functionInjection = []
+            functionInjection.append(string)
         if name == 'stat_smooth':
             
             if str(self.statSmoothMethod.currentText()) != '' and self.statSmoothMethod.isVisible():
@@ -165,7 +167,7 @@ class ggplot(OWRpy):
                 functionInjection.append(string)
                 
         
-        self.plotAtts[name] = {'Global': (name == 'Global'), 'data':name+'(aes('+','.join(injection)+'), '+','.join(functionInjection)+')', 'subAtt': ('Sub Attribute' in self.isSubAtt.getChecked())}
+        self.plotAtts[name] = {'Global': (name == 'Global'), 'data':name+'(aes('+','.join(injection)+'),'+','.join(functionInjection)+')', 'subAtt': ('Sub Attribute' in self.isSubAtt.getChecked())}
         self.plotBox.addItem(name)
     def addGlobal(self):
         self.plotAtts['Global'] = {'Global':True, 'data':'ggplot(data = '+self.data.data+')', 'subAtt':False}

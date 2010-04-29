@@ -1,0 +1,31 @@
+<main>
+    <Version>1.5, 1.7, 2.0</Version>
+    <Dependencies>
+    </Dependencies>
+    <FileDirectoryStucture>/OrangeWidgets/widgets/test.py</FileDirectoryStucture>
+    <FileData>"""Test for writing to the file
+<name>R Executor</name>
+<description>Accepts and sends R objects as well as performing R commands</description>
+<tags>Special, R</tags>
+<icon>icons/rexecutor.png</icon>
+<priority>80</priority>
+"""
+
+from OWRpy import *
+import redRGUI
+
+class rExecutor(OWRpy):
+    settingsList = ['command', 'sendthis', 'sendt']
+    def __init__(self, parent=None, signalManager=None):
+        #OWWidget.__init__(self, parent, signalManager, "Sample Data")
+        OWRpy.__init__(self, wantGUIDialog = 1, wandMainArea = 0)
+        
+        self.command = ''
+        self.sendthis = ''
+        self.sendt = {}
+        self.dfselected = None
+        self.loadSettings()
+</FileData>
+    <Examples>
+    </Examples>
+</main>

@@ -21,7 +21,7 @@ class SchemaDoc(QWidget):
         QWidget.__init__(self, *args)
         self.canvasDlg = canvasDlg
         self.ctrlPressed = 0
-        self.version = '1.5'
+        self.version = 'trunk'                  # should be changed before making the installer or when moving to a new branch.
         self.lines = []                         # list of orngCanvasItems.CanvasLine items
         self.widgets = []                       # list of orngCanvasItems.CanvasWidget items
         self.signalManager = SignalManager()    # signal manager to correctly process signals
@@ -743,7 +743,7 @@ class SchemaDoc(QWidget):
                 self.canvasDlg.output.write("%s = %s" % (val, getattr(widget.instance, val)))
 
                 
-    def loadRRW(self, filename):
+    def loadRRW(self, filename, force = False):
         print 'Loading RRW file.  This will update your system.'
         
         f = open(filename, 'r')
@@ -761,16 +761,23 @@ class SchemaDoc(QWidget):
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
-            if not os.path.isfile(os.path.join(self.canvasDlg.redRDir, dep)) and dep != 'None':
+            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, dep)) and dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
-                if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.redRDir, 'temp'))):
-                    os.mkdir(os.path.join(self.canvasDlg.redRDir, 'temp'))
-                fileExt = os.path.split(dep)[1]
-                newPackage = os.path.join(self.canvasDlg.redRDir, 'temp', fileExt)
-                self.urlOpener.retrieve('http://www.red-r.org/packages/'+fileExt, newPackage)
-                self.loadRRW(newPackage)
-                ### go to website, get the file, and repleat this process until success
+                if '.rrp' in dep:  # this is requiring a package so we need to go and get that
+                    
+                    if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.redRDir, dep))):
+                        os.mkdir(os.path.join(self.canvasDlg.redRDir, 'temp'))
+                    fileExt = os.path.split(dep)[1]
+                    newPackage = os.path.join(self.canvasDlg.redRDir, 'temp', dep)
+                    self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/Red-RPackages/'+dep, newPackage)                    
+                    self.loadRRW(newPackage)
+                else:
+                    newPackage = os.path.join(self.canvasDlg.redRDir, dep)
+                    self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/'+dep, newPackage)
+                    #self.loadRRW(newPackage)
+                    ### go to website, get the file, and repleat this process until success
                 
+        ## write the file, if there is one, to the file dir.
         fileDirName = self.getXMLText(mainTabs.getElementsByTagName('FileDirectoryStucture')[0].childNodes)
         code = mainTabs.getElementsByTagName('FileData')[0]
         code = code.toxml()
@@ -784,21 +791,53 @@ class SchemaDoc(QWidget):
         file = open(newFileDirectory, "wt")
         file.write(code)
         file.close()
+        ## Done writing the file
         
+        ## update the tags heitarchy
+        t = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'r')
+        tags = xml.dom.minidom.parse(t)
+        t.close()
+        
+        newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
+        
+        for tag in newTags:
+            if tag.nodeName == 'group': #picked a group element
+                self.addTagsSystemTag(tags, tag)
+            # the tag is a structure is XML itself so we should add the xml if we don't find the right tab
+            
+        file = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags2.xml'), 'wt')
+        file.write(tags.toxml())
+        file.close()
         # get the examples if there are anything
         examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
         for example in examples.split(','):
             example = example.strip(' ')
-            if not os.path.isfile(os.path.join(self.canvasDlg.redRDir,'Examples', example)) and example != 'None':
+            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir,example)) and example != 'None')or (force and example != 'None'):
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
-                newExample = os.path.join(self.canvasDlg.redRDir, 'Examples', fileExt)
-                self.urlOpener.retrieve('http://www.red-r.org/Examples/'+fileExt, newExample)
+                newExample = os.path.join(self.canvasDlg.redRDir, fileExt)
+                self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/'+newExample, newExample)
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
         
         os.remove(filename)
         print 'Package loaded successfully'
+        
+    def addTagsSystemTag(self, tags, tag):
+        # tags is the current tags system, tag is the tag that should be added.
+        name = str(tag.getAttribute('name'))
+        # move through the group tags in tags, if you find the grouname of tag then you don't need to add it, rather just add the child tags to that tag.
+        for t in tags:
+            if t.nodeName == 'group':
+                if str(t.getAttribute('name')) == name: ## found the right tag
+                    for tt in tag:
+                        if tt.nodeName == 'group':
+                            self.addTagsSystemTag(t, tt) # add the child tags
+                            
+                    return
+                    
+        ## if we made it this far we didn't find the right tag so we need to add all of the tag xml to the tags xml
+        tags.childNodes[0].appendChild(tag)
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()
