@@ -825,7 +825,7 @@ class SchemaDoc(QWidget):
         if '.rrp' not in filename:
             os.remove(filename)
         print 'Package loaded successfully'
-        self.canvasDlg.reloadWidgets()
+        qApp.canvasDlg.reloadWidgets()
     def addTagsSystemTag(self, tags, tag):
         # tags is the current tags system, tag is the tag that should be added.
         name = str(tag.getAttribute('name'))

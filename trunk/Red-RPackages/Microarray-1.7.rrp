@@ -1,0 +1,16 @@
+<main>
+    <Version>1.5, 1.7, 2.0, trunk</Version>
+    <Repository>http://r-orange.googlecode.com/svn/</Repository>
+    <Dependencies>libraries/widgets/affyNormalize.py, libraries/widgets/diffExp.py, libraries/widgets/normalize_quantile.py, libraries/widgets/pamrcv.py, libraries/widgets/pamrc_from_excel.py, libraries/widgets/pamr_train.py, libraries/widgets/panpCalls.py, libraries/widgets/plotAffy.py, libraries/widgets/ReadCEL.py, libraries/widgets/runSigPathway.py, libraries/widgets/writeEset.py,libraries/signalClasses/RAffyBatch.py, libraries/signalClasses/REset.py, libraries/signalClasses/RMArrayLM.py, libraries/icons/diffExp.png, libraries/icons/normalize.png, libraries/icons/plotAffy.png, libraries/icons/readcel.png</Dependencies>
+    <menuTags>
+            <group name = 'Bioinformatics'>
+                <Description>General Bioinformatics Widgets</Description>
+                <group name = 'Microarray'>
+                    <Description>Widgets for microarray analysis</Description>
+                </group>
+            </group>
+    </menuTags>
+    <FileDirectoryStucture>None</FileDirectoryStucture>
+    <FileData>None</FileData>
+    <Examples>None</Examples>
+</main>
