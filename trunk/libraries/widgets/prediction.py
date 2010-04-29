@@ -2,7 +2,7 @@
 <name>prediction</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>ROCR:prediction</RFunctions>
-<tags>Prototypes</tags>
+<tags>ROC Curves</tags>
 <icon>icons/RExecutor.png</icon>
 """
 from OWRpy import * 

@@ -551,10 +551,11 @@ class SchemaDoc(QWidget):
         
         import redREnviron
         ### .rrw functionality
-        if filename.split('.')[-1] == 'rrw':
+        if filename.split('.')[-1] in ['rrw', 'rrp']:
             self.loadRRW(filename)
             return # we don't need to load anything else, we are not really loading a rrs file. 
         ###
+        print filename.split('.')[-1], 'File name extension'
         print 'document load called'
         #self.clear()
         pos = self.canvasDlg.pos()
@@ -795,7 +796,8 @@ class SchemaDoc(QWidget):
         
         ## update the tags heitarchy
         t = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'r')
-        tags = xml.dom.minidom.parse(t)
+        mainTagsTabs = xml.dom.minidom.parse(t)
+        tags = mainTagsTabs.childNodes[0]
         t.close()
         
         newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
@@ -805,7 +807,7 @@ class SchemaDoc(QWidget):
                 self.addTagsSystemTag(tags, tag)
             # the tag is a structure is XML itself so we should add the xml if we don't find the right tab
             
-        file = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags2.xml'), 'wt')
+        file = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'wt')
         file.write(tags.toxml())
         file.close()
         # get the examples if there are anything
@@ -820,24 +822,30 @@ class SchemaDoc(QWidget):
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
         
-        os.remove(filename)
+        if '.rrp' not in filename:
+            os.remove(filename)
         print 'Package loaded successfully'
-        
+        self.canvasDlg.reloadWidgets()
     def addTagsSystemTag(self, tags, tag):
         # tags is the current tags system, tag is the tag that should be added.
         name = str(tag.getAttribute('name'))
         # move through the group tags in tags, if you find the grouname of tag then you don't need to add it, rather just add the child tags to that tag.
-        for t in tags:
+        print tags.childNodes, 'Child Nodes'
+        for t in tags.childNodes:
             if t.nodeName == 'group':
+                print t
                 if str(t.getAttribute('name')) == name: ## found the right tag
-                    for tt in tag:
+                    print 'Found the name'
+                    print t.childNodes
+                    for tt in tag.childNodes:
                         if tt.nodeName == 'group':
                             self.addTagsSystemTag(t, tt) # add the child tags
                             
                     return
                     
         ## if we made it this far we didn't find the right tag so we need to add all of the tag xml to the tags xml
-        tags.childNodes[0].appendChild(tag)
+        print 'Name not found, appending to group.  This is normal, don\t be worried.'
+        tags.appendChild(tag)
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()

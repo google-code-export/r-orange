@@ -31,7 +31,9 @@
         <group name="Survival">
             <Description>Survival Statistics</Description>
         </group>        
-    </group>
+    <group name="ROC Curves">
+                <Description> Generates ROC Curves </Description>
+            </group></group>
     <group name="Bioinformatics">
         <Description>Application of information technology and computer science to the field of molecular biology</Description>
         <group name="Microarray">
