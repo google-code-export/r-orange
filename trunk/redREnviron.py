@@ -19,6 +19,8 @@ def __getDirectoryNames():
     canvasDir = os.path.join(redRDir, "canvas")
     RDir = os.path.join(os.path.split(redRDir)[0], "R")
     widgetDir = os.path.join(redRDir, "libraries")
+    qtWidgetsDir = os.path.join(redRDir, "libraries",'qtWidgets')
+    redRSignalsDir = os.path.join(redRDir, "libraries",'signalClasses')
     tagsDir = os.path.join(redRDir, "tagsSystem")
     picsDir = os.path.join(widgetDir, "icons")
     addOnsDir = os.path.join(redRDir, "add-ons")
@@ -73,7 +75,7 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
 
-    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "RDir", "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
+    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
 
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))

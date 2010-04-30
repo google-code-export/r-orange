@@ -60,6 +60,7 @@ class widgetGUI(QMainWindow):
 
         self.windowState = {}
         self.savePosition = True
+        self.hasBeenShown = False
         self.hasAdvancedOptions = wantGUIDialog
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
@@ -277,7 +278,8 @@ class widgetGUI(QMainWindow):
         
         for i in self.findChildren(QDialog):
             i.setHidden(True)
-        self.saveWidgetWindowState()
+        if self.hasBeenShown:
+            self.saveWidgetWindowState()
         self.saveGlobalSettings()
         self.customCloseEvent()
 
@@ -315,7 +317,7 @@ class widgetGUI(QMainWindow):
         # print 'owbasewidget show'
         print 'in onShow'
 
-        
+        self.hasBeenShown = True
         if 'state' in self.windowState.keys():
             self.restoreState(self.windowState['state'])
         if 'geometry' in self.windowState.keys():
@@ -326,6 +328,7 @@ class widgetGUI(QMainWindow):
         if 'pos' in self.windowState.keys():
             self.move(self.windowState['pos'])
 
+        
         if self.hasAdvancedOptions and ('leftDockState' in self.windowState):
             self.leftDockButton.setChecked(self.windowState['leftDockState'])
             self.showLeftDock()

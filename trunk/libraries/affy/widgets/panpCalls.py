@@ -29,7 +29,7 @@ class panpCalls(OWRpy):
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         self.loadSettings()
 
-        self.inputs = [("Normalized Eset", signals.REset, self.process)]
+        self.inputs = [("Normalized Eset", signals.affy.REset, self.process)]
         self.outputs = [("Present Gene Signal Matrix", signals.RMatrix)]
         
         

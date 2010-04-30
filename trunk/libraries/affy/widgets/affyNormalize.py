@@ -35,8 +35,8 @@ class affyNormalize(OWRpy):
         self.setRvariableNames(['normalized_Eset'])
         
         #signals
-        self.inputs = [("AffyBatch", signals.RAffyBatch, self.process)]
-        self.outputs = [("Normalized Eset", signals.REset)]
+        self.inputs = [("AffyBatch", signals.affy.RAffyBatch, self.process)]
+        self.outputs = [("Normalized Eset", signals.affy.REset)]
 
         
         #the GUI
@@ -161,7 +161,7 @@ class affyNormalize(OWRpy):
                 self.normselector.setEnabled(True)
 
     def toSend(self):
-        newData = signals.REset(data = self.Rvariables['normalized_Eset'])
+        newData = signals.affy.REset(data = self.Rvariables['normalized_Eset'])
         newData.dictAttrs = self.oldData.dictAttrs
         self.rSend("Normalized Eset", newData)
         

@@ -7,7 +7,7 @@ class RDataFrame(RList):
     def __init__(self, data, parent = None, checkVal = True):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
-            raise Exception # there this isn't the right kind of data for me to get !!!!!
+            raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
         
     def convertToClass(self, varClass):
         if varClass == RList:

@@ -157,8 +157,12 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         #print str(forceInSignals)
         #print str(forceOutSignals)
         # print 'Initializing widget'
+        if widgetInfo.package !='base':
+            import orngRegistry
+            orngRegistry.loadPackage(widgetInfo.package)
+            
         m = __import__(widgetInfo.fileName)
-        self.instance = m.__dict__[widgetInfo.fileName].__new__(m.__dict__[widgetInfo.fileName],
+        self.instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
         _owInfo = canvasDlg.settings["owInfo"],
         _owWarning = canvasDlg.settings["owWarning"],
         _owError = canvasDlg.settings["owError"],

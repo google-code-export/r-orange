@@ -635,7 +635,7 @@ class SchemaDoc(QWidget):
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                     if not tempWidget:
                         #print settings
-                        print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                        # print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
                         # we must build a fake widget this will involve getting the inputs and outputs and joining 
                         #them at the widget creation 
                         
@@ -715,7 +715,7 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                print 'instance\n'*5, str(widget.instance)
+                # print 'instance\n'*5, str(widget.instance)
                 widget.instance.onLoadSavedSession()
             except:
                 import traceback,sys

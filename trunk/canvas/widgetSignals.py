@@ -237,6 +237,7 @@ class widgetSignals():
             return
         # print 'loadSavedSessionState', self.loadSavedSession
         if self.loadSavedSession:
+            self.needProcessing = 0
             return
         if not self.loadSavedSession:
             self.signalManager.setNeedAttention(self)

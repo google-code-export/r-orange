@@ -12,6 +12,7 @@ class BaseRedRVariable:
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']
         
+        
     def __getitem__(self, item):
         try:
             attr = getattr(self, item)
@@ -22,7 +23,7 @@ class BaseRedRVariable:
                 attr = None
         return attr
     def saveSettings(self):
-        return {'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
+        return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
         
     def loadSettings(self, settings):
         self.data = settings['data']
@@ -137,14 +138,37 @@ def forname(modname, classname):
     classobj = getattr(module, classname)
     return classobj
 
-RVariableClasses = []
 current_module = __import__(__name__)
+RedRSignals = []
+def registerRedRSignals(package):
+    print '@@@@@@@@@@registerRedRSignals'
+    import imp
+    m = imp.new_module(package)
+    directory = os.path.join(redREnviron.widgetDir,package,'signalClasses')
+    for filename in glob.iglob(os.path.join(directory,  "*.py")):
+        print 'import filename', filename
+        if os.path.isdir(filename) or os.path.islink(filename):
+            continue
+        guiClass = os.path.basename(filename).split('.')[0]
+        RedRSignals.append(guiClass)
+        c = forname(guiClass,guiClass)
+        c.__dict__['__package__'] = package
+        setattr(m, guiClass,c)
+        
+    
+    setattr(current_module,package,m)
+    # print m
+    # print current_module
+    
+
+#registerRedRSignals(redREnviron.directoryNames['redRSignalsDir'])
 
 
-for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/signalClasses', "*.py")):
+for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/base/signalClasses', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
-    #print filename
     signalClasses = os.path.basename(filename).split('.')[0]
-    RVariableClasses.append(signalClasses)
-    setattr(current_module, signalClasses,forname(signalClasses,signalClasses))
+    RedRSignals.append(signalClasses)
+    c = forname(signalClasses,signalClasses)
+    c.__dict__['__package__'] = 'base'
+    setattr(current_module, signalClasses,c)

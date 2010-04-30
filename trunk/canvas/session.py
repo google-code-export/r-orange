@@ -4,6 +4,7 @@ import signals
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI 
+import signals 
 
 
 class session():
@@ -34,7 +35,7 @@ class session():
                 continue
             i += 1
             self.progressBarAdvance(i)
-            # print 'frist att: ' + att
+            print 'frist att: ' + att
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
 
@@ -78,7 +79,7 @@ class session():
             
     def returnSettings(self,var):
         settings = {}
-        
+        print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
             #print 'getting gui settings for:' + att + '\n\n'
             try:
@@ -97,8 +98,8 @@ class session():
 
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
-        elif isinstance(var, signals.BaseRedRVariable):
-            
+        #elif isinstance(var, signals.BaseRedRVariable):
+        elif var.__class__.__name__ in signals.RedRSignals:    
             settings['signalsObject'] = var.saveSettings()
             print 'Saving signalsObject ', settings['signalsObject']
         
@@ -210,12 +211,15 @@ class session():
             self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName)))
     
     def setSentRvarClass(self, d, sentItemName):
+        print 'setSentRvarClass', d
         className = d['class'].split('.')
-        # print className
         className = className[1]
         # print 'setting ', className
         try: # try to reload the output class from the signals
-            var = getattr(signals, className)(data = d['data'])
+            if d['package'] != 'base':
+                var = getattr(getattr(signals,d['package']), className)(data = d['data'])
+            else:
+                var = getattr(signals, className)(data = d['data'])
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
             try:
                 var = None
@@ -229,7 +233,7 @@ class session():
             
         
         for key in d.keys():
-            if key == 'class': continue
+            if key in ['class','package']: continue
             # print 'setting ', key
             subvar = getattr(var, key) 
             subvar = d[key]
@@ -241,12 +245,15 @@ class session():
         className = className[1]
         print 'setting ', className
         #try: # try to reload the output class from the signals
-        var = getattr(signals, className)(data = d['data'])
+        if d['package'] != 'base':
+            var = getattr(getattr(signals,d['package']), className)(data = d['data'])
+        else:
+            var = getattr(signals, className)(data = d['data'])
         # finally: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
             # print 'Class name not found, setting to a variable'
             # var = signals.RVariable(data = d['data'])
         for key in d.keys():
-            if key == 'class': continue
+            if key in ['class','package']: continue
             print 'setting ', key
             subvar = getattr(var, key) 
             subvar = d[key]

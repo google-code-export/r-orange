@@ -37,8 +37,8 @@ class runSigPathway(OWRpy):
         self.subtable = {}
         self.noFile() # run the file manager to get all the needed files.
         self.loadSettings()
-        self.inputs = [("Expression Set", signals.RDataFrame, self.process), ("Pathway Annotation List", signals.RDataFrame, self.processPathAnnot), ('Phenotype Vector', signals.RVector, self.phenotypeConnected)]
-        self.outputs = [("Pathway Analysis File", signals.RDataFrame), ("Pathway Annotation List", signals.RDataFrame), ("Pathway List", signals.RDataFrame)]
+        self.inputs = [("Expression Set", signals.affy.RDataFrame, self.process), ("Pathway Annotation List", signals.affy.RDataFrame, self.processPathAnnot), ('Phenotype Vector', signals.affy.RVector, self.phenotypeConnected)]
+        self.outputs = [("Pathway Analysis File", signals.affy.RDataFrame), ("Pathway Annotation List", signals.affy.RDataFrame), ("Pathway List", signals.affy.RDataFrame)]
 #GUI
         mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         leftArea = redRGUI.widgetBox(mainArea, sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding))

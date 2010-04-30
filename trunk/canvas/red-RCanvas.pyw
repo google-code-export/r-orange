@@ -90,6 +90,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.setStatusBar(MyStatusBar(self))
                 
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
+        
+        print self.widgetRegistry
         self.updateStyle()
         
         # create toolbar
@@ -352,6 +354,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
         self.widgetRegistry = orngRegistry.readCategories()
+        import redRGUI
         self.createWidgetsToolbar()
         #self.widgetsToolBar.show()
     def menuItemSaveAs(self):

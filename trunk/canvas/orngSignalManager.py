@@ -415,6 +415,7 @@ class SignalManager:
                 # except:
                     # type, val, traceback = sys.exc_info()
                     # sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't         
+        print children
         for i in children:
             if i.needProcessing:
                 try:

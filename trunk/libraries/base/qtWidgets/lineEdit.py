@@ -31,6 +31,7 @@ class lineEdit(QLineEdit,widgetState):
             self.setMaximumWidth(width)
             self.setMinimumWidth(width)
         self.setText(text)
+        # self.setText('asdf')
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
     def getSettings(self):

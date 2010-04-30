@@ -28,7 +28,7 @@ class plotAffy(OWRpy):
         #set R variable names
         #self.setRvariableNames()
 
-        self.inputs = [("Affybatch", signals.Eset, self.init)]
+        self.inputs = [("Affybatch", signals.affy.Eset, self.init)]
         self.outputs = None
         
         self.testLineEdit = ""

@@ -5,6 +5,8 @@ import os, sys, re, glob, stat
 from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import redRGUI
+import signals
 
 redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 if not redRDir in sys.path:
@@ -41,17 +43,17 @@ def readCategories():
             directories.append((dirName, directory, ""))
 
     # read list of add-ons (in orange/add-ons as well as those additionally registered by the user)
-    for (name, dirName) in redREnviron.addOns:
-        addOnWidgetsDir = os.path.join(dirName, "widgets")
-        if os.path.isdir(addOnWidgetsDir):
-            directories.append((name, addOnWidgetsDir, addOnWidgetsDir))
-        addOnWidgetsPrototypesDir = os.path.join(addOnWidgetsDir, "prototypes")
-        if os.path.isdir(addOnWidgetsDir):
-            directories.append(("Prototypes", addOnWidgetsPrototypesDir, addOnWidgetsPrototypesDir))
-
+    # for (name, dirName) in redREnviron.addOns:
+        # addOnWidgetsDir = os.path.join(dirName, "widgets")
+        # if os.path.isdir(addOnWidgetsDir):
+            # directories.append((name, addOnWidgetsDir, addOnWidgetsDir))
+        # addOnWidgetsPrototypesDir = os.path.join(addOnWidgetsDir, "prototypes")
+        # if os.path.isdir(addOnWidgetsDir):
+            # directories.append(("Prototypes", addOnWidgetsPrototypesDir, addOnWidgetsPrototypesDir))
     categories = {}     
     for catName, dirName, plugin in directories:
-        widgets = readWidgets(dirName, catName, cachedWidgetDescriptions)
+        widgets = readWidgets(os.path.join(dirName,'widgets'), catName, cachedWidgetDescriptions)
+        print '#########widgets',widgets
         if widgets:
             categories[catName] = WidgetCategory(plugin and dirName or "", widgets)
 
@@ -67,11 +69,11 @@ splashWindow = None
 widgetsWithError = []
 
 
-def readWidgets(directory, category, cachedWidgetDescriptions):
+def readWidgets(directory, package, cachedWidgetDescriptions):
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     
-    
+    print '################readWidgets', directory, package
     widgets = []
     for filename in glob.iglob(os.path.join(directory, "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
@@ -93,7 +95,9 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
         outputList = getSignalList(re_outputs, data)
         
         dirname, fname = os.path.split(filename)
-        widgname = os.path.splitext(fname)[0]
+        # dirname, package = os.path.split(dirname)
+        widgetName = os.path.splitext(fname)[0]
+        #widgetName = package + '_' + widget
         try:
             if not splashWindow:
                 import redREnviron
@@ -111,19 +115,23 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
             dirnameInPath = dirname in sys.path
             if not dirnameInPath:
                 sys.path.append(dirname)
-            wmod = imp.load_source(widgname, filename)
+            
+            wmod = imp.load_source(package + '_' + widgetName, filename)
+
             #wmod.__dict__['widgetFilename'] = filename
             if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
                 sys.path.remove(dirname)
-            widgClass = wmod.__dict__[widgname]
+            
             # inputClasses = set(eval(x[1], wmod.__dict__).__name__ for x in eval(inputList))
             # outputClasses = set(y.__name__ for x in eval(outputList) for y in eval(x[1], wmod.__dict__).mro())
             #print 'OUTPUT CLASSES: '+str(outputClasses)
             widgetInfo = WidgetDescription(
                              name = data[istart+6:iend],
-                             category = category,
+                             category = package,
+                             package = package,
                              time = datetime,
-                             fileName = widgname,
+                             fileName = package + '_' + widgetName,
+                             widgetName = widgetName,
                              fullName = filename,
                              inputList = inputList, outputList = outputList
                              )
@@ -156,10 +164,17 @@ def readWidgets(directory, category, cachedWidgetDescriptions):
             if not hasErrors:
                 print "There were problems importing the following widgets:"
                 hasErrors = True
-            print "   %s: %s" % (widgname, msg)
-            widgetsWithError.append(widgname)
+            print "   %s: %s" % (widgetName, msg)
+            widgetsWithError.append(widgetName)
         
     return widgets
+
+def loadPackage(package):
+    # import imp
+    # m = imp.new_module(package)
+    redRGUI.registerQTWidgets(package)
+    signals.registerRedRSignals(package)
+    
 
 re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
 re_outputs = re.compile(r'[ \t]+self.outputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)

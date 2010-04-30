@@ -31,10 +31,14 @@ class ReadCEL(OWRpy):
         self.setRvariableNames(['affyBatch','folder', 'cm'])
         #signals
         self.inputs = None 
-        self.outputs = [("affyBatch", signals.RAffyBatch)]
+        self.outputs = [("affyBatch", signals.affy.RAffyBatch)]
         
-
-
+        # module = __import__('REset')
+        # classobj = getattr(module, 'REset')
+        # print classobj, classobj.__dict__
+        self.a  = signals.affy.RAffyBatch(data='test')
+        # print  self.a.saveSettings()
+        # print '@@@@@@@@@@@@@@@@', self.a.__name__
         #GUI
         box = redRGUI.groupBox(self.controlArea, "Select Folder",orientation='horizontal')
         #sizePolicy=QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed))
@@ -94,5 +98,5 @@ class ReadCEL(OWRpy):
         
     
     def sendMe(self):
-        out2 = signals.RAffyBatch(data = str(self.Rvariables['affyBatch']))
+        out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
         self.rSend("affyBatch", out2)
