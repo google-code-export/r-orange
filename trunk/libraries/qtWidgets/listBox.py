@@ -10,6 +10,7 @@ class listBox(QListWidget,widgetState):
     def __init__(self, widget, value=None, label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback=None, toolTip = None, items = None, *args):
         self.widget = widget
         QListWidget.__init__(self, *args)
+        self.label = label
         if label:
             self.hb = widgetBox(widget,orientation=orientation)
             widgetLabel(self.hb, label)
@@ -69,8 +70,6 @@ class listBox(QListWidget,widgetState):
             ev.accept()
         else:
             ev.ignore()
-
-
     def dragMoveEvent(self, ev):
         if not self.enableDragDrop: return
         if self.dataValidityCallback: return self.dataValidityCallback(ev)
@@ -188,3 +187,13 @@ class listBox(QListWidget,widgetState):
                 index.append(lwi)
         for i in index:
             i.setSelected(True)
+    def hide(self):
+        if self.label:
+            self.hb.hide()
+        else:
+            QListWidget.hide(self)
+    def show(self):
+        if self.label:
+            self.hb.show()
+        else:
+            QListWidget.show(self)

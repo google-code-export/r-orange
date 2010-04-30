@@ -616,8 +616,8 @@ class SchemaDoc(QWidget):
                     
                     try:
                         if 'requiredRLibraries' in settings.keys():
-                            print qApp.canvasDlg.settings.keys()
-                            print qApp.canvasDlg.settings['CRANrepos']
+                            #print qApp.canvasDlg.settings.keys()
+                            #print qApp.canvasDlg.settings['CRANrepos']
                             if 'CRANrepos' in qApp.canvasDlg.settings.keys():
                                 repo = qApp.canvasDlg.settings['CRANrepos']
                             else:
@@ -633,21 +633,26 @@ class SchemaDoc(QWidget):
                         
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
-                    tempWidget.updateWidgetState()
-                    tempWidget.instance.setLoadingSavedSession(True)
                     if not tempWidget:
                         #print settings
                         print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
                         # we must build a fake widget this will involve getting the inputs and outputs and joining 
                         #them at the widget creation 
                         
-                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), 
+                        int(widget.getAttribute("yPos")), widget.getAttribute("caption"), 
+                        settings, saveTempDoc = False,forceInSignals = settings['inputs'], 
+                        forceOutSignals = settings['outputs']) 
                         
                         if not tempWidget:
                             #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
                             failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                             loadedOk = 0
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+
+                    tempWidget.updateWidgetState()
+                    tempWidget.instance.setLoadingSavedSession(True)
+
                 except:
                     import sys, traceback
                     print 'Error occured during widget loading'
@@ -710,6 +715,7 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
+                print 'instance\n'*5, str(widget.instance)
                 widget.instance.onLoadSavedSession()
             except:
                 import traceback,sys

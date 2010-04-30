@@ -11,13 +11,18 @@ from session import *
 from PyQt4.QtGui import *
 import rpy
 
-class OWRpy(widgetGUI,widgetSignals,session):   
+class OWRpy(widgetSignals,widgetGUI,session):   
     uniqueWidgetNumber = 0
     
     def __init__(self,parent=None, signalManager=None, 
     title="R Widget", wantGUIDialog = 0, **args):
-        widgetGUI.__init__(self, parent=parent, signalManager=signalManager, title=title,wantGUIDialog=wantGUIDialog, **args)
+        
         widgetSignals.__init__(self, parent, signalManager)
+        self.dontSaveList = self.__dict__.keys()
+        # print self.dontSaveList
+
+        widgetGUI.__init__(self, parent=parent, signalManager=signalManager, title=title,
+        wantGUIDialog=wantGUIDialog, **args)
         session.__init__(self)
         
         

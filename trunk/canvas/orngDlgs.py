@@ -202,7 +202,7 @@ class CanvasOptionsDlg(QDialog):
         item = self.libListBox.currentRow()
         self.settings['CRANrepos'] = str(self.libs['URL'][item])
         RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')
-        print self.settings['CRANrepos']
+        #print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
     def accept(self):
         self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()

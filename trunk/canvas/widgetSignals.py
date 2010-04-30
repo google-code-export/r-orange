@@ -37,26 +37,64 @@ class widgetSignals():
         self.sentItems = []
         self.eventHandler = None
 
-        self.dontSaveList = self.__dict__.keys()
-
 
     def send(self, signalName, value, id = None):
         if not self.hasOutputName(signalName):
             print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
 
-        ##remove sent items from the sentItems List if they have already been sent
-        # i = 0
-        # for (itemName, value) in self.sentItems:
-            # if itemName == signalName:
-                # self.sentItems.pop(i)
-            # i += 1
-        # end block
         if self.linksOut.has_key(signalName):
             self.linksOut[signalName][id] = value
         else:
             self.linksOut[signalName] = {id:value}
-
+        
         self.signalManager.send(self, signalName, value, id)
+
+    def rSend(self, name, variable, updateSignalProcessingManager = 1):
+        print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
+        
+        # funciton for upclassing variables that are send as dictionaries
+        for i in self.outputs:
+            #print 'i', i
+            if i[0] == name: # this is the channel that you are sending from 
+                #print 'type',name, variable,type(variable)
+                if type(variable) == dict: # if we havent converted this already
+                    #print 'in send dict', issubclass(i[1], signals.RDataFrame)
+                    #print i[1]
+                    print '\n'*5
+                    print '='*60
+                    print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
+                    print '='*60
+                    print '\n'*5
+                    # if issubclass(i[1], signals.RDataFrame): 
+                        # newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
+                        # newvariable['dictAttrs'] = variable
+                    # else:
+                    newvariable = i[1](data = variable['data'], parent = variable['parent'])
+                    newvariable['dictAttrs'] = variable
+                    variable = newvariable
+                break
+        try:
+            self.send(name, variable)
+            # if not self.hasOutputName(name):
+                # print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (name, self.captionTitle)
+
+            # if self.linksOut.has_key(name):
+                # self.linksOut[name][id] = variable
+            # else:
+                # self.linksOut[name] = {id:variable}
+            
+            # self.signalManager.send(self, name, variable, id)
+
+            self.removeInformation(id = 'attention')
+            self.removeError()
+            self.sentItems.append((name, variable))
+            self.status.setText('Data sent.')
+        except:
+            self.setError(id = 'sendError', text = 'Failed to send data')
+            import sys, traceback
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60        
 
 
     # does widget have a signal with name in inputs
@@ -177,44 +215,6 @@ class widgetSignals():
         self.loadSavedSession = state
     
     
-    def rSend(self, name, variable, updateSignalProcessingManager = 1):
-        print 'send'
-        # funciton for upclassing variables that are send as dictionaries
-        for i in self.outputs:
-            #print 'i', i
-            if i[0] == name: # this is the channel that you are sending from 
-                #print 'type',name, variable,type(variable)
-                if type(variable) == dict: # if we havent converted this already
-                    #print 'in send dict', issubclass(i[1], signals.RDataFrame)
-                    #print i[1]
-                    print '\n'*5
-                    print '='*60
-                    print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
-                    print '='*60
-                    print '\n'*5
-                    # if issubclass(i[1], signals.RDataFrame): 
-                        # newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
-                        # newvariable['dictAttrs'] = variable
-                    # else:
-                    newvariable = i[1](data = variable['data'], parent = variable['parent'])
-                    newvariable['dictAttrs'] = variable
-                    variable = newvariable
-                break
-        try:
-            print 'send==============',name 
-            print 'variable',variable, variable.__class__
-            self.send(name, variable)
-            # if updateSignalProcessingManager:
-                #try:
-            self.removeInformation(id = 'attention')
-            self.removeError()
-            self.sentItems.append((name, variable))
-            self.status.setText('Data sent.')
-                #except: 
-                #    print 'Failed to remove information', self.widgetState
-        except:
-            self.setError(id = 'sendError', text = 'Failed to send data')
-    
 
     # def isConnectionPossible(outputs,inputs):
         # print 'isConnectionPossible'
@@ -232,11 +232,15 @@ class widgetSignals():
         # return canConnect
         
     def processSignals(self):
-        print 'processing Signals'
+        # print 'processSignals', self.windowTitle()
         if self.closing == True:
             return
-        #print 'loadSavedSession', self.loadSavedSession
-        processHandler = not self.loadSavedSession
+        # print 'loadSavedSessionState', self.loadSavedSession
+        if self.loadSavedSession:
+            return
+        if not self.loadSavedSession:
+            self.signalManager.setNeedAttention(self)
+        
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
         self.working = 1
@@ -247,11 +251,10 @@ class widgetSignals():
                 for i in range(len(self.linksIn[key])):
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
                     #print dirty,widgetFrom,handler, signalData
-                    #print 'processHandler: ' + str(processHandler)
-                    print 'data being passed: ' + str(signalData)
+                    # print 'data being passed: ' + str(signalData)
                      
                     if not (handler and dirty): continue
-                    #print 'do the work'
+                    # print 'do the work'
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
@@ -270,12 +273,14 @@ class widgetSignals():
                             ### end block
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
-                                if processHandler:
+                                if not self.loadSavedSession:
+                                    # print 'process handler'
                                     handler(value)
                                 
                             else:
                                 self.printEvent("ProcessSignals: Calling %s with %s (%s, %s)" % (handler, value, nameFrom, id), eventVerbosity = 2)
-                                if processHandler:
+                                if not self.loadSavedSession:
+                                    # print 'process handler'
                                     handler(value, (widgetFrom, nameFrom, id))
                             
                     except:
@@ -283,7 +288,7 @@ class widgetSignals():
                         sys.excepthook(thistype, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 
-                    if processHandler:
+                    if not self.loadSavedSession:
                         self.linksIn[key][i] = (0, widgetFrom, handler, []) # clear the dirty flag
 
         if newSignal == 1:

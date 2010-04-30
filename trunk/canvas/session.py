@@ -25,23 +25,19 @@ class session():
         # self.dontSaveList.extend(RSession().__dict__.keys())
         #self.dontSaveList.extend(OWWidget().__dict__.keys())
         # print 'all atts:', allAtts
-        #print 'dontSaveList', self.dontSaveList
+        # print 'dontSaveList', self.dontSaveList
         # try:
         self.progressBarInit()
         i = 0
         for att in allAtts:
-            if att in self.dontSaveList:
+            if att in self.dontSaveList or re.search('^_', att):
                 continue
             i += 1
             self.progressBarAdvance(i)
-            #print 'frist att: ' + att
-            if re.search('^_', att):
-                continue
+            # print 'frist att: ' + att
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
-        # except:
-            # print 'Exception occured in saving settings'
-            # print sys.exc_info()[0]
+
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
@@ -136,6 +132,8 @@ class session():
     def setSettings(self,settings):
         # print 'on set settings'
         self.redRGUIObjects = {}
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings)
         for k,v in settings.iteritems():
             if k in ['inputs', 'outputs']: continue
             if v == None:
@@ -199,6 +197,7 @@ class session():
         else:
             self.loadCustomSettings(self.redRGUIObjects)
         
+        print 'onLoadSavedSession send', self.windowTitle()
         for (name, data) in self.sentItems:
             self.send(name, data)
         
@@ -212,9 +211,9 @@ class session():
     
     def setSentRvarClass(self, d, sentItemName):
         className = d['class'].split('.')
-        print className
+        # print className
         className = className[1]
-        print 'setting ', className
+        # print 'setting ', className
         try: # try to reload the output class from the signals
             var = getattr(signals, className)(data = d['data'])
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
@@ -231,7 +230,7 @@ class session():
         
         for key in d.keys():
             if key == 'class': continue
-            print 'setting ', key
+            # print 'setting ', key
             subvar = getattr(var, key) 
             subvar = d[key]
         return var

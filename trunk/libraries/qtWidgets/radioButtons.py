@@ -10,19 +10,7 @@ class radioButtons(widgetBox,widgetState):
     orientation='vertical',callback = None, **args):
         
         widgetBox.__init__(self,widget,orientation=orientation)
-        
-        # if label:
-            # self.box = groupBox(self,label=label,orientation=orientation)
-            # self.layout().addWidget(self.box)
-        # else:
-            # self.box = self
-            
-        # self.buttons = QButtonGroup(self.box)
-    
-        # for i in buttons:
-            # w = QRadioButton(i)
-            # self.buttons.addButton(w)
-            # self.box.layout().addWidget(w)
+        self.label = label
         if label:
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
@@ -50,8 +38,12 @@ class radioButtons(widgetBox,widgetState):
         button = self.buttons.checkedButton()
         if button == 0 or button == None: return 0
         else: return button.text()
+    
     def hide(self):
-        widgetBox.hide(self.box)
+        self.box.hide()
+    def show(self):
+        self.box.show()
+        
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}

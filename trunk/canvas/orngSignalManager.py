@@ -257,10 +257,10 @@ class SignalManager:
                     # widgetTo.setInformation(id = 'dataNotSent', text = 'Data not processed')
 
         # reorder widgets if necessary
-        if self.widgets.index(widgetFrom) > self.widgets.index(widgetTo):
-            self.widgets.remove(widgetTo)
-            self.widgets.append(widgetTo)   # appent the widget at the end of the list
-            self.fixPositionOfDescendants(widgetTo)
+        # if self.widgets.index(widgetFrom) > self.widgets.index(widgetTo):
+            # self.widgets.remove(widgetTo)
+            # self.widgets.append(widgetTo)   # appent the widget at the end of the list
+            # self.fixPositionOfDescendants(widgetTo)
 ##            print "--------"
 ##            for widget in self.widgets: print widget.captionTitle
 ##            print "--------"
@@ -275,7 +275,19 @@ class SignalManager:
             self.widgets.append(widgetTo)
             self.fixPositionOfDescendants(widgetTo)
 
-
+    
+    def getChildern(self,theWidget):
+        children = []
+        # print 'getChildern\n'*5
+        # print 'theWidget', theWidget
+        # print self.links.keys()
+        # print self.links.get(theWidget, [])
+        for (widget, signalNameFrom, signalNameTo, enabled) in self.links.get(theWidget, []):
+            # print 'widget',widget
+            children.append(widget)
+            children.extend(self.getChildern(widget))
+        return children
+                
     # return list of signals that are connected from widgetFrom to widgetTo
     def findSignals(self, widgetFrom, widgetTo):
         signals = []
@@ -362,29 +374,51 @@ class SignalManager:
                 widgetTo.updateNewSignalData(widgetFrom, inName, widgetFrom.linksOut[outName][key], key, outName)
 
 
+    def setNeedAttention(self,firstWidget) :
+        #index = self.widgets.index(firstWidget)
+        # print 'setNeedAttention\n'*5
+        # print 'firstWidget', firstWidget
+        children = self.getChildern(firstWidget)
+        children.append(firstWidget)
+        # print children
+        #for i in range(index, len(self.widgets)):
+        for i in children:
+            # print 'propagating', i.windowTitle(), i#, index
+            if len(i.outputs) !=0 and not i.loadSavedSession:
+                i.setInformation(id = 'attention', text = 'Widget needs attention.')
+    
+    
     def processNewSignals(self, firstWidget):
+        print 'processNewSignals'
         if len(self.widgets) == 0: return
         if self.signalProcessingInProgress: return
 
         if self.verbosity >= 2:
             self.addEvent("process new signals from " + firstWidget.captionTitle, eventVerbosity = 2)
 
+        
         if firstWidget not in self.widgets:
             firstWidget = self.widgets[0]   # if some window that is not a widget started some processing we have to process new signals from the first widget
-
+        
         # start propagating
         self.signalProcessingInProgress = 1
-
-        index = self.widgets.index(firstWidget)
         
-        for i in range(index, len(self.widgets)):
-            # print 'propagating', self.widgets[i].windowTitle(), i, index
-            # if len(self.widgets[i].outputs) !=0 and not self.widgets[i].loadSavedSession and i != index:
-                # self.widgets[i].setInformation(id = 'attention', text = 'Widget needs attention.')
+        index = self.widgets.index(firstWidget)
+        children = self.getChildern(firstWidget)
+        children.append(firstWidget)
 
-            if self.widgets[i].needProcessing:
+        # for i in range(index, len(self.widgets)):
+
+            # if self.widgets[i].needProcessing:
+                # try:
+                    # self.widgets[i].processSignals()
+                # except:
+                    # type, val, traceback = sys.exc_info()
+                    # sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't         
+        for i in children:
+            if i.needProcessing:
                 try:
-                    self.widgets[i].processSignals()
+                    i.processSignals()
                 except:
                     type, val, traceback = sys.exc_info()
                     sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas

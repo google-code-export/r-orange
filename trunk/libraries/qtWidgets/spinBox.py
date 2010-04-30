@@ -10,6 +10,7 @@ class spinBox(QSpinBox,widgetState):
     def __init__(self, widget, value=None, label=None,orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
         self.widget = widget
         QSpinBox.__init__(self)
+        self.label = label
         if label:
             self.hb = widgetBox(widget,orientation=orientation)
             widgetLabel(self.hb, label)
@@ -59,3 +60,13 @@ class spinBox(QSpinBox,widgetState):
         self.setMaximum(max)
         self.setMinimum(min)
         self.setValue(value)
+    def hide(self):
+        if self.label:
+            self.hb.hide()
+        else:
+            QSpinBox.hide(self)
+    def show(self):
+        if self.label:
+            self.hb.show()
+        else:
+            QSpinBox.show(self)

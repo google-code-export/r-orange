@@ -96,7 +96,7 @@ class widgetGUI(QMainWindow):
         minWidth = 200
         self.rightDock=QDockWidget('Documentation')
         self.rightDock.setObjectName('rightDock')
-        self.connect(self.rightDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
+        QObject.connect(self.rightDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
         self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.rightDock.setMinimumWidth(minWidth)
         

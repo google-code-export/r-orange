@@ -8,7 +8,7 @@ from PyQt4.QtGui import *
 class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None,orientation='vertical'):
         QTextEdit.__init__(self,widget)
-        
+        self.label = label
         if label:
             self.hb = widgetBox(widget,orientation=orientation)
             widgetLabel(self.hb, label)
@@ -41,5 +41,15 @@ class textEdit(QTextEdit,widgetState):
         self.clear()
         self.insertHtml(data['text'])
         # self.setEnabled(data['enabled'])
+    def hide(self):
+        if self.label:
+            self.hb.hide()
+        else:
+            QTextEdit.hide(self)
+    def show(self):
+        if self.label:
+            self.hb.show()
+        else:
+            QTextEdit.show(self)
 
         

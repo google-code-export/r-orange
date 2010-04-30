@@ -99,7 +99,7 @@ class affyNormalize(OWRpy):
         #required librarys
 
         # self.rSend("Normalized Expression Matrix", None) #start the killing cascade because normalization is required
-        self.rSend("Normalized Eset", None) #start the killing cascade because normalization is required
+        # self.rSend("Normalized Eset", None) #start the killing cascade because normalization is required
                 
         try: 
             # print str(dataset['data'])
