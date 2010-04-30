@@ -68,10 +68,12 @@ class runSigPathway(OWRpy):
         
     def loadpAnnot(self):
         file = str(self.pAnnotlist.currentText())
-        rrdir = os.path.split(qApp.canvasDlg.canvasDir)[0]
+        rrdir = redREnviron.RDir
         destpath = os.path.join(rrdir, 'R', 'doc', 'geneSets')
-        fileFull = os.path.abspath(os.path.join(destpath, file, '.RData'))
-        fileFull = fileFull.replace('\\', '//')
+        if not os.path.isdir(destpath):
+            os.mkdir(destpath)
+        fileFull = os.path.abspath(os.path.join(destpath, file+'.RData'))
+        #fileFull = fileFull.replace('\\', '//')
         self.R('load('+fileFull+')')
         self.pAnnots = 'G'
         self.infob.setText('Annotation file loaded')
@@ -155,7 +157,7 @@ class runSigPathway(OWRpy):
             progressBar.setWindowTitle('Loading')
             pbv = 0
             opener = urllib.FancyURLopener()
-            for geneSet in ['GenesetsU430v2', 'GenesetsU74av2', 'GenesetsU95av2', 'GenesetsU133a', 'GenesetsU133plus2']:
+            for geneSet in neededFiles:
                 #try:
                 opener.retrieve(url = 'http://chip.org/~ppark/Supplements/PNAS05/%s.RData' % geneSet, filename = os.path.abspath(os.path.join(destpath, geneSet+'.RData')))
                 # except: 

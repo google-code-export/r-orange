@@ -23,7 +23,6 @@ class readFile(OWRpy):
         OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 
         self.recentFiles=['Select File']
-        self.delim = 0
         self.path = os.path.abspath('/')
         self.colClasses = []
         self.myColClasses = []
@@ -71,7 +70,6 @@ class readFile(OWRpy):
         box = redRGUI.groupBox(options, label="Row and Column Names", 
         addSpace = True, orientation ='horizontal')
 
-        
         self.hasHeader = redRGUI.checkBox(box, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
@@ -99,6 +97,7 @@ class readFile(OWRpy):
         #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         split.layout().setAlignment(box2,Qt.AlignTop)
         self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
+        self.decimal = redRGUI.lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
         # self.quote.setMaximumWidth(50)
         # self.quote.setMinimumWidth(50)
         
@@ -265,7 +264,7 @@ class readFile(OWRpy):
             ccl = 'NA'
         try:
         # +', quote='+self.quote.text()
-            RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + ')'
+            RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
             # print RStr
             self.R(RStr, processingNotice=True)
         except:

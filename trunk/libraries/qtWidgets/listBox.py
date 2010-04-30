@@ -11,9 +11,9 @@ class listBox(QListWidget,widgetState):
         self.widget = widget
         QListWidget.__init__(self, *args)
         if label:
-            hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(hb, label)
-            hb.layout().addWidget(self)
+            self.hb = widgetBox(widget,orientation=orientation)
+            widgetLabel(self.hb, label)
+            self.hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
         self.ogValue = value
@@ -40,6 +40,11 @@ class listBox(QListWidget,widgetState):
             QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
     def sizeHint(self):
         return self.defaultSizeHint
+    def hide(self):
+        if self.hb:
+            self.hb.hide()
+        else:
+            QListWidget.hide(self)
     def startDrag(self, supportedActions):
         if not self.enableDragDrop: return
 

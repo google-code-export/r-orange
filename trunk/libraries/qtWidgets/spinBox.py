@@ -11,9 +11,9 @@ class spinBox(QSpinBox,widgetState):
         self.widget = widget
         QSpinBox.__init__(self)
         if label:
-            hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(hb, label)
-            hb.layout().addWidget(self)
+            self.hb = widgetBox(widget,orientation=orientation)
+            widgetLabel(self.hb, label)
+            self.hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
         if max:
@@ -26,6 +26,11 @@ class spinBox(QSpinBox,widgetState):
             QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
         self.setWrapping(True) # we always allow the spin box to wrap around
         
+    def hide(self):
+        if self.hb:
+            self.hb.hide()
+        else:
+            QSpinBox.hide(self)
     def getSettings(self):
         value = self.value()
         prefix = self.prefix()

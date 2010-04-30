@@ -10,13 +10,18 @@ class textEdit(QTextEdit,widgetState):
         QTextEdit.__init__(self,widget)
         
         if label:
-            hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(hb, label)
-            hb.layout().addWidget(self)
+            self.hb = widgetBox(widget,orientation=orientation)
+            widgetLabel(self.hb, label)
+            self.hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
         self.insertHtml(html)
 
+    def hide(self):
+        if self.hb:
+            self.hb.hide()
+        else:
+            QTextEdit.hide(self)
     def sizeHint(self):
         return QSize(10,10)
     def setCursorToEnd(self):

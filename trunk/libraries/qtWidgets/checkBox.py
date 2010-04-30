@@ -41,7 +41,8 @@ class checkBox(widgetBox,widgetState):
             if i.isChecked(): checked.append(i.text())
 
         return checked
-      
+    def hide(self):
+        self.box.hide()
     def getSettings(self):
         # print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}
