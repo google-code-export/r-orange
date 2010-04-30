@@ -278,7 +278,7 @@ class widgetGUI(QMainWindow):
         
         for i in self.findChildren(QDialog):
             i.setHidden(True)
-        if self.hasBeenShown:
+        if self.hasBeenShown and not self.isHidden():
             self.saveWidgetWindowState()
         self.saveGlobalSettings()
         self.customCloseEvent()

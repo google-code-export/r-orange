@@ -104,6 +104,12 @@ class SchemaDoc(QWidget):
             os.remove(tempName)
 
 
+    def showAllWidgets(self):
+        for i in self.widgets:
+            i.instance.show()
+    def closeAllWidgets(self):
+        for i in self.widgets:
+            i.instance.close()
             
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect

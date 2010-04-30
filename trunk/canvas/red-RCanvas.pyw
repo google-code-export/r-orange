@@ -41,6 +41,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.file_open = os.path.join(canvasPicsDir, "open.png")
         self.file_save = os.path.join(canvasPicsDir, "save.png")
         self.reload_pic = os.path.join(canvasPicsDir, "update1.png")
+        self.showAll_pic = os.path.join(canvasPicsDir, "upgreenarrow.png")
+        self.closeAll_pic = os.path.join(canvasPicsDir, "downgreenarrow.png")
         self.text_icon = os.path.join(canvasPicsDir, "text.png")
         self.file_print= os.path.join(canvasPicsDir, "print.png")
         self.file_exit = os.path.join(canvasPicsDir, "exit.png")
@@ -113,7 +115,9 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
-        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets and Show ToolBar", self.reloadWidgets)
+        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
+        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", self.schema.showAllWidgets)
+        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", self.schema.closeAllWidgets)
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
