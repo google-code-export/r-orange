@@ -43,6 +43,8 @@ class ggplot(OWRpy):
         self.aesX = redRGUI.comboBox(lBox, label = 'X Data:', items = [])
         self.aesY = redRGUI.comboBox(lBox, label = 'Y Data:', items = [])
         self.aesZ = redRGUI.comboBox(lBox, label = 'Z Data:', items = [])
+        self.aesZ.hide()
+        self.aesGroup = redRGUI.comboBox(lBox, label = 'Grouping:')
         self.aesSize = redRGUI.comboBox(lBox, label = 'Size Variable:', items = [])
 
         self.aesSizeLineEdit = redRGUI.lineEdit(lBox, label = 'Override Size:')
@@ -103,6 +105,8 @@ class ggplot(OWRpy):
             self.aesX.update(([''] + self.dataNames))
             self.aesY.update(([''] + self.dataNames))
             self.aesZ.update(([''] + self.dataNames))
+            self.aesColour.update((['', '\'red\'', '\'green\'', '\'blue\'', '\'orange\'', '\'black\'', '\'white\'', '\'yellow\'', '\'purple\''] + self.dataNames))
+            self.aesGroup.update(([''] + self.dataNames))
         else:
             pass
     def addLayer(self):
@@ -133,9 +137,15 @@ class ggplot(OWRpy):
         if str(self.aesLineType.text()) != '' and self.aesLineType.isVisible():
             string = 'linetype ='+str(self.aesLineType.text())
             injection.append(string)
+        if str(self.aesColour.currentText()) != '' and self.aesColour.isVisible() and name in ['Global', 'geom_point', 'geom_jitter', 'stat_smooth', 'geom_hex']:
+            string = 'colour = '+str(self.aesColour.currentText())
+            injection.append(string)
+        if str(self.aesGroup.currentText()) != '' and self.aesGroup.isVisible():
+            string = 'group='+str(self.aesGroup.currentText())
+            injection.append(string)
         
         functionInjection = []
-        if str(self.aesColour.currentText()) != '':
+        if str(self.aesColour.currentText()) != '' and self.aesColour.isVisible() and name not in ['Global', 'geom_point', 'geom_jitter', 'stat_smooth', 'geom_hex']:
             string = 'colour ='+str(self.aesColour.currentText())
             functionInjection.append(string)
         if str(self.aesFill.currentText()) != '' and self.aesFill.isVisible():
@@ -166,8 +176,12 @@ class ggplot(OWRpy):
                 string = 'to ='+str(self.scaleTo.text())
                 functionInjection.append(string)
                 
-        
-        self.plotAtts[name] = {'Global': (name == 'Global'), 'data':name+'(aes('+','.join(injection)+'),'+','.join(functionInjection)+')', 'subAtt': ('Sub Attribute' in self.isSubAtt.getChecked())}
+        if name == 'Global':
+            isGlobal = True
+            name = 'ggplot'
+        else:
+            isGlobal = False
+        self.plotAtts[name] = {'Global': isGlobal, 'data':name+'(aes('+','.join(injection)+'),'+','.join(functionInjection)+')', 'subAtt': ('Sub Attribute' in self.isSubAtt.getChecked())}
         self.plotBox.addItem(name)
     def addGlobal(self):
         self.plotAtts['Global'] = {'Global':True, 'data':'ggplot(data = '+self.data.data+')', 'subAtt':False}
@@ -188,16 +202,23 @@ class ggplot(OWRpy):
         self.statSmoothSE.hide()
         self.scaleFrom.hide()
         self.scaleTo.hide()
+        self.aesZ.hide()
+        self.aesGroup.hide()
         
         if att in ['geom_abline', 'stat_abline']:
             self.aesIntercept.show()
             self.aesSlope.show()
+        elif att == 'stat_contour':
+            self.aesZ.show()
+        elif att in ['geom_point', 'geom_jitter']:
+            self.aesGroup.show()
         elif att == 'stat_smooth':
             self.statSmoothConfLevel.show()
             self.statSmoothFormula.show()
             self.statSmoothFullrange.show()
             self.statSmoothMethod.show()
             self.statSmoothSE.show()
+            self.aesGroup.show()
         elif att == 'geom_area':
             self.aesFill.show()
         elif att == 'geom_bar':
@@ -207,6 +228,7 @@ class ggplot(OWRpy):
         elif att == 'geom_contour':
             self.aesLineType.show()
         elif att in ['geom_tile', 'geom_smooth', 'geom_crossbar', 'geom_pointrange', 'geom_polygon', 'geom_rect', 'geom_ribbon', ]:
+            self.aesGroup.show()
             self.aesFill.show()
             self.aesLineType.show()
         elif att == 'geom_density':
@@ -214,7 +236,7 @@ class ggplot(OWRpy):
             self.aesFill.show()
         elif att == 'geom_density2d':
             self.aesLineType.show()
-        elif att in ['geom_step', 'geom_vline', 'geom_errorbar', 'geom_errorbarh', 'geom_freqpoly', 'geom_hline', 'geom_line', 'geom_linerange', 'geom_path', 'geom_quantile', 'geom_rug', 'geom_segment', ]:
+        elif att in ['geom_step', 'geom_vline', 'geom_errorbar', 'geom_errorbarh', 'geom_freqpoly', 'geom_hline', 'geom_line', 'geom_linerange', 'geom_path', 'geom_quantile', 'geom_rug', 'geom_segment']:
             self.aesLineType.show()
         elif att == 'geom_histogram':
             self.aesLineType.show()
