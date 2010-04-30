@@ -738,7 +738,9 @@ class OrangeCanvasDlg(QMainWindow):
         for num in [16, 32, 40, 48, 60]:
             names.append("%s_%d%s" % (name, num, ext))
             
-        widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)  #os.path.split(self.getFileName())[0]
+        #widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)  #os.path.split(self.getFileName())[0]
+        widgetDir = os.path.join(redREnviron.widgetDir,widgetInfo.package)  #os.path.split(self.getFileName())[0]
+        #print widgetDir + '\n' *10
         fullPaths = []
         for paths in [(self.widgetDir, widgetInfo.category), (self.widgetDir,), (self.picsDir,), tuple(), (widgetDir,), (widgetDir, "icons")]:
             for name in names + [iconName]:
@@ -752,12 +754,14 @@ class OrangeCanvasDlg(QMainWindow):
         return [self.defaultPic]
     
     def getFullIconBackgroundName(self, widgetInfo):
-        widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)
+        #widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)
+        widgetDir = os.path.join(redREnviron.widgetDir,widgetInfo.package)  #os.path.split(self.getFileName())[0]
+
         fullPaths = []
-        for paths in [(widgetDir, "icons"), (self.widgetDir, widgetInfo.category, "icons"), (self.widgetDir, "icons"), (self.picsDir,), tuple(), (widgetDir,), (widgetDir, "icons")]:
+        for paths in [(widgetDir, "icons"), (redREnviron.widgetDir, "base", "icons"), (self.widgetDir, "icons"), (self.picsDir,), tuple(), (widgetDir,), (widgetDir, "icons")]:
             for name in ["background_%d.png" % num for num in [16, 32, 40, 48, 60]]:
                 fname = os.path.join(*paths + (name,))
-#                print fname
+                # print fname
                 if os.path.exists(fname):
                     fullPaths.append(fname)
             if fullPaths != []:

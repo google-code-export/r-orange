@@ -19,10 +19,10 @@ def __getDirectoryNames():
     canvasDir = os.path.join(redRDir, "canvas")
     RDir = os.path.join(os.path.split(redRDir)[0], "R")
     widgetDir = os.path.join(redRDir, "libraries")
-    qtWidgetsDir = os.path.join(redRDir, "libraries",'qtWidgets')
-    redRSignalsDir = os.path.join(redRDir, "libraries",'signalClasses')
+    qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')
+    redRSignalsDir = os.path.join(redRDir, "libraries",'base','signalClasses')
     tagsDir = os.path.join(redRDir, "tagsSystem")
-    picsDir = os.path.join(widgetDir, "icons")
+    picsDir = os.path.join(widgetDir,'base', "icons")
     addOnsDir = os.path.join(redRDir, "add-ons")
 
     if not os.path.isdir(widgetDir) or not os.path.isdir(widgetDir):
@@ -62,8 +62,6 @@ def __getDirectoryNames():
 
 
     orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
-        
-    orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     
     reportsDir = os.path.join(orangeSettingsDir, "orange-reports")
     bufferDir = os.path.join(orangeSettingsDir, "buffer")
@@ -75,7 +73,9 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
 
-    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", "canvasSettingsDir", "bufferDir"]])
+    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir',
+    "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", 
+    "canvasSettingsDir", "bufferDir"]])
 
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
@@ -91,7 +91,10 @@ def addOrangeDirectoriesToPath():
         pathsToAdd.append(widgetDir)
         defaultWidgetsDirs = [os.path.join(widgetDir, x) for x in os.listdir(widgetDir) if os.path.isdir(os.path.join(widgetDir, x))]
         pathsToAdd.extend(defaultWidgetsDirs)
-
+    baseWidgetDir = os.path.join(widgetDir,'base')
+    defaultWidgetsDirs = [os.path.join(baseWidgetDir, x) for x in os.listdir(baseWidgetDir) if os.path.isdir(os.path.join(baseWidgetDir, x))]
+    pathsToAdd.extend(defaultWidgetsDirs)
+    
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0, path)

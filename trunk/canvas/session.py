@@ -35,13 +35,44 @@ class session():
                 continue
             i += 1
             self.progressBarAdvance(i)
-            print 'frist att: ' + att
+            # print 'frist att: ' + att
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
 
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
+        if self.inputs and len(self.inputs) != 0:
+            ainputs = []
+            for (a, b, c) in [input for input in self.inputs]:
+                
+                if issubclass(b, signals.RDataFrame):
+                    bc = 'Data Frame'
+                elif issubclass(b, signals.RVector):
+                    bc = 'Vector'
+                elif issubclass(b, signals.RList):
+                    bc = 'List'
+                else:
+                    bc = 'Variable'
+                ainputs.append((a, bc))
+            settings['inputs'] = ainputs
+        else: settings['inputs'] = None
+        if self.outputs and len(self.outputs) != 0:
+            aoutputs = []
+            for (a,b) in [output for output in self.outputs]:
+                # print 'Output type', type(b)
+                if issubclass(b, signals.RDataFrame):
+                    bc = 'Data Frame'
+                elif issubclass(b, signals.RVector):
+                    bc = 'Vector'
+                elif issubclass(b, signals.RList):
+                    bc = 'List'
+                else:
+                    bc = 'Variable'
+                aoutputs.append((a, bc))
+            settings['outputs'] = aoutputs
+        else: settings['outputs'] = None
+        
         self.progressBarFinished()
         return settings
     def saveCustomSettings(self):
@@ -79,7 +110,7 @@ class session():
             
     def returnSettings(self,var):
         settings = {}
-        print 'var class', var.__class__.__name__
+        # print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
             #print 'getting gui settings for:' + att + '\n\n'
             try:
