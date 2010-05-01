@@ -829,8 +829,8 @@ class SchemaDoc(QWidget):
             if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir,example)) and example != 'None')or (force and example != 'None'):
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
-                newExample = os.path.join(self.canvasDlg.redRDir, fileExt)
-                self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/'+newExample, newExample)
+                newExample = os.path.join(self.canvasDlg.redRDir, example)
+                self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/'+example, newExample)
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
         
