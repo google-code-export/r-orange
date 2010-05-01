@@ -42,6 +42,7 @@ class session():
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
+        
         if self.inputs and len(self.inputs) != 0:
             ainputs = []
             for (a, b, c) in [input for input in self.inputs]:

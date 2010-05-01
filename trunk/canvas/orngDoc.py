@@ -480,13 +480,16 @@ class SchemaDoc(QWidget):
         widgets = doc.createElement("widgets")
         lines = doc.createElement("channels")
         settings = doc.createElement("settings")
+        required = doc.createElement("required")
         doc.appendChild(schema)
         schema.appendChild(widgets)
         schema.appendChild(lines)
         schema.appendChild(settings)
-        settingsDict = {}
-
+        schema.appendChild(required)
         
+        requiredRLibraries = {}
+        requireRedRLibraries = {}
+        settingsDict = {}
         #save widgets
         for widget in self.widgets:
             temp = doc.createElement("widget")
@@ -497,9 +500,28 @@ class SchemaDoc(QWidget):
             print 'save in orngDoc ' + str(widget.caption)
             progress += 1
             progressBar.setValue(progress)
-            settingsDict[widget.caption] = widget.instance.saveSettingsStr()
+            
+            s = widget.instance.getSettings()
+            
+            map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
+            #requiredRLibraries.extend()
+            del s['requiredRLibraries']
+            settingsDict[widget.caption] = cPickle.dumps(s)
+            
+            if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
+                f = open(os.path.join(redREnviron.directoryNames['libraryDir'],
+                widget.widgetInfo.package,widget.widgetInfo.package + '.rrp'),'r')
+                rrp = f.read()
+                f.close()
+                requireRedRLibraries[widget.widgetInfo.package] = rrp
+        
             widgets.appendChild(temp)
-
+        
+        r =  cPickle.dumps({'R': requiredRLibraries.keys(), 'RedR': requireRedRLibraries.values()})
+        required.setAttribute("requiredPackages", str({'r':r}))
+        
+        settings.setAttribute("settingsDictionary", str(settingsDict))      
+        
         #save connections
         for line in self.lines:
             temp = doc.createElement("channel")
@@ -509,7 +531,6 @@ class SchemaDoc(QWidget):
             temp.setAttribute("signals", str(line.getSignals()))
             lines.appendChild(temp)
 
-        settings.setAttribute("settingsDictionary", str(settingsDict))      
         
         xmlText = doc.toprettyxml()
         progress += 1
@@ -595,18 +616,48 @@ class SchemaDoc(QWidget):
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
                 file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
-                if re.search('tempSchema.tmp',os.path.basename(name)):
-                    doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)))
-                else:
-                    RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)).replace('\\','/') +'")')
+                
+                #if re.search('tempSchema.tmp',os.path.basename(name)):
+            doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,'tempSchema.tmp'))
+                
             schema = doc.firstChild
             widgets = schema.getElementsByTagName("widgets")[0]
             lines = schema.getElementsByTagName("channels")[0]
             settings = schema.getElementsByTagName("settings")
             settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
             self.loadedSettingsDict = settingsDict
-              
-            # read widgets
+            
+            
+            
+            required = schema.getElementsByTagName("required")
+            required = eval(str(required[0].getAttribute("requiredPackages")))
+            #print required
+            required = cPickle.loads(required['r'])
+            # print required
+            
+            try:
+                if len(required['R']) > 0:
+                    #print qApp.canvasDlg.settings.keys()
+                    #print qApp.canvasDlg.settings['CRANrepos']
+                    if 'CRANrepos' in qApp.canvasDlg.settings.keys():
+                        repo = qApp.canvasDlg.settings['CRANrepos']
+                    else:
+                        repo = None
+                    loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
+                    RSession.require_librarys(required['R'], repository=repo)
+            except: 
+                import sys, traceback
+                print '-'*60
+                traceback.print_exc(file=sys.stdout)
+                print '-'*60        
+
+            for i in required['RedR']:
+                self.loadRRW(fileText = i)
+                
+                
+            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
+
+            
             # read widgets
             loadedOk = 1
             loadingProgressBar.setLabelText('Loading Widgets')
@@ -619,24 +670,6 @@ class SchemaDoc(QWidget):
                     #print 'Name: '+str(name)+' (orngDoc.py)'
                     #print settingsDict[widget.getAttribute("caption")]
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                    
-                    try:
-                        if 'requiredRLibraries' in settings.keys():
-                            print qApp.canvasDlg.settings.keys()
-                            print qApp.canvasDlg.settings['CRANrepos']
-                            if 'CRANrepos' in qApp.canvasDlg.settings.keys():
-                                repo = qApp.canvasDlg.settings['CRANrepos']
-                            else:
-                                repo = None
-                            loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
-                            RSession.require_librarys(settings['requiredRLibraries']['pythonObject'], repository=repo)
-                    except: 
-                        import sys, traceback
-                        print '-'*60
-                        traceback.print_exc(file=sys.stdout)
-                        print '-'*60        
-
-                        
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
                     tempWidget.updateWidgetState()

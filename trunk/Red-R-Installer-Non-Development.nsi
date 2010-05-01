@@ -87,9 +87,9 @@ Section "" ;this is the section that will install Red-R and all of it's files
 	File /r /x .svn /x *.pyc /x .nsi ${EXAMPLES}\*
 
 
+    AccessControl::GrantOnFile "$INSTDIR\${REDRVERSION}" "(BU)" "FullAccess" 
     
     IfFileExists $INSTDIR\R\README.${RVER}.* has_R
-
         SetOutPath $INSTDIR\R
         File /r /x .svn ${RDIRECTORY}\*
         ; grant access to modify the files in this directory

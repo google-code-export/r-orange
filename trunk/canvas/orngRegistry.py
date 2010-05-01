@@ -42,18 +42,10 @@ def readCategories():
         if os.path.isdir(directory):
             directories.append((dirName, directory, ""))
 
-    # read list of add-ons (in orange/add-ons as well as those additionally registered by the user)
-    # for (name, dirName) in redREnviron.addOns:
-        # addOnWidgetsDir = os.path.join(dirName, "widgets")
-        # if os.path.isdir(addOnWidgetsDir):
-            # directories.append((name, addOnWidgetsDir, addOnWidgetsDir))
-        # addOnWidgetsPrototypesDir = os.path.join(addOnWidgetsDir, "prototypes")
-        # if os.path.isdir(addOnWidgetsDir):
-            # directories.append(("Prototypes", addOnWidgetsPrototypesDir, addOnWidgetsPrototypesDir))
     categories = {}     
     for catName, dirName, plugin in directories:
         widgets = readWidgets(os.path.join(dirName,'widgets'), catName, cachedWidgetDescriptions)
-        print '#########widgets',widgets
+        # print '#########widgets',widgets
         if widgets:
             categories[catName] = WidgetCategory(plugin and dirName or "", widgets)
 
@@ -73,7 +65,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     
-    print '################readWidgets', directory, package
+    # print '################readWidgets', directory, package
     widgets = []
     for filename in glob.iglob(os.path.join(directory, "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):

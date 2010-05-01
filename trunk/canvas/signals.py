@@ -142,7 +142,8 @@ current_module = __import__(__name__)
 RedRSignals = []
 def registerRedRSignals(package):
     print '@@@@@@@@@@registerRedRSignals'
-    import imp
+    import imp, sys
+    # print sys.path
     m = imp.new_module(package)
     directory = os.path.join(redREnviron.widgetDir,package,'signalClasses')
     for filename in glob.iglob(os.path.join(directory,  "*.py")):

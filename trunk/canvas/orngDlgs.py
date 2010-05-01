@@ -8,6 +8,7 @@ from orngCanvasItems import MyCanvasText
 import OWGUI, sys, os 
 import RSession
 import redRGUI
+import redREnviron, re
 
 
 class ColorIcon(QToolButton):
@@ -374,16 +375,26 @@ class AboutDlg(QDialog):
         self.topLayout = QVBoxLayout(self)
         self.setWindowFlags(Qt.Popup)
         
-        import redREnviron
         logoImage = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
-        logo = OWGUI.widgetLabel(self, "")
+        logo = redRGUI.widgetLabel(self, "")
         logo.setPixmap(logoImage)
         
-        OWGUI.widgetLabel(self, '<p align="center"><h2>Red-R Version 1.7 beta</h2></p>')
-        OWGUI.widgetLabel(self, '<p align="center"><h3>Kyle R Covington and Anup Parikh 2010</h3></p>')
-
-        OWGUI.widgetLabel(self, "" )
-        #OWGUI.button(self, self, "Close", callback = self.accept)
+        
+        f = open(os.path.join(redREnviron.directoryNames["redRDir"],'version.txt'), 'r')
+        version = f.readlines()
+        f.close()
+#            !define REDRVERSION "Red-R 1.7"
+        info = {}
+        for i in version:
+            m = re.search('!define\s(\S+)\s"(.*)"',i)
+            info[m.group(1)] = m.group(2)
+        # print info
+        self.about = redRGUI.webViewBox(self)
+        self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.about.setMinimumHeight(150)
+        self.about.setHtml('<h2>' + info['REDRVERSION'] + '</h2>' + 
+        'Revision: ' + info['SVNVERSION'] +  '; Build Time: ' + info['DATE'] + '' + 
+        '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)
         self.layout().addWidget(b)

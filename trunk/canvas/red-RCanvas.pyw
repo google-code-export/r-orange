@@ -93,7 +93,7 @@ class OrangeCanvasDlg(QMainWindow):
                 
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         
-        print self.widgetRegistry
+        # print self.widgetRegistry
         self.updateStyle()
         
         # create toolbar

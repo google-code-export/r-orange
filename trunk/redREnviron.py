@@ -19,6 +19,7 @@ def __getDirectoryNames():
     canvasDir = os.path.join(redRDir, "canvas")
     RDir = os.path.join(os.path.split(redRDir)[0], "R")
     widgetDir = os.path.join(redRDir, "libraries")
+    libraryDir = os.path.join(redRDir, "libraries")
     qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')
     redRSignalsDir = os.path.join(redRDir, "libraries",'base','signalClasses')
     tagsDir = os.path.join(redRDir, "tagsSystem")
@@ -73,7 +74,7 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
 
-    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir',
+    return dict([(name, vars()[name]) for name in ["redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir',
     "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir", 
     "canvasSettingsDir", "bufferDir"]])
 
@@ -88,12 +89,11 @@ def addOrangeDirectoriesToPath():
         pathsToAdd.append(canvasDir)
 
     if widgetDir <> None and os.path.isdir(widgetDir):
-        pathsToAdd.append(widgetDir)
-        defaultWidgetsDirs = [os.path.join(widgetDir, x) for x in os.listdir(widgetDir) if os.path.isdir(os.path.join(widgetDir, x))]
-        pathsToAdd.extend(defaultWidgetsDirs)
-    baseWidgetDir = os.path.join(widgetDir,'base')
-    defaultWidgetsDirs = [os.path.join(baseWidgetDir, x) for x in os.listdir(baseWidgetDir) if os.path.isdir(os.path.join(baseWidgetDir, x))]
-    pathsToAdd.extend(defaultWidgetsDirs)
+        pathsToAdd.extend([os.path.join(widgetDir, x) for x in os.listdir(widgetDir) if os.path.isdir(os.path.join(widgetDir, x))])
+        pathsToAdd.extend([os.path.join(widgetDir, x,'widgets') for x in os.listdir(widgetDir) if os.path.isdir(os.path.join(widgetDir, x))])
+        pathsToAdd.extend([os.path.join(widgetDir, x,'qtWidgets') for x in os.listdir(widgetDir) if os.path.isdir(os.path.join(widgetDir, x))])
+        pathsToAdd.extend([os.path.join(widgetDir, x,'signalClasses') for x in os.listdir(widgetDir) if os.path.isdir(os.path.join(widgetDir, x))])
+        
     
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
