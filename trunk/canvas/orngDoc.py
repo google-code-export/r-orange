@@ -104,12 +104,6 @@ class SchemaDoc(QWidget):
             os.remove(tempName)
 
 
-    def showAllWidgets(self):
-        for i in self.widgets:
-            i.instance.show()
-    def closeAllWidgets(self):
-        for i in self.widgets:
-            i.instance.close()
             
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
@@ -622,8 +616,8 @@ class SchemaDoc(QWidget):
                     
                     try:
                         if 'requiredRLibraries' in settings.keys():
-                            #print qApp.canvasDlg.settings.keys()
-                            #print qApp.canvasDlg.settings['CRANrepos']
+                            print qApp.canvasDlg.settings.keys()
+                            print qApp.canvasDlg.settings['CRANrepos']
                             if 'CRANrepos' in qApp.canvasDlg.settings.keys():
                                 repo = qApp.canvasDlg.settings['CRANrepos']
                             else:
@@ -639,26 +633,21 @@ class SchemaDoc(QWidget):
                         
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
                     int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                    tempWidget.updateWidgetState()
+                    tempWidget.instance.setLoadingSavedSession(True)
                     if not tempWidget:
                         #print settings
-                        # print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                        print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
                         # we must build a fake widget this will involve getting the inputs and outputs and joining 
                         #them at the widget creation 
                         
-                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), 
-                        int(widget.getAttribute("yPos")), widget.getAttribute("caption"), 
-                        settings, saveTempDoc = False,forceInSignals = settings['inputs'], 
-                        forceOutSignals = settings['outputs']) 
+                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
                         
                         if not tempWidget:
                             #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
                             failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                             loadedOk = 0
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
-
-                    tempWidget.updateWidgetState()
-                    tempWidget.instance.setLoadingSavedSession(True)
-
                 except:
                     import sys, traceback
                     print 'Error occured during widget loading'
@@ -721,7 +710,6 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                # print 'instance\n'*5, str(widget.instance)
                 widget.instance.onLoadSavedSession()
             except:
                 import traceback,sys
@@ -756,37 +744,62 @@ class SchemaDoc(QWidget):
                 self.canvasDlg.output.write("%s = %s" % (val, getattr(widget.instance, val)))
 
                 
-    def loadRRW(self, filename, force = False):
+    def loadRRW(self, filename = None, fileText = None, force = False):
+        if filename == None and fileText == None:
+            raise Exception, 'Must specify either a fileName or fileText'
+        if filename != None and fileText != None:
+            raise Exception, 'Only one of fileName or fileText can be specified'
+            
+        if filename
         print 'Loading RRW file.  This will update your system.'
         
-        f = open(filename, 'r')
+        if filename:
+            f = open(filename, 'r')
 
         #print str(f)
         
-        mainTabs = xml.dom.minidom.parse(f)
-        f.close() 
+            mainTabs = xml.dom.minidom.parse(f)
+            f.close() 
+        
+        if fileText:
+            mainTabs = xml.dom.minidom.parseString(fileText)
         
         version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
         if self.version not in version:
             print 'Warning, this widget does not work with your current version.  Please update!!'
             return
+        try:
+            repository = self.getXMLText(mainTabs.getElementsByTagName('Repository')[0].childNodes)
+        except:
+            repository = 'http://r-orange.googlecode.com/svn/'
             
+        packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
+        ### make the package directoryNames
+        if not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName)):
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName))
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'widgets'))
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'qtWidgets'))
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'signalClasses'))
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'icons'))
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'doc'))
+            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'schemas'))
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
             if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, dep)) and dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
                 if '.rrp' in dep:  # this is requiring a package so we need to go and get that
-                    
-                    if not os.path.isdir(os.path.abspath(os.path.join(self.canvasDlg.redRDir, dep))):
-                        os.mkdir(os.path.join(self.canvasDlg.redRDir, 'temp'))
                     fileExt = os.path.split(dep)[1]
-                    newPackage = os.path.join(self.canvasDlg.redRDir, 'temp', dep)
-                    self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/Red-RPackages/'+dep, newPackage)                    
+                    newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
+                    if not os.path.isfile(newPackage)
+                        os.mkdir(os.path.split(newPackage)[0])
+                    self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)                    
                     self.loadRRW(newPackage)
                 else:
                     newPackage = os.path.join(self.canvasDlg.redRDir, dep)
-                    self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/'+dep, newPackage)
+                    if not os.path.isfile(newPackage)
+                        os.mkdir(os.path.split(newPackage)[0])
+                    self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)
                     #self.loadRRW(newPackage)
                     ### go to website, get the file, and repleat this process until success
                 
@@ -830,7 +843,7 @@ class SchemaDoc(QWidget):
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
                 newExample = os.path.join(self.canvasDlg.redRDir, example)
-                self.urlOpener.retrieve('http://r-orange.googlecode.com/svn/'+self.version+'/'+example, newExample)
+                self.urlOpener.retrieve(repository+self.version+'/'+example, newExample)
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
         
