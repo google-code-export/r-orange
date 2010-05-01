@@ -1,5 +1,7 @@
 <main>
     <Version>1.5, 1.7, 2.0, trunk</Version>
+    <PackageName>ROCCurves</PackageName>
+    <Repository><Repository>http://r-orange.googlecode.com/svn/</Repository></Repository>
     <Dependencies>libraries/widgets/performance.py, libraries/widgets/prediction.py, libraries/signalClasses/RROCPerformanceFit.py, libraries/signalClasses/RROCPredictionFit.py</Dependencies>
     <menuTags>
         <group name = 'Stats'>
