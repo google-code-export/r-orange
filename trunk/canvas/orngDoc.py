@@ -778,7 +778,7 @@ class SchemaDoc(QWidget):
             
         packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
         ### make the package directoryNames
-        if not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName)):
+        if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName)):
             os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName))
             os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'widgets'))
             os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'qtWidgets'))
@@ -799,8 +799,8 @@ class SchemaDoc(QWidget):
                     self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)                    
                     self.loadRRW(newPackage)
                 else:
-                    newPackage = os.path.join(self.canvasDlg.redRDir, dep)
-                    if not os.path.isfile(newPackage):
+                    newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
+                    if not os.path.exists(os.path.split(newPackage)[0]):
                         os.mkdir(os.path.split(newPackage)[0])
                     self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)
                     #self.loadRRW(newPackage)

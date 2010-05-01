@@ -3,5 +3,5 @@
 <title>404 Not Found</title>
 </head><body>
 <h1>Not Found</h1>
-<p>The requested URL /svn/trunk/libraries/affy/icons/diffExp.png was not found on this server.</p>
+<p>The requested URL /svn/trunk/libraries/affy/widgets/pamrcv.py was not found on this server.</p>
 </body></html>
