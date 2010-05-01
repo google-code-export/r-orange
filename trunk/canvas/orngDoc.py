@@ -761,9 +761,6 @@ class SchemaDoc(QWidget):
         
         if filename:
             f = open(filename, 'r')
-
-        #print str(f)
-        
             mainTabs = xml.dom.minidom.parse(f)
             f.close() 
         
@@ -1273,4 +1270,5 @@ class SignalDialog(QDialog):
 
     def getLinks(self):
         return self._links
+
 
