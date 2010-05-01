@@ -104,6 +104,12 @@ class SchemaDoc(QWidget):
             os.remove(tempName)
 
 
+    def showAllWidgets(self):
+        for i in self.widgets:
+            i.instance.show()
+    def closeAllWidgets(self):
+        for i in self.widgets:
+            i.instance.close()
             
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
@@ -750,7 +756,7 @@ class SchemaDoc(QWidget):
         if filename != None and fileText != None:
             raise Exception, 'Only one of fileName or fileText can be specified'
             
-        if filename
+        
         print 'Loading RRW file.  This will update your system.'
         
         if filename:
@@ -791,13 +797,13 @@ class SchemaDoc(QWidget):
                 if '.rrp' in dep:  # this is requiring a package so we need to go and get that
                     fileExt = os.path.split(dep)[1]
                     newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
-                    if not os.path.isfile(newPackage)
+                    if not os.path.isfile(newPackage):
                         os.mkdir(os.path.split(newPackage)[0])
                     self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)                    
                     self.loadRRW(newPackage)
                 else:
                     newPackage = os.path.join(self.canvasDlg.redRDir, dep)
-                    if not os.path.isfile(newPackage)
+                    if not os.path.isfile(newPackage):
                         os.mkdir(os.path.split(newPackage)[0])
                     self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)
                     #self.loadRRW(newPackage)
