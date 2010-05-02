@@ -1,0 +1,16 @@
+<main>
+    <Version>1.5, 1.7, 2.0, trunk</Version>
+    <PackageName>doseResponse</PackageName>
+    <Repository>http://r-orange.googlecode.com/svn/</Repository>
+    <Dependencies>widgets/ED.py, widgets/multdrc.py, icons/drc.png</Dependencies>
+    <menuTags>
+        <group name = 'Stats'>
+            <group name = 'Dose Response'>
+                <Description>Generates Dose Response Curves</Description>
+            </group>
+        </group>
+    </menuTags>
+    <FileDirectoryStucture>None</FileDirectoryStucture>
+    <FileData>None</FileData>
+    <Examples>None</Examples>
+</main>
