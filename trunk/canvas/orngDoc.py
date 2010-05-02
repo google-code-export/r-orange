@@ -822,7 +822,7 @@ class SchemaDoc(QWidget):
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
-            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, dep)) and dep != 'None') or (force and dep != 'None'):
+            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
                 if '.rrp' in dep:  # this is requiring a package so we need to go and get that
                     fileExt = os.path.split(dep)[1]
@@ -883,7 +883,7 @@ class SchemaDoc(QWidget):
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
         
-        if '.rrp' not in filename:
+        if filename != None and '.rrp' not in filename:
             os.remove(filename)
         print 'Package loaded successfully'
         qApp.canvasDlg.reloadWidgets()
