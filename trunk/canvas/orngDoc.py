@@ -596,9 +596,10 @@ class SchemaDoc(QWidget):
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
                 QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
-            return
+            
             loadingProgressBar.hide()
             loadingProgressBar.close()
+            return
         # set cursor
         qApp.setOverrideCursor(Qt.WaitCursor)
         failureText = ""
@@ -1017,20 +1018,12 @@ class SchemaDoc(QWidget):
             os.path.join(packageName,'signalClasses'),
             os.path.join(packageName,'icons'),
             os.path.join(packageName,'doc'),
-            os.path.join(packageName,'schemas')]
+            os.path.join(packageName,'schemas'), 
+            os.path.join(packageName, 'templates')]
             for d in dirs: 
                 os.mkdir(os.path.join(redREnviron.directoryNames['libraryDir'], d))
                 sys.path.insert(0, d)
             
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName))
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'widgets'))
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'qtWidgets'))
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'signalClasses'))
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'icons'))
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'doc'))
-            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'schemas'))
-            
-
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
