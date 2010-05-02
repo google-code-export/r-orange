@@ -883,7 +883,7 @@ class SchemaDoc(QWidget):
                 
         ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
         if fileText or '.rpp' in filename:
-            if not os.paht.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.rrp')):  # don't replace this if we already have it.
+            if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.rrp')):  # don't replace this if we already have it.
                 rppFile = open(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.rrp'), 'wt')
                 rppFile.write(mainTabs.toxml())
                 rppFile.close()
