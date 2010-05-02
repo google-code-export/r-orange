@@ -574,6 +574,207 @@ class SchemaDoc(QWidget):
 
         return True
     # load a scheme with name "filename"
+    def loadTemplate(self, filename, caption = None, freeze = 0, importBlank = 0):
+        import redREnviron
+        ### .rrw functionality
+        if filename.split('.')[-1] in ['rrw', 'rrp']:
+            self.loadRRW(filename)
+            return # we don't need to load anything else, we are not really loading a rrs file. 
+        ###
+        print filename.split('.')[-1], 'File name extension'
+        print 'document load called'
+        #self.clear()
+        pos = self.canvasDlg.pos()
+        size = self.canvasDlg.size()
+        loadingProgressBar = QProgressDialog()
+        loadingProgressBar.setCancelButtonText(QString())
+        loadingProgressBar.setWindowIcon(QIcon(os.path.join(redREnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
+        loadingProgressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
+        loadingProgressBar.setWindowTitle('Loading '+str(os.path.basename(filename)))
+        loadingProgressBar.show()
+        loadingProgressBar.setLabelText('Loading '+str(filename))
+        if not os.path.exists(filename):
+            if os.path.splitext(filename)[1].lower() != ".tmp":
+                QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
+            return
+            loadingProgressBar.hide()
+            loadingProgressBar.close()
+        # set cursor
+        qApp.setOverrideCursor(Qt.WaitCursor)
+        failureText = ""
+        
+        #if os.path.splitext(filename)[1].lower() == ".rrs":
+            #self.schemaPath, self.schemaName = os.path.split(filename)
+            #self.canvasDlg.setCaption(caption or self.schemaName)
+        try:
+            import re
+            # for widget in self.widgets: # convert the caption names so there are no conflicts
+                # widget.caption += 'A'
+                
+            loadingProgressBar.setLabelText('Loading Schema Data, please wait')
+            zfile = zipfile.ZipFile( str(filename), "r" )
+            for name in zfile.namelist():
+                file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
+                
+                #if re.search('tempSchema.tmp',os.path.basename(name)):
+            doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,'tempSchema.tmp'))
+                
+            schema = doc.firstChild
+            widgets = schema.getElementsByTagName("widgets")[0]
+            lines = schema.getElementsByTagName("channels")[0]
+            settings = schema.getElementsByTagName("settings")
+            settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+            self.loadedSettingsDict = settingsDict
+            
+            
+            
+            required = schema.getElementsByTagName("required")
+            required = eval(str(required[0].getAttribute("requiredPackages")))
+            #print required
+            required = cPickle.loads(required['r'])
+            # print required
+            
+            try:
+                if len(required['R']) > 0:
+                    #print qApp.canvasDlg.settings.keys()
+                    #print qApp.canvasDlg.settings['CRANrepos']
+                    if 'CRANrepos' in qApp.canvasDlg.settings.keys():
+                        repo = qApp.canvasDlg.settings['CRANrepos']
+                    else:
+                        repo = None
+                    loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
+                    RSession.require_librarys(required['R'], repository=repo)
+            except: 
+                import sys, traceback
+                print '-'*60
+                traceback.print_exc(file=sys.stdout)
+                print '-'*60        
+
+            for i in required['RedR']:
+                self.loadRRW(fileText = i)
+                
+                
+            #RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
+
+            
+            # read widgets
+            loadedOk = 1
+            loadingProgressBar.setLabelText('Loading Widgets')
+            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
+            loadingProgressBar.setValue(0)
+            lpb = 0
+            for widget in widgets.getElementsByTagName("widget"):
+                try:
+                    name = widget.getAttribute("widgetName")
+                    #print 'Name: '+str(name)+' (orngDoc.py)'
+                    #print settingsDict[widget.getAttribute("caption")]
+                    settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
+                    tempWidget = self.addWidgetByFileName(name, x = -1, #int(widget.getAttribute("xPos")), 
+                    y = -1, caption = "", #int(widget.getAttribute("yPos")), widget.getAttribute("caption"), 
+                    widgetSettings = settings, saveTempDoc = False)
+                    tempWidget.updateWidgetState()
+                    tempWidget.instance.setLoadingSavedSession(True)
+                    if not tempWidget:
+                        #print settings
+                        print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                        # we must build a fake widget this will involve getting the inputs and outputs and joining 
+                        #them at the widget creation 
+                        
+                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                        
+                        if not tempWidget:
+                            #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
+                            failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                            loadedOk = 0
+                            print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                except:
+                    import sys, traceback
+                    print 'Error occured during widget loading'
+                    print '-'*60
+                    traceback.print_exc(file=sys.stdout)
+                    print '-'*60        
+                lpb += 1
+                loadingProgressBar.setValue(lpb)
+            if not importBlank: # a normal load of the session
+                pass
+            else:
+                self.schemaName = ""
+
+            #read lines
+            lineList = lines.getElementsByTagName("channel")
+            loadingProgressBar.setLabelText('Loading Lines')
+            # loadingProgressBar.setMaximum(len(lineList))
+            # loadingProgressBar.setValue(0)
+            # lpb = 0
+            
+            
+
+            for line in lineList:
+                inCaption = line.getAttribute("inWidgetCaption")
+                outCaption = line.getAttribute("outWidgetCaption")
+                if freeze: enabled = 0
+                else:      enabled = int(line.getAttribute("enabled"))
+                signals = line.getAttribute("signals")
+                inWidget = self.getWidgetByCaption(inCaption)
+                outWidget = self.getWidgetByCaption(outCaption)
+                if inWidget == None or outWidget == None:
+                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
+                    loadedOk = 0
+                    continue
+
+                signalList = eval(signals)
+                for (outName, inName) in signalList:
+                    
+                    self.addLink(outWidget, inWidget, outName, inName, enabled)
+                qApp.processEvents()
+                # lpb += 1
+                # loadingProgressBar.setValue(lpb)
+            
+        finally:
+            qApp.restoreOverrideCursor()
+            
+
+        for widget in self.widgets: widget.updateTooltip()
+        self.canvas.update()
+
+        #self.saveTempDoc()
+
+        if not loadedOk:
+            QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
+        
+        loadingProgressBar.setLabelText('Loading Widget Data')
+        loadingProgressBar.setMaximum(len(self.widgets))
+        loadingProgressBar.setValue(0)
+        lpb = 0
+        for widget in self.widgets:
+            print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
+            try: # important to have this or else failures in load saved settings will result in no links able to connect.
+                widget.instance.onLoadSavedSession()
+            except:
+                import traceback,sys
+                print '-'*60
+                traceback.print_exc(file=sys.stdout)
+                print '-'*60        
+                QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo['fileName'], 
+                QMessageBox.Ok + QMessageBox.Default)
+            lpb += 1
+            loadingProgressBar.setValue(lpb)
+            
+        print 'done on load'
+
+        # do we want to restore last position and size of the widget
+        # if self.canvasDlg.settings["saveWidgetsPosition"]:
+            # for widget in self.widgets:
+                # widget.instance.setLoadingSavedSession(False)
+                #widget.instance.show()
+        qApp.restoreOverrideCursor() 
+        qApp.restoreOverrideCursor()
+        loadingProgressBar.hide()
+        loadingProgressBar.close()
+    # save document as application
+    
+    
+    
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         
         import redREnviron

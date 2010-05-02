@@ -309,9 +309,7 @@ class WidgetListBase:
 
                 if hasattr(tab, "adjustSize"):
                     tab.adjustSize()
-        
-        #self.insertFavoriteWidgets(treeXML, self, widgetRegistry)
-        
+
     def insertFavoriteChildTabs(self, node, tab, widgetRegistry):
         try:
             if node.hasChildNodes(): subTabs = node.childNodes
@@ -381,7 +379,6 @@ class WidgetListBase:
         iconSize = self.canvasDlg.toolbarIconSizeList[size]
         
         # find tab names that are not in widgetTabList
-        extraTabs = [(name, 1) for name in widgetRegistry.keys() if name not in [tab for (tab, s) in widgetTabList]]
         
         tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
         f = open(tfile, 'r')
@@ -406,7 +403,7 @@ class WidgetListBase:
                     tab.adjustSize()
         
         # return the list of tabs and their status (shown/hidden)
-        return widgetTabList + extraTabs
+        return widgetTabList
         
     def insertChildTabs(self, itab, tab, widgetRegistry):
         try:
@@ -431,42 +428,33 @@ class WidgetListBase:
     def insertWidgets(self, itab, tab, widgetRegistry):
         #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
         widgets = None
-        for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
+        # for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
             
-            for wName in widgetRegistry[tabName].keys():
-                awidgets = {}
-                try: 
-                    #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
-                    wtags = widgetRegistry[tabName][wName].tags
-                    wtags = wtags.replace(' ', '')
-                    wtags = wtags.split(',')
-                except: 
-                    wtags = 'Prototypes'
-                try:
-                    if itab.replace(' ', '') in wtags: # add the widget
-                        if tabName not in awidgets.keys(): awidgets[tabName] = {}
-                        awidgets[tabName][wName] = widgetRegistry[tabName][wName]
-                        #print 'made it past the awidgets stage'
-                        #print str(awidgets[tabName].items())
-                        (name, widgetInfo) = awidgets[tabName].items()[0]
-                        (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
-                        #print str((priority, name, widgetInfo)) + 'made it to 7894'
-                        #print str(widgetInfo)
-                        if isinstance(self, WidgetTree):
-                            #print 'trying to add a button'
-                            button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
-                            
-                        else:
-                            button = WidgetButton(tab, name, widgetInfo, self, self.canvasDlg, widgetTypeList, iconSize)
-                            for k in range(priority/1000 - exIndex):
-                                tab.layout().addSpacing(10)
-                            exIndex = priority / 1000
-                            tab.layout().addWidget(button)
-                        if button not in tab.widgets:
-                            tab.widgets.append(button)
-                        self.allWidgets.append(button)
+        for wName in widgetRegistry['widgets'].keys():
+            awidgets = {}
+            try: 
+                #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+                wtags = widgetRegistry['widgets'][wName].tags
+                wtags = wtags.replace(' ', '')
+                wtags = wtags.split(',')
+            except: 
+                wtags = 'Prototypes'
+            try:
+                if itab.replace(' ', '') in wtags: # add the widget
+                    if 'widgets' not in awidgets.keys(): awidgets['widgets'] = {}
+                    awidgets['widgets'][wName] = widgetRegistry['widgets'][wName]
+                    #print 'made it past the awidgets stage'
+                    #print str(awidgets[tabName].items())
+                    (name, widgetInfo) = awidgets['widgets'].items()[0]
+
+                    button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
                         
-                except: pass
+                    tab.layout().addWidget(button)
+                    if button not in tab.widgets:
+                        tab.widgets.append(button)
+                    self.allWidgets.append(button)
+                    
+            except: pass
            
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
@@ -509,6 +497,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         QDockWidget.__init__(self)
         self.setObjectName('widgetDock')
         self.actions = categoriesPopup.allActions
+        self.templateActions = categoriesPopup.templateActions
         self.treeWidget = MyTreeWidget(canvasDlg, self)
         self.treeWidget.setFocusPolicy(Qt.ClickFocus)    # this is needed otherwise the document window will sometimes strangely lose focus and the output window will be focused
         self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
@@ -524,6 +513,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.widgetSuggestEdit.autoSizeListWidget = 1
         
         self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
+        self.widgetSuggestEdit.addItems([QListWidgetItem(action.templateInfo.name) for action in self.templateActions])
         #self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
         #tmpBoxLayout.insertWidget(0, CanvasPopup)
         tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
@@ -576,13 +566,16 @@ class WidgetTree(WidgetListBase, QDockWidget):
         return item
     def callback(self):
         text = str(self.widgetSuggestEdit.text())
+        if '.rrs' in text: ## this is a template, we should load this and not add the widget
+            for action in self.templateActions:
+                if action.templateInfo.name == text:
+                    self.canvasDlg.schema.loadTemplate(action.templateInfo.file)
         for action in self.actions:
             if action.widgetInfo.name == text:
                 self.widgetInfo = action.widgetInfo
-                #self.parent.setActiveAction(self)
-                #self.activate(QAction.Trigger)
-                #QApplication.sendEvent(self.widgetSuggestEdit, QKeyEvent(QEvent.KeyPress, Qt.Key_Enter, Qt.NoModifier))
+                print action.widgetInfo, 'Widget info'
                 self.canvasDlg.schema.addWidget(action.widgetInfo)
+                
                 self.widgetSuggestEdit.clear()
                 return
 
@@ -688,6 +681,7 @@ class CanvasPopup(QMenu):
     def __init__(self, canvasDlg):
         QMenu.__init__(self, canvasDlg)
         self.allActions = []
+        self.templateActions = []
         self.widgetActionNameList = []
         self.catActions = []
         self.quickActions = []
@@ -817,6 +811,15 @@ def constructCategoriesPopup(canvasDlg):
             act.category = catmenu
             #categoriesPopup.allActions.append(act)
     
+    
+    ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
+    for template in canvasDlg.widgetRegistry['templates']:
+        #icon = 
+        act = catmenu.addAction(#icon,
+        template.name)
+        act.templateInfo = template
+        categoriesPopup.templateActions.append(act)
+    #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
     ####
@@ -839,37 +842,35 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
     widgets = None
-    for (tabName, show) in [(name, 1) for name in canvasDlg.widgetRegistry.keys()]:
         
-        for wName in canvasDlg.widgetRegistry[tabName].keys():
-            awidgets = {}
-            try: 
-                #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
-                wtags = canvasDlg.widgetRegistry[tabName][wName].tags
-                wtags = wtags.replace(' ', '')
-                wtags = wtags.split(',')
-            except: 
-                wtags = 'Prototypes'
-            try:
-                if catName.replace(' ', '') in wtags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
-                    if tabName not in awidgets.keys(): awidgets[tabName] = {}
-                    awidgets[tabName][wName] = canvasDlg.widgetRegistry[tabName][wName]
-                    #print 'made it past the awidgets stage'
-                    #print str(awidgets[tabName].items())
-                    (name, widgetInfo) = awidgets[tabName].items()[0]
-                    #(priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)  # collect the widget info from the widgetRegistry
-                    
-                    icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
-                    act = catmenu.addAction(icon, widgetInfo.name)
-                    
-                    act.widgetInfo = widgetInfo
-                    act.category = catmenu
-                    if not widgetInfo.name in categoriesPopup.widgetActionNameList:
-                        categoriesPopup.allActions.append(act)
-                        categoriesPopup.widgetActionNameList.append(widgetInfo.name)
-                    
-                    
-            except: pass
+    for wName in canvasDlg.widgetRegistry['widgets'].keys():
+        awidgets = {}
+        try: 
+            #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
+            wtags = canvasDlg.widgetRegistry['widgets'][wName].tags
+            wtags = wtags.replace(' ', '')
+            wtags = wtags.split(',')
+        except: 
+            wtags = 'Prototypes'
+        try:
+            if catName.replace(' ', '') in wtags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
+                if 'widgets' not in awidgets.keys(): awidgets['widgets'] = {}
+                awidgets['widgets'][wName] = canvasDlg.widgetRegistry['widgets'][wName]
+                #print 'made it past the awidgets stage'
+                #print str(awidgets[tabName].items())
+                (name, widgetInfo) = awidgets['widgets'].items()[0]
+
+                icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
+                act = catmenu.addAction(icon, widgetInfo.name)
+                
+                act.widgetInfo = widgetInfo
+                act.category = catmenu
+                if not widgetInfo.name in categoriesPopup.widgetActionNameList:
+                    categoriesPopup.allActions.append(act)
+                    categoriesPopup.widgetActionNameList.append(widgetInfo.name)
+                
+                
+        except: pass
 #        
 class SearchBox(redRGUI.lineEditHint):
     def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
@@ -903,18 +904,6 @@ class SearchBox(redRGUI.lineEditHint):
                     self.event(ev)
             return consumed
         except: return 0
-    
-    # def doneCompletion(self, *args):
-        # if self.listWidget.isVisible():
-            # if len(args) == 1:  itemText = str(args[0].text())
-            # else:               itemText = str(self.listWidget.currentItem().text())
-            # last = self.getLastTextItem()
-            # self.setText(str(self.text()).rstrip(last) + itemText)
-            # self.listWidget.hide()
-            # self.setFocus()
-        # if self.callbackOnComplete:
-            # QTimer.singleShot(0, self.callbackOnComplete)
-            #self.callbackOnComplete()
         
     def searchDialog(self):
         if str(self.text()) in self.itemsAsStrings:

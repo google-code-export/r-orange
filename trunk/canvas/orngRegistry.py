@@ -17,7 +17,10 @@ import redREnviron
 class WidgetDescription:
     def __init__(self, **attrs):
         self.__dict__.update(attrs)
-
+class TemplateDescription:
+    def __init__(self, **attrs):
+        self.__dict__.update(attrs)
+        
 class WidgetCategory(dict):
     def __init__(self, directory, widgets):
         self.update(widgets)
@@ -42,19 +45,27 @@ def readCategories():
         if os.path.isdir(directory):
             directories.append((dirName, directory, ""))
 
-    categories = {}     
-    for catName, dirName, plugin in directories:
-        widgets = readWidgets(os.path.join(dirName,'widgets'), catName, cachedWidgetDescriptions)
-        # print '#########widgets',widgets
-        if widgets:
-            categories[catName] = WidgetCategory(plugin and dirName or "", widgets)
+    categories = {'widgets':[], 'templates':[]}     
+    allWidgets = []
+    for dirName, directory, plugin in directories:
+        widgets = readWidgets(os.path.join(directory,'widgets'), dirName, cachedWidgetDescriptions)  # we read in all the widgets in dirName, directory in the directories
+        print '#########widgets',widgets
+        allWidgets += widgets
+    if allWidgets: ## collect all of the widgets and set them in the catepories
+        categories['widgets'] = WidgetCategory(plugin and directory or "", allWidgets)
 
+    allTemplates = []
+    for dirName, directory, plugin in directories:
+        templates = readTemplates(os.path.join(directory,'templates'), dirName, cachedWidgetDescriptions) # a function to read in the templates that are in the directories
+        allTemplates += templates
+    if allTemplates:
+        categories['templates'] = allTemplates
     cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
         splashWindow.hide()
     if widgetsWithError != []:
         print "The following widgets could not be imported and will not be available: " + ", ".join(widgetsWithError)
-    return categories
+    return categories ## return the widgets and the templates
 
 hasErrors = False
 splashWindow = None
@@ -161,13 +172,43 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         
     return widgets
 
+def readTemplates(directory, package, cachedWidgetDescriptions):
+    import sys, imp
+    global hasErrors, splashWindow, widgetsWithError
+    
+    # print '################readWidgets', directory, package
+    templates = []
+    for filename in glob.iglob(os.path.join(directory, "*.rrs")):
+        if os.path.isdir(filename) or os.path.islink(filename):
+            continue  # protects from a filename that has .rrs in it I guess
+
+        dirname, fname = os.path.split(filename)
+        # dirname, package = os.path.split(dirname)
+        templateName = fname
+        #widgetName = package + '_' + widget
+        try:
+            if not splashWindow:
+                import redREnviron
+                logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+                splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
+                splashWindow.setMask(logo.mask())
+                splashWindow.show()
+                
+            splashWindow.showMessage("Registering widget %s" % templateName, Qt.AlignHCenter + Qt.AlignBottom)
+            qApp.processEvents()
+            templateInfo = TemplateDescription(name = templateName, file = filename) 
+            templates.append(templateInfo)
+        except Exception, msg:
+            print msg
+        
+    return templates
 def loadPackage(package):
     # import imp
     # m = imp.new_module(package)
     redRGUI.registerQTWidgets(package)
     signals.registerRedRSignals(package)
     
-
+### we really need to change this...
 re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
 re_outputs = re.compile(r'[ \t]+self.outputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)
 

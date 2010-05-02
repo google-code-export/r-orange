@@ -39,7 +39,8 @@ class lineEditHint(lineEdit):
         
         if items:
             self.itemsAsItems = items
-            if (type(items[0]) == str) or (type(items[0]) == numpy.string_):                   self.itemsAsStrings = items
+            if (type(items[0]) == str) or (type(items[0]) == numpy.string_):
+                self.itemsAsStrings = items
             elif type(items[0]) in [numpy.float64]:
                 self.itemsAsStrings = [str(item) for item in items]
             elif type(items[0]) == QListWidgetItem:     self.itemsAsStrings = [str(item.text()) for item in items]
