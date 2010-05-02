@@ -7,10 +7,10 @@ class RList(RVariable):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
-    def copy(self):
-        newVariable = RList(self.data, self.parent)
-        newVariable.dictAttrs = self.dictAttrs.copy()
-        return newVariable
+    # def copy(self):
+        # newVariable = RList(self.data, self.parent)
+        # newVariable.dictAttrs = self.dictAttrs.copy()
+        # return newVariable
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
         text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'

@@ -33,10 +33,10 @@ class readFile(OWRpy):
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
-        
-        #self.R('for(i in 1:1e8) {  }')
-        # self.R('ls()')
-        # raise Exception('asdf')
+        a = signals.RVector(data='asdf',checkVal=False)
+        print a
+        b = a.copy()
+        print b
         #signals
         self.inputs = None
         self.outputs = [("data.frame", signals.RDataFrame)]

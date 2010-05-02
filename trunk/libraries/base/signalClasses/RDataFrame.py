@@ -27,10 +27,10 @@ class RDataFrame(RList):
         return newData
         
         
-    def copy(self):
-        newVariable = RDataFrame(data = self.data, parent = self.parent)
-        newVariable.dictAttrs = self.dictAttrs.copy()
-        return newVariable
+    # def copy(self):
+        # newVariable = RDataFrame(data = self.data, parent = self.parent)
+        # newVariable.dictAttrs = self.dictAttrs.copy()
+        # return newVariable
     def getSimpleOutput(self, subsetting = '[1:5, 1:5]'):
         # return the text for a simple output of this variable
         text = 'Simple Output\n\n'

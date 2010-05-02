@@ -5,39 +5,37 @@ from PyQt4.QtGui import *
 from RMatrix import *
 from RDataFrame import *
 
-class REset(RList, RMatrix):
+class REset(RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
         
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
         
-    def copy(self):
-        newData = REset(data = self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
+    # def copy(self):
+        # newData = REset(data = self.data, parent = self.parent)
+        # newData.dictAttrs = self.dictAttrs.copy()
+        # return newData
     def convertToClass(self, varClass):
-        if varClass == RList:
-            return self._convertToList()
-        elif varClass == RVariable:
-            return self._convertToVariable()
+        # if varClass == RList:
+            # newData = self._convertToList()
+        if varClass == RVariable:
+            newData = self._convertToVariable()
         elif varClass == RDataFrame:
-            return self._convertToDataFrame()
+            newData = self._convertToDataFrame()
         elif varClass == RMatrix:
-            return self._convertToMatrix()
+            newData = self._convertToMatrix()
         else:
             raise Exception, '%s Not A Defined Conversion Type' % str(varClass)
+            
+        newData.copyAllOptionalData(self)
+        newData.setOptionalData(name='eset', data=self.data,creatorWidget=None,
+        description='Converted due to a conversion to rectangular data')
+        return newData
+        
     def _convertToMatrix(self):
         newData = RMatrix(data = 'exprs('+self.data+')')
-        newData.dictAttrs = self.dictAttrs.copy()
-        newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a conversion to rectangular data', None)
         return newData
     def _convertToDataFrame(self):
         newData = RDataFrame(data = 'as.data.frame(exprs('+self.data+'))')
-        newData.dictAttrs = self.dictAttrs.copy()
-        newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a conversion to rectangular data', None)
         return newData
-    def _convertToList(self):
-        #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
-        newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs.copy()
-        newData.dictAttrs['eset'] = (self.data, 'RvarClass Conversion', 'Converted due to a copy to rectangular data', None)
-        return newData
+        
+        

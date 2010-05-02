@@ -5,10 +5,10 @@ from RMatrix import *
 class RVector(RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
-    def copy(self):
-        newVariable = RVector(data = self.data, parent = self.parent)
-        newVariable.dictAttrs = self.dictAttrs
-        return newVariable
+    # def copy(self):
+        # newVariable = RVector(data = self.data, parent = self.parent)
+        # newVariable.dictAttrs = self.dictAttrs
+        # return newVariable
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()

@@ -4,14 +4,13 @@ from PyQt4.QtGui import *
 from RSession import Rcommand
 import glob,os.path,redREnviron
 
-class BaseRedRVariable:
+class BaseRedRVariable:# parent class of all signals.  This class holds base functions such as assignment and item setting
     def __init__(self, data):
         if not data:
             raise Exception()
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']
-        
         
     def __getitem__(self, item):
         try:
@@ -33,55 +32,47 @@ class BaseRedRVariable:
         if item in self.reserved:
             raise Exception
         self.dictAttrs[item] = value
+    def copyAllOptionalData(self,signal):
+        import copy
+        self.dictAttrs = copy.deepcopy(signal.dictAttrs)
     
-    def setOptionalData(self, key, creatorWidget, data, description = None, extra=None):
-        self.dictAttrs[key] = {'creator': creatorWidget.windowTitle(), ##should change to a premenent identifier
+    #(data, generator, comment, other)
+    def setOptionalData(self, name, data, creatorWidget=None, description = None, extra=None):
+        if creatorWidget:
+            creator = creatorWidget.windowTitle()
+        else:
+            creator = None
+        
+        self.dictAttrs[name] = {'creator': creator, ##should change to a premenent identifier
         'data':data,'description':description,'extra':extra}
     
-    def getOptionalData(self,key):
-        return self.dictAttrs[key]
+    def getOptionalData(self,name):
+        return self.dictAttrs[name]
     
     def __str__(self):
         ## print output for the class
-        return 'Class: '+str(self.__class__)+'\nData: '+self.data+'\nAttributes: '+str(self.dictAttrs)
+        return 'Class: '+str(self.__class__)+'; Data: '+self.data+'; Attributes: '+str(self.dictAttrs)
     def convertToClass(self, varClass):
         return self.copy()
     def keys(self):
         return self.dictAttrs.keys()
     def copy(self):
-        newVariable = BaseRedRVariable(data = self.data)
-        newVariable.dictAttrs = self.dictAttrs.copy()
-        return newVariable
+        import copy
+        return copy.deepcopy(self)
 
-class RVariable(BaseRedRVariable): # parent class of all signals.  This class holds base functions such as assignment and item setting
+class RVariable(BaseRedRVariable): 
     def __init__(self, data, parent = None, checkVal = False):
         
         BaseRedRVariable.__init__(self,data)
         if not parent:
             parent = data
         self.parent = parent
-        # self.dictAttrs = {}
         self.R = Rcommand
         self.reserved = ['data', 'parent', 'R', 'dictAttrs']
-    # def __getitem__(self, item):
-        # try:
-            # attr = getattr(self, item)
-        # except:
-            # try:
-                # attr = self.dictAttrs[item]
-            # except:
-                # attr = None
-        # return attr
-    
-    # def __setitem__(self, item, value):
-        # if item in self.reserved:
-            # raise Exception
-        # self.dictAttrs[item] = value
     def __str__(self):
         ## print output for the class
-        return 'Class: '+str(self.__class__)+'\nData: '+self.data+'\nParent: '+self.parent+'Attributes: '+str(self.dictAttrs)
-    # def keys(self):
-        # return self.dictAttrs.keys()
+        return '###Signal Class: '+str(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+str(self.dictAttrs)
+
     def getClass_call(self):
         return 'class('+self.data+')'
         
@@ -95,10 +86,10 @@ class RVariable(BaseRedRVariable): # parent class of all signals.  This class ho
         # except:
             # print 'Exception occured'
 
-    def copy(self):
-        newVariable = RVariable(self.data, self.parent)
-        newVariable.dictAttrs = self.dictAttrs.copy()
-        return newVariable
+    # def copy(self):
+        # newVariable = RVariable(self.data, self.parent)
+        # newVariable.dictAttrs = self.dictAttrs.copy()
+        # return newVariable
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'
         return text
@@ -147,7 +138,7 @@ def registerRedRSignals(package):
     m = imp.new_module(package)
     directory = os.path.join(redREnviron.widgetDir,package,'signalClasses')
     for filename in glob.iglob(os.path.join(directory,  "*.py")):
-        print 'import filename', filename
+        # print 'import filename', filename
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
         guiClass = os.path.basename(filename).split('.')[0]

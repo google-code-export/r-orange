@@ -627,8 +627,6 @@ class SchemaDoc(QWidget):
             settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
             self.loadedSettingsDict = settingsDict
             
-            
-            
             required = schema.getElementsByTagName("required")
             required = eval(str(required[0].getAttribute("requiredPackages")))
             #print required
@@ -812,13 +810,26 @@ class SchemaDoc(QWidget):
         packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
         ### make the package directoryNames
         if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName)):
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName))
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'widgets'))
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'qtWidgets'))
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'signalClasses'))
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'icons'))
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'doc'))
-            os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'schemas'))
+            dirs = [packageName, 
+            os.path.join(packageName,'widgets'),
+            os.path.join(packageName,'qtWidgets'),
+            os.path.join(packageName,'signalClasses'),
+            os.path.join(packageName,'icons'),
+            os.path.join(packageName,'doc'),
+            os.path.join(packageName,'schemas')]
+            for d in dirs: 
+                os.mkdir(os.path.join(redREnviron.directoryNames['libraryDir'], d))
+                sys.path.insert(0, d)
+            
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName))
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'widgets'))
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'qtWidgets'))
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'signalClasses'))
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'icons'))
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'doc'))
+            # os.mkdir(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, 'schemas'))
+            
+
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
@@ -890,7 +901,7 @@ class SchemaDoc(QWidget):
         if filename != None and '.rrp' not in filename:
             os.remove(filename)
         print 'Package loaded successfully'
-        qApp.canvasDlg.reloadWidgets()
+        self.canvasDlg.reloadWidgets()
     def addTagsSystemTag(self, tags, tag):
         # tags is the current tags system, tag is the tag that should be added.
         name = str(tag.getAttribute('name'))
