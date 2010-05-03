@@ -1021,12 +1021,15 @@ class SchemaDoc(QWidget):
             os.path.join(packageName,'schemas'), 
             os.path.join(packageName, 'templates')]
             for d in dirs: 
-                os.mkdir(os.path.join(redREnviron.directoryNames['libraryDir'], d))
-                sys.path.insert(0, d)
+                if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], d)):
+                    os.mkdir(os.path.join(redREnviron.directoryNames['libraryDir'], d))
+                    sys.path.insert(0, d)
             
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
+            if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', package, dep))[0]):
+                os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', package, dep))[0])
             if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
                 if '.rrp' in dep:  # this is requiring a package so we need to go and get that
@@ -1081,6 +1084,8 @@ class SchemaDoc(QWidget):
         for example in examples.split(','):
             example = example.strip(' ')
             if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir,example)) and example != 'None')or (force and example != 'None'):
+                if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir,example))[0]):
+                    os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir,example))[0])
                 print 'Downloading example file', example
                 fileExt = os.path.split(example)[1]
                 newExample = os.path.join(self.canvasDlg.redRDir, example)
