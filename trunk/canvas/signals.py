@@ -47,8 +47,16 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
         'data':data,'description':description,'extra':extra}
     
     def getOptionalData(self,name):
-        return self.dictAttrs[name]
-    
+        if name in self.dictAttrs:
+            
+            return self.dictAttrs[name]
+        else:
+            return None
+    def optionalDataExists(self, name):
+        if name in self.dictAttrs.keys():
+            return True
+        else:
+            return False
     def __str__(self):
         ## print output for the class
         return 'Class: '+str(self.__class__)+'; Data: '+self.data+'; Attributes: '+str(self.dictAttrs)
@@ -59,7 +67,8 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
     def copy(self):
         import copy
         return copy.deepcopy(self)
-
+    def removeOptionalData(self, data):
+        self.dictAttrs.pop(data)
 class RVariable(BaseRedRVariable): 
     def __init__(self, data, parent = None, checkVal = False):
         

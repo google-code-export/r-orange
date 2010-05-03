@@ -336,7 +336,7 @@ class widgetMaker(OWRpy):
         
         if 'Allow Output' in self.functionAllowOutput.getChecked():
             self.commitFunction += '\t\tnewData = signals.'+str(self.outputsCombobox.currentText())+'(data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
-            self.commitFunction += '\t\t#newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.\n'
+            self.commitFunction += '\t\t#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.\n'
             self.commitFunction += '\t\tself.rSend("'+self.functionName.text()+' Output", newData)\n'
 
     def combineCode(self):

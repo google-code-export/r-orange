@@ -112,9 +112,11 @@ class DataExplorer(OWRpy):
                 self.orriginalColumnNames = self.colnames
                 print 'Colnames are '+str(self.orriginalColumnNames)
                 self.dataParent = data.copy()
-                if 'cm' not in self.dataParent.dictAttrs.keys():
+                if not self.dataParent.optionalDataExists('cm'):
                     self.R('cm_'+self.Rvariables['dataExplorer']+'<-list()')
-                    self.dataParent.dictAttrs['cm'] = ('cm_'+self.Rvariables['dataExplorer'], 'Row Filtering', 'Class Manager added to the data by Row Filtering, the data did not have a class manager before this.', None)
+                    self.dataParent.setOptionalData('cm', 'cm_'+self.Rvariables['dataExplorer'], 'Row Filtering', 'Class Manager added to the data by Row Filtering, the data did not have a class manager before this.', None)
+                    ## show a warning on the widget
+                    self.setWarning(text = 'Class manager variable set,\nyou should use a Class Coordinator\nwidget to do this for more\nfunctionality.')
                 # first get some info about the table so we can put that into the current table.
                 #dims = self.R('dim('+self.data+')') #self data should be a data.frame
                 print self.dataParent.getDims_call()

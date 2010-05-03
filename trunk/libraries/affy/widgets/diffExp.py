@@ -174,11 +174,11 @@ class diffExp(OWRpy):
             self.R(self.Rvariables['results']+'<-eBayes(fit)')
 
         newdata = signals.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')') 
-        newdata.dictAttrs['classes'] = (self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression', None)
+        newdata.setOptionalData('classes', self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression')
         self.rSend('eBayes data frame', newdata)
         
         self.newdata = signals.affy.RMArrayLM(data = self.Rvariables['results'])
-        self.newdata.dictAttrs['classes'] = (self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression', None)
+        self.newdata.setOptionalData('classes', self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression')
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
         self.processingComplete = 1
