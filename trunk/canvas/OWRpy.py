@@ -30,7 +30,6 @@ class OWRpy(widgetSignals,widgetGUI,session):
         ctime = str(time.time())
         self.widgetID = str(OWRpy.uniqueWidgetNumber) + '_' + ctime
         self.variable_suffix = '_' + self.widgetID
-        
         self.Rvariables = {}
         self.setRvariableNames(['title'])
         self.requiredRLibraries = []

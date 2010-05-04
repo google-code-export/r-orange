@@ -405,6 +405,12 @@ class SchemaDoc(QWidget):
                 return widget
         return None
 
+    def getWidgetByID(self, widgetID):
+        for widget in self.widgets:
+            if (widget.instance.widgetID == widgetID):
+                return widget
+        return None
+        
     def getWidgetCaption(self, widgetInstance):
         for widget in self.widgets:
             if widget.instance == widgetInstance:
@@ -431,6 +437,14 @@ class SchemaDoc(QWidget):
     # ###########################################
     # SAVING, LOADING, ....
     # ###########################################
+    def minimumY(self):
+        ## calculate the miinimum Y position on the canvas.  When loading new widgets will be adjusted down by this amount.
+        y = 0
+        for widget in self.widgets:
+            if widget.y() < y:
+                y = widget.y()
+                
+        return y
     def saveDocument(self):
         print 'saveDocument'
         #return
@@ -492,6 +506,7 @@ class SchemaDoc(QWidget):
             temp.setAttribute("caption", widget.caption)
             
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
+            temp.setAttribute('widgetID', widget.instance.widgetID)
             temp.setAttribute("widgetID", widget.instance.WidgetID)
             print 'save in orngDoc ' + str(widget.caption)
             progress += 1
@@ -502,7 +517,7 @@ class SchemaDoc(QWidget):
             map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
             #requiredRLibraries.extend()
             del s['requiredRLibraries']
-            settingsDict[widget.caption] = cPickle.dumps(s)
+            settingsDict[widget.instance.widgetID] = cPickle.dumps(s)
             
             if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
                 f = open(os.path.join(redREnviron.directoryNames['libraryDir'],
@@ -522,7 +537,9 @@ class SchemaDoc(QWidget):
         for line in self.lines:
             temp = doc.createElement("channel")
             temp.setAttribute("outWidgetCaption", line.outWidget.caption)
+            temp.setAttribute('outWidgetIndex', line.outWidget.instance.widgetID)
             temp.setAttribute("inWidgetCaption", line.inWidget.caption)
+            temp.setAttribute('inWidgetIndex', line.inWidget.instance.widgetID)
             temp.setAttribute("enabled", str(line.getEnabled()))
             temp.setAttribute("signals", str(line.getSignals()))
             lines.appendChild(temp)
@@ -582,6 +599,9 @@ class SchemaDoc(QWidget):
         #self.clear()
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
+        
+        minY = self.minimumY()
+        
         loadingProgressBar = QProgressDialog()
         loadingProgressBar.setCancelButtonText(QString())
         loadingProgressBar.setWindowIcon(QIcon(os.path.join(redREnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
@@ -665,10 +685,11 @@ class SchemaDoc(QWidget):
                     name = widget.getAttribute("widgetName")
                     #print 'Name: '+str(name)+' (orngDoc.py)'
                     #print settingsDict[widget.getAttribute("caption")]
-                    settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                    tempWidget = self.addWidgetByFileName(name, x = -1, #int(widget.getAttribute("xPos")), 
-                    y = -1, caption = "", #int(widget.getAttribute("yPos")), widget.getAttribute("caption"), 
-                    widgetSettings = settings, saveTempDoc = False)
+                    try:
+                        settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
+                    except:
+                        settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
+                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), caption = "", y = int(widget.getAttribute("yPos")) - minY, widgetSettings = settings, saveTempDoc = False)
                     tempWidget.updateWidgetState()
                     tempWidget.instance.setLoadingSavedSession(True)
                     if not tempWidget:
@@ -707,17 +728,41 @@ class SchemaDoc(QWidget):
             
 
             for line in lineList:
-                inCaption = line.getAttribute("inWidgetCaption")
-                outCaption = line.getAttribute("outWidgetCaption")
-                if freeze: enabled = 0
-                else:      enabled = int(line.getAttribute("enabled"))
-                signals = line.getAttribute("signals")
-                inWidget = self.getWidgetByCaption(inCaption)
-                outWidget = self.getWidgetByCaption(outCaption)
-                if inWidget == None or outWidget == None:
-                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
-                    loadedOk = 0
-                    continue
+                try:
+                    inIndex = line.getAttribute("inWidgetIndex")
+                    outIndex = line.getAttribute("outWidgetIndex")
+                    print 'Indexes are ', inIndex, outIndex
+                    if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
+                        raise Exception
+                        
+                    print 'No error encountered'
+                    if freeze: enabled = 0
+                    else:      enabled = int(line.getAttribute("enabled"))
+                    signals = line.getAttribute("signals")
+                    print signals
+                    inWidget = self.getWidgetByID(inIndex)
+                    outWidget = self.getWidgetByID(outIndex)
+                    if inWidget == None or outWidget == None:
+                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
+                        loadedOk = 0
+                        continue
+                except: # must not be an index in this schema   
+                    print 'Exception raised'
+                    inCaption = line.getAttribute('inWidgetCaption')
+                    outCaption = line.getAttribute('outWidgetCaption')
+                    
+                    print 'Captions are ', inCaption, outCaption
+                    if freeze: enabled = 0
+                    else:      enabled = int(line.getAttribute("enabled"))
+                    signals = line.getAttribute("signals")
+                    print signals
+                    inWidget = self.getWidgetByCaption(inCaption)
+                    outWidget = self.getWidgetByCaption(outCaption)
+                    if inWidget == None or outWidget == None:
+                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
+                        loadedOk = 0
+                        continue
+                
 
                 signalList = eval(signals)
                 for (outName, inName) in signalList:
@@ -785,6 +830,7 @@ class SchemaDoc(QWidget):
         #self.clear()
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
+        minY = self.minimumY()
         loadingProgressBar = QProgressDialog()
         loadingProgressBar.setCancelButtonText(QString())
         loadingProgressBar.setWindowIcon(QIcon(os.path.join(redREnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
@@ -867,7 +913,7 @@ class SchemaDoc(QWidget):
                     #print settingsDict[widget.getAttribute("caption")]
                     settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
                     tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
-                    int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False)
+                    int(widget.getAttribute("yPos")) - minY, widget.getAttribute("caption"), settings, saveTempDoc = False)
                     tempWidget.updateWidgetState()
                     tempWidget.instance.setLoadingSavedSession(True)
                     if not tempWidget:
@@ -906,17 +952,41 @@ class SchemaDoc(QWidget):
             
 
             for line in lineList:
-                inCaption = line.getAttribute("inWidgetCaption")
-                outCaption = line.getAttribute("outWidgetCaption")
-                if freeze: enabled = 0
-                else:      enabled = int(line.getAttribute("enabled"))
-                signals = line.getAttribute("signals")
-                inWidget = self.getWidgetByCaption(inCaption)
-                outWidget = self.getWidgetByCaption(outCaption)
-                if inWidget == None or outWidget == None:
-                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
-                    loadedOk = 0
-                    continue
+                try:
+                    inIndex = line.getAttribute("inWidgetIndex")
+                    outIndex = line.getAttribute("outWidgetIndex")
+                    print 'Indexes are ', inIndex, outIndex
+                    if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
+                        raise Exception
+                        
+                    print 'No error encountered'
+                    if freeze: enabled = 0
+                    else:      enabled = int(line.getAttribute("enabled"))
+                    signals = line.getAttribute("signals")
+                    print signals
+                    inWidget = self.getWidgetByID(inIndex)
+                    outWidget = self.getWidgetByID(outIndex)
+                    if inWidget == None or outWidget == None:
+                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
+                        loadedOk = 0
+                        continue
+                except: # must not be an index in this schema   
+                    print 'Exception raised'
+                    inCaption = line.getAttribute('inWidgetCaption')
+                    outCaption = line.getAttribute('outWidgetCaption')
+                    
+                    print 'Captions are ', inCaption, outCaption
+                    if freeze: enabled = 0
+                    else:      enabled = int(line.getAttribute("enabled"))
+                    signals = line.getAttribute("signals")
+                    print signals
+                    inWidget = self.getWidgetByCaption(inCaption)
+                    outWidget = self.getWidgetByCaption(outCaption)
+                    if inWidget == None or outWidget == None:
+                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
+                        loadedOk = 0
+                        continue
+                
 
                 signalList = eval(signals)
                 for (outName, inName) in signalList:
@@ -1030,21 +1100,23 @@ class SchemaDoc(QWidget):
                 os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0])
             if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
-                if '.rrp' in dep:  # this is requiring a package so we need to go and get that
-                    fileExt = os.path.split(dep)[1]
-                    newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
-                    if not os.path.isfile(newPackage):
-                        os.mkdir(os.path.split(newPackage)[0])
-                    self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)                    
-                    self.loadRRW(newPackage)
-                else:
-                    newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
-                    if not os.path.exists(os.path.split(newPackage)[0]):
-                        os.mkdir(os.path.split(newPackage)[0])
-                    self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)
-                    #self.loadRRW(newPackage)
-                    ### go to website, get the file, and repleat this process until success
-                
+                try:
+                    if '.rrp' in dep:  # this is requiring a package so we need to go and get that
+                        fileExt = os.path.split(dep)[1]
+                        newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
+                        if not os.path.exists(os.path.split(newPackage)[0]):
+                            os.mkdir(os.path.split(newPackage)[0])
+                        self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)                    
+                        self.loadRRW(newPackage)
+                    else:
+                        newPackage = os.path.abspath(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))
+                        if not os.path.exists(os.path.split(newPackage)[0]):
+                            os.mkdir(os.path.split(newPackage)[0])
+                        self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)
+                        #self.loadRRW(newPackage)
+                        ### go to website, get the file, and repleat this process until success
+                except:
+                    print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
         ## write the file, if there is one, to the file dir.
         fileDirName = self.getXMLText(mainTabs.getElementsByTagName('FileDirectoryStucture')[0].childNodes)
         code = mainTabs.getElementsByTagName('FileData')[0]

@@ -43,7 +43,7 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
         # else:
             # creator = None
         
-        self.dictAttrs[name] = {'creator': creatorWidget, ##should change to a premenent identifier
+        self.dictAttrs[name] = {'creator': creatorWidget.widgetID, ##should change to a premenent identifier
         'data':data,'description':description,'extra':extra}
     
     def getOptionalData(self,name):

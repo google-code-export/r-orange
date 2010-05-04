@@ -39,4 +39,4 @@ class RLoader(OWRpy):
         self.status.setText('Session loaded from memory, please use the variable separator to parse the widget output.')
         
     def customWidgetDelete(self):
-        self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { rm(local(ls(), ' + self.Rvariables['sessionEnviron'] + '), envir = '+self.Rvariables['sessionEnviron']+' }')
+        self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { local(rm(ls()), envir = ' + self.Rvariables['sessionEnviron'] + ')}')
