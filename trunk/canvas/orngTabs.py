@@ -278,8 +278,9 @@ class WidgetScrollArea(QScrollArea):
         hs.setValue(min(max(hs.minimum(), hs.value()-ev.delta()), hs.maximum()))
 
 class WidgetListBase:
-    def __init__(self, canvasDlg, widgetInfo):
+    def __init__(self, canvasDlg,schema, widgetInfo):
         self.canvasDlg = canvasDlg
+        self.schema = schema
         self.widgetInfo = widgetInfo
         self.allWidgets = []
         self.tabDict = {}
@@ -380,14 +381,15 @@ class WidgetListBase:
         
         # find tab names that are not in widgetTabList
         
-        tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
-        f = open(tfile, 'r')
+        # tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
+        # f = open(tfile, 'r')
         #print str(f)
         
-        mainTabs = xml.dom.minidom.parse(f)
-        f.close()
+        #mainTabs = xml.dom.minidom.parse(f)
+        mainTabs = self.schema.tags
+        # f.close()
         treeXML = mainTabs.childNodes[0]
-        #print treeXML.childNodes
+        print treeXML.childNodes
         self.canvasDlg.settings['widgetXML'] = mainTabs
         for itab in treeXML.childNodes:
             if itab.nodeName == 'group': #picked a group element
@@ -492,8 +494,8 @@ class WidgetTabs(WidgetListBase, QTabWidget):
 
 
 class WidgetTree(WidgetListBase, QDockWidget):
-    def __init__(self, canvasDlg, widgetInfo, *args):
-        WidgetListBase.__init__(self, canvasDlg, widgetInfo)
+    def __init__(self, canvasDlg, schema, widgetInfo, *args):
+        WidgetListBase.__init__(self, canvasDlg,schema, widgetInfo)
         QDockWidget.__init__(self)
         self.setObjectName('widgetDock')
         self.actions = categoriesPopup.allActions

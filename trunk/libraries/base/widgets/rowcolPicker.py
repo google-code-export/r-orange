@@ -33,7 +33,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         self.rowcolBox = redRGUI.radioButtons(box, 'The names come from:', ['Row', 'Column'], callback=self.rowcolButtonSelected)
         #self.ISNOT = redRGUI.comboBox(box, items = ['IS', 'IS NOT'])
         self.attributes = redRGUI.listBox(box, label='Attributes')
-        self.attributes.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.attributes.setSelectionMode(QAbstractItemView.ExtendedSelection)
         
         selectionBox = redRGUI.widgetBox(box)
         self.attsHintEdit = OWGUIEx.lineEditHint(selectionBox, None, None, callback = self.callback)

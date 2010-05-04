@@ -1,0 +1,47 @@
+<main>
+    <Version>1.7, trunk</Version>
+    <Repository>http://r-orange.googlecode.com/svn/</Repository>
+    <PackageName>base</PackageName>
+    <Dependencies>widgets/anova_lm.py, widgets/apply.py, widgets/boxplot.py, widgets/classCoordinator.py, widgets/cmEditor.py, widgets/cor.py, widgets/coxph.py, widgets/dataEntry.py, widgets/DataExplorer.py, widgets/dummy.py, widgets/erobj.py, widgets/ggplot.py, widgets/Heatmap.py, widgets/hist.py, widgets/intersect.py, widgets/kruskal_test.py, widgets/ListSelector.py, widgets/lm.py, widgets/Melt_DF.py, widgets/mergeR.py, widgets/nameProtector.py, widgets/na_omit.py, widgets/normalize_quantiles.py, widgets/pairwise_t_test.py, widgets/percentileClassifier.py, widgets/plot.py, widgets/prcomp.py, widgets/rank.py, widgets/RDataTable.py, widgets/readFile.py, widgets/RedRScatterplot.py, widgets/rExecutor.py, widgets/RLoader.py, widgets/rowcolPicker.py, widgets/rownames.py, widgets/RVarSeparator.py, widgets/rViewer.py, widgets/SandBox.py, widgets/sort.py, widgets/summary.py, widgets/survdiff.py, widgets/survfit.py, widgets/SurvivalClasses.py, widgets/survivalPlot.py, widgets/t.py, widgets/widgetMaker.py, widgets/wilcox_test.py, icons/arrow_down.png, icons/arrow_up.png, icons/backgrounds, icons/background_16.png, icons/background_32.png, icons/background_40.png, icons/background_48.png, icons/background_60.png, icons/Blank_40.PNG, icons/boxplot.png, icons/Classifications.png, icons/DataFileSave.png, icons/datatable.png, icons/DataTable_16.png, icons/DataTable_32.png, icons/DataTable_40.png, icons/DataTable_48.png, icons/DataTable_60.png, icons/Default.png, icons/Default2.png, icons/Dlg_arrow.png, icons/Dlg_browseCircle.png, icons/Dlg_browseRectangle.png, icons/Dlg_clear.png, icons/Dlg_down1.png, icons/Dlg_down2.png, icons/Dlg_down3.png, icons/Dlg_enter.png, icons/Dlg_left.png, icons/Dlg_Mark2Sel.png, icons/Dlg_pan_hand.png, icons/Dlg_poly.png, icons/Dlg_rect.png, icons/Dlg_right.png, icons/Dlg_Sel2Mark.png, icons/Dlg_SelectedNodes.png, icons/Dlg_SelisMark.png, icons/Dlg_send.png, icons/Dlg_sort.png, icons/Dlg_undo.png, icons/Dlg_UnselectedNodes.png, icons/Dlg_up1.png, icons/Dlg_up2.png, icons/Dlg_up3.png, icons/Dlg_zoom.png, icons/Dlg_zoom2.png, icons/dlg_zoom_extent.png, icons/Dlg_zoom_selection.png, icons/downgreenarrow.png, icons/dummy.png, icons/File_16.png, icons/File_32.png, icons/File_40.png, icons/File_48.png, icons/File_60.png, icons/Finance.png, icons/frame-iron.png, icons/frame-spring.png, icons/frame.png, icons/GenomeMap.png, icons/heatmap.png, icons/HierarchicalClustering.png, icons/HierarchicalClustering_16.png, icons/HierarchicalClustering_32.png, icons/HierarchicalClustering_40.png, icons/HierarchicalClustering_48.png, icons/HierarchicalClustering_60.png, icons/histogram.png, icons/leftEdge.png, icons/merge.png, icons/plot.png, icons/readfile.png, icons/rexecutor.png, icons/rightEdge.png, icons/Save_16.png, icons/Save_32.png, icons/Save_40.png, icons/Save_48.png, icons/Save_60.png, icons/stats.png, icons/Subset.png, icons/survival.png, icons/Thumbs.db, icons/triangle-blue.png, icons/triangle-orange.png, icons/triangle-red.png, icons/Unknown.png, icons/upgreenarrow.png, icons/widgetEdge.png, signalClasses/RCoxphFit.py, signalClasses/RDataFrame.py, signalClasses/REnvironment.py, signalClasses/RGGPlotPlot.py, signalClasses/RList.py, signalClasses/RMArrayLM.py, signalClasses/RMatrix.py, signalClasses/RModelFit.py, signalClasses/RVector.py</Dependencies>
+    <menuTags>
+        <group name="Data Input">
+            <Description>Widgets for Importing data into redR</Description>
+        </group>
+        <group name="View Data">
+            <Description>Sets of widgets for looking at data</Description>
+        </group>
+        <group name="Data Manipulation">
+            <Description>Widgets for data manipulation</Description>
+        </group>
+        <group name="Data Classification">
+            <Description>Widgets that classify data</Description>
+        </group>
+        <group name="Subsetting">
+            <Description>Tools for subsetting tables</Description>
+        </group>
+        <group name="R">
+            <Description>Special Widgets for Interfacing with R</Description>
+        </group>
+        <group name="Plotting">
+            <Description>Visualizing Data</Description>
+        </group>
+        <group name="Stats">
+            <Description>Statistics</Description>
+            <group name="Parametric">
+                <Description>Parametric Statistics</Description>
+            </group>
+            <group name="Non Parametric">
+                <Description>Non-Parametric Statistics</Description>
+            </group>
+            <group name="Survival">
+                <Description>Survival Statistics</Description>
+            </group>
+        </group>
+        <group name="Prototypes">
+            <Description>Prototypes</Description>
+        </group>        
+    </menuTags>
+    <FileDirectoryStucture>None</FileDirectoryStucture>
+    <FileData>None</FileData>
+    <Examples>None</Examples>
+</main>

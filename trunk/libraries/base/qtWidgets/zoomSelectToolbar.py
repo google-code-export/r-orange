@@ -3,9 +3,10 @@ from PyQt4.QtGui import *
 import os.path
 import OWGUI
 import redREnviron
+from redRGUI import widgetState
 
 
-dir = os.path.abspath(redREnviron.directoryNames["widgetDir"]+'/icons/')
+dir = os.path.join(redREnviron.directoryNames["libraryDir"],'base','icons')
 
 dlg_zoom = os.path.join(dir , "Dlg_zoom.png")
 dlg_zoom_selection = os.path.join(dir ,  "Dlg_zoom_selection.png")
@@ -39,7 +40,7 @@ def createButton(parent, text, action = None, icon = None, toggle = 0):
     btn.setToolTip(text)
     return btn
 
-class ZoomSelectToolbar(QGroupBox):
+class zoomSelectToolbar(QGroupBox,widgetState):
 #                (tooltip, attribute containing the button, callback function, button icon, button cursor, toggle)
     IconSpace, IconZoom, IconPan, IconSelect, IconRectangle, IconPolygon, IconRemoveLast, IconRemoveAll, IconSendSelection, IconZoomExtent, IconZoomSelection = range(11)
 
@@ -48,8 +49,8 @@ class ZoomSelectToolbar(QGroupBox):
     NavigateButtons = 1, 9, 10, 0, 2
 
     def __init__(self, widget, parent, graph, autoSend = 0, buttons = (1, 4, 5, 0, 6, 7), name = "Zoom / Select", exclusiveList = "__toolbars"):
-        if not hasattr(ZoomSelectToolbar, "builtinFunctions"):
-            ZoomSelectToolbar.builtinFunctions = \
+        if not hasattr(zoomSelectToolbar, "builtinFunctions"):
+            zoomSelectToolbar.builtinFunctions = \
                  (None,
                  ("Zooming", "buttonZoom", "activateZooming", QIcon(dlg_zoom), Qt.ArrowCursor, 1),
                  ("Panning", "buttonPan", "activatePanning", QIcon(dlg_pan), Qt.OpenHandCursor, 1),
@@ -117,7 +118,7 @@ class ZoomSelectToolbar(QGroupBox):
     def actionRectangleSelection(self): self.action(3)
     def actionPolygonSelection(self): self.action(4)
 
-
+"""
 class NavigateSelectToolbar(QWidget):
 #                (tooltip, attribute containing the button, callback function, button icon, button cursor, toggle)
 
@@ -201,3 +202,5 @@ class NavigateSelectToolbar(QWidget):
     def actionRectangleSelection(self): self.action(3)
     def actionPolygonSelection(self): self.action(4)
 
+
+"""

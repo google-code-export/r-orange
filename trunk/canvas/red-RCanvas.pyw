@@ -104,6 +104,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         # create a schema
         self.schema = orngDoc.SchemaDoc(self)
+        
         self.setCentralWidget(self.schema)
         self.schema.setFocus()
 
@@ -131,7 +132,9 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
-        self.createWidgetsToolbar() # also creates the categories popup
+        # self.createWidgetsToolbar() # also creates the categories popup
+        self.schema.loadRRW(os.path.join(redREnviron.directoryNames['libraryDir'],'base','base.rrp'))
+        
         self.readShortcuts()
         self.readRecentFiles()
 
@@ -212,7 +215,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         else:
             float = False
-        self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
+        self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self,self.schema, self.widgetRegistry)
         self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         self.widgetsToolBar.setFloating(float)
@@ -358,7 +361,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
         self.widgetRegistry = orngRegistry.readCategories()
-        import redRGUI
+        #import redRGUI
         self.createWidgetsToolbar()
         #self.widgetsToolBar.show()
     def menuItemSaveAs(self):
@@ -622,7 +625,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings.setdefault('schemeIconSize', 1)
         self.settings.setdefault("snapToGrid", 1)
         self.settings.setdefault("writeLogFile", 1)
-        self.settings.setdefault("dontAskBeforeClose", 1)
+        self.settings.setdefault("dontAskBeforeClose", 0)
         self.settings.setdefault("debugMode", 0)
         #self.settings.setdefault("autoSaveSchemasOnClose", 0)
         self.settings.setdefault("saveWidgetsPosition", 1)
@@ -691,20 +694,31 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings['pos'] = self.pos()
         self.settings['size'] = self.size()
         self.saveSettings()
+        # closed = self.schema.close()
+        if self.settings['dontAskBeforeClose']:
+            res = QMessageBox.No
+        else:
+            res = QMessageBox.question(self, 'Red-R Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
         
-        closed = self.schema.close()
-        if closed:
-            self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
-            self.output.logFile.close()
-            self.output.hide()
-            ce.accept()            
-            # self.helpWindow.close()
-            # self.reportWindow.close()
+        if res == QMessageBox.Yes:
+            self.RVariableRemoveSupress = 1
+            saveComplete = self.schema.saveDocument()
+            ce.accept()
+            QMainWindow.closeEvent(self,ce)
+        elif res == QMessageBox.No:
+            ce.accept()
+            QMainWindow.closeEvent(self,ce)
         else:
             ce.ignore()
+
         
-        # self.reportWindow.removeTemp()
-        
+        # if closed:
+            # self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
+            # self.output.logFile.close()
+            # self.output.hide()
+            # ce.accept()            
+        # else:
+            # ce.ignore()
         
 
 

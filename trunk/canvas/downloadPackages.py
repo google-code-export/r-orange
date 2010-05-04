@@ -38,7 +38,7 @@ def start(lastRevproplist, versionNumber, silent = True):
             np = QMessageBox(None, 'New Package Download', 'The following packages are available for download.\nPleas select desired packages and press OK', QMessageBox.Cancel, QMessageBox.Ok)
             packageList = QListWidget(None)
             packageList.addItems(newPackageList)
-            packageList.setSelectionMode(QAbstractItemView.MultiSelection)
+            packageList.setSelectionMode(QAbstractItemView.ExtendedSelection)
             np.layout().addWidget(packageList)
             
             if np = QMessageBox.Ok:

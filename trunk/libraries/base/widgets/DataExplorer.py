@@ -56,7 +56,7 @@ class DataExplorer(OWRpy):
         self.selectRowsOnAttachedButton.setEnabled(False)
         
         self.rowListBox = redRGUI.listBox(rowArea)
-        self.rowListBox.setSelectionMode(QAbstractItemView.MultiSelection) # set them to accept multiple selections
+        self.rowListBox.setSelectionMode(QAbstractItemView.ExtendedSelection) # set them to accept multiple selections
         self.rowListHint = OWGUIEx.lineEditHint(rowArea, None, None, callback = self.rowListCallback) # hints that will hold the data for the row and column names, these should be searchable and allow the user to pick subsets of rows and cols to show in the data.  Ideally these will be subset from either another vector of names or will be short enough that the user can type them individually into the line hint
         
         subOnSelectButton = redRGUI.button(self.rowcolDialog, "Subset on Selected", callback = self.commitCriteriaDialog)

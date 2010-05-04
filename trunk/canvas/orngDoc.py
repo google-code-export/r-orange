@@ -38,14 +38,22 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
+        self.tags = xml.dom.minidom.parseString('<tree></tree>')
 
     # we are about to close document
     # ask the user if he is sure
     def closeEvent(self,ce):
-        res = QMessageBox.question(self, 'Red-R Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
+        QWidget.closeEvent(self, ce)
+        orngHistory.logCloseSchema(self.schemaID)
+        return # the close of red-r should be handled in red-rCanvas not in the schema???
+        
+        if self.canvasDlg.settings['dontAskBeforeClose']:
+            res = QMessageBox.No
+        else:
+            res = QMessageBox.question(self, 'Red-R Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
         
         if res == QMessageBox.Yes:
-            newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
+            #newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
             self.RVariableRemoveSupress = 1
             #if self.canvasDlg.settings["autoSaveSchemasOnClose"] and self.widgets != []:
             # if self.widgets != []:
@@ -75,20 +83,7 @@ class SchemaDoc(QWidget):
             ce.ignore()
             return
             
-            # res = QMessageBox.question(self, 'Orange Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
-            # if res == QMessageBox.Yes:
-                # self.saveDocument()
-                # ce.accept()
-                # self.clear(close = True)
-            # elif res == QMessageBox.No:
-                # self.clear(close = True)
-                # self.removeTempDoc()
-                # ce.accept()
-            # else:
-                # ce.ignore()     # we pressed cancel - we don't want to close the document
-                # return
-        QWidget.closeEvent(self, ce)
-        orngHistory.logCloseSchema(self.schemaID)
+        
         
     # save a temp document whenever anything changes. this doc is deleted on closeEvent
     # in case that Orange crashes, Canvas on the next start offers an option to reload the crashed schema with links frozen
@@ -1028,9 +1023,11 @@ class SchemaDoc(QWidget):
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
-            if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', package, dep))[0]):
-                os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', package, dep))[0])
-            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and dep != 'None') or (force and dep != 'None'):
+            if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0]):
+                os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0])
+            
+            if (not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and 
+            dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
                 if '.rrp' in dep:  # this is requiring a package so we need to go and get that
                     fileExt = os.path.split(dep)[1]
@@ -1064,21 +1061,21 @@ class SchemaDoc(QWidget):
         ## Done writing the file
         
         ## update the tags heitarchy
-        t = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'r')
-        mainTagsTabs = xml.dom.minidom.parse(t)
-        tags = mainTagsTabs.childNodes[0]
-        t.close()
+        # t = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'r')
+        # mainTagsTabs = xml.dom.minidom.parse(t)
+        # tags = mainTagsTabs.childNodes[0]
+        # t.close()
         
         newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
         
         for tag in newTags:
             if tag.nodeName == 'group': #picked a group element
-                self.addTagsSystemTag(tags, tag)
+                self.addTagsSystemTag(tag)
             # the tag is a structure is XML itself so we should add the xml if we don't find the right tab
             
-        file = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'wt')
-        file.write(tags.toxml())
-        file.close()
+        # file = open(os.path.join(self.canvasDlg.redRDir, 'tagsSystem', 'tags.xml'), 'wt')
+        # file.write(tags.toxml())
+        # file.close()
         # get the examples if there are anything
         examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
         for example in examples.split(','):
@@ -1101,17 +1098,18 @@ class SchemaDoc(QWidget):
             os.remove(filename)
         print 'Package loaded successfully'
         self.canvasDlg.reloadWidgets()
-    def addTagsSystemTag(self, tags, tag):
+    def addTagsSystemTag(self, tag):
         # tags is the current tags system, tag is the tag that should be added.
         name = str(tag.getAttribute('name'))
         # move through the group tags in tags, if you find the grouname of tag then you don't need to add it, rather just add the child tags to that tag.
-        print tags.childNodes, 'Child Nodes'
+        tags = self.tags.childNodes[0]
+        #print tags.childNodes, 'Child Nodes'
         for t in tags.childNodes:
             if t.nodeName == 'group':
-                print t
+                #print t
                 if str(t.getAttribute('name')) == name: ## found the right tag
-                    print 'Found the name'
-                    print t.childNodes
+                    #print 'Found the name'
+                    #print t.childNodes
                     for tt in tag.childNodes:
                         if tt.nodeName == 'group':
                             self.addTagsSystemTag(t, tt) # add the child tags
@@ -1119,8 +1117,9 @@ class SchemaDoc(QWidget):
                     return
                     
         ## if we made it this far we didn't find the right tag so we need to add all of the tag xml to the tags xml
-        print 'Name not found, appending to group.  This is normal, don\t be worried.'
+        print 'Name not found, appending to group.  This is normal, dont be worried.'
         tags.appendChild(tag)
+        self.tags.childNodes[0] = tags
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()

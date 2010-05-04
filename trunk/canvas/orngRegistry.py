@@ -49,7 +49,7 @@ def readCategories():
     allWidgets = []
     for dirName, directory, plugin in directories:
         widgets = readWidgets(os.path.join(directory,'widgets'), dirName, cachedWidgetDescriptions)  # we read in all the widgets in dirName, directory in the directories
-        print '#########widgets',widgets
+        #print '#########widgets',widgets
         allWidgets += widgets
     if allWidgets: ## collect all of the widgets and set them in the catepories
         categories['widgets'] = WidgetCategory(plugin and directory or "", allWidgets)

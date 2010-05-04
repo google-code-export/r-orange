@@ -38,12 +38,12 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
     
     #(data, generator, comment, other)
     def setOptionalData(self, name, data, creatorWidget=None, description = None, extra=None):
-        if creatorWidget:
-            creator = creatorWidget.windowTitle()
-        else:
-            creator = None
+        # if creatorWidget:
+            # creator = creatorWidget.windowTitle()
+        # else:
+            # creator = None
         
-        self.dictAttrs[name] = {'creator': creator, ##should change to a premenent identifier
+        self.dictAttrs[name] = {'creator': creatorWidget, ##should change to a premenent identifier
         'data':data,'description':description,'extra':extra}
     
     def getOptionalData(self,name):

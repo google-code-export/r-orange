@@ -9,7 +9,7 @@
 from OWRpy import *
 import OWGUI
 import redRGUI 
-import OWToolbars
+# import OWToolbars
 import re
 import textwrap, numpy
 from PyQt4.QtGui import *
@@ -44,7 +44,7 @@ class RedRScatterplot(OWRpy):
         self.graph = redRGUI.redRGraph(plotarea)
         plotarea.layout().addWidget(self.graph)
         self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
-        self.zoomSelectToolbar = OWToolbars.ZoomSelectToolbar(self, self.zoomSelectToolbarBox, self.graph)
+        self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.zoomSelectToolbarBox, self.graph)
         redRGUI.button(self.bottomAreaRight, label = "Print", callback = self.printGraph, tooltip = 'Print your selection to the default printer')
         redRGUI.button(self.bottomAreaRight, label = "Select", callback = self.showSelected, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
         

@@ -20,7 +20,7 @@ class percentileClassifier(OWRpy):
         
         ### GUI ###
         self.colNames_listBox = redRGUI.listBox(self.controlArea, label = 'Column Names:')
-        self.colNames_listBox.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.colNames_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.percentile_spinBox = redRGUI.spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100)
         self.percentile_lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
         self.outputWindow = redRGUI.textEdit(self.controlArea, label = 'Output Summary')

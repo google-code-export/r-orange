@@ -4,7 +4,6 @@
 <tags>Microarray</tags>
 <RFunctions>affy:image</RFunctions>
 <icon>icons/plotaffy.png</icon>
-<priority>70</priority>
 """
 
 from OWRpy import *
