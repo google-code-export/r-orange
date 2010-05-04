@@ -26,6 +26,7 @@ class SchemaDoc(QWidget):
         self.widgets = []                       # list of orngCanvasItems.CanvasWidget items
         self.signalManager = SignalManager()    # signal manager to correctly process signals
 
+        self.sessionID = 0
         self.schemaPath = self.canvasDlg.settings["saveSchemaDir"]
         self.schemaName = ""
         self.loadedSettingsDict = {}
@@ -440,10 +441,14 @@ class SchemaDoc(QWidget):
     def minimumY(self):
         ## calculate the miinimum Y position on the canvas.  When loading new widgets will be adjusted down by this amount.
         y = 0
+        
         for widget in self.widgets:
-            if widget.y() < y:
+            print widget.y()
+            if widget.y() > y:
                 y = widget.y()
                 
+        if y != 0:
+            y += 30 # gives a little more space for the widgets.
         return y
     def saveDocument(self):
         print 'saveDocument'
@@ -507,7 +512,6 @@ class SchemaDoc(QWidget):
             
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
             temp.setAttribute('widgetID', widget.instance.widgetID)
-            temp.setAttribute("widgetID", widget.instance.WidgetID)
             print 'save in orngDoc ' + str(widget.caption)
             progress += 1
             progressBar.setValue(progress)
@@ -673,7 +677,7 @@ class SchemaDoc(QWidget):
                 
             #RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
 
-            
+            loadedWidgets = []
             # read widgets
             loadedOk = 1
             loadingProgressBar.setLabelText('Loading Widgets')
@@ -689,9 +693,8 @@ class SchemaDoc(QWidget):
                         settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
                     except:
                         settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
-                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), caption = "", y = int(widget.getAttribute("yPos")) - minY, widgetSettings = settings, saveTempDoc = False)
-                    tempWidget.updateWidgetState()
-                    tempWidget.instance.setLoadingSavedSession(True)
+                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), caption = "", y = int(int(widget.getAttribute("yPos")) + minY), widgetSettings = settings, saveTempDoc = False)
+                    
                     if not tempWidget:
                         #print settings
                         print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
@@ -705,6 +708,11 @@ class SchemaDoc(QWidget):
                             failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                             loadedOk = 0
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                    tempWidget.updateWidgetState()
+                    tempWidget.instance.setLoadingSavedSession(True)
+                    
+                    ## add a collector for widget td settings
+                    loadedWidgets.append(tempWidget)
                 except:
                     import sys, traceback
                     print 'Error occured during widget loading'
@@ -740,7 +748,7 @@ class SchemaDoc(QWidget):
                     else:      enabled = int(line.getAttribute("enabled"))
                     signals = line.getAttribute("signals")
                     print signals
-                    inWidget = self.getWidgetByID(inIndex)
+                    inWidget = self.getWidgetByID(inIndex)  ### last times that these ID's will be used before widget close we permute these
                     outWidget = self.getWidgetByID(outIndex)
                     if inWidget == None or outWidget == None:
                         failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
@@ -780,7 +788,6 @@ class SchemaDoc(QWidget):
         self.canvas.update()
 
         #self.saveTempDoc()
-
         if not loadedOk:
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
         
@@ -791,7 +798,7 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                widget.instance.onLoadSavedSession()
+                widget.instance.onLoadSavedSession(template = True)
             except:
                 import traceback,sys
                 print '-'*60
@@ -801,21 +808,27 @@ class SchemaDoc(QWidget):
                 QMessageBox.Ok + QMessageBox.Default)
             lpb += 1
             loadingProgressBar.setValue(lpb)
-            
+        
+        ## now we need to reset the widget variables by appending a string
+        for widget in loadedWidgets:
+            widget.instance.widgetID += str('_'+str(self.sessionID))
+            widget.instance.variable_suffix = '_'+widget.instance.widgetID
+            widget.instance.resetRvariableNames()
+        self.sessionID += 1
         print 'done on load'
 
-        # do we want to restore last position and size of the widget
-        # if self.canvasDlg.settings["saveWidgetsPosition"]:
-            # for widget in self.widgets:
-                # widget.instance.setLoadingSavedSession(False)
-                #widget.instance.show()
+        
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
         loadingProgressBar.hide()
         loadingProgressBar.close()
-    # save document as application
     
-    
+    def checkID(self, widgetID):
+        for widget in self.widgets:
+            if widget.instance.widgetID == widgetID:
+                return False
+        else:
+            return True
     
     def loadDocument(self, filename, caption = None, freeze = 0, importBlank = 0):
         
@@ -853,8 +866,8 @@ class SchemaDoc(QWidget):
             self.canvasDlg.setCaption(caption or self.schemaName)
         try:
             import re
-            for widget in self.widgets: # convert the caption names so there are no conflicts
-                widget.caption += 'A'
+            # for widget in self.widgets: # convert the caption names so there are no conflicts
+                # widget.caption += 'A'
                 
             loadingProgressBar.setLabelText('Loading Schema Data, please wait')
             zfile = zipfile.ZipFile( str(filename), "r" )
@@ -872,12 +885,13 @@ class SchemaDoc(QWidget):
             self.loadedSettingsDict = settingsDict
             
             required = schema.getElementsByTagName("required")
-            required = eval(str(required[0].getAttribute("requiredPackages")))
-            #print required
-            required = cPickle.loads(required['r'])
-            # print required
+            print str(required), required
+            if str(required) not in ['', '[]']: 
+                required = eval(str(required[0].getAttribute("requiredPackages")))
+                required = cPickle.loads(required['r'])
+                
             
-            try:
+            try:  # protect the required functions in a try statement, we want to load these things and they should be there but we can't force it to exist in older schemas, so this is in a try.
                 if len(required['R']) > 0:
                     #print qApp.canvasDlg.settings.keys()
                     #print qApp.canvasDlg.settings['CRANrepos']
@@ -887,19 +901,19 @@ class SchemaDoc(QWidget):
                         repo = None
                     loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
                     RSession.require_librarys(required['R'], repository=repo)
+                
+                
+                for i in required['RedR']:
+                    self.loadRRW(fileText = i)
             except: 
                 import sys, traceback
                 print '-'*60
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
 
-            for i in required['RedR']:
-                self.loadRRW(fileText = i)
-                
-                
-            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
-
             
+            
+
             # read widgets
             loadedOk = 1
             loadingProgressBar.setLabelText('Loading Widgets')
@@ -911,11 +925,16 @@ class SchemaDoc(QWidget):
                     name = widget.getAttribute("widgetName")
                     #print 'Name: '+str(name)+' (orngDoc.py)'
                     #print settingsDict[widget.getAttribute("caption")]
-                    settings = cPickle.loads(settingsDict[widget.getAttribute("caption")])
-                    tempWidget = self.addWidgetByFileName(name, int(widget.getAttribute("xPos")), 
-                    int(widget.getAttribute("yPos")) - minY, widget.getAttribute("caption"), settings, saveTempDoc = False)
-                    tempWidget.updateWidgetState()
-                    tempWidget.instance.setLoadingSavedSession(True)
+                    widgetIDisNew = self.checkID(widget.getAttribute('widgetID'))
+                    if widgetIDisNew == False:
+                        raise Exception, 'Widget ID is a duplicate, I can\'t load this!!!'
+                    try:
+                        settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
+                    except:
+                        settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
+                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
+                    int(widget.getAttribute("yPos")) - minY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
+                    
                     if not tempWidget:
                         #print settings
                         print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
@@ -929,6 +948,8 @@ class SchemaDoc(QWidget):
                             failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                             loadedOk = 0
                             print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                    tempWidget.updateWidgetState()
+                    tempWidget.instance.setLoadingSavedSession(True)
                 except:
                     import sys, traceback
                     print 'Error occured during widget loading'
@@ -950,6 +971,9 @@ class SchemaDoc(QWidget):
             # lpb = 0
             
             
+            ## all of the widgets were loaded successfully, this means that we now can load the r-session.
+            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
+
 
             for line in lineList:
                 try:
@@ -1013,7 +1037,7 @@ class SchemaDoc(QWidget):
         loadingProgressBar.setValue(0)
         lpb = 0
         for widget in self.widgets:
-            print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
+            #print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
             try: # important to have this or else failures in load saved settings will result in no links able to connect.
                 widget.instance.onLoadSavedSession()
             except:

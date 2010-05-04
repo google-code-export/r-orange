@@ -28,9 +28,11 @@ class OWRpy(widgetSignals,widgetGUI,session):
         
         OWRpy.uniqueWidgetNumber += 1
         ctime = str(time.time())
+        self.sessionID = 0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
         self.widgetID = str(OWRpy.uniqueWidgetNumber) + '_' + ctime
         self.variable_suffix = '_' + self.widgetID
         self.Rvariables = {}
+        self.RvariablesNames = []
         self.setRvariableNames(['title'])
         self.requiredRLibraries = []
         self.device = {}
@@ -39,12 +41,15 @@ class OWRpy(widgetSignals,widgetGUI,session):
         
         
         
-
+    def resetRvariableNames(self):
+        for x in self.RvariablesNames:
+            self.Rvariables[x] = x + self.variable_suffix
     def setRvariableNames(self,names):
         
         #names.append('loadSavedSession')
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
+            self.RvariablesNames.append(x)
     def makeCM(self, Variable):
         self.R(Variable+'<-list()')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):

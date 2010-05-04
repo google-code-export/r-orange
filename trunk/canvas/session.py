@@ -13,10 +13,10 @@ class session():
         #collect the sent items
         
         #dont save these variables
-        
+        self.loaded = False
         self.defaultGlobalSettingsList = ['windowState']
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
-        self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList'])
+        self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
 
     def getSettings(self, alsoContexts = True):
         print 'moving to save'+str(self.captionTitle)
@@ -185,7 +185,8 @@ class session():
             else:
                 self.redRGUIObjects[k] = v;
         
-    def onLoadSavedSession(self):
+    def onLoadSavedSession(self, force = False, template = False):
+        if self.loaded and not force: return  # prevents a loaded widget from being reloaded this can be overwriten using a call to force if the loader wishes.
         print 'in onLoadSavedSession'
         qApp.setOverrideCursor(Qt.WaitCursor)
         self.progressBarInit()
@@ -202,7 +203,7 @@ class session():
                 if 'redRGUIObject' in v.keys():
                     getattr(self, k).loadSettings(v['redRGUIObject'])
                     getattr(self, k).setDefaultState(v['redRGUIObject'])
-                
+                elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     # print 'dict',len(var),len(v['dict'])
@@ -236,6 +237,7 @@ class session():
         
         qApp.restoreOverrideCursor()
         self.progressBarFinished()
+        self.loaded = True
     def setSentItemsList(self, d):
         # set the sentItems in the widget
         for (sentItemName, sentItemDict) in d:
@@ -335,15 +337,9 @@ class session():
             if settings: settings.update(self._settingsFromSchema)
             else:        settings = self._settingsFromSchema
 
-        # can't close everything into one big try-except since this would mask all errors in the below code
         if settings:
-            # if hasattr(self, "settingsList"):
-            # pp = pprint.PrettyPrinter(indent=3)
-            # pp.pprint(settings)
             self.setSettings(settings)
 
-    
-        
 #############widget specific settings#####################
 
     def getGlobalSettingsFile(self, file=None):
