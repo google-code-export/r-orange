@@ -13,7 +13,7 @@ class writeEset(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Sample Data")
         
-        self.inputs = [("Affybatch", signals.affy.RVariable, self.nothingb)]
+        self.inputs = [("Affybatch", signals.RVariable, self.nothingb)]
         self.outputs = None
         
         self.data = None

@@ -14,9 +14,12 @@ import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 
 
 class OrangeCanvasDlg(QMainWindow):
+    
     def __init__(self, app, parent = None, flags =  0):
         QMainWindow.__init__(self, parent)
         
+        self.version = {}
+        self.version = self.getVersion()
         self.debugMode = 1        # print extra output for debuging
         self.setWindowTitle("Red-R Canvas")
         self.windows = []    # list of id for windows in Window menu
@@ -26,6 +29,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.schemeIconSizeList = [32, 40, 48]
         self.widgetsToolBar = None
         self.originalPalette = QApplication.palette()
+        
 
         self.__dict__.update(redREnviron.directoryNames)
         logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
@@ -52,6 +56,7 @@ class OrangeCanvasDlg(QMainWindow):
             
         self.settings = {}
         self.settings['CRANrepos'] = 'http://cran.r-project.org'
+        
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
         splashWindow.showMessage("Loading Settings", Qt.AlignHCenter + Qt.AlignBottom)
@@ -132,8 +137,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
-        # self.createWidgetsToolbar() # also creates the categories popup
-        self.schema.loadRRW(os.path.join(redREnviron.directoryNames['libraryDir'],'base','base.rrp'))
+        self.createWidgetsToolbar() # also creates the categories popup
+        
         
         self.readShortcuts()
         self.readRecentFiles()
@@ -198,24 +203,23 @@ class OrangeCanvasDlg(QMainWindow):
         
     def createWidgetsToolbar(self):
         orngTabs.constructCategoriesPopup(self)
+        float = False
         if self.widgetsToolBar:
             if self.widgetsToolBar.isFloating():
                 float = True
-            else: 
-                float = False
-            self.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
-            if isinstance(self.widgetsToolBar, QToolBar):
-                self.removeToolBar(self.widgetsToolBar)
-            elif isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
-                self.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
-                self.removeDockWidget(self.widgetsToolBar)
-            elif isinstance(self.widgetsToolBar, orngTabs.WidgetTree):
-                self.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
-                self.removeDockWidget(self.widgetsToolBar)
 
-        else:
-            float = False
-        self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self,self.schema, self.widgetRegistry)
+            self.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
+            # if isinstance(self.widgetsToolBar, QToolBar):
+                # self.removeToolBar(self.widgetsToolBar)
+            # elif isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
+                # self.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
+                # self.removeDockWidget(self.widgetsToolBar)
+            # elif isinstance(self.widgetsToolBar, orngTabs.WidgetTree):
+            self.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
+            self.removeDockWidget(self.widgetsToolBar)
+
+            
+        self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
         self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         self.widgetsToolBar.setFloating(float)
@@ -223,10 +227,19 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings["WidgetTabs"] = self.tabs.createWidgetTabs(self.settings["WidgetTabs"], self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
         #self.tabs.createFavoriteWidgetTabs(self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
-        if not self.settings.get("showWidgetToolbar", True): 
-            self.widgetsToolBar.hide()
+        # if not self.settings.get("showWidgetToolbar", True): 
+            # self.widgetsToolBar.hide()
         
-
+    def getVersion(self):
+        if len(self.version.keys()) ==0:
+            f = open(os.path.join(redREnviron.directoryNames["redRDir"],'version.txt'), 'r')
+            file = f.readlines()
+            f.close()
+            import re
+            for i in file:
+                m = re.search('!define\s(\S+)\s"(.*)"',i)
+                self.version[m.group(1)] = m.group(2)
+        return self.version
 
     def readShortcuts(self):
         self.widgetShortcuts = {}

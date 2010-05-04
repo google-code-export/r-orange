@@ -384,7 +384,7 @@ class SignalManager:
         #for i in range(index, len(self.widgets)):
         for i in children:
             # print 'propagating', i.windowTitle(), i#, index
-            if len(i.outputs) !=0 and not i.loadSavedSession:
+            if i.outputs != None and len(i.outputs) !=0 and not i.loadSavedSession:
                 i.setInformation(id = 'attention', text = 'Widget needs attention.')
     
     

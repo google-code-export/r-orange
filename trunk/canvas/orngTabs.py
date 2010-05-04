@@ -278,9 +278,8 @@ class WidgetScrollArea(QScrollArea):
         hs.setValue(min(max(hs.minimum(), hs.value()-ev.delta()), hs.maximum()))
 
 class WidgetListBase:
-    def __init__(self, canvasDlg,schema, widgetInfo):
+    def __init__(self, canvasDlg, widgetInfo):
         self.canvasDlg = canvasDlg
-        self.schema = schema
         self.widgetInfo = widgetInfo
         self.allWidgets = []
         self.tabDict = {}
@@ -386,7 +385,7 @@ class WidgetListBase:
         #print str(f)
         
         #mainTabs = xml.dom.minidom.parse(f)
-        mainTabs = self.schema.tags
+        mainTabs = widgetRegistry['tags']
         # f.close()
         treeXML = mainTabs.childNodes[0]
         print treeXML.childNodes
@@ -407,6 +406,7 @@ class WidgetListBase:
         # return the list of tabs and their status (shown/hidden)
         return widgetTabList
         
+    
     def insertChildTabs(self, itab, tab, widgetRegistry):
         try:
             #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
@@ -494,8 +494,8 @@ class WidgetTabs(WidgetListBase, QTabWidget):
 
 
 class WidgetTree(WidgetListBase, QDockWidget):
-    def __init__(self, canvasDlg, schema, widgetInfo, *args):
-        WidgetListBase.__init__(self, canvasDlg,schema, widgetInfo)
+    def __init__(self, canvasDlg, widgetInfo, *args):
+        WidgetListBase.__init__(self, canvasDlg, widgetInfo)
         QDockWidget.__init__(self)
         self.setObjectName('widgetDock')
         self.actions = categoriesPopup.allActions

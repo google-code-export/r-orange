@@ -7,6 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI
 import signals
+import xml.dom.minidom
 
 redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 if not redRDir in sys.path:
@@ -25,7 +26,8 @@ class WidgetCategory(dict):
     def __init__(self, directory, widgets):
         self.update(widgets)
         self.directory = directory
-   
+
+        
 def readCategories():
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
@@ -45,12 +47,24 @@ def readCategories():
         if os.path.isdir(directory):
             directories.append((dirName, directory, ""))
 
-    categories = {'widgets':[], 'templates':[]}     
+    categories = {'widgets':[], 'templates':[], 'tags': None}     
     allWidgets = []
+    theTags = xml.dom.minidom.parseString('<tree></tree>')
+
     for dirName, directory, plugin in directories:
         widgets = readWidgets(os.path.join(directory,'widgets'), dirName, cachedWidgetDescriptions)  # we read in all the widgets in dirName, directory in the directories
+        if os.path.isfile(os.path.join(directory,dirName+'.rrp')):
+            f = open(os.path.join(directory,dirName+'.rrp'), 'r')
+            mainTabs = xml.dom.minidom.parse(f)
+            f.close() 
+            newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
+            for tag in newTags:
+                if tag.nodeName == 'group': 
+                    addTagsSystemTag(theTags.childNodes[0],tag)
         #print '#########widgets',widgets
         allWidgets += widgets
+    categories['tags'] = theTags
+    # print theTags
     if allWidgets: ## collect all of the widgets and set them in the catepories
         categories['widgets'] = WidgetCategory(plugin and directory or "", allWidgets)
 
@@ -71,6 +85,29 @@ hasErrors = False
 splashWindow = None
 widgetsWithError = []
 
+def addTagsSystemTag(tags,newTag):
+                
+    name = str(newTag.getAttribute('name'))
+    # move through the group tags in tags, if you find the grouname of tag 
+    #then you don't need to add it, rather just add the child tags to that tag.
+    #tags = theTags.childNodes[0]
+    #print tags.childNodes, 'Child Nodes'
+    for t in tags.childNodes:
+        if t.nodeName == 'group':
+            #print t
+            if str(t.getAttribute('name')) == name: ## found the right tag
+                #print 'Found the name'
+                #print t.childNodes
+                for tt in newTag.childNodes:
+                    if tt.nodeName == 'group':
+                        addTagsSystemTag(t, tt) # add the child tags
+            
+                return
+                
+    ## if we made it this far we didn't find the right tag so we need to add all of the tag xml to the tags xml
+    print 'Name not found, appending to group.  This is normal, dont be worried.'
+    tags.appendChild(newTag)
+    #theTags.childNodes[0] = tags    
 
 def readWidgets(directory, package, cachedWidgetDescriptions):
     import sys, imp
