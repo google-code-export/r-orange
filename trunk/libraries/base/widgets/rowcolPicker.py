@@ -49,9 +49,22 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         if data:
             self.data = data['data']
             self.dataParent = data.copy()
-            r =  self.R(self.dataParent.getRownames_call())
-            c =  self.R(self.dataParent.getColumnnames_call())
+            
+    def callback(self):
+        text = str(self.attsHintEdit.text())
+        for i in range(0, self.attributes.count()):
+            item = self.attributes.item(i)
+            if str(item.text()) == text:
+                self.attributes.setItemSelected(item, 1)
+                
+    
+    def rowcolButtonSelected(self): #recall the GUI setting the data if data is selected
+        print self.rowcolBox.getChecked()
+        if self.dataParent:
+            
+            
             if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
+                r =  self.R(self.dataParent.getRownames_call())
                 if type(r) == list:
                     self.attributes.update(r)
                     self.attsHintEdit.show()
@@ -63,7 +76,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
                     self.attsHintEdit.setItems([i for i in range(self.R('length('+self.data+'[1,])'))])
                     self.namesPresent = 0
             elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
-                
+                c =  self.R(self.dataParent.getColumnnames_call())
                 if type(c) == list:
                     self.attributes.update(c)
                     self.attsHintEdit.show()
@@ -76,17 +89,6 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
                     self.namesPresent = 0
             else: #by exclusion we haven't picked anything yet
                 self.status.setText('You must select either Row or Column to procede')
-    def callback(self):
-        text = str(self.attsHintEdit.text())
-        for i in range(0, self.attributes.count()):
-            item = self.attributes.item(i)
-            if str(item.text()) == text:
-                self.attributes.setItemSelected(item, 1)
-                
-    
-    def rowcolButtonSelected(self): #recall the GUI setting the data if data is selected
-        print self.rowcolBox.getChecked()
-        if self.dataParent: self.setWidget(self.dataParent)
     def setSubsettingVector(self, data):
         if data == None: return
         self.subOnAttachedButton.setEnabled(True)

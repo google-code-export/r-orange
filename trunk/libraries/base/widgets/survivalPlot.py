@@ -16,13 +16,14 @@ class survivalPlot(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.loadSettings()
         self.RFunctionParam_x = ''
-        self.inputs = [("x", SurvivalClasses.SurvFit, self.processx)]
+        self.inputs = [("x", signals.RSurvFit, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:', text = 'Survival Plot', toolTip = 'The title of the plot')
         self.RFunctionParam_xlab = redRGUI.lineEdit(box, label = 'X Axis Label:', text = 'Time', toolTip = 'The text representing the X axis.')
         self.RFunctionParam_ylab = redRGUI.lineEdit(box, label = 'Y Axis Label:', text = 'Percent Surviving', toolTip = 'The text representing the Y axis.')
         self.RFunctionParam_xscale = redRGUI.lineEdit(box, label = 'X Scale Adjust:', toolTip = 'Number to adjust the scale by to convert from different times ex months to years.')
+        self.RFunctionParam_colors = redRGUI.lineEdit(box, label = 'Colors:', toolTip = 'Colors either as names (must be in quotes) or numbers')
         self.RFunctionParam_cex = redRGUI.lineEdit(box, label = 'Text Magnification Percent:', text = '120', toolTip = 'Magnification of the axes.')
         redRGUI.button(self.bottomAreaRight, 'Save as PDF', callback = self.saveAsPDF)
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -52,6 +53,8 @@ class survivalPlot(OWRpy):
             mag = float(str(self.RFunctionParam_cex.text()))/100
             injection.append('cex.lab = '+str(mag))
             injection.append('cex.axis = '+str(mag))
+        if str(self.RFunctionParam_colors.text()) != '':
+            injection.append('col = c('+str(self.RFunctionParam_colors.text())+')')
         inj = ','.join(injection)
         
         self.Rplot('plot('+str(self.RFunctionParam_x)+','+inj+', yscale = 100, lty=c(1,2,3))', 5, 5)

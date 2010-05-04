@@ -71,4 +71,4 @@ class percentileClassifier(OWRpy):
         self.outputWindow.insertHtml('</table>')
         newData = self.dataParent.copy()
         newData.data = self.Rvariables['percentileClassifier_df']
-        self.rSend('Data Frame', self.dataParent)
+        self.rSend('Data Frame', newData)

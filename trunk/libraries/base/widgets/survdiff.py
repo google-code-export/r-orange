@@ -19,7 +19,7 @@ class survdiff(OWRpy):
         self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata)]
-        self.outputs = [("survdiff Output", SurvivalClasses.SurvFit)]
+        self.outputs = [("survdiff Output", signals.RSurvFit)]
         
         self.help.setHtml('<small>Calculates the survival differece between groups given a data table with event times, event status, and groupings.  This can perform complex comparisons including interactions.  The parameter rho can be set between 0 and 1 with With rho = 0 this is the log-rank or Mantel-Haenszel test, and with rho = 1 it is equivalent to the Peto & Peto modification of the Gehan-Wilcoxon test.</small>')
         hbox = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
@@ -60,8 +60,8 @@ class survdiff(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.data["data"] = self.Rvariables["survdiff"]
-        self.rSend("survdiff Output", self.data)
+        newData = signals.RSurvFit(data = self.Rvariables['survdiff'])
+        self.rSend("survdiff Output", newData)
     def compileReport(self):
         self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
         self.reportSettings('Function Settings', [('formula',self.formula)])

@@ -15,8 +15,8 @@ class RVarSeparator(OWRpy):
         OWRpy.__init__(self,parent, signalManager, "RVarSeparator", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(['separator_cm'])
         self.loadSettings()
-        self.inputs = [('R Session', signals.RSession, self.process)]
-        self.outputs = [('R Session', signals.RSession), ('R.object', signals.RVariable), ('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector)]
+        self.inputs = [('R Session', signals.REnvironment, self.process)]
+        self.outputs = [('R Session', signals.REnvironment), ('R.object', signals.RVariable), ('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector)]
         self.setRvariableNames(['sessionEnviron'])
         self.envName = ''
         self.sendthis = {}
@@ -64,15 +64,14 @@ class RVarSeparator(OWRpy):
                 self.status.setText('Character vector sent')
                 self.sendStatus.setText('Data sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                
-                self.makeCM(self.Rvariables['separator_cm'], self.sendthis['data'])
-                newData = signals.RDataFrame(data = self.sendthis['data'], cm = self.Rvariables['separator_cm'], parent = self.sendthis['data'])
+
+                newData = signals.RDataFrame(data = self.sendthis['data'])
                 self.rSend('R Data Frame', newData)
                 self.status.setText('Data frame sent')
                 self.sendStatus.setText('Data sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
-                self.makeCM(self.Rvariables['separator_cm'], 'as.data.frame('+self.sendthis['data']+')')
-                newData = signals.RDataFrame(data = self.sendthis['data'], cm = self.Rvariables['separator_cm'], parent = self.sendthis['data'])
+                
+                newData = signals.RMatrix(data = self.sendthis['data'])
                 
                 self.rSend('R Data Frame', newData)
                 self.status.setText('Matrix sent')

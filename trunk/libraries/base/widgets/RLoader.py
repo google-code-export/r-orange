@@ -16,7 +16,7 @@ class RLoader(OWRpy):
         OWRpy.__init__(self,parent, signalManager, "RLoader", wantMainArea = 0, resizingEnabled = 1)
         self.loadSettings()
         self.inputs = None
-        self.outputs = [('R Session', signals.RSession)]
+        self.outputs = [('R Session', signals.REnvironment)]
         self.setRvariableNames(['sessionEnviron'])
         OWGUI.button(self.controlArea, self, 'Load Session', callback = self.loadSession)
         self.infoa = redRGUI.widgetLabel(self.controlArea, '')
@@ -34,7 +34,8 @@ class RLoader(OWRpy):
         
         # logic to handle exceptions to loading
         self.infoa.setText('Data loaded from '+str(file)+'. Please use the R Variable Separator widget to extract your data.')
-        self.rSend('R Session', {'data':self.Rvariables['sessionEnviron']})
+        newData = signals.REnvironment(data = self.Rvariables['sessionEnviron'])
+        self.rSend('R Session', newData)
         self.status.setText('Session loaded from memory, please use the variable separator to parse the widget output.')
         
     def customWidgetDelete(self):

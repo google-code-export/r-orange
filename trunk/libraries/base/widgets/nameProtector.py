@@ -42,7 +42,7 @@ class nameProtector(OWRpy):
             self.data = data['data']
             self.dfbox.show()
             self.vbox.hide()
-            cols = self.R('colnames('+self.data+')')
+            cols = self.R('colnames('+self.data+')', wantType = 'list')
             cols.insert(0, '') # in case you don't want to protect a column name
             self.namesProtectDFcomboBox.update(cols)
         else:

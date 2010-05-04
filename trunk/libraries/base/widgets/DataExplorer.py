@@ -114,7 +114,7 @@ class DataExplorer(OWRpy):
                 self.dataParent = data.copy()
                 if not self.dataParent.optionalDataExists('cm'):
                     self.R('cm_'+self.Rvariables['dataExplorer']+'<-list()')
-                    self.dataParent.setOptionalData('cm', 'cm_'+self.Rvariables['dataExplorer'], 'Row Filtering', 'Class Manager added to the data by Row Filtering, the data did not have a class manager before this.', None)
+                    self.dataParent.setOptionalData('cm', 'cm_'+self.Rvariables['dataExplorer'], self, 'Class Manager added to the data by Row Filtering, the data did not have a class manager before this.', None)
                     ## show a warning on the widget
                     self.setWarning(text = 'Class manager variable set,\nyou should use a Class Coordinator\nwidget to do this for more\nfunctionality.')
                 # first get some info about the table so we can put that into the current table.
@@ -374,7 +374,7 @@ class DataExplorer(OWRpy):
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
-        newData = {'data':'as.data.frame('+self.orriginalData+'['+'&'.join(self.criteriaList)+',])'} # reprocess the table
+        newData = {'data':+self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
@@ -389,9 +389,9 @@ class DataExplorer(OWRpy):
 
         print self.criteriaList
         if len(self.criteriaList) > 0:
-            self.R(self.dataParent.dictAttrs['cm'][0]+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
+            self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
             newData = self.dataParent.copy()
-            newData.data = self.dataParent.data+'['+self.dataParent['cm'][0]+'$'+self.Rvariables['dataExplorer']+'$True,]'
+            newData.data = self.dataParent.data+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,]'
             self.rSend('Data Subset', newData)
         else:
             self.rSend('Data Subset', self.dataParent.copy())

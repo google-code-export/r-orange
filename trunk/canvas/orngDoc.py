@@ -1025,9 +1025,7 @@ class SchemaDoc(QWidget):
             dep = dep.strip(' /')
             if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0]):
                 os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0])
-            
-            if (not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and 
-            dep != 'None') or (force and dep != 'None'):
+            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and dep != 'None') or (force and dep != 'None'):
                 print 'Downloading dependencies', dep
                 if '.rrp' in dep:  # this is requiring a package so we need to go and get that
                     fileExt = os.path.split(dep)[1]
