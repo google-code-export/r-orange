@@ -467,13 +467,19 @@ class SchemaDoc(QWidget):
         if not name or name == None: return False
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == "": return False
-        if os.path.splitext(str(name))[1].lower() != ".rrs": name = os.path.splitext(str(name))[0] + ".rrs"
+        if os.path.splitext(str(name))[1].lower() != ".rrs": name = name + ".rrs"
         return self.save(str(name),tmp=False)
         
-
+    def saveTemplate(self):
+        name = QFileDialog.getSaveFileName(self, "Save Template", os.path.join(self.canvasDlg.redRDir, 'libraries'), "Red-R Widget Template (*.rrts)")
+        if not name or name == None: return False
+        if str(name) == '': return False
+        if os.path.splitext(str(name))[0] == '': return False
+        if os.path.splitext(str(name))[1].lower() != ".rrts": name = name + '.rrts'
+        return self.save(str(name),tmp=True)
         
     # save the file
-    def save(self, filename = None,tmp = True):
+    def save(self, filename = None,tmp = False):
 
         print 'start save schema'
         if filename == None:
@@ -594,12 +600,12 @@ class SchemaDoc(QWidget):
 
         return True
     # load a scheme with name "filename"
-    def loadTemplate(self, filename, caption = None, freeze = 0, importBlank = 0):
+    def loadTemplate(self, filename, caption = None, freeze = 0):
         import redREnviron
         ### .rrw functionality
-        if filename.split('.')[-1] in ['rrw', 'rrp']:
-            self.loadRRW(filename)
-            return # we don't need to load anything else, we are not really loading a rrs file. 
+        # if filename.split('.')[-1] in ['rrw', 'rrp']:
+            # self.loadRRW(filename)
+            # return # we don't need to load anything else, we are not really loading a rrs file. 
         ###
         print filename.split('.')[-1], 'File name extension'
         print 'document load called'
@@ -636,12 +642,12 @@ class SchemaDoc(QWidget):
                 # widget.caption += 'A'
                 
             loadingProgressBar.setLabelText('Loading Schema Data, please wait')
-            zfile = zipfile.ZipFile( str(filename), "r" )
-            for name in zfile.namelist():
-                file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
+            # zfile = zipfile.ZipFile( str(filename), "r" )
+            # for name in zfile.namelist():
+                # file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
                 
                 #if re.search('tempSchema.tmp',os.path.basename(name)):
-            doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,'tempSchema.tmp'))
+            doc = parse(filename)
                 
             schema = doc.firstChild
             widgets = schema.getElementsByTagName("widgets")[0]
@@ -724,10 +730,6 @@ class SchemaDoc(QWidget):
                     print '-'*60        
                 lpb += 1
                 loadingProgressBar.setValue(lpb)
-            if not importBlank: # a normal load of the session
-                pass
-            else:
-                self.schemaName = ""
 
             #read lines
             lineList = lines.getElementsByTagName("channel")

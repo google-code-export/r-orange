@@ -270,6 +270,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuFile.addSeparator()
         self.menuSaveID = self.menuFile.addAction(QIcon(self.file_save), "&Save", self.menuItemSave, QKeySequence.Save )
         self.menuSaveAsID = self.menuFile.addAction( "Save &As...", self.menuItemSaveAs)
+        self.menuSaveTemplateID = self.menuFile.addAction( "Save As Template", self.menuItemSaveTemplate)
         #self.menuFile.addAction( "&Save as Application (Tabs)...", self.menuItemSaveAsAppTabs)
         #self.menuFile.addAction( "&Save as Application (Buttons)...", self.menuItemSaveAsAppButtons)
         self.menuFile.addSeparator()
@@ -339,22 +340,30 @@ class OrangeCanvasDlg(QMainWindow):
             #self.debugModeButton.setChecked(False)
             self.output.debugMode = 1
     def importSchema(self):
-        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; All Files (*.*)")
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs, *.rrts);; All Files (*.*)")
         if name.isEmpty():
             return
-        self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
-        self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
-        self.addToRecentMenu(str(name))
+        if os.path.splitext(str(name))[1].lower() == '.rrts':  ## we have a template schema and need to treat it in a special way   
+            self.schema.loadTemplate(str(name))
+            return # we don't want to process any further
+        else:
+            self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+            self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
+            self.addToRecentMenu(str(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; Red-R Package (*.rrp);; All Files (*.*)")
+        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; Red-R Package (*.rrp);; Red-R Template (*.rrts);; All Files (*.*)")
         if name.isEmpty():
         
             return
-        self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
-        self.schema.clear()
-        self.schema.loadDocument(str(name), freeze = 0)
-        self.addToRecentMenu(str(name))
+        if os.path.splitext(str(name))[1].lower() == '.rrts':  ## we have a template schema and need to treat it in a special way   
+            self.schema.loadTemplate(str(name))
+            return # we don't want to process any further
+        else:
+            self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+            self.schema.clear()
+            self.schema.loadDocument(str(name), freeze = 0, importBlank = 0)
+            self.addToRecentMenu(str(name))
 
     def menuItemOpenFreeze(self):
         name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.rrs)")
@@ -380,6 +389,8 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveAs(self):
         self.schema.saveDocumentAs()
 
+    def menuItemSaveTemplate(self):
+        self.schema.saveTemplate()
     def menuItemSaveAsAppButtons(self):
         self.schema.saveDocumentAsApp(asTabs = 0)
 
