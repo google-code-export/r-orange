@@ -471,6 +471,7 @@ class SchemaDoc(QWidget):
         return self.save(str(name),tmp=False)
         
 
+        
     # save the file
     def save(self, filename = None,tmp = True):
 
