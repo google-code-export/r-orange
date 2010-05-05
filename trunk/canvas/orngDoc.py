@@ -39,12 +39,14 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
+   
 
+    """
     # we are about to close document
     # ask the user if he is sure
     def closeEvent(self,ce):
-        QWidget.closeEvent(self, ce)
-        orngHistory.logCloseSchema(self.schemaID)
+        # QWidget.closeEvent(self, ce)
+        # orngHistory.logCloseSchema(self.schemaID)
         return # the close of red-r should be handled in red-rCanvas not in the schema???
         
         if self.canvasDlg.settings['dontAskBeforeClose']:
@@ -84,7 +86,7 @@ class SchemaDoc(QWidget):
             return
             
         
-        
+    """    
     # save a temp document whenever anything changes. this doc is deleted on closeEvent
     # in case that Orange crashes, Canvas on the next start offers an option to reload the crashed schema with links frozen
     def saveTempDoc(self):

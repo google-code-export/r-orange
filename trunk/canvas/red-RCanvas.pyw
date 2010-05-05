@@ -716,22 +716,21 @@ class OrangeCanvasDlg(QMainWindow):
         if res == QMessageBox.Yes:
             self.RVariableRemoveSupress = 1
             saveComplete = self.schema.saveDocument()
-            ce.accept()
-            QMainWindow.closeEvent(self,ce)
+            closed=True
         elif res == QMessageBox.No:
+            closed=True
+        else:
+            closed=False
+
+        
+        if closed:
+            self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
+            self.output.logFile.close()
+            self.output.hide()
             ce.accept()
             QMainWindow.closeEvent(self,ce)
         else:
             ce.ignore()
-
-        
-        # if closed:
-            # self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
-            # self.output.logFile.close()
-            # self.output.hide()
-            # ce.accept()            
-        # else:
-            # ce.ignore()
         
 
 
@@ -871,7 +870,7 @@ def main(argv = None):
             # dlg.menuItemOpenLastSchema()
     app.exec_()
     # manager.shutdown()
-    dlg.saveSettings()
+    # dlg.saveSettings()
     app.closeAllWindows()
 
 if __name__ == "__main__":

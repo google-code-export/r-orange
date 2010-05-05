@@ -191,8 +191,10 @@ class CanvasOptionsDlg(QDialog):
         self.libInfo = redRGUI.widgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
         
     def onTabChange(self,index):
-        print 'onTabChange',index
+        # print 'onTabChange',index
         # get a data frame (dict) of r libraries
+        if self.tabs.tabText(index) != 'R Settings':
+            return
         self.libs = RSession.Rcommand('getCRANmirrors()')
         # place a listBox in the widget and fill it with a list of mirrors
         self.libListBox = redRGUI.listBox(self.rlibrariesBox, label = 'Mirrors', 
