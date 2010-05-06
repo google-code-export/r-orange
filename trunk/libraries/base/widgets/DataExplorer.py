@@ -374,7 +374,7 @@ class DataExplorer(OWRpy):
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
-        newData = {'data':+self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
+        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):

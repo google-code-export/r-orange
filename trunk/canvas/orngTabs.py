@@ -548,7 +548,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.tabs.append((name, 2*int(show), item))
 
         return item
-    def insertFavoriteWidgetTab(self, name, show = 1):
+    def insertFavoriteWidgetTab(self, name, show = 1):  # currently depricated but would add a favorites widget tab into the favorites widget dropdown.
         if self.tabDict.has_key(name):
             self.tabDict[name].setHidden(not show)
             return self.tabDict[name]
@@ -568,18 +568,20 @@ class WidgetTree(WidgetListBase, QDockWidget):
         return item
     def callback(self):
         text = str(self.widgetSuggestEdit.text())
-        if '.rrs' in text: ## this is a template, we should load this and not add the widget
+        if '.rrts' in text: ## this is a template, we should load this and not add the widget
             for action in self.templateActions:
                 if action.templateInfo.name == text:
                     self.canvasDlg.schema.loadTemplate(action.templateInfo.file)
-        for action in self.actions:
-            if action.widgetInfo.name == text:
-                self.widgetInfo = action.widgetInfo
-                print action.widgetInfo, 'Widget info'
-                self.canvasDlg.schema.addWidget(action.widgetInfo)
-                
-                self.widgetSuggestEdit.clear()
-                return
+                    return
+        else: ## if there isn't a .rrts in the filename then we should proceed as normal
+            for action in self.actions: # move through all of the actions in the actions list
+                if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
+                    self.widgetInfo = action.widgetInfo
+                    print action.widgetInfo, 'Widget info'
+                    self.canvasDlg.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
+                    
+                    self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
+                    return
 
 class WidgetTreeFolder(QTreeWidgetItem):
     def __init__(self, parent, name):

@@ -20,7 +20,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.version = {}
         self.version = self.getVersion()
-        self.debugMode = 1        # print extra output for debuging
+        self.debugMode = 0        # print extra output for debuging
         self.setWindowTitle("Red-R Canvas")
         self.windows = []    # list of id for windows in Window menu
         self.recentDocs = []
@@ -53,7 +53,7 @@ class OrangeCanvasDlg(QMainWindow):
         canvasIconName = os.path.join(canvasPicsDir, "CanvasIcon.png")
         if os.path.exists(canvasIconName):
             self.setWindowIcon(QIcon(canvasIconName))
-            
+        
         self.settings = {}
         self.settings['CRANrepos'] = 'http://cran.r-project.org'
         
@@ -62,7 +62,6 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage("Loading Settings", Qt.AlignHCenter + Qt.AlignBottom)
         self.loadSettings()
         # print '####################################\n'*10,self.settings
-     
 
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
         self.widgetActiveColor   = QColor(*self.settings["widgetActiveColor"])

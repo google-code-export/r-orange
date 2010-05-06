@@ -18,8 +18,8 @@ class lm(OWRpy):
         self.modelFormula = ''
         self.processingComplete = 0
         self.loadSettings()
-        self.inputs = [("data", signals.RVariable, self.processdata)]
-        self.outputs = [("lm Output", signals.RVariable)]
+        self.inputs = [("data", signals.RDataFrame, self.processdata)]
+        self.outputs = [("lm Output", signals.RLMFit)]
         
         #GUI
         
@@ -63,5 +63,6 @@ class lm(OWRpy):
 
         
         self.R(self.Rvariables['lm']+'<-lm(data='+str(self.RFunctionParam_data)+',subset='+str(self.RFunctionParam_subset.text())+',qr='+str(self.RFunctionParam_qr.text())+',formula='+str(self.RFunctionParam_formula)+',singular_ok='+str(self.RFunctionParam_singular_ok.text())+',y='+str(self.RFunctionParam_y.text())+',weights='+str(self.RFunctionParam_weights.text())+',offset='+str(self.RFunctionParam_offset.text())+',contrasts='+str(self.RFunctionParam_contrasts.text())+',x='+str(self.RFunctionParam_x.text())+',model='+str(self.RFunctionParam_model.text())+',method="'+str(self.RFunctionParam_method.text())+'")')
-        self.rSend("lm Output", {"data":self.Rvariables["lm"]})
-        self.status.setText('Data Processed and Sent')
+        newData = signals.RLMFit(data = self.Rvariables['lm'])
+        self.rSend("lm Output", newData)
+        

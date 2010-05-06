@@ -110,7 +110,7 @@ class RVariable(BaseRedRVariable):
         text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
         return text
     def getAttrOutput_call(self, item, subsetting = ''):
-        print item, subsetting
+        print '#--#', item, subsetting
         call = 'paste(capture.output('+self.__getitem__(item)+subsetting+'), collapse = "\n")'
         return call
     def getAttrOutput_data(self, item, subsetting = ''):
@@ -141,7 +141,7 @@ def forname(modname, classname):
 current_module = __import__(__name__)
 RedRSignals = []
 def registerRedRSignals(package):
-    print '@@@@@@@@@@registerRedRSignals'
+    print '#--# @@@@@@@@@@registerRedRSignals'
     import imp, sys
     # print sys.path
     m = imp.new_module(package)

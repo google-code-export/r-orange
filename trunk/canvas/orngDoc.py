@@ -916,7 +916,8 @@ class SchemaDoc(QWidget):
                 traceback.print_exc(file=sys.stdout)
                 print '-'*60        
 
-            
+            ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
+            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
             
 
             # read widgets
@@ -976,8 +977,7 @@ class SchemaDoc(QWidget):
             # lpb = 0
             
             
-            ## all of the widgets were loaded successfully, this means that we now can load the r-session.
-            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
+            
 
 
             for line in lineList:

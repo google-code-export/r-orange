@@ -15,7 +15,7 @@ class anova_lm(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_object = ''
         self.loadSettings()
-        self.inputs = [("object", signals.RVariable, self.processobject)]
+        self.inputs = [("object", signals.RLMFit, self.processobject)]
         
         box = redRGUI.groupBox(self.controlArea, "Output")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -33,4 +33,4 @@ class anova_lm(OWRpy):
         self.R('txt<-capture.output('+'anova.lm(object='+str(self.RFunctionParam_object)+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+        self.RoutputWindow.insertPlainText(tmp)

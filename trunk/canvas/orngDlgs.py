@@ -62,12 +62,12 @@ class CanvasOptionsDlg(QDialog):
         self.tabs = QTabWidget(self)
         GeneralTab = OWGUI.widgetBox(self.tabs, margin = 4)
         ExceptionsTab = OWGUI.widgetBox(self.tabs, margin = 4)
-        TabOrderTab = OWGUI.widgetBox(self.tabs, margin = 4)
+        #TabOrderTab = OWGUI.widgetBox(self.tabs, margin = 4)
         RSettings = OWGUI.widgetBox(self.tabs, margin = 4)
 
         self.tabs.addTab(GeneralTab, "General")
         self.tabs.addTab(ExceptionsTab, "Exception handling")
-        self.tabs.addTab(TabOrderTab, "Widget tab order")
+        #self.tabs.addTab(TabOrderTab, "Widget tab order")
         self.tabs.addTab(RSettings, 'R Settings')
         QObject.connect(self.tabs, SIGNAL('currentChanged(int)'), self.onTabChange)
         # #################################################################
@@ -78,8 +78,9 @@ class CanvasOptionsDlg(QDialog):
         self.showSignalNamesCB = OWGUI.checkBox(generalBox, self.settings, "showSignalNames", "Show signal names between widgets", debuggingEnabled = 0)
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", "Don't ask to save schema before closing", debuggingEnabled = 0)
         self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", "Save size and position of widgets", debuggingEnabled = 0)
+        
         self.useContextsCB = OWGUI.checkBox(generalBox, self.settings, "useContexts", "Use context settings")
-        self.setDebugModeCheckBox = OWGUI.checkBox(generalBox, self.canvasDlg.output, "debugMode", "Set to debug mode")
+        self.setDebugModeCheckBox = OWGUI.checkBox(generalBox, self.canvasDlg.output, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
         validator = QIntValidator(self)
         validator.setRange(0,10000)
 
@@ -152,53 +153,62 @@ class CanvasOptionsDlg(QDialog):
 
         # #################################################################
         # TAB ORDER TAB
-        tabOrderBox = OWGUI.widgetBox(TabOrderTab, "Set Order of Widget Categories", orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum))
-        self.tabOrderList = QListWidget(tabOrderBox)
-        self.tabOrderList.setAcceptDrops(True)
+        # tabOrderBox = OWGUI.widgetBox(TabOrderTab, "Set Order of Widget Categories", orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum))
+        # self.tabOrderList = QListWidget(tabOrderBox)
+        # self.tabOrderList.setAcceptDrops(True)
 
-        tabOrderBox.layout().addWidget(self.tabOrderList)
-        self.tabOrderList.setSelectionMode(QListWidget.SingleSelection)
+        # tabOrderBox.layout().addWidget(self.tabOrderList)
+        # self.tabOrderList.setSelectionMode(QListWidget.SingleSelection)
         
-        ind = 0
-        for (name, show) in self.settings["WidgetTabs"]:
-            if self.canvasDlg.widgetRegistry.has_key(name):
-                self.tabOrderList.addItem(name)
-                self.tabOrderList.item(ind).setCheckState(show and Qt.Checked or Qt.Unchecked)
-                ind+=1
+        # ind = 0
+        # for (name, show) in self.settings["WidgetTabs"]:
+            # if self.canvasDlg.widgetRegistry.has_key(name):
+                # self.tabOrderList.addItem(name)
+                # self.tabOrderList.item(ind).setCheckState(show and Qt.Checked or Qt.Unchecked)
+                # ind+=1
 
-        w = OWGUI.widgetBox(tabOrderBox, sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding))
-        self.upButton = OWGUI.button(w, self, "Up", callback = self.moveUp)
-        self.downButton = OWGUI.button(w, self, "Down", callback = self.moveDown)
-        w.layout().addSpacing(20)
-        self.addButton = OWGUI.button(w, self, "Add", callback = self.addCategory)
-        self.removeButton = OWGUI.button(w, self, "Remove", callback = self.removeCategory)
-        self.removeButton.setEnabled(0)
-        w.layout().addStretch(1)
+        # w = OWGUI.widgetBox(tabOrderBox, sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding))
+        # self.upButton = OWGUI.button(w, self, "Up", callback = self.moveUp)
+        # self.downButton = OWGUI.button(w, self, "Down", callback = self.moveDown)
+        # w.layout().addSpacing(20)
+        # self.addButton = OWGUI.button(w, self, "Add", callback = self.addCategory)
+        # self.removeButton = OWGUI.button(w, self, "Remove", callback = self.removeCategory)
+        # self.removeButton.setEnabled(0)
+        # w.layout().addStretch(1)
 
-        # OK, Cancel buttons
-        hbox = OWGUI.widgetBox(self, orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed))
-        hbox.layout().addStretch(1)
-        self.okButton = OWGUI.button(hbox, self, "OK", callback = self.accept)
-        self.cancelButton = OWGUI.button(hbox, self, "Cancel", callback = self.reject)
-        self.connect(self.tabOrderList, SIGNAL("currentRowChanged(int)"), self.enableDisableButtons)
-
-        self.topLayout.addWidget(self.tabs)
-        self.topLayout.addWidget(hbox)
+        
 
         #####################################
         # R Settings Tab
         self.rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
         self.libInfo = redRGUI.widgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
         
+        
+        ################################ Global buttons  ######################
+        # OK, Cancel buttons
+        hbox = OWGUI.widgetBox(self, orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed))
+        hbox.layout().addStretch(1)
+        self.okButton = OWGUI.button(hbox, self, "OK", callback = self.accept)
+        self.cancelButton = OWGUI.button(hbox, self, "Cancel", callback = self.reject)
+        #self.connect(self.tabOrderList, SIGNAL("currentRowChanged(int)"), self.enableDisableButtons)
+
+        self.topLayout.addWidget(self.tabs)
+        self.topLayout.addWidget(hbox)
+        
+        
     def onTabChange(self,index):
         # print 'onTabChange',index
         # get a data frame (dict) of r libraries
         if self.tabs.tabText(index) != 'R Settings':
             return
-        self.libs = RSession.Rcommand('getCRANmirrors()')
-        # place a listBox in the widget and fill it with a list of mirrors
-        self.libListBox = redRGUI.listBox(self.rlibrariesBox, label = 'Mirrors', 
-        items = self.libs['Name'], callback = self.setMirror)
+        try:
+            if not self.libListBox: return
+        except:
+            self.libs = RSession.Rcommand('getCRANmirrors()')
+            # place a listBox in the widget and fill it with a list of mirrors
+            
+            self.libListBox = redRGUI.listBox(self.rlibrariesBox, label = 'Mirrors', 
+            items = self.libs['Name'], callback = self.setMirror)
         
     def setMirror(self):
         # print 'setMirror'

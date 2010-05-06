@@ -18,8 +18,8 @@ class session():
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
         self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
 
-    def getSettings(self, alsoContexts = True):
-        print 'moving to save'+str(self.captionTitle)
+    def getSettings(self, alsoContexts = True):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
+        print '#--# moving to save'+str(self.captionTitle)
         import re
         settings = {}
         allAtts = self.__dict__
@@ -76,9 +76,9 @@ class session():
         
         self.progressBarFinished()
         return settings
-    def saveCustomSettings(self):
+    def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
         pass
-    def isPickleable(self,d):
+    def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
         #if isinstance(d,QObject):
         # print str(type(d))
@@ -99,13 +99,14 @@ class session():
                         #ok = False
                         return False
                 return True
-        elif type(d) in [type(None), str, int, float, bool, numpy.float64]:
+        elif type(d) in [type(None), str, int, float, bool, numpy.float64]:  # list of allowed save types, may epand in the future considerably
             return True
         elif isinstance(d, signals.BaseRedRVariable):
             return True
         else: 
-            print 'Type ' + str(d) + ' is not supported at the moment..'
-            print 
+            
+            print '#--# Type ' + str(d) + ' is not supported at the moment..'  # notify the developer that the class that they are using is not saveable.
+            print '#--#   '
             return False
         
             
@@ -133,7 +134,7 @@ class session():
         #elif isinstance(var, signals.BaseRedRVariable):
         elif var.__class__.__name__ in signals.RedRSignals:    
             settings['signalsObject'] = var.saveSettings()
-            print 'Saving signalsObject ', settings['signalsObject']
+            print '#--#  Saving signalsObject ', settings['signalsObject']
         
         elif self.isPickleable(var):
             settings['pythonObject'] =  var
@@ -158,7 +159,7 @@ class session():
                 sentItemsList.append((sentDataName, None))
             elif type(sentDataObject) == dict:
                 sentItemsList.append((sentDataName, sentDataObject))
-                print sentDataName, 'still set to a dict, change this!!!'
+                print '#--# ', sentDataName, 'still set to a dict, change this!!!'
             else:
                 sentItemsList.append((sentDataName, sentDataObject.saveSettings()))
         return sentItemsList
@@ -177,7 +178,7 @@ class session():
                 # print k
                 self.__setattr__(k, v['pythonObject'])
             elif 'signalsObject' in v.keys():
-                print 'Setting signalsObject'
+                print '#--# Setting signalsObject'
                 varClass = self.setRvarClass(v['signalsObject'])
                 self.__setattr__(k, varClass)
                 #var = getattr(self, k)
@@ -187,7 +188,7 @@ class session():
         
     def onLoadSavedSession(self, force = False, template = False):
         if self.loaded and not force: return  # prevents a loaded widget from being reloaded this can be overwriten using a call to force if the loader wishes.
-        print 'in onLoadSavedSession'
+        print '#--# in onLoadSavedSession'
         qApp.setOverrideCursor(Qt.WaitCursor)
         self.progressBarInit()
         i = 0
@@ -231,7 +232,7 @@ class session():
         else:
             self.loadCustomSettings(self.redRGUIObjects)
         
-        print 'onLoadSavedSession send', self.windowTitle()
+        print '#--# onLoadSavedSession send', self.windowTitle()
         for (name, data) in self.sentItems:
             self.send(name, data)
         
@@ -241,11 +242,11 @@ class session():
     def setSentItemsList(self, d):
         # set the sentItems in the widget
         for (sentItemName, sentItemDict) in d:
-            print 'setting sent items', sentItemName, 'to', sentItemDict
+            print '#--# setting sent items', sentItemName, 'to', sentItemDict
             self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName)))
     
     def setSentRvarClass(self, d, sentItemName):
-        print 'setSentRvarClass', d
+        print '#--# setSentRvarClass', d
         className = d['class'].split('.')
         className = className[1]
         # print 'setting ', className
@@ -275,9 +276,9 @@ class session():
             
     def setRvarClass(self, d):
         className = d['class'].split('.')
-        print className
+        print '#--#', className
         className = className[1]
-        print 'setting ', className
+        print '#--# setting ', className
         #try: # try to reload the output class from the signals
         if d['package'] != 'base':
             var = getattr(getattr(signals,d['package']), className)(data = d['data'])
@@ -288,7 +289,7 @@ class session():
             # var = signals.RVariable(data = d['data'])
         for key in d.keys():
             if key in ['class','package']: continue
-            print 'setting ', key
+            print '#--# setting ', key
             subvar = getattr(var, key) 
             subvar = d[key]
         return var
@@ -313,7 +314,7 @@ class session():
     def loadCustomSettings(self,settings=None):
         pass
 
-    def saveSettingsStr(self):
+    def saveSettingsStr(self): # called from outside of this class, used by orngDoc to collect the settings
         # print 'saveSettingsStr called'
         settings = self.getSettings()
         try:
@@ -352,7 +353,7 @@ class session():
     
     # save global settings
     def saveGlobalSettings(self, file = None):
-        print 'owrpy global save settings'
+        print '#--# owrpy global save settings'
         settings = {}
         
         if hasattr(self, "globalSettingsList"):

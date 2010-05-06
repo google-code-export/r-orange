@@ -97,6 +97,8 @@ class OutputWindow(QDialog):
     def write(self, text):
         # print text
         #return
+        if '#--#' in text and self.debugMode == 0:  # a convenience function that will suppress printing of things that should be in debug this allows the user to set a flag that distinguishes printing of normal things from printing debug things.  Kind of a hack I know but it should work in most places.
+            return 
         self.numberofLines += 1
         # if self.numberofLines > 1000 and not self.debugMode:
             # self.textOutput.clear()

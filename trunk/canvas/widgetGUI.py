@@ -216,7 +216,7 @@ class widgetGUI(QMainWindow):
 
     
     def showLeftDock(self):
-        print 'in updatedock left', self.leftDockButton.isChecked()
+        print '#--#  in updatedock left', self.leftDockButton.isChecked()
         
         if self.leftDockButton.isChecked():
             self.leftDock.show()
@@ -226,7 +226,7 @@ class widgetGUI(QMainWindow):
             self.windowState['leftDockState'] = False
 
     def updateDocumentationDock(self):
-        print 'in updatedock right'
+        print '#--#  in updatedock right'
         if 'documentationState' not in self.windowState.keys():
             self.windowState['documentationState'] = {}
         
@@ -270,7 +270,7 @@ class widgetGUI(QMainWindow):
         self.windowState['size'] = self.size()
         #self.saveGlobalSettings()
     def closeEvent(self, event):
-        print 'in owrpy close'
+        print '#--# in owrpy close'
         if self.rightDock.isFloating():
             self.rightDock.hide()
         if hasattr(self, "leftDock") and self.leftDock.isFloating():
@@ -315,7 +315,7 @@ class widgetGUI(QMainWindow):
     def show(self):
         
         # print 'owbasewidget show'
-        print 'in onShow'
+        print '#--# in onShow'
 
         self.hasBeenShown = True
         if 'state' in self.windowState.keys():
@@ -403,7 +403,7 @@ class widgetGUI(QMainWindow):
     
     def removeInformation(self,id=None):
         if id == None:
-            print 'remove information'
+            print '#--# remove information'
             self.setState("Info", self.widgetState['Info'].keys())
         else:
             self.setState("Info", id)
@@ -426,7 +426,7 @@ class widgetGUI(QMainWindow):
             for val in id:
                 if self.widgetState[stateType].has_key(val):
                     self.widgetState[stateType].pop(val)
-                    print 'pop',val
+                    print '#--# pop',val
                     changed = 1
         else:
             #if type(id) == str:

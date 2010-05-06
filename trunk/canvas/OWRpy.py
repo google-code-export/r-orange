@@ -115,18 +115,18 @@ class OWRpy(widgetSignals,widgetGUI,session):
         # print 'the devNumber is'+str(devNumber)
         # print str(self.device)
         if str(devNumber) in self.device:
-            print 'dev exists'
+            print '#--# dev exists'
             actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
             if actdev == 1: #there were no decives present and a new one has been created.
                 self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
             if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
-                print 'dev not in R'
+                print '#--# dev not in R'
                 self.R('dev.off()')
                 self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
                 self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-                print str(self.device)
+                print '#--#', str(self.device)
         else:
-            print 'make new dev for this'
+            print '#--# make new dev for this'
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
             if type(mfrow) == list:
                 self.R('par(mfrow = c('+str(mfrow[0])+','+str(mfrow[1])+'))')

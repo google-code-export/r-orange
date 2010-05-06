@@ -65,6 +65,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
 	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\Red-R\${RVERSION}" "UninstallString" '"$INSTDIR\uninst ${RVERSION}.exe"'
 
 	WriteRegStr HKEY_CLASSES_ROOT ".rrs" "" "Red R Canvas"
+    WriteRegStr HKEY_CLASSES_ROOT ".rrp" "" "Red R Canvas"
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${RVERSION}\OrangeCanvas\icons\redrOWS.ico"
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$PythonDir\pythonw.exe $INSTDIR\${RVERSION}\OrangeCanvas\red-RCanvas.pyw "%1"';name is appended into the sys.argv variables for opening by Red-R
     WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\RedRDir" "" "$INSTDIR"
