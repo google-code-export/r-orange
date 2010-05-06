@@ -602,11 +602,6 @@ class OrangeCanvasDlg(QMainWindow):
             if dlg.toAdd != [] or dlg.toRemove != []:
                 self.widgetRegistry = orngRegistry.readCategories()
 
-            # save tab order settings
-            newTabList = [(str(dlg.tabOrderList.item(i).text()), int(dlg.tabOrderList.item(i).checkState())) for i in range(dlg.tabOrderList.count())]
-            if newTabList != self.settings["WidgetTabs"]:
-                self.settings["WidgetTabs"] = newTabList
-                self.createWidgetsToolbar()
 
     def updateStyle(self):
         QApplication.setStyle(QStyleFactory.create(self.settings["style"]))
@@ -735,6 +730,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         if closed:
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
+            self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
             self.output.logFile.close()
             self.output.hide()
             ce.accept()
