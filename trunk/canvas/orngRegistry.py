@@ -105,7 +105,7 @@ def addTagsSystemTag(tags,newTag):
                 return
                 
     ## if we made it this far we didn't find the right tag so we need to add all of the tag xml to the tags xml
-    print 'Name not found, appending to group.  This is normal, dont be worried.'
+    print '|#|Name not found, appending to group.  This is normal, dont be worried.'
     tags.appendChild(newTag)
     #theTags.childNodes[0] = tags    
 

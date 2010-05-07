@@ -80,7 +80,6 @@ class CanvasOptionsDlg(QDialog):
         self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", "Save size and position of widgets", debuggingEnabled = 0)
         
         self.useContextsCB = OWGUI.checkBox(generalBox, self.settings, "useContexts", "Use context settings")
-        self.setDebugModeCheckBox = OWGUI.checkBox(generalBox, self.canvasDlg.output, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
         validator = QIntValidator(self)
         validator.setRange(0,10000)
 
@@ -123,6 +122,12 @@ class CanvasOptionsDlg(QDialog):
 
         # #################################################################
         # EXCEPTION TAB
+        
+        debug = OWGUI.widgetBox(ExceptionsTab, "Debug")
+        self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
+        self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", orientation='horizontal', items=["All", "High", "Medium", "Low"])
+
+        
         exceptions = OWGUI.widgetBox(ExceptionsTab, "Exceptions")
         #self.catchExceptionCB = QCheckBox('Catch exceptions', exceptions)
         self.focusOnCatchExceptionCB = OWGUI.checkBox(exceptions, self.settings, "focusOnCatchException", 'Show output window on exception')
@@ -133,22 +138,19 @@ class CanvasOptionsDlg(QDialog):
         self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
 
-        hboxExc = OWGUI.widgetBox(ExceptionsTab, orientation="horizontal")
-        outputCanvas = OWGUI.widgetBox(hboxExc, "Canvas Info Handling")
-        outputWidgets = OWGUI.widgetBox(hboxExc, "Widget Info Handling")
-        self.ocShow = OWGUI.checkBox(outputCanvas, self.settings, "ocShow", 'Show icon above widget for...')
-        self.ocInfo = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocInfo", 'Information')
-        self.ocWarning = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocWarning", 'Warnings')
-        self.ocError = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocError", 'Errors')
+        # hboxExc = OWGUI.widgetBox(ExceptionsTab, orientation="horizontal")
+        # outputCanvas = OWGUI.widgetBox(hboxExc, "Canvas Info Handling")
+        # outputWidgets = OWGUI.widgetBox(hboxExc, "Widget Info Handling")
+        # self.ocShow = OWGUI.checkBox(outputCanvas, self.settings, "ocShow", 'Show icon above widget for...')
+        # self.ocInfo = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocInfo", 'Information')
+        # self.ocWarning = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocWarning", 'Warnings')
+        # self.ocError = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocError", 'Errors')
 
-        self.rrshow = OWGUI.checkBox(outputWidgets, self.settings, "owShow", 'Show statusbar info for...')
-        self.owInfo = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owInfo", 'Information')
-        self.owWarning = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owWarning", 'Warnings')
-        self.owError = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owError", 'Errors')
+        # self.rrshow = OWGUI.checkBox(outputWidgets, self.settings, "owShow", 'Show statusbar info for...')
+        # self.owInfo = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owInfo", 'Information')
+        # self.owWarning = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owWarning", 'Warnings')
+        # self.owError = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owError", 'Errors')
 
-        verbosityBox = OWGUI.widgetBox(ExceptionsTab, "Verbosity", orientation = "horizontal")
-        verbosityBox.setSizePolicy(QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum))
-        self.verbosityCombo = OWGUI.comboBox(verbosityBox, self.settings, "outputVerbosity", label = "Set level of widget output: ", orientation='horizontal', items=["Small", "Medium", "High"])
         ExceptionsTab.layout().addStretch(1)
 
         # #################################################################

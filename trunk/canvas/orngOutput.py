@@ -19,7 +19,6 @@ class OutputWindow(QDialog):
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
         self.numberofLines = 0
-        self.debugMode = 0
 
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.textOutput)
@@ -95,33 +94,47 @@ class OutputWindow(QDialog):
 
     # simple printing of text called by print calls
     def write(self, text):
-        # print text
-        #return
-        if '#--#' in text and self.debugMode == 0:  # a convenience function that will suppress printing of things that should be in debug this allows the user to set a flag that distinguishes printing of normal things from printing debug things.  Kind of a hack I know but it should work in most places.
-            return 
-        self.numberofLines += 1
-        # if self.numberofLines > 1000 and not self.debugMode:
-            # self.textOutput.clear()
-            # self.numberofLines = 0
-        Text = text #self.getSafeString(text)
-        #Text = Text.replace("\n", "<br>\n")   # replace new line characters with <br> otherwise they don't get shown correctly in html output
+            
         
-        #text = "<nobr>" + text + "</nobr>"
+        if not self.canvasDlg.settings['debugMode']: return 
+        
+        import re
+        m = re.search('^(\|(#+)\|)(.*)',text)
+        if self.canvasDlg.settings['outputVerbosity'] ==0:
+            if m:
+                text = str(m.group(3))
+            
+        elif m and len(m.group(2)) >= self.canvasDlg.settings['outputVerbosity']:
+            #text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(self.canvasDlg.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (self.canvasDlg.settings['outputVerbosity'])+1)
+            text = str(m.group(3)) + "\n"
+        else:
+            return
+            # text +=  '\n debugMode:' + str(self.canvasDlg.settings['debugMode']) + '\n outputVerbosity: ' + str(self.canvasDlg.settings['outputVerbosity']) + '\n' #+ '\n level: ' #+ str(len(re.split('#',m.group(2))))
+            # if m:
+                # text += m.group(1) + ' == ' + str(re.split('#',m.group(1))) + "\n"
+                # text += m.group(2) + ' == ' + str(re.split('#',m.group(2))) + "\n"
+                # text += m.group(3) + ' == ' +str(re.split('#',m.group(3))) + "\n"
+
+        # if '|##|' in text and self.canvasDlg.settings['debugMode'] == 0:  # a convenience function that will suppress printing of things that should be in debug this allows the user to set a flag that distinguishes printing of normal things from printing debug things.  Kind of a hack I know but it should work in most places.
+            # return 
+        
+        #text +=  '\n debugMode:' + str(self.canvasDlg.settings['debugMode']) + '\n outputVerbosity: ' + str(self.canvasDlg.settings['outputVerbosity'])
+
         
         if self.canvasDlg.settings["focusOnCatchOutput"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
         if self.canvasDlg.settings["writeLogFile"]:
-            self.logFile.write(Text.replace("\n", "<br>\n"))
+            self.logFile.write(text.replace("\n", "<br>\n"))
 
         
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         self.textOutput.setTextCursor(cursor)                             # existing text
-        self.textOutput.insertPlainText(Text)                                  # then append the text
+        self.textOutput.insertPlainText(text)                                  # then append the text
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        if Text[-1:] == "\n":
+        if text[-1:] == "\n":
             if self.canvasDlg.settings["printOutputInStatusBar"]:
                 self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
             self.unfinishedText = ""
@@ -130,12 +143,6 @@ class OutputWindow(QDialog):
             
         
 
-    # def writelines(self, lines):
-        # for line in lines:
-            # self.numberofLines += 1
-            # self.write(line)
-            # if self.numberofLines > 1000 and not self.debugMode:
-                # self.textOutput.clear()
 
     def flush(self):
         pass

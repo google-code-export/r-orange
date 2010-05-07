@@ -286,8 +286,6 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
         self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
-        #self.debugModeButton = self.menuOptions.addAction('Set Debug Mode', self.setDebugMode)
-        #self.connect(self.debugModeButton, SIGNAL('toggled()'), self.setDebugMode)
 
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
@@ -296,7 +294,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addSeparator()
         #self.menuOptions.addAction( "Channel preferences",  self.menuItemPreferences)
         #self.menuOptions.addSeparator()
-        self.menuOptions.addAction( "&Customize Shortcuts",  self.menuItemEditWidgetShortcuts)
+        # self.menuOptions.addAction( "&Customize Shortcuts",  self.menuItemEditWidgetShortcuts)
         self.menuOptions.addAction( "&Delete Widget Settings",  self.menuItemDeleteWidgetSettings)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction( sys.platform == "darwin" and "&Preferences..." or "Canvas &Options...",  self.menuItemCanvasOptions)
@@ -331,13 +329,6 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
-    def setDebugMode(self):
-        if self.debugMode:
-            #self.debugModeButton.setChecked(True)
-            self.output.debugMode = 0
-        else:
-            #self.debugModeButton.setChecked(False)
-            self.output.debugMode = 1
     def importSchema(self):
         name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs, *.rrts);; All Files (*.*)")
         if name.isEmpty():
@@ -648,7 +639,7 @@ class OrangeCanvasDlg(QMainWindow):
         #self.settings.setdefault("autoSaveSchemasOnClose", 0)
         self.settings.setdefault("saveWidgetsPosition", 1)
         self.settings.setdefault("svnSettings", None)
-        self.settings.setdefault("versionNumber", 'Version0')
+        #self.settings.setdefault("versionNumber", 'Version0')
 ##        self.settings.setdefault("autoLoadSchemasOnStart", 0)
         self.settings.setdefault("CRANrepos", 'http://cran.r-project.org')
         self.settings.setdefault("widgetSelectedColor", (0, 255, 0))
