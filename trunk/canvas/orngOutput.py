@@ -18,8 +18,8 @@ class OutputWindow(QDialog):
         self.textOutput = QTextEdit(self)
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
-        self.numberofLines = 0
-
+        self.allOutput = ''
+        
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.textOutput)
         self.layout().setMargin(2)
@@ -95,7 +95,14 @@ class OutputWindow(QDialog):
     # simple printing of text called by print calls
     def write(self, text):
             
-        
+        # if text[-1:] == "\n":
+        self.allOutput += text.replace("\n", "<br>\n")
+        # else:
+            # self.allOutput += text + "\n"
+
+        if self.canvasDlg.settings["writeLogFile"]:
+            self.logFile.write(text.replace("\n", "<br>\n"))
+            
         if not self.canvasDlg.settings['debugMode']: return 
         
         import re
@@ -109,23 +116,11 @@ class OutputWindow(QDialog):
             text = str(m.group(3)) + "\n"
         else:
             return
-            # text +=  '\n debugMode:' + str(self.canvasDlg.settings['debugMode']) + '\n outputVerbosity: ' + str(self.canvasDlg.settings['outputVerbosity']) + '\n' #+ '\n level: ' #+ str(len(re.split('#',m.group(2))))
-            # if m:
-                # text += m.group(1) + ' == ' + str(re.split('#',m.group(1))) + "\n"
-                # text += m.group(2) + ' == ' + str(re.split('#',m.group(2))) + "\n"
-                # text += m.group(3) + ' == ' +str(re.split('#',m.group(3))) + "\n"
-
-        # if '|##|' in text and self.canvasDlg.settings['debugMode'] == 0:  # a convenience function that will suppress printing of things that should be in debug this allows the user to set a flag that distinguishes printing of normal things from printing debug things.  Kind of a hack I know but it should work in most places.
-            # return 
-        
-        #text +=  '\n debugMode:' + str(self.canvasDlg.settings['debugMode']) + '\n outputVerbosity: ' + str(self.canvasDlg.settings['outputVerbosity'])
 
         
         if self.canvasDlg.settings["focusOnCatchOutput"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
-        if self.canvasDlg.settings["writeLogFile"]:
-            self.logFile.write(text.replace("\n", "<br>\n"))
 
         
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
@@ -157,7 +152,8 @@ class OutputWindow(QDialog):
         #res = QMessageBox.No
         if res == QMessageBox.Yes:
             err.update(self.canvasDlg.version)
-            err['template'] = ''
+            #err['template'] = ''
+            err['output'] = self.allOutput
             
             params = urllib.urlencode(err)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
@@ -180,7 +176,7 @@ class OutputWindow(QDialog):
         #traceback.print_exception(type,value,tracebackInfo)
         toUpload = {}
         t = datetime.today().isoformat(' ')
-        text = "<nobr>Unhandled exception of type %s occured at %s:</nobr><br><nobr>Traceback:</nobr><br>\n" % ( self.getSafeString(type.__name__), t)
+        text = "Unhandled exception of type %s occured at %s:<br>Traceback:<br>\n" % ( self.getSafeString(type.__name__), t)
 
         toUpload['time'] = t
         toUpload['errorType'] = self.getSafeString(type.__name__)
@@ -202,18 +198,18 @@ class OutputWindow(QDialog):
             #print 'code', code
             
             (dir, filename) = os.path.split(file)
-            text += "<nobr>" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b></nobr><br>\n" % (self.getSafeString(funct))
+            text += "" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b><br>\n" % (self.getSafeString(funct))
             if code != None:
                 code = code.replace('<', '&lt;') #convert for html
                 code = code.replace('>', '&gt;')
                 code = code.replace("\t", "\x5ct") # convert \t to unicode \t
-                text += "<nobr>" + totalSpace + "Code: " + code + "</nobr><br>\n"
+                text += "" + totalSpace + "Code: " + code + "<br>\n"
             totalSpace += space
         #print '-'*60, text
         lines = traceback.format_exception_only(type, value)
         for line in lines[:-1]:
-            text += "<nobr>" + totalSpace + self.getSafeString(line) + "</nobr><br>\n"
-        text += "<nobr><b>" + totalSpace + self.getSafeString(lines[-1]) + "</b></nobr><br>\n"
+            text += "" + totalSpace + self.getSafeString(line) + "<br>\n"
+        text += "<b>" + totalSpace + self.getSafeString(lines[-1]) + "</b><br>\n"
 
         toUpload['traceback'] = text
         self.uploadException(toUpload)
