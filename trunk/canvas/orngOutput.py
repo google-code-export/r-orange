@@ -106,7 +106,7 @@ class OutputWindow(QDialog):
         if not self.canvasDlg.settings['debugMode']: return 
         
         import re
-        m = re.search('^(\|(#+)\|)(.*)',text)
+        m = re.search('^(\|(#+)\|\s?)(.*)',text)
         if self.canvasDlg.settings['outputVerbosity'] ==0:
             if m:
                 text = str(m.group(3))

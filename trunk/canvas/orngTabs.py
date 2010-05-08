@@ -784,13 +784,11 @@ def constructCategoriesPopup(canvasDlg):
     categoriesPopup.setStyleSheet(""" QMenu { background-color: #fffff0; selection-background-color: blue; } QMenu::item:disabled { color: #dddddd } QMenu::separator {height: 1px; background: #dddddd; margin-left: 3px; margin-right: 4px;}""")
     
     
-    tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
-    f = open(tfile, 'r')
-    #print str(f)
-    
-    mainTabs = xml.dom.minidom.parse(f)
-    f.close() 
-    
+    # tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
+    # f = open(tfile, 'r')
+    # mainTabs = xml.dom.minidom.parse(f)
+    # f.close() 
+    mainTabs = canvasDlg.widgetRegistry['tags']
     treeXML = mainTabs.childNodes[0]
     #print treeXML.childNodes
     
