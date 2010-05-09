@@ -35,7 +35,7 @@ class readSQLiteFile(OWRpy):
         self.useheader = 1
         self.loadSettings()
         #set R variable names        
-        self.database = os.path.abspath(os.path.join(redREnviron.directoryNames["redRDir"], 'temp', 'temp.db'))
+        self.database = os.path.abspath(os.path.join(qApp.canvasDlg.tempDir, 'temp.db'))
         
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         self.inputs = None

@@ -61,6 +61,12 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuSaveSettings = 1
         splashWindow.showMessage("Loading Settings", Qt.AlignHCenter + Qt.AlignBottom)
         self.loadSettings()
+        
+        ## set the temp directory for this session
+        if not os.path.exists(os.path.join(self.canvasSettingsDir, 'temp')):
+            os.mkdir(os.path.join(self.canvasSettingsDir, 'temp')) ## should only need to be done once.
+        
+        self.setTempDir(1)
         # print '####################################\n'*10,self.settings
 
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
@@ -721,9 +727,12 @@ class OrangeCanvasDlg(QMainWindow):
         
         if closed:
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
+            import shutil
+            shutil.rmtree(self.tempDir, True) # remove the tempdir, better hope we saved everything we wanted.
             self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
             self.output.logFile.close()
             self.output.hide()
+            
             ce.accept()
             QMainWindow.closeEvent(self,ce)
         else:
@@ -795,6 +804,12 @@ class OrangeCanvasDlg(QMainWindow):
                 return fullPaths    
         return [self.defaultBackground]
     
+    def setTempDir(self, dirNumber):
+        if not os.path.exists(os.path.join(self.canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))):
+            os.mkdir(os.path.join(self.canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
+            self.tempDir = os.path.join(self.canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
+        else:
+            self.setTempDir(int(dirNumber + 1))
 class MyStatusBar(QStatusBar):
     def __init__(self, parent):
         QStatusBar.__init__(self, parent)

@@ -563,8 +563,8 @@ class SchemaDoc(QWidget):
         progressBar.setValue(progress)
 
         if not tmp:
-            tempschema = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
-            tempR = os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/')
+            tempschema = os.path.join(self.canvasDlg.tempDir, "tempSchema.tmp")
+            tempR = os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/')
             file = open(tempschema, "wt")
             file.write(xmlText)
             file.close()
@@ -574,13 +574,13 @@ class SchemaDoc(QWidget):
             progress += 1
             progressBar.setValue(progress)
 
-            RSession.Rcommand('save.image("' + tempR + '")')
-            zout = zipfile.ZipFile(filename, "w")
-            for fname in [tempschema,tempR]:
-                zout.write(fname)
-            zout.close()
-            os.remove(tempR)
-            os.remove(tempschema)
+            RSession.Rcommand('save.image("' + tempR + '")')  # save the R data
+            zout = zipfile.ZipFile(filename, "w")  # create a zip file
+            for fname in os.listdir(self.canvasDlg.tempDir):  # collect the files that are in the tempDir and save them into the zip file.
+                zout.write(os.path.join(self.canvasDlg.tempDir, fname))
+            zout.close()  # close the zipfile (this is the .rrs)
+            # os.remove(tempR)
+            # os.remove(tempschema)
             print 'image saved.'
         else :
             file = open(filename, "wt")
@@ -877,10 +877,10 @@ class SchemaDoc(QWidget):
             loadingProgressBar.setLabelText('Loading Schema Data, please wait')
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
-                file(os.path.join(self.canvasDlg.canvasSettingsDir,os.path.basename(name)), 'wb').write(zfile.read(name))
+                file(os.path.join(self.canvasDlg.tempDir,os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
                 
                 #if re.search('tempSchema.tmp',os.path.basename(name)):
-            doc = parse(os.path.join(self.canvasDlg.canvasSettingsDir,'tempSchema.tmp'))
+            doc = parse(os.path.join(self.canvasDlg.tempDir,'tempSchema.tmp')) # load the doc data for the data in the temp dir.
                 
             schema = doc.firstChild
             widgets = schema.getElementsByTagName("widgets")[0]
@@ -917,8 +917,6 @@ class SchemaDoc(QWidget):
                 print '-'*60        
 
             ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
-            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
-            
 
             # read widgets
             loadedOk = 1
@@ -969,6 +967,9 @@ class SchemaDoc(QWidget):
             else:
                 self.schemaName = ""
 
+            
+            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
+            
             #read lines
             lineList = lines.getElementsByTagName("channel")
             loadingProgressBar.setLabelText('Loading Lines')
