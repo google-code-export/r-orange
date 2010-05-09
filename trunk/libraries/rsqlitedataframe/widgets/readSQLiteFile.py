@@ -272,10 +272,11 @@ class readSQLiteFile(OWRpy):
                 line = line.replace('.', '_')  # must convert from the annoying habbit of placing '.' in the names of r variables that is not accepted by any other programming languagre
                 lineData = line.split(sep)
                 for j in range(len(lineData)): # move across the columns and set the data type to the type of data in the columns.  This might be hard because we don't know about the data yet.
-                    if type(dtl[j]) in [str]:
-                        lineData[j] = str(lineData[j])+' text'
-                    elif type(dtl[j]) in [int, float, bool]:
+                    try:
+                        float(dtl[j])
                         lineData[j] = str(lineData[j])+' real'
+                    except:
+                        lineData[j] = str(lineData[j])+' text'
                 print "create table "+tableName+" ("+','.join(lineData)+")"
                 cursor.execute("create table "+tableName+" ("+','.join(lineData)+")")  # insert the column names into the table, this is the command that also makes the table
             else:
@@ -361,7 +362,8 @@ class readSQLiteFile(OWRpy):
         pass
     def commit(self):
         self.updateGUI()
-        sendData = signals.rsqlitedataframe.SQLiteTable(data = str(self.filecombo.currentText()).split('.')[0], database = self.database)
+        
+        sendData = signals.rsqlitedataframe.SQLiteTable(data = str(self.filecombo.currentText()).split('.')[0], database = self.database.replace('\\','/'))
         self.rSend("data.frame", sendData)
         
         

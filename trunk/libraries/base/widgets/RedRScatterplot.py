@@ -77,32 +77,19 @@ class RedRScatterplot(OWRpy):
                 pass
         
     def showSelected(self):
-        # set the values in the cm to selected 
-        #cmSelector = self.subsetCMSelector.currentText()
-        #cmClass = self.subsetCMClass.currentText()
-        # if cmSelector != ' ':
-            # subset = str(self.cm+'[,"'+cmSelector+'"] == "' + cmClass+'"')
-        #else: 
         if self.R('rownames('+self.data+')') != None:
             subset = 'rownames('+self.data+')'
         else:
             subset = ''
-        xData = self.R('as.matrix(t('+self.data+'[,\''+str(self.xColumnSelector.currentText())+'\']))')
-        yData = self.R('as.matrix(t('+self.data+'[,\''+str(self.yColumnSelector.currentText())+'\']))')
-        if type(xData) in [numpy.ndarray]:
-            print type(xData), 'Data type'   
-        
-            xData = xData[0]
-            print xData
-        if type(yData) in [numpy.ndarray]:
-            yData = yData[0]
-            print(yData)
-        print type(xData), 'Data type'   
+        xData = self.R(self.data+'$'+str(self.xColumnSelector.currentText()))
+        yData = self.R(self.data+'$'+str(self.yColumnSelector.currentText()))
+        print '|###|', xData[:5]
         print xData
+        print xData[0]
+        print '|###|', yData[:5]
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
-
+        
         self.R(self.cm+'$'+self.Rvariables['Plot']+'<-list(True = rownames('+self.data+'[as.logical(c('+str(selected)[1:-1]+')),]), False = rownames('+self.data+'[!as.logical(c('+str(selected)[1:-1]+')),]))')
-        print 
         self.sendMe()
         
     def gotX(self, data):
@@ -219,13 +206,15 @@ class RedRScatterplot(OWRpy):
                 # generate the subset
                 # check if the column is a factor
                 if xDataClass in ['factor']:
+                    print 'Setting xData as factor'
                     xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
                 else:
-                    xData = self.R(self.data+'['+subset+',\''+str(xCol)+'\']', wantType = 'list')
+                    xData = self.R('as.numeric('+self.data+'['+subset+',\''+str(xCol)+'\'])', wantType = 'list')
                 if yDataClass in ['factor']:
+                    print 'Setting yData as factor'
                     yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
                 else:
-                    yData = self.R(self.data+'['+subset+',\''+str(yCol)+'\']', wantType = 'list')
+                    yData = self.R('as.numeric('+self.data+'['+subset+',\''+str(yCol)+'\'])', wantType = 'list')
                 print xData
                 print yData
                 

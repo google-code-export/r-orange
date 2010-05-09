@@ -892,9 +892,23 @@ class redRGraph(QwtPlot,widgetState):
         if validData == None:
             validData = []
             for i in range(len(xData)):
+                #print type(xData[i])
+                if type(xData[i]) in [str]:
+                    try:
+                        xData[i] = float(xData[i])
+                    except:
+                        print 'Exception occured in xData conversion'
+                if type(yData[i]) in [str]:
+                    try:
+                        yData[i] = float(yData[i])
+                    except:
+                        print 'Exception occured in yData conversion'
+                        
+                #print type(xData[i]), 'New type'
                 if type(xData[i]) in [int, float, long, numpy.float64] and type(yData[i]) in [int, float, long, numpy.float64]:
                     validData.append(1)
-                    print type(xData[i]), type(yData[i])
+                    #print type(xData[i]), type(yData[i])
+                
                 else:
                     print type(xData[i])
                     validData.append(0)
