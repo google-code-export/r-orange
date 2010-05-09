@@ -40,6 +40,8 @@ class SQLiteTable(RDataFrame):
         
         newDataName = 'dataFrameConversion_'+str(time.time())
         self.R(newDataName+'<-dbGetQuery(con, statement=\'select * from '+self.data+'\')')
+        # it would be really nice if in this we could ask the user to pick the column for the column name
+        
         self.R('dbDisconnect(con)')  # close the connection
         newData = RDataFrame(data = newDataName)
         return newData

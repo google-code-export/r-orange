@@ -13,7 +13,7 @@
 from OWRpy import *
 import redRGUI 
 
-import re
+import re, os
 import textwrap
 import cPickle
 import pickle
@@ -35,7 +35,7 @@ class readSQLiteFile(OWRpy):
         self.useheader = 1
         self.loadSettings()
         #set R variable names        
-        self.database = 'temp.db'
+        self.database = os.path.abspath(os.path.join(redREnviron.directoryNames["redRDir"], 'temp', 'temp.db'))
         
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         self.inputs = None
@@ -73,8 +73,8 @@ class readSQLiteFile(OWRpy):
         self.hasHeader = redRGUI.checkBox(box, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
-        self.rowNamesCombo = redRGUI.comboBox(box,label='Select Row Names', items=[],
-        orientation='vertical',callback=self.scanFile)
+        # self.rowNamesCombo = redRGUI.comboBox(box,label='Select Row Names', items=[],
+        # orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
         
         box = redRGUI.groupBox(options, label="Other Options", 
@@ -83,20 +83,20 @@ class readSQLiteFile(OWRpy):
         split = redRGUI.widgetBox(box,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.otherOptions = redRGUI.checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
-        'allowEscapes','stringsAsFactors'],
-        setChecked = ['blank.lines.skip'],
-        toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
-        'logical. Used only when sep has been specified, and allows the stripping of leading and trailing white space from character fields (numeric fields are always stripped). ',
-        'logical: if TRUE blank lines in the input are ignored.',
-        'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
-        'logical: should character vectors be converted to factors?'],
-        orientation='vertical',callback=self.scanFile)
+        #self.otherOptions = redRGUI.checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
+        #'allowEscapes','stringsAsFactors'],
+        #setChecked = ['blank.lines.skip'],
+        #toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
+        #'logical. Used only when sep has been specified, and allows the stripping of leading and trailing white space from character fields (numeric fields are always stripped). ',
+        #'logical: if TRUE blank lines in the input are ignored.',
+        #'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
+        #'logical: should character vectors be converted to factors?'],
+        #orientation='vertical',callback=self.scanFile)
         # box.layout().addWidget(self.otherOptions,1,1)
         box2 = redRGUI.widgetBox(split,orientation='vertical')
         #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         split.layout().setAlignment(box2,Qt.AlignTop)
-        self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
+        #self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
         self.decimal = redRGUI.lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
         # self.quote.setMaximumWidth(50)
         # self.quote.setMinimumWidth(50)
@@ -105,7 +105,7 @@ class readSQLiteFile(OWRpy):
         # self.numLinesScan.setMaximumWidth(50)
         # self.numLinesScan.setMinimumWidth(50)
 
-        self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',width=50,orientation='horizontal')
+        # self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',width=50,orientation='horizontal')
         # self.numLinesSkip.setMaximumWidth(50)
         # self.numLinesSkip.setMinimumWidth(50)
 
@@ -120,11 +120,11 @@ class readSQLiteFile(OWRpy):
         load = redRGUI.button(holder, label = 'Load File', callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
-        self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       
-        self.infob = redRGUI.widgetLabel(self.FileInfoBox, label='')
-        self.infob.setWordWrap(True)
-        self.infoc = redRGUI.widgetLabel(self.FileInfoBox, label='')
-        self.FileInfoBox.setHidden(True)
+        # self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       
+        # self.infob = redRGUI.widgetLabel(self.FileInfoBox, label='')
+        # self.infob.setWordWrap(True)
+        # self.infoc = redRGUI.widgetLabel(self.FileInfoBox, label='')
+        # self.FileInfoBox.setHidden(True)
         
         
         self.tableArea = redRGUI.groupBox(area)
@@ -135,14 +135,13 @@ class readSQLiteFile(OWRpy):
         self.scanarea = redRGUI.textEdit(self.tableArea)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
-        self.scroll = redRGUI.scrollArea(self.tableArea);
+        # self.scroll = redRGUI.scrollArea(self.tableArea);
         
-        self.columnTypes = redRGUI.widgetBox(self,orientation=QGridLayout(),margin=10);
-        self.scroll.setWidget(self.columnTypes)
-        #self.columnTypes.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
-        self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
-        self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
-        self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        # self.columnTypes = redRGUI.widgetBox(self,orientation=QGridLayout(),margin=10);
+        # self.scroll.setWidget(self.columnTypes)
+        # self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
+        # self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
+        # self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.setFileList()
 
     def loadCustomSettings(self,settings):
@@ -184,10 +183,10 @@ class readSQLiteFile(OWRpy):
         self.removeInformation()
         self.removeWarning()
 
-        for i in self.columnTypes.findChildren(QWidget):
-            i.setHidden(True)
+        # for i in self.columnTypes.findChildren(QWidget):
+            # i.setHidden(True)
           
-        self.rowNamesCombo.clear()
+        # self.rowNamesCombo.clear()
         self.colClasses = []
         self.colNames = []
         self.dataTypes = []
@@ -231,12 +230,12 @@ class readSQLiteFile(OWRpy):
             nrows = '-1'
         
         
-        if self.rowNamesCombo.currentIndex() not in [0,-1]:
-            self.rownames = str(self.rowNamesCombo.currentText())
-            param_name = '"' + self.rownames + '"'
-        else:
-            param_name = 'NULL' 
-            self.rownames = 'NULL'
+        # if self.rowNamesCombo.currentIndex() not in [0,-1]:
+            # self.rownames = str(self.rowNamesCombo.currentText())
+            # param_name = '"' + self.rownames + '"'
+        # else:
+            # param_name = 'NULL' 
+            # self.rownames = 'NULL'
         
         cls = []
         for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
@@ -342,15 +341,6 @@ class readSQLiteFile(OWRpy):
                 # self.dataTypes.append([i,s])
             
     
-    def updateRowNames(self):
-        
-        self.R('rownames(' + self.Rvariables['dataframe_final'] + ') <- ' 
-        + self.Rvariables['dataframe_org'] + '[,' + str(self.rowNamesCombo.currentIndex()+1)  + ']')
-        
-        self.R(self.Rvariables['dataframe_final'] + ' <- ' 
-        +  self.Rvariables['dataframe_org'] + '[,-' + str(self.rowNamesCombo.currentIndex()+1)  + ']')
-        #print self.rowNamesCombo.currentIndex()
-        self.updateScan()
         
     def html_table(self,colnames,data):
         s = '<table border="1" cellpadding="3">'
