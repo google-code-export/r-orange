@@ -1,5 +1,5 @@
 """
-<name>Grammer of Graphics Plotter</name>
+<name>Grammar of Graphics Plotter</name>
 <author>Generates sophisticated plots using the garmmar of graphics orriginally written by Hadley Wickham.  This plot takes a data frame of data and uses multiple graphics parameters to construct a plot.  These parameters can be added to generate ever more complicated plotts.</author>
 <RFunctions>ggplot2:ggplot</RFunctions>
 <tags>Plotting</tags>
@@ -137,7 +137,7 @@ class ggplot(OWRpy):
         if str(self.aesLineType.text()) != '' and self.aesLineType.isVisible():
             string = 'linetype ='+str(self.aesLineType.text())
             injection.append(string)
-        if str(self.aesColour.currentText()) != '' and self.aesColour.isVisible() and name in ['Global', 'geom_point', 'geom_jitter', 'stat_smooth', 'geom_hex']:
+        if str(self.aesColour.currentText()) != '' and self.aesColour.isVisible():# and name in ['Global', 'geom_point', 'geom_jitter', 'stat_smooth', 'geom_hex']:
             string = 'colour = '+str(self.aesColour.currentText())
             injection.append(string)
         if str(self.aesGroup.currentText()) != '' and self.aesGroup.isVisible():
@@ -145,9 +145,9 @@ class ggplot(OWRpy):
             injection.append(string)
         
         functionInjection = []
-        if str(self.aesColour.currentText()) != '' and self.aesColour.isVisible() and name not in ['Global', 'geom_point', 'geom_jitter', 'stat_smooth', 'geom_hex']:
-            string = 'colour ='+str(self.aesColour.currentText())
-            functionInjection.append(string)
+        # if str(self.aesColour.currentText()) != '' and self.aesColour.isVisible() and name not in ['Global', 'geom_point', 'geom_jitter', 'stat_smooth', 'geom_hex']:
+            # string = 'colour ='+str(self.aesColour.currentText())
+            # functionInjection.append(string)
         if str(self.aesFill.currentText()) != '' and self.aesFill.isVisible():
             string = 'fill = '+str(self.aesFill.currentText())
             functionInjection.append(string)

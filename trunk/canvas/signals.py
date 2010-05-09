@@ -2,6 +2,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
+from RSession import require_librarys
 import glob,os.path,redREnviron
 
 class BaseRedRVariable:# parent class of all signals.  This class holds base functions such as assignment and item setting
@@ -77,6 +78,7 @@ class RVariable(BaseRedRVariable):
             parent = data
         self.parent = parent
         self.R = Rcommand
+        self.require_librarys = require_librarys
         self.reserved = ['data', 'parent', 'R', 'dictAttrs']
     def __str__(self):
         ## print output for the class

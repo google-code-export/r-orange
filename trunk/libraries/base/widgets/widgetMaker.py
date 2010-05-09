@@ -84,7 +84,7 @@ class widgetMaker(OWRpy):
         import redREnviron, orngRegistry
         widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
-        path = widgetDirName +  "\\widgets\\" + self.functionName.text().replace('.', '_') + ".py"
+        path = widgetDirName +  "\\base\\widgets\\" + self.functionName.text().replace('.', '_') + ".py"
         #print 'path:' + path
         file = open(os.path.abspath(path), "wt")
         tmpCode = self.completeCode

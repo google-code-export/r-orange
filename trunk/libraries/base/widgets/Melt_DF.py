@@ -63,8 +63,9 @@ class Melt_DF(OWRpy):
             if ivStr == ', id.var = c(\'\')': ivStr = ''
         except:
             ivStr = ''
-            
-        self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', rownames('+str(self.RFunctionParam_data)+')),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')')
+        self.R('OldRownames<-rownames('+str(self.RFunctionParam_data)+')')
+        self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', OldRownames),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')')
+        self.R('rm(OldRownames)')
         # copy the signals class and send the newData
         newData = signals.RDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
