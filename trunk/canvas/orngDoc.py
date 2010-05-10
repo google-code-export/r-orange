@@ -969,7 +969,7 @@ class SchemaDoc(QWidget):
                 self.schemaName = ""
 
             
-            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
+            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/') +'")')
             theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
 
             #read lines

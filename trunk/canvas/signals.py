@@ -7,8 +7,7 @@ import glob,os.path,redREnviron
 
 class BaseRedRVariable:# parent class of all signals.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None):
-        if not data:
-            raise Exception()
+        
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']

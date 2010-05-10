@@ -5,7 +5,7 @@ import time, sqlite3, os
 
 
 class SQLiteTable(RDataFrame):
-    def __init__(self, data, database, parent = None, checkVal = True):
+    def __init__(self, data, database = None, parent = None, checkVal = True):
         RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
         ##  Need to set some specific parameters for SQLiteTable objects.  Such as the database and other stuff
         if parent:  # sets the parent (ideally a real table in the database) of the data that you have here.  This may not be used that much, especially if you merge things, but you have it anyway if you need it.

@@ -140,7 +140,12 @@ class session():
                 raise Exception, str('|##| '+str(sentDataName)+' still set to a dict, change this!!!')
                 
             else:
-                sentItemsList.append((sentDataName, sentDataObject.saveSettings()))
+                try:
+                    sentItemsList.append((sentDataName, {'package': sentDataObject.__package__, 'class':str(sentDataObject.__class__), 'data':sentDataObject.saveSettings()}))
+                except:
+                    ### problem with getting the settings, print and inform the developers.
+                    print '|#| problem getting data for '+str(sentDataObject)
+                    raise Exception, 'Setting save exception'
         return sentItemsList
     def setSettings(self,settings):
         # print 'on set settings'
@@ -223,37 +228,36 @@ class session():
         # set the sentItems in the widget
         for (sentItemName, sentItemDict) in d:
             print '|##| setting sent items', sentItemName, 'to', sentItemDict
-            self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName)))
+            self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName))) # append a list of sent items to the sent items list, this is the place that we need to place the Red-R data container class into using setSentRvarClass.
     
     def setSentRvarClass(self, d, sentItemName):
         print '|##| setSentRvarClass', d
-        className = d['class'].split('.')
-        className = className[1]
-        # print 'setting ', className
-        try: # try to reload the output class from the signals
-            if d['package'] != 'base':
-                var = getattr(getattr(signals,d['package']), className)(data = d['data'], checkVal = False) # reset the object with the data, disabling checkVal means that the variable doesn't need to exist in R yet (which it doesn't)
-            else:
-                var = getattr(signals, className)(data = d['data'], checkVal = False)
-            var.dictAttrs = d['dictAttrs']  # set the dict attrs
-        except: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            try:
-                var = None
-                for (name, att) in self.outputs:
-                    if name == sentItemName:
-                        var = att(data = d['data'])
-                        var.dictAttrs = d['dictAttrs']
-                if var == None: raise Exception
-            except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-                print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                var = signals.RVariable(data = d['data'])
-            
+        className = d['class'].split('.')[1]
         
-        for key in d.keys():
-            if key in ['class','package']: continue
-            # print 'setting ', key
-            subvar = getattr(var, key) 
-            subvar = d[key]
+        # print 'setting ', className
+        #try: # try to reload the output class from the signals
+        if d['package'] != 'base':
+            var = getattr(getattr(signals,d['package']), className)(data = None, checkVal = False) # reset the object with the data, disabling checkVal means that the variable doesn't need to exist in R yet (which it doesn't)
+        else:
+            var = getattr(signals, className)(data = None, checkVal = False)
+        var.loadSettings(d['data'])
+        # except: # if it doesn't exist we need to set the class something so we look to the outputs. 
+            # try:
+                # var = None
+                # for (name, att) in self.outputs:
+                    # if name == sentItemName:
+                        # var = att(data = None, checkVal = False)
+                        
+                # if var == None: raise Exception
+                # var.loadSettings(d['data'])
+            # except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+                # print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+                # try:
+                    # var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+                # except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
+                    # print 'Fatal exception in loading.  Can\'t assign the signal value'
+                    # var = None
+        
         return var
             
     def setRvarClass(self, d):
