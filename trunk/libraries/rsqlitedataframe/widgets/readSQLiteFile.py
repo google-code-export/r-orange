@@ -339,8 +339,8 @@ class readSQLiteFile(OWRpy):
         pass
     def commit(self):
         self.updateGUI()
-        
-        sendData = signals.rsqlitedataframe.SQLiteTable(data = str(self.filecombo.currentText()).split('.')[0], database = self.database.replace('\\','/'))
+       
+        sendData = signals.rsqlitedataframe.SQLiteTable(data = str(self.filecombo.currentText()).split('.')[0], database = self.database)
         self.rSend("data.frame", sendData)
         
         

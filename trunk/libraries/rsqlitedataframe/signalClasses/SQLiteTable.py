@@ -5,17 +5,22 @@ import time, sqlite3, os
 
 
 class SQLiteTable(RDataFrame):
-    def __init__(self, data, database, connection = None, parent = None, checkVal = True):
+    def __init__(self, data, database, parent = None, checkVal = True):
         RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
         ##  Need to set some specific parameters for SQLiteTable objects.  Such as the database and other stuff
-        
+        if parent:  # sets the parent (ideally a real table in the database) of the data that you have here.  This may not be used that much, especially if you merge things, but you have it anyway if you need it.
+            self.parent = parent
+        else:
+            self.parent = data
         self.database = database
         self.newDataName = 'dataFrameConversion_'+str(time.time()) # put this here because we may make many connections from this output and we only want one dataFrameConversion_ in R
-        if connection == None:
-            pass
-            ## make the connection
-        else:
-            self.connection = connection
+        
+    def saveSettings(self):
+        return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'database': self.database, 'newDataName': self.newDataName}
+    def loadSettings(self, settings):
+        self.data = settings['data']
+        self.database = settings['database']
+        self.newDataName = settings['newDataName']
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()
@@ -40,13 +45,19 @@ class SQLiteTable(RDataFrame):
         else:
             database = self.database
         if not os.path.exists(database):
-            QMessageBox.information(self, 'SQLite Conversion','Database '+str(database)+' does not exist on your system.\nIf you got this schema from someone else this is normal.\nI\'ll make the connection but no data will be sent.',  QMessageBox.Ok + QMessageBox.Default)
-            return
+            if self.R('exists('+self.newDataName+')') == 'TRUE':
+                QMessageBox.information(self, 'SQLite Conversion','Database '+str(database)+' does not exist on your system.\nHowever, I found the data in the Red-R session and will send this\ninstead of making a new table.',  QMessageBox.Ok + QMessageBox.Default)
+                newData = RDataFrame(data = self.newDataName)
+                return newData
+            else:
+                QMessageBox.information(self, 'SQLite Conversion','Database '+str(database)+' does not exist on your system.\nIf you got this schema from someone else this is normal.\nI\'ll make the connection but no data will be sent.',  QMessageBox.Ok + QMessageBox.Default)
+                return
+        database = database.replace('\\','/')
         self.require_librarys(['RSQLite']) # require the sqlite package
         ## convert the data table to a database.  This will actually run the current sql query which will likely inherit from some kind of view
         self.R('m<-dbDriver("SQLite")')
-        print self.database
-        self.R('con<-dbConnect(m, dbname=\''+self.database+'\')')
+        print database
+        self.R('con<-dbConnect(m, dbname=\''+database+'\')')
         
         
         self.R(self.newDataName+'<-dbGetQuery(con, statement=\'select * from '+self.data+'\')')
@@ -55,7 +66,7 @@ class SQLiteTable(RDataFrame):
         
         
         # convert the classes of the columns to something reasonable like numeric or factor
-        conn = sqlite3.connect(self.database)
+        conn = sqlite3.connect(database)
         cursor = conn.cursor()
         
         cursor.execute('PRAGMA table_info('+self.data+')')
@@ -68,6 +79,9 @@ class SQLiteTable(RDataFrame):
                 self.R(self.newDataName+'$'+str(type[0])+'<-as.factor('+self.newDataName+'$'+str(type[0])+')')
             elif type[1] in ['real']:
                 self.R(self.newDataName+'$'+str(type[0])+'<-as.numeric('+self.newDataName+'$'+str(type[0])+')')
+        
+        ## allow the user to set rownames???
+        
         
         newData = RDataFrame(data = self.newDataName)
         return newData
