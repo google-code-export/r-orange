@@ -23,11 +23,6 @@ class session():
         import re
         settings = {}
         allAtts = self.__dict__
-        # self.dontSaveList.extend(RSession().__dict__.keys())
-        #self.dontSaveList.extend(OWWidget().__dict__.keys())
-        # print 'all atts:', allAtts
-        # print 'dontSaveList', self.dontSaveList
-        # try:
         self.progressBarInit()
         i = 0
         for att in allAtts:
@@ -46,31 +41,14 @@ class session():
         if self.inputs and len(self.inputs) != 0:
             ainputs = []
             for (a, b, c) in [input for input in self.inputs]:
-                
-                if issubclass(b, signals.RDataFrame):
-                    bc = 'Data Frame'
-                elif issubclass(b, signals.RVector):
-                    bc = 'Vector'
-                elif issubclass(b, signals.RList):
-                    bc = 'List'
-                else:
-                    bc = 'Variable'
-                ainputs.append((a, bc))
+                ainputs.append((a, b))
             settings['inputs'] = ainputs
         else: settings['inputs'] = None
         if self.outputs and len(self.outputs) != 0:
             aoutputs = []
+            ## move across the outputs and get their type
             for (a,b) in [output for output in self.outputs]:
-                # print 'Output type', type(b)
-                if issubclass(b, signals.RDataFrame):
-                    bc = 'Data Frame'
-                elif issubclass(b, signals.RVector):
-                    bc = 'Vector'
-                elif issubclass(b, signals.RList):
-                    bc = 'List'
-                else:
-                    bc = 'Variable'
-                aoutputs.append((a, bc))
+                aoutputs.append((a, b))
             settings['outputs'] = aoutputs
         else: settings['outputs'] = None
         
@@ -158,8 +136,9 @@ class session():
             if sentDataObject == None: 
                 sentItemsList.append((sentDataName, None))
             elif type(sentDataObject) == dict:
-                sentItemsList.append((sentDataName, sentDataObject))
-                print '|##| ', sentDataName, 'still set to a dict, change this!!!'
+                
+                raise Exception, str('|##| '+str(sentDataName)+' still set to a dict, change this!!!')
+                
             else:
                 sentItemsList.append((sentDataName, sentDataObject.saveSettings()))
         return sentItemsList
@@ -253,15 +232,17 @@ class session():
         # print 'setting ', className
         try: # try to reload the output class from the signals
             if d['package'] != 'base':
-                var = getattr(getattr(signals,d['package']), className)(data = d['data'])
+                var = getattr(getattr(signals,d['package']), className)(data = d['data'], checkVal = False) # reset the object with the data, disabling checkVal means that the variable doesn't need to exist in R yet (which it doesn't)
             else:
-                var = getattr(signals, className)(data = d['data'])
+                var = getattr(signals, className)(data = d['data'], checkVal = False)
+            var.dictAttrs = d['dictAttrs']  # set the dict attrs
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
             try:
                 var = None
                 for (name, att) in self.outputs:
                     if name == sentItemName:
                         var = att(data = d['data'])
+                        var.dictAttrs = d['dictAttrs']
                 if var == None: raise Exception
             except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
                 print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'

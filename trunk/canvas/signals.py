@@ -6,13 +6,13 @@ from RSession import require_librarys
 import glob,os.path,redREnviron
 
 class BaseRedRVariable:# parent class of all signals.  This class holds base functions such as assignment and item setting
-    def __init__(self, data):
+    def __init__(self, data, parent = None):
         if not data:
             raise Exception()
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']
-        
+        self.parent = parent
     def __getitem__(self, item):
         try:
             attr = getattr(self, item)
@@ -86,24 +86,14 @@ class RVariable(BaseRedRVariable):
     def __str__(self):
         ## print output for the class
         return '###Signal Class: '+str(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+str(self.dictAttrs)
+    
 
     def getClass_call(self):
         return 'class('+self.data+')'
         
     def getClass_data(self):
         return self.R(self.getClass_call(), silent = True)
-        
-    # def plotObject(self, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
-        # try:
-            # query = 'plot('+self.data+')'
-            # self.Rplot(query = query, dwidth = dwidth, dheight = dheight, devNumber = devNumber, mfrow = mfrow)
-        # except:
-            # print 'Exception occured'
 
-    # def copy(self):
-        # newVariable = RVariable(self.data, self.parent)
-        # newVariable.dictAttrs = self.dictAttrs.copy()
-        # return newVariable
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'
         return text
