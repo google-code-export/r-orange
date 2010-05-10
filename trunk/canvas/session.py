@@ -186,6 +186,7 @@ class session():
             else:
                 self.redRGUIObjects[k] = v;
         
+        
     def onLoadSavedSession(self, force = False, template = False):
         if self.loaded and not force: return  # prevents a loaded widget from being reloaded this can be overwriten using a call to force if the loader wishes.
         print '|##| in onLoadSavedSession'

@@ -13,9 +13,8 @@ import signals
 class panpCalls(OWRpy):
 
     def __init__(self, parent=None, signalManager=None):
-        #OWWidget.__init__(self, parent, signalManager, "Sample Data")
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        #self.setStateVariables(['senddata', 'looseCut', 'tightCut', 'percentA', 'data', 'eset'])
+        
 
         self.senddata = {}
         self.data = {}
@@ -70,7 +69,9 @@ class panpCalls(OWRpy):
         self.R('colnames('+self.Rvariables['peset']+') <- colnames(exprs('+self.eset+'))')
         self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
         self.status.setText('Processed')
+        
         self.senddata = signals.RMatrix(data = self.Rvariables['peset'])
-        self.senddata.dictAttrs = self.data.dictAttrs
-        self.senddata.dictAttrs['eset'] = self.eset
+        #self.senddata.dictAttrs = self.data.dictAttrs
+        #self.senddata.dictAttrs['eset'] = self.eset
+        
         self.rSend('Present Gene Signal Matrix', self.senddata)

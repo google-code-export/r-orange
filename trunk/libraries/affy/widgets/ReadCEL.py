@@ -23,9 +23,6 @@ class ReadCEL(OWRpy):
         self.path = os.path.abspath('/')
         self.methodcombo = 0
         self.loadSettings()
-        # make sure that there is an escape option for the file selection 
-        # if '' not in self.recentFiles:
-            # self.recentFiles.insert(0, '')
         
         #set R variable names
         self.setRvariableNames(['affyBatch','folder', 'cm'])
@@ -33,12 +30,6 @@ class ReadCEL(OWRpy):
         self.inputs = None 
         self.outputs = [("affyBatch", signals.affy.RAffyBatch)]
         
-        # module = __import__('REset')
-        # classobj = getattr(module, 'REset')
-        # print classobj, classobj.__dict__
-        self.a  = signals.affy.RAffyBatch(data='test')
-        # print  self.a.saveSettings()
-        # print '@@@@@@@@@@@@@@@@', self.a.__name__
         #GUI
         box = redRGUI.groupBox(self.controlArea, "Select Folder",orientation='horizontal')
         #sizePolicy=QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed))
@@ -98,5 +89,7 @@ class ReadCEL(OWRpy):
         
     
     def sendMe(self):
+        chipType = self.R('annotation('+self.Rvariables['affyBatch']+')')
+        signals.setGlobalData(self,'chipType',chipType,description='Chip Type')
         out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
         self.rSend("affyBatch", out2)

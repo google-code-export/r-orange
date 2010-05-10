@@ -119,14 +119,16 @@ class RDataTable(OWRpy):
         data = {}
         self.data = data
         tableData = dataset['data']
-        if 'link' in dataset.dictAttrs:
-            self.link = dataset.dictAttrs['link']
-            print 'setting link as '+str(self.link)
+        #print '|###|' + str(signals.globalData)
+        #print '|###| %s' % signals.globalDataExists('urls')
+        if signals.globalDataExists('urls'):
+            link = signals.getGlobalData('urls')
+            print 'setting link as '+str(link)
             self.linkListBox.clear()
             
-            for key in self.link.keys():
-                self.linkListBox.addItem(key)
-            self.currentLinks = self.link
+            for url in link['data']:
+                self.linkListBox.addItem(url)
+            self.currentLinks = link['data']
         
         else: 
             linkData = None
@@ -158,7 +160,7 @@ class RDataTable(OWRpy):
             if col == 0 or col == 'row': #special cases for looking into rownames
                 cellVal = self.R('rownames('+table+')['+str(RclickedRow)+']')
             else:
-                cellVal = self.R(table+'['+str(RclickedRow)+','+col+']')
+                cellVal = self.R(table+'['+str(RclickedRow)+',"'+col+'"]')
             url = url.replace('{'+col+'}', str(cellVal))
             #print url
             import webbrowser

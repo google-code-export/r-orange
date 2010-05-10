@@ -356,6 +356,7 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
+        # signals.setGlobalData(self,'urls',{'dictybase':'http://www.dictybase.org/gene/{db_gene_id}'},description='url')
         sendData = signals.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("data.frame", sendData)
         

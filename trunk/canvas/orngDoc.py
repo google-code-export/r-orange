@@ -10,6 +10,7 @@ import xml.dom.minidom
 import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
+import signals as theSignals
 
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
@@ -541,10 +542,11 @@ class SchemaDoc(QWidget):
         
             widgets.appendChild(temp)
         
+        settingsDict['_globalData'] = cPickle.dumps(theSignals.globalData)
+        settings.setAttribute("settingsDictionary", str(settingsDict))      
+
         r =  cPickle.dumps({'R': requiredRLibraries.keys(), 'RedR': requireRedRLibraries.values()})
         required.setAttribute("requiredPackages", str({'r':r}))
-        
-        settings.setAttribute("settingsDictionary", str(settingsDict))      
         
         #save connections
         for line in self.lines:
@@ -685,7 +687,6 @@ class SchemaDoc(QWidget):
                 
                 
             #RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
-
             loadedWidgets = []
             # read widgets
             loadedOk = 1
@@ -969,17 +970,11 @@ class SchemaDoc(QWidget):
 
             
             RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
-            
+            theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
+
             #read lines
             lineList = lines.getElementsByTagName("channel")
             loadingProgressBar.setLabelText('Loading Lines')
-            # loadingProgressBar.setMaximum(len(lineList))
-            # loadingProgressBar.setValue(0)
-            # lpb = 0
-            
-            
-            
-
 
             for line in lineList:
                 try:

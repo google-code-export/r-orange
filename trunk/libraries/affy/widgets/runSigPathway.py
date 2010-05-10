@@ -14,12 +14,10 @@ from OWRpy import *
 import redREnviron
 
 class runSigPathway(OWRpy):
-    settingsList = ['clickedRow', 'vs', 'Rvariables', 'newdata', 'subtable', 'pAnnots']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         
         
-        self.vs = self.variable_suffix
         self.setRvariableNames(['data', 'affy', 'pAnnots',  'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType', 'sigpath'])
         self.Rpannot = None
         self.clickedRow = None
@@ -37,9 +35,15 @@ class runSigPathway(OWRpy):
         self.subtable = {}
         self.noFile() # run the file manager to get all the needed files.
         self.loadSettings()
-        self.inputs = [("Expression Set", signals.affy.RDataFrame, self.process), ("Pathway Annotation List", signals.affy.RDataFrame, self.processPathAnnot), ('Phenotype Vector', signals.affy.RVector, self.phenotypeConnected)]
-        self.outputs = [("Pathway Analysis File", signals.affy.RDataFrame), ("Pathway Annotation List", signals.affy.RDataFrame), ("Pathway List", signals.affy.RDataFrame)]
-#GUI
+        
+        self.inputs = [("Expression Set", signals.RDataFrame, self.process), 
+        ("Pathway Annotation List", signals.RDataFrame, self.processPathAnnot), 
+        ('Phenotype Vector', signals.RVector, self.phenotypeConnected)]
+        self.outputs = [("Pathway Analysis File", signals.RDataFrame), 
+        ("Pathway Annotation List", signals.RDataFrame), 
+        ("Pathway List", signals.RDataFrame)]
+    
+        #GUI
         mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         leftArea = redRGUI.widgetBox(mainArea, sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding))
         rightArea = redRGUI.widgetBox(mainArea)
@@ -88,21 +92,25 @@ class runSigPathway(OWRpy):
             self.data = data['data']
             self.pAnnotlist.setEnabled(True)
             self.chiptype.clear()
-            if 'eset' in data:
-                self.affy = data['eset']
-                self.chiptype.setText(self.R('annotation('+self.affy+')'))
+            if signals.globalDataExists('chiptype'):
                 self.chiptype.setEnabled(False)
                 self.usedb.setChecked(['Use Annotation Database'])
                 self.getChiptype()
-            elif 'affy' in data:
-                self.affy = data['affy']
-                self.chiptype.setText(self.R('annotation('+self.affy+')'))
-                self.chiptype.setEnabled(False)
-                self.usedb.setChecked(['Use Annotation Database'])
-                self.getChiptype()
-            else:
-                self.infob.setText("No Chip Type Info Available. \n Please input.")
-                self.chiptype.setEnabled(True)
+            # if 'eset' in data:
+                # self.affy = data['eset']
+                # self.chiptype.setText(self.R('annotation('+self.affy+')'))
+                # self.chiptype.setEnabled(False)
+                # self.usedb.setChecked(['Use Annotation Database'])
+                # self.getChiptype()
+            # elif 'affy' in data:
+                # self.affy = data['affy']
+                # self.chiptype.setText(self.R('annotation('+self.affy+')'))
+                # self.chiptype.setEnabled(False)
+                # self.usedb.setChecked(['Use Annotation Database'])
+                # self.getChiptype()
+            # else:
+                # self.infob.setText("No Chip Type Info Available. \n Please input.")
+                # self.chiptype.setEnabled(True)
             if str(self.chiptype.text()) != '':
                 self.infob.setText('Your chip type is '+str(self.chiptype.text()))
             if 'classes' in self.olddata:
@@ -169,7 +177,6 @@ class runSigPathway(OWRpy):
         if self.data == '': return
         if not reload:
             self.getChiptype()
-            #self.R('if(exists("sigpath_'+self.vs+'")) {rm(sigpath_'+self.vs+')}')
             try:
                 self.R(self.Rvariables['sigpath']+'<-runSigPathway('+self.pAnnots+', minNPS='+str(self.minNPS.text())+', maxNPS = '+str(self.maxNPS.text())+', '+self.data+', phenotype = '+self.phenotype+', weightType = "'+self.weightType+'", npath = '+str(self.npath.text())+self.dboptions+')')
             except:

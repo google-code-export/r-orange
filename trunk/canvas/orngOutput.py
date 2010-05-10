@@ -112,7 +112,7 @@ class OutputWindow(QDialog):
                 text = str(m.group(3))
             
         elif m and len(m.group(2)) >= self.canvasDlg.settings['outputVerbosity']:
-            #text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(self.canvasDlg.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (self.canvasDlg.settings['outputVerbosity'])+1)
+            # text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(self.canvasDlg.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (self.canvasDlg.settings['outputVerbosity'])+1)
             text = str(m.group(3)) + "\n"
         else:
             return

@@ -28,7 +28,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
     
     output = None
     if not silent:
-        print query
+        print '|##| %s' % query
     #####################Forked verions of R##############################
     # try:
         # output = qApp.R.R(query)            
@@ -98,7 +98,7 @@ def getInstalledLibraries():
     return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
-        print libPath
+        #print libPath
         installedRPackages = getInstalledLibraries()
         
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')

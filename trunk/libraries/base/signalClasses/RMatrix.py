@@ -5,6 +5,9 @@ from RDataFrame import *
 class RMatrix(RDataFrame):
     def __init__(self, data, parent = None, checkVal = True):
         RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
+        if checkVal and self.getClass_data() != 'matrix':
+            raise Exception('not a Matrix.') # there this isn't the right kind of data for me to get !!!!!
+
 
     def convertToClass(self, varClass):
         if varClass == RVariable:

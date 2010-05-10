@@ -39,12 +39,15 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
     
     #(data, generator, comment, other)
     def setOptionalData(self, name, data, creatorWidget=None, description = None, extra=None):
-        # if creatorWidget:
-            # creator = creatorWidget.windowTitle()
-        # else:
-            # creator = None
+        #if creatorWidget and type(creatorWidget) in [str]:
+        widgetID = 'none'
+        if hasattr(creatorWidget, 'widgetID'):
+            widgetID = creatorWidget.widgetID
         
-        self.dictAttrs[name] = {'creator': creatorWidget.widgetID, ##should change to a premenent identifier
+        if widgetID not in self.dictAttrs.keys():
+            self.dictAttrs[widgetID] = {}
+    
+        self.dictAttrs[widgetID][name] = {'creator': widgetID, 
         'data':data,'description':description,'extra':extra}
     
     def getOptionalData(self,name):
@@ -112,7 +115,7 @@ class RVariable(BaseRedRVariable):
         text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
         return text
     def getAttrOutput_call(self, item, subsetting = ''):
-        print '|##|', item, subsetting
+        print '|#|', item, subsetting
         call = 'paste(capture.output('+self.__getitem__(item)+subsetting+'), collapse = "\n")'
         return call
     def getAttrOutput_data(self, item, subsetting = ''):
@@ -143,7 +146,7 @@ def forname(modname, classname):
 current_module = __import__(__name__)
 RedRSignals = []
 def registerRedRSignals(package):
-    print '|##| @@@@@@@@@@registerRedRSignals'
+    print '|#| registerRedRSignals for %s' % package
     import imp, sys
     # print sys.path
     m = imp.new_module(package)
@@ -157,17 +160,9 @@ def registerRedRSignals(package):
         c = forname(guiClass,guiClass)
         c.__dict__['__package__'] = package
         setattr(m, guiClass,c)
-        
-    
     setattr(current_module,package,m)
-    # print m
-    # print current_module
-    
 
-#registerRedRSignals(redREnviron.directoryNames['redRSignalsDir'])
-
-
-for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/base/signalClasses', "*.py")):
+for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'],'base','signalClasses',"*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
     signalClasses = os.path.basename(filename).split('.')[0]
@@ -175,3 +170,35 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] 
     c = forname(signalClasses,signalClasses)
     c.__dict__['__package__'] = 'base'
     setattr(current_module, signalClasses,c)
+
+
+################Define global data###############
+
+globalData = {}
+def setGlobalData(creatorWidget, name, data, description = None, extra=None):
+    if creatorWidget and type(creatorWidget) in [str]:
+        widgetID = 'none'
+    elif hasattr(creatorWidget, 'widgetID'):
+        widgetID = creatorWidget.widgetID
+        
+    if widgetID not in globalData.keys():
+        globalData[widgetID] = {}
+    
+    globalData[widgetID][name] = {'creator': widgetID, 
+    'data':data,'description':description,'extra':extra}
+
+def getGlobalData(name):
+    for key,value in globalData.items():
+        if name in value.keys(): 
+            return value[name]
+    
+    return None
+def globalDataExists(name):
+    for key,value in globalData.items():
+        if name in value.keys(): 
+            return True
+    
+    return False
+    
+def removeGlobalData(data):
+    del globalData[data]

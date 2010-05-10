@@ -12,7 +12,6 @@ from OWRpy import *
 
 
 class limmaDecide(OWRpy):
-    settingsList = ['modelProcessed', 'olddata', 'newdata', 'dmethod', 'adjmethods', 'foldchange', 'pval', 'data', 'sending', 'ebdata', 'eset']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 
@@ -28,10 +27,9 @@ class limmaDecide(OWRpy):
         
         self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm', 'gcm_matrix'])
         
-        #self.sendMe()
         
         self.inputs = [("eBayes fit", signals.RModelFit, self.process), ('Normalized Eset', signals.RDataFrame, self.processeset)]
-        self.outputs = [("Expression Subset", signals.RDataFrame), ("Gene Change Table", signals.RDataFrame)]
+        self.outputs = [("Expression Subset", signals.RDataFrame), ("Gene Change Matrix", signals.RDataFrame)]
         
         #GUI
         #want to have an options part, a data viewing part and a run part
@@ -70,8 +68,6 @@ class limmaDecide(OWRpy):
         self.require_librarys(['affy', 'limma'])
         self.data = '' # protect from using obsolete data
         self.removeWarning()
-        for output in self.outputs:
-            self.rSend(output[0], None, 0) #start the killing cascade for all outputs
         if dataset == None:
             print dataset
             self.status.setText("Blank data recieved")
@@ -84,9 +80,11 @@ class limmaDecide(OWRpy):
         self.ebdata = dataset
         self.status.setText("Data connected")
         self.runbutton.setEnabled(True)
-        if 'eset' in dataset.dictAttrs.keys():
-            self.processeset(dataset.dictAttrs['eset'][0])
-        #self.pickGroup.setEnabled(True)
+        # if 'eset' in dataset.dictAttrs.keys():
+        if signals.globalDataExists('eset'):
+            self.eset = signals.getGlobalData('eset')
+            #self.processeset(signals.getGlobalData('eset'))
+        
         
     def runAnalysis(self):
         #self.Rvariables['gcm'] = 'gcm'+self.variable_suffix
@@ -96,7 +94,7 @@ class limmaDecide(OWRpy):
         #run the analysis using the parameters selected or input
         self.R(self.Rvariables['gcm']+'<-decideTests('+self.data+', method="'+str(self.dmethod.currentText())+'", adjust.method="'+str(self.adjmethods.currentText())+'", p.value='+str(self.pval.text())+', lfc='+str(self.foldchange.text())+')')
         #self.infoa.setText("Gene Matrix Processed and sent!")
-        self.R(self.Rvariables['gcm_matrix']+'<-as.matrix('+self.Rvariables['gcm']+')')
+        self.R(self.Rvariables['gcm_matrix']+'<-'+self.Rvariables['gcm']+'[]')
         self.sending = signals.RMatrix(data = self.Rvariables['gcm_matrix'])
         self.rSend("Gene Change Matrix", self.sending)
         self.groupNames = self.R('colnames('+self.Rvariables['gcm']+')', wantType = 'list')
@@ -106,50 +104,26 @@ class limmaDecide(OWRpy):
         self.modelListBox.update(self.groupNames)
         if self.eset != None:
             self.modelGroupDialog.show()
-        self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
-        self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
-        self.modelProcessed = 1
-        
-        self.sendesetsubset()
-        
-    # def onLoadSavedSession(self):
-        # if self.R('exists("'+self.Rvariables['gcm']+'")'):
-            # self.infoa.setText("Gene Matrix Processed and sent!")
-            # self.sending = {'data':self.Rvariables['gcm']}
-            # self.modelProcessed = 1
-            # self.sendesetsubset()
-        # else:
-            # self.send("Gene Change Matrix",None)
-        # if self.R('exists("'+self.Rvariables['eset_sub']+'")'):
-            # self.rSend("Expression Subset", self.newdata)
-        # else:
-            # self.rSend("Expression Subset", None)
-
-            
+            self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
+            self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
+            self.sendesetsubset()
+                   
             
     def processeset(self, data):
         self.removeWarning()
-        self.eset = None
-        if data == None:
-            self.rSend("Expression Subset", None, 0)
-        if data:
-            self.eset = data['data'] #this is data from an expression matrix or data.frame
-            
-            if self.sending != None and self.ebdata != '':
-                self.sendesetsubset()
-        else: return
+        self.eset = data['data'] #this is data from an expression matrix or data.frame
+        if self.sending != None and self.ebdata != '':
+            self.sendesetsubset()
 
     def sendesetsubset(self):
-        if self.eset != None and self.modelProcessed == 1:
-            self.R(self.Rvariables['gcm']+'[,'+str(int(self.modelListBox.currentRow())+1)+']!=0 ->'+self.Rvariables['geneissig'])
-            self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
-            self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
-            self.newdata = self.olddata.copy()
-            self.newdata.data = self.Rvariables['eset_sub']
-            if 'classes' in self.ebdata.dictAttrs.keys():
-                self.newdata.dictAttrs['classes'] = self.ebdata.dictAttrs['classes']
-                self.newdata.dictAttrs['classes'][2] += 'Copied in Significance Criteria because this data was found in the incomming model fit, potential channel switching has occured.  These data should be considered carefully.'
-            self.rSend("Expression Subset", self.newdata)
-        else:
-            self.setWarning(id = 'subsetIMpossible', text = 'Can\'t send subset because expression data is not available')
-            return 
+        self.R(self.Rvariables['gcm']+'[,'+str(int(self.modelListBox.currentRow())+1)+']!=0 ->'+self.Rvariables['geneissig'])
+        self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
+        self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
+        #self.newdata = self.olddata.copy()
+        #self.newdata.data = self.Rvariables['eset_sub']
+        newdata = signals.RDataFrame(self.Rvariables['eset_sub'])
+        
+        self.rSend("Expression Subset", newdata)
+        # else:
+            # self.setWarning(id = 'subsetIMpossible', text = 'Can\'t send subset because expression data is not available')
+            # return 

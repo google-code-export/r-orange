@@ -15,7 +15,6 @@ import redRGUI
 
 
 class affyNormalize(OWRpy):
-    # settingsList = ['norminfo', 'enableMethBox', 'data','normmeth', 'normoptions', 'bgcorrect', 'bgcorrectmeth', 'pmcorrect', 'summarymeth', 'norm', 'selectMethod']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Normalization")
         
@@ -119,7 +118,7 @@ class affyNormalize(OWRpy):
             self.selMethBox.setEnabled(True)
             self.status.setText('Data Loaded')
         except: 
-            print 'error'
+            print '|###| error'
 
         
         self.bgcmethselector.update(self.R('bgcorrect.methods()'))
@@ -161,8 +160,9 @@ class affyNormalize(OWRpy):
                 self.normselector.setEnabled(True)
 
     def toSend(self):
+        signals.setGlobalData(self,'eset',self.Rvariables['normalized_Eset'],description='Normalized Eset')
+        
         newData = signals.affy.REset(data = self.Rvariables['normalized_Eset'])
-        newData.dictAttrs = self.oldData.dictAttrs
         self.rSend("Normalized Eset", newData)
         
     

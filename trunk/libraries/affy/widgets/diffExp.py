@@ -14,7 +14,6 @@ class diffExp(OWRpy):
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        #self.setStateVariables(['samplenames', 'sampleA', 'sampleB'])        
         
         self.samplenames = []
         self.sampleA = []
@@ -22,7 +21,6 @@ class diffExp(OWRpy):
         self.phenoData = ''
         self.modelFormula = ''
         self.data = ''
-        self.processingComplete = 0
         self.newdata = {}
         self.olddata = {}
         self.require_librarys(['affy','gcrma','limma'])
@@ -126,21 +124,18 @@ class diffExp(OWRpy):
         self.selectedArrays.clear()
         self.selectedArraysB.clear()
         self.data = '' #clear the data
-        if data:
-            self.data = data['data']
-            self.samplenames = self.R('colnames('+self.data+')') #collect the sample names to make the differential matrix
+        if not data: return
 
-            if self.samplenames is str:
-                self.samplenames = [self.samplenames]
-            else:
-                for v in self.samplenames:
-                    self.arrays.addItem(v)
-                #self.functionBox.addItems(self.samplenames) #add the items to the funcitonBox
-            
-            if not self.phenoData == '' and self.R('intersect(rownames('+self.phenoData+'), colnames('+self.data+'))') == None:
-                self.infoa.setText('No intersect between the phenoData and the expression data.\nPhenoData ignored.')
-                self.valuesStack.setCurrentWidget(self.boxIndices[0])
-                return
+        self.data = data['data']
+        self.samplenames = self.R('colnames('+self.data+')',wantType='list') #collect the sample names to make the differential matrix
+
+        for v in self.samplenames:
+            self.arrays.addItem(v)
+        
+        if not self.phenoData == '' and self.R('intersect(rownames('+self.phenoData+'), colnames('+self.data+'))') == None:
+            self.infoa.setText('No intersect between the phenoData and the expression data.\nPhenoData ignored.')
+            self.valuesStack.setCurrentWidget(self.boxIndices[0])
+            return
 
     def processEset(self, reload = 0): #convert the listBox elements to R objects, perform differential expression and send the results of that to the next widget
         if self.data == '': return
@@ -174,14 +169,13 @@ class diffExp(OWRpy):
             self.R(self.Rvariables['results']+'<-eBayes(fit)')
 
         newdata = signals.RDataFrame(data = 'as.data.frame('+self.Rvariables['results']+')') 
-        newdata.setOptionalData('classes', self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression')
+        #newdata.setOptionalData('classes', self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression')
         self.rSend('eBayes data frame', newdata)
         
         self.newdata = signals.affy.RMArrayLM(data = self.Rvariables['results'])
-        self.newdata.setOptionalData('classes', self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression')
+        #self.newdata.setOptionalData('classes', self.Rvariables['classes'], 'Differential Expression', 'Created from either a design matrix or the user input in Differential Expression')
         self.rSend('eBayes fit', self.newdata)
         self.infoa.setText('Your data fit has been sent.  Use the diffSelector widget to select significant cutoffs')
-        self.processingComplete = 1
 
 
     def printSelected(self):
@@ -201,12 +195,12 @@ class diffExp(OWRpy):
                 self.infoa.setText("No arrays selected")
 
     
-    def Rreload(self):
-        for v in self.sampleA:
-            self.selectedArrays.addItem(str(v))
-        for v in self.sampleB:
-            self.selectedArraysB.addItem(str(v))
-        self.arrays.addItems(self.sampleA)
-        self.arrays.addItems(self.sampleB)
-        self.modelText.setText("Model: " + self.modelFormula)
+    # def Rreload(self):
+        # for v in self.sampleA:
+            # self.selectedArrays.addItem(str(v))
+        # for v in self.sampleB:
+            # self.selectedArraysB.addItem(str(v))
+        # self.arrays.addItems(self.sampleA)
+        # self.arrays.addItems(self.sampleB)
+        # self.modelText.setText("Model: " + self.modelFormula)
         
