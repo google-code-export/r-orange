@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RDataFrame import *
-import time, sqlite3
+import time, sqlite3, os
 
 
 class SQLiteTable(RDataFrame):
@@ -34,6 +34,14 @@ class SQLiteTable(RDataFrame):
         newData = RList(data = 'as.list('+dfData.data+')')
         return newData
     def _convertToDataFrame(self):
+        ## we need to check if the database is available if not then we can't make the conversion.
+        if 'local|' in self.database:  # convert the database if the local name is present.
+            database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+        else:
+            database = self.database
+        if not os.path.exists(database):
+            QMessageBox.information(self, 'SQLite Conversion','Database '+str(database)+' does not exist on your system.\nIf you got this schema from someone else this is normal.\nI\'ll make the connection but no data will be sent.',  QMessageBox.Ok + QMessageBox.Default)
+            return
         self.require_librarys(['RSQLite']) # require the sqlite package
         ## convert the data table to a database.  This will actually run the current sql query which will likely inherit from some kind of view
         self.R('m<-dbDriver("SQLite")')

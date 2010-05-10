@@ -35,7 +35,7 @@ class readSQLiteFile(OWRpy):
         self.useheader = 1
         self.loadSettings()
         #set R variable names        
-        self.database = os.path.abspath(os.path.join(qApp.canvasDlg.tempDir, 'temp.db'))
+        self.database = 'local|temp.db'
         
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         self.inputs = None
@@ -61,6 +61,9 @@ class readSQLiteFile(OWRpy):
         # self.filecombo.setMinimumWidth(200)
         # self.filecombo.setMaximumWidth(200)
         button = redRGUI.button(box, label = 'Browse', callback = self.browseFile)
+        box2 = redRGUI.widgetBox(options)
+        self.dbinfo = redRGUI.widgetLabel(box2, label = 'Database File: local directory')
+        button2 = redRGUI.button(box2, 'Change File', callback = self.changeDirectory)
         
         
         self.delimiter = redRGUI.radioButtons(options, label='Column Seperator',
@@ -81,38 +84,12 @@ class readSQLiteFile(OWRpy):
         addSpace = True, orientation ='vertical')
         # box.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         split = redRGUI.widgetBox(box,orientation='horizontal')
-        # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        #self.otherOptions = redRGUI.checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
-        #'allowEscapes','stringsAsFactors'],
-        #setChecked = ['blank.lines.skip'],
-        #toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
-        #'logical. Used only when sep has been specified, and allows the stripping of leading and trailing white space from character fields (numeric fields are always stripped). ',
-        #'logical: if TRUE blank lines in the input are ignored.',
-        #'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
-        #'logical: should character vectors be converted to factors?'],
-        #orientation='vertical',callback=self.scanFile)
-        # box.layout().addWidget(self.otherOptions,1,1)
         box2 = redRGUI.widgetBox(split,orientation='vertical')
         #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         split.layout().setAlignment(box2,Qt.AlignTop)
         #self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
         self.decimal = redRGUI.lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
-        # self.quote.setMaximumWidth(50)
-        # self.quote.setMinimumWidth(50)
-        
         self.numLinesScan = redRGUI.lineEdit(box2,text='10',label='# Lines to Scan:',width=50,orientation='horizontal')
-        # self.numLinesScan.setMaximumWidth(50)
-        # self.numLinesScan.setMinimumWidth(50)
-
-        # self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',width=50,orientation='horizontal')
-        # self.numLinesSkip.setMaximumWidth(50)
-        # self.numLinesSkip.setMinimumWidth(50)
-
-
-        
-        # box.layout().addWidget(self.otherOptions,2,1)
-        
         
         
         holder = redRGUI.widgetBox(options,orientation='horizontal')
@@ -120,13 +97,6 @@ class readSQLiteFile(OWRpy):
         load = redRGUI.button(holder, label = 'Load File', callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
-        # self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       
-        # self.infob = redRGUI.widgetLabel(self.FileInfoBox, label='')
-        # self.infob.setWordWrap(True)
-        # self.infoc = redRGUI.widgetLabel(self.FileInfoBox, label='')
-        # self.FileInfoBox.setHidden(True)
-        
-        
         self.tableArea = redRGUI.groupBox(area)
         self.tableArea.setMinimumWidth(200)
         #self.tableArea.setHidden(True)
@@ -135,13 +105,6 @@ class readSQLiteFile(OWRpy):
         self.scanarea = redRGUI.textEdit(self.tableArea)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
-        # self.scroll = redRGUI.scrollArea(self.tableArea);
-        
-        # self.columnTypes = redRGUI.widgetBox(self,orientation=QGridLayout(),margin=10);
-        # self.scroll.setWidget(self.columnTypes)
-        # self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
-        # self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
-        # self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.setFileList()
 
     def loadCustomSettings(self,settings):
@@ -162,7 +125,13 @@ class readSQLiteFile(OWRpy):
         self.filecombo.clear()
         for file in self.recentFiles:
             self.filecombo.addItem(os.path.basename(file))
-    
+
+    def changeDirectory(self):
+        ### set a new file name to save the directory to.
+        fn = QFileDialog.getSaveFileName(self, "Set Database", os.path.abspath('/'), "Database (*.db)")
+        if fn.isEmpty(): return
+        self.dbinfo.setText('Database File:'+str(fn))
+        self.database = os.path.abspath(str(fn))
     def browseFile(self): 
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
         "Text file (*.txt *.csv *.tab);; All Files (*.*)")
@@ -259,7 +228,11 @@ class readSQLiteFile(OWRpy):
         dtl = dtl.split(sep)
         print dtl
         f = open(self.recentFiles[self.filecombo.currentIndex()], 'r')
-        conn = sqlite3.connect(self.database)
+        if 'local|' in self.database:
+            database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+        else:
+            database = self.database
+        conn = sqlite3.connect(database)
         cursor = conn.cursor()
         cursor.execute('DROP TABLE IF EXISTS '+tableName)  # we drop the previous table to remove any reference to it from this database.  we must do this so there is no conflict with the new data.
         
@@ -301,7 +274,11 @@ class readSQLiteFile(OWRpy):
 
     def updateScan(self):
         #if self.rowNamesCombo.count() == 0:
-        conn = sqlite3.connect(self.database)
+        if 'local|' in self.database:
+            database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+        else:
+            database = self.database
+        conn = sqlite3.connect(database)
         cursor = conn.cursor()
         print 'PRAGMA table_info('+str(self.filecombo.currentText()).split('.')[0]+')'
         cursor.execute('PRAGMA table_info('+str(self.filecombo.currentText()).split('.')[0]+')')
