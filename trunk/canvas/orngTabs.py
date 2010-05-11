@@ -577,7 +577,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
             for action in self.actions: # move through all of the actions in the actions list
                 if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
                     self.widgetInfo = action.widgetInfo
-                    print action.widgetInfo, 'Widget info'
+                    #print action.widgetInfo, 'Widget info'
                     self.canvasDlg.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
                     
                     self.widgetSuggestEdit.clear()  # clear the line edit for the next widget

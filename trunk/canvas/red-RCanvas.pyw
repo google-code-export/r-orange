@@ -32,6 +32,8 @@ class OrangeCanvasDlg(QMainWindow):
         
 
         self.__dict__.update(redREnviron.directoryNames)
+        print self.tempDir
+        print redREnviron.directoryNames['tempDir']
         logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
         splashWindow.setMask(logo.mask())
@@ -66,7 +68,6 @@ class OrangeCanvasDlg(QMainWindow):
         if not os.path.exists(os.path.join(self.canvasSettingsDir, 'temp')):
             os.mkdir(os.path.join(self.canvasSettingsDir, 'temp')) ## should only need to be done once.
         
-        self.setTempDir(1)
         # print '####################################\n'*10,self.settings
 
         self.widgetSelectedColor = QColor(*self.settings["widgetSelectedColor"])
@@ -214,12 +215,6 @@ class OrangeCanvasDlg(QMainWindow):
                 float = True
 
             self.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
-            # if isinstance(self.widgetsToolBar, QToolBar):
-                # self.removeToolBar(self.widgetsToolBar)
-            # elif isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
-                # self.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
-                # self.removeDockWidget(self.widgetsToolBar)
-            # elif isinstance(self.widgetsToolBar, orngTabs.WidgetTree):
             self.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
             self.removeDockWidget(self.widgetsToolBar)
 
@@ -231,9 +226,6 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.settings["WidgetTabs"] = self.tabs.createWidgetTabs(self.settings["WidgetTabs"], self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
-        #self.tabs.createFavoriteWidgetTabs(self.widgetRegistry, self.widgetDir, self.picsDir, self.defaultPic)
-        # if not self.settings.get("showWidgetToolbar", True): 
-            # self.widgetsToolBar.hide()
         
     def getVersion(self):
         if len(self.version.keys()) ==0:
@@ -728,7 +720,7 @@ class OrangeCanvasDlg(QMainWindow):
         if closed:
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             import shutil
-            shutil.rmtree(self.tempDir, True) # remove the tempdir, better hope we saved everything we wanted.
+            shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
             self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
             self.output.logFile.close()
             self.output.hide()
@@ -804,12 +796,7 @@ class OrangeCanvasDlg(QMainWindow):
                 return fullPaths    
         return [self.defaultBackground]
     
-    def setTempDir(self, dirNumber):
-        if not os.path.exists(os.path.join(self.canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))):
-            os.mkdir(os.path.join(self.canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
-            self.tempDir = os.path.join(self.canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
-        else:
-            self.setTempDir(int(dirNumber + 1))
+    
 class MyStatusBar(QStatusBar):
     def __init__(self, parent):
         QStatusBar.__init__(self, parent)

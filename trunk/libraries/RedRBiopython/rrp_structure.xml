@@ -1,0 +1,12 @@
+<main>
+    <Version>1.5, 1.7, 2.0, trunk</Version>
+    <PackageName>RedRBiopython</PackageName>
+    <Repository>http://r-orange.googlecode.com/svn/</Repository>
+    <Dependencies>widgets/getEntrezData.py, signalClasses/SequenceRecordCollection.py</Dependencies>
+    <menuTags>
+    <group name = 'Biopython'>
+            
+        </group>
+    </menuTags>
+    <Examples>None</Examples>
+</main>

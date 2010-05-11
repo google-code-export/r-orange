@@ -1083,11 +1083,23 @@ class SchemaDoc(QWidget):
         
         print 'Loading RRW file.  This will update your system.'
         
+            
         if filename:
-            f = open(filename, 'r')
+            #try:
+            tempDir = redREnviron.directoryNames['tempDir']
+            installDir = os.path.join(os.path.abspath(tempDir), str(os.path.split(filename)[1].split('.')[0]))
+            os.mkdir(installDir) ## make the directory to store the zipfile into
+            ## here we need to unzip the zip file and place it into the tempDir
+            import re
+            zfile = zipfile.ZipFile(str(filename), "r" )
+            for name in zfile.namelist():
+                file(os.path.join(str(installDir),os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
+            f = open(os.path.join(str(installDir), 'rrp_structure.xml'), 'r') # read in the special file for the rrp_structure
             mainTabs = xml.dom.minidom.parse(f)
             f.close() 
-        
+            # except: 
+                # print 'Can\'t open the file or something is wrong'
+                # return
         if fileText:
             mainTabs = xml.dom.minidom.parseString(fileText)
         
@@ -1116,7 +1128,7 @@ class SchemaDoc(QWidget):
                 if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], d)):
                     os.mkdir(os.path.join(redREnviron.directoryNames['libraryDir'], d))
                     sys.path.insert(0, d)
-            
+        ### resolve the dependencies
         dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
         for dep in dependencies.split(','):
             dep = dep.strip(' /')
@@ -1142,20 +1154,7 @@ class SchemaDoc(QWidget):
                         ### go to website, get the file, and repleat this process until success
                 except:
                     print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
-        ## write the file, if there is one, to the file dir.
-        fileDirName = self.getXMLText(mainTabs.getElementsByTagName('FileDirectoryStucture')[0].childNodes)
-        code = mainTabs.getElementsByTagName('FileData')[0]
-        code = code.toxml()
-        code = code.strip('</FileData>')
-        code = code.replace('&quot;', '\"')
-        
-        newFileDirectory = os.path.join(str(self.canvasDlg.redRDir), str(fileDirName.strip('/')))
-        print newFileDirectory
-        print str(self.canvasDlg.redRDir)
-        print str(fileDirName.strip('/'))
-        file = open(newFileDirectory, "wt")
-        file.write(code)
-        file.close()
+
         # get the examples if there are anything
         examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
         for example in examples.split(','):
@@ -1167,15 +1166,21 @@ class SchemaDoc(QWidget):
                 fileExt = os.path.split(example)[1]
                 newExample = os.path.join(self.canvasDlg.redRDir, example)
                 self.urlOpener.retrieve(repository+self.version+'/'+example, newExample)
-                
-        ## update tage; read in the tags, look for the tag heirarchy in your file; follow the tag heirarchy down the tags file, when you run out of decendents add the rest of the tags section to the tags file and save the whole thing as xml.
+        
+        # run the install file if there is one
+        if os.path.isfile(os.path.join(str(installDir), 'installFile.py')):
+            ## need to import and execute the run statement of the installFile.  installFile may import many other modules at it's discression.
+            print 'Executing file'
+            execfile(os.path.join(str(installDir), 'installFile.py'))
         if fileText or '.rpp' in filename:
-            if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.rrp')):  # don't replace this if we already have it.
-                rppFile = open(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.rrp'), 'wt')
+            if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.xml')):  # don't replace this if we already have it.
+                rppFile = open(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.xml'), 'wt') # will be writing a binary package
                 rppFile.write(mainTabs.toxml())
                 rppFile.close()
-        if filename != None and '.rrp' not in filename:
-            os.remove(filename)
+        
+        if filename: # remove the temporary file in the temp directory, it has been installed and we are ready to roll!!!
+            import shutil
+            shutil.rmtree(installDir, True)
         print 'Package loaded successfully'
         self.canvasDlg.reloadWidgets()
 

@@ -53,8 +53,8 @@ def readCategories():
 
     for dirName, directory, plugin in directories:
         widgets = readWidgets(os.path.join(directory,'widgets'), dirName, cachedWidgetDescriptions)  # we read in all the widgets in dirName, directory in the directories
-        if os.path.isfile(os.path.join(directory,dirName+'.rrp')):
-            f = open(os.path.join(directory,dirName+'.rrp'), 'r')
+        if os.path.isfile(os.path.join(directory,dirName+'.xml')):
+            f = open(os.path.join(directory,dirName+'.xml'), 'r')
             mainTabs = xml.dom.minidom.parse(f)
             f.close() 
             newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
@@ -105,7 +105,7 @@ def addTagsSystemTag(tags,newTag):
                 return
                 
     ## if we made it this far we didn't find the right tag so we need to add all of the tag xml to the tags xml
-    print '|#|Name not found, appending to group.  This is normal, dont be worried.'
+    #print '|#|Name not found, appending to group.  This is normal, dont be worried.'
     tags.appendChild(newTag)
     #theTags.childNodes[0] = tags    
 
