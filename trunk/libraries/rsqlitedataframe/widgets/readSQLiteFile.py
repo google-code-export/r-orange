@@ -206,15 +206,15 @@ class readSQLiteFile(OWRpy):
             # param_name = 'NULL' 
             # self.rownames = 'NULL'
         
-        cls = []
-        for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
-            if new != old:
-                cls.append(self.dataTypes[i][0] + '="' + new + '"')
+        # cls = []
+        # for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
+            # if new != old:
+                # cls.append(self.dataTypes[i][0] + '="' + new + '"')
         
-        if len(cls) > 0:
-            ccl = 'c(' + ','.join(cls) + ')'
-        else:
-            ccl = 'NA'
+        # if len(cls) > 0:
+            # ccl = 'c(' + ','.join(cls) + ')'
+        # else:
+            # ccl = 'NA'
         
         ## connect to the file and read it 
         i = 0
