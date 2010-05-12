@@ -49,7 +49,8 @@ class RDataTable(OWRpy):
         self.supressTabClick = False
         self.mylink = ''
         self.link = {}
-        self.loadSettings()
+        print 'init RDataTable\n'*5
+        # self.loadSettings()
 
         #The settings
         

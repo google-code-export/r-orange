@@ -28,7 +28,7 @@ class widgetGUI(QMainWindow):
 
         
         for key in args:
-            if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_category", "_settingsFromSchema"]:
+            if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_category"]:
                 self.__dict__[key] = args[key]        # we cannot use __dict__.update(args) since we can have many other
 
         return self

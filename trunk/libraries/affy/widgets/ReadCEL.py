@@ -91,5 +91,5 @@ class ReadCEL(OWRpy):
     def sendMe(self):
         chipType = self.R('annotation('+self.Rvariables['affyBatch']+')')
         signals.setGlobalData(self,'chipType',chipType,description='Chip Type')
-        out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
-        self.rSend("affyBatch", out2)
+        self.out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
+        self.rSend("affyBatch", self.out2)

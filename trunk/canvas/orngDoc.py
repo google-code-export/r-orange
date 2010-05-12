@@ -42,52 +42,7 @@ class SchemaDoc(QWidget):
         self.urlOpener = urllib.FancyURLopener()
    
 
-    """
-    # we are about to close document
-    # ask the user if he is sure
-    def closeEvent(self,ce):
-        # QWidget.closeEvent(self, ce)
-        # orngHistory.logCloseSchema(self.schemaID)
-        return # the close of red-r should be handled in red-rCanvas not in the schema???
-        
-        if self.canvasDlg.settings['dontAskBeforeClose']:
-            res = QMessageBox.No
-        else:
-            res = QMessageBox.question(self, 'Red-R Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
-        
-        if res == QMessageBox.Yes:
-            #newSettings = self.loadedSettingsDict and self.loadedSettingsDict != dict([(widget.caption, widget.instance.saveSettingsStr()) for widget in self.widgets])
-            self.RVariableRemoveSupress = 1
-            #if self.canvasDlg.settings["autoSaveSchemasOnClose"] and self.widgets != []:
-            # if self.widgets != []:
-                # self.save(os.path.join(self.canvasDlg.canvasSettingsDir, "lastSchema.tmp"))
 
-            saveComplete = self.saveDocument()
-            
-            if not saveComplete: 
-                QMessageBox.information(self, 'Red-R Canvas','Save interupted because no file name specified.\nData not saved.',  QMessageBox.Ok + QMessageBox.Default)
-                print 'Saving interupted'
-                ce.ignore()
-                return
-            ce.accept()
-            self.clear(close = True)
-        # if self.canvasDlg.settings["dontAskBeforeClose"]:
-            # if newSettings and self.schemaName != "":
-                # pass
-                ##self.save(True)
-            # self.clear(close = True)  
-            # self.removeTempDoc()
-            # ce.accept()
-        elif res == QMessageBox.No:
-            self.RVariableRemoveSupress = 1
-            self.clear(close = True)
-            ce.accept()
-        else:
-            ce.ignore()
-            return
-            
-        
-    """    
     # save a temp document whenever anything changes. this doc is deleted on closeEvent
     # in case that Orange crashes, Canvas on the next start offers an option to reload the crashed schema with links frozen
     def saveTempDoc(self):
@@ -487,16 +442,12 @@ class SchemaDoc(QWidget):
             filename = os.path.join(self.schemaPath, self.schemaName)
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
-        progressBar = QProgressDialog()
-        progressBar.setCancelButtonText(QString())
-        progressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
-        progressBar.setWindowTitle('Saving '+str(os.path.basename(filename)))
-        progressBar.setLabelText('Saving '+str(os.path.basename(filename)))
-        progressBar.setMaximum(len(self.widgets)+len(self.lines)+3)
+        progressBar = self.startProgressBar(
+        'Saving '+str(os.path.basename(filename)),
+        'Saving '+str(os.path.basename(filename)),
+        len(self.widgets)+len(self.lines)+3)
         progress = 0
-        progressBar.setValue(progress)
-        progressBar.show()
-        
+
         # create xml document
         doc = Document()
         schema = doc.createElement("schema")
@@ -535,7 +486,7 @@ class SchemaDoc(QWidget):
             
             if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
                 f = open(os.path.join(redREnviron.directoryNames['libraryDir'],
-                widget.widgetInfo.package,widget.widgetInfo.package + '.rrp'),'r')
+                widget.widgetInfo.package,widget.widgetInfo.package + '.xml'),'r')
                 rrp = f.read()
                 f.close()
                 requireRedRLibraries[widget.widgetInfo.package] = rrp
@@ -703,7 +654,7 @@ class SchemaDoc(QWidget):
                         settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
                     except:
                         settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
-                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), caption = "", y = int(int(widget.getAttribute("yPos")) + minY), widgetSettings = settings, saveTempDoc = False)
+                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), caption = "", y = int(int(widget.getAttribute("yPos")) + self.minimumY()), widgetSettings = settings, saveTempDoc = False)
                     
                     if not tempWidget:
                         #print settings
@@ -847,16 +798,11 @@ class SchemaDoc(QWidget):
         print filename.split('.')[-1], 'File name extension'
         print 'document load called'
         #self.clear()
-        pos = self.canvasDlg.pos()
-        size = self.canvasDlg.size()
-        minY = self.minimumY()
-        loadingProgressBar = QProgressDialog()
-        loadingProgressBar.setCancelButtonText(QString())
-        loadingProgressBar.setWindowIcon(QIcon(os.path.join(redREnviron.directoryNames['canvasDir'], 'icons', 'save.png')))
-        loadingProgressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
-        loadingProgressBar.setWindowTitle('Loading '+str(os.path.basename(filename)))
-        loadingProgressBar.show()
-        loadingProgressBar.setLabelText('Loading '+str(filename))
+        loadingProgressBar = self.startProgressBar('Loading '+str(os.path.basename(filename)),
+        'Loading '+str(filename),
+        2)
+        
+        
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
                 QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
@@ -870,159 +816,161 @@ class SchemaDoc(QWidget):
         if os.path.splitext(filename)[1].lower() == ".rrs":
             self.schemaPath, self.schemaName = os.path.split(filename)
             self.canvasDlg.setCaption(caption or self.schemaName)
-        try:
-            import re
-            # for widget in self.widgets: # convert the caption names so there are no conflicts
-                # widget.caption += 'A'
-                
-            loadingProgressBar.setLabelText('Loading Schema Data, please wait')
-            zfile = zipfile.ZipFile( str(filename), "r" )
-            for name in zfile.namelist():
-                file(os.path.join(self.canvasDlg.tempDir,os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
-                
-                #if re.search('tempSchema.tmp',os.path.basename(name)):
-            doc = parse(os.path.join(self.canvasDlg.tempDir,'tempSchema.tmp')) # load the doc data for the data in the temp dir.
-                
-            schema = doc.firstChild
-            widgets = schema.getElementsByTagName("widgets")[0]
-            lines = schema.getElementsByTagName("channels")[0]
-            settings = schema.getElementsByTagName("settings")
-            settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
-            self.loadedSettingsDict = settingsDict
+        # try:
+        import re
+        # for widget in self.widgets: # convert the caption names so there are no conflicts
+            # widget.caption += 'A'
             
-            required = schema.getElementsByTagName("required")
-            print str(required), required
-            if str(required) not in ['', '[]']: 
-                required = eval(str(required[0].getAttribute("requiredPackages")))
-                required = cPickle.loads(required['r'])
-                
+        loadingProgressBar.setLabelText('Loading Schema Data, please wait')
+        zfile = zipfile.ZipFile( str(filename), "r" )
+        for name in zfile.namelist():
+            file(os.path.join(self.canvasDlg.tempDir,os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
             
-            try:  # protect the required functions in a try statement, we want to load these things and they should be there but we can't force it to exist in older schemas, so this is in a try.
-                if len(required['R']) > 0:
-                    #print qApp.canvasDlg.settings.keys()
-                    #print qApp.canvasDlg.settings['CRANrepos']
-                    if 'CRANrepos' in qApp.canvasDlg.settings.keys():
-                        repo = qApp.canvasDlg.settings['CRANrepos']
-                    else:
-                        repo = None
-                    loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
-                    RSession.require_librarys(required['R'], repository=repo)
-                
-                
-                for i in required['RedR']:
-                    self.loadRRW(fileText = i)
-            except: 
-                import sys, traceback
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60        
+            #if re.search('tempSchema.tmp',os.path.basename(name)):
+        doc = parse(os.path.join(self.canvasDlg.tempDir,'tempSchema.tmp')) # load the doc data for the data in the temp dir.
+            
+        schema = doc.firstChild
+        widgets = schema.getElementsByTagName("widgets")[0]
+        lines = schema.getElementsByTagName("channels")[0]
+        settings = schema.getElementsByTagName("settings")
+        settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+        self.loadedSettingsDict = settingsDict
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.loadedSettingsDict)
 
-            ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
+        required = schema.getElementsByTagName("required")
+        #print str(required), required
+        if str(required) not in ['', '[]']: 
+            required = eval(str(required[0].getAttribute("requiredPackages")))
+            required = cPickle.loads(required['r'])
+            
+        
+        try:  # protect the required functions in a try statement, we want to load these things and they should be there but we can't force it to exist in older schemas, so this is in a try.
+            if len(required['R']) > 0:
+                #print qApp.canvasDlg.settings.keys()
+                #print qApp.canvasDlg.settings['CRANrepos']
+                if 'CRANrepos' in qApp.canvasDlg.settings.keys():
+                    repo = qApp.canvasDlg.settings['CRANrepos']
+                else:
+                    repo = None
+                loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
+                RSession.require_librarys(required['R'], repository=repo)
+            
+            
+            for i in required['RedR']:
+                self.loadRRW(fileText = i)
+        except: 
+            import sys, traceback
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60        
 
-            # read widgets
-            loadedOk = 1
-            loadingProgressBar.setLabelText('Loading Widgets')
-            loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
-            loadingProgressBar.setValue(0)
-            lpb = 0
-            for widget in widgets.getElementsByTagName("widget"):
-                try:
-                    name = widget.getAttribute("widgetName")
-                    #print 'Name: '+str(name)+' (orngDoc.py)'
-                    #print settingsDict[widget.getAttribute("caption")]
-                    widgetIDisNew = self.checkID(widget.getAttribute('widgetID'))
-                    if widgetIDisNew == False:
-                        raise Exception, 'Widget ID is a duplicate, I can\'t load this!!!'
-                    try:
-                        settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
-                    except:
-                        settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
-                    tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
-                    int(widget.getAttribute("yPos")) - minY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
+
+        # read widgets
+        loadedOk = 1
+        loadingProgressBar.setLabelText('Loading Widgets')
+        loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
+        loadingProgressBar.setValue(0)
+        lpb = 0
+        for widget in widgets.getElementsByTagName("widget"):
+            widgetIDisNew = self.checkID(widget.getAttribute('widgetID'))
+            if widgetIDisNew == False:
+                raise Exception, 'Widget ID is a duplicate, I can\'t load this!!!'
+        
+        ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
+        RSession.Rcommand('load("' + os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/') +'")')
+        theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
+       
+        ## LOAD widgets
+        for widget in widgets.getElementsByTagName("widget"):
+            print 'for widget (orngDoc.py) ' + widget.getAttribute('caption')
+            print 'for widget (orngDoc.py) ' + widget.getAttribute('widgetID')
+            name = widget.getAttribute("widgetName")
+
+            # try:
+            settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
+            # except:
+                # settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
+            
+            tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
+            int(widget.getAttribute("yPos")) - self.minimumY()), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
+            
+            if not tempWidget:
+                #print settings
+                print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                # we must build a fake widget this will involve getting the inputs and outputs and joining 
+                #them at the widget creation 
+                
+                tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                
+                if not tempWidget:
+                    #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
+                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                    loadedOk = 0
+                    print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+            tempWidget.updateWidgetState()
+            tempWidget.instance.setLoadingSavedSession(True)
+            lpb += 1
+            loadingProgressBar.setValue(lpb)
+        if not importBlank: # a normal load of the session
+            pass
+        else:
+            self.schemaName = ""
+
+        
+
+        #read lines
+        lineList = lines.getElementsByTagName("channel")
+        loadingProgressBar.setLabelText('Loading Lines')
+
+        for line in lineList:
+            try:
+                inIndex = line.getAttribute("inWidgetIndex")
+                outIndex = line.getAttribute("outWidgetIndex")
+                print 'Indexes are ', inIndex, outIndex
+                if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
+                    raise Exception
                     
-                    if not tempWidget:
-                        #print settings
-                        print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
-                        # we must build a fake widget this will involve getting the inputs and outputs and joining 
-                        #them at the widget creation 
-                        
-                        tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
-                        
-                        if not tempWidget:
-                            #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
-                            failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
-                            loadedOk = 0
-                            print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
-                    tempWidget.updateWidgetState()
-                    tempWidget.instance.setLoadingSavedSession(True)
-                except:
-                    import sys, traceback
-                    print 'Error occured during widget loading'
-                    print '-'*60
-                    traceback.print_exc(file=sys.stdout)
-                    print '-'*60        
-                lpb += 1
-                loadingProgressBar.setValue(lpb)
-            if not importBlank: # a normal load of the session
-                pass
-            else:
-                self.schemaName = ""
-
-            
-            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/') +'")')
-            theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
-
-            #read lines
-            lineList = lines.getElementsByTagName("channel")
-            loadingProgressBar.setLabelText('Loading Lines')
-
-            for line in lineList:
-                try:
-                    inIndex = line.getAttribute("inWidgetIndex")
-                    outIndex = line.getAttribute("outWidgetIndex")
-                    print 'Indexes are ', inIndex, outIndex
-                    if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
-                        raise Exception
-                        
-                    print 'No error encountered'
-                    if freeze: enabled = 0
-                    else:      enabled = int(line.getAttribute("enabled"))
-                    signals = line.getAttribute("signals")
-                    print signals
-                    inWidget = self.getWidgetByID(inIndex)
-                    outWidget = self.getWidgetByID(outIndex)
-                    if inWidget == None or outWidget == None:
-                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
-                        loadedOk = 0
-                        continue
-                except: # must not be an index in this schema   
-                    print 'Exception raised'
-                    inCaption = line.getAttribute('inWidgetCaption')
-                    outCaption = line.getAttribute('outWidgetCaption')
-                    
-                    print 'Captions are ', inCaption, outCaption
-                    if freeze: enabled = 0
-                    else:      enabled = int(line.getAttribute("enabled"))
-                    signals = line.getAttribute("signals")
-                    print signals
-                    inWidget = self.getWidgetByCaption(inCaption)
-                    outWidget = self.getWidgetByCaption(outCaption)
-                    if inWidget == None or outWidget == None:
-                        failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
-                        loadedOk = 0
-                        continue
+                print 'No error encountered'
+                if freeze: enabled = 0
+                else:      enabled = int(line.getAttribute("enabled"))
+                signals = line.getAttribute("signals")
+                print signals
+                inWidget = self.getWidgetByID(inIndex)
+                outWidget = self.getWidgetByID(outIndex)
+                if inWidget == None or outWidget == None:
+                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
+                    loadedOk = 0
+                    continue
+            except: # must not be an index in this schema   
+                print 'Exception raised'
+                inCaption = line.getAttribute('inWidgetCaption')
+                outCaption = line.getAttribute('outWidgetCaption')
                 
-
-                signalList = eval(signals)
-                for (outName, inName) in signalList:
-                    
-                    self.addLink(outWidget, inWidget, outName, inName, enabled)
-                qApp.processEvents()
-                # lpb += 1
-                # loadingProgressBar.setValue(lpb)
+                print 'Captions are ', inCaption, outCaption
+                if freeze: enabled = 0
+                else:      enabled = int(line.getAttribute("enabled"))
+                signals = line.getAttribute("signals")
+                print signals
+                inWidget = self.getWidgetByCaption(inCaption)
+                outWidget = self.getWidgetByCaption(outCaption)
+                if inWidget == None or outWidget == None:
+                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
+                    loadedOk = 0
+                    continue
             
-        finally:
-            qApp.restoreOverrideCursor()
+
+            signalList = eval(signals)
+            for (outName, inName) in signalList:
+                
+                self.addLink(outWidget, inWidget, outName, inName, enabled)
+            qApp.processEvents()
+            # lpb += 1
+            # loadingProgressBar.setValue(lpb)
+            
+        # finally:
+            # qApp.restoreOverrideCursor()
             
 
         for widget in self.widgets: widget.updateTooltip()
@@ -1033,31 +981,28 @@ class SchemaDoc(QWidget):
         if not loadedOk:
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
         
-        loadingProgressBar.setLabelText('Loading Widget Data')
-        loadingProgressBar.setMaximum(len(self.widgets))
-        loadingProgressBar.setValue(0)
-        lpb = 0
-        for widget in self.widgets:
-            #print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
-            try: # important to have this or else failures in load saved settings will result in no links able to connect.
-                widget.instance.onLoadSavedSession()
-            except:
-                import traceback,sys
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60        
-                QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo['fileName'], 
-                QMessageBox.Ok + QMessageBox.Default)
-            lpb += 1
-            loadingProgressBar.setValue(lpb)
+        # loadingProgressBar.setLabelText('Loading Widget Data')
+        # loadingProgressBar.setMaximum(len(self.widgets))
+        # loadingProgressBar.setValue(0)
+        # lpb = 0
+        # for widget in self.widgets:
+            # print 'for widget (orngDoc.py) ' + widget.instance._widgetInfo['fileName']
+            # try: # important to have this or else failures in load saved settings will result in no links able to connect.
+                # widget.instance.onLoadSavedSession()
+            # except:
+                # import traceback,sys
+                # print '-'*60
+                # traceback.print_exc(file=sys.stdout)
+                # print '-'*60        
+                # QMessageBox.information(self,'Error', 'Loading Failed for ' + widget.instance._widgetInfo['fileName'], 
+                # QMessageBox.Ok + QMessageBox.Default)
+            # lpb += 1
+            # loadingProgressBar.setValue(lpb)
             
-        print 'done on load'
+        # print 'done on load'
 
-        # do we want to restore last position and size of the widget
-        if self.canvasDlg.settings["saveWidgetsPosition"]:
-            for widget in self.widgets:
-                widget.instance.setLoadingSavedSession(False)
-                #widget.instance.show()
+        for widget in self.widgets:
+            widget.instance.setLoadingSavedSession(False)
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
         loadingProgressBar.hide()
@@ -1218,6 +1163,22 @@ class SchemaDoc(QWidget):
         else:
             #e.ignore()
             QWidget.keyPressEvent(self, e)
+# #######################################
+# # Progress Bar
+# #######################################
+    def startProgressBar(self,title,text,max):
+        pos = self.canvasDlg.pos()
+        size = self.canvasDlg.size()
+        
+        progressBar = QProgressDialog()
+        progressBar.setCancelButtonText(QString())
+        progressBar.move(pos.x() + (size.width()/2) , pos.y() + (size.height()/2))
+        progressBar.setWindowTitle(title)
+        progressBar.setLabelText(text)
+        progressBar.setMaximum(max)
+        progressBar.setValue(0)
+        progressBar.show()
+        return progressBar
 
 
 # this class is needed by signalDialog to show widgets and lines

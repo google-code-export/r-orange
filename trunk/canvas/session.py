@@ -36,6 +36,7 @@ class session():
 
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
+        #print tempSentItems
         settings['sentItems'] = {'sentItemsList':tempSentItems}
         
         if self.inputs and len(self.inputs) != 0:
@@ -131,46 +132,176 @@ class session():
             settings = None
         return settings
     def processSentItems(self):
+        print '|##| in processSentItems %s' % str(self.sentItems)
         sentItemsList = []
         for (sentDataName, sentDataObject) in self.sentItems:
             if sentDataObject == None: 
                 sentItemsList.append((sentDataName, None))
             elif type(sentDataObject) == dict:
-                
-                raise Exception, str('|##| '+str(sentDataName)+' still set to a dict, change this!!!')
+                raise Exception, str(sentDataName)+' still set to a dict, change this!!!'
                 
             else:
                 try:
-                    sentItemsList.append((sentDataName, {'package': sentDataObject.__package__, 'class':str(sentDataObject.__class__), 'data':sentDataObject.saveSettings()}))
+                    sentItemsList.append((sentDataName,sentDataObject.saveSettings()))
                 except:
                     ### problem with getting the settings, print and inform the developers.
-                    print '|#| problem getting data for '+str(sentDataObject)
+                    print '|###| problem getting data for '+str(sentDataObject)
                     raise Exception, 'Setting save exception'
         return sentItemsList
     def setSettings(self,settings):
-        # print 'on set settings'
-        self.redRGUIObjects = {}
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
+        print 'on set settings'
+        # self.redRGUIObjects = {}
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(settings)
         for k,v in settings.iteritems():
+            # print k
             if k in ['inputs', 'outputs']: continue
             if v == None:
                 continue
-            # elif k =='_customSettings':
-                # self.__setattr__(k, v)
             elif 'pythonObject' in v.keys(): 
-                # print k
                 self.__setattr__(k, v['pythonObject'])
             elif 'signalsObject' in v.keys():
                 print '|##| Setting signalsObject'
-                varClass = self.setRvarClass(v['signalsObject'])
+                varClass = self.setSignalClass(v['signalsObject'])
                 self.__setattr__(k, varClass)
-                #var = getattr(self, k)
-                #self.setRvarClass(var, v['signalsObject'])
-            else:
-                self.redRGUIObjects[k] = v;
+            elif 'sentItemsList' in v.keys():
+                #self.setSentItemsList(v['sentItemsList'])        
+                for (sentItemName, sentItemDict) in v['sentItemsList']:
+                    print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
+                    var = self.setSignalClass(sentItemDict)
+                    self.send(sentItemName, var)
+#############################################
+            elif not hasattr(self,k):
+                continue
+            elif 'redRGUIObject' in v.keys():
+                print getattr(self, k)
+                getattr(self, k).loadSettings(v['redRGUIObject'])
+                getattr(self, k).setDefaultState(v['redRGUIObject'])
+            # elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
+            elif 'dict' in v.keys():
+                var = getattr(self, k)
+                # print 'dict',len(var),len(v['dict'])
+                if len(var) != len(v['dict']): continue
+                self.recursiveSetSetting(var,v['dict'])
+            elif 'list' in v.keys():
+                var = getattr(self, k)
+                # print 'list',len(var),len(v['list'])
+                if len(var) != len(v['list']): continue
+                self.recursiveSetSetting(var,v['list'])
         
+#############################################
         
+        if '_customSettings' in settings.keys():
+            self.loadCustomSettings(settings['_customSettings'])
+        else:
+            self.loadCustomSettings(settings)
+        
+    def setSignalClass(self, d):
+        print '|##| setSentRvarClass %s' % str(d)
+        className = d['class'].split('.')[1]
+        
+        # print 'setting ', className
+        #try: # try to reload the output class from the signals
+        if d['package'] != 'base':
+            var = getattr(getattr(signals,d['package']), className)(data = d['data']) 
+        else:
+            var = getattr(signals, className)(data = d['data'])
+        var.loadSettings(d)
+        # except: # if it doesn't exist we need to set the class something so we look to the outputs. 
+            # try:
+                # var = None
+                # for (name, att) in self.outputs:
+                    # if name == sentItemName:
+                        # var = att(data = None, checkVal = False)
+                        
+                # if var == None: raise Exception
+                # var.loadSettings(d['data'])
+            # except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+                # print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+                # try:
+                    # var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+                # except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
+                    # print 'Fatal exception in loading.  Can\'t assign the signal value'
+                    # var = None
+        
+        return var
+            
+    def recursiveSetSetting(self,var,d):
+        # print 'recursiveSetSetting'
+        
+        if type(var) in [list,tuple]:
+            for k in xrange(len(d)):
+                if type(d[k]) is dict and 'redRGUIObject' in d[k].keys():
+                    var[k].loadSettings(d[k]['redRGUIObject'])
+                    var[k].setDefaultState(d[k]['redRGUIObject'])
+                else:
+                    self.recursiveSetSetting(var[k],d[k])
+        elif type(var) is dict:
+            for k,v in d.iteritems():
+                if type(v) is dict and 'redRGUIObject' in v.keys():
+                    var[k].loadSettings(v['redRGUIObject'])
+                    var[k].setDefaultState(v['redRGUIObject'])
+                else:
+                    self.recursiveSetSetting(var[k],d[k])
+        
+    def loadCustomSettings(self,settings=None):
+        pass
+
+
+    def loadSettings2(self, sessionSettings=None):
+        
+        file = self.getGlobalSettingsFile(None)
+        settings = {}
+        if file:
+            try:
+                file = open(file, "r")
+                settings = cPickle.load(file)
+            except:
+                settings = None
+
+        if sessionSettings:
+            if settings: settings.update(sessionSettings)
+            else:        settings = sessionSettings
+
+        if settings:
+            self.setSettings(settings)
+
+#############widget specific settings#####################
+
+    def getGlobalSettingsFile(self, file=None):
+        # print 'getSettingsFile in owbasewidget'
+        if file==None:
+            file = os.path.join(redREnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
+        #print 'getSettingsFile', file
+        return file
+
+    
+    # save global settings
+    def saveGlobalSettings(self, file = None):
+        print '|##| owrpy global save settings'
+        settings = {}
+        
+        if hasattr(self, "globalSettingsList"):
+            self.globalSettingsList.extend(self.defaultGlobalSettingsList)
+        else:
+            self.globalSettingsList =  self.defaultGlobalSettingsList
+            
+        for name in self.globalSettingsList:
+            try:
+                settings[name] = {}
+                settings[name]['pythonObject'] =  getattr(self,name)
+            except:
+                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+        if settings:
+            file = self.getGlobalSettingsFile(file)
+            file = open(file, "w")
+            cPickle.dump(settings, file)
+
+#############DEPRECIATED######################
+#############DEPRECIATED######################
+    def loadSettings(self,file=None):
+        print '|###| DO NOT USE loadSettings in widget'
+
     def onLoadSavedSession(self, force = False, template = False):
         if self.loaded and not force: return  # prevents a loaded widget from being reloaded this can be overwriten using a call to force if the loader wishes.
         print '|##| in onLoadSavedSession'
@@ -217,7 +348,7 @@ class session():
         else:
             self.loadCustomSettings(self.redRGUIObjects)
         
-        print '|##| onLoadSavedSession send', self.windowTitle()
+        print '|##| onLoadSavedSession send %s' % self.windowTitle()
         for (name, data) in self.sentItems:
             self.send(name, data)
         
@@ -227,44 +358,14 @@ class session():
     def setSentItemsList(self, d):
         # set the sentItems in the widget
         for (sentItemName, sentItemDict) in d:
-            print '|##| setting sent items', sentItemName, 'to', sentItemDict
+            print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
             self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName))) # append a list of sent items to the sent items list, this is the place that we need to place the Red-R data container class into using setSentRvarClass.
     
-    def setSentRvarClass(self, d, sentItemName):
-        print '|##| setSentRvarClass', d
-        className = d['class'].split('.')[1]
-        
-        # print 'setting ', className
-        #try: # try to reload the output class from the signals
-        if d['package'] != 'base':
-            var = getattr(getattr(signals,d['package']), className)(data = None, checkVal = False) # reset the object with the data, disabling checkVal means that the variable doesn't need to exist in R yet (which it doesn't)
-        else:
-            var = getattr(signals, className)(data = None, checkVal = False)
-        var.loadSettings(d['data'])
-        # except: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            # try:
-                # var = None
-                # for (name, att) in self.outputs:
-                    # if name == sentItemName:
-                        # var = att(data = None, checkVal = False)
-                        
-                # if var == None: raise Exception
-                # var.loadSettings(d['data'])
-            # except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-                # print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                # try:
-                    # var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
-                # except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                    # print 'Fatal exception in loading.  Can\'t assign the signal value'
-                    # var = None
-        
-        return var
-            
     def setRvarClass(self, d):
         className = d['class'].split('.')
-        print '|##|', className
+        #print '|##|', className
         className = className[1]
-        print '|##| setting ', className
+        print '|##| setting %s' % className
         #try: # try to reload the output class from the signals
         if d['package'] != 'base':
             var = getattr(getattr(signals,d['package']), className)(data = d['data'])
@@ -275,31 +376,12 @@ class session():
             # var = signals.RVariable(data = d['data'])
         for key in d.keys():
             if key in ['class','package']: continue
-            print '|##| setting ', key
+            print '|##| setting %s' % key
             subvar = getattr(var, key) 
             subvar = d[key]
         return var
-    def recursiveSetSetting(self,var,d):
-        # print 'recursiveSetSetting'
-        
-        if type(var) in [list,tuple]:
-            for k in xrange(len(d)):
-                if type(d[k]) is dict and 'redRGUIObject' in d[k].keys():
-                    var[k].loadSettings(d[k]['redRGUIObject'])
-                    var[k].setDefaultState(d[k]['redRGUIObject'])
-                else:
-                    self.recursiveSetSetting(var[k],d[k])
-        elif type(var) is dict:
-            for k,v in d.iteritems():
-                if type(v) is dict and 'redRGUIObject' in v.keys():
-                    var[k].loadSettings(v['redRGUIObject'])
-                    var[k].setDefaultState(v['redRGUIObject'])
-                else:
-                    self.recursiveSetSetting(var[k],d[k])
-        
-    def loadCustomSettings(self,settings=None):
-        pass
 
+                
     def saveSettingsStr(self): # called from outside of this class, used by orngDoc to collect the settings
         # print 'saveSettingsStr called'
         settings = self.getSettings()
@@ -308,53 +390,3 @@ class session():
         except: 
             print "ERROR in Pickle", sys.exc_info()[0] 
             pass
-
-    def loadSettings(self, file = None):
-        
-        file = self.getGlobalSettingsFile(file)
-        settings = {}
-        if file:
-            try:
-                file = open(file, "r")
-                settings = cPickle.load(file)
-            except:
-                settings = None
-
-        if hasattr(self, "_settingsFromSchema"):
-            if settings: settings.update(self._settingsFromSchema)
-            else:        settings = self._settingsFromSchema
-
-        if settings:
-            self.setSettings(settings)
-
-#############widget specific settings#####################
-
-    def getGlobalSettingsFile(self, file=None):
-        # print 'getSettingsFile in owbasewidget'
-        if file==None:
-            file = os.path.join(redREnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
-        #print 'getSettingsFile', file
-        return file
-
-    
-    # save global settings
-    def saveGlobalSettings(self, file = None):
-        print '|##| owrpy global save settings'
-        settings = {}
-        
-        if hasattr(self, "globalSettingsList"):
-            self.globalSettingsList.extend(self.defaultGlobalSettingsList)
-        else:
-            self.globalSettingsList =  self.defaultGlobalSettingsList
-            
-        for name in self.globalSettingsList:
-            try:
-                settings[name] = {}
-                settings[name]['pythonObject'] =  getattr(self,name)
-            except:
-                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-        if settings:
-            file = self.getGlobalSettingsFile(file)
-            file = open(file, "w")
-            cPickle.dump(settings, file)
-

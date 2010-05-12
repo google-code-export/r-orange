@@ -28,8 +28,10 @@ class limmaDecide(OWRpy):
         self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm', 'gcm_matrix'])
         
         
-        self.inputs = [("eBayes fit", signals.RModelFit, self.process), ('Normalized Eset', signals.RDataFrame, self.processeset)]
-        self.outputs = [("Expression Subset", signals.RDataFrame), ("Gene Change Matrix", signals.RDataFrame)]
+        self.inputs = [("eBayes fit", signals.RModelFit, self.process)]
+        #, ('Normalized Eset', signals.RDataFrame, self.processeset)]
+        self.outputs = [("Gene Change Matrix", signals.RDataFrame)]
+        #("Expression Subset", signals.RDataFrame), 
         
         #GUI
         #want to have an options part, a data viewing part and a run part
@@ -50,17 +52,17 @@ class limmaDecide(OWRpy):
         computebox = redRGUI.widgetBox(self.controlArea, "Compute")
         grid.addWidget(computebox, 1,0)
         #self.infoa = redRGUI.widgetLabel(computebox, "Data not yet connected")
-        self.pickGroup = redRGUI.button(computebox, "Change Model Group Subset", tooltip = 'Change the interaction term of your model if more than one term is available.', callback = self.showModelGroupDialog)
-        self.pickGroup.setEnabled(False)
+        # self.pickGroup = redRGUI.button(computebox, "Change Model Group Subset", tooltip = 'Change the interaction term of your model if more than one term is available.', callback = self.showModelGroupDialog)
+        # self.pickGroup.setEnabled(False)
         self.runbutton = redRGUI.button(self.bottomAreaRight, "Run Analysis", callback = self.runAnalysis)
         self.runbutton.setEnabled(False)
         
-        self.modelGroupDialog = QDialog()
-        self.modelGroupDialog.setLayout(QVBoxLayout())
-        self.modelGroupDialog.setWindowTitle('Model Group for '+self.captionTitle)
-        self.modelMessage = redRGUI.widgetLabel(self.modelGroupDialog, "Choose Group For Subsetting")
-        self.modelListBox = redRGUI.listBox(self.modelGroupDialog, callback = self.sendesetsubset)
-        self.modelGroupDialog.hide()
+        # self.modelGroupDialog = QDialog()
+        # self.modelGroupDialog.setLayout(QVBoxLayout())
+        #self.modelGroupDialog.setWindowTitle('Model Group for '+self.captionTitle)
+        #self.modelMessage = redRGUI.widgetLabel(self.modelGroupDialog, "Choose Group For Subsetting")
+        #self.modelListBox = redRGUI.listBox(self.modelGroupDialog, callback = self.sendesetsubset)
+        # self.modelGroupDialog.hide()
 
     def showModelGroupDialog(self):
         self.modelGroupDialog.show()
@@ -81,8 +83,8 @@ class limmaDecide(OWRpy):
         self.status.setText("Data connected")
         self.runbutton.setEnabled(True)
         # if 'eset' in dataset.dictAttrs.keys():
-        if signals.globalDataExists('eset'):
-            self.eset = signals.getGlobalData('eset')
+        # if signals.globalDataExists('eset'):
+            # self.eset = signals.getGlobalData('eset')
             #self.processeset(signals.getGlobalData('eset'))
         
         
@@ -99,31 +101,25 @@ class limmaDecide(OWRpy):
         self.rSend("Gene Change Matrix", self.sending)
         self.groupNames = self.R('colnames('+self.Rvariables['gcm']+')', wantType = 'list')
         #if len(self.groupNames) > 2:
-        print len(self.groupNames), self.groupNames
-        self.pickGroup.setEnabled(True)
-        self.modelListBox.update(self.groupNames)
-        if self.eset != None:
-            self.modelGroupDialog.show()
-            self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
-            self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
-            self.sendesetsubset()
+        # print len(self.groupNames), self.groupNames
+        # self.pickGroup.setEnabled(True)
+        # self.modelListBox.update(self.groupNames)
+        # if self.eset != None:
+            # self.modelGroupDialog.show()
+            # self.R(self.Rvariables['gcm']+'[,2]!=0 ->'+self.Rvariables['geneissig'])
+            # self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
+            # self.sendesetsubset()
                    
             
-    def processeset(self, data):
-        self.removeWarning()
-        self.eset = data['data'] #this is data from an expression matrix or data.frame
-        if self.sending != None and self.ebdata != '':
-            self.sendesetsubset()
+    # def processeset(self, data):
+        # self.removeWarning()
+        # self.eset = data['data'] #this is data from an expression matrix or data.frame
+        # if self.sending != None and self.ebdata != '':
+            # self.sendesetsubset()
 
-    def sendesetsubset(self):
-        self.R(self.Rvariables['gcm']+'[,'+str(int(self.modelListBox.currentRow())+1)+']!=0 ->'+self.Rvariables['geneissig'])
-        self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
-        self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
-        #self.newdata = self.olddata.copy()
-        #self.newdata.data = self.Rvariables['eset_sub']
-        newdata = signals.RDataFrame(self.Rvariables['eset_sub'])
-        
-        self.rSend("Expression Subset", newdata)
-        # else:
-            # self.setWarning(id = 'subsetIMpossible', text = 'Can\'t send subset because expression data is not available')
-            # return 
+    # def sendesetsubset(self):
+        # self.R(self.Rvariables['gcm']+'[,'+str(int(self.modelListBox.currentRow())+1)+']!=0 ->'+self.Rvariables['geneissig'])
+        # self.R(self.Rvariables['gcm']+'['+self.Rvariables['geneissig']+',] ->'+self.Rvariables['dfsg'])
+        # self.R(self.Rvariables['eset_sub']+'<-'+self.eset+'[rownames('+self.Rvariables['dfsg']+'),]')
+        # newdata = signals.RDataFrame(self.Rvariables['eset_sub'])
+        # self.rSend("Expression Subset", newdata)

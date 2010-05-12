@@ -12,6 +12,9 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']
         self.parent = parent
+    
+    def getData(self):
+        return self.dictAttrs['data']
     def __getitem__(self, item):
         try:
             attr = getattr(self, item)
@@ -189,5 +192,7 @@ def globalDataExists(name):
     
     return False
     
-def removeGlobalData(data):
-    del globalData[data]
+def removeGlobalData(name):
+    for key,value in globalData.items():
+        if name in value.keys(): 
+            del value[name]
