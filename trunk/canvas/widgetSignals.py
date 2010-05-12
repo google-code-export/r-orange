@@ -264,7 +264,7 @@ class widgetSignals():
                             if oldValue == None:
                                 value = oldValue
                             else: # the value had better be one of our signals
-                                if not isinstance(oldValue, signals.RVariable):
+                                if not isinstance(oldValue, signals.BaseRedRVariable):
                                     raise Exception
                                 value = oldValue.copy()
                                 if not value.__class__ == signal[1]:

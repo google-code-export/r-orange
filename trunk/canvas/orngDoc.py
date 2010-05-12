@@ -1100,6 +1100,14 @@ class SchemaDoc(QWidget):
             # except: 
                 # print 'Can\'t open the file or something is wrong'
                 # return
+                
+            # run the install file if there is one
+            if os.path.isfile(os.path.join(str(installDir), 'installFile.py')):
+                ## need to import and execute the run statement of the installFile.  installFile may import many other modules at it's discression.
+                print 'Executing file'
+                if execfile(os.path.join(str(installDir), 'installFile.py')) == False:
+                    print 'Loading of installFile failed.  Aborting installation'
+                    return
         if fileText:
             mainTabs = xml.dom.minidom.parseString(fileText)
         
@@ -1167,11 +1175,7 @@ class SchemaDoc(QWidget):
                 newExample = os.path.join(self.canvasDlg.redRDir, example)
                 self.urlOpener.retrieve(repository+self.version+'/'+example, newExample)
         
-        # run the install file if there is one
-        if os.path.isfile(os.path.join(str(installDir), 'installFile.py')):
-            ## need to import and execute the run statement of the installFile.  installFile may import many other modules at it's discression.
-            print 'Executing file'
-            execfile(os.path.join(str(installDir), 'installFile.py'))
+        
         if fileText or '.rpp' in filename:
             if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.xml')):  # don't replace this if we already have it.
                 rppFile = open(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.xml'), 'wt') # will be writing a binary package

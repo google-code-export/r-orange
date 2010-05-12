@@ -17,7 +17,7 @@ class getEntrezData(OWRpy):
     globalSettingsList = ['recentFiles','path']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,parent, signalManager, "SQLite Quert", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self,parent, signalManager, "Get Entrex Data", wantMainArea = 0, resizingEnabled = 1)
         
         self.outputs = [('Sequence List', signals.RedRBiopython.SequenceRecordCollection)]
         self.loadSettings()
@@ -33,7 +33,7 @@ class getEntrezData(OWRpy):
         
     def commit(self):
         handle = Entrez.efetch(db = str(self.database.currentText()), rettype = str(self.type.currentText()), id = str(self.id.text()))
-        records = SeqIO.parse(handle, str(self.type.currentText()))
+        records = list(SeqIO.parse(handle, str(self.type.currentText())))
         handle.close()
         
         newData = signals.RedRBiopython.SequenceRecordCollection(data = records)

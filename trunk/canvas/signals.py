@@ -62,7 +62,7 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
             return False
     def __str__(self):
         ## print output for the class
-        return 'Class: '+str(self.__class__)+'; Data: '+self.data+'; Attributes: '+str(self.dictAttrs)
+        return 'Class: '+str(self.__class__)+'; Data: '+str(self.data)+'; Attributes: '+str(self.dictAttrs)
     def convertToClass(self, varClass):
         return self.copy()
     def keys(self):
