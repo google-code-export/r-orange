@@ -1109,6 +1109,8 @@ class SchemaDoc(QWidget):
                 execfile(os.path.join(str(installDir), 'installFile.py'), {'passed':passed})
                 if passed == False:
                     print 'Loading of installFile failed.  Aborting installation'
+                    import shutil
+                    shutil.rmtree(installDir, True)
                     return
         if fileText:
             mainTabs = xml.dom.minidom.parseString(fileText)
