@@ -18,6 +18,7 @@ class session():
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
         self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
 
+
     def getSettings(self, alsoContexts = True):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
         print '|##| moving to save'+str(self.captionTitle)
         import re
@@ -89,7 +90,7 @@ class session():
             return False
         
             
-    def returnSettings(self,var):
+    def returnSettings(self,var, isPickleable=False):
         settings = {}
         # print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
@@ -115,7 +116,7 @@ class session():
             settings['signalsObject'] = var.saveSettings()
             print '|##|  Saving signalsObject ', settings['signalsObject']
         
-        elif self.isPickleable(var):
+        elif isPickleable or self.isPickleable(var):
             settings['pythonObject'] =  var
         #elif type(var) in [str, int, float, bool]:
         #   settings = var
@@ -154,11 +155,12 @@ class session():
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(settings)
         for k,v in settings.iteritems():
-            # print k
+            print k
             if k in ['inputs', 'outputs']: continue
             if v == None:
                 continue
-            elif 'pythonObject' in v.keys(): 
+            elif 'pythonObject' in v.keys():
+                print '|##| Setting pythonObject %s' % str(v['pythonObject'])             
                 self.__setattr__(k, v['pythonObject'])
             elif 'signalsObject' in v.keys():
                 print '|##| Setting signalsObject'
@@ -180,7 +182,7 @@ class session():
             # elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
             elif 'dict' in v.keys():
                 var = getattr(self, k)
-                # print 'dict',len(var),len(v['dict'])
+                print 'dict',len(var),len(v['dict'])
                 if len(var) != len(v['dict']): continue
                 self.recursiveSetSetting(var,v['dict'])
             elif 'list' in v.keys():
@@ -249,20 +251,19 @@ class session():
 
 
     def loadSettings2(self, sessionSettings=None):
+        if sessionSettings:
+            self.setSettings(sessionSettings)
         
+        ##########set global settings#############
         file = self.getGlobalSettingsFile(None)
-        settings = {}
         if file:
             try:
                 file = open(file, "r")
                 settings = cPickle.load(file)
             except:
                 settings = None
-
-        if sessionSettings:
-            if settings: settings.update(sessionSettings)
-            else:        settings = sessionSettings
-
+        
+        # print settings
         if settings:
             self.setSettings(settings)
 
@@ -278,7 +279,7 @@ class session():
     
     # save global settings
     def saveGlobalSettings(self, file = None):
-        print '|##| owrpy global save settings'
+        print '|#| owrpy global save settings'
         settings = {}
         
         if hasattr(self, "globalSettingsList"):
@@ -288,10 +289,10 @@ class session():
             
         for name in self.globalSettingsList:
             try:
-                settings[name] = {}
-                settings[name]['pythonObject'] =  getattr(self,name)
+                settings[name] = self.returnSettings(getattr(self,name),isPickleable=True)
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+        # print settings
         if settings:
             file = self.getGlobalSettingsFile(file)
             file = open(file, "w")

@@ -17,7 +17,7 @@ import pickle
 import types
 class readFile(OWRpy):
     
-    globalSettingsList = ['recentFiles','path']
+    globalSettingsList = ['filecombo','recentFiles','path']
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)

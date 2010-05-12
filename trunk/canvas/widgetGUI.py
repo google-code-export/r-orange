@@ -174,6 +174,8 @@ class widgetGUI(QMainWindow):
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
+        # print '|#| end init of widgetGUI %s' % str(self.windowState)
+        
     # uncomment this when you need to see which events occured
     """
     def event(self, e):
@@ -316,7 +318,7 @@ class widgetGUI(QMainWindow):
         
         # print 'owbasewidget show'
         print '|#| in onShow'
-
+        print self.windowState
         self.hasBeenShown = True
         if 'state' in self.windowState.keys():
             self.restoreState(self.windowState['state'])

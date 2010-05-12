@@ -14,7 +14,7 @@ import signals
 
 
 class ReadCEL(OWRpy):
-    globalSettingsList = ['recentFiles','path']
+    globalSettingsList = ['filecombo', 'recentFiles','path']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
         #self.setStateVariables(['recentFiles'])
