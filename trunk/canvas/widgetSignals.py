@@ -213,24 +213,7 @@ class widgetSignals():
     def setLoadingSavedSession(self,state):
         print 'setting setloadingSavedSession', state
         self.loadSavedSession = state
-    
-    
 
-    # def isConnectionPossible(outputs,inputs):
-        # print 'isConnectionPossible'
-        # canConnect = 0
-        # for outtype in outputs:
-            # if True in [issubclass(outtype, intype)  for intype in inputs]:
-                # print 'is subtype'
-                # canConnect = 1
-                # break
-            # elif True in [intype in outtype.conversions for intype in inputs]:
-                # print 'can convert '
-                # canConnect = 1
-                # break
-
-        # return canConnect
-        
     def processSignals(self):
         # print 'processSignals', self.windowTitle()
         if self.closing == True:
@@ -263,15 +246,13 @@ class widgetSignals():
                         for (oldValue, id, nameFrom) in signalData:
                             if oldValue == None:
                                 value = oldValue
-                            else: # the value had better be one of our signals
+                            else: # the value had better be one of our signals or a child of one
                                 if not isinstance(oldValue, signals.BaseRedRVariable):
                                     raise Exception
                                 value = oldValue.copy()
                                 if not value.__class__ == signal[1]:
                                     print 'CONVERSION of ', value.__class__
                                     value = value.convertToClass(signal[1])
-                            
-                            ### end block
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
                                 if not self.loadSavedSession:
@@ -286,6 +267,7 @@ class widgetSignals():
                             
                     except:
                         thistype, val, traceback = sys.exc_info()
+                        print 'Some exception occured'
                         sys.excepthook(thistype, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 

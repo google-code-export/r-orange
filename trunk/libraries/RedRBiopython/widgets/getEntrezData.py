@@ -9,6 +9,7 @@
 """
 
 from Bio import Entrez
+Entrez.tool = 'Red-R Biopython'
 from Bio import SeqIO
 from OWRpy import *
 
@@ -33,7 +34,7 @@ class getEntrezData(OWRpy):
         
     def commit(self):
         handle = Entrez.efetch(db = str(self.database.currentText()), rettype = str(self.type.currentText()), id = str(self.id.text()))
-        records = list(SeqIO.parse(handle, str(self.type.currentText())))
+        records = SeqIO.to_dict(SeqIO.parse(handle, str(self.type.currentText())))
         handle.close()
         
         newData = signals.RedRBiopython.SequenceRecordCollection(data = records)

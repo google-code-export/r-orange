@@ -34,6 +34,7 @@ class runSQLiteQuery(OWRpy):
         submitButton = redRGUI.button(statementBox, 'Commit Statement', callback = self.runStatement)
         infoArea = redRGUI.groupBox(self.controlArea, label = 'Info:')
         self.infoA = redRGUI.widgetLabel(infoArea, 'No data connected')
+        self.infoB = redRGUI.widgetLabel(infoArea, "")
         outputBox = redRGUI.groupBox(self.controlArea, label = 'Sample of Output')
         self.outputTextArea = redRGUI.textEdit(outputBox)
         
@@ -42,6 +43,10 @@ class runSQLiteQuery(OWRpy):
         if data:
             self.data = data
             self.infoA.setText('Incoming table name is '+self.data.data)
+            ## scan the current table, easiest way to do that is to run a command with a query to select *
+            self.statementLineEdit.setText('select * from '+self.data.data)
+            self.runStatement()
+            self.statementLineEdit.clear()
         else:
             self.data = None
             self.infoA.setText('No data connected')
@@ -56,8 +61,12 @@ class runSQLiteQuery(OWRpy):
         conn = sqlite3.connect(database)
         cursor = conn.cursor()
         
-        cursor.execute('CREATE VIEW '+self.Rvariables['view']+' AS '+statement)  # execute the statement
-        
+        cursor.execute('DROP VIEW IF EXISTS '+self.Rvariables['view'])
+        try:
+            cursor.execute('CREATE VIEW '+self.Rvariables['view']+' AS '+statement)  # execute the statement
+        except:
+            self.outputTextArea.clear()
+            self.outputTextArea.insertHtml('Error occured during processing, please check that the query is formatted correctly.'
         newData = signals.rsqlitedataframe.SQLiteTable(data = self.Rvariables['view'], database = self.data.database) # set the new data
         self.rSend('SQLite Table', newData)  # send the data
         self.updateScan()

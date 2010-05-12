@@ -36,9 +36,7 @@ class showSequenceData(OWRpy):
     def gotData(self, data):
         if data:
             self.data = data
-            records = []
-            for rec in self.data.data:
-                records.append(str(rec.id))
+            records = self.data.data.keys()
             self.sequenceCombo.update(records)
         else:
             self.sequenceCombo.clear()
@@ -49,15 +47,15 @@ class showSequenceData(OWRpy):
         
         wantRecord = str(self.sequenceCombo.currentText())
         
-        for rec in self.data.data:
-            if str(rec.id) == wantRecord:
-                self.sequenceTextArea.insertPlainText('ID: '+str(rec.id)+'\n')
-                self.sequenceTextArea.insertPlainText('Name:'+str(rec.name)+'\n')
-                self.sequenceTextArea.insertPlainText('Sequence:'+str(rec.seq)+'\n')
-                self.sequenceTextArea.insertPlainText('Description:'+str(rec.description)+'\n')
-                self.sequenceTextArea.insertPlainText('Letter Annotations:'+str(rec.letter_annotations)+'\n')
-                self.sequenceTextArea.insertPlainText('Annotations:'+str(rec.annotations)+'\n')
-                self.sequenceTextArea.insertPlainText('Features:'+str(rec.features)+'\n')
-                #self.sequenceTextArea.insertPlainText(str(rec.id))
-                return
-                
+        rec = self.data.data[wantRecord]
+        
+        self.sequenceTextArea.insertPlainText('ID: '+str(rec.id)+'\n')
+        self.sequenceTextArea.insertPlainText('Name:'+str(rec.name)+'\n')
+        self.sequenceTextArea.insertPlainText('Sequence:'+str(rec.seq)+'\n')
+        self.sequenceTextArea.insertPlainText('Description:'+str(rec.description)+'\n')
+        self.sequenceTextArea.insertPlainText('Letter Annotations:'+str(rec.letter_annotations)+'\n')
+        self.sequenceTextArea.insertPlainText('Annotations:'+str(rec.annotations)+'\n')
+        self.sequenceTextArea.insertPlainText('Features:'+str(rec.features)+'\n')
+        #self.sequenceTextArea.insertPlainText(str(rec.id))
+        return
+        

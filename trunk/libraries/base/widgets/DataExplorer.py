@@ -18,10 +18,10 @@ class DataExplorer(OWRpy):
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, parent, signalManager, "Data Explorer", wantMainArea = 0)
         
-        self.data = ''
+        self.data = None
         self.orriginalData = '' # a holder for data that we get from a connection
         self.currentDataTransformation = '' # holder for data transformations ex: ((data[1:5,])[,1:3])[1:2,]
-        self.dataParent = {}
+        self.dataParent = None
         
         self.currentRow = 0
         self.currentColumn = 0
@@ -29,7 +29,6 @@ class DataExplorer(OWRpy):
         self.criteriaList = []
         
         self.setRvariableNames(['dataExplorer'])
-        self.loadSettings()
         self.criteriaDialogList = []
         self.inputs = [('Data Table', signals.RDataFrame, self.processData), ('Row Subset Vector', signals.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', signals.RDataFrame)]
@@ -88,12 +87,17 @@ class DataExplorer(OWRpy):
         self.rowNameSelectionCriteria = 'rownames('+self.orriginalData+') %in% c(\''+'\',\''.join(cg)+'\')'
     def processData(self, data, newData = True):
         if data:
+            print type(data)
+            print data.data
+            print data.parent
+            print 'Data is '+str(data)
             self.data = ''
             self.currentDataTransformation = '' # holder for data transformations ex: ((data[1:5,])[,1:3])[1:2,]
             
             self.table.hide()
             self.table = redRGUI.table(self.tableArea)
-            self.data = data['data']
+            self.data = data.data  # set self.data to the data element of the recieved signal.
+            print self.data
             self.rownames = self.R('rownames('+self.data+')')
             if type(self.rownames) == str:
                 self.rownames = [self.rownames]
@@ -255,9 +259,9 @@ class DataExplorer(OWRpy):
                 ######## Set the table for the data ######
             self.setDataTable()
         else: # clear all of the data and move on
-            self.data = ''
+            self.data = None
             self.currentDataTransformation = ''
-            self.dataParent = {}
+            self.dataParent = None
         
     def setDataTable(self):
         ### want to set the table with the data in the currentDataTransformation object

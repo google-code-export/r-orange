@@ -557,7 +557,7 @@ class SchemaDoc(QWidget):
         import redREnviron
         ### .rrw functionality
         # if filename.split('.')[-1] in ['rrw', 'rrp']:
-            # self.loadRRW(filename)
+            # self.loadRRP(filename)
             # return # we don't need to load anything else, we are not really loading a rrs file. 
         ###
         print filename.split('.')[-1], 'File name extension'
@@ -634,7 +634,7 @@ class SchemaDoc(QWidget):
                 print '-'*60        
 
             for i in required['RedR']:
-                self.loadRRW(fileText = i)
+                self.loadRRP(fileText = i)
                 
                 
             #RSession.Rcommand('load("' + os.path.join(self.canvasDlg.canvasSettingsDir, "tmp.RData").replace('\\','/') +'")')
@@ -792,7 +792,7 @@ class SchemaDoc(QWidget):
         import redREnviron
         ### .rrw functionality
         if filename.split('.')[-1] in ['rrw', 'rrp']:
-            self.loadRRW(filename)
+            self.loadRRP(filename)
             return # we don't need to load anything else, we are not really loading a rrs file. 
         ###
         print filename.split('.')[-1], 'File name extension'
@@ -859,7 +859,7 @@ class SchemaDoc(QWidget):
             
             
             for i in required['RedR']:
-                self.loadRRW(fileText = i)
+                self.loadRRP(fileText = i)
         except: 
             import sys, traceback
             print '-'*60
@@ -1019,124 +1019,125 @@ class SchemaDoc(QWidget):
                 self.canvasDlg.output.write("%s = %s" % (val, getattr(widget.instance, val)))
 
                 
-    def loadRRW(self, filename = None, fileText = None, force = False):
+    def loadRRP(self, filename = None, fileText = None, force = False):  # loads either the rrp files or the xml text for resolving dependencies
         if filename == None and fileText == None:
             raise Exception, 'Must specify either a fileName or fileText'
         if filename != None and fileText != None:
             raise Exception, 'Only one of fileName or fileText can be specified'
             
         
-        print 'Loading RRW file.  This will update your system.'
+        print 'Loading RRP file.  This will update your system.'
         
             
-        if filename:
-            #try:
-            tempDir = redREnviron.directoryNames['tempDir']
-            installDir = os.path.join(os.path.abspath(tempDir), str(os.path.split(filename)[1].split('.')[0]))
-            os.mkdir(installDir) ## make the directory to store the zipfile into
-            ## here we need to unzip the zip file and place it into the tempDir
-            import re
-            zfile = zipfile.ZipFile(str(filename), "r" )
-            for name in zfile.namelist():
-                file(os.path.join(str(installDir),os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
-            f = open(os.path.join(str(installDir), 'rrp_structure.xml'), 'r') # read in the special file for the rrp_structure
-            mainTabs = xml.dom.minidom.parse(f)
-            f.close() 
-            # except: 
-                # print 'Can\'t open the file or something is wrong'
-                # return
+        if filename: ## if we specify an rrp zipfile then we should load that into the temp directory and work with it.
+            try:
+                tempDir = redREnviron.directoryNames['tempDir']
+                installDir = os.path.join(os.path.abspath(tempDir), str(os.path.split(filename)[1].split('.')[0]))
+                os.mkdir(installDir) ## make the directory to store the zipfile into
+                ## here we need to unzip the zip file and place it into the tempDir
+                import re
+                zfile = zipfile.ZipFile(str(filename), "r" )
+                for name in zfile.namelist():
+                    file(os.path.join(str(installDir),os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
+                f = open(os.path.join(str(installDir), 'rrp_structure.xml'), 'r') # read in the special file for the rrp_structure
+                mainTabs = xml.dom.minidom.parse(f)
+                f.close() 
+            except: 
+                print 'Can\'t open the file or something is wrong'
+                return False
                 
-            # run the install file if there is one
+            ## check the version number before we do anything else, who knows what version the usef downloaded????
+            version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
+            if self.version not in version:
+                print 'Warning, this widget does not work with your current version.  Please update!!'
+                return False
+                
+            ## resolve the package dependencies first
+            ## set the repository for downloading the package if it is needed.
+            try:
+                repository = self.getXMLText(mainTabs.getElementsByTagName('Repository')[0].childNodes)
+            except:
+                repository = 'http://www.red-r.org/Libraries/'
+                
+            ## attach the version number to the repository
+            repository += str(self.version)
+            ### resolve the dependencies
+            dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
+            if dependencies != 'None':
+                alldeps = dependencies.split(',')
+                print '|##| Dependencies are:'+alldeps
+                self.resolveRRPDependencies(alldeps, repository)
+
+            # run the install file if there is one, this should take care of the dependencies that are non-R related and install the needed files for the package
+            
             if os.path.isfile(os.path.join(str(installDir), 'installFile.py')):
                 ## need to import and execute the run statement of the installFile.  installFile may import many other modules at it's discression.
                 print 'Executing file'
                 passed = True
-                execfile(os.path.join(str(installDir), 'installFile.py'), {'passed':passed})
-                if passed == False:
+                execfile(os.path.join(str(installDir), 'installFile.py'))
+                if passed == False: # there was an error in loading.  We should stop the installation, clear the tempdirectory of the failed zipfile and return
                     print 'Loading of installFile failed.  Aborting installation'
                     import shutil
                     shutil.rmtree(installDir, True)
-                    return
-        if fileText:
+                    return False
+                    
+            ## now move all of the files in the tempDir into the libraries dir of Red-R
+            packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
+            import shutil
+            shutil.copy2(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName))
+            shutil.rmtree(installDir, True)
+            ## we copied everything now return
+            print 'Installation successful'
+            self.canvasDlg.reloadWidgets()
+            return True
+        elif fileText:
             mainTabs = xml.dom.minidom.parseString(fileText)
         
-        version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
-        if self.version not in version:
-            print 'Warning, this widget does not work with your current version.  Please update!!'
-            return
-        try:
-            repository = self.getXMLText(mainTabs.getElementsByTagName('Repository')[0].childNodes)
-        except:
-            repository = 'http://r-orange.googlecode.com/svn/'
+            # check the version number to make sure that it is compatible
+            version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
+            if self.version not in version:
+                print 'Warning, this widget does not work with your current version.  Please update!!'
+                return False
             
-        packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
-        
-        ### make the package directoryNames
-        if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName)):
-            dirs = [packageName, 
-            os.path.join(packageName,'widgets'),
-            os.path.join(packageName,'qtWidgets'),
-            os.path.join(packageName,'signalClasses'),
-            os.path.join(packageName,'icons'),
-            os.path.join(packageName,'doc'),
-            os.path.join(packageName,'schemas'), 
-            os.path.join(packageName, 'templates')]
-            for d in dirs: 
-                if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], d)):
-                    os.mkdir(os.path.join(redREnviron.directoryNames['libraryDir'], d))
-                    sys.path.insert(0, d)
-        ### resolve the dependencies
-        dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
-        for dep in dependencies.split(','):
-            dep = dep.strip(' /')
+                
+            packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
+            
+            ## set the repository for downloading the package if it is needed.
+            try:
+                repository = self.getXMLText(mainTabs.getElementsByTagName('Repository')[0].childNodes)
+            except:
+                repository = 'http://www.red-r.org/Libraries/'
+                
+            ## attach the version number to the repository
+            repository += str(self.version)
+            ### resolve the dependencies
+            dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
+            if dependencies != 'None':
+                alldeps = dependencies.split(',')
+                alldeps.append(packageName)
+            else:
+                alldeps = [packageName]
+            self.resolveRRPDependencies(alldeps, repository)
+
+            print 'Package loaded successfully'
+            self.canvasDlg.reloadWidgets()
+
+    def resolveRRPDependencies(self, alldeps, repository):
+        for dep in alldeps:
             print dep
-            if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0]):
-                os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))[0])
-            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)) and dep != 'None') or (force and dep != 'None'):
+            [pack, ver] = dep.split('/')
+            ## check to see if the directory exists, if it does then there is no need to worry, unless someone is playing a cruel joke and made the directory with nothing in it.
+            if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], pack)):
                 print 'Downloading dependencies', dep
                 try:
-                    if '.rrp' in dep:  # this is requiring a package so we need to go and get that
-                        fileExt = os.path.split(dep)[1]
-                        newPackage = os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep)
-                        if not os.path.exists(os.path.split(newPackage)[0]):
-                            os.mkdir(os.path.split(newPackage)[0])
-                        self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)                    
-                        self.loadRRW(newPackage)
-                    else:
-                        newPackage = os.path.abspath(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, dep))
-                        if not os.path.exists(os.path.split(newPackage)[0]):
-                            os.mkdir(os.path.split(newPackage)[0])
-                        self.urlOpener.retrieve(repository+self.version+'/libraries/'+packageName+'/'+dep, newPackage)
-                        #self.loadRRW(newPackage)
-                        ### go to website, get the file, and repleat this process until success
+                    ## make the url for the dep
+                    url = repository+'/'+pack+'/'+ver
+                    ## download the package, place in the tempDir for resolution
+                    self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
+                    ## install the package
+                    self.loadRRP(filename = os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
                 except:
                     print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
-
-        # get the examples if there are anything
-        examples = self.getXMLText(mainTabs.getElementsByTagName('Examples')[0].childNodes)
-        for example in examples.split(','):
-            example = example.strip(' ')
-            if (not os.path.isfile(os.path.join(self.canvasDlg.redRDir,example)) and example != 'None')or (force and example != 'None'):
-                if not os.path.exists(os.path.split(os.path.join(self.canvasDlg.redRDir,example))[0]):
-                    os.mkdir(os.path.split(os.path.join(self.canvasDlg.redRDir,example))[0])
-                print 'Downloading example file', example
-                fileExt = os.path.split(example)[1]
-                newExample = os.path.join(self.canvasDlg.redRDir, example)
-                self.urlOpener.retrieve(repository+self.version+'/'+example, newExample)
-        
-        
-        if fileText or '.rpp' in filename:
-            if not os.path.exists(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.xml')):  # don't replace this if we already have it.
-                rppFile = open(os.path.join(self.canvasDlg.redRDir, 'libraries', packageName, packageName+'.xml'), 'wt') # will be writing a binary package
-                rppFile.write(mainTabs.toxml())
-                rppFile.close()
-        
-        if filename: # remove the temporary file in the temp directory, it has been installed and we are ready to roll!!!
-            import shutil
-            shutil.rmtree(installDir, True)
-        print 'Package loaded successfully'
-        self.canvasDlg.reloadWidgets()
-
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()

@@ -94,18 +94,19 @@ class RedRScatterplot(OWRpy):
         
     def gotX(self, data):
         if data:
+            print 'Data is: '+str(data)
             self.data = data.data
             self.parent = data.parent
             self.dataParent = data.copy()
 
-            if 'cm' in self.dataParent.dictAttrs.keys():
-                print self.dataParent.dictAttrs['cm']
-                self.cm = self.dataParent.dictAttrs['cm']['data']
+            if self.dataParent.optionalDataExists('cm'):
+                
+                self.cm = self.dataParent.getOptionalData('cm')
                 cmColNames = self.R('names('+self.cm+')')
                 if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
                 if type(cmColNames) == type(''): cmColNames = [cmColNames]
             else:
-                self.dataParent.dictAttrs['cm'] = ('cm_'+self.Rvariables['Plot'], 'RedRScatterplot', 'Created in RedRScatterplot because no Class Manager was detected', None)
+                self.dataParent.setOptionalData(name = 'cm', data = 'cm_'+self.Rvariables['Plot'], creatorWidget = self, description = 'Created in RedRScatterplot because no Class Manager was detected')
                 self.cm = 'cm_'+self.Rvariables['Plot']
                 self.R(self.cm+'<-list()')
                 cmColNames = []
