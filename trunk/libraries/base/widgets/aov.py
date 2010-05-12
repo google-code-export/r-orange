@@ -13,7 +13,6 @@ class aov(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["aov"])
         self.data = {}
-        self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
         self.outputs = [("aov Output", signals.RModelFit)]

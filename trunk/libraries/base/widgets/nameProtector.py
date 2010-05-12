@@ -16,7 +16,6 @@ class nameProtector(OWRpy):
         # the variables
         self.parentData = {}
         self.data = ''
-        self.loadSettings()
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector', 'newDataFromNameProtector_cm'])
         self.inputs = [("Data Frame", signals.RDataFrame, self.gotDF), ("Vector", signals.RVector, self.gotV)]
         self.outputs = [("Data Frame", signals.RDataFrame), ("Vector", signals.RVector)]

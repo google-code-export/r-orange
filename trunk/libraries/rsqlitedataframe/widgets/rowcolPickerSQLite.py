@@ -22,7 +22,6 @@ class rowcolPickerSQLite(OWRpy): # a simple widget that actually will become qui
         self.namesPresent = 0
         self.dataClass = None
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
-        self.loadSettings()
         
         self.inputs = [('Data Table', signals.RDataFrame, self.setWidget), ('Subsetting Vector', signals.RVector, self.setSubsettingVector), ('SQL Data', signals.)]
         self.outputs = [('Data Table', signals.RDataFrame), ('Not Data Table', signals.RDataFrame), ('Reduced Vector', signals.RVector)]

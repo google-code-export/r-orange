@@ -15,7 +15,6 @@ class Melt_DF(OWRpy):
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
-        self.loadSettings()
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
         self.outputs = [("melt.data.frame Output", signals.RDataFrame)]
         

@@ -17,7 +17,7 @@ class ggplot(OWRpy):
         self.plotAtts = {} # a collection of dicts, these contain the parameters that can be set for any particular function.  The aes attribut will also be a dict, however, other parameters will be contained within this dictionary.  This essentially represents all of the data that this widget will contain.
         
         self.require_librarys(["ggplot2", "hexbin"])
-        self.loadSettings()
+
         self.inputs = [('Input Data Frame', signals.RDataFrame, self.addDataFrame)]
         self.outputs = [('Plot colleciton', signals.RGGPlotPlot)]
         

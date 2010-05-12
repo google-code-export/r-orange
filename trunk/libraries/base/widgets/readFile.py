@@ -28,9 +28,7 @@ class readFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
-        
-        #self.loadSettings()
-        
+
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         

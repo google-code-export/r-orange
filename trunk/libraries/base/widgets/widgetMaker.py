@@ -237,8 +237,7 @@ class widgetMaker(OWRpy):
         if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
             self.initCode += '\t\tself.data = {}\n'
-        
-        self.initCode += '\t\tself.loadSettings() \n'
+
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"

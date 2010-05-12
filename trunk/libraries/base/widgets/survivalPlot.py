@@ -14,7 +14,6 @@ class survivalPlot(OWRpy):
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.loadSettings()
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RSurvFit, self.processx)]
         

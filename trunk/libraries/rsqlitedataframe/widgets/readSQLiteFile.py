@@ -33,7 +33,6 @@ class readSQLiteFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
-        self.loadSettings()
         #set R variable names        
         self.database = 'local|temp.db'
         

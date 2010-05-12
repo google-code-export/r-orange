@@ -15,7 +15,6 @@ class survfit(OWRpy):
         
         self.setRvariableNames(["survfit"])
         self.data = {}
-        self.loadSettings() 
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata), ('Model Fit', signals.RModelFit, self.processfit)]
         self.outputs = [("survfit Output", signals.RSurvFit)]

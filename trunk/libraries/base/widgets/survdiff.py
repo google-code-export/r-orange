@@ -14,7 +14,7 @@ class survdiff(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["survdiff"])
-        self.data = {}
+        self.data = None
         self.formula = ''
         self.loadSettings() 
         self.RFunctionParam_data = ''

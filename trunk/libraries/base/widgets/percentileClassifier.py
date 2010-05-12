@@ -13,8 +13,7 @@ class percentileClassifier(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Percentile Classifier", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
         self.data = ''
-        self.dataParent = {}
-        self.loadSettings()
+        self.dataParent = None
         self.inputs = [('Data Frame', signals.RDataFrame, self.processData)]
         self.outputs = [('Data Frame', signals.RDataFrame)]
         
