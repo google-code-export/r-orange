@@ -1105,7 +1105,9 @@ class SchemaDoc(QWidget):
             if os.path.isfile(os.path.join(str(installDir), 'installFile.py')):
                 ## need to import and execute the run statement of the installFile.  installFile may import many other modules at it's discression.
                 print 'Executing file'
-                if execfile(os.path.join(str(installDir), 'installFile.py')) == False:
+                passed = True
+                execfile(os.path.join(str(installDir), 'installFile.py'), {'passed':passed})
+                if passed == False:
                     print 'Loading of installFile failed.  Aborting installation'
                     return
         if fileText:

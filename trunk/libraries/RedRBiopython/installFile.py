@@ -3,14 +3,14 @@
 import sys, os, redREnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
-def haveBiopython:
+print passed
+def haveBiopython():
     try:
         import Bio  # doesn't fail if we have biopython
-        return True
+        passed = True
     except:
         QMessageBox.information(None, 'File Download','It looks like something went wrong.  Please install again.',  QMessageBox.Ok + QMessageBox.Default)
-        return False
+        passed = False
 ### check if Biopython already exists  ### will do later
 if sys.platform=="win32":
 
@@ -26,14 +26,14 @@ if sys.platform=="win32":
         gotBiopython = haveBiopython()
         if gotBiopython:
             QMessageBox.information(None, 'File Download','Thanks, now that did\'t hurt a bit did it?',  QMessageBox.Ok + QMessageBox.Default)
-            return True
+            passed = True
             
         else:
-            return False
+            passed = False
         
 else:
     import webbrowser
     webbrowser.open_new_tab('http://biopython.org/wiki/Download')
     QMessageBox.information(None, 'File Download','It doesn\'t look like you have a Windows machine, please get the appropriate version of Biopython to continue.',  QMessageBox.Ok + QMessageBox.Default)
     
-    return True
+    passed = True
