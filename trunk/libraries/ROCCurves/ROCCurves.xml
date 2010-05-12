@@ -1,8 +1,8 @@
 <main>
     <Version>1.5, 1.7, 2.0, trunk</Version>
-    <PackageName>ROCCurves</PackageName>
+    <PackageName>ROCCurves/ROCCurves-1.rrp</PackageName>
     <Repository>http://r-orange.googlecode.com/svn/</Repository>
-    <Dependencies>widgets/performance.py, widgets/prediction.py, signalClasses/RROCPerformanceFit.py, signalClasses/RROCPredictionFit.py</Dependencies>
+    <Dependencies>None</Dependencies>
     <menuTags>
         <group name = 'Stats'>
             <group name = 'ROC Curves'>
@@ -10,7 +10,4 @@
             </group>
         </group>
     </menuTags>
-    <FileDirectoryStucture>None</FileDirectoryStucture>
-    <FileData>None</FileData>
-    <Examples>None</Examples>
 </main>

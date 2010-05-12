@@ -1,8 +1,8 @@
 <main>
     <Version>1.5, 1.7, 2.0, trunk</Version>
-    <PackageName>rsqlitedataframe</PackageName>
+    <PackageName>rsqlitedataframe/rsqlitedataframe-1.rrp</PackageName>
     <Repository>http://r-orange.googlecode.com/svn/</Repository>
-    <Dependencies>widgets/readSQLiteFile.py, widgets/mergeSQLite.py, signalClasses/SQLiteTable.py, widgets/connectSQLiteDatabase.py</Dependencies>
+    <Dependencies>None</Dependencies>
     <menuTags>
         <group name = 'SQLite'>
             

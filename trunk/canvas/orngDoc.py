@@ -1030,21 +1030,29 @@ class SchemaDoc(QWidget):
         
             
         if filename: ## if we specify an rrp zipfile then we should load that into the temp directory and work with it.
-            try:
-                tempDir = redREnviron.directoryNames['tempDir']
-                installDir = os.path.join(os.path.abspath(tempDir), str(os.path.split(filename)[1].split('.')[0]))
-                os.mkdir(installDir) ## make the directory to store the zipfile into
-                ## here we need to unzip the zip file and place it into the tempDir
-                import re
-                zfile = zipfile.ZipFile(str(filename), "r" )
-                for name in zfile.namelist():
-                    file(os.path.join(str(installDir),os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
-                f = open(os.path.join(str(installDir), 'rrp_structure.xml'), 'r') # read in the special file for the rrp_structure
-                mainTabs = xml.dom.minidom.parse(f)
-                f.close() 
-            except: 
-                print 'Can\'t open the file or something is wrong'
+            #try:
+            tempDir = redREnviron.directoryNames['tempDir']
+            installDir = os.path.join(os.path.abspath(tempDir), str(os.path.split(filename)[1].split('.')[0]))
+            print installDir
+            os.mkdir(installDir) ## make the directory to store the zipfile into
+            ## here we need to unzip the zip file and place it into the tempDir
+            import re
+            zfile = zipfile.ZipFile(str(filename), "r" )
+            zfile.extractall(installDir)
+            zfile.close()
+            tempPackageName = os.path.split(filename)[1].split('-')[0]  ## this should be the package name
+            if os.path.isfile(os.path.join(str(installDir), tempPackageName+'.xml')):
+                f = open(os.path.join(str(installDir), tempPackageName+'.xml'), 'r') # read in the special file for the rrp_structure
+            elif os.path.isfile(os.path.join(str(installDir), 'rrp_structure.xml')):
+                f = open(os.path.join(str(installDir), 'rrp_structure.xml'), 'r')
+            else:
+                print 'No structure file, aborting insallation!!!'
                 return False
+            mainTabs = xml.dom.minidom.parse(f)
+            f.close() 
+            # except: 
+                # print 'Can\'t open the file or something is wrong'
+                # return False
                 
             ## check the version number before we do anything else, who knows what version the usef downloaded????
             version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
@@ -1065,7 +1073,7 @@ class SchemaDoc(QWidget):
             dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
             if dependencies != 'None':
                 alldeps = dependencies.split(',')
-                print '|##| Dependencies are:'+alldeps
+                print '|##| Dependencies are:'+str(alldeps)
                 self.resolveRRPDependencies(alldeps, repository)
 
             # run the install file if there is one, this should take care of the dependencies that are non-R related and install the needed files for the package
@@ -1082,9 +1090,9 @@ class SchemaDoc(QWidget):
                     return False
                     
             ## now move all of the files in the tempDir into the libraries dir of Red-R
-            packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
+            packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes).split('/')[0] # get the base package name, this is the base folder of the package.
             import shutil
-            shutil.copy2(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName))
+            shutil.copytree(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName))
             shutil.rmtree(installDir, True)
             ## we copied everything now return
             print 'Installation successful'

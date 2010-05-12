@@ -87,11 +87,6 @@ class DataExplorer(OWRpy):
         self.rowNameSelectionCriteria = 'rownames('+self.orriginalData+') %in% c(\''+'\',\''.join(cg)+'\')'
     def processData(self, data, newData = True):
         if data:
-            print type(data)
-            print data.data
-            print data.parent
-            print 'Data is '+str(data)
-            self.data = ''
             self.currentDataTransformation = '' # holder for data transformations ex: ((data[1:5,])[,1:3])[1:2,]
             
             self.table.hide()
@@ -104,9 +99,6 @@ class DataExplorer(OWRpy):
             self.colnames = self.R('colnames('+self.data+')')
             if type(self.colnames) == str:
                 self.colnames = [self.colnames]
-            #print self.data
-            #print self.rownames
-            #print self.colnames
             if newData == True:
                 self.orriginalData = data['data']
                 

@@ -1,8 +1,8 @@
 <main>
     <Version>1.5, 1.7, 2.0, trunk</Version>
     <Repository>http://r-orange.googlecode.com/svn/</Repository>
-    <PackageName>affy</PackageName>
-    <Dependencies>widgets/affyNormalize.py, widgets/diffExp.py, widgets/normalize_quantile.py, widgets/pamrcv.py, widgets/pamrc_from_excel.py, widgets/pamr_train.py, widgets/panpCalls.py, widgets/plotAffy.py, widgets/ReadCEL.py, widgets/runSigPathway.py, widgets/writeEset.py,signalClasses/RAffyBatch.py, signalClasses/REset.py, signalClasses/RMArrayLM.py, icons/diffexp.png, icons/normalize.png, icons/plotAffy.png, icons/readcel.png</Dependencies>
+    <PackageName>affy/affy-1.rrp</PackageName>
+    <Dependencies>None</Dependencies>
     <menuTags>
             <group name = 'Bioinformatics'>
                 <Description>General Bioinformatics Widgets</Description>
@@ -11,7 +11,4 @@
                 </group>
             </group>
     </menuTags>
-    <FileDirectoryStucture>None</FileDirectoryStucture>
-    <FileData>None</FileData>
-    <Examples>None</Examples>
 </main>
