@@ -431,32 +431,20 @@ class WidgetListBase:
         #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
         widgets = None
         # for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
-            
         for wName in widgetRegistry['widgets'].keys():
-            awidgets = {}
-            try: 
-                #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
-                wtags = widgetRegistry['widgets'][wName].tags
-                wtags = wtags.replace(' ', '')
-                wtags = wtags.split(',')
-            except: 
-                wtags = 'Prototypes'
+            widgetInfo = widgetRegistry['widgets'][wName]
             try:
-                if itab.replace(' ', '') in wtags: # add the widget
-                    if 'widgets' not in awidgets.keys(): awidgets['widgets'] = {}
-                    awidgets['widgets'][wName] = widgetRegistry['widgets'][wName]
-                    #print 'made it past the awidgets stage'
-                    #print str(awidgets[tabName].items())
-                    (name, widgetInfo) = awidgets['widgets'].items()[0]
-
-                    button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
+                if str(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
+                    button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
                         
                     tab.layout().addWidget(button)
                     if button not in tab.widgets:
                         tab.widgets.append(button)
                     self.allWidgets.append(button)
                     
-            except: pass
+            except Exception as inst: 
+                print inst
+                pass
            
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
@@ -845,23 +833,10 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
     widgets = None
         
-    for wName in canvasDlg.widgetRegistry['widgets'].keys():
-        awidgets = {}
-        try: 
-            #print str(widgetRegistry[tabName][wName].tags) + 'was found in the tags section of '+str(wName)
-            wtags = canvasDlg.widgetRegistry['widgets'][wName].tags
-            wtags = wtags.replace(' ', '')
-            wtags = wtags.split(',')
-        except: 
-            wtags = 'Prototypes'
+    for wName in canvasDlg.widgetRegistry['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
+        widgetInfo = canvasDlg.widgetRegistry['widgets'][wName]
         try:
-            if catName.replace(' ', '') in wtags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
-                if 'widgets' not in awidgets.keys(): awidgets['widgets'] = {}
-                awidgets['widgets'][wName] = canvasDlg.widgetRegistry['widgets'][wName]
-                #print 'made it past the awidgets stage'
-                #print str(awidgets[tabName].items())
-                (name, widgetInfo) = awidgets['widgets'].items()[0]
-
+            if str(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
                 icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
                 act = catmenu.addAction(icon, widgetInfo.name)
                 
@@ -870,9 +845,11 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                 if not widgetInfo.name in categoriesPopup.widgetActionNameList:
                     categoriesPopup.allActions.append(act)
                     categoriesPopup.widgetActionNameList.append(widgetInfo.name)
-                
-                
-        except: pass
+                    
+                    
+        except Exception as inst: 
+            print inst
+            pass
 #        
 class SearchBox(redRGUI.lineEditHint):
     def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):

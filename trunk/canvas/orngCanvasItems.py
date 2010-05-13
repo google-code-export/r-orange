@@ -154,9 +154,9 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
         
         # import widget class and create a class instance
-        #print str(forceInSignals)
-        #print str(forceOutSignals)
-        # print 'Initializing widget'
+        print str(forceInSignals)
+        print str(forceOutSignals)
+        print 'Initializing widget'
         if widgetInfo.package !='base':
             import orngRegistry
             orngRegistry.loadPackage(widgetInfo.package)
@@ -172,7 +172,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         #_settingsFromSchema = widgetSettings)
         self.instance.__dict__['_widgetInfo'] = {'fullName':widgetInfo.fullName, 'fileName':widgetInfo.fileName }
         
-        if widgetInfo.fileName == 'dummy': 
+        if widgetInfo.name == 'dummy': 
             print 'Loading dummy step 3'
             self.instance.__init__(signalManager = signalManager,
             forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)

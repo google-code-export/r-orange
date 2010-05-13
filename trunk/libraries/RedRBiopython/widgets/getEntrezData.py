@@ -13,12 +13,12 @@ Entrez.tool = 'Red-R Biopython'
 from Bio import SeqIO
 from OWRpy import *
 
-class getEntrezData(OWRpy):
+    class getEntrezData(OWRpy):
     
     globalSettingsList = ['recentFiles','path']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,parent, signalManager, "Get Entrex Data", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self,parent, signalManager, "Get Entrez Data", wantMainArea = 0, resizingEnabled = 1)
         
         self.outputs = [('Sequence List', signals.RedRBiopython.SequenceRecordCollection)]
         self.loadSettings()

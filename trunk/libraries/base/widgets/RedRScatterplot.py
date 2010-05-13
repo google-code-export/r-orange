@@ -27,7 +27,6 @@ class RedRScatterplot(OWRpy):
         self.parent = None
         self.dataParent = {}
         self.cm = None
-        self.loadSettings()
 
         # GUI
         self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)

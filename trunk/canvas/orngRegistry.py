@@ -124,7 +124,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
             widgets.append((cachedDescription.name, cachedDescription))
             continue
-        
+        widgetID = str(package+'_'+os.path.split(filename)[1].split('.')[0])
         data = file(filename).read()
         istart = data.find("<name>")
         iend = data.find("</name>")
@@ -180,7 +180,9 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 
-    
+            widgetInfo.tags = widgetInfo.tags.replace(' ', '')
+            widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
+            print str(widgetInfo.tags)
             # build the tooltip
             widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
             if len(widgetInfo.inputs) == 0:
@@ -199,7 +201,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                     formatedOutList += " &nbsp; &nbsp; - " + signal.name + " (" + signal.type + ")<br>"
     
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s<hr>%s<hr>%s" % (name, widgetInfo.description, formatedInList[:-4], formatedOutList[:-4]) 
-            widgets.append((name, widgetInfo))
+            widgets.append((widgetID, widgetInfo))
         except Exception, msg:
             if not hasErrors:
                 print "There were problems importing the following widgets:"

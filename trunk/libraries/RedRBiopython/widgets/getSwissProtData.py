@@ -29,12 +29,20 @@ class getSwissProtData(OWRpy):
         # self.database = redRGUI.comboBox(box, label = 'Sequence Database:', items = ['nucleotide'], toolTip = 'Select the database that you would like your sequecne to come from')
         # self.type = redRGUI.comboBox(box, label = 'Sequence Type:', items = ['fasta', 'gb'], toolTip = 'Select the type of sequence that you would like to retrieve')
         self.id = redRGUI.lineEdit(box, label = 'ID\'s:', toolTip = 'List the ID\'s that you would like to retrieve, separated using a comma')
+        self.infoA = redRGUI.widgetLabel(box, '')
         button = redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.commit)
         
     def commit(self):
+        self.infoA.clear()
         handle = ExPASy.get_sprot_raw(str(self.id.text()))
-        records = SeqIO.to_dict(SeqIO.parse(handle, 'swiss')
-        handle.close()
+        try:
+            records = SeqIO.to_dict(SeqIO.parse(handle, 'swiss'))
+            handle.close()
+        except Exception as inst:
+            handle.close()
+            print inst
+            self.infoA.setText('Error occured, see output for details')
+            return
         
         newData = signals.RedRBiopython.SequenceRecordCollection(data = records)
         self.rSend('Sequence List', newData)

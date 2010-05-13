@@ -370,7 +370,7 @@ class DataExplorer(OWRpy):
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
-        newData = {'data':self.orriginalData+'['+'&'.join(self.criteriaList)+',]'} # reprocess the table
+        newData = signals.RDataFrame(data = self.orriginalData+'['+'&'.join(self.criteriaList)+',]', parent = self.orriginalData) # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
@@ -398,15 +398,16 @@ class DataExplorer(OWRpy):
         # custom function for reloading the widget
         
         # process the data again
-        # self.processData(self.dataParent) # this sets the criteriaDialogList and the widget
-       
-        # for i in range(0, len(self.criteriaList)):
-            # print 'Set Criteria '+str(i)+' to '+str(self.criteriaList[i])
-            # self.criteriaDialogList[i]['widgetLabel'].setHtml('<pre>'+self.criteriaList[i]+'</pre>')
-            # self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
-        # self.commitCriteriaDialog()
-        # print 'Previously Committed data has been displayed.'
-        pass
+        if self.dataParent != None:
+            self.processData(self.dataParent) # this sets the criteriaDialogList and the widget, I'll think of a smarter way of doing this...
+           
+            for i in range(0, len(self.criteriaList)):
+                print 'Set Criteria '+str(i)+' to '+str(self.criteriaList[i])
+                self.criteriaDialogList[i]['widgetLabel'].setHtml('<pre>'+self.criteriaList[i]+'</pre>')
+                self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
+            self.commitCriteriaDialog()
+            print 'Previously Committed data has been displayed.'
+        # pass
     def customCloseEvent(self):
         qApp.setOverrideCursor(Qt.WaitCursor)
         for item in self.criteriaDialogList:

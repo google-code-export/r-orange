@@ -21,7 +21,6 @@ class runSQLiteQuery(OWRpy):
         self.data = None
         self.setRvariableNames(["view"])
         self.Rvariables['view'] = self.Rvariables['view'].split('.')[0]  # need to get rid of the .XX at the end of system time.
-        self.loadSettings()
         self.inputs = [('SQLite Table', signals.rsqlitedataframe.SQLiteTable, self.gotTable)]
         self.outputs = [('SQLite Table', signals.rsqlitedataframe.SQLiteTable)]
         self.recentFiles=['Select File']
@@ -66,7 +65,7 @@ class runSQLiteQuery(OWRpy):
             cursor.execute('CREATE VIEW '+self.Rvariables['view']+' AS '+statement)  # execute the statement
         except:
             self.outputTextArea.clear()
-            self.outputTextArea.insertHtml('Error occured during processing, please check that the query is formatted correctly.'
+            self.outputTextArea.insertHtml('Error occured during processing, please check that the query is formatted correctly.')
         newData = signals.rsqlitedataframe.SQLiteTable(data = self.Rvariables['view'], database = self.data.database) # set the new data
         self.rSend('SQLite Table', newData)  # send the data
         self.updateScan()

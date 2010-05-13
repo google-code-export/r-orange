@@ -346,16 +346,14 @@ class SchemaDoc(QWidget):
 
     # return a new widget instance of a widget with filename "widgetName"
     def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
-        if widgetFileName == 'dummy': print 'Loading dummy step 1a'
-        for category in self.canvasDlg.widgetRegistry.keys():
-            for name, widget in self.canvasDlg.widgetRegistry[category].items():
-                if widget.fileName == widgetFileName: 
-                    if widgetFileName == 'dummy':
-                        print 'Loading dummy step 1'
-                    #print str(forceInSignals) + 'force in signals'
-                    #print str(forceOutSignals) + 'force out signals'
-                    return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
-        return None
+        try:
+            if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
+            print self.canvasDlg.widgetRegistry['widgets']
+            widget = self.canvasDlg.widgetRegistry['widgets'][widgetFileName]
+            return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
+        except:
+            print '|###| Loading exception occured for widget '+widgetFileName
+            return None
 
     # return the widget instance that has caption "widgetName"
     def getWidgetByCaption(self, widgetName):
@@ -839,15 +837,17 @@ class SchemaDoc(QWidget):
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(self.loadedSettingsDict)
 
-        required = schema.getElementsByTagName("required")
-        #print str(required), required
-        if str(required) not in ['', '[]']: 
-            required = eval(str(required[0].getAttribute("requiredPackages")))
-            required = cPickle.loads(required['r'])
+        
             
         
         try:  # protect the required functions in a try statement, we want to load these things and they should be there but we can't force it to exist in older schemas, so this is in a try.
-            if len(required['R']) > 0:
+            required = schema.getElementsByTagName("required")
+            print str(required), required
+            if str(required) not in ['', '[]']: 
+                required = eval(str(required[0].getAttribute("requiredPackages")))
+                required = cPickle.loads(required['r'])
+            
+            if len(required) > 0:
                 #print qApp.canvasDlg.settings.keys()
                 #print qApp.canvasDlg.settings['CRANrepos']
                 if 'CRANrepos' in qApp.canvasDlg.settings.keys():
@@ -880,18 +880,19 @@ class SchemaDoc(QWidget):
         
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         RSession.Rcommand('load("' + os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/') +'")')
-        theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
-       
+        try:
+            theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
+        except: pass
         ## LOAD widgets
         for widget in widgets.getElementsByTagName("widget"):
             print 'for widget (orngDoc.py) ' + widget.getAttribute('caption')
             print 'for widget (orngDoc.py) ' + widget.getAttribute('widgetID')
             name = widget.getAttribute("widgetName")
 
-            # try:
-            settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
-            # except:
-                # settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
+            try:
+                settings = cPickle.loads(settingsDict[widget.getAttribute('widgetID')])
+            except:
+                settings = cPickle.loads(settingsDict[widget.getAttribute('caption')])
             
             tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
             int(widget.getAttribute("yPos")) - self.minimumY()), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
@@ -902,13 +903,14 @@ class SchemaDoc(QWidget):
                 # we must build a fake widget this will involve getting the inputs and outputs and joining 
                 #them at the widget creation 
                 
-                tempWidget = self.addWidgetByFileName('dummy' , int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False,forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                tempWidget = self.addWidgetByFileName('base_dummy', int(widget.getAttribute("xPos")), int(widget.getAttribute("yPos")), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
                 
                 if not tempWidget:
-                    #QMessageBox.information(self, 'Orange Canvas','Unable to create instance of widget \"'+ name + '\"',  QMessageBox.Ok + QMessageBox.Default)
                     failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
                     loadedOk = 0
                     print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                    
+                    continue
             tempWidget.updateWidgetState()
             tempWidget.instance.setLoadingSavedSession(True)
             lpb += 1
