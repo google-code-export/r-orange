@@ -246,7 +246,7 @@ class dataEntry(OWRpy):
         
         self.rSend('Data Table', self.newData)
     def loadCustomSettings(self,settings=None):
-        # if settings and 'newData' in settings.keys():
-            # self.processDF(self.newData)
-        pass
+        if settings and 'newData' in settings.keys():
+            if self.newData != None:
+                self.processDF(self.newData)
             

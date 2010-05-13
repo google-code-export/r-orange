@@ -139,8 +139,9 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         widgetName = os.path.splitext(fname)[0]
         #widgetName = package + '_' + widget
         try:
+            import redREnviron
             if not splashWindow:
-                import redREnviron
+                
                 logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
                 splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
                 splashWindow.setMask(logo.mask())
@@ -176,13 +177,25 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                              inputList = inputList, outputList = outputList
                              )
     
-            for attr, deflt in (("contact>", "") , ("icon>", "icons/Unknown.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
+            for attr, deflt in (("contact>", "") , ("icon>", "icons/Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 
             widgetInfo.tags = widgetInfo.tags.replace(' ', '')
             widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
-            print str(widgetInfo.tags)
+            ## set the icon, this might not exist so we need to check
+            try:
+                widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], package, widgetInfo.icon))
+                if not os.path.exists(widgetInfo.icon):
+                    if os.path.exists(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png')): 
+                        widgetInfo.icon = os.path.abspath(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png'))
+                    else:
+                        widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'icons', 'Unknown.png'))
+                print str(widgetInfo.icon)
+            except Exception as inst:
+                print 'Exception occured in the registry for the icon.'
+                print inst
+                widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'icons', 'Unknown.png')
             # build the tooltip
             widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
             if len(widgetInfo.inputs) == 0:

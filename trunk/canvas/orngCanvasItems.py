@@ -191,7 +191,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.selected = False
         self.inLines = []               # list of connected lines on input
         self.outLines = []              # list of connected lines on output
-        self.icon = canvasDlg.getWidgetIcon(widgetInfo)
+        self.icon = QIcon(widgetInfo.icon)
         
         self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
         self.instance.setProcessingHandler(view.processingHandler)

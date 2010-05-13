@@ -186,7 +186,7 @@ class WidgetTreeItem(QTreeWidgetItem, WidgetButtonBase):
         QTreeWidgetItem.__init__(self, parent)
         WidgetButtonBase.__init__(self, name, widgetInfo, tabs, canvasDlg)
         
-        self.setIcon(0, canvasDlg.getWidgetIcon(widgetInfo))
+        self.setIcon(0, QIcon(widgetInfo.icon))
         self.setText(0, name)
         self.setToolTip(0, widgetInfo.tooltipText)
     
@@ -409,9 +409,7 @@ class WidgetListBase:
     
     def insertChildTabs(self, itab, tab, widgetRegistry):
         try:
-            #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
-            #print 'checking file '+subfile+' for more tabs'
-            #f = open(subfile, 'r')
+            
             if itab.hasChildNodes(): subTabs = itab.childNodes
             else: return
             
@@ -423,8 +421,9 @@ class WidgetListBase:
                     childTab.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
                     self.insertChildTabs(child, childTab, widgetRegistry)
                     self.insertWidgets(child.getAttribute('name'), childTab, widgetRegistry)
-                
-        except: #subtabs don't exist
+                    
+        except Exception as inst: #subtabs don't exist
+            print inst
             return
                 
     def insertWidgets(self, itab, tab, widgetRegistry):
@@ -436,16 +435,13 @@ class WidgetListBase:
             try:
                 if str(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
                     button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
-                        
-                    tab.layout().addWidget(button)
                     if button not in tab.widgets:
                         tab.widgets.append(button)
                     self.allWidgets.append(button)
-                    
+                        
             except Exception as inst: 
                 print inst
                 pass
-           
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
@@ -787,20 +783,23 @@ def constructCategoriesPopup(canvasDlg):
             insertChildActions(canvasDlg, catmenu, categoriesPopup, itab)
             insertWidgets(canvasDlg, catmenu, categoriesPopup, str(itab.getAttribute('name'))) 
     #print canvasDlg.settings["WidgetTabs"]
-    for category, show in canvasDlg.settings["WidgetTabs"]:
-        if not show or not canvasDlg.widgetRegistry.has_key(category):
-            continue
-        catmenu = categoriesPopup.addMenu(category)
-        categoriesPopup.catActions.append(catmenu)
-        #print canvasDlg.widgetRegistry[category]
-        for widgetInfo in sorted(canvasDlg.widgetRegistry[category].values(), key=lambda x:x.priority):
-            icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
-            act = catmenu.addAction(icon, widgetInfo.name)
-            
-            act.widgetInfo = widgetInfo
-            act.category = catmenu
-            #categoriesPopup.allActions.append(act)
-    
+    try:
+        for category, show in canvasDlg.settings["WidgetTabs"]:
+            if not show or not canvasDlg.widgetRegistry.has_key(category):
+                continue
+            catmenu = categoriesPopup.addMenu(category)
+            categoriesPopup.catActions.append(catmenu)
+            #print canvasDlg.widgetRegistry[category]
+            for widgetInfo in sorted(canvasDlg.widgetRegistry[category].values(), key=lambda x:x.priority):
+                icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
+                act = catmenu.addAction(icon, widgetInfo.name)
+                
+                act.widgetInfo = widgetInfo
+                act.category = catmenu
+                #categoriesPopup.allActions.append(act)
+    except Exception as inst:
+        print inst
+        print 'Error occured in categories popup'
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in canvasDlg.widgetRegistry['templates']:
@@ -832,25 +831,27 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
     widgets = None
-        
-    for wName in canvasDlg.widgetRegistry['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
-        widgetInfo = canvasDlg.widgetRegistry['widgets'][wName]
-        try:
-            if str(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
-                icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
-                act = catmenu.addAction(icon, widgetInfo.name)
-                
-                act.widgetInfo = widgetInfo
-                act.category = catmenu
-                if not widgetInfo.name in categoriesPopup.widgetActionNameList:
-                    categoriesPopup.allActions.append(act)
-                    categoriesPopup.widgetActionNameList.append(widgetInfo.name)
+    print str(canvasDlg.widgetRegistry['widgets'])
+    try:
+        for wName in canvasDlg.widgetRegistry['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
+            widgetInfo = canvasDlg.widgetRegistry['widgets'][wName]
+            try:
+                if str(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
+                    icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
+                    act = catmenu.addAction(icon, widgetInfo.name)
                     
-                    
-        except Exception as inst: 
-            print inst
-            pass
-#        
+                    act.widgetInfo = widgetInfo
+                    act.category = catmenu
+                    if not widgetInfo.name in categoriesPopup.widgetActionNameList:
+                        categoriesPopup.allActions.append(act)
+                        categoriesPopup.widgetActionNameList.append(widgetInfo.name)
+                        
+                        
+            except Exception as inst: 
+                print inst
+                pass
+    except:
+        print 'Exception in Tabs with widgetRegistry'#        
 class SearchBox(redRGUI.lineEditHint):
     def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRGUI.lineEditHint.__init__(self, widget = widget, label = label, orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)

@@ -109,12 +109,15 @@ class diffExp(OWRpy):
             self.infob.setText("Setting Class A")
     def phenoProcess(self, data):
         if not data: return
-        if not self.data == '' and self.R('intersect(rownames('+data['data']+'), colnames('+self.data+'))') == None:
+        if not self.data.data in ['', None] and self.R('intersect(rownames('+data['data']+'), colnames('+self.data+'))') == None:
             self.infoa.setText('No intersect between the phenoData and the expression data.\nPhenoData ignored.')
             return
         
         self.phenoData = data['data']
-        colnames = self.R('colnames('+self.phenoData+')')
+        colnames = self.R('colnames('+self.phenoData+')', wantType = 'list')
+        if len(colnames) == 1: ## we got a one column data frame and need to change this so the phenotype subsetting won't cause an error.
+            self.R(self.phenoData+'$DiffExpIntercept<-rep(1, length('+self.phenoData+'[,1]))')
+            colnames = self.R('colnames('+self.phenoData+')', wantType = 'list')
         self.functionBox.update(colnames)
         self.valuesStack.setCurrentWidget(self.boxIndices[1])
 
