@@ -1133,7 +1133,11 @@ class SchemaDoc(QWidget):
     def resolveRRPDependencies(self, alldeps, repository):
         for dep in alldeps:
             print dep
-            [pack, ver] = dep.split('/')
+            try:
+                [pack, ver] = dep.split('/')
+            except:
+                pack = dep
+                ver = dep+'-1.rrp'
             ## check to see if the directory exists, if it does then there is no need to worry, unless someone is playing a cruel joke and made the directory with nothing in it.
             if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], pack)):
                 print 'Downloading dependencies', dep
