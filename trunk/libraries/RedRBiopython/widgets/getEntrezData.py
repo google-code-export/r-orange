@@ -13,7 +13,7 @@ Entrez.tool = 'Red-R Biopython'
 from Bio import SeqIO
 from OWRpy import *
 
-    class getEntrezData(OWRpy):
+class getEntrezData(OWRpy):
     
     globalSettingsList = ['recentFiles','path']
     def __init__(self, parent=None, signalManager=None):

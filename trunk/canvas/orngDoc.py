@@ -229,10 +229,10 @@ class SchemaDoc(QWidget):
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            #print str(forceInSignals) 
-            #print str(forceOutSignals)
+            print str(forceInSignals) 
+            print str(forceOutSignals)
             #print 'adding widget '+caption
-            if widgetInfo.name == 'dummy': print 'Loading dummy step 2'
+            if widgetInfo.name == 'Dummy': print 'Loading dummy step 2'
             newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
         except:
@@ -348,7 +348,6 @@ class SchemaDoc(QWidget):
     def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         try:
             if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
-            print self.canvasDlg.widgetRegistry['widgets']
             widget = self.canvasDlg.widgetRegistry['widgets'][widgetFileName]
             return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
         except:
@@ -399,7 +398,6 @@ class SchemaDoc(QWidget):
         y = 0
         
         for widget in self.widgets:
-            print widget.y()
             if widget.y() > y:
                 y = widget.y()
                 

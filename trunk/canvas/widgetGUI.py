@@ -332,8 +332,11 @@ class widgetGUI(QMainWindow):
 
         
         if self.hasAdvancedOptions and ('leftDockState' in self.windowState):
-            self.leftDockButton.setChecked(self.windowState['leftDockState'])
-            self.showLeftDock()
+            try:
+                self.leftDockButton.setChecked(self.windowState['leftDockState'])
+                self.showLeftDock()
+            except:
+                self.hasAdvancedOptions = False
         
         if 'documentationState' in self.windowState.keys():
             self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
