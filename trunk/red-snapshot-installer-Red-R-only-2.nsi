@@ -10,7 +10,7 @@
 
 ;--------------------------------
 ; Defines
-!define RVERSION "Red-R1.7.Snapshot-ND" ;                                           ;;; Change this when a new version is made
+!define RVERSION "Red-R1.7.Snapshot" ;                                           ;;; Change this when a new version is made
 !define Red-RDIR C:\Python26\Lib\site-packages\redR1.5
 
 ;---------------------------------
@@ -53,21 +53,21 @@ Section "" ;this is the section that will install Red-R and all of it's files
    CreateDirectory "$SMPROGRAMS\Red-R\${RVERSION}"
     AccessControl::GrantOnFile "$SMPROGRAMS\Red-R" "(BU)" "FullAccess" ; required to give those with admin restrictions read write access to the files.
     
-	CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\OrangeCanvas\red-RCanvas.pyw" "" $INSTDIR\${RVERSION}\OrangeCanvas\icons\orange.ico 0
+	CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\canvas\red-RCanvas.pyw" "" $INSTDIR\${RVERSION}\canvas\icons\orange.ico 0
 	CreateShortCut "$SMPROGRAMS\Red-R\${RVERSION}\Uninstall Red-R.lnk" "$INSTDIR\uninst ${RVERSION}.exe"
 
-	;SetOutPath $INSTDIR\OrangeCanvas
-	CreateShortCut "$DESKTOP\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\OrangeCanvas\red-RCanvas.pyw" "" $INSTDIR\${RVERSION}\OrangeCanvas\icons\orange.ico 0
-	;CreateShortCut "$SMPROGRAMS\Red-R\Red-R Canvas.lnk" "$INSTDIR\OrangeCanvas\red-RCanvas.pyw" "" $INSTDIR\OrangeCanvas\icons\orange.ico 0
+	;SetOutPath $INSTDIR\canvas
+	CreateShortCut "$DESKTOP\Red-R Canvas ${RVERSION}.lnk" "$INSTDIR\${RVERSION}\canvas\red-RCanvas.pyw" "" $INSTDIR\${RVERSION}\canvas\icons\orange.ico 0
+	;CreateShortCut "$SMPROGRAMS\Red-R\Red-R Canvas.lnk" "$INSTDIR\canvas\red-RCanvas.pyw" "" $INSTDIR\canvas\icons\orange.ico 0
 
-	WriteRegStr SHELL_CONTEXT "SOFTWARE\Python\PythonCore\2.6\PythonPath\Red-R\${RVERSION}" "" "$INSTDIR\${RVERSION};$INSTDIR\${RVERSION}\OrangeWidgets;$INSTDIR\${RVERSION}\OrangeCanvas"
+	WriteRegStr SHELL_CONTEXT "SOFTWARE\Python\PythonCore\2.6\PythonPath\Red-R\${RVERSION}" "" "$INSTDIR\${RVERSION};$INSTDIR\${RVERSION}\OrangeWidgets;$INSTDIR\${RVERSION}\canvas"
 	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\Red-R\${RVERSION}" "DisplayName" "Red-R (remove only)"
 	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\Red-R\${RVERSION}" "UninstallString" '"$INSTDIR\uninst ${RVERSION}.exe"'
 
 	WriteRegStr HKEY_CLASSES_ROOT ".rrs" "" "Red R Canvas"
     WriteRegStr HKEY_CLASSES_ROOT ".rrp" "" "Red R Canvas"
-	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${RVERSION}\OrangeCanvas\icons\redrOWS.ico"
-	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$PythonDir\pythonw.exe $INSTDIR\${RVERSION}\OrangeCanvas\red-RCanvas.pyw "%1"';name is appended into the sys.argv variables for opening by Red-R
+	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${RVERSION}\canvas\icons\redrOWS.ico"
+	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$PythonDir\pythonw.exe $INSTDIR\${RVERSION}\canvas\red-RCanvas.pyw "%1"';name is appended into the sys.argv variables for opening by Red-R
     WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\RedRDir" "" "$INSTDIR"
     
     WriteUninstaller "$INSTDIR\uninst ${RVERSION}.exe"

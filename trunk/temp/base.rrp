@@ -1,7 +1,0 @@
-<main>
-    <Version>1.5, 1.7, 2.0</Version>
-    <Dependencies>OrangeWidgets/signalClasses/RDataFrame.py, OrangeWidgets/signalClasses/REnvironment.py, OrangeWidgets/signalClasses/RList.py, OrangeWidgets/signalClasses/RVector.py, OrangeWidgets/signalClasses/RModelFit.py, OrangeWidgets/signalClasses/RMatrix.py, OrangeWidgets/widgets/anova_lm.py, OrangeWidgets/widgets/apply.py, OrangeWidgets/widgets/boxplot.py, OrangeWidgets/widgets/dataEntry.py, OrangeWidgets/widgets/DataExplorer.py, OrangeWidgets/widgets/dummy.py, OrangeWidgets/widgets/hist.py, OrangeWidgets/widgets/intersect.py, OrangeWidgets/widgets/kruskal_test.py, OrangeWidgets/widgets/ListSelector.py, OrangeWidgets/widgets/lm.py, OrangeWidgets/widgets/Melt_DF.py, OrangeWidgets/widgets/na_omit.py, OrangeWidgets/widgets/nameProtector.py, OrangeWidgets/widgets/pairwise_t_test.py, OrangeWidgets/widgets/prcomp.py, OrangeWidgets/widgets/rank.py, OrangeWidgets/widgets/RDataTable.py, OrangeWidgets/widgets/readFile.py, OrangeWidgets/widgets/RedRScatterplot.py, OrangeWidgets/widgets/rExecutor.py, OrangeWidgets/widgets/RLoader.py, OrangeWidgets/widgets/rowcolPicker.py, OrangeWidgets/widgets/rownames.py, OrangeWidgets/widgets/RVarSeparator.py, OrangeWidgets/widgets/rViewer.py, OrangeWidgets/widgets/summary.py, OrangeWidgets/widgets/t.py, OrangeWidgets/widgets/widgetMaker.py, OrangeWidgets/widgets/wilcox_test.py</Dependencies>
-    <FileDirectoryStucture>None</FileDirectoryStucture>
-    <FileData>None</FileData>
-    <Examples>None</Examples>
-</main>
