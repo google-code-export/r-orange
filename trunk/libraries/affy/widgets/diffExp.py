@@ -162,7 +162,7 @@ class diffExp(OWRpy):
                 print self.functionBox.Formula()[1]
                 print self.phenoData
                 print self.data
-                self.R('design<-model.matrix(1~'+self.functionBox.Formula()[1]+', '+self.phenoData+'[colnames('+self.data+'),])')
+                self.R('design<-model.matrix(~'+self.functionBox.Formula()[1]+', '+self.phenoData+'[colnames('+self.data+'),])')
                 self.R(self.Rvariables['subset']+ '<-' +self.data)
                 self.R(self.Rvariables['classes']+'<-as.data.frame(design)')
             self.R('fit<-lmFit('+self.Rvariables['subset']+', design)')

@@ -15,13 +15,12 @@ class dataEntry(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
 
-        self.rowCount = 10
-        self.colCount = 0
+        self.rowCount = 1
+        self.colCount = 1
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
         self.classes = None
-        self.savedData = {}
-        self.loadSettings()
+        self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
         self.inputs = [('Data Table', signals.RDataFrame, self.processDF)]
@@ -47,15 +46,17 @@ class dataEntry(OWRpy):
         box = redRGUI.groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
-        self.dataTable = redRGUI.Rtable(box, Rdata = None, rows = self.rowCount+1, columns = self.colCount+1)
-        self.dataTable.setHorizontalHeaderLabels(['Rownames'])
+        
 
-        self.dataTable.show()
-        # upcell = QTableWidgetItem()
-        # upcell.setBackgroundColor(Qt.gray)
-        # upcell.setFlags(Qt.NoItemFlags) #sets the cell as being unselectable
-        # self.dataTable.setItem(0,0,upcell)
-        # self.dataTable.item(0,0).setBackgroundColor(Qt.gray)
+        
+        self.dataTable = redRGUI.Rtable(box, Rdata = None, rows = self.rowCount+1, columns = self.colCount+1)
+        if self.dataTable.columnCount() < 1:
+            self.dataTable.setColumnCount(1)
+            self.dataTable.setHorizontalHeaderLabels(['Rownames'])
+        if self.dataTable.rowCount() < 1:
+            self.dataTable.setRowCount(1)
+        self.dataTable.setHorizontalHeaderLabels(['Rownames'])
+        
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         self.window = QDialog(self)
@@ -89,6 +90,7 @@ class dataEntry(OWRpy):
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
     def cellClicked(self, row, col):
+        print str(row), str(col)
         pass
 
     def onCellFocus(self, currentRow, currentCol, tb):
@@ -98,9 +100,9 @@ class dataEntry(OWRpy):
         tb.editItem(item)
     
     def itemChanged(self, row, col):
-        if row > self.rowCount-3: #bump up the number of cells to keep up with the needs of the table
-            self.dataTable.setRowCount(self.rowCount+3)
-            self.rowCount += 3
+        if row == self.rowCount-1: #bump up the number of cells to keep up with the needs of the table
+            self.dataTable.setRowCount(self.rowCount+1)
+            self.rowCount += 1
         if row > self.maxRow: self.maxRow = row #update the extremes of the row and cols
         if col > self.maxCol: self.maxCol = col
         self.dataTable.setCurrentCell(row+1, col)
@@ -239,12 +241,12 @@ class dataEntry(OWRpy):
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
+        
         self.newData = signals.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
-        self.newData.copyAllOptionalData(self.savedData)
-        if self.newData.optionalDataExists('cm'):
-            self.newData.removeOptionalData('cm')
+        
         self.rSend('Data Table', self.newData)
     def loadCustomSettings(self,settings=None):
-        if settings and 'newData' in settings.keys():
-            self.processDF(self.newData)
+        # if settings and 'newData' in settings.keys():
+            # self.processDF(self.newData)
+        pass
             
