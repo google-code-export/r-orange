@@ -3,7 +3,7 @@
 <description>A table input data entry into a data.frame.</description>
 <tags>Data Input</tags>
 <RFunctions>base:data.frame</RFunctions>
-<icon>icons/File.png</icon>
+<icon>icons/readfile.png</icon>
 <priority>20</priority>
 """
 

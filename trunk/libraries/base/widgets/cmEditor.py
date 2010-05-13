@@ -4,7 +4,7 @@
 <author>Kyle R Covington kylecovington1@gmail.com</author>
 <tags>Data Input</tags>
 <RFunctions>base:data.frame</RFunctions>
-<icon>icons/File.png</icon>
+<icon>icons/readfile.png</icon>
 <priority>20</priority>
 """
 

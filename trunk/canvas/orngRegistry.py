@@ -197,6 +197,8 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                 print inst
                 widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'icons', 'Unknown.png')
             # build the tooltip
+            
+            ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.
             widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
             if len(widgetInfo.inputs) == 0:
                 formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; None<br>"

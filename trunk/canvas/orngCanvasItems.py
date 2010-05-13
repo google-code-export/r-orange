@@ -53,8 +53,8 @@ class TempCanvasLine(QGraphicsLineItem):
         else:                pos = self.endWidget.getLeftEdgePoint()
 
         if self.widget not in [self.startWidget, self.endWidget]: 
-            if self.startWidget == None and self.widget.widgetInfo.outputs: newPos = self.widget.getRightEdgePoint()
-            elif self.endWidget == None and self.widget.widgetInfo.inputs:  newPos = self.widget.getLeftEdgePoint()
+            if self.startWidget == None and self.widget.instance.outputs: newPos = self.widget.getRightEdgePoint()
+            elif self.endWidget == None and self.widget.instance.inputs:  newPos = self.widget.getLeftEdgePoint()
         
         self.setLine(pos.x(), pos.y(), newPos.x(), newPos.y())
         
@@ -402,8 +402,11 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         
     def canConnect(self, outWidget, inWidget):
         if outWidget == inWidget: return
-        outputs = [outWidget.instance.getOutputType(output.name) for output in outWidget.widgetInfo.outputs]
-        inputs = [inWidget.instance.getInputType(input.name) for input in inWidget.widgetInfo.inputs]
+        ## here is where we make the decision as to weather widgets can connect or not.  This should be decieded based on the signals that are in the widget and not what is in the widgetInfo
+        #outputs = [outWidget.instance.getOutputType(output.name) for output in outWidget.widgetInfo.outputs]
+        #inputs = [inWidget.instance.getInputType(input.name) for input in inWidget.widgetInfo.inputs]
+        outputs = [output[1] for output in outWidget.instance.outputs]
+        inputs = [input[1] for input in inWidget.instance.inputs] 
         canConnect = 0
         for outtype in outputs:
             if True in [issubclass(outtype, intype) for intype in inputs]:
