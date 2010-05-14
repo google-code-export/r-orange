@@ -250,9 +250,9 @@ class widgetSignals():
                                 if not isinstance(oldValue, signals.BaseRedRVariable):
                                     raise Exception, 'Signal not a child of a Red-R signal'
                                 
-                                if signal[1] != 'All' and not value.__class__ == signal[1]:
-                                    print 'CONVERSION of ', value.__class__
-                                    value = value.convertToClass(signal[1])
+                                if signal[1] != 'All' and not oldValue.__class__ == signal[1]:
+                                    print 'CONVERSION of ', oldValue.__class__
+                                    value = oldValue.convertToClass(signal[1])
                                 else:
                                     value = oldValue.copy()
                             if self.signalIsOnlySingleConnection(key):
