@@ -226,7 +226,7 @@ class SchemaDoc(QWidget):
             self.removeLine1(line)
 
     # add new widget
-    def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
+    def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
             print str(forceInSignals) 
@@ -345,7 +345,7 @@ class SchemaDoc(QWidget):
         self.canvas.update()
 
     # return a new widget instance of a widget with filename "widgetName"
-    def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings = {}, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
+    def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         try:
             if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
             widget = self.canvasDlg.widgetRegistry['widgets'][widgetFileName]

@@ -150,7 +150,7 @@ class CanvasLine(QGraphicsLineItem):
 # # CANVAS WIDGET
 # #######################################
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
-    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = {}, forceInSignals = None, forceOutSignals = None):        
+    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = None, forceInSignals = None, forceOutSignals = None):        
 
         
         # import widget class and create a class instance
@@ -178,7 +178,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
         else: self.instance.__init__(signalManager = signalManager)
         
-        self.instance.loadSettings2(widgetSettings)
+        if widgetSettings:
+            self.instance.loadSettings2(widgetSettings)
         
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget
         self.isProcessing = 0   # is this widget currently processing signals

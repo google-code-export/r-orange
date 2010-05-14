@@ -152,8 +152,8 @@ class session():
     def setSettings(self,settings):
         print 'on set settings'
         # self.redRGUIObjects = {}
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(settings)
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings)
         for k,v in settings.iteritems():
             print k
             if k in ['inputs', 'outputs']: continue
@@ -176,10 +176,10 @@ class session():
             elif not hasattr(self,k):
                 continue
             elif 'redRGUIObject' in v.keys():
-                print getattr(self, k)
+                #print getattr(self, k)
+                print '|##| Setting redRGUIObject'
                 getattr(self, k).loadSettings(v['redRGUIObject'])
                 getattr(self, k).setDefaultState(v['redRGUIObject'])
-            # elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
             elif 'dict' in v.keys():
                 var = getattr(self, k)
                 print 'dict',len(var),len(v['dict'])
@@ -251,6 +251,7 @@ class session():
 
 
     def loadSettings2(self, sessionSettings=None):
+        print '|#| in loadSettings2 '# + str(sessionSettings)
         if sessionSettings:
             self.setSettings(sessionSettings)
         
