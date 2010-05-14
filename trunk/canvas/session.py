@@ -172,6 +172,45 @@ class session():
                     print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
                     var = self.setSignalClass(sentItemDict)
                     self.send(sentItemName, var)
+            try:
+                print k
+                if k in ['inputs', 'outputs']: continue
+                if v == None:
+                    continue
+                elif 'pythonObject' in v.keys():
+                    print '|##| Setting pythonObject %s' % str(v['pythonObject'])             
+                    self.__setattr__(k, v['pythonObject'])
+                elif 'signalsObject' in v.keys():
+                    print '|##| Setting signalsObject'
+                    varClass = self.setSignalClass(v['signalsObject'])
+                    self.__setattr__(k, varClass)
+                elif 'sentItemsList' in v.keys():
+                    #self.setSentItemsList(v['sentItemsList'])        
+                    for (sentItemName, sentItemDict) in v['sentItemsList']:
+                        print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
+                        var = self.setSignalClass(sentItemDict)
+                        self.send(sentItemName, var)
+    #############################################
+                elif not hasattr(self,k):
+                    continue
+                elif 'redRGUIObject' in v.keys():
+                    print getattr(self, k)
+                    getattr(self, k).loadSettings(v['redRGUIObject'])
+                    getattr(self, k).setDefaultState(v['redRGUIObject'])
+                # elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
+                elif 'dict' in v.keys():
+                    var = getattr(self, k)
+                    print 'dict',len(var),len(v['dict'])
+                    if len(var) != len(v['dict']): continue
+                    self.recursiveSetSetting(var,v['dict'])
+                elif 'list' in v.keys():
+                    var = getattr(self, k)
+                    # print 'list',len(var),len(v['list'])
+                    if len(var) != len(v['list']): continue
+                    self.recursiveSetSetting(var,v['list'])
+            except Exception as inst:
+                print inst
+                print 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'
 #############################################
             elif not hasattr(self,k):
                 continue
@@ -190,8 +229,6 @@ class session():
                 # print 'list',len(var),len(v['list'])
                 if len(var) != len(v['list']): continue
                 self.recursiveSetSetting(var,v['list'])
-        
-#############################################
         
         if '_customSettings' in settings.keys():
             self.loadCustomSettings(settings['_customSettings'])

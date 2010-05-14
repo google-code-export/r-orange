@@ -81,7 +81,10 @@ def logAddLink(schemaID, outWidget, inWidget, outSignalName):
     for o in outWidget.instance.outputs:
         output = OutputSignal(*o)
         if output.name == outSignalName:
-            signalType = str(output.type.__name__)
+            if output.type == 'All':
+                signalType = 'All output type'
+            else:
+                signalType = str(output.type.__name__)
             break
     
     logAppend(schemaID, "ADDLINK", str(id(outWidget)) + ";" + str(id(inWidget)) + ";" + str(signalType))

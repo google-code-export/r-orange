@@ -4,6 +4,7 @@ from PyQt4.QtGui import *
 from RSession import Rcommand
 from RSession import require_librarys
 import glob,os.path,redREnviron
+    
 
 class BaseRedRVariable:# parent class of all signals.  This class holds base functions such as assignment and item setting
     def __init__(self, data, parent = None):
@@ -75,6 +76,8 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
         return copy.deepcopy(self)
     def removeOptionalData(self, data):
         self.dictAttrs.pop(data)
+
+        
 class RVariable(BaseRedRVariable): 
     def __init__(self, data, parent = None, checkVal = False):
         

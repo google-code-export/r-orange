@@ -214,7 +214,7 @@ class widgetSignals():
         print 'setting setloadingSavedSession', state
         self.loadSavedSession = state
 
-    def processSignals(self):
+    def processSignals(self, convert = False): ## not called inside of this class 
         # print 'processSignals', self.windowTitle()
         if self.closing == True:
             return
@@ -223,7 +223,7 @@ class widgetSignals():
             self.needProcessing = 0
             return
         if not self.loadSavedSession:
-            self.signalManager.setNeedAttention(self)
+            self.signalManager.setNeedAttention(self)  # don't know what this does exactly
         
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
@@ -248,11 +248,13 @@ class widgetSignals():
                                 value = oldValue
                             else: # the value had better be one of our signals or a child of one
                                 if not isinstance(oldValue, signals.BaseRedRVariable):
-                                    raise Exception
-                                value = oldValue.copy()
-                                if not value.__class__ == signal[1]:
+                                    raise Exception, 'Signal not a child of a Red-R signal'
+                                
+                                if signal[1] != 'All' and not value.__class__ == signal[1]:
                                     print 'CONVERSION of ', value.__class__
                                     value = value.convertToClass(signal[1])
+                                else:
+                                    value = oldValue.copy()
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
                                 if not self.loadSavedSession:

@@ -23,7 +23,7 @@ class rExecutor(OWRpy):
         
         
         self.inputs = [('R.object', signals.RVariable, self.process)]
-        self.outputs = [('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable), ('R Matrix', signals.RMatrix)]
+        self.outputs = [('R Data Frame', 'All'), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable), ('R Matrix', signals.RMatrix)]
         #self.breakme()
         
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')

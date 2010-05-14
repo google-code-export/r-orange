@@ -3,7 +3,7 @@
 """
 <name>Get Entrez Data</name>
 <description>Retrieves data from a connection to Entrez.</description>
-<tags>Data Input, Biopython</tags>
+<tags>Biopython</tags>
 <icon>icons/readfile.png</icon>
 <priority>10</priority>
 """

@@ -1410,7 +1410,7 @@ class SignalDialog(QDialog):
         self._links = []
         self.allSignalsTaken = 0
 
-        # GUI
+        # GUI    ### canvas dialog that is shown when there are multiple possible connections.
         self.setWindowTitle('Connect Signals')
         self.setLayout(QVBoxLayout())
 
@@ -1444,9 +1444,13 @@ class SignalDialog(QDialog):
         count = 0
         for outS in outputs:
             if outInstance.getOutputType(outS.name) == None: continue  # ignore if some signals don't exist any more, since we will report error somewhere else
-            if not issubclass(outInstance.getOutputType(outS.name), outType): continue
+            if outInstance.getOutputType(outS.name) == 'All': pass
+            elif not issubclass(outInstance.getOutputType(outS.name), outType): continue
             for inS in inputs:
                 if inInstance.getOutputType(inS.name) == None: continue  # ignore if some signals don't exist any more, since we will report error somewhere else
+                if inInstance.getOutputType(inS.name) == 'All': 
+                    count += 1
+                    continue
                 if not issubclass(inType, inInstance.getInputType(inS.name)): continue
                 if issubclass(outInstance.getOutputType(outS.name), inInstance.getInputType(inS.name)): count+= 1
 
@@ -1476,8 +1480,10 @@ class SignalDialog(QDialog):
                 inType = self.inWidget.instance.getInputType(inS.name)
                 if inType == None:
                     continue        #print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
-                if issubclass(outType, inType):
-                        possibleLinks.append((outS.name, inS.name))
+                if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
+                    possibleLinks.append((outS.name, inS.name))
+                elif issubclass(outType, inType):
+                    possibleLinks.append((outS.name, inS.name))
         print possibleLinks
         return possibleLinks
 
@@ -1541,7 +1547,10 @@ class SignalDialog(QDialog):
         # check if correct types
         outType = self.outWidget.instance.getOutputType(outName)
         inType = self.inWidget.instance.getInputType(inName)
-        if not issubclass(outType, inType): return 0
+        if outType == 'All' or inType == 'All': 
+            print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+            pass
+        elif not issubclass(outType, inType): return 0
 
         inSignal = None
         inputs = self.inWidget.widgetInfo.inputs
