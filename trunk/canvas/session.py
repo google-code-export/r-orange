@@ -90,7 +90,7 @@ class session():
             return False
         
             
-    def returnSettings(self,var, isPickleable=False):
+    def returnSettings(self,var, isPickleable=False): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
         # print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
@@ -155,23 +155,6 @@ class session():
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
-            print k
-            if k in ['inputs', 'outputs']: continue
-            if v == None:
-                continue
-            elif 'pythonObject' in v.keys():
-                print '|##| Setting pythonObject %s' % str(v['pythonObject'])             
-                self.__setattr__(k, v['pythonObject'])
-            elif 'signalsObject' in v.keys():
-                print '|##| Setting signalsObject'
-                varClass = self.setSignalClass(v['signalsObject'])
-                self.__setattr__(k, varClass)
-            elif 'sentItemsList' in v.keys():
-                #self.setSentItemsList(v['sentItemsList'])        
-                for (sentItemName, sentItemDict) in v['sentItemsList']:
-                    print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
-                    var = self.setSignalClass(sentItemDict)
-                    self.send(sentItemName, var)
             try:
                 print k
                 if k in ['inputs', 'outputs']: continue
@@ -212,56 +195,43 @@ class session():
                 print inst
                 print 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'
 #############################################
-            elif not hasattr(self,k):
-                continue
-            elif 'redRGUIObject' in v.keys():
-                #print getattr(self, k)
-                print '|##| Setting redRGUIObject'
-                getattr(self, k).loadSettings(v['redRGUIObject'])
-                getattr(self, k).setDefaultState(v['redRGUIObject'])
-            elif 'dict' in v.keys():
-                var = getattr(self, k)
-                print 'dict',len(var),len(v['dict'])
-                if len(var) != len(v['dict']): continue
-                self.recursiveSetSetting(var,v['dict'])
-            elif 'list' in v.keys():
-                var = getattr(self, k)
-                # print 'list',len(var),len(v['list'])
-                if len(var) != len(v['list']): continue
-                self.recursiveSetSetting(var,v['list'])
         
-        if '_customSettings' in settings.keys():
-            self.loadCustomSettings(settings['_customSettings'])
-        else:
-            self.loadCustomSettings(settings)
+        ## commented out because already called in loadSettings
+        # if '_customSettings' in settings.keys():
+            # self.loadCustomSettings(settings['_customSettings'])
+        # else:
+            # self.loadCustomSettings(settings)
         
     def setSignalClass(self, d):
         print '|##| setSentRvarClass %s' % str(d)
         className = d['class'].split('.')[1]
         
         # print 'setting ', className
-        #try: # try to reload the output class from the signals
-        if d['package'] != 'base':
-            var = getattr(getattr(signals,d['package']), className)(data = d['data']) 
-        else:
-            var = getattr(signals, className)(data = d['data'])
-        var.loadSettings(d)
-        # except: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            # try:
-                # var = None
-                # for (name, att) in self.outputs:
-                    # if name == sentItemName:
-                        # var = att(data = None, checkVal = False)
+        try: # try to reload the output class from the signals
+            if d['package'] != 'base':
+                var = getattr(getattr(signals,d['package']), className)(data = d['data']) 
+            else:
+                var = getattr(signals, className)(data = d['data'])
+            var.loadSettings(d)
+        except Exception as inst: # if it doesn't exist we need to set the class something so we look to the outputs. 
+            print '############################################'
+            print inst
+            print '############################################'
+            try:
+                var = None
+                for (name, att) in self.outputs:
+                    if name == sentItemName:
+                        var = att(data = None, checkVal = False)
                         
-                # if var == None: raise Exception
-                # var.loadSettings(d['data'])
-            # except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-                # print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                # try:
-                    # var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
-                # except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                    # print 'Fatal exception in loading.  Can\'t assign the signal value'
-                    # var = None
+                if var == None: raise Exception
+                var.loadSettings(d['data'])
+            except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+                print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+                try:
+                    var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+                except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
+                    print 'Fatal exception in loading.  Can\'t assign the signal value'
+                    var = None
         
         return var
             
