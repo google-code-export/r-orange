@@ -13,7 +13,7 @@ class na_omit(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["na.omit"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_object = ''
         self.inputs = [("object", signals.RVariable, self.processobject)]
         self.outputs = [('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable)]

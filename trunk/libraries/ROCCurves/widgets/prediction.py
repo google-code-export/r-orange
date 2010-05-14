@@ -13,7 +13,7 @@ class prediction(OWRpy):
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		self.setRvariableNames(["prediction"])
 		self.data = {}
-		self.loadSettings() 
+		 
 		self.RFunctionParam_labels = ''
 		self.RFunctionParam_predictions = ''
 		self.inputs = [("labels", signals.RVector, self.processlabels),("predictions", signals.RVector, self.processpredictions)]

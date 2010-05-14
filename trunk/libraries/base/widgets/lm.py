@@ -17,7 +17,7 @@ class lm(OWRpy):
         self.RFunctionParam_data = ''
         self.modelFormula = ''
         self.processingComplete = 0
-        self.loadSettings()
+        
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
         self.outputs = [("lm Output", signals.RLMFit)]
         

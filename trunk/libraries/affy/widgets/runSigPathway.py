@@ -34,7 +34,7 @@ class runSigPathway(OWRpy):
         self.dboptions = ''
         self.subtable = {}
         self.noFile() # run the file manager to get all the needed files.
-        self.loadSettings()
+        
         
         self.inputs = [("Expression Set", signals.RDataFrame, self.process), 
         ("Pathway Annotation List", signals.RDataFrame, self.processPathAnnot), 

@@ -31,7 +31,7 @@ class mergeR(OWRpy):
         self.colBsel = None
         #self.forceMergeAll = 0 #checkbox value for forcing merger on all data, default is to remove instances from the rows or cols.
         print 'init merge and load settings'
-        self.loadSettings()
+        
         
         #set R variable names
         self.setRvariableNames(['merged_dataAB','merged_dataBA','merged_dataAll'])

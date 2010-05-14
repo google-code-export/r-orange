@@ -14,7 +14,7 @@ class coxph(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["coxph"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata)]
         self.outputs = [("coxph Output", signals.RCoxphFit)]

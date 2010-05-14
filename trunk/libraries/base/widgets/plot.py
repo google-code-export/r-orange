@@ -19,7 +19,7 @@ class plot(OWRpy):
         # self.RFunctionParam_cex = '100'
         self.data = {}
         #self.RFunctionParam_y = ''
-        self.loadSettings()
+        
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RVariable, self.processx)]
         

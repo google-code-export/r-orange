@@ -13,7 +13,7 @@ class sort(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Sort", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["sort"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame, self.processx)]
         self.outputs = [("sort Output", signals.RDataFrame)]

@@ -20,7 +20,7 @@ class getSwissProtData(OWRpy):
         OWRpy.__init__(self,parent, signalManager, "Get SwissProt Data", wantMainArea = 0, resizingEnabled = 1)
         
         self.outputs = [('Sequence List', signals.RedRBiopython.SequenceRecordCollection)]
-        self.loadSettings()
+        
         ### GUI ###
         
         # want to set the database, the type, and the id'self

@@ -12,7 +12,7 @@ class normalize_quantiles(OWRpy):
         self.setRvariableNames(["normalize.quantiles"])
         self.RFunctionParam_x = ""
         self.RFunctionParam_copy = "TRUE"
-        self.loadSettings() 
+         
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame, self.processx)]
         self.outputs = [("normalize.quantiles Output", signals.RDataFrame)]

@@ -22,7 +22,7 @@ class plotAffy(OWRpy):
         self.qcsProcessed = 0
         self.data = ''
         self.dataset = {}
-        self.loadSettings()
+        
 
         #set R variable names
         #self.setRvariableNames()

@@ -22,7 +22,7 @@ class cmEditor(OWRpy):
         self.maxCol = 0
 
         self.savedData = None
-        self.loadSettings()
+        
         self.setRvariableNames(['table'])
         
         self.inputs = [('Data Table', signals.RDataFrame, self.processDF)]

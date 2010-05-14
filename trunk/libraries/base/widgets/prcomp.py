@@ -14,7 +14,7 @@ class prcomp(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["prcomp"])
-        self.loadSettings() 
+         
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame, self.processx)]
         self.outputs = [("prcomp Output", signals.RModelFit), ("Scaled Data", signals.RMatrix)]

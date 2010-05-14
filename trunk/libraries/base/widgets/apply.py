@@ -14,7 +14,7 @@ class apply(OWRpy):
                 OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
                 self.setRvariableNames(["apply", 'apply_cm'])
                 self.data = {}
-                self.loadSettings() 
+                 
                 self.RFunctionParam_X = ''
                 self.inputs = [("X", signals.RDataFrame, self.processX)]
                 self.outputs = [("apply Output", signals.RVector)]

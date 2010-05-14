@@ -18,7 +18,7 @@ class ListSelector(OWRpy):
         #self.selection = 0
         self.setRvariableNames(['cm', 'listelement'])
         self.data = None
-        self.loadSettings()
+        
         self.inputs = [('R List', signals.RList, self.process)]
         self.outputs = [('R Data Frame', signals.RDataFrame), ('R Vector', signals.RVector), ('R List', signals.RList), ('R Variable', signals.RVariable)]
         

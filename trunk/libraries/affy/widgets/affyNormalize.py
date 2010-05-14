@@ -25,7 +25,7 @@ class affyNormalize(OWRpy):
         self.newdata = {}
         self.enableMethBox = False
         self.norminfo = ''
-        self.loadSettings()
+        
         self.require_librarys(['affy'])
         
         

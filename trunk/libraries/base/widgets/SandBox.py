@@ -14,7 +14,7 @@ class SandBox(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "plotAffy")
         self.lineEditText = ''
-        self.loadSettings()
+        
         self.inputs = None
         self.outputs = None
         self.R('data <- data.frame(a=rnorm(100),b=rnorm(100))')

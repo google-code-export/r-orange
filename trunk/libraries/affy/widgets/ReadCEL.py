@@ -22,7 +22,7 @@ class ReadCEL(OWRpy):
         self.recentFiles = ['Select Directory']
         self.path = os.path.abspath('/')
         self.methodcombo = 0
-        self.loadSettings()
+        
         
         #set R variable names
         self.setRvariableNames(['affyBatch','folder', 'cm'])

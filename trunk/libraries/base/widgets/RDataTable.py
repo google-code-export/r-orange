@@ -50,7 +50,7 @@ class RDataTable(OWRpy):
         self.mylink = ''
         self.link = {}
         print 'init RDataTable\n'*5
-        # self.loadSettings()
+        # 
 
         #The settings
         

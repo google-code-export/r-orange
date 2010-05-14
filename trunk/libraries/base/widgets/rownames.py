@@ -14,7 +14,7 @@ class rownames(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["rownames"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame, self.processx)]
         self.outputs = [("rownames Output", signals.RVector)]

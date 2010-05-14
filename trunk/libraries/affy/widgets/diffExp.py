@@ -24,7 +24,7 @@ class diffExp(OWRpy):
         self.newdata = {}
         self.olddata = {}
         self.require_librarys(['affy','gcrma','limma'])
-        self.loadSettings()
+        
         
         self.setRvariableNames(['results','classes','subset', 'diffExp_cm'])
         

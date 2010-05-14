@@ -14,7 +14,7 @@ class intersect(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["intersect"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]

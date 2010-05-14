@@ -13,7 +13,7 @@ class summary(OWRpy):
 		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
 		self.setRvariableNames(["summary"])
 		self.data = {}
-		self.loadSettings() 
+		 
 		self.RFunctionParam_object = ''
 		self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
 		

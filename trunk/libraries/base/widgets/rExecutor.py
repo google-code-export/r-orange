@@ -20,7 +20,7 @@ class rExecutor(OWRpy):
         self.sendt = {}
         self.dfselected = None
         self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
-        self.loadSettings()
+        
         
         self.inputs = [('R.object', signals.RVariable, self.process)]
         self.outputs = [('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable), ('R Matrix', signals.RMatrix)]

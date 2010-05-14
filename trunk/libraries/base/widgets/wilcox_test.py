@@ -15,7 +15,7 @@ class wilcox_test(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["wilcox.test"])
-        self.loadSettings() 
+         
         self.RFunctionParam_x = ''
         self.RFunctionParam_y = ''
         self.inputs = [("x", signals.RVector, self.processx), ('y', signals.RVector, self.processy)]

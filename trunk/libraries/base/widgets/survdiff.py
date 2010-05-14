@@ -16,7 +16,7 @@ class survdiff(OWRpy):
         self.setRvariableNames(["survdiff"])
         self.data = None
         self.formula = ''
-        self.loadSettings() 
+         
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata)]
         self.outputs = [("survdiff Output", signals.RSurvFit)]

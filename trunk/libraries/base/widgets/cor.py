@@ -13,7 +13,7 @@ class cor(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["cor"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame, self.processx),("y", signals.RVector, self.processy)]

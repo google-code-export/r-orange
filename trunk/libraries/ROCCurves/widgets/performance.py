@@ -13,7 +13,7 @@ class performance(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["performance"])
         self.data = {}
-        self.loadSettings() 
+         
         self.RFunctionParam_prediction_obj = ''
         self.inputs = [("prediction_obj", signals.ROCCurves.RROCPredictionFit, self.processprediction_obj)]
         self.outputs = [("performance Output", signals.ROCCurves.RROCPerformanceFit)]

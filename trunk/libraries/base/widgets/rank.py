@@ -17,7 +17,7 @@ class rank(OWRpy):
         self.setRvariableNames(["rank"])
         self.RFunctionParam_ties_method = ''
         #self.RFunctionParam_na_last = "TRUE"
-        self.loadSettings() 
+         
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RMatrix, self.processx)]
         self.outputs = [("rank Output", signals.RMatrix)]

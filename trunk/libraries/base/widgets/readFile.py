@@ -28,7 +28,9 @@ class readFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
-
+        
+        #
+        
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
@@ -360,7 +362,15 @@ class readFile(OWRpy):
         sendData = signals.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("data.frame", sendData)
         
-
+    def compileReport(self):
+        self.reportSettings("File Name", [(self.Rvariables['filename'], self.R(self.Rvariables['filename']))])
+        
+        self.reportRaw(self.fileInfo.toHtml())
+        #self.finishReport()
+        
+    # def sendReport(self):
+        # self.compileReport()
+        # self.showReport()
         
         
     

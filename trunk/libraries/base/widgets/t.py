@@ -17,7 +17,7 @@ class t(OWRpy):
         self.setRvariableNames(["t"])
         self.RFunctionParam_x = ''
         self.data={}
-        self.loadSettings()
+        
         
         self.inputs = [("x", signals.RDataFrame, self.processx)]
         self.outputs = [("t Output", signals.RDataFrame)]

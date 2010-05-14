@@ -13,7 +13,7 @@ class kruskal_test(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        self.loadSettings() 
+         
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata)]
         
