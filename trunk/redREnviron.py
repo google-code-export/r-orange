@@ -26,26 +26,35 @@ def __getDirectoryNames():
         picsDir = ""
     
 
+    ## check that the settings directories are in place, this would be skipped over in the try
+    if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
+        os.mkdir(os.path.join(os.environ['APPDATA'], 'red-r'))
     orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     
-    reportsDir = os.path.join(orangeSettingsDir, "orange-reports")
+    reportsDir = os.path.join(orangeSettingsDir, "RedRReports")
     bufferDir = os.path.join(orangeSettingsDir, "buffer")
-    canvasSettingsDir = os.path.join(orangeSettingsDir, "OrangeCanvasQt4") 
-    tempDir = setTempDir(canvasSettingsDir, 1)
-    print tempDir
-    widgetSettingsDir = os.path.join(orangeSettingsDir, "widgetSettingsQt4")
+    canvasSettingsDir = os.path.join(orangeSettingsDir, "RedRCanvas") 
+    
+    
+    widgetSettingsDir = os.path.join(orangeSettingsDir, "RedRWidgetSettings")
 
     for dname in [orangeSettingsDir, bufferDir, widgetSettingsDir, canvasSettingsDir, reportsDir]:
         if dname <> None and not os.path.isdir(dname):
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
-
+    
+    tempDir = setTempDir(canvasSettingsDir, 1)
+    print tempDir
     return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir",  "canvasSettingsDir", "bufferDir"]])
 
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(canvasSettingsDir, dirNumber):
-    if not os.path.exists(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))):
+    try:  # try to make the canvas temp dir.  This should work but I would be cautious given the problems with the Vista system.
+        if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp')):
+            os.mkdir(os.path.join(canvasSettingsDir, 'temp'))
+    except: pass
+    if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))):
         os.mkdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
         return os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
     else:

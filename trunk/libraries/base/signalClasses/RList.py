@@ -11,16 +11,11 @@ class RList(RVariable):
         # newVariable = RList(self.data, self.parent)
         # newVariable.dictAttrs = self.dictAttrs.copy()
         # return newVariable
-    def _fullOutput(self, subsetting = ''):
-        text = self._simpleOutput()+'\n\n'
-        text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'
-        text += 'R Data Variable Size: '+str(self.getLength_data())+' Elements\n\n'
-        text += 'R Parent Variable Name: '+self.parent+'\n\n'
-        text += 'R Parent Variable Value: '+self.getAttrOutput_data('parent', subsetting)+'\n\n'
-        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
-        return text
+    
     def convertToClass(self, varClass):
         if varClass == RVariable:
+            return self._convertToVariable()
+        elif varClass == BaseRedRVariable:
             return self._convertToVariable()
         else:
             raise Exception
@@ -29,6 +24,16 @@ class RList(RVariable):
         # newData.dictAttrs = self.dictAttrs
         # newData.dictAttrs['cm'] = self.cm
         return self.copy()
+    def _fullOutput(self, subsetting = ''):
+        text = self._simpleOutput()+'\n\n'
+        text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'
+        text += 'R Data Variable Size: '+str(self.getLength_data())+' Elements\n\n'
+        text += 'R Parent Variable Name: '+self.parent+'\n\n'
+        text += 'R Parent Variable Value: '+self.getAttrOutput_data('parent', subsetting)+'\n\n'
+        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        return text
+        
+        
     def names_call(self):
         return 'names('+self.data+')'
     def names_data(self):

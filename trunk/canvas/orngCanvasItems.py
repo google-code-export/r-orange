@@ -401,7 +401,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         elif isinstance(pos, QRectF) and boxRect.intersects(pos): return True
         else: return False
         
-    def canConnect(self, outWidget, inWidget):
+    def canConnect(self, outWidget, inWidget):  ## returns a list of what can and can't connect, this should be handled by signal manager.
         if outWidget == inWidget: return
         ## here is where we make the decision as to weather widgets can connect or not.  This should be decieded based on the signals that are in the widget and not what is in the widgetInfo
         #outputs = [outWidget.instance.getOutputType(output.name) for output in outWidget.widgetInfo.outputs]
@@ -419,8 +419,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             print inst
             raise Excpetion, inst
         canConnect = 0
-        if 'All' not in outputs + inputs:
-            if outputs != None and inputs != None:
+        if outputs != None and inputs != None:
+            if 'All' not in outputs + inputs:
                 for outtype in outputs:
                     
                     if True in [issubclass(outtype, intype) for intype in inputs]:
