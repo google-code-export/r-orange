@@ -690,6 +690,7 @@ class OrangeCanvasDlg(QMainWindow):
         file.close()
 
     def closeEvent(self, ce):
+        print '|#| redRCanvas closeEvent'
         # save the current width of the toolbox, if we are using it
         if isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
             self.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
@@ -721,7 +722,9 @@ class OrangeCanvasDlg(QMainWindow):
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
-            self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
+            #self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
+            import RSession
+            RSession.Rcommand('quit("no")') # close the entire session dropping anything that was open in case it was left by something else, makes the closing much cleaner than just loosing the session.
             self.output.logFile.close()
             self.output.hide()
             

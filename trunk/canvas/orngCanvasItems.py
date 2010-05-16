@@ -179,7 +179,9 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         else: self.instance.__init__(signalManager = signalManager)
         
         if widgetSettings:
-            self.instance.loadSettings2(widgetSettings)
+            self.instance.setSettings(widgetSettings)
+        
+        self.instance.loadGlobalSettings()
         
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget
         self.isProcessing = 0   # is this widget currently processing signals
@@ -283,7 +285,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 if outSignal not in signals: signals.append(outSignal)
         return signals
     
-    def remove(self, suppress = 0):
+    def remove(self):
         self.hide()
         self.errorIcon.hide()
         self.warningIcon.hide()
@@ -302,7 +304,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.instance.close()
                 self.instance.linksOut.clear()      # this helps python to more quickly delete the unused objects
                 self.instance.linksIn.clear()
-                self.instance.onDeleteWidget(suppress)      # this is a cleanup function that can take care of deleting some unused objects
+                self.instance.onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
             except: pass
             # try:
                 ##import sip

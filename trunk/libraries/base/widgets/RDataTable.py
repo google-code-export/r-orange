@@ -17,6 +17,7 @@
 from OWRpy import *
 import OWGUI, redRGUI
 import math
+import globalData
 #from orngDataCaching import *
 
 ##############################################################################
@@ -49,12 +50,7 @@ class RDataTable(OWRpy):
         self.supressTabClick = False
         self.mylink = ''
         self.link = {}
-        print 'init RDataTable\n'*5
-        # 
-
         #The settings
-        
-
         self.advancedOptions = redRGUI.widgetBox(self.GUIDialog)
         self.GUIDialog.layout().setAlignment(self.advancedOptions,Qt.AlignTop)
         
@@ -103,39 +99,31 @@ class RDataTable(OWRpy):
         #self.resize(700,500)
         #self.move(300, 25)
 
-    def dataset(self, dataset, id=None):
+    def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         print 'got data'
-        print dataset
+        #print dataset
+        
         if not dataset:
             return
         self.supressTabClick = True
-        # if dataset != None:  # can be an empty table!
-            # if dataset.__class__ != signals.RDataFrame:
-                # we convert to a data.frame so that we can do other things with the data, 
-                # this will give rownames and colnames even if the matrix or other rectangular data doesn't have them.
-                
-                # dataset = signals.RDataFrame(data = dataset.data, parent = dataset.parent, cm = dataset.cm)
         self.table.show()
         data = {}
         self.data = data
         tableData = dataset['data']
         #print '|###|' + str(signals.globalData)
         #print '|###| %s' % signals.globalDataExists('urls')
-        if signals.globalDataExists('urls'):
-            link = signals.getGlobalData('urls')
-            print 'setting link as '+str(link)
+        
+        if globalData.globalDataExists(self,'urls'):
+            urls = globalData.getGlobalData(self,'urls')
+            #print 'setting link as '+str(link)
             self.linkListBox.clear()
             
-            for url in link['data']:
-                self.linkListBox.addItem(url)
-            self.currentLinks = link['data']
+            for links in urls:
+                print '|###| %s' %  str(links)
+                self.linkListBox.addItems(links['data'].keys())
+            self.currentLinks.update(links['data'])
         
-        else: 
-            linkData = None
-            print 'no link data detected'
-        #self.showMetas[id] = (True, [])
-        #self.dataTableIndex[id] = dataset
         self.currentData = dataset['data']
         dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
         self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))

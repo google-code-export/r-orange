@@ -317,3 +317,5 @@ class widgetSignals():
         if self.eventHandler:
             self.eventHandler(self.captionTitle + ": " + text, eventVerbosity)
 
+
+

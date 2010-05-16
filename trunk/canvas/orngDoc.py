@@ -10,7 +10,7 @@ import xml.dom.minidom
 import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
-import signals as theSignals
+import globalData
 
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
@@ -205,10 +205,10 @@ class SchemaDoc(QWidget):
 
 
     # remove line line
-    def removeLine1(self, line, close = False):
+    def removeLine1(self, line):
         #print 'removing a line from' + str(outName) +'to' +str(inName)
         for (outName, inName) in line.getSignals():
-            self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName, close = close)   # update SignalManager
+            self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
 
         self.lines.remove(line)
         line.inWidget.removeLine(line)
@@ -299,36 +299,27 @@ class SchemaDoc(QWidget):
         return newwidget
 
     # remove widget
-    def removeWidget(self, widget, saveTempDoc = True, close = False):
+    def removeWidget(self, widget, saveTempDoc = True):
         if not widget:
             return
-        widget.closing = close
-        while widget.inLines != []: self.removeLine1(widget.inLines[0], close = True)
-        while widget.outLines != []:  self.removeLine1(widget.outLines[0], close = True)
+        #widget.closing = close
+        while widget.inLines != []: self.removeLine1(widget.inLines[0])
+        while widget.outLines != []:  self.removeLine1(widget.outLines[0])
 
         self.signalManager.removeWidget(widget.instance) # sending occurs before this point
+        widget.remove()
         self.widgets.remove(widget)
-        if self.RVariableRemoveSupress == 1: #send occurs before this point
-            widget.remove(suppress = 1)
-        else:
-            widget.remove()
-        if self.RVariableRemoveSupress == 1:
-            return
-        if saveTempDoc:
-            self.saveTempDoc()
-        
         orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
 
-    def clear(self, close = False):
-        print 'clear called'
+    def clear(self):
+        print '|#| orngDoc clear'
         self.canvasDlg.setCaption()
         for widget in self.widgets[::-1]:   
-            self.removeWidget(widget, saveTempDoc = False, close = close)   # remove widgets from last to first
+            self.removeWidget(widget, saveTempDoc = False)   # remove widgets from last to first
         RSession.Rcommand('rm(list = ls())')
         self.canvas.update()
         self.saveTempDoc()
-        if close:
-            RSession.Rcommand('quit("no")') # close the entire session dropping anything that was open in case it was left by something else, makes the closing much cleaner than just loosing the session.
+        
 
     def enableAllLines(self):
         for line in self.lines:
@@ -433,7 +424,7 @@ class SchemaDoc(QWidget):
     # save the file
     def save(self, filename = None,tmp = False):
 
-        print 'start save schema'
+        print '|#| start save schema'
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
         pos = self.canvasDlg.pos()
@@ -489,7 +480,7 @@ class SchemaDoc(QWidget):
         
             widgets.appendChild(temp)
         
-        settingsDict['_globalData'] = cPickle.dumps(theSignals.globalData)
+        settingsDict['_globalData'] = cPickle.dumps(globalData.globalData)
         settings.setAttribute("settingsDictionary", str(settingsDict))      
 
         r =  cPickle.dumps({'R': requiredRLibraries.keys(), 'RedR': requireRedRLibraries.values()})
@@ -878,9 +869,8 @@ class SchemaDoc(QWidget):
         
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         RSession.Rcommand('load("' + os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/') +'")')
-        try:
-            theSignals.globalData = cPickle.loads(settingsDict['_globalData'])
-        except: pass
+        globalData.globalData = cPickle.loads(settingsDict['_globalData'])
+        
         ## LOAD widgets
         for widget in widgets.getElementsByTagName("widget"):
             print 'for widget (orngDoc.py) ' + widget.getAttribute('caption')

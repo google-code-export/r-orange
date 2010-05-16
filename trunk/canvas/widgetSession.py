@@ -7,7 +7,7 @@ import redRGUI
 import signals 
 
 
-class session():
+class widgetSession():
     def __init__(self):
         self.redRGUIObjects = {}
         #collect the sent items
@@ -16,10 +16,10 @@ class session():
         self.loaded = False
         self.defaultGlobalSettingsList = ['windowState']
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
-        self.dontSaveList.extend(['dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
+        self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
 
 
-    def getSettings(self, alsoContexts = True):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
+    def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
         print '|##| moving to save'+str(self.captionTitle)
         import re
         settings = {}
@@ -31,13 +31,12 @@ class session():
                 continue
             i += 1
             self.progressBarAdvance(i)
-            # print 'frist att: ' + att
+            print 'frist att: ' + att
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
 
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
-        #print tempSentItems
         settings['sentItems'] = {'sentItemsList':tempSentItems}
         
         if self.inputs and len(self.inputs) != 0:
@@ -61,9 +60,9 @@ class session():
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
         #if isinstance(d,QObject):
-        # print str(type(d))
+        print str(type(d))
         if re.search('PyQt4|OWGUIEx|OWToolbars',str(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
-            # print 'QT object NOT Pickleable'
+            print 'QT object NOT Pickleable'
             return False
         elif type(d) in [list, dict, tuple]:
             #ok = True
@@ -90,7 +89,7 @@ class session():
             return False
         
             
-    def returnSettings(self,var, isPickleable=False): ## parses through objects returning if they can be saved or not and collecting their settings.
+    def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
         # print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
@@ -114,12 +113,11 @@ class session():
         #elif isinstance(var, signals.BaseRedRVariable):
         elif var.__class__.__name__ in signals.RedRSignals:    
             settings['signalsObject'] = var.saveSettings()
-            print '|##|  Saving signalsObject ', settings['signalsObject']
-        
-        elif isPickleable or self.isPickleable(var):
+            print '|#|  Saving signalsObject ', settings['signalsObject']
+        elif not checkIfPickleable: 
             settings['pythonObject'] =  var
-        #elif type(var) in [str, int, float, bool]:
-        #   settings = var
+        elif self.isPickleable(var):
+            settings['pythonObject'] =  var
         elif type(var) in [list]:
            settings['list'] = []
            for i in var:
@@ -161,16 +159,16 @@ class session():
                 if v == None:
                     continue
                 elif 'pythonObject' in v.keys():
-                    print '|##| Setting pythonObject %s' % str(v['pythonObject'])             
+                    print '|#| Setting pythonObject %s to %s' % (k,str(v['pythonObject']))
                     self.__setattr__(k, v['pythonObject'])
                 elif 'signalsObject' in v.keys():
-                    print '|##| Setting signalsObject'
+                    print '|#| Setting signalsObject'
                     varClass = self.setSignalClass(v['signalsObject'])
                     self.__setattr__(k, varClass)
                 elif 'sentItemsList' in v.keys():
                     #self.setSentItemsList(v['sentItemsList'])        
                     for (sentItemName, sentItemDict) in v['sentItemsList']:
-                        print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
+                        print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
                         var = self.setSignalClass(sentItemDict)
                         self.send(sentItemName, var)
     #############################################
@@ -197,10 +195,10 @@ class session():
 #############################################
         
         ## commented out because already called in loadSettings
-        # if '_customSettings' in settings.keys():
-            # self.loadCustomSettings(settings['_customSettings'])
-        # else:
-            # self.loadCustomSettings(settings)
+        if '_customSettings' in settings.keys():
+            self.loadCustomSettings(settings['_customSettings'])
+        else:
+            self.loadCustomSettings(settings)
         
     def setSignalClass(self, d):
         print '|##| setSentRvarClass %s' % str(d)
@@ -256,37 +254,27 @@ class session():
     def loadCustomSettings(self,settings=None):
         pass
 
-
-    def loadSettings2(self, sessionSettings=None):
-        print '|#| in loadSettings2 '# + str(sessionSettings)
-        if sessionSettings:
-            self.setSettings(sessionSettings)
-        
-        ##########set global settings#############
-        file = self.getGlobalSettingsFile(None)
-        if file:
-            try:
-                file = open(file, "r")
-                settings = cPickle.load(file)
-            except:
-                settings = None
-        
-        # print settings
-        if settings:
-            self.setSettings(settings)
-
 #############widget specific settings#####################
-
-    def getGlobalSettingsFile(self, file=None):
+        ##########set global settings#############
+    def loadGlobalSettings(self):
+        file = self.getGlobalSettingsFile()
+        try:
+            file = open(file, "r")
+            settings = cPickle.load(file)
+            self.setSettings(settings)
+        except:
+            pass
+        
+    
+    def getGlobalSettingsFile(self):
         # print 'getSettingsFile in owbasewidget'
-        if file==None:
-            file = os.path.join(redREnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
+        file = os.path.join(redREnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
         #print 'getSettingsFile', file
         return file
 
     
     # save global settings
-    def saveGlobalSettings(self, file = None):
+    def saveGlobalSettings(self):
         print '|#| owrpy global save settings'
         settings = {}
         
@@ -297,20 +285,24 @@ class session():
             
         for name in self.globalSettingsList:
             try:
-                settings[name] = self.returnSettings(getattr(self,name),isPickleable=True)
+                settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-        # print settings
+        print '%s' % str(settings)
         if settings:
-            file = self.getGlobalSettingsFile(file)
+            file = self.getGlobalSettingsFile()
             file = open(file, "w")
             cPickle.dump(settings, file)
+        
+        print '|#| owrpy global save settings done'
 
 #############DEPRECIATED######################
 #############DEPRECIATED######################
-    def loadSettings(self,file=None):
-        print '|###| DO NOT USE loadSettings in widget'
-
+    def loadSettings(self, sessionSettings=None):
+        print '|#| in loadSettings '# + str(sessionSettings)
+        if sessionSettings:
+            self.setSettings(sessionSettings)
+  
     def onLoadSavedSession(self, force = False, template = False):
         if self.loaded and not force: return  # prevents a loaded widget from being reloaded this can be overwriten using a call to force if the loader wishes.
         print '|##| in onLoadSavedSession'

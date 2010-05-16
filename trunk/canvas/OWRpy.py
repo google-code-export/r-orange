@@ -6,12 +6,12 @@
 
 from widgetGUI import *
 from widgetSignals import *
-import RSession
-from session import *
+from widgetSession import *
 from PyQt4.QtGui import *
+import RSession
 import rpy
 
-class OWRpy(widgetSignals,widgetGUI,session):   
+class OWRpy(widgetSignals,widgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
     
     def __init__(self,parent=None, signalManager=None, 
@@ -19,11 +19,11 @@ class OWRpy(widgetSignals,widgetGUI,session):
         
         widgetSignals.__init__(self, parent, signalManager)
         self.dontSaveList = self.__dict__.keys()
-        # print self.dontSaveList
+        print self.dontSaveList
 
         widgetGUI.__init__(self, parent=parent, signalManager=signalManager, title=title,
         wantGUIDialog=wantGUIDialog, **args)
-        session.__init__(self)
+        widgetSession.__init__(self)
         
         
         OWRpy.uniqueWidgetNumber += 1
@@ -40,7 +40,8 @@ class OWRpy(widgetSignals,widgetGUI,session):
         self.packagesLoaded = 0
         
         
-        
+
+
     def resetRvariableNames(self):
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix
@@ -151,26 +152,26 @@ class OWRpy(widgetSignals,widgetGUI,session):
         RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()
-    def onDeleteWidget(self, suppress = 0):
-        for k in self.Rvariables:
-            #print self.Rvariables[k]
-            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+    def onDeleteWidget(self):
+        print '|#| onDeleteWidget OWRpy'
         try:
-            #if self.device != []: #  if this is true then this widget made an R device and we would like to shut it down
             for device in self.device.keys():
                 dev = self.device[device]
                 #key = device.keys()[0]
                 self.R('dev.set('+str(dev)+')', 'setRData')
                 self.R('dev.off() # shut down device for widget '+ str(OWRpy.uniqueWidgetNumber), 'setRData') 
-                
-        except: pass
-        self.customWidgetDelete()
-        if suppress == 1: # instantiated in orngDoc.py, will fail if orngDoc has not initialized it.
-            return
+        except:
+            import traceback,sys
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60        
 
-        
-        
-    
+        for k in self.Rvariables:
+            #print self.Rvariables[k]
+            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+
+        self.customWidgetDelete()
+
     def customWidgetDelete(self):
         pass #holder function for other widgets
 

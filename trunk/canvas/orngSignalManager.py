@@ -103,13 +103,6 @@ class SignalManager:
         sys.stderr = self.stderr
         #sys.stdout = self.stdout
 
-#    def __del__(self):
-#        if not self or type(self) == type(None):
-#            return
-#        if self.debugFile:
-#            self.debugFile.close()
-#        sys.stderr = self.stderr
-#        #sys.stdout = self.stdout
 
     #
     def addEvent(self, strValue, object = None, eventVerbosity = 1):
@@ -287,7 +280,24 @@ class SignalManager:
             children.append(widget)
             children.extend(self.getChildern(widget))
         return children
-                
+
+    def getParents(self,theWidget):
+        parents = []
+        print 'getParents\n'*5
+        print 'theWidget', theWidget
+        # print self.links.keys()
+        #print self.links
+        for k, v in self.links.items():
+            for (widget, signalNameFrom, signalNameTo, enabled) in v:
+                print 'widget', widget
+                if widget == theWidget:
+                    print 'from', k
+                    print 'to',widget
+                    parents.append(k)
+                    parents.extend(self.getParents(k))
+        return parents
+         
+         
     # return list of signals that are connected from widgetFrom to widgetTo
     def findSignals(self, widgetFrom, widgetTo):
         signals = []
@@ -303,7 +313,7 @@ class SignalManager:
                 return enabled
         return 0
 
-    def removeLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo, close = False):
+    def removeLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo):
         if self.verbosity >= 2:
             self.addEvent("remove link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle, eventVerbosity = 2)
         print "remove link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle
@@ -316,7 +326,7 @@ class SignalManager:
                         widgetTo.updateNewSignalData(widgetFrom, signalNameTo, None, key, signalNameFrom)
                         print 'updating signal data'
                     self.links[widgetFrom].remove((widget, signalFrom, signalTo, enabled))
-                    if not self.freezing and not self.signalProcessingInProgress and not close: 
+                    if not self.freezing and not self.signalProcessingInProgress: 
                         self.processNewSignals(widgetFrom)
                         #print 'processing signals'
         widgetTo.removeInputConnection(widgetFrom, signalNameTo)
@@ -403,7 +413,8 @@ class SignalManager:
         # start propagating
         self.signalProcessingInProgress = 1
         
-        index = self.widgets.index(firstWidget)
+        # index = self.widgets.index(firstWidget)
+        print self.getParents(firstWidget)
         children = self.getChildern(firstWidget)
         children.append(firstWidget)
 
