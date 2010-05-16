@@ -19,11 +19,14 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         
         widgetSignals.__init__(self, parent, signalManager)
         self.dontSaveList = self.__dict__.keys()
-        print self.dontSaveList
+        #print self.dontSaveList
 
         widgetGUI.__init__(self, parent=parent, signalManager=signalManager, title=title,
         wantGUIDialog=wantGUIDialog, **args)
-        widgetSession.__init__(self)
+        self.dontSaveList = self.__dict__.keys()
+        for x in ['status','help','notes','ROutput']: self.dontSaveList.remove(x)
+        
+        widgetSession.__init__(self,self.dontSaveList)
         
         
         OWRpy.uniqueWidgetNumber += 1

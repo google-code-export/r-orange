@@ -8,12 +8,12 @@ import signals
 
 
 class widgetSession():
-    def __init__(self):
-        self.redRGUIObjects = {}
+    def __init__(self,dontSaveList):
         #collect the sent items
         
         #dont save these variables
         self.loaded = False
+        self.dontSaveList = dontSaveList
         self.defaultGlobalSettingsList = ['windowState']
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
         self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
@@ -60,7 +60,7 @@ class widgetSession():
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
         #if isinstance(d,QObject):
-        print str(type(d))
+        # print str(type(d))
         if re.search('PyQt4|OWGUIEx|OWToolbars',str(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
             print 'QT object NOT Pickleable'
             return False
@@ -149,7 +149,6 @@ class widgetSession():
         return sentItemsList
     def setSettings(self,settings):
         print 'on set settings'
-        # self.redRGUIObjects = {}
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():

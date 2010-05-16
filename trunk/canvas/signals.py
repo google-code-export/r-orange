@@ -16,6 +16,10 @@ class BaseRedRVariable:
     
     def getData(self):
         return self.data
+
+    def getDataParent(self):
+        return self.parent
+
     def getItem(self, name):
         ## gets a required item from the signal, this does not query the dictAttrs but could return it.
         try:
