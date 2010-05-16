@@ -27,15 +27,6 @@ class BaseRedRVariable:
             return attr
         except:
             return None
-    def __getitem__(self, item):
-        try:
-            attr = getattr(self, item)
-        except:
-            try:
-                attr = self.dictAttrs[item]
-            except:
-                attr = None
-        return attr
     def saveSettings(self):
         return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
         
@@ -43,10 +34,6 @@ class BaseRedRVariable:
         self.data = settings['data']
         self.parent = settings['parent']
         self.dictAttrs = settings['dictAttrs']
-    def __setitem__(self, item, value):
-        if item in self.reserved:
-            raise Exception
-        self.dictAttrs[item] = value
     def copyAllOptionalData(self,signal):
         import copy
         self.dictAttrs = copy.deepcopy(signal.dictAttrs)
@@ -77,7 +64,9 @@ class BaseRedRVariable:
             return False
     def __str__(self):
         ## print output for the class
-        return 'Class: '+str(self.__class__)+'; Data: '+str(self.data)+'; Attributes: '+str(self.dictAttrs)
+        string = 'Class: '+str(self.__class__)+'; Data: '+str(self.data)
+        
+        return string
     def convertToClass(self, varClass):
         return self.copy()
     def keys(self):
