@@ -13,7 +13,7 @@ import redRGUI
 class diffExp(OWRpy):
 
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "DifferentialExpression", wantMainArea = 0, resizingEnabled = 1)
         
         self.samplenames = []
         self.sampleA = []

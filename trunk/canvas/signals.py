@@ -16,6 +16,13 @@ class BaseRedRVariable:# parent class of all signals.  This class holds base fun
     
     def getData(self):
         return self.data
+    def getItem(self, name):
+        ## gets a required item from the signal, this does not query the dictAttrs but could return it.
+        try:
+            attr = getattr(self, name)
+            return attr
+        except:
+            return None
     def __getitem__(self, item):
         try:
             attr = getattr(self, item)

@@ -10,13 +10,13 @@ import redRGUI
 class lmer(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self, parent, signalManager, "LMER", wantMainArea = 0, resizingEnabled = 1)
 		self.setRvariableNames(["lmer"])
 		self.data = {}
 		self.RFunctionParam_model = ''
 		self.RFunctionParam_data = ''
 		self.inputs = [("model", signals.RModelFit, self.processmodel),("data", signals.RDataFrame, self.processdata)]
-		self.outputs = [("lmer Output", signals.RModelFit)]
+		self.outputs = [("lmer Output", signals.RLme4ModelFit)]
 		
 		self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
 		box = redRGUI.tabWidget(self.controlArea)
@@ -102,6 +102,6 @@ class lmer(OWRpy):
 		self.RoutputWindow.clear()
 		tmp = self.R('paste(txt, collapse ="\n")')
 		self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-		newData = signals.RModelFit(data = self.Rvariables["lmer"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+		newData = signals.RLme4ModelFit(data = self.Rvariables["lmer"], parent = str(self.RFunctionParam_data)) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("lmer Output", newData)

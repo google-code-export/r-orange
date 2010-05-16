@@ -7,10 +7,6 @@ class RList(RVariable):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
-    # def copy(self):
-        # newVariable = RList(self.data, self.parent)
-        # newVariable.dictAttrs = self.dictAttrs.copy()
-        # return newVariable
     
     def convertToClass(self, varClass):
         if varClass == RVariable:
@@ -20,9 +16,6 @@ class RList(RVariable):
         else:
             raise Exception
     def _convertToVariable(self):
-        # newData = RVariable(data = self.data, parent = self.parent)
-        # newData.dictAttrs = self.dictAttrs
-        # newData.dictAttrs['cm'] = self.cm
         return self.copy()
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'

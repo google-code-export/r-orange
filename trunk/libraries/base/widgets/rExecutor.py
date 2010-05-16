@@ -13,7 +13,7 @@ class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
     def __init__(self, parent=None, signalManager=None):
         #OWWidget.__init__(self, parent, signalManager, "Sample Data")
-        OWRpy.__init__(self, wantGUIDialog = 1, wandMainArea = 0)
+        OWRpy.__init__(self, parent, signalManager, 'RExecutor', wantGUIDialog = 1, wandMainArea = 0)
         
         self.command = ''
         self.sendthis = ''

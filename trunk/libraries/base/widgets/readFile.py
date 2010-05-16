@@ -20,7 +20,7 @@ class readFile(OWRpy):
     globalSettingsList = ['filecombo','recentFiles','path']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self,parent, signalManager, "ReadFile", wantMainArea = 0, resizingEnabled = 1)
         self.recentFiles=['Select File']
         self.path = os.path.abspath('/')
         self.colClasses = []
@@ -155,7 +155,7 @@ class readFile(OWRpy):
             self.columnTypes.layout().addWidget(q, i, 0)
         
     def setFileList(self):
-        if self.recentFiles == None: self.recentFiles = []
+        if self.recentFiles == None: self.recentFiles = ['Select File']
         
         self.filecombo.clear()
         for file in self.recentFiles:

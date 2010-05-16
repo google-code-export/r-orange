@@ -12,7 +12,7 @@ import redRGUI
 class widgetMaker(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         settingsList = ['output_txt', 'parameters']
-        OWRpy.__init__(self, parent, signalManager, "File", resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Widget Maker", resizingEnabled = 1)
         
         self.functionParams = ''
         self.widgetInputsName = []
@@ -233,7 +233,7 @@ class widgetMaker(OWRpy):
         self.initCode += '\tsettingsList = []\n'
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
 
-        self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)\n'
+        self.initCode += '\t\tOWRpy.__init__(self, parent, signalManager, "'+self.functionName.text().replace('.', '_')+'", wantMainArea = 0, resizingEnabled = 1)\n'
         if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
             self.initCode += '\t\tself.data = {}\n'
