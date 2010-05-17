@@ -20,7 +20,7 @@ class boxplot(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.getData()
             self.commitFunction()
     def savePlot(self):
         if self.x == '': return

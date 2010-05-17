@@ -11,7 +11,7 @@ import redRGUI, redRGUI
 class lm(OWRpy): 
     settingsList = ['RFunctionParam_data', 'RFunctionParam_formula', 'modelFormula', 'sentItems']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
+        OWRpy.__init__(self, parent, signalManager, "LM", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(["lm"])
         self.RFunctionParam_formula = ""
         self.RFunctionParam_data = ''
@@ -48,8 +48,8 @@ class lm(OWRpy):
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
     def processdata(self, data):
-        if data and data['data']:
-            self.RFunctionParam_data=data["data"]
+        if data:
+            self.RFunctionParam_data=data.getData()
             names = self.R('colnames('+self.RFunctionParam_data+')')
             self.formulEntry.update(names)
             self.status.setText('Data Connected')
@@ -58,7 +58,9 @@ class lm(OWRpy):
             self.RFunctionParam_data = ''
             self.status.setText('Data Connection Failed. Please Reconnect')
     def commitFunction(self):
-        if self.RFunctionParam_data == '': return
+        if self.RFunctionParam_data == '': 
+            self.status.setText('No data')
+            return
         self.RFunctionParam_formula = self.formulEntry.Formula()[0] + ' ~ ' + self.formulEntry.Formula()[1]
 
         

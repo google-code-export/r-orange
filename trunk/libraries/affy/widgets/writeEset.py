@@ -11,13 +11,16 @@ import redRGUI
 
 class writeEset(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Sample Data")
+        OWRpy.__init__(self, parent, signalManager, "Write Eset")
+        
+        self.data = None
+        self.fileName = ""
+        self.saveSettingsList.append(['data', 'fileName'])
         
         self.inputs = [("Affybatch", signals.RVariable, self.nothingb)]
         self.outputs = None
         
-        self.data = None
-        self.fileName = ""
+        
         
         #GUI
         box = redRGUI.widgetBox(self.controlArea, "Write to file.")
@@ -26,8 +29,8 @@ class writeEset(OWRpy):
         self.infoa = redRGUI.widgetLabel(box, "No output yet")
         
     def nothingb(self,data):
-        if 'data' in data:
-            self.data = data['data']
+        if data:
+            self.data = data.getData()
         else: return
             
     def write(self):

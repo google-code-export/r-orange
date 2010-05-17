@@ -13,7 +13,7 @@ import OWGUI
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Heatmap", wantMainArea = 0, resizingEnabled = 1)
         
         self.setRvariableNames(['heatsubset', 'hclust'])
         self.plotOnConnect = 0
@@ -60,9 +60,9 @@ class Heatmap(OWRpy):
     def processMatrix(self, data =None):
         
         if data:
-            self.plotdata = data['data']
-            if 'classes' in data.dictAttrs:
-                self.classes = data.dictAttrs['classes'][0]
+            self.plotdata = data.getData()
+            if data.optionalDataExists('classes'):
+                self.classes = data.getOptionalData('classes')
                 self.showClasses.setEnabled(True)
             else:
                 self.classes = 'rep(0, length('+self.plotdata+'[1,]))'
@@ -75,7 +75,7 @@ class Heatmap(OWRpy):
             self.Rplot('par(mfrow=c(1,1))')
     def processClasses(self, data):
         if data:
-            self.classesData = data.data
+            self.classesData = data.getData()
             self.classesDropdown.update(self.R('colnames('+data.data+')', wantType = 'list'))
         else:
             self.classesDropdown.clear()

@@ -12,8 +12,9 @@ import redRGUI
 class anova_lm(OWRpy): 
     settingsList = ['RFunctionParam_object']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Anova LM", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_object = ''
+        self.saveSettingsList.append(['RFunctionParam_object'])
         self.inputs = [("object", signals.RLMFit, self.processobject)]
         
         box = redRGUI.groupBox(self.controlArea, "Output")
@@ -24,7 +25,7 @@ class anova_lm(OWRpy):
         self.commitFunction()
     def processobject(self, data):
         if data:
-            self.RFunctionParam_object=data["data"]
+            self.RFunctionParam_object=data.getData()
             self.commitFunction()
         else: self.RFunctionParam_object = ''
     def commitFunction(self):

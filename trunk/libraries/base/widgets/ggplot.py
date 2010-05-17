@@ -100,7 +100,7 @@ class ggplot(OWRpy):
     def addDataFrame(self, data):
         if data:
             self.data = data
-            self.dataNames = self.R('names('+self.data.data+')')
+            self.dataNames = self.R('names('+self.data.getData()+')')
             self.addGlobal()
             self.aesX.update(([''] + self.dataNames))
             self.aesY.update(([''] + self.dataNames))

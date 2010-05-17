@@ -18,7 +18,7 @@ import redRGUI
 class rowcolPicker(OWRpy): # a simple widget that actually will become quite complex.  We want to do several things, give into about the variables that are selected (do a summary on the attributes and show them to the user) and to pass forward both a subsetted data.frame or a vector for classification for things evaluating TRUE to the subsetting
     settingsList = ['rowcolselect', 'newdata', 'rowactiveCriteria', 'rowselectionCriteria', 'cTableTexts', 'olddata', 'ssvdata', 'data', 'test', 'saveData']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1) #initialize the widget
+        OWRpy.__init__(self, parent, signalManager, "RowColumnSelection", wantMainArea = 0, resizingEnabled = 1) #initialize the widget
         self.namesPresent = 0
         self.dataClass = None
         self.dataParent = None
@@ -91,7 +91,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
     def setSubsettingVector(self, data):
         if data == None: return
         self.subOnAttachedButton.setEnabled(True)
-        self.ssv = data['data']
+        self.ssv = data.getData()
         self.ssvdata = data
         
     def subOnAttached(self):
@@ -185,10 +185,10 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
             self.rSend('Reduced Vector', newVector)
             
         
-        newData = signals.RDataFrame(self.Rvariables['rowcolSelector'])
+        newData = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = signals.RDataFrame(self.Rvariables['rowcolSelector'])
+        newDataNot = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Not Data Table', newDataNot)
                 
         

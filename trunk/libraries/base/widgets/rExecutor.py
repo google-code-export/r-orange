@@ -132,7 +132,7 @@ class rExecutor(OWRpy):
             self.rSend(output[0], None, 0)
         self.data = ''
         if data:
-            self.data = str(data.data)
+            self.data = str(data.getData())
             self.olddata = data
             if self.olddata.data:
                 self.metadataLB.addItem('data')

@@ -110,21 +110,15 @@ class RDataTable(OWRpy):
         self.table.show()
         data = {}
         self.data = data
-        tableData = dataset['data']
-        #print '|###|' + str(signals.globalData)
-        #print '|###| %s' % signals.globalDataExists('urls')
+        tableData = dataset.getData()
         
-        if globalData.globalDataExists(self,'urls'):
-            urls = globalData.getGlobalData(self,'urls')
-            #print 'setting link as '+str(link)
-            self.linkListBox.clear()
             
-            for links in urls:
-                print '|###| %s' %  str(links)
-                self.linkListBox.addItems(links['data'].keys())
-            self.currentLinks.update(links['data'])
+        if dataset.optionalDataExists('links'):
+            linksData = dataset.getOptionalData('links')['data']
+            self.linksListBox.update(linksData.keys())
+            self.currentLinks.update(linksData)
         
-        self.currentData = dataset['data']
+        self.currentData = dataset.getData()
         dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
         self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
         self.infoBox.setHidden(False)

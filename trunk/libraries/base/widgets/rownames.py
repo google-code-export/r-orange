@@ -11,7 +11,7 @@ import redRGUI
 class rownames(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Rownames", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["rownames"])
         self.data = {}
          
@@ -28,13 +28,15 @@ class rownames(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_x=data.getData()
+            self.data = data
             self.commitFunction()
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if str(self.RFunctionParam_x) == '': 
+            self.status.setText('No data')
+            return
         injection = []
         if str(self.RFunctionParamprefix_lineEdit.text()) != '':
             string = 'prefix='+str(self.RFunctionParamprefix_lineEdit.text())

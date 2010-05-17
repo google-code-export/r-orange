@@ -12,15 +12,10 @@ import redRGUI
 class plot(OWRpy): 
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
-        # self.RFunctionParam_main = ''
-        # self.RFunctionParam_xlab = ''
-        # self.RFunctionParam_ylab = ''
-        # self.RFunctionParam_cex = '100'
+        OWRpy.__init__(self, parent, signalManager, "Generic Plot", wantMainArea = 0, resizingEnabled = 1)
         self.data = {}
-        #self.RFunctionParam_y = ''
-        
         self.RFunctionParam_x = ''
+        self.saveSettingsList.append(['data', 'RFunctionParam_x'])
         self.inputs = [("x", signals.RVariable, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
@@ -33,7 +28,7 @@ class plot(OWRpy):
     def processx(self, data):
         if data:
             self.data = data
-            self.RFunctionParam_x=data.data
+            self.RFunctionParam_x=data.getData()
             self.commitFunction()
     def saveAsPDF(self):
         if self.RFunctionParam_x == '': return
@@ -74,7 +69,6 @@ class plot(OWRpy):
         if injection != []:
             inj = ','+','.join(injection)
         else: inj = ''
-        #try:
+
         self.Rplot('plot('+str(self.RFunctionParam_x)+inj+')')
-        # except:
-            # QMessageBox.information(None, 'Plotting Error', 'Your plot failed, this may not be a supported plot type.', QMessageBox.Ok)
+

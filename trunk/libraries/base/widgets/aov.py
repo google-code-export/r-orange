@@ -10,10 +10,11 @@ import redRGUI
 class aov(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "AOV", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["aov"])
         self.data = {}
         self.RFunctionParam_data = ''
+        self.saveSettingsList.append(['data', 'RFunctionParam_data'])
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
         self.outputs = [("aov Output", signals.RModelFit)]
         
@@ -30,7 +31,8 @@ class aov(OWRpy):
     def processdata(self, data):
         self.require_librarys(["stats"]) 
         if data:
-            self.RFunctionParam_data=data.data
+            self.removeWarning()
+            self.RFunctionParam_data=data.getData()
             #self.data = data.copy()
             self.RFunctionParamformula_formulaEntry.update(self.R('names('+self.RFunctionParam_data+')'))
             self.commitFunction()
@@ -38,9 +40,12 @@ class aov(OWRpy):
             self.RFunctionParam_data=''
             self.RFunctionParamformula_formulaEntry.clear()
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': return
+        if str(self.RFunctionParam_data) == '': 
+            self.setWarning(id = 'NoData', text = 'No Data connected or data is blank')
+            return
         formula = self.RFunctionParamformula_formulaEntry.Formula()
-        if formula[0] == '' or formula[1] == '': return
+        if formula[0] == '' or formula[1] == '': 
+            self.setWarning(id = 'BadFormula', text = 'Formula not entered correctly')
         injection = []
         string = 'formula='+formula[0]+ ' ~ '+formula[1]
         injection.append(string)

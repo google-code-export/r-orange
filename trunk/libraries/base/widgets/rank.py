@@ -13,7 +13,7 @@ import redRGUI
 class rank(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Rank", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["rank"])
         self.RFunctionParam_ties_method = ''
         #self.RFunctionParam_na_last = "TRUE"
@@ -31,12 +31,14 @@ class rank(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.getData()
             self.commitFunction()
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if str(self.RFunctionParam_x) == '': 
+            self.status.setText('No data')
+            return
         injection = []
         if str(self.RFunctionParamties_method_comboBox.currentText()) != '':
             string = 'ties.method="'+str(self.RFunctionParamties_method_comboBox.currentText())+'"'

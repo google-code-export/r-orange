@@ -11,7 +11,7 @@ import redRGUI
 class intersect(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Intersect", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["intersect"])
         self.data = {}
          
@@ -26,21 +26,25 @@ class intersect(OWRpy):
         self.resize(500, 200)
     def processy(self, data):
         if data:
-            self.RFunctionParam_y=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_y=data.getData()
+            self.data = data
             self.commitFunction()
         else:
             self.RFunctionParam_y = ''
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.getData()
             #self.data = data.copy()
             self.commitFunction()
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
+        if str(self.RFunctionParam_y) == '': 
+            self.status.setText('No Y data exists')
+            return
+        if str(self.RFunctionParam_x) == '': 
+            self.status.setText('No X data exists')
+            return
         self.R(self.Rvariables['intersect']+'<-intersect(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+')')
         self.R('txt<-capture.output('+self.Rvariables['intersect']+')')
         

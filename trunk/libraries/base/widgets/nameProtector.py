@@ -12,7 +12,7 @@ import OWGUI
 class nameProtector(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Name Protector", wantMainArea = 0, resizingEnabled = 1)
         # the variables
         self.parentData = {}
         self.data = ''
@@ -37,8 +37,8 @@ class nameProtector(OWRpy):
         
     def gotDF(self, data):
         if data:
-            self.parentData = data.copy()
-            self.data = data['data']
+            self.parentData = data
+            self.data = data.getData()
             self.dfbox.show()
             self.vbox.hide()
             cols = self.R('colnames('+self.data+')', wantType = 'list')
@@ -51,8 +51,8 @@ class nameProtector(OWRpy):
             
     def gotV(self, data):
         if data:
-            self.parentData = data.copy()
-            self.data = data['data']
+            self.parentData = data
+            self.data = data.getData()
             self.dfbox.hide()
             self.vbox.show()
         else:

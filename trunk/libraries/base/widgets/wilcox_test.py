@@ -13,7 +13,7 @@ import redRGUI
 class wilcox_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Wilcox Test", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["wilcox.test"])
          
         self.RFunctionParam_x = ''
@@ -26,11 +26,11 @@ class wilcox_test(OWRpy):
         
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.getData()
             self.commitFunction()
     def processy(self, data):
         if data:
-            self.RFunctionParam_y=data["data"]
+            self.RFunctionParam_y=data.getData()
             self.commitFunction()
     def commitFunction(self):
         if self.RFunctionParam_x == '': return

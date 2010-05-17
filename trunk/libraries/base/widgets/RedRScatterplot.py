@@ -82,10 +82,6 @@ class RedRScatterplot(OWRpy):
             subset = ''
         xData = self.R(self.data+'$'+str(self.xColumnSelector.currentText()))
         yData = self.R(self.data+'$'+str(self.yColumnSelector.currentText()))
-        print '|###|', xData[:5]
-        print xData
-        print xData[0]
-        print '|###|', yData[:5]
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
         
         self.R(self.cm+'$'+self.Rvariables['Plot']+'<-list(True = rownames('+self.data+'[as.logical(c('+str(selected)[1:-1]+')),]), False = rownames('+self.data+'[!as.logical(c('+str(selected)[1:-1]+')),]))')
@@ -93,14 +89,13 @@ class RedRScatterplot(OWRpy):
         
     def gotX(self, data):
         if data:
-            print 'Data is: '+str(data)
-            self.data = data.data
-            self.parent = data.parent
-            self.dataParent = data.copy()
+            self.data = data.getData()
+            self.parent = data.getItem('parent')
+            self.dataParent = data
 
             if self.dataParent.optionalDataExists('cm'):
                 
-                self.cm = self.dataParent.getOptionalData('cm')
+                self.cm = self.dataParent.getOptionalData('cm')['data']
                 cmColNames = self.R('names('+self.cm+')')
                 if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
                 if type(cmColNames) == type(''): cmColNames = [cmColNames]
@@ -260,7 +255,7 @@ class RedRScatterplot(OWRpy):
     def sendMe(self):
 
         data = signals.RDataFrame(data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.parent) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
-        data.dictAttrs = self.dataParent.dictAttrs
+        data.copyAllOptionalData(self.dataParent)
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()
     def loadCustomSettings(self, settings = None):

@@ -91,8 +91,7 @@ class DataExplorer(OWRpy):
             
             self.table.hide()
             self.table = redRGUI.table(self.tableArea)
-            self.data = data.data  # set self.data to the data element of the recieved signal.
-            print self.data
+            self.data = data.getData()  # set self.data to the data element of the recieved signal.
             self.rownames = self.R('rownames('+self.data+')')
             if type(self.rownames) == str:
                 self.rownames = [self.rownames]
@@ -100,14 +99,14 @@ class DataExplorer(OWRpy):
             if type(self.colnames) == str:
                 self.colnames = [self.colnames]
             if newData == True:
-                self.orriginalData = data['data']
+                self.orriginalData = data.getData()
                 
                 self.criteriaDialogList = []
                 self.criteriaList = []
                 self.orriginalRowNames = self.rownames
                 self.orriginalColumnNames = self.colnames
                 print 'Colnames are '+str(self.orriginalColumnNames)
-                self.dataParent = data.copy()
+                self.dataParent = data
                 if not self.dataParent.optionalDataExists('cm'):
                     self.R('cm_'+self.Rvariables['dataExplorer']+'<-list()')
                     self.dataParent.setOptionalData('cm', 'cm_'+self.Rvariables['dataExplorer'], self, 'Class Manager added to the data by Row Filtering, the data did not have a class manager before this.', None)
@@ -386,11 +385,11 @@ class DataExplorer(OWRpy):
         print self.criteriaList
         if len(self.criteriaList) > 0:
             self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
-            newData = self.dataParent.copy()
-            newData.data = self.dataParent.data+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,]'
+            newData = signals.RDataFrame(data = self.dataParent.getData()+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,]', parent = self.dataParent.getData()
+            newData.data = 
             self.rSend('Data Subset', newData)
         else:
-            self.rSend('Data Subset', self.dataParent.copy())
+            self.rSend('Data Subset', self.dataParent)
         self.status.setText('Data Sent')
         
         self.sendRefresh()

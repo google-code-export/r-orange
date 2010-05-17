@@ -16,15 +16,16 @@ import redRGUI
 
 class affyNormalize(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Normalization")
+        OWRpy.__init__(self, parent, 'Affy Normalize', signalManager, "Normalization")
         
         self.normmeth = 'quantiles'
         self.normoptions = ''
         self.norm = ['quantiles']
         self.data = ''
-        self.newdata = {}
         self.enableMethBox = False
         self.norminfo = ''
+        
+        self.saveSettingsList.append(['norm', 'normmeth', 'normoptions', 'data', 'enableMethBox', 'norminfo'])
         
         self.require_librarys(['affy'])
         
@@ -104,8 +105,7 @@ class affyNormalize(OWRpy):
             # print str(dataset['data'])
             # print dataset.__class__
             print dataset
-            self.data = str(dataset['data'])
-            self.oldData = dataset
+            self.data = str(dataset.getData())
             
             if self.R('length(exprs('+self.data+')[1,])') > 10:
                 self.selectMethod = 2

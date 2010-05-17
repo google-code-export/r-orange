@@ -11,7 +11,7 @@ import redRGUI
 class Melt_DF(OWRpy): 
     settingsList = ['RFunctionParam_data']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "MeltDF", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
@@ -31,8 +31,8 @@ class Melt_DF(OWRpy):
     def processdata(self, data):
         if data:
             self.require_librarys(['reshape'])
-            self.RFunctionParam_data=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_data=data.getData()
+            self.data = data
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
             self.RFunctionParam_measure_var.update(colnames)
             self.RFunctionParam_id_var.update(colnames)

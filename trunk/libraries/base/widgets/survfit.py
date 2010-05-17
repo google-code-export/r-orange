@@ -11,7 +11,7 @@ import redRGUI
 class survfit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
+        OWRpy.__init__(self, parent, signalManager, "Survival Fit", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         
         self.setRvariableNames(["survfit"])
         self.data = {}
@@ -19,7 +19,7 @@ class survfit(OWRpy):
         self.inputs = [("data", signals.RVariable, self.processdata), ('Model Fit', signals.RModelFit, self.processfit)]
         self.outputs = [("survfit Output", signals.RSurvFit)]
         
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
+        self.help.setHtml('<small>Generates a survival fit to a set of data.  This can be used in plotting.</small>')
         formulaBox = redRGUI.widgetBox(self.controlArea)
         self.times = redRGUI.comboBox(formulaBox, label = 'Times', toolTip = 'The event times.')
         self.event = redRGUI.comboBox(formulaBox, label = 'Events', toolTip = 'The event status. 1 means an event occurred\nwhile 0 means there was no event at the end time.')
@@ -32,19 +32,19 @@ class survfit(OWRpy):
             self.times.clear()
             self.event.clear()
             self.groupings.clear()
-            self.data = data.copy()
-            self.R(self.Rvariables['survfit']+'<-survfit('+data['data']+')')
+            self.data = data
+            self.R(self.Rvariables['survfit']+'<-survfit('+data.getData()+')')
             self.out = signals.RModelFit(data=self.Rvariables["survfit"])
             self.rSend("survfit Output", self.out)
     def processdata(self, data):
         self.require_librarys(["survival"]) 
         if data:
-            self.RFunctionParam_data=data["data"]
+            self.RFunctionParam_data=data.getData()
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
             self.groupings.update(colnames)
             self.times.update(colnames)
             self.event.update(colnames)
-            self.data = data.copy()
+            self.data = data
             self.commitFunction()
     def commitFunction(self):
         if str(self.RFunctionParam_data) == '': return

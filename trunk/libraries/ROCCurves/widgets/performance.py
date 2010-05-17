@@ -10,7 +10,7 @@ import redRGUI
 class performance(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "performance", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["performance"])
         self.data = {}
          
@@ -33,7 +33,7 @@ class performance(OWRpy):
     def processprediction_obj(self, data):
         self.require_librarys(["ROCR"]) 
         if data:
-            self.RFunctionParam_prediction_obj=data.data
+            self.RFunctionParam_prediction_obj=data.getData()
             #self.data = data.copy()
             self.commitFunction()
         else:

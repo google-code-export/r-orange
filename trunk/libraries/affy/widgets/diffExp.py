@@ -23,6 +23,7 @@ class diffExp(OWRpy):
         self.data = ''
         self.newdata = {}
         self.olddata = {}
+        self.saveSettingsList.append(['samplenames', 'sampleA', 'sampleB', 'phenoData', 'modelFormula', 'data', 'newdata', 'olddata'])
         self.require_librarys(['affy','gcrma','limma'])
         
         
@@ -109,11 +110,11 @@ class diffExp(OWRpy):
             self.infob.setText("Setting Class A")
     def phenoProcess(self, data):
         if not data: return
-        if not self.data.data in ['', None] and self.R('intersect(rownames('+data['data']+'), colnames('+self.data+'))') == None:
+        if not self.data in ['', None] and self.R('intersect(rownames('+data.getData()+'), colnames('+self.data+'))') == None:
             self.infoa.setText('No intersect between the phenoData and the expression data.\nPhenoData ignored.')
             return
         
-        self.phenoData = data['data']
+        self.phenoData = data.getData()
         colnames = self.R('colnames('+self.phenoData+')', wantType = 'list')
         if len(colnames) == 1: ## we got a one column data frame and need to change this so the phenotype subsetting won't cause an error.
             self.R(self.phenoData+'$DiffExpIntercept<-rep(1, length('+self.phenoData+'[,1]))')
@@ -129,7 +130,7 @@ class diffExp(OWRpy):
         self.data = '' #clear the data
         if not data: return
 
-        self.data = data['data']
+        self.data = data.getData()
         self.samplenames = self.R('colnames('+self.data+')',wantType='list') #collect the sample names to make the differential matrix
 
         for v in self.samplenames:
@@ -196,14 +197,4 @@ class diffExp(OWRpy):
                 #self.arrays.selectedItems.clear()
             else: 
                 self.infoa.setText("No arrays selected")
-
-    
-    # def Rreload(self):
-        # for v in self.sampleA:
-            # self.selectedArrays.addItem(str(v))
-        # for v in self.sampleB:
-            # self.selectedArraysB.addItem(str(v))
-        # self.arrays.addItems(self.sampleA)
-        # self.arrays.addItems(self.sampleB)
-        # self.modelText.setText("Model: " + self.modelFormula)
         

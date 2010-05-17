@@ -15,7 +15,7 @@ import redREnviron
 
 class runSigPathway(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Pathway Enrichment", wantMainArea = 0, resizingEnabled = 1)
         
         
         self.setRvariableNames(['data', 'affy', 'pAnnots',  'sublist', 'wd', 'minNPS', 'maxNPS', 'phenotype', 'weightType', 'sigpath'])
@@ -84,43 +84,27 @@ class runSigPathway(OWRpy):
 
     def process(self, data): #collect a preprocessed file for pathway analysis
         self.require_librarys(['sigPathway'])
+        self.removeWarning()
         if data:
-            try:
-                self.removeWarning(id = 'NoData')
-            except: pass
             self.olddata = data
-            self.data = data['data']
+            self.data = data.getData()
             self.pAnnotlist.setEnabled(True)
             self.chiptype.clear()
             if signals.globalDataExists('chiptype'):
                 self.chiptype.setEnabled(False)
                 self.usedb.setChecked(['Use Annotation Database'])
                 self.getChiptype()
-            # if 'eset' in data:
-                # self.affy = data['eset']
-                # self.chiptype.setText(self.R('annotation('+self.affy+')'))
-                # self.chiptype.setEnabled(False)
-                # self.usedb.setChecked(['Use Annotation Database'])
-                # self.getChiptype()
-            # elif 'affy' in data:
-                # self.affy = data['affy']
-                # self.chiptype.setText(self.R('annotation('+self.affy+')'))
-                # self.chiptype.setEnabled(False)
-                # self.usedb.setChecked(['Use Annotation Database'])
-                # self.getChiptype()
-            # else:
-                # self.infob.setText("No Chip Type Info Available. \n Please input.")
-                # self.chiptype.setEnabled(True)
             if str(self.chiptype.text()) != '':
                 self.infob.setText('Your chip type is '+str(self.chiptype.text()))
-            if 'classes' in self.olddata:
-                self.phenotype = self.olddata['classes']
-            else: return
+            if self.olddata.optionalDataExists('classes'):
+                self.phenotype = self.olddata.getOptionalData('classes')
+            else: 
+                self.setWarning(id = 'NoPhenodata', text = 'No phenotype data detected')
         else: 
             self.setWarning(id = 'NoData', text = 'No data was found in your connection')
     def processPathAnnot(self, data): #connect a processed annotation file if removed, re-enable the choose file function
         if data:
-            self.pAnnots = data['data']
+            self.pAnnots = data.getData()
             self.pAnnotlist.setEnabled(False)
         else: 
             self.pAnnotlist.setEnabled(True)
@@ -174,7 +158,8 @@ class runSigPathway(OWRpy):
                 progressBar.setValue(pbv)
 
     def runPath(self, reload = 0):
-        if self.data == '': return
+        if self.data == '': self.setWarning(id = 'NoData', text = 'No data to process')
+        if self.phenotype == '': self.setWarning(id = 'NoPhenodata', text = 'No phenotype data available')
         if not reload:
             self.getChiptype()
             try:
@@ -204,7 +189,7 @@ class runSigPathway(OWRpy):
         self.connect(self.table1, SIGNAL("itemClicked(QTableWidgetItem*)"), self.cellClicked)
         
     
-    def tableShow(self):
+    def tableShow(self):  ## show the table of all of the classes that are enriched.
         try:
             self.table1.show()
             #self.table.setMinimumSize(500, 500)
@@ -212,18 +197,19 @@ class runSigPathway(OWRpy):
         except: return
     
         
-    def cellClicked(self, item):
+    def cellClicked(self, item):  ## show a subtable of genes that are in the list.
         self.clickedRow = int(item.row())+1
-        self.subtable = {'data':self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']]', 'col':3, 'link':{'IHOP':'http://www.ihop-net.org/UniPub/iHOP/?search={4}', 'Entrez Gene': 'http://www.ncbi.nih.gov/gene/{3}'}}
+        self.subtable = signals.RDataFrame(data = self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']]')
+        self.subtable.setOptionalData(name = 'col', data = 3, creatorWidget = self)
+        self.subtable.setOptionalData(name =  'link', data = {'IHOP':'http://www.ihop-net.org/UniPub/iHOP/?search={4}', 'Entrez Gene': 'http://www.ncbi.nih.gov/gene/{3}'}, creatorWidget = self)
         self.sendMe()
         try: self.table2
         except: pass
         else: self.table2.clear()
-        #self.table2 = MyTable(self.subtable['data'])
         
-        headers = self.R('colnames('+self.subtable['data']+')')
+        headers = self.R('colnames('+self.subtable.getData()+')')
         #self.headers = r('colnames('+self.dataframename+')')
-        dataframe = self.R(self.subtable['data'])
+        dataframe = self.R(self.subtable.getData())
         self.table2.setColumnCount(len(headers))
         self.table2.setRowCount(len(dataframe[headers[0]]))
         n=0
@@ -235,18 +221,11 @@ class runSigPathway(OWRpy):
                 m += 1
             n += 1
         self.table2.setHorizontalHeaderLabels(headers)
-        self.connect(self.table2, SIGNAL("itemClicked(QTableWidgetItem*)"), self.geneClicked)
-    
-    def geneClicked(self, item):
-        
-        clickedGene = int(item.row())+1
-        if 'GeneID' in self.R('colnames('+self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']])'):
-            genenumber = self.R(self.Rvariables['sigpath']+'$list.gPS[['+str(self.clickedRow)+']]['+str(clickedGene)+',3]')
-            self.R('shell.exec("http://www.ncbi.nlm.nih.gov/gene/'+str(genenumber)+'")')
         
     def phenotypeConnected(self, data):
+        self.removeWarning()
         if data:
-            self.phenotype = data['data']
+            self.phenotype = data.getData()
         else: return
     
     def sendMe(self, pafile = True, palist = True):

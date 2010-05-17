@@ -282,8 +282,8 @@ class widgetMaker(OWRpy):
             if str(self.packageName.text()) != '':
                 self.processSignals += '\t\tself.require_librarys(["'+str(self.packageName.text())+'"]) \n'
             self.processSignals += '\t\tif data:\n'
-            self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data.data\n'
-            self.processSignals += '\t\t\t#self.data = data.copy()\n'
+            self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data.getData()\n'
+            self.processSignals += '\t\t\t#self.data = data\n'
             if self.processOnConnect:
                 self.processSignals += '\t\t\tself.commitFunction()\n'
             self.processSignals += '\t\telse:\n'

@@ -11,7 +11,7 @@ import redRGUI
 class apply(OWRpy): 
         settingsList = []
         def __init__(self, parent=None, signalManager=None):
-                OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+                OWRpy.__init__(self, parent, signalManager, "Apply", wantMainArea = 0, resizingEnabled = 1)
                 self.setRvariableNames(["apply", 'apply_cm'])
                 self.data = {}
                  
@@ -28,8 +28,8 @@ class apply(OWRpy):
                 redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         def processX(self, data):
                 if data:
-                        self.RFunctionParam_X=data["data"]
-                        self.data = data.copy()
+                        self.RFunctionParam_X=data.getData()
+                        self.data = data
                         self.commitFunction()
                 else:
                     self.RFunctionParam_X=''

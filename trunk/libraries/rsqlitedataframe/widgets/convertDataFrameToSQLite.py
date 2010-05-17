@@ -35,7 +35,7 @@ class convertDataFrameToSQLite(OWRpy):
     def gotDataFrame(self, data):
         if data:
             self.data = data
-            self.tableNameLineEdit.setText(str(self.data.data.replace('.', '_')))
+            self.tableNameLineEdit.setText(str(self.data.getData().replace('.', '_')))
             
         else:
             self.data = None

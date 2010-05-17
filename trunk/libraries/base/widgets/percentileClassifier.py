@@ -28,8 +28,8 @@ class percentileClassifier(OWRpy):
         
     def processData(self, data):
         if data:
-            self.data = data['data']
-            self.dataParent = data.copy()
+            self.data = data.getData()
+            self.dataParent = data
             self.colNames_listBox.update(self.R('colnames('+self.data+')'))
             self.outputWindow.clear()
             self.commit()

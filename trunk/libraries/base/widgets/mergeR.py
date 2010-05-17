@@ -63,8 +63,8 @@ class mergeR(OWRpy):
     def processA(self, data):
         #print 'processA'
         if data:
-            self.dataA = str(data['data'])
-            self.dataParentA = data.copy()
+            self.dataA = str(data.getData())
+            self.dataParentA = data
             colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
             
             if type(colsA) is str:
@@ -93,8 +93,8 @@ class mergeR(OWRpy):
     def processB(self, data):
         #print 'processB'
         if data:
-            self.dataB = str(data['data'])
-            self.dataParentB = data.copy()
+            self.dataB = str(data.getData())
+            self.dataParentB = data
             colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
             if type(colsB) is str:
                 colsB = [colsB]

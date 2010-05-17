@@ -27,7 +27,7 @@ class sort(OWRpy):
     def processx(self, data):
         self.require_librarys(["base"]) 
         if data:
-            self.RFunctionParam_x=data.data
+            self.RFunctionParam_x=data.getData()
             #self.data = data.copy()
             self.commitFunction()
         else:

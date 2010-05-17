@@ -32,13 +32,13 @@ class RVarSeparator(OWRpy):
         self.sendthis = {}
         self.sendStatus.setText('')
         if data:
-            dataList = self.R('local(ls(), '+data['data']+')', wantType = 'list')
+            dataList = self.R('local(ls(), '+data.getData()+')', wantType = 'list')
             if type(dataList) == type([]):
                 self.varBox.update(dataList)
             elif type(dataList) == type(None):
                 self.status.setText('No data in the R session')
                 return
-            self.envName = data['data']
+            self.envName = data.getData()
             self.status.setText('Data Loaded')
         else: 
             self.status.setText('No data to parse')
@@ -49,7 +49,8 @@ class RVarSeparator(OWRpy):
         
         thisdataclass = self.R('class('+self.sendthis['data']+')')
         if type(thisdataclass) == type([]): #this is a special R type so just send as generic
-            self.rSend('R.object', self.sendthis)
+            newData = signals.RVariable(data = self.sendthis['data'])
+            self.rSend('R.object', newData)
             self.status.setText('Ambiguous class Sent')
             
         elif type(thisdataclass) == type(''):

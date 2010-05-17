@@ -13,7 +13,7 @@ import SurvivalClasses
 class survivalPlot(OWRpy): 
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Survival Plot", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RSurvFit, self.processx)]
         
@@ -32,7 +32,7 @@ class survivalPlot(OWRpy):
         self.status.setText('Plot Saved')
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.getData()
             self.commitFunction()
         else:
             self.RFunctionParam_x = ''

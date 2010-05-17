@@ -13,11 +13,9 @@ import signals
 class panpCalls(OWRpy):
 
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Present Calls", wantMainArea = 0, resizingEnabled = 1)
         
-
-        self.senddata = {}
-        self.data = {}
+        self.data = None
         self.eset = ''
         self.panpinfo = '' #used to communicate info after session reload.
         
@@ -25,11 +23,13 @@ class panpCalls(OWRpy):
         self.tightCut = '0.01'
         self.percentA = '20'
         
+        self.saveSettingsList.append(['data', 'eset', 'panpinfo', 'looseCut', 'tightCut', 'percentA'])
+        
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         
 
         self.inputs = [("Normalized Eset", signals.affy.REset, self.process)]
-        self.outputs = [("Present Gene Signal Matrix", signals.RMatrix)]
+        self.outputs = [("Present Gene Signal Matrix", signals.RMatrix), ('PA Calls Fit', signals.RModelFit)]
         
         
         #GUI
@@ -51,10 +51,11 @@ class panpCalls(OWRpy):
 
         if dataset == None: 
             self.status.setText("Blank data recieved")
+            self.eset = ''
         else:
             print dataset
             self.data = dataset
-            self.eset = self.data['data']
+            self.eset = self.data.getData()
             self.status.setText("Data Received")
             
     def processEset(self):
@@ -62,6 +63,11 @@ class panpCalls(OWRpy):
         self.status.setText("Processing Started!!!")
         self.R(self.Rvariables['PA'] + '<-pa.calls('+self.eset+', looseCutoff='+str(self.looseCut.text())+', tightCutoff='+str(self.tightCut.text())+')','setRData', True)
         self.status.setText('PA calls have been calculated')
+        
+        pafit = signals.RModelFit(data = self.Rvariables['PA'])
+        self.rSend('PA Calls Fit', pafit)
+        
+        
         self.R(self.Rvariables['PAcalls'] + '<-' + self.Rvariables['PA'] + '$Pcalls == "A"','setRData', True)
         self.R(self.Rvariables['PAcalls_sum'] + '<-apply(' + self.Rvariables['PAcalls'] + ', 1, sum)','setRData', True)
         self.R(self.Rvariables['Present'] + '<- ' + self.Rvariables['PAcalls_sum'] + '/length(' + self.Rvariables['PAcalls'] + '[1,]) > '+str(self.percentA.text())+'/100','setRData', True)
@@ -70,8 +76,5 @@ class panpCalls(OWRpy):
         self.panpinfo = 'Processed with loose cut off = '+str(self.looseCut.text())+', tight cut off ='+str(self.tightCut.text())+', and percent absent = '+str(self.percentA.text())
         self.status.setText('Processed')
         
-        self.senddata = signals.RMatrix(data = self.Rvariables['peset'])
-        #self.senddata.dictAttrs = self.data.dictAttrs
-        #self.senddata.dictAttrs['eset'] = self.eset
-        
-        self.rSend('Present Gene Signal Matrix', self.senddata)
+        senddata = signals.RMatrix(data = self.Rvariables['peset'])
+        self.rSend('Present Gene Signal Matrix', senddata)

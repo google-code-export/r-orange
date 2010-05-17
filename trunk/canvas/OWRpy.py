@@ -28,7 +28,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         
         widgetSession.__init__(self,self.dontSaveList)
         
-        
+        self.saveSettingsList = []  # a list of lists or strings that we will save.
         OWRpy.uniqueWidgetNumber += 1
         ctime = str(time.time())
         self.sessionID = 0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 

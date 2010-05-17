@@ -22,7 +22,7 @@ class ReadCEL(OWRpy):
         self.recentFiles = ['Select Directory']
         self.path = os.path.abspath('/')
         self.methodcombo = 0
-        
+        self.saveSettingsList.append(['recentFiles', 'path', 'methodcombo'])
         
         #set R variable names
         self.setRvariableNames(['affyBatch','folder', 'cm'])
@@ -91,5 +91,5 @@ class ReadCEL(OWRpy):
     def sendMe(self):
         chipType = self.R('annotation('+self.Rvariables['affyBatch']+')')
         signals.setGlobalData(self,'chipType',chipType,description='Chip Type')
-        self.out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
-        self.rSend("affyBatch", self.out2)
+        out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
+        self.rSend("affyBatch", out2)

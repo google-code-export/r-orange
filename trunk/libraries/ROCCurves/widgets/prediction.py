@@ -10,7 +10,7 @@ import redRGUI
 class prediction(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self, parent, signalManager, "prediction", wantMainArea = 0, resizingEnabled = 1)
 		self.setRvariableNames(["prediction"])
 		self.data = {}
 		 
@@ -28,7 +28,7 @@ class prediction(OWRpy):
 	def processlabels(self, data):
 		self.require_librarys(["ROCR"]) 
 		if data:
-			self.RFunctionParam_labels=data.data
+			self.RFunctionParam_labels=data.getData()
 			#self.data = data.copy()
 			self.commitFunction()
 		else:
@@ -36,14 +36,18 @@ class prediction(OWRpy):
 	def processpredictions(self, data):
 		self.require_librarys(["ROCR"]) 
 		if data:
-			self.RFunctionParam_predictions=data.data
+			self.RFunctionParam_predictions=data.getData()
 			#self.data = data.copy()
 			self.commitFunction()
 		else:
 			self.RFunctionParam_predictions=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_labels) == '': return
-		if str(self.RFunctionParam_predictions) == '': return
+		if str(self.RFunctionParam_labels) == '': 
+            self.status.setText('Labels do not exist')
+            return
+		if str(self.RFunctionParam_predictions) == '': 
+            self.status.setText('Predictions do not exist')
+            return
 		injection = []
 		if str(self.RFunctionParamlabel_ordering_lineEdit.text()) != '':
 			string = 'label.ordering='+str(self.RFunctionParamlabel_ordering_lineEdit.text())+''

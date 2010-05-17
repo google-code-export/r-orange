@@ -10,7 +10,7 @@ import redRGUI
 class cor(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Correlation", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["cor"])
         self.data = {}
          
@@ -30,7 +30,7 @@ class cor(OWRpy):
     def processy(self, data):
         self.require_librarys(["stats"]) 
         if data:
-            self.RFunctionParam_y=data.data
+            self.RFunctionParam_y=data.getData()
             #self.data = data.copy()
             self.commitFunction()
         else:
@@ -38,7 +38,7 @@ class cor(OWRpy):
     def processx(self, data):
         self.require_librarys(["stats"]) 
         if data:
-            self.RFunctionParam_x=data.data
+            self.RFunctionParam_x=data.getData()
             dims = self.R('dim('+self.RFunctionParam_x+')', silent = True, wantType = 'list')
             if dims[0] == 1 or dims[1] == 1:
                 self.RFunctionParam_x = 'as.vector('+self.RFunctionParam_x+')'
@@ -47,7 +47,9 @@ class cor(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if str(self.RFunctionParam_x) == '': 
+            self.status.setText('X data is missing')
+            return
         
         injection = []
         if str(self.RFunctionParamuse_lineEdit.text()) != '':

@@ -18,7 +18,7 @@ class classCoordinator(OWRpy):
         self.outputWindow = redRGUI.textEdit(self.controlArea, label = 'Class Manager Output')
     def gotData(self, data):
         if data:
-            newData = data
+            newData = data.copy()
             self.R(self.Rvariables['cm']+'<-list()')
             newData.setOptionalData('cm', self, self.Rvariables['cm'], 'Data added by the Class Coordinator so that class data can be shared across multiple widgets.')
             self.rSend('Out Data', newData)

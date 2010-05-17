@@ -12,7 +12,7 @@ import redRGUI
 class kruskal_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Kruskal Test", wantMainArea = 0, resizingEnabled = 1)
          
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata)]
@@ -26,30 +26,30 @@ class kruskal_test(OWRpy):
         #self.RFunctionParamg_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "g:")
         self.RFunctionParamformula =  redRGUI.RFormulaEntry(self.controlArea)
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         self.require_librarys(["stats"]) 
         self.RoutputWindow.clear()
         self.status.setText('New data recieved')
         if data:
-            self.RFunctionParam_data=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_data=data.getData()
+            self.data = data
             self.RFunctionParamformula.update(self.R('colnames('+self.RFunctionParam_data+')'))
             self.commitFunction()
         else:
             self.RFunctionParam_data = ''
             self.RFunctionParamformula.clear()
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': return
+        if str(self.RFunctionParam_data) == '': 
+            self.status.setText('No data')
+            return
         formulaOutput = self.RFunctionParamformula.Formula()
-        if formulaOutput == None or formulaOutput[0] == '' or formulaOutput[1] == '': return
+        if formulaOutput == None or formulaOutput[0] == '' or formulaOutput[1] == '': 
+            self.status.setText('Bad formula construction')
+            return
         injection = []
         string = formulaOutput[0]+ ' ~ ' + formulaOutput[1]
         injection.append(string)
-        # if str(self.RFunctionParamsubset_lineEdit.text()) != '':  # We nolonger support subsets, you may subset using an upstream widget
-            # string = 'subset='+str(self.RFunctionParamsubset_lineEdit.text())
-            # injection.append(string)
 
         inj = ','.join(injection)
         self.R('txt<-capture.output(kruskal.test('+inj+', data='+str(self.RFunctionParam_data)+'))')
@@ -57,12 +57,4 @@ class kruskal_test(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
         self.status.setText('Data sent')
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
-        self.reportSettings('Function Settings', [('subset',str(self.RFunctionParamsubset_lineEdit))])
-        #self.reportSettings('Function Settings', [('x',str(self.RFunctionParam_x))])
-        #self.reportSettings('Function Settings', [('g',str(self.RFunctionParam_g))])
-        self.reportSettings('Function Settings', [('formula',str(self.RFunctionParamformula_lineEdit))])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()
+

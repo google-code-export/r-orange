@@ -10,7 +10,7 @@ import redRGUI
 class na_omit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "NA Omit", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["na.omit"])
         self.data = {}
          
@@ -27,8 +27,8 @@ class na_omit(OWRpy):
     def processobject(self, data):
         self.require_librarys(["base"]) 
         if data:
-            self.RFunctionParam_object=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_object=data.getData()
+            self.data = data
             self.commitFunction()
         else:
             self.RFunctionParam_object=''

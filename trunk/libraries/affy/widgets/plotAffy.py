@@ -13,7 +13,7 @@ import signals
 class plotAffy(OWRpy):
     settingsList = ['irows', 'icols', 'qcsProcessed']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "plotAffy")
+        OWRpy.__init__(self, parent, 'Plot Affy', signalManager, "plotAffy")
         
         #default values        
         #self.irows = 1 #this sets the variable for the rows
@@ -21,16 +21,10 @@ class plotAffy(OWRpy):
         self.setRvariableNames(['qcs'])
         self.qcsProcessed = 0
         self.data = ''
-        self.dataset = {}
         
-
-        #set R variable names
-        #self.setRvariableNames()
+        self.saveSettingsList.append(['qcsProcessed', 'data'])
 
         self.inputs = [("Affybatch", signals.affy.RAffyBatch, self.init)]
-        
-        self.testLineEdit = ""
-
         
         #the GUI
         info = redRGUI.widgetBox(self.controlArea, "Info")
@@ -40,8 +34,6 @@ class plotAffy(OWRpy):
         redRGUI.button(info, "Process and Show QC", callback = self.RAffyQC, width = 150)
         
         optionsa = redRGUI.groupBox(self.controlArea, "Options")
-        #self.infob = redRGUI.widgetLabel(optionsa, 'Button not pressed')
-        #redRGUI.lineEdit(optionsa, self, "testLineEdit", "Test Line Edit", orientation = "horizontal")
         self.irows = redRGUI.lineEdit(optionsa, text = '1', label = "Number of rows:", orientation="horizontal") #make line edits that will set the values of the irows and icols variables, this seems to happen automatically.  Only need to include variable name where the "irows" is in this example
         self.icols = redRGUI.lineEdit(optionsa, text = '1', label = "Number of columns:", orientation="horizontal")
         #testlineButton = redRGUI.button(optionsa, self, "test line edit", callback = self.test, width = 200)
@@ -52,11 +44,10 @@ class plotAffy(OWRpy):
         self.processSignals()
         
     def init(self, dataset):
-        if dataset and 'data' in dataset:
-            self.data = dataset['data']
+        if dataset:
+            self.data = dataset.getData()
             self.status.setText("Data Connected")
             self.qcsProcessed == 0
-            self.dataset = dataset.copy()
         else:
             self.status.setText("No data loaded or not of appropriate type.")
             self.data = ''

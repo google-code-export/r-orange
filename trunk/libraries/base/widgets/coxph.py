@@ -11,7 +11,7 @@ import redRGUI
 class coxph(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Cox PH", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["coxph"])
         self.data = {}
          
@@ -39,8 +39,7 @@ class coxph(OWRpy):
     def processdata(self, data):
         self.require_librarys(["survival"]) 
         if data:
-            self.RFunctionParam_data=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_data=data.getData()
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
             self.survTime.update(colnames)
             self.RFunctionParamformula.update(colnames)
@@ -79,6 +78,5 @@ class coxph(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
         newData = signals.RSurvFit(data = self.Rvariables['coxph'])
-        newData.dictAttrs = self.data.dictAttrs  # copy the dictionary
-        self.rSend("coxph Output", self.data)
+        self.rSend("coxph Output", newData)
 

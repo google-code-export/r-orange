@@ -44,11 +44,10 @@ class BaseRedRVariable:
         widgetID = 'none'
         if hasattr(creatorWidget, 'widgetID'):
             widgetID = creatorWidget.widgetID
-        
-        if widgetID not in self.dictAttrs.keys():
-            self.dictAttrs[widgetID] = {}
+        else:
+            widgetID = None
     
-        self.dictAttrs[widgetID][name] = {'creator': widgetID, 
+        self.dictAttrs[name] = {'creator': widgetID, 
         'data':data,'description':description,'extra':extra}
     
     def getOptionalData(self,name):

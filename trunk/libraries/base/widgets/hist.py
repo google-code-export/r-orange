@@ -11,7 +11,7 @@ import OWGUI
 class hist(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Histogram", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_x = ''
         self.column = ''
         self.needsColumns = 0
@@ -25,7 +25,7 @@ class hist(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
-            self.RFunctionParam_x=data["data"]
+            self.RFunctionParam_x=data.getData()
             #self.commitFunction()
             myclass = self.R('class('+self.RFunctionParam_x+')')
             if myclass == 'matrix' or myclass == 'data.frame':

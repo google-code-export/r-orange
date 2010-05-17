@@ -12,7 +12,7 @@ import SurvivalClasses
 class survdiff(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Survival Difference", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["survdiff"])
         self.data = None
         self.formula = ''
@@ -30,13 +30,12 @@ class survdiff(OWRpy):
         self.survTime = redRGUI.comboBox(self.RFunctionParamformula.extrasBox, label = 'Time')
         self.RFunctionParamrho_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "rho:", text = '0', toolTip = 'Sets the rho parameter of the comparison.\nWith rho = 0 this is the log-rank or Mantel-Haenszel test,\nand with rho = 1 it is equivalent to the Peto & Peto modification of the Gehan-Wilcoxon test.')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        redRGUI.button(self.controlArea, "Report", callback = self.sendReport)
         self.RoutputWindow = redRGUI.textEdit(hbox, label = "RoutputWindow")
     def processdata(self, data):
         self.require_librarys(["survival"]) 
         if data:
-            self.RFunctionParam_data=data["data"]
-            self.data = data.copy()
+            self.RFunctionParam_data=data.getData()
+            self.data = data
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
             self.RFunctionParamformula.update(self.R('colnames('+self.RFunctionParam_data+')'))
             self.survTime.update(colnames)
@@ -62,11 +61,3 @@ class survdiff(OWRpy):
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
         newData = signals.RSurvFit(data = self.Rvariables['survdiff'])
         self.rSend("survdiff Output", newData)
-    def compileReport(self):
-        self.reportSettings("Input Settings",[("data", self.RFunctionParam_data)])
-        self.reportSettings('Function Settings', [('formula',self.formula)])
-        self.reportSettings('Function Settings', [('rho',str(self.RFunctionParamrho_lineEdit.text()))])
-        self.reportRaw(self.Rvariables["survdiff"])
-    def sendReport(self):
-        self.compileReport()
-        self.showReport()

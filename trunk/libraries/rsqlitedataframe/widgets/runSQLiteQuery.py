@@ -41,9 +41,9 @@ class runSQLiteQuery(OWRpy):
         ## set the data to the widget need to set 
         if data:
             self.data = data
-            self.infoA.setText('Incoming table name is '+self.data.data)
+            self.infoA.setText('Incoming table name is '+self.data.getData())
             ## scan the current table, easiest way to do that is to run a command with a query to select *
-            self.statementLineEdit.setText('select * from '+self.data.data)
+            self.statementLineEdit.setText('select * from '+self.data.getData())
             self.runStatement()
             self.statementLineEdit.clear()
         else:

@@ -11,7 +11,7 @@ import redRGUI
 class rViewer(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "RViewer", wantMainArea = 0, resizingEnabled = 1)
         
         self.RFunctionParam_data = None
         
@@ -31,7 +31,7 @@ class rViewer(OWRpy):
         self.RoutputWindow.print_(thisPrinter)
     def processdata(self, data):
         if data:
-            self.RFunctionParam_data=data["data"]
+            self.RFunctionParam_data=data.getData()
             self.data = data
             self.commitFunction()
         else:
@@ -42,7 +42,7 @@ class rViewer(OWRpy):
     
     def commitFunction(self):
         if not self.RFunctionParam_data:
-            self.RoutputWindow.setHtml('No data connected to show.')
+            self.status.setText('No data connected to show.')
             return
         if self.data.getClass_data() in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked() and 'Show All Columns' not in self.showAll.getChecked():
             dims = self.data.getDims_data()

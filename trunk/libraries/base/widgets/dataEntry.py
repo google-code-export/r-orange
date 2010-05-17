@@ -77,8 +77,8 @@ class dataEntry(OWRpy):
         self.columnDialog.hide()
     def processDF(self, data):
         if data:
-            self.data = data.data
-            self.savedData = data.copy()
+            self.data = data.getData()
+            self.savedData = data
             self.populateTable()
         else:
             return

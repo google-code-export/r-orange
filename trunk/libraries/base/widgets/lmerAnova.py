@@ -27,7 +27,7 @@ class lmerAnova(OWRpy):
     def processdata(self, data):
          
         if data:
-            self.RFunctionParam_data=data.data
+            self.RFunctionParam_data=data.getData()
             self.data = data
             #self.data = data.copy()
             self.commitFunction()
@@ -37,17 +37,21 @@ class lmerAnova(OWRpy):
     def processdata2(self, data):
          
         if data:
-            self.RFunctionParam_data2=data.data
+            self.RFunctionParam_data2=data.getData()
             self.data2 = data
             #self.data = data.copy()
             self.commitFunction()
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': return
-        if str(self.RFunctionParam_data2) == '': return
+        if str(self.RFunctionParam_data) == '': 
+            self.status.setText('No data')
+            return
+        if str(self.RFunctionParam_data2) == '': 
+            self.status.setText('No data')
+            return
         if self.data.getItem('parent') != self.data2.getItem('parent'):
-            print 'Data not of the same parent, incompatable models'
+            self.status.setText('Data not of the same parent, incompatable models')
             return
         self.R(self.Rvariables['anova']+'<-anova('+str(self.RFunctionParam_data)+','+str(self.RFunctionParam_data2)+')')
         self.R('txt<-capture.output('+self.Rvariables['anova']+')')

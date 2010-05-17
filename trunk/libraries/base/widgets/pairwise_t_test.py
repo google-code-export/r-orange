@@ -11,7 +11,7 @@ import OWGUI
 class pairwise_t_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "File", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Pairwise T Test", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["pairwise.t.test"])
         self.RFunctionParam_x = ""
         self.RFunctionParam_pool_sd = "TRUE"
@@ -32,7 +32,7 @@ class pairwise_t_test(OWRpy):
     
     def process(self, data):
         if data:
-            self.indata = data['data']
+            self.indata = data.getData()
             cols = self.R('colnames('+self.indata+')')
             self.RFunctionParam_x.update(cols)
             self.RFunctionParam_g.update(cols)

@@ -36,7 +36,7 @@ class showSequenceData(OWRpy):
     def gotData(self, data):
         if data:
             self.data = data
-            records = self.data.data.keys()
+            records = self.data.getData().keys()
             self.sequenceCombo.update(records)
         else:
             self.sequenceCombo.clear()
@@ -47,7 +47,7 @@ class showSequenceData(OWRpy):
         
         wantRecord = str(self.sequenceCombo.currentText())
         
-        rec = self.data.data[wantRecord]
+        rec = self.data.getData()[wantRecord]
         
         self.sequenceTextArea.insertPlainText('ID: '+str(rec.id)+'\n')
         self.sequenceTextArea.insertPlainText('Name:'+str(rec.name)+'\n')
