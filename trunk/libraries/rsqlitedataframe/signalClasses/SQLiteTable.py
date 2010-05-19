@@ -2,6 +2,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RDataFrame import *
 import time, sqlite3, os
+import redRGUI
 
 
 class SQLiteTable(RDataFrame):
@@ -14,6 +15,9 @@ class SQLiteTable(RDataFrame):
             self.parent = data
         self.database = database
         self.newDataName = 'dataFrameConversion_'+str(time.time()) # put this here because we may make many connections from this output and we only want one dataFrameConversion_ in R
+        self.dialog = redRGUI.dialog()
+        self.dataFrameData = None
+        self.rownameList = redRGUI.listBox(self.dialog, label = 'Rownames', toolTip = 'Select a column to represent Row Names', callback = self.dialog.accept)
         
     def saveSettings(self):
         return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'database': self.database, 'newDataName': self.newDataName}
@@ -29,16 +33,21 @@ class SQLiteTable(RDataFrame):
         elif varClass == RDataFrame:
             return self._convertToDataFrame()
         elif varClass == SQLiteTable:
-            return self.copy()
+            return self
         else:
             raise Exception
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
-        dfData = self._convertToDataFrame()
-        
-        newData = RList(data = 'as.list('+dfData.data+')')
-        return newData
+        if self.dataFrameData:
+            return self.dataFrameData._convertToList()
+        else:
+            dfData = self._convertToDataFrame()
+            
+            newData = RList(data = 'as.list('+dfData.data+')')
+            return newData
     def _convertToDataFrame(self):
+        if self.dataFrameData:  ## don't reprocess if there is already a valid conversion.
+            return self.dataFrameData
         ## we need to check if the database is available if not then we can't make the conversion.
         if 'local|' in self.database:  # convert the database if the local name is present.
             database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
@@ -55,17 +64,7 @@ class SQLiteTable(RDataFrame):
         database = database.replace('\\','/')
         self.require_librarys(['RSQLite']) # require the sqlite package
         ## convert the data table to a database.  This will actually run the current sql query which will likely inherit from some kind of view
-        self.R('m<-dbDriver("SQLite")')
-        print database
-        self.R('con<-dbConnect(m, dbname=\''+database+'\')')
         
-        
-        self.R(self.newDataName+'<-dbGetQuery(con, statement=\'select * from '+self.data+'\')')
-        self.R('dbDisconnect(con)')  # close the connection
-        # it would be really nice if in this we could ask the user to pick the column for the column name
-        
-        
-        # convert the classes of the columns to something reasonable like numeric or factor
         conn = sqlite3.connect(database)
         cursor = conn.cursor()
         
@@ -74,17 +73,43 @@ class SQLiteTable(RDataFrame):
         for row in cursor:
             types.append((row[1], row[2]))
         conn.close()
+        
+        ### list all of the column names and allow the user to specify one as the rowname column if desired.
+        colnames = [type[0] for type in types]
+        colnames.insert(0, 'No Names')
+        self.rownameList.update(colnames)
+        r = self.dialog.exec_() ## execute the dialog
+        if r == QDialog.Accepted:
+            
+            rownameSelection = '\''+str(self.rownameList.selectedItems()[0].text())+'\''
+        else:
+            rownameSelection = 'NULL'
+        self.R('m<-dbDriver("SQLite")')
+        print database
+        self.R('con<-dbConnect(m, dbname=\''+database+'\')')
+        
+        
+        self.R(self.newDataName+'<-dbGetQuery(con, statement=\'select * from '+self.data+'\', row.names = '+rownameSelection+')')
+        self.R('dbDisconnect(con)')  # close the connection
+        # it would be really nice if in this we could ask the user to pick the column for the column name
+        
+        
+        # convert the classes of the columns to something reasonable like numeric or factor
+        
         for type in types:
             if type[1] in ['text']:
                 self.R(self.newDataName+'$'+str(type[0])+'<-as.factor('+self.newDataName+'$'+str(type[0])+')')
             elif type[1] in ['real']:
                 self.R(self.newDataName+'$'+str(type[0])+'<-as.numeric('+self.newDataName+'$'+str(type[0])+')')
         
+        if rownameSelection != 'NULL':
+            self.R('rownames('+self.newDataName+')<-'+self.newDataName+'$'+rownameSelection.strip('\''))
+            self.R(self.newDataName+'<-'+self.newDataName+'[colnames('+self.newDataName+') != '+rownameSelection+',,drop = F]')
         ## allow the user to set rownames???
         
         
-        newData = RDataFrame(data = self.newDataName)
-        return newData
+        self.dataFrameData = RDataFrame(data = self.newDataName)
+        return self.dataFrameData
         
         
         

@@ -30,7 +30,9 @@ class RedRScatterplot(OWRpy):
 
         # GUI
         self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
+        self.forceXNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
         self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
+        self.forceYNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
         self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''], callback = self.plot)
         self.replotCheckbox = redRGUI.checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
         self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
@@ -200,12 +202,13 @@ class RedRScatterplot(OWRpy):
                 self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
                 # generate the subset
                 # check if the column is a factor
-                if xDataClass in ['factor']:
+                print '|#| '+str(self.forceXNumeric.getChecked())
+                if xDataClass in ['factor'] and 'Force Numeric' not in self.forceXNumeric.getChecked():
                     print 'Setting xData as factor'
                     xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
                 else:
                     xData = self.R('as.numeric('+self.data+'['+subset+',\''+str(xCol)+'\'])', wantType = 'list')
-                if yDataClass in ['factor']:
+                if yDataClass in ['factor'] and 'Force Numeric' not in self.forceYNumeric.getChecked():
                     print 'Setting yData as factor'
                     yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
                 else:
@@ -230,11 +233,11 @@ class RedRScatterplot(OWRpy):
             xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
             yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
             # check if the column is a factor
-            if xDataClass in ['factor']:
+            if xDataClass in ['factor'] and 'Force Numeric' not in self.forceXNumeric.getChecked():
                 xData = self.R('match('+self.data+'[!is.na('+self.data+'$'+str(xCol)+'),\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
             else:
                 xData = self.R(self.data+'[!is.na('+self.data+'$'+str(xCol)+'),\''+str(xCol)+'\']', wantType = 'list')
-            if yDataClass in ['factor']:
+            if yDataClass in ['factor'] and 'Force Numeric' not in self.forceYNumeric.getChecked():
                 yData = self.R('match('+self.data+'[!is.na('+self.data+'$'+str(yCol)+'),\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
             else:
                 yData = self.R(self.data+'[!is.na('+self.data+'$'+str(yCol)+'),\''+str(yCol)+'\']', wantType = 'list')

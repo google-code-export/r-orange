@@ -25,17 +25,17 @@ class RVariable(BaseRedRVariable):
         return text
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
-        text += 'R Data Variable Value: '+self.getAttrOutput_data(self.data, subsetting)+'\n\n'
+        text += 'R Data Variable Value: '+self.R('paste(capture.output('+self.data+subsetting+'), collapse = "\n")')+'\n\n'
         text += 'R Parent Variable Name: '+self.parent+'\n\n'
-        text += 'R Parent Variable Value: '+self.getAttrOutput_data(self.parent, subsetting)+'\n\n'
+        text += 'R Parent Variable Value: '+self.R('paste(capture.output('+self.parent+subsetting+'), collapse = "\n")')+'\n\n'
         text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
         return text
-    def getAttrOutput_call(self, item, subsetting = ''):
-        print '|#|', item, subsetting
-        call = 'paste(capture.output('+self.__getitem__(item)+subsetting+'), collapse = "\n")'
-        return call
-    def getAttrOutput_data(self, item, subsetting = ''):
-        return self.R(self.getAttrOutput_call(item = item, subsetting = subsetting))
+    # def getAttrOutput_call(self, item, subsetting = ''):
+        # print '|#|', item, subsetting
+        # call = 'paste(capture.output('+self.__getitem__(item)+subsetting+'), collapse = "\n")'
+        # return call
+    # def getAttrOutput_data(self, item, subsetting = ''):
+        # return self.R(self.getAttrOutput_call(item = item, subsetting = subsetting))
     def getSimpleOutput(self, subsetting = ''):
         # return the text for a simple output of this variable
         text = 'Simple Output\n\n'

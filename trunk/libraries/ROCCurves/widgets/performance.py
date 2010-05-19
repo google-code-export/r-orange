@@ -39,7 +39,9 @@ class performance(OWRpy):
         else:
             self.RFunctionParam_prediction_obj=''
     def commitFunction(self):
-        if str(self.RFunctionParam_prediction_obj) == '': return
+        if str(self.RFunctionParam_prediction_obj) == '': 
+            self.status.setText('Prediction object not found')
+            return
         injection = []
         mes = str(str(self.RFunctionParammeasure_comboBox.currentText()).split(',')[0])
         xmes = str(str(self.RFunctionParamx_measure_comboBox.currentText()).split(',')[0])

@@ -126,11 +126,11 @@ class DataExplorer(OWRpy):
                 elif (int(dims[0]) < 200) and (int(dims[1]) < 200): # don't let the dims get too high or too low
                     self.currentDataTransformation = self.data # there isn't any transformation to apply
                 elif not (int(dims[0]) < 200) and not (int(dims[1]) < 200): # they are both over 200
-                    self.currentDataTransformation = self.data+'[1:200, 1:200]' # we only show the first 200 rows and cols.  This will need to be subset later and we should show the row and column names in a separate dialog
+                    self.currentDataTransformation = self.data+'[1:200, 1:200, drop = F]' # we only show the first 200 rows and cols.  This will need to be subset later and we should show the row and column names in a separate dialog
                 elif not (int(dims[0]) < 200): # made it this far so there must be fewer columns than 200 but more than 200 rows
-                    self.currentDataTransformation = self.data+'[1:200,]'
+                    self.currentDataTransformation = self.data+'[1:200,,drop = F]'
                 elif not (int(dims[1]) < 200):
-                    self.currentDataTransformation = self.data+'[,1:200]'
+                    self.currentDataTransformation = self.data+'[,1:200, drop = F]'
                     
                 ######## End Block ##########
                 self.rowListBox.addRItems(self.rownames)
@@ -242,9 +242,9 @@ class DataExplorer(OWRpy):
                 if int(dims[0]) > 200 and int(dims[1]) > 200:
                     self.currentDataTransformation = 'as.data.frame('+self.data+'[1:200, 1:200])' ## wrap in an as.data.frame so that there aren't errors with vectors.
                 elif int(dims[0]) > 200:
-                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:200,])'
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[1:200,, drop = F])'
                 elif int(dims[1]) > 200:
-                    self.currentDataTransformation = 'as.data.frame('+self.data+'[,1:200])'
+                    self.currentDataTransformation = 'as.data.frame('+self.data+'[,1:200, drop = F])'
                 else:
                     self.currentDataTransformation = self.data
                 ######## Set the table for the data ######
@@ -319,7 +319,7 @@ class DataExplorer(OWRpy):
         cw = self.criteriaDialogList[k]['cw']
         text = str(cw.text())
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent['parent']+')[,\"'+colName+'\"] == \''+text+'\')'
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent['parent']+')[,\"'+colName+'\"] == \''+text+'\')'  # reduces to a vector of 1 and 0
         
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
@@ -331,7 +331,7 @@ class DataExplorer(OWRpy):
             self.status.setText('Please make a logical statement beginning with either \'==\', \'>\', or \'<\'')
             return
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent['parent']+')[,\''+colName+'\']'+text+')'
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent.getItem('parent')+')[,\''+colName+'\']'+text+')'
         
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
@@ -369,7 +369,7 @@ class DataExplorer(OWRpy):
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
-        newData = signals.RDataFrame(data = self.orriginalData+'['+'&'.join(self.criteriaList)+',]', parent = self.orriginalData) # reprocess the table
+        newData = signals.RDataFrame(data = self.orriginalData+'['+'&'.join(self.criteriaList)+',, drop = F]', parent = self.orriginalData) # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
@@ -380,13 +380,12 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append('(!is.na('+self.dataParent.parent+'[,\''+item['colname']+'\'])&('+item['criteriaCollection']+'))')
+                self.criteriaList.append('(!is.na('+self.dataParent.parent+'[,\''+item['colname']+'\', drop = F])&('+item['criteriaCollection']+'))')
 
         print self.criteriaList
         if len(self.criteriaList) > 0:
             self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
-            newData = signals.RDataFrame(data = self.dataParent.getData()+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,]', parent = self.dataParent.getData()
-            newData.data = 
+            newData = signals.RDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
             self.rSend('Data Subset', newData)
         else:
             self.rSend('Data Subset', self.dataParent)

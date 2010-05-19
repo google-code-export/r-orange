@@ -188,7 +188,7 @@ class rowcolPicker(OWRpy): # a simple widget that actually will become quite com
         newData = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newDataNot = signals.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('Not Data Table', newDataNot)
                 
         

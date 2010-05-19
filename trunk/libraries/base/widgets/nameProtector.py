@@ -66,7 +66,7 @@ class nameProtector(OWRpy):
         if 'Make New Data Object' in self.newDataDFcheckBox.getChecked():
             
             
-            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData['data'])
+            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData.getData())
             newData = signals.RDataFrame(data = self.Rvariables['newDataFromNameProtector'])
             self.data = self.Rvariables['newDataFromNameProtector']
 

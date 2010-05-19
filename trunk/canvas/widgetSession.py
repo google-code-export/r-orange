@@ -175,8 +175,12 @@ class widgetSession():
                     continue
                 elif 'redRGUIObject' in v.keys():
                     print getattr(self, k)
-                    getattr(self, k).loadSettings(v['redRGUIObject'])
-                    getattr(self, k).setDefaultState(v['redRGUIObject'])
+                    try:
+                        getattr(self, k).loadSettings(v['redRGUIObject'])
+                        getattr(self, k).setDefaultState(v['redRGUIObject'])
+                    except Exception as inst:
+                        print str(inst)
+                        print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
                 # elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
                 elif 'dict' in v.keys():
                     var = getattr(self, k)

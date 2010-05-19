@@ -36,7 +36,7 @@ class readSQLiteFile(OWRpy):
         #set R variable names        
         self.database = 'local|temp.db'
         
-        self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
+        self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent', 'table'])
         self.inputs = None
         self.outputs = [("data.frame", signals.rsqlitedataframe.SQLiteTable)]
         #GUI
@@ -60,10 +60,12 @@ class readSQLiteFile(OWRpy):
         # self.filecombo.setMinimumWidth(200)
         # self.filecombo.setMaximumWidth(200)
         button = redRGUI.button(box, label = 'Browse', callback = self.browseFile)
+        
         box2 = redRGUI.widgetBox(options)
         self.dbinfo = redRGUI.widgetLabel(box2, label = 'Database File: local directory')
         button2 = redRGUI.button(box2, 'Change File', callback = self.changeDirectory)
-        
+        self.tableNameEdit = redRGUI.lineEdit(box2, label = 'Table Name', toolTip = 'Sets the name of the table in the database')
+        self.tableNameEdit.setText(self.Rvariables['table'].replace('.', '_'))
         
         self.delimiter = redRGUI.radioButtons(options, label='Column Seperator',
         buttons = ['Tab', 'Space', 'Comma'], setChecked='Tab',callback=self.scanNewFile,
@@ -181,7 +183,6 @@ class readSQLiteFile(OWRpy):
             self.setFileList()
             QMessageBox.information(self,'Error', "File does not exist.", 
             QMessageBox.Ok + QMessageBox.Default)
-
             return
             
         
@@ -197,27 +198,8 @@ class readSQLiteFile(OWRpy):
         else:
             nrows = '-1'
         
-        
-        # if self.rowNamesCombo.currentIndex() not in [0,-1]:
-            # self.rownames = str(self.rowNamesCombo.currentText())
-            # param_name = '"' + self.rownames + '"'
-        # else:
-            # param_name = 'NULL' 
-            # self.rownames = 'NULL'
-        
-        # cls = []
-        # for i,new,old in zip(xrange(len(self.myColClasses)),self.myColClasses,self.colClasses):
-            # if new != old:
-                # cls.append(self.dataTypes[i][0] + '="' + new + '"')
-        
-        # if len(cls) > 0:
-            # ccl = 'c(' + ','.join(cls) + ')'
-        # else:
-            # ccl = 'NA'
-        
-        ## connect to the file and read it 
         i = 0
-        tableName = str(self.filecombo.currentText()).split('.')[0]
+        tableName = str(self.tableNameEdit.text())
         
         ## make a fake read of the file and get the second line of data, this will give us the data types
         f2 = open(self.recentFiles[self.filecombo.currentIndex()], 'r')
@@ -233,8 +215,10 @@ class readSQLiteFile(OWRpy):
             database = self.database
         conn = sqlite3.connect(database)
         cursor = conn.cursor()
-        cursor.execute('DROP TABLE IF EXISTS '+tableName)  # we drop the previous table to remove any reference to it from this database.  we must do this so there is no conflict with the new data.
-        
+        try: ## may fail sometimes if there is no name in the tableName area, I don't know why this would be but we need to protect.
+            cursor.execute('DROP TABLE IF EXISTS '+tableName)  # we drop the previous table to remove any reference to it from this database.  we must do this so there is no conflict with the new data.
+        except:
+            print tableName, 'not able to be removed'
         #try:
         for line in f:  # itterate over the lines and convert to the sqlite database
             # line 0 is the column names
@@ -249,7 +233,6 @@ class readSQLiteFile(OWRpy):
                         lineData[j] = str(lineData[j])+' real'
                     except:
                         lineData[j] = str(lineData[j])+' text'
-                print "create table "+tableName+" ("+','.join(lineData)+")"
                 cursor.execute("create table "+tableName+" ("+','.join(lineData)+")")  # insert the column names into the table, this is the command that also makes the table
             else:
                 lineData = line.split(sep)
@@ -279,8 +262,8 @@ class readSQLiteFile(OWRpy):
             database = self.database
         conn = sqlite3.connect(database)
         cursor = conn.cursor()
-        print 'PRAGMA table_info('+str(self.filecombo.currentText()).split('.')[0]+')'
-        cursor.execute('PRAGMA table_info('+str(self.filecombo.currentText()).split('.')[0]+')')
+        print 'PRAGMA table_info('+str(self.tableNameEdit.text())+')'
+        cursor.execute('PRAGMA table_info('+str(self.tableNameEdit.text())+')')
         colnames = cursor.fetchall()
         print colnames
         
@@ -289,35 +272,12 @@ class readSQLiteFile(OWRpy):
         # return
         
         
-        cursor.execute("SELECT * from "+str(self.filecombo.currentText()).split('.')[0]+" LIMIT "+str(self.numLinesScan.text()))
+        cursor.execute("SELECT * from "+str(self.tableNameEdit.text())+" LIMIT "+str(self.numLinesScan.text()))
         data = cursor.fetchall()  # collect the first N lines of the data so that we can put it into the scan area.
 
         txt = self.html_table(colnames,data)
         
         self.scanarea.setText(txt)
-        # if len(self.colClasses) ==0:
-            # self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-            # self.myColClasses = self.colClasses
-        
-        # if len(self.dataTypes) ==0:
-            # types = ['factor','numeric','character','integer','logical']
-            # self.dataTypes = []
-            
-            # for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                # s = redRGUI.comboBox(self.columnTypes,items=types,orientation='horizontal',callback=self.updateColClasses)
-                
-                # if str(v) in types:
-                    # s.setCurrentIndex(types.index(str(v)))
-                # else:
-                    # s.addItem(str(v))
-                    # s.setCurrentIndex(s.count()-1)
-                # s.setMinimumWidth(100)
-                # q = redRGUI.widgetLabel(self.columnTypes,label=i)
-                # self.columnTypes.layout().addWidget(s,k,1)
-                # self.columnTypes.layout().addWidget(q,k,0)
-                # self.dataTypes.append([i,s])
-            
-    
         
     def html_table(self,colnames,data):
         s = '<table border="1" cellpadding="3">'
@@ -339,7 +299,7 @@ class readSQLiteFile(OWRpy):
     def commit(self):
         self.updateGUI()
        
-        sendData = signals.rsqlitedataframe.SQLiteTable(data = str(self.filecombo.currentText()).split('.')[0], database = self.database)
+        sendData = signals.rsqlitedataframe.SQLiteTable(data = str(self.tableNameEdit.text()), database = self.database)
         self.rSend("data.frame", sendData)
         
         

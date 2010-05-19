@@ -57,7 +57,7 @@ class ListSelector(OWRpy):
             newData = signals.RList(data = self.Rvariables['listelement'])
             self.rSend('R List', newData)
             print 'Sent List'
-        elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric']:
+        elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer']:
             newData = signals.RVector(data = self.Rvariables['listelement'])
             self.rSend('R Vector', newData)
             print 'Sent Vector'

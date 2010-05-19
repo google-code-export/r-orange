@@ -39,7 +39,8 @@ class connectSQLiteDatabase(OWRpy):
         ### set file area
         button = redRGUI.button(box, label = 'Browse', callback = self.browseFile)
         self.dbinfo = redRGUI.widgetLabel(box, '')  # put the name of the database here
-        
+        self.button2 = redRGUI.button(box, label = 'Attach Second Database', callback = self.attachToDatabase)
+        self.button2.setEnabled(False)
         ### set table area
         self.tableNames = redRGUI.listBox(self.controlArea, label = 'Available Tables:', toolTip = 'A list of available tables that can be selected.  The selected table will be sent into the schema.', callback = self.selectTable)
         
@@ -49,7 +50,7 @@ class connectSQLiteDatabase(OWRpy):
         if fn.isEmpty(): return
         self.dbinfo.setText(str(fn))
         self.database = str(fn)
-
+        self.button2.setEnabled(True)
         self.scanNewFile()  # scans the database and picks out the table names for sending to the send function.
         
     def scanNewFile(self):
@@ -75,4 +76,19 @@ class connectSQLiteDatabase(OWRpy):
         
         newData = signals.rsqlitedataframe.SQLiteTable(data = table, database = self.database)
         self.rSend("SQLite Data Table", newData)
+    def attachToDatabase(self):
+        ## connect two databases together.
+        fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
+        "Database (*.db);; All Files (*.*)")
+        if fn.isEmpty(): return
+        
+        ## establish connection and cursor
+        conn = sqlite3.connect(os.path.abspath(self.database))
+        cursor = conn.cursor()
+        
+        cursor.execute('ATTACH DATABASE '+str(fn)+' AS '+str(os.path.split(str(fn))[1]).split('.')[0])
+        
+        conn.commit()
+        conn.close()
+        self.scanNewFile()
         

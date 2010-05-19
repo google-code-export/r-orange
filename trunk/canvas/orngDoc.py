@@ -237,6 +237,7 @@ class SchemaDoc(QWidget):
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
         except:
             type, val, traceback = sys.exc_info()
+            print str(traceback)
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
             qApp.restoreOverrideCursor()
             return None
@@ -341,8 +342,9 @@ class SchemaDoc(QWidget):
             if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
             widget = self.canvasDlg.widgetRegistry['widgets'][widgetFileName]
             return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
-        except:
+        except Exception as inst:
             print '|###| Loading exception occured for widget '+widgetFileName
+            print str(inst)
             return None
 
     # return the widget instance that has caption "widgetName"
@@ -822,12 +824,6 @@ class SchemaDoc(QWidget):
         settings = schema.getElementsByTagName("settings")
         settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
         self.loadedSettingsDict = settingsDict
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.loadedSettingsDict)
-
-        
-            
         
         try:  # protect the required functions in a try statement, we want to load these things and they should be there but we can't force it to exist in older schemas, so this is in a try.
             required = schema.getElementsByTagName("required")
@@ -837,8 +833,6 @@ class SchemaDoc(QWidget):
                 required = cPickle.loads(required['r'])
             
             if len(required) > 0:
-                #print qApp.canvasDlg.settings.keys()
-                #print qApp.canvasDlg.settings['CRANrepos']
                 if 'CRANrepos' in qApp.canvasDlg.settings.keys():
                     repo = qApp.canvasDlg.settings['CRANrepos']
                 else:
