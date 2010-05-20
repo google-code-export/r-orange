@@ -134,7 +134,9 @@ class WidgetButton(QFrame, WidgetButtonBase):
              #dinwin.canvasView.scene().update()
 
         if inside:
+            print 'I\'m inside'
             if not widget:
+                print 'I\'m adding a widget!!!'
                 widget = schema.addWidget(self.widgetInfo, p.x(), p.y())
                 self.widgetDragging = schema, widget
 
@@ -206,43 +208,43 @@ class MyTreeWidget(QTreeWidget):
         self.setStyleSheet(""" QTreeView::item {padding: 2px 0px 2px 0px} """)          # show items a little bit apart from each other
 
         
-    def mouseMoveEvent(self, e):
-        if not self.mousePressed:   # this is needed, otherwise another widget in the tree might get selected while we drag the icon to the canvas
-            QTreeWidget.mouseMoveEvent(self, e)
-        ### Semaphore "busy" is needed for some widgets whose loading takes more time, e.g. Select Data
-        ### Since the active window cannot change during dragging, we wouldn't have to remember the window; but let's leave the code in, it can't hurt
-        schema = self.canvasDlg.schema
-        if hasattr(self, "busy"):
-            return
-        self.busy = 1
+    # def mouseMoveEvent(self, e):
+        # if not self.mousePressed:   # this is needed, otherwise another widget in the tree might get selected while we drag the icon to the canvas
+            # QTreeWidget.mouseMoveEvent(self, e)
+        ## Semaphore "busy" is needed for some widgets whose loading takes more time, e.g. Select Data
+        ## Since the active window cannot change during dragging, we wouldn't have to remember the window; but let's leave the code in, it can't hurt
+        # schema = self.canvasDlg.schema
+        # if hasattr(self, "busy"):
+            # return
+        # self.busy = 1
 
-        inside = schema.canvasView.rect().contains(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos())) - QPoint(50,50))
-        p = QPointF(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos()))) + QPointF(schema.canvasView.mapToScene(QPoint(0, 0)))
+        # inside = schema.canvasView.rect().contains(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos())) - QPoint(50,50))
+        # p = QPointF(schema.canvasView.mapFromGlobal(self.mapToGlobal(e.pos()))) + QPointF(schema.canvasView.mapToScene(QPoint(0, 0)))
 
-        dinwin, widget = getattr(self, "widgetDragging", (None, None))
-        if dinwin and not inside:
-             dinwin.removeWidget(widget)
-             delattr(self, "widgetDragging")
-             dinwin.canvasView.scene().update()
+        # dinwin, widget = getattr(self, "widgetDragging", (None, None))
+        # if dinwin and not inside:
+             # dinwin.removeWidget(widget)
+             # delattr(self, "widgetDragging")
+             # dinwin.canvasView.scene().update()
 
-        if inside:
-            if not widget and self.selectedItems() != [] and isinstance(self.selectedItems()[0], WidgetTreeItem):
-                widget = schema.addWidget(self.selectedItems()[0].widgetInfo, p.x(), p.y())
-                self.widgetDragging = schema, widget
+        # if inside:
+            # if not widget and self.selectedItems() != [] and isinstance(self.selectedItems()[0], WidgetTreeItem):
+                # widget = schema.addWidget(self.selectedItems()[0].widgetInfo, p.x(), p.y())
+                # self.widgetDragging = schema, widget
 
-            # in case we got an exception when creating a widget instance
-            if widget == None:
-                delattr(self, "busy")
-                return
+            ###in case we got an exception when creating a widget instance
+            # if widget == None:
+                # delattr(self, "busy")
+                # return
 
-            widget.setCoords(p.x() - widget.rect().width()/2, p.y() - widget.rect().height()/2)
-            schema.canvasView.scene().update()
+            # widget.setCoords(p.x() - widget.rect().width()/2, p.y() - widget.rect().height()/2)
+            # schema.canvasView.scene().update()
 
-            import orngCanvasItems
-            items = schema.canvas.collidingItems(widget)
-            widget.invalidPosition = widget.selected = (schema.canvasView.findItemTypeCount(items, orngCanvasItems.CanvasWidget) > 0)
+            # import orngCanvasItems
+            # items = schema.canvas.collidingItems(widget)
+            # widget.invalidPosition = widget.selected = (schema.canvasView.findItemTypeCount(items, orngCanvasItems.CanvasWidget) > 0)
 
-        delattr(self, "busy")
+        # delattr(self, "busy")
         
     def mousePressEvent(self, e):
         QTreeWidget.mousePressEvent(self, e)

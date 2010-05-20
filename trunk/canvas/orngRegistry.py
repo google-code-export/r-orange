@@ -79,6 +79,7 @@ def readCategories():
         splashWindow.hide()
     if widgetsWithError != []:
         print "The following widgets could not be imported and will not be available: " + ", ".join(widgetsWithError)
+        widgetsWithError = []
     return categories ## return the widgets and the templates
 
 hasErrors = False
@@ -191,7 +192,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                         widgetInfo.icon = os.path.abspath(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png'))
                     else:
                         widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'icons', 'Unknown.png'))
-                print str(widgetInfo.icon)
+                
             except Exception as inst:
                 print 'Exception occured in the registry for the icon.'
                 print inst

@@ -52,39 +52,9 @@ class widgetSignals():
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
         
-        # funciton for upclassing variables that are send as dictionaries
-        for i in self.outputs:
-            #print 'i', i
-            if i[0] == name: # this is the channel that you are sending from 
-                #print 'type',name, variable,type(variable)
-                if type(variable) == dict: # if we havent converted this already
-                    #print 'in send dict', issubclass(i[1], signals.RDataFrame)
-                    #print i[1]
-                    print '\n'*5
-                    print '='*60
-                    print 'NEED TO CHANGE DICT TO RVARCLASSES\n'*5
-                    print '='*60
-                    print '\n'*5
-                    # if issubclass(i[1], signals.RDataFrame): 
-                        # newvariable = i[1](data = variable['data'], parent = variable['parent'], cm = variable['cm'])
-                        # newvariable['dictAttrs'] = variable
-                    # else:
-                    newvariable = i[1](data = variable['data'], parent = variable['parent'])
-                    newvariable['dictAttrs'] = variable
-                    variable = newvariable
-                break
+        
         try:
             self.send(name, variable)
-            # if not self.hasOutputName(name):
-                # print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (name, self.captionTitle)
-
-            # if self.linksOut.has_key(name):
-                # self.linksOut[name][id] = variable
-            # else:
-                # self.linksOut[name] = {id:variable}
-            
-            # self.signalManager.send(self, name, variable, id)
-
             self.removeInformation(id = 'attention')
             self.removeError()
             self.sentItems.append((name, variable))

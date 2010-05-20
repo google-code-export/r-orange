@@ -1435,9 +1435,13 @@ class SignalDialog(QDialog):
                 if inInstance.getOutputType(inS.name) == 'All': 
                     count += 1
                     continue
-                if not issubclass(inType, inInstance.getInputType(inS.name)): continue
-                if issubclass(outInstance.getOutputType(outS.name), inInstance.getInputType(inS.name)): count+= 1
-
+                if type(inInstance.getOutputType(inS.name)) not in [list]:
+                    if not issubclass(inType, inInstance.getInputType(inS.name)): continue
+                    if issubclass(outInstance.getOutputType(outS.name), inInstance.getInputType(inS.name)): count+= 1
+                else:
+                    for i in type(inInstance.getOutputType(inS.name)):
+                        if not issubclass(inType, i): continue
+                        if issubclass(outInstance.getOutputType(outS.name), i): count+= 1
         return count
 
     def existsABetterLink(self, outSignal, inSignal, outSignals, inSignals):
@@ -1466,8 +1470,17 @@ class SignalDialog(QDialog):
                     continue        #print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
                 if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
                     possibleLinks.append((outS.name, inS.name))
-                elif issubclass(outType, inType):
-                    possibleLinks.append((outS.name, inS.name))
+                    continue
+                    
+                if type(inType) not in [list]:
+                    if issubclass(outType, inType):
+                        possibleLinks.append((outS.name, inS.name))
+                        continue
+                else:
+                    for i in inType:
+                        if issubclass(outType, i):
+                            possibleLinks.append((outS.name, inS.name))
+                            continue
         print possibleLinks
         return possibleLinks
 
@@ -1531,11 +1544,17 @@ class SignalDialog(QDialog):
         # check if correct types
         outType = self.outWidget.instance.getOutputType(outName)
         inType = self.inWidget.instance.getInputType(inName)
-        if outType == 'All' or inType == 'All': 
-            print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-            pass
-        elif not issubclass(outType, inType): return 0
-
+        if type(inType) not in [list]:
+            if outType == 'All' or inType == 'All': 
+                print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+                
+            elif not issubclass(outType, inType): return 0
+        else:
+            passes = 0
+            for i in inType:
+                if issubclass(outType, i): passes = 10
+            if not passes: return 0
+            
         inSignal = None
         inputs = self.inWidget.widgetInfo.inputs
         for i in range(len(inputs)):

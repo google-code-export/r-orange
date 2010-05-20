@@ -31,7 +31,7 @@ class RDataTable(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
-        self.inputs = [("Rectangular Data", signals.RDataFrame, self.dataset)]
+        self.inputs = [("Rectangular Data", [signals.RDataFrame, signals.rsqlitedataframe.SQLiteTable], self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation
@@ -127,7 +127,7 @@ class RDataTable(OWRpy):
         self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        self.table.setRTable(dataset['data'])
+        self.table.setRTable(dataset.getData())
         self.supressTabClick = False
             
     def itemClicked(self, val, table):

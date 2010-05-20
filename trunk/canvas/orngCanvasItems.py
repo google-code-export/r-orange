@@ -482,9 +482,6 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.setPen(QPen(color))
             painter.drawRect(-3, -3, self.widgetSize.width()+6, self.widgetSize.height()+6)
 
-
-#        painter.drawPixmap(0, 0, self.imageFrame.pixmap(self.widgetSize.width(), self.widgetSize.height()))
-        #painter.drawPixmap(0, 0, self.image)
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
         if self.instance.inputs != [] and self.instance.inputs != None:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
@@ -494,9 +491,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         painter.setPen(QPen(QColor(0,0,0)))
         midX, midY = self.widgetSize.width()/2., self.widgetSize.height() + 5
         painter.drawText(midX-200/2, midY, 200, 20, Qt.AlignTop | Qt.AlignHCenter, self.caption)
-        
-        #painter.drawRect(self.boundingRect())
-        
+
         yPos = -22
         if self.progressBarValue >= 0 and self.progressBarValue <= 100:
             rect = QRectF(0, yPos, self.widgetSize.width(), 16)
@@ -508,10 +503,6 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.drawRect(QRectF(0, yPos, self.widgetSize.width()*self.progressBarValue/100., 16))
             painter.drawText(rect, Qt.AlignCenter, "%d %%" % (self.progressBarValue))
         
-        # if self.isProcessing:
-            # self.setNeedsProcessing(1)
-
-
     def addOutLine(self, line):
         self.outLines.append(line)
 
