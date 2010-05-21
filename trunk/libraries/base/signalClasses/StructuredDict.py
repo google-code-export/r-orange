@@ -29,6 +29,30 @@ class StructuredDict(UnstructuredDict):
         else:
             self.keys = None
             self.length = None
+    def transpose(self):
+        ## transpose the structured data
+        
+        newDict = {}
+        newKeys = []
+        if 'row_names' in self.data:
+            for name in self.data['row_names']:
+                newDict[name] = []
+                newKeys.append(name)
+        else:
+            for i in range(len(self.data[self.data.keys()[0]])):
+                newDict[str(i+1)] = []
+                newKeys.append(str(i+1))
+        if not self.keys or self.keys == None:
+            keys = self.data.keys()
+        else:
+            keys = self.keys
+        for i in range(len(self.data[self.data.keys()[0]])):
+            for key in keys:
+                newDict[newKeys[i]].append(self.data[key][i])
+                
+        newData = StructuredDict(data = newDict, parent = self, keys = newKeys)
+        return newData
+            
     def convertToClass(self, varClass):
         if varClass == BaseRedRVariable:
             return self

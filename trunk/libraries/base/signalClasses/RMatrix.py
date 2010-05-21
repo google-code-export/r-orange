@@ -14,8 +14,24 @@ class RMatrix(RDataFrame):
             return self._convertToRDataFrame()
         elif varClass == RList:
             return self._convertToRList()
+        elif varClass == RMatrix:
+            return self
+        elif varClass == StructuredDict:
+            return self._convertToStructuredDict()
+        elif varClass == UnstructuredDict:
+            return self._convertToStructuredDict()
         else:
             raise Exception
+    def _convertToStructuredDict(self):
+        data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
+        keys = ['row_names']
+        keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
+        rownames = self.R('rownames('+self.data+')', wantType = 'list')
+        if rownames[0] in [None, 'NULL', 'NA']:
+            rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
+        data['row_names'] = rownames
+        newData = StructuredDict(data = data, parent = self, keys = keys)
+        return newData
     def _convertToRDataFrame(self):
         newData = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
         newData.dictAttrs = self.dictAttrs.copy()
