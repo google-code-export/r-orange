@@ -1,10 +1,12 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RList import *
+from StructuredDict import *
 
 
-class RDataFrame(RList):
+class RDataFrame(RList, StructuredDict):
     def __init__(self, data, parent = None, checkVal = True):
+        StructuredDict.__init__(self, data = data, parent = parent, checkVal = False)
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
@@ -15,11 +17,18 @@ class RDataFrame(RList):
         elif varClass == RVariable:
             return self._convertToVariable()
         elif varClass == RDataFrame:
-            return self.copy()
+            return self
+        elif issubclass(StructuredDict, varClass):
+            return self._convertToStructuredDict()
         else:
             raise Exception
-    def _convertToRectangularData(self):
-        return self.copy()
+    def _convertToStructuredDict(self):
+        dictData = self.R(self.data, wantType = 'dict')
+        dictData['row_names'] = self.R('rownames('+self.data+')', wantType = 'list')
+        keys = ['row_names']
+        keys += self.R('colnames('+self.data+')')
+        newData = StructuredDict(data = data, parent = self, keys = keys)
+        return newData
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         newData = RList(data = 'as.list('+self.data+')', parent = self.parent)

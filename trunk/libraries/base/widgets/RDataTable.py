@@ -31,7 +31,7 @@ class RDataTable(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
-        self.inputs = [("Rectangular Data", [signals.RDataFrame, signals.rsqlitedataframe.SQLiteTable], self.dataset)]
+        self.inputs = [("Rectangular Data", signals.StructuredDict, self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation
@@ -101,15 +101,11 @@ class RDataTable(OWRpy):
 
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
-        print 'got data'
-        #print dataset
-        
         if not dataset:
             return
         self.supressTabClick = True
         self.table.show()
-        data = {}
-        self.data = data
+        self.data = dataset
         tableData = dataset.getData()
         
             
@@ -118,7 +114,7 @@ class RDataTable(OWRpy):
             self.linksListBox.update(linksData.keys())
             self.currentLinks.update(linksData)
         
-        self.currentData = dataset.getData()
+        #self.currentData = dataset.getData()
         dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
         self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
         self.infoBox.setHidden(False)
@@ -127,7 +123,7 @@ class RDataTable(OWRpy):
         self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        self.table.setRTable(dataset.getData())
+        self.table.setTable(dataset.getData(), keys = dataset.getItem('keys'))
         self.supressTabClick = False
             
     def itemClicked(self, val, table):
@@ -141,9 +137,9 @@ class RDataTable(OWRpy):
             url = self.currentLinks[str(item.text())]
             col = url[url.find('{')+1:url.find('}')]
             if col == 0 or col == 'row': #special cases for looking into rownames
-                cellVal = self.R('rownames('+table+')['+str(RclickedRow)+']')
+                cellVal = self.data.getData()['row_names'][val.row()]  #self.R('rownames('+table+')['+str(RclickedRow)+']')
             else:
-                cellVal = self.R(table+'['+str(RclickedRow)+',"'+col+'"]')
+                cellVal = self.data.getData()[col][val.row()]  #self.R(table+'['+str(RclickedRow)+',"'+col+'"]')
             url = url.replace('{'+col+'}', str(cellVal))
             #print url
             import webbrowser
@@ -156,8 +152,10 @@ class RDataTable(OWRpy):
         self.customLink.clear()
         
     def writeFile(self):
-    
-        if not self.currentData: return;
+        
+        if not self.data: 
+            self.status.setText('Data does not exist.')
+            return
         name = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'),
         "Text file (*.txt *.csv *.tab);; All Files (*.*)")
         if name.isEmpty(): return
@@ -168,7 +166,23 @@ class RDataTable(OWRpy):
             sep = ' '
         elif self.separator.currentText() == 'Comma':
             sep = ','
-        self.R('write.table('+self.currentData+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
+        if isinstance(self.data.getItem('parent'), signals.RDataFrame):  #use the R function if the parent of the dict is an R object.
+            
+            self.R('write.table('+self.data.getItem('parent').getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
+        else:  # We write the file ourselves
+            string = ''
+            for key in self.data.getData().keys():
+                string += str(key)+sep
+            string += '\n'
+            for i in range(self.data.getItem('length')):
+                for key in self.data.getData().keys():
+                    string += self.data.getData()[key][i]+sep
+                string += '\n'
+            
+            f = open(str(name), 'w')
+            f.write(string)
+            f.close()
+            
     def changeColor(self):
         color = QColorDialog.getColor(self.distColor, self)
         if color.isValid():
@@ -203,7 +217,7 @@ class RDataTable(OWRpy):
         print 'on load data table'
         self.processSignals()
    
-    # Writes data into table, adjusts the column width.
+    # Writes data into table, adjusts the column width.  DEPRICATED
     def setTable(self, table, data):
         if data==None:
             return
@@ -359,7 +373,7 @@ class RDataTable(OWRpy):
         # print table
         table.reset()
 
-    # show data in the default order
+    # show data in the default order.  DEPRICATED
     def btnResetSortClicked(self):
         table = self.tabs.currentWidget()
         id = self.table2id[table]

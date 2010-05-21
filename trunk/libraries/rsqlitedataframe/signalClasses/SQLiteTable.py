@@ -1,13 +1,15 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RDataFrame import *
+from StructuredDict import *
 import time, sqlite3, os
 import redRGUI
 
 
-class SQLiteTable(RDataFrame):
+class SQLiteTable(RDataFrame, StructuredDict):
     def __init__(self, data, database = None, parent = None, checkVal = True):
         RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
+        StructuredDict.__init__(self, data = data, parent = parent, checkVal = False)
         ##  Need to set some specific parameters for SQLiteTable objects.  Such as the database and other stuff
         if parent:  # sets the parent (ideally a real table in the database) of the data that you have here.  This may not be used that much, especially if you merge things, but you have it anyway if you need it.
             self.parent = parent
@@ -28,14 +30,39 @@ class SQLiteTable(RDataFrame):
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()
+        elif varClass == BaseRedRVariable:
+            return self
         elif varClass == RVariable:
             return self._convertToDataFrame()
         elif varClass == RDataFrame:
             return self._convertToDataFrame()
         elif varClass == SQLiteTable:
             return self
+        elif varClass == StructuredDict:
+            return self._convertToStructuredDict()
+        elif varClass == UnstructuredDict:
+            return self._convertToStructuredDict()
         else:
             raise Exception
+    def _convertToStructuredDict(self):
+        ## convert to a python object that is a structured dict.
+        conn = sqlite3.connect(self.database)
+        cursor = conn.cursor()
+        cursor.execute('PRAGMA table_info('+self.data+')')
+        dictData = {}
+        colnames = []
+        for row in cursor:
+            dictData[str(row[1])] = []  # make an empty list in the beginning.
+            colnames.append(str(row[1]))
+        
+        cursor.execute('select * from '+self.data)
+        for row in cursor: ## returns a structured tuple of values that will go into the dict.  But these values are based on rows instead of columns as the dict will be
+            for i in range(len(colnames)):
+                dictData[colnames[i]].append(row[i])
+                
+        conn.close()
+        newData = StructuredDict(data = dictData, parent = self, keys = colnames)
+        return newData
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         if self.dataFrameData:

@@ -21,7 +21,7 @@ class RedRScatterplot(OWRpy):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
-        self.inputs = [('x', signals.RDataFrame, self.gotX)]
+        self.inputs = [('x', signals.StructuredDict, self.gotX)]
         self.outputs = [('Scatterplot Output', signals.RDataFrame)]
         self.data = None
         self.parent = None
@@ -78,49 +78,127 @@ class RedRScatterplot(OWRpy):
                 pass
         
     def showSelected(self):
-        if self.R('rownames('+self.data+')') != None:
-            subset = 'rownames('+self.data+')'
-        else:
-            subset = ''
-        xData = self.R(self.data+'$'+str(self.xColumnSelector.currentText()))
-        yData = self.R(self.data+'$'+str(self.yColumnSelector.currentText()))
+        if self.data == None:
+            self.status.setText('No Data')
+            return
+            
+        xData = self.data.getData()[str(self.xColumnSelector.currentText())]
+        yData = self.data.getData()[str(self.yColumnSelector.currentText())]
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
         
-        self.R(self.cm+'$'+self.Rvariables['Plot']+'<-list(True = rownames('+self.data+'[as.logical(c('+str(selected)[1:-1]+')),]), False = rownames('+self.data+'[!as.logical(c('+str(selected)[1:-1]+')),]))')
-        self.sendMe()
+        ## use the selected and unselected lists to generate the new dict.
+        newData = {}
+        for key in self.data.getData().keys():
+            newData[key] = []
+            for i in range(len(selected)):
+                if selected[i]:
+                    newData[key].append(self.data.getData()[key][i])
+                    
+        sendData = signals.StructuredDict(data = newData, parent = self.data.getData(), keys = self.data.getItem('keys'))
+        self.rSend('Scatterplot Output', newData)
+        self.sendRefresh()
         
     def gotX(self, data):
         if data:
-            self.data = data.getData()
-            self.parent = data.getItem('parent')
-            self.dataParent = data
-
-            if self.dataParent.optionalDataExists('cm'):
-                
-                self.cm = self.dataParent.getOptionalData('cm')['data']
-                cmColNames = self.R('names('+self.cm+')')
-                if cmColNames == ['NULL'] or cmColNames == None: cmColNames = []
-                if type(cmColNames) == type(''): cmColNames = [cmColNames]
-            else:
-                self.dataParent.setOptionalData(name = 'cm', data = 'cm_'+self.Rvariables['Plot'], creatorWidget = self, description = 'Created in RedRScatterplot because no Class Manager was detected')
-                self.cm = 'cm_'+self.Rvariables['Plot']
-                self.R(self.cm+'<-list()')
-                cmColNames = []
+            self.data = data
+            keys = ['']
+            keys += self.data.getItem('keys')
+            self.paintCMSelector.update(keys)
             
-
-            cmColNames.insert(0, ' ')
-            cmColNames.extend(self.R('colnames('+self.data+')'))
-            self.paintCMSelector.update(cmColNames)
-            print cmColNames
-
-
-            self.xColumnSelector.update(self.R('colnames('+self.data+')', wantType = 'list'))
-            self.yColumnSelector.update(self.R('colnames('+self.data+')', wantType = 'list'))
-            
-
+            ## might be good to limit the user to selecting only those indicies that have numeric values
+            self.xColumnSelector.update(self.data.getItem('keys'))
+            self.yColumnSelector.update(self.data.getItem('keys'))
             self.plot()
-
+        else:
+            self.data = None
+            self.xData = []
+            self.yData = []
+            self.graph.clear()
+    def unique(self, seq, idfun=None):  
+        # order preserving 
+        if idfun is None: 
+            def idfun(x): return x 
+        seen = {} 
+        result = [] 
+        for item in seq: 
+            marker = idfun(item) 
+            # in old Python versions: 
+            # if seen.has_key(marker) 
+            # but in new ones: 
+            if marker in seen: continue 
+            seen[marker] = 1 
+            result.append(item) 
+        return result
     def plot(self, newZoom = True):
+        
+        ## remake the plot function to work on dictionaries.  This will be much better than only being able to work on data frames.
+        if self.data == None:
+            self.status.setText('No Data, nothing to plot')
+            return
+        xIndex = str(self.xColumnSelector.currentText())
+        yIndex = str(self.yColumnSelector.currentText())
+        paintClass = str(self.paintCMSelector.currentText())
+        self.xData = []
+        self.yData = []
+        if xIndex == yIndex: 
+            self.status.setText('X and Y data are the same, can\'t plot.')
+            return
+        
+        # prepare the graph
+        self.graph.setXaxisTitle(str(xIndex))
+        self.graph.setYLaxisTitle(str(yIndex))
+        self.graph.setShowXaxisTitle(True)
+        self.graph.setShowYLaxisTitle(True)
+        self.graph.clear()
+
+        # start to make the plot we need to move across all of the levels (though they may not be levels in the dict case) of the paintclass and plot those points.
+        if paintClass not in ['', ' ']:  # There are paintClass and we now need to find out what they are.
+            paintclasses = self.unique(self.data.getData()[paintClass]) # returns the unique items.
+            if len(paintclasses) > 50:
+                runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
+                if runMe == QMessageBox.No: return
+            pc = 0
+            self.paintLegend.insertHtml('<h5>Color Legend</h5>')
+            self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
+                
+            for pclass in paintclasses: # move across all of the paint classes.
+                index = []
+                for i, v in enumerate(self.data.getData()[paintClass]):
+                    if v == pclass:
+                        index.append(i)
+                ## form the list for the data
+                xData = []
+                yData = []
+                for i in index:
+                    xData.append(self.data.getData()[xIndex][i])
+                    yData.append(self.data.getData()[yIndex][i])
+                lColor = self.setColor(pc)
+                self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+str(pclass)+'</td></tr>')
+                self.graph.points("MyData", xData = xData, yData = yData, brushColor = pc, penColor=pc)
+                self.xData += xData
+                self.yData += yData
+                pc += 1
+            self.paintLegend.insertHtml('</table>')
+            
+        else:
+            self.xData = self.data.getData()[xIndex]
+            self.yData = self.data.getData()[yIndex]
+            self.graph.points("MyData", xData = self.xData, yData = self.yData, brushColor = 1, penColor = 1)
+        # make the plot
+        
+        
+        if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
+             
+            if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
+                self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+            else:
+                self.status.setText('X or Y data not numeric, can not reset the zoom.')
+                print type(min(self.xData))
+                print type(min(self.yData))
+        self.graph.replot()
+        
+        
+        return
         # populate the cm class columns
         #cmSelector = str(self.subsetCMSelector.currentText())
         #cmClass = str(self.subsetCMClass.currentText())
@@ -247,16 +325,9 @@ class RedRScatterplot(OWRpy):
             self.yData += yData
         ## make a fake call to the zoom to repaint the points and to add some interest to the graph
             
-        if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
-             
-            if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
-                self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
-            else:
-                print type(min(self.xData))
-                print type(min(self.yData))
-        self.graph.replot()
     def sendMe(self):
 
+        return
         data = signals.RDataFrame(data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.parent) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         data.copyAllOptionalData(self.dataParent)
         self.rSend('Scatterplot Output', data)

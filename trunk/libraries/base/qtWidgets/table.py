@@ -26,10 +26,12 @@ class table(widgetState,QTableWidget):
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
         
-    def setTable(self, data):
+    def setTable(self, data, keys = None):
         print 'in table set'
         if data==None:
             return
+        if not keys:
+            keys = [str(key) for key in self.data.keys()]
         self.setHidden(True)
         self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -38,8 +40,11 @@ class table(widgetState,QTableWidget):
         self.setRowCount(len(data[data.keys()[0]]))
         self.setColumnCount(len(data.keys()))
 
+        self.setHorizontalHeaderLabels(keys)
+        if 'row_names' in self.data.keys(): ## special case if the keyword row_names is present we want to populate the rownames of the table
+            self.setVerticalHeaderLabels([str(item) for item in self.data['row_names']])
         n = 0
-        for key in data:
+        for key in keys:
             m = 0
             for item in data[key]:
                 newitem = QTableWidgetItem(str(item))
