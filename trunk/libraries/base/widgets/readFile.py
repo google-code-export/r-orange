@@ -29,6 +29,7 @@ class readFile(OWRpy):
         self.dataTypes = []
         self.useheader = 1
         
+        raise Exception
         
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])

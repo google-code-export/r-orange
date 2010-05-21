@@ -8,7 +8,7 @@ import sys
 import string
 from datetime import tzinfo, timedelta, datetime
 import traceback
-import os.path, os
+import os.path, os, redRGUI
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
@@ -145,25 +145,52 @@ class OutputWindow(QDialog):
     def getSafeString(self, s):
         return str(s).replace("<", "&lt;").replace(">", "&gt;")
 
+    def uploadYes(self):
+        self.msg.done(1)
+
+    def uploadNo(self):
+        self.msg.done(0)
+    def rememberResponse(self):
+        if 'Remember my Response' in self.remember.getChecked():
+            self.checked = True
+            self.canvasDlg.settings['askToUploadError'] = 0
+
+        else:
+            self.checked = False
+        
     def uploadException(self,err):
         import httplib,urllib
         import sys,pickle
-        res = QMessageBox.question(self, 'RedR Error','Do you wish to send the output to the developers?', QMessageBox.Yes, QMessageBox.No)
-        #res = QMessageBox.No
-        if res == QMessageBox.Yes:
-            err.update(self.canvasDlg.version)
-            #err['template'] = ''
-            err['output'] = self.allOutput
+
+        if not self.canvasDlg.settings['askToUploadError']:
+            res = self.canvasDlg.settings['uploadError']
+        else:
+            self.msg = redRGUI.dialog(parent=self,title='Red-R Error')
             
+            
+            error = redRGUI.widgetBox(self.msg,orientation='vertical')
+            redRGUI.widgetLabel(error, label='Do you wish to report the Error Log?')
+            buttons = redRGUI.widgetBox(error,orientation='horizontal')
+
+            redRGUI.button(buttons, label = 'Yes', callback = self.uploadYes)
+            redRGUI.button(buttons, label = 'No', callback = self.uploadNo)
+            self.checked = False
+            self.remember = redRGUI.checkBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
+            res = self.msg.exec_()
+            self.canvasDlg.settings['uploadError'] = res
+            
+        if res == 1:
+            err.update(self.canvasDlg.version)
+            err['output'] = self.allOutput
             params = urllib.urlencode(err)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
             conn = httplib.HTTPConnection("www.red-r.org",80)
             conn.request("POST", "/errorReport.php", params,headers)
-            response = conn.getresponse()
-            print response.status, response.reason
-            data = response.read()
-            print data
-            conn.close()
+            # response = conn.getresponse()
+            # print response.status, response.reason
+            # data = response.read()
+            # print data
+            # conn.close()
         else:
             return
         
@@ -212,7 +239,7 @@ class OutputWindow(QDialog):
         text += "<b>" + totalSpace + self.getSafeString(lines[-1]) + "</b><br>\n"
 
         toUpload['traceback'] = text
-        self.uploadException(toUpload)
+        
         
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
@@ -223,3 +250,5 @@ class OutputWindow(QDialog):
 
         if self.canvasDlg.settings["writeLogFile"]:
             self.logFile.write(str(text) + "<br>\n")
+        
+        self.uploadException(toUpload)

@@ -79,7 +79,7 @@ class CanvasOptionsDlg(QDialog):
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", "Don't ask to save schema before closing", debuggingEnabled = 0)
         self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", "Save size and position of widgets", debuggingEnabled = 0)
         
-        self.useContextsCB = OWGUI.checkBox(generalBox, self.settings, "useContexts", "Use context settings")
+        # self.useContextsCB = OWGUI.checkBox(generalBox, self.settings, "useContexts", "Use context settings")
         validator = QIntValidator(self)
         validator.setRange(0,10000)
 
@@ -132,6 +132,8 @@ class CanvasOptionsDlg(QDialog):
         #self.catchExceptionCB = QCheckBox('Catch exceptions', exceptions)
         self.focusOnCatchExceptionCB = OWGUI.checkBox(exceptions, self.settings, "focusOnCatchException", 'Show output window on exception')
         self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "printExceptionInStatusBar", 'Print last exception in status bar')
+        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "uploadError", 'Submit Error Report')
+        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "askToUploadError", 'Always ask before submitting error report')
 
         output = OWGUI.widgetBox(ExceptionsTab, "System output")
         #self.catchOutputCB = QCheckBox('Catch system output', output)

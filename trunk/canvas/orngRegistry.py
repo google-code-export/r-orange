@@ -260,8 +260,12 @@ def readTemplates(directory, package, cachedWidgetDescriptions):
 def loadPackage(package):
     # import imp
     # m = imp.new_module(package)
-    redRGUI.registerQTWidgets(package)
-    signals.registerRedRSignals(package)
+    #print '######## %s' % str(hasattr(redRGUI,package))
+    if not hasattr(redRGUI,package):
+        redRGUI.registerQTWidgets(package)
+    if not hasattr(signals,package):
+        signals.registerRedRSignals(package)
+    
     
 ### we really need to change this...
 re_inputs = re.compile(r'[ \t]+self.inputs\s*=\s*(?P<signals>\[[^]]*\])', re.DOTALL)

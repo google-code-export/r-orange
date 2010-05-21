@@ -4,9 +4,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class dialog(QDialog):
-    def __init__(self, parent = None, layout = 'vertical'):
-        QDialog.__init__(self)
-        
+    def __init__(self, parent = None, layout = 'vertical',title=None):
+        QDialog.__init__(self,parent)
+        if title:
+            self.setWindowTitle(title)
         if layout == 'horizontal':
             self.setLayout(QHBoxLayout())
         else:

@@ -32,8 +32,8 @@ class OrangeCanvasDlg(QMainWindow):
         
 
         self.__dict__.update(redREnviron.directoryNames)
-        print self.tempDir
-        print redREnviron.directoryNames['tempDir']
+        # print self.tempDir
+        # print redREnviron.directoryNames['tempDir']
         logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
         splashWindow.setMask(logo.mask())
@@ -634,6 +634,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.settings.setdefault("writeLogFile", 1)
         self.settings.setdefault("dontAskBeforeClose", 0)
         self.settings.setdefault("debugMode", 0)
+        self.settings.setdefault("uploadError", 0)
+        self.settings.setdefault("askToUploadError", 0)
         #self.settings.setdefault("autoSaveSchemasOnClose", 0)
         self.settings.setdefault("saveWidgetsPosition", 1)
         self.settings.setdefault("svnSettings", None)
