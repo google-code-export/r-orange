@@ -160,13 +160,12 @@ class OutputWindow(QDialog):
         
     def uploadException(self,err):
         import httplib,urllib
-        import sys,pickle
+        import sys,pickle,os
 
         if not self.canvasDlg.settings['askToUploadError']:
             res = self.canvasDlg.settings['uploadError']
         else:
             self.msg = redRGUI.dialog(parent=self,title='Red-R Error')
-            
             
             error = redRGUI.widgetBox(self.msg,orientation='vertical')
             redRGUI.widgetLabel(error, label='Do you wish to report the Error Log?')
@@ -182,6 +181,7 @@ class OutputWindow(QDialog):
         if res == 1:
             err.update(self.canvasDlg.version)
             err['output'] = self.allOutput
+            err['os'] = os.name
             params = urllib.urlencode(err)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
             conn = httplib.HTTPConnection("www.red-r.org",80)

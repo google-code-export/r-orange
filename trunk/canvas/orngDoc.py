@@ -461,6 +461,7 @@ class SchemaDoc(QWidget):
             temp.setAttribute("caption", widget.caption)
             
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
+            temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
             temp.setAttribute('widgetID', widget.instance.widgetID)
             print 'save in orngDoc ' + str(widget.caption)
             progress += 1
