@@ -328,33 +328,26 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
     def importSchema(self):
-        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs, *.rrts);; All Files (*.*)")
-        if name.isEmpty():
-            return
-        if os.path.splitext(str(name))[1].lower() == '.rrts':  ## we have a template schema and need to treat it in a special way   
-            self.schema.loadTemplate(str(name))
-            return # we don't want to process any further
-        else:
-            self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
-            self.schema.loadDocument(str(name), freeze = 0, importBlank = 1)
-            self.addToRecentMenu(str(name))
+        name = QFileDialog.getOpenFileName(self, "Import File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
+        if name.isEmpty(): return
+        
+        self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        self.schema.loadDocument(str(name), freeze = 0, importing = True)
+        self.addToRecentMenu(str(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs);; Red-R Package (*.rrp);; Red-R Template (*.rrts);; All Files (*.*)")
-        if name.isEmpty():
+        name = QFileDialog.getOpenFileName(self, "Open File", 
+        self.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
+        if name.isEmpty(): return
         
-            return
-        if os.path.splitext(str(name))[1].lower() == '.rrts':  ## we have a template schema and need to treat it in a special way   
-            self.schema.loadTemplate(str(name))
-            return # we don't want to process any further
-        else:
-            self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
-            self.schema.clear()
-            self.schema.loadDocument(str(name), freeze = 0, importBlank = 0)
-            self.addToRecentMenu(str(name))
+        self.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        self.schema.clear()
+        self.schema.loadDocument(str(name), freeze = 0, importing = False)
+        self.addToRecentMenu(str(name))
 
     def menuItemOpenFreeze(self):
-        name = QFileDialog.getOpenFileName(self, "Open File", self.settings["saveSchemaDir"], "Orange Widget Scripts (*.rrs)")
+        name = QFileDialog.getOpenFileName(self, "Open File", 
+        self.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         if name.isEmpty():
             return
         self.schema.clear()

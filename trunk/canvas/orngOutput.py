@@ -136,8 +136,6 @@ class OutputWindow(QDialog):
         else:
             self.unfinishedText += text
             
-        
-
 
     def flush(self):
         pass
@@ -252,3 +250,10 @@ class OutputWindow(QDialog):
             self.logFile.write(str(text) + "<br>\n")
         
         self.uploadException(toUpload)
+
+        
+def printException(self):
+    import sys, traceback
+    print '-'*60
+    traceback.print_exc(file=sys.stdout)
+    print '-'*60        
