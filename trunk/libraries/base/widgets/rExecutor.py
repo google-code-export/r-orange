@@ -39,7 +39,7 @@ class rExecutor(OWRpy):
         area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        leftArea = redRGUI.widgetBox(area)
+        leftArea = redRGUI.widgetBox(self.box)
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         rightArea = redRGUI.widgetBox(area)
 
@@ -53,32 +53,28 @@ class rExecutor(OWRpy):
         self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
         self.status = redRGUI.widgetLabel(self.dataBox, "No Input")
         
-        self.metadataBox = redRGUI.widgetBox(leftArea, "Metadata")
-        self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
-        self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
+        # self.metadataBox = redRGUI.widgetBox(leftArea, "Metadata")
+        # self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
+        # self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
         varbutton = redRGUI.button(leftArea, "Recieved", callback = self.putrecieved, width = 150)
         history = redRGUI.button(leftArea, "RHistory", callback = self.putRHistory, width = 150)
         redRGUI.button(leftArea, "Clear Output", callback = self.clearOutput)
 
         self.thistext = redRGUI.textEdit(rightArea)
 
-        #sendbox = redRGUI.groupBox(leftArea, "Send Box")
-        #self.sendthis = redRGUI.lineEdit(sendbox,"", label = "Send")
         sendbutton = redRGUI.button(runbox, label = "&Send", tooltip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
-        #self.resize(700,500)
-        #self.move(300, 25)
-        #self.autoShowDialog = 0
+
         
     def clearOutput(self):
         self.thistext.clear()
     def putrecieved(self):
         self.command.setText(str(self.data))
         
-    def insertMetaDataVar(self):
-        tmp = str(self.olddata[str(self.metadataLB.selectedItems()[0].text())])
-        self.thistext.insertHtml(tmp)
-        self.infoM.setText(tmp)
-        self.command.setText(tmp)
+    # def insertMetaDataVar(self):
+        # tmp = str(self.olddata[str(self.metadataLB.selectedItems()[0].text())])
+        # self.thistext.insertHtml(tmp)
+        # self.infoM.setText(tmp)
+        # self.command.setText(tmp)
     def sendThis(self):
         
         thisdataclass = self.R('class('+str(self.command.text())+')')
@@ -134,14 +130,7 @@ class rExecutor(OWRpy):
         if data:
             self.data = str(data.getData())
             self.olddata = data
-            if self.olddata.data:
-                self.metadataLB.addItem('data')
-            if self.olddata.parent:
-                self.metadataLB.addItem('parent')
-            if hasattr(self.olddata,'cm') and self.olddata.cm:
-                self.metadataLB.addItem('cm')
-            for key in self.olddata.dictAttrs.keys():
-                self.metadataLB.addItem(key)
+            
             self.infob.setText(self.data)
             # logic to handle assignment of the data elements
             thisclass = self.R('class('+self.data+')')

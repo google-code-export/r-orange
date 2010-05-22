@@ -70,6 +70,20 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
         elif type(output) == type([]):
             
             output = {'output': output}
+        elif type(output) == type({}):
+            print '#--#'+str(output)
+            for key in output:
+                if type(output[key]) not in [list]:  # the key does not point to a list so now we make some choices
+                    if type(output[key]) not in [list, dict]:
+                        nd = output.copy()[key]
+                        print nd, output[key]
+                        output[key] = [nd]  ## forces coersion to a list
+                    elif type(output[key]) in [dict]:  # it is a dict, we need to coerce this to a list, com
+                        ## for some reason we are seeing dicts of returned statemtns.  This is very strange but we need to deal with it.
+                        nd = []
+                        for key2 in output[key].keys():
+                            nd.append(output[key][key2])
+                        output[key] = nd
         else:
             pass
     elif wantType == 'array': # want a numpy array

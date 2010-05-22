@@ -44,9 +44,19 @@ class SQLiteTable(RDataFrame, StructuredDict):
             return self._convertToStructuredDict()
         else:
             raise Exception
+    def getDatabase(self):
+        if 'local|' in self.database:  # convert the database if the local name is present.
+            database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+        else:
+            database = self.database
+        return database
     def _convertToStructuredDict(self):
         ## convert to a python object that is a structured dict.
-        conn = sqlite3.connect(self.database)
+        if 'local|' in self.database:  # convert the database if the local name is present.
+            database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+        else:
+            database = self.database
+        conn = sqlite3.connect(database)
         cursor = conn.cursor()
         cursor.execute('PRAGMA table_info('+self.data+')')
         dictData = {}

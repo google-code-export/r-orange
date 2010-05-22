@@ -232,10 +232,10 @@ class dataEntry(OWRpy):
         if len(rownames) > 0:
             rname = []
             for i in rowi:
-                print i
-                print str(i)
-
-                rname.append(rownames[str(i)])
+                if rownames[str(i)] in rname:
+                    rname.append(rownames[str(i)]+'_at_'+str(i))
+                else:
+                    rname.append(rownames[str(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')

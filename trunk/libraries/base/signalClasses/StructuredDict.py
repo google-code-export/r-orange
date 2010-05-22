@@ -17,6 +17,7 @@ class StructuredDict(UnstructuredDict):
                 if type(data[key]) not in [list]:
                     raise Exception, 'Data in '+str(key)+' not of list type'
                 if len(data[key]) != self.length:
+                    print data
                     raise Exception, 'Data in '+str(key)+' not of same length as data in first key.'
                         
             if keys and len(keys) != len(self.data.keys()):

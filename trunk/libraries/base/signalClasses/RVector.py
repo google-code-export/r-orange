@@ -31,7 +31,10 @@ class RVector(RMatrix):
         keys = ['row_names']
         keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
         rownames = self.R('rownames('+self.data+')', wantType = 'list')
-        if rownames[0] in [None, 'NULL', 'NA']:
+        try:
+            if rownames in [None, 'NULL', 'NA']:
+                rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
+        except:
             rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
         data['row_names'] = rownames
         newData = StructuredDict(data = data, parent = self, keys = keys)

@@ -27,5 +27,12 @@ class boxplot(OWRpy):
         self.savePDF('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')
         self.status.setText('Plot Saved')
     def commitFunction(self):
-        if self.x == '': return
-        self.Rplot('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')
+        if self.x == '': 
+            self.status.setText('Do data. Can not plot')
+            return
+        try:
+            self.Rplot('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')
+        except:
+            QMessageBox.information(self,'R Error', "Plotting failed.  Try to format the data in a way that is acceptable for this widget.\nSee the documentation for help.", 
+            QMessageBox.Ok + QMessageBox.Default)
+            return

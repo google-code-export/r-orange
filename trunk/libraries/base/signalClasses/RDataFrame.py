@@ -23,11 +23,11 @@ class RDataFrame(RList, StructuredDict):
         else:
             raise Exception
     def _convertToStructuredDict(self):
-        dictData = self.R(self.data, wantType = 'dict')
+        dictData = self.R(self.data, wantType = 'dict', silent = False)
         dictData['row_names'] = self.R('rownames('+self.data+')', wantType = 'list')
         keys = ['row_names']
         keys += self.R('colnames('+self.data+')')
-        newData = StructuredDict(data = data, parent = self, keys = keys)
+        newData = StructuredDict(data = dictData, parent = self, keys = keys)
         return newData
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')

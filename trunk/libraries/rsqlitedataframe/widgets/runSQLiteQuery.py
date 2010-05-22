@@ -68,7 +68,7 @@ class runSQLiteQuery(OWRpy):
             self.status.setText('Can\'t show table names when no main table exists.  Please resend data.')
             return
             
-        conn = sqlite3.connect(self.mainData.getItem('database'))  # make the main connection
+        conn = sqlite3.connect(self.mainData.getDatabase())  # make the main connection
         cursor = conn.cursor()
         
         cursor.execute('SELECT * FROM SQLITE_MASTER WHERE type="table" OR type ="view"')
@@ -90,7 +90,7 @@ class runSQLiteQuery(OWRpy):
             self.status.setText('Can\'t show table names when no main table exists.  Please resend data.')
             return
             
-        conn = sqlite3.connect(self.mainData.getItem('database'))  # make the main connection
+        conn = sqlite3.connect(self.mainData.getDatabase())  # make the main connection
         cursor = conn.cursor()
         
         cursor.execute('PRAGMA table_info('+tableName+')')
@@ -114,7 +114,7 @@ class runSQLiteQuery(OWRpy):
             self.status.setText('Can\'t move table when no main table exists.  Please resend data.')
             return
             
-        conn = sqlite3.connect(self.mainData.getItem('database'))  # make the main connection
+        conn = sqlite3.connect(self.mainData.getDatabase())  # make the main connection
         cursor = conn.cursor()
         
         ## attach the data for the new table
@@ -144,10 +144,8 @@ class runSQLiteQuery(OWRpy):
             self.status.setText('No Main Data connected')
             return
         self.outputTextArea.clear()
-        if 'local|' in self.mainData.getItem('database'):
-            databaseName = os.path.join(qApp.canvasDlg.tempDir, self.mainData.getItem('database').split('|')[1])
-        else:
-            databaseName = self.mainData.getItem('database')
+        
+        databaseName = self.mainData.getDatabase()
         statement = str(self.statementLineEdit.text())
         conn = sqlite3.connect(databaseName)
         cursor = conn.cursor()

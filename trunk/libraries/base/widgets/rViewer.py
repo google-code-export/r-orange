@@ -41,33 +41,11 @@ class rViewer(OWRpy):
 
     
     def commitFunction(self):
-        # if not self.RFunctionParam_data:
-            # self.status.setText('No data connected to show.')
-            # return
-        # if self.data.getClass_data() in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked() and 'Show All Columns' not in self.showAll.getChecked():
-            # dims = self.data.getDims_data()
-            # if dims[0] > 5 and dims[1] > 5:
-                # text = self.data.getFullOutput(subsetting = '[1:5, 1:5]')
-            # elif dims[0] > 5:
-                # text = self.data.getFullOutput(subsetting = '[1:5,]')
-            # elif dims[1] > 5:
-                # text = self.data.getFullOutput(subsetting = '[,1:5]')
-            # else:
-                # text = self.data.getFullOutput(subsetting = '')
-        # elif self.data.getClass_data() in ['data.frame', 'matrix'] and 'Show All Rows' not in self.showAll.getChecked():
-            # dims = self.data.getDims_data()
-            # if dims[0] > 5:
-                # text = self.data.getFullOutput(subsetting = '[1:5,]')#only need to see the first 5 rows of the data.
-            # else:
-                # text = self.data.getFullOutput(subsetting = '')
-        # elif self.R('class('+self.RFunctionParam_data+')') in ['data.frame', 'matrix'] and 'Show All Columns' not in self.showAll.getChecked():
-            # dims = self.R('dim('+self.RFunctionParam_data+')')
-            # if dims[1] > 5:
-                # text = self.data.getFullOutput(subsetting = '[,1:5]')#only need to see the first 5 cols of the data.
-            # else:
-                # text = self.data.getFullOutput(subsetting = '')
-        # else:
-            # text = self.data.getFullOutput(subsetting = '')
+        
         self.RoutputWindow.clear()
-        text = self.R('paste(capture.output(summary('+str(self.data.getData())+')), collapse = \'\\n\')')
+        try:
+            text = self.data.showSummary()
+        except Exception, msg:
+            print str(msg), 'Show Summary must not exist in this signal type'
+            text = self.R('paste(capture.output(str('+str(self.data.getData())+')), collapse = \'\\n\')')
         self.RoutputWindow.setHtml('<pre>'+str(text)+'</pre>')
