@@ -72,8 +72,8 @@ def readCategories():
     for dirName, directory, plugin in directories:
         templates = readTemplates(os.path.join(directory,'templates'), dirName, cachedWidgetDescriptions) # a function to read in the templates that are in the directories
         allTemplates += templates
-    if allTemplates:
-        categories['templates'] = allTemplates
+        print templates
+    categories['templates'] = allTemplates
     cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
         splashWindow.hide()
@@ -233,9 +233,9 @@ def readTemplates(directory, package, cachedWidgetDescriptions):
     
     # print '################readWidgets', directory, package
     templates = []
-    for filename in glob.iglob(os.path.join(directory, "*.rrs")):
+    for filename in glob.iglob(os.path.join(directory, "*.rrts")):
         if os.path.isdir(filename) or os.path.islink(filename):
-            continue  # protects from a filename that has .rrs in it I guess
+            continue  # protects from a direcoty that has .rrs in it I guess
 
         dirname, fname = os.path.split(filename)
         # dirname, package = os.path.split(dirname)
@@ -249,7 +249,7 @@ def readTemplates(directory, package, cachedWidgetDescriptions):
                 splashWindow.setMask(logo.mask())
                 splashWindow.show()
                 
-            splashWindow.showMessage("Registering widget %s" % templateName, Qt.AlignHCenter + Qt.AlignBottom)
+            splashWindow.showMessage("Registering template %s" % templateName, Qt.AlignHCenter + Qt.AlignBottom)
             qApp.processEvents()
             templateInfo = TemplateDescription(name = templateName, file = filename) 
             templates.append(templateInfo)

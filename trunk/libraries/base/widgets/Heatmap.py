@@ -73,6 +73,7 @@ class Heatmap(OWRpy):
                 self.makePlot()
         else: 
             self.Rplot('par(mfrow=c(1,1))')
+            self.R('dev.off()')
     def processClasses(self, data):
         if data:
             self.classesData = data.getData()

@@ -208,6 +208,8 @@ class MyTreeWidget(QTreeWidget):
         self.setStyleSheet(""" QTreeView::item {padding: 2px 0px 2px 0px} """)          # show items a little bit apart from each other
 
         
+    ####  DEPRICATED   #####
+        
     # def mouseMoveEvent(self, e):
         # if not self.mousePressed:   # this is needed, otherwise another widget in the tree might get selected while we drag the icon to the canvas
             # QTreeWidget.mouseMoveEvent(self, e)
@@ -501,7 +503,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.widgetSuggestEdit.autoSizeListWidget = 1
         
         self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in self.actions])
-        self.widgetSuggestEdit.addItems([QListWidgetItem(action.templateInfo.name) for action in self.templateActions])
+        self.widgetSuggestEdit.addItems([QListWidgetItem(action.icon(), action.templateInfo.name) for action in self.templateActions])
         #self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
         #tmpBoxLayout.insertWidget(0, CanvasPopup)
         tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
@@ -805,11 +807,14 @@ def constructCategoriesPopup(canvasDlg):
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in canvasDlg.widgetRegistry['templates']:
-        #icon = 
-        act = catmenu.addAction(#icon,
-        template.name)
-        act.templateInfo = template
-        categoriesPopup.templateActions.append(act)
+        try:
+            icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'], 'Default.png'))
+            act = catmenu.addAction(icon, template.name)
+            act.templateInfo = template
+            categoriesPopup.templateActions.append(act)
+        except Exception as inst:
+            print inst
+            print 'Loading template failed'
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -833,7 +838,7 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
     widgets = None
-    print str(canvasDlg.widgetRegistry['widgets'])
+    print str(canvasDlg.widgetRegistry['templates'])
     try:
         for wName in canvasDlg.widgetRegistry['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
             widgetInfo = canvasDlg.widgetRegistry['widgets'][wName]
@@ -847,8 +852,6 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                     if not widgetInfo.name in categoriesPopup.widgetActionNameList:
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
-                        
-                        
             except Exception as inst: 
                 print inst
                 pass

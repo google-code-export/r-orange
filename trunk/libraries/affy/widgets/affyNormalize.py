@@ -16,7 +16,7 @@ import redRGUI
 
 class affyNormalize(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, 'Affy Normalize', signalManager, "Normalization")
+        OWRpy.__init__(self, parent, signalManager, 'Affy Normalize')
         
         self.normmeth = 'quantiles'
         self.normoptions = ''

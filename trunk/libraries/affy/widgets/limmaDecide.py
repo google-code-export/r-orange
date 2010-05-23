@@ -23,7 +23,7 @@ class limmaDecide(OWRpy):
         self.eset = None
         self.sending = None
         self.modelProcessed = 0
-        self.saveSettingsList.append('data', 'ebdata', 'olddata', 'newdata', 'eset', 'sending', 'modelProcessed'])
+        self.saveSettingsList.append(['data', 'ebdata', 'olddata', 'newdata', 'eset', 'sending', 'modelProcessed'])
         
         
         self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm', 'gcm_matrix'])
@@ -63,8 +63,8 @@ class limmaDecide(OWRpy):
         self.removeWarning()
         if dataset == None:
             self.status.setText("Blank data recieved")
-            self.runbutton.setEnabled(False)
-            self.pickGroup.setEnabled(False)
+            # self.runbutton.setEnabled(False)
+            # self.pickGroup.setEnabled(False)
             return
         
         self.data = dataset.getData()

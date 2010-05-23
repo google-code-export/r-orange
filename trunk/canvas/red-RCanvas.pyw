@@ -415,7 +415,6 @@ class OrangeCanvasDlg(QMainWindow):
             #print 'Added doc ', shortName, ' to position ', i
 
     def openRecentFile(self, index):
-        print 'Loading recent file at index ', index, ':', self.settings["RecentFiles"][index-1]
         if len(self.settings["RecentFiles"]) >= index:
             self.schema.clear()
             self.schema.loadDocument(self.settings["RecentFiles"][index-1])

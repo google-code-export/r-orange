@@ -13,7 +13,7 @@ import signals
 class plotAffy(OWRpy):
     settingsList = ['irows', 'icols', 'qcsProcessed']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, 'Plot Affy', signalManager, "plotAffy")
+        OWRpy.__init__(self, parent, signalManager, 'Plot Affy')
         
         #default values        
         #self.irows = 1 #this sets the variable for the rows
