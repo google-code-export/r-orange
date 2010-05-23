@@ -77,6 +77,8 @@ class SQLiteTable(RDataFrame, StructuredDict):
         print 'Delete Signal'
         if self.dataFrameData:
             self.R('if(exists("' + self.dataFrameData.getData() + '")) { rm(' + self.dataFrameData.getData() + ') }')
+        
+        self.dataFrameData = None
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         if self.dataFrameData:
