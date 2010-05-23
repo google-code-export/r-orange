@@ -48,12 +48,21 @@ class widgetSignals():
             self.linksOut[signalName] = {id:value}
         
         self.signalManager.send(self, signalName, value, id)
-
+    def callSignalDelete(self, name):
+        if self.linksOut.has_key(name):
+        
+            for id in self.linksOut[name]:
+                try:
+                    self.linksOut[name][id].deleteSignal()
+                except Exception as inst:
+                    print str(inst)
+        
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
         
         
         try:
+            self.callSignalDelete(name)
             self.send(name, variable)
             self.removeInformation(id = 'attention')
             self.removeError()

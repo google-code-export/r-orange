@@ -75,7 +75,8 @@ class BaseRedRVariable:
         return copy.deepcopy(self)
     def removeOptionalData(self, name):
         del self.dictAttrs['name']
-
+    def deleteSignal(self):
+        print 'Deleting signal'
         
 
 

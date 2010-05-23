@@ -73,6 +73,10 @@ class SQLiteTable(RDataFrame, StructuredDict):
         conn.close()
         newData = StructuredDict(data = dictData, parent = self, keys = colnames)
         return newData
+    def deleteSignal(self):
+        print 'Delete Signal'
+        if self.dataFrameData:
+            self.R('if(exists("' + self.dataFrameData.getData() + '")) { rm(' + self.dataFrameData.getData() + ') }')
     def _convertToList(self):
         #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
         if self.dataFrameData:
