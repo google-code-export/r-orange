@@ -32,21 +32,26 @@ def __getDirectoryNames():
     orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     
     reportsDir = os.path.join(orangeSettingsDir, "RedRReports")
-    bufferDir = os.path.join(orangeSettingsDir, "buffer")
     canvasSettingsDir = os.path.join(orangeSettingsDir, "RedRCanvas") 
     
     
     widgetSettingsDir = os.path.join(orangeSettingsDir, "RedRWidgetSettings")
 
-    for dname in [orangeSettingsDir, bufferDir, widgetSettingsDir, canvasSettingsDir, reportsDir]:
+    for dname in [orangeSettingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir]:
         if dname <> None and not os.path.isdir(dname):
             try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
     
     tempDir = setTempDir(canvasSettingsDir, 1)
     print tempDir
-    return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir",  "canvasSettingsDir", "bufferDir"]])
-
+    return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+def checkInternetConnection():
+    import urllib
+    try:
+        urllib.urlopen('http://www.red-r.org/')
+        return True
+    except:
+        return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(canvasSettingsDir, dirNumber):

@@ -3,7 +3,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class table(widgetState,QTableWidget):
-    def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1):
+    def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
         QTableWidget.__init__(self,rows,columns,widget)
         self.sortIndex = None
         self.oldSortingIndex = None
@@ -25,7 +25,8 @@ class table(widgetState,QTableWidget):
         if sortable:
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
-        
+        if callback:
+            QObject.connect(self, SIGNAL('cellClicked(int, int)'), callback)
     def setTable(self, data, keys = None):
         print 'in table set'
         if data==None:

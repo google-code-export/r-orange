@@ -11,7 +11,7 @@
 ;--------------------------------
 ; Defines
 !define RVERSION "Red-R1.7.Snapshot" ;                                           ;;; Change this when a new version is made
-!define Red-RDIR C:\Python26\Lib\site-packages\redR1.5
+!define Red-RDIR C:\Python26\Lib\site-packages\redR1.5-base
 
 ;---------------------------------
   ;Default installation folder

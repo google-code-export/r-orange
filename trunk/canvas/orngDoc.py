@@ -830,7 +830,9 @@ class SchemaDoc(QWidget):
                 if dependencies != 'None':
                     alldeps = dependencies.split(',')
                     print '|##| Dependencies are:'+str(alldeps)
-                    self.resolveRRPDependencies(alldeps, repository)
+                    if not self.resolveRRPDependencies(alldeps, repository):
+                        print 'Error occured during resolution of dependencies.'
+                        QMessageBox.information(self, "Dependencies Failed", "Error occured during resolution of dependencies.\nWe will continue loading the file, but you may have problems with the widgets.\nPlease try to reload this package later to fix the dependencies.", QMessageBox.Ok)
 
                 # run the install file if there is one, this should take care of the dependencies that are non-R related and install the needed files for the package
                 
@@ -840,10 +842,7 @@ class SchemaDoc(QWidget):
                     passed = True
                     execfile(os.path.join(str(installDir), 'installFile.py'))
                     if passed == False: # there was an error in loading.  We should stop the installation, clear the tempdirectory of the failed zipfile and return
-                        print 'Loading of installFile failed.  Aborting installation'
-                        import shutil
-                        shutil.rmtree(installDir, True)
-                        return False
+                        QMessageBox.information(self, "Installation Failed", "Error occured during resolution of dependencies.\nWe will continue loading the file, but you may have problems with the widgets.\nPlease try to reload this package later to fix the dependencies.", QMessageBox.Ok)
                         
                 ## now move all of the files in the tempDir into the libraries dir of Red-R
                 packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes).split('/')[0] # get the base package name, this is the base folder of the package.
@@ -881,7 +880,9 @@ class SchemaDoc(QWidget):
                     alldeps.append(packageName)
                 else:
                     alldeps = [packageName]
-                self.resolveRRPDependencies(alldeps, repository)
+                if not self.resolveRRPDependencies(alldeps, repository):
+                    print 'Error occured during resolution of dependencies.'
+                    QMessageBox.information(self, "Dependencies Failed", "Error occured during resolution of dependencies.\nWe will continue loading the file, but you may have problems with the widgets.\nPlease try to reload this package later to fix the dependencies.", QMessageBox.Ok)
 
                 print 'Package loaded successfully'
                 self.canvasDlg.reloadWidgets()
@@ -889,6 +890,7 @@ class SchemaDoc(QWidget):
             print 'Error occured during rrp loading.  Please try again later.'
             return False
     def resolveRRPDependencies(self, alldeps, repository):
+        loadedOk = 1
         for dep in alldeps:
             try:
                 print dep
@@ -904,10 +906,13 @@ class SchemaDoc(QWidget):
                         ## install the package
                         self.loadRRP(filename = os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
                     except:
+                        loadedOk = 0
                         print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
             except:
+                loadedOk = 0
                 print 'Problem resolving dependencies: '+str(dep)+', this will not be availabel.  Please try again later'
                 continue
+        return loadedOk
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()
