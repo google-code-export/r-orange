@@ -148,14 +148,17 @@ class runSigPathway(OWRpy):
             progressBar.setValue(0)
             progressBar.setWindowTitle('Loading')
             pbv = 0
-            opener = urllib.FancyURLopener()
-            for geneSet in neededFiles:
-                #try:
-                opener.retrieve(url = 'http://chip.org/~ppark/Supplements/PNAS05/%s.RData' % geneSet, filename = os.path.abspath(os.path.join(destpath, geneSet+'.RData')))
-                # except: 
-                    # print 'Exception
-                pbv += 1
-                progressBar.setValue(pbv)
+            if redREnviron.checkInternetConnection():
+                mb = QMessageBox("Pathway Enrichment", "You are missing some key files for this widget.\n+"+'\n'.join(neededFiles)+"Would you like to download them?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+                if mb.exec_() == QMessageBox.Ok:
+                    opener = urllib.FancyURLopener()
+                    for geneSet in neededFiles:
+                        #try:
+                        opener.retrieve(url = 'http://chip.org/~ppark/Supplements/PNAS05/%s.RData' % geneSet, filename = os.path.abspath(os.path.join(destpath, geneSet+'.RData')))
+                        # except: 
+                            # print 'Exception
+                        pbv += 1
+                        progressBar.setValue(pbv)
 
     def runPath(self, reload = 0):
         if self.data == '': self.setWarning(id = 'NoData', text = 'No data to process')
