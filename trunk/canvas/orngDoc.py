@@ -11,7 +11,7 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
 import globalData
-import redRPackageManager.packageManager as packageManager
+from redRPackageManager import packageManager
 
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
@@ -577,7 +577,8 @@ class SchemaDoc(QWidget):
         ## What is the purpose of this???
         if not os.path.exists(filename):
             if os.path.splitext(filename)[1].lower() != ".tmp":
-                QMessageBox.critical(self, 'Red-R Canvas', 'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
+                QMessageBox.critical(self, 'Red-R Canvas', 
+                'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
             return
             loadingProgressBar.hide()
             loadingProgressBar.close()
@@ -645,50 +646,39 @@ class SchemaDoc(QWidget):
         qApp.restoreOverrideCursor()
         loadingProgressBar.hide()
         loadingProgressBar.close()
+    
     def loadLines(self, lineList, loadingProgressBar, freeze, tmp):
         failureText = ""
         loadedOk = 1
         for line in lineList:
             inIndex = line.getAttribute("inWidgetIndex")
             outIndex = line.getAttribute("outWidgetIndex")
-            print inIndex, outIndex, '###################HFJSDADSHFAK#############'
-            try:
-                inIndex = line.getAttribute("inWidgetIndex")
-                outIndex = line.getAttribute("outWidgetIndex")
-                if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
-                    raise Exception
-                if freeze: enabled = 0
-                else:      enabled = int(line.getAttribute("enabled"))
-                signals = line.getAttribute("signals")
-                if tmp: ## index up the index to match sessionID
-                    inIndex += '_'+str(self.sessionID)
-                    outIndex += '_'+str(self.sessionID)
-                    print inIndex, outIndex, 'Settings template ID to these values'
-                inWidget = self.getWidgetByID(inIndex)
-                outWidget = self.getWidgetByID(outIndex)
-                if inWidget == None or outWidget == None:
-                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
-                    loadedOk = 0
-                    continue
-            except Exception as inst: # must not be an index in this schema   
-                print 'Exception raised', str(inst)
-                inCaption = line.getAttribute('inWidgetCaption')
-                outCaption = line.getAttribute('outWidgetCaption')
-                
-                print 'Captions are ', inCaption, outCaption
-                if freeze: enabled = 0
-                else:      enabled = int(line.getAttribute("enabled"))
-                signals = line.getAttribute("signals")
-                print signals
-                inWidget = self.getWidgetByCaption(inCaption)
-                outWidget = self.getWidgetByCaption(outCaption)
-                if inWidget == None or outWidget == None:
-                    failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outCaption, inCaption)
-                    loadedOk = 0
-                    continue
+            #print inIndex, outIndex, '###################HFJSDADSHFAK#############'
+            inIndex = line.getAttribute("inWidgetIndex")
+            outIndex = line.getAttribute("outWidgetIndex")
+            if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
+                raise Exception
+            if freeze: enabled = 0
+            else:      enabled = int(line.getAttribute("enabled"))
+            signals = line.getAttribute("signals")
+            if tmp: ## index up the index to match sessionID
+                inIndex += '_'+str(self.sessionID)
+                outIndex += '_'+str(self.sessionID)
+                print inIndex, outIndex, 'Settings template ID to these values'
+            inWidget = self.getWidgetByID(inIndex)
+            outWidget = self.getWidgetByID(outIndex)
+            if inWidget == None or outWidget == None:
+                failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
+                loadedOk = 0
+                continue
             signalList = eval(signals)
             for (outName, inName) in signalList:
                 self.addLink(outWidget, inWidget, outName, inName, enabled)
+            
+            #required to process all the signals of the saved widgets.
+            #without this all the signals are set to unprocessed 
+            #and will re-process on any update of an upstream widget
+            self.signalManager.setFreeze(0)
             qApp.processEvents()
             
         return (loadedOk, failureText)

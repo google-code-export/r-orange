@@ -30,6 +30,6 @@ class dummy(OWRpy):
             
         box = OWGUI.widgetBox(self.controlArea, "Info")
         self.infoa = OWGUI.widgetLabel(box, "A widget failed to load this was put in it's place.")
-        self.infob = OWGUI.widgetLabel(box, "The variables that were saved with this widget are %s .\n You can use R Executor to retrieve these variables and incorporate them into your schema." % str(self.sentItems))
+        self.infob = OWGUI.widgetLabel(box, "The variables that were saved with this widget are %s .\n You can use R Executor to retrieve these variables and incorporate them into your schema." % str(self.linksOut))
         
     

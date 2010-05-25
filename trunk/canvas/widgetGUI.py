@@ -128,8 +128,9 @@ class widgetGUI(QMainWindow):
                 html = f.read()
                 f.close()
             else:
-                html = 'No local help file. <a href="http://www.red-r.org/"> Red-R</a>'
+                html = 'No local help file. Please visit <a href="http://www.red-r.org/"> Red-R</a> for more help.'
             self.help = redRGUI.webViewBox(self.helpBox)
+            
             self.help.setHtml(html)
             self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         

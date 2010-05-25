@@ -1,5 +1,5 @@
 """
-<name>View R Data Table</name>
+<name>View Data Table</name>
 <description>Shows data in a spreadsheet.</description>
 <tags>View Data</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
@@ -24,14 +24,14 @@ import globalData
 
 OrangeValueRole = Qt.UserRole + 1
 
-class RDataTable(OWRpy):
+class DataTable(OWRpy):
     #settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
 
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
-        self.inputs = [("Rectangular Data", signals.RDataFrame, self.dataset)]
+        self.inputs = [("Rectangular Data", signals.StructuredDict, self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation
@@ -95,7 +95,7 @@ class RDataTable(OWRpy):
         # self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", 
         # callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
-        self.table = redRGUI.Rtable(self.tableBox)
+        self.table = redRGUI.table(self.tableBox)
         #self.resize(700,500)
         #self.move(300, 25)
 
@@ -124,7 +124,7 @@ class RDataTable(OWRpy):
         self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        self.table.setRTable(dataset.getData())
+        self.table.setTable(dataset.getData(), keys = dataset.getItem('keys'))
         self.supressTabClick = False
             
     def itemClicked(self, val, table):
@@ -167,8 +167,8 @@ class RDataTable(OWRpy):
             sep = ' '
         elif self.separator.currentText() == 'Comma':
             sep = ','
-        #use the R function if the parent of the dict is an R object.
-        if isinstance(self.data.getItem('parent'), signals.RDataFrame):  
+        if isinstance(self.data.getItem('parent'), signals.RDataFrame):  #use the R function if the parent of the dict is an R object.
+            
             self.R('write.table('+self.data.getItem('parent').getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
             string = ''

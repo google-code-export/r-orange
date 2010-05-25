@@ -34,7 +34,7 @@ class widgetSignals():
         # self.controlledAttributes = ControlledAttributesDict(self)
         self.closing = False # is the widget closing, if so don't process any signals
         self.loadSavedSession = False # is the widget closing, if so don't process any signals
-        self.sentItems = []
+        # self.sentItems = []
         self.eventHandler = None
 
 
@@ -59,14 +59,12 @@ class widgetSignals():
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
-        
-        
         try:
             self.callSignalDelete(name)
             self.send(name, variable)
             self.removeInformation(id = 'attention')
             self.removeError()
-            self.sentItems.append((name, variable))
+            #self.sentItems.append((name, variable))
             self.status.setText('Data sent.')
         except:
             self.setError(id = 'sendError', text = 'Failed to send data')
@@ -194,15 +192,17 @@ class widgetSignals():
         self.loadSavedSession = state
 
     def processSignals(self, convert = False): ## not called inside of this class 
-        # print 'processSignals', self.windowTitle()
+        print '|#| processSignals %s' % str(self.windowTitle())
         if self.closing == True:
             return
-        # print 'loadSavedSessionState', self.loadSavedSession
+        
+        print '|#| loadSavedSessionState %s' % str(self.loadSavedSession)
         if self.loadSavedSession:
             self.needProcessing = 0
             return
-        if not self.loadSavedSession:
-            self.signalManager.setNeedAttention(self)  # don't know what this does exactly
+        
+        
+        self.signalManager.setNeedAttention(self)  # don't know what this does exactly
         
         if self.processingHandler: self.processingHandler(self, 1)    # focus on active widget
         newSignal = 0        # did we get any new signals
@@ -230,7 +230,7 @@ class widgetSignals():
                                     raise Exception, 'Signal not a child of a Red-R signal'
                                 
                                 if signal[1] != 'All':
-                                    print 'CONVERSION of ', oldValue.__class__
+                                    print '|#| CONVERSION of %s to ' % oldValue.__class__, signal[1]
                                     value = oldValue.convertToClass(signal[1])
                                 else:
                                     value = oldValue.convertToClass(oldValue.__class__) ## conversion to self.

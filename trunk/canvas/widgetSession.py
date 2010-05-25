@@ -16,7 +16,7 @@ class widgetSession():
         self.dontSaveList = dontSaveList
         self.defaultGlobalSettingsList = ['windowState']
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
-        self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList', 'loaded'])
+        self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList','globalSettingsList', 'loaded'])
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
@@ -31,7 +31,7 @@ class widgetSession():
                 continue
             i += 1
             self.progressBarAdvance(i)
-            print 'frist att: ' + att
+            #print 'frist att: ' + att
             var = getattr(self, att)
             settings[att] = self.returnSettings(var)
 
@@ -113,7 +113,7 @@ class widgetSession():
         #elif isinstance(var, signals.BaseRedRVariable):
         elif var.__class__.__name__ in signals.RedRSignals:    
             settings['signalsObject'] = var.saveSettings()
-            print '|#|  Saving signalsObject ', settings['signalsObject']
+            print '|#|  Saving signalsObject '#, settings['signalsObject']
         elif not checkIfPickleable: 
             settings['pythonObject'] =  var
         elif self.isPickleable(var):
@@ -131,29 +131,33 @@ class widgetSession():
             settings = None
         return settings
     def processSentItems(self):
-        print '|##| in processSentItems %s' % str(self.sentItems)
+        print '|##| in processSentItems %s' % str(self.linksOut)
         sentItemsList = []
-        for (sentDataName, sentDataObject) in self.sentItems:
-            if sentDataObject == None: 
-                sentItemsList.append((sentDataName, None))
-            elif type(sentDataObject) == dict:
-                raise Exception, str(sentDataName)+' still set to a dict, change this!!!'
+        for sentDataName, sentDataObject in self.linksOut.items():
+            s = {}
+            for k,v in sentDataObject.items():
+                if v == None: 
+                    sentItemsList.append((sentDataName, None))
+                else:
+                    try:
+                        s[k] = v.saveSettings()
+                    ### problem with getting the settings, print and inform the developers.                 
+                    except:
+                        import orngOutput 
+                        orngOutput.printException()
+                        print '|###| problem getting data for '+str(sentDataObject)
+                        
+                sentItemsList.append((sentDataName,s))
                 
-            else:
-                try:
-                    sentItemsList.append((sentDataName,sentDataObject.saveSettings()))
-                except:
-                    ### problem with getting the settings, print and inform the developers.
-                    print '|###| problem getting data for '+str(sentDataObject)
-                    raise Exception, 'Setting save exception'
         return sentItemsList
+        
     def setSettings(self,settings):
         print 'on set settings'
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
             try:
-                print k
+                #print k
                 if k in ['inputs', 'outputs']: continue
                 if v == None:
                     continue
@@ -168,20 +172,21 @@ class widgetSession():
                     #self.setSentItemsList(v['sentItemsList'])        
                     for (sentItemName, sentItemDict) in v['sentItemsList']:
                         print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
-                        var = self.setSignalClass(sentItemDict)
-                        self.send(sentItemName, var)
+                        for kk,vv in sentItemDict.items():
+                            var = self.setSignalClass(vv)
+                            self.send(sentItemName, var,id=kk)
     #############################################
                 elif not hasattr(self,k):
                     continue
                 elif 'redRGUIObject' in v.keys():
-                    print getattr(self, k)
+                    #print getattr(self, k)
                     try:
                         getattr(self, k).loadSettings(v['redRGUIObject'])
                         getattr(self, k).setDefaultState(v['redRGUIObject'])
                     except Exception as inst:
-                        print str(inst)
+                        import orngOutput
                         print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
-                # elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
+                        orngOutput.printException()
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     print 'dict',len(var),len(v['dict'])
@@ -204,7 +209,7 @@ class widgetSession():
             self.loadCustomSettings(settings)
         
     def setSignalClass(self, d):
-        print '|##| setSentRvarClass %s' % str(d)
+        print '|##| setSentRvarClass' #% str(d)
         className = d['class'].split('.')[1]
         
         # print 'setting ', className
@@ -291,7 +296,7 @@ class widgetSession():
                 settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
-        print '%s' % str(settings)
+        #print '%s' % str(settings)
         if settings:
             file = self.getGlobalSettingsFile()
             file = open(file, "w")
@@ -299,98 +304,3 @@ class widgetSession():
         
         print '|#| owrpy global save settings done'
 
-#############DEPRECIATED######################
-#############DEPRECIATED######################
-    def loadSettings(self, sessionSettings=None):
-        print '|#| in loadSettings '# + str(sessionSettings)
-        if sessionSettings:
-            self.setSettings(sessionSettings)
-  
-    def onLoadSavedSession(self, force = False, template = False):
-        if self.loaded and not force: return  # prevents a loaded widget from being reloaded this can be overwriten using a call to force if the loader wishes.
-        print '|##| in onLoadSavedSession'
-        qApp.setOverrideCursor(Qt.WaitCursor)
-        self.progressBarInit()
-        i = 0
-        for k,v in self.redRGUIObjects.iteritems():
-            # pp = pprint.PrettyPrinter(indent=4)
-            # print str(k)+ ' in onLoadSavedSession widget attribute'
-            # pp.pprint(v)
-            i += 1
-            self.progressBarAdvance(i)
-            if not hasattr(self,k):
-                continue
-            try:
-                if 'redRGUIObject' in v.keys():
-                    getattr(self, k).loadSettings(v['redRGUIObject'])
-                    getattr(self, k).setDefaultState(v['redRGUIObject'])
-                elif template: continue                                         ### continue the cycling if this is a template, we don't need to set any of the settings since the schema doesn't have any special settings in it.  Only the widget gui settings are important as they may represent settings that are specific to the template.
-                elif 'dict' in v.keys():
-                    var = getattr(self, k)
-                    # print 'dict',len(var),len(v['dict'])
-                    if len(var) != len(v['dict']): continue
-                    self.recursiveSetSetting(var,v['dict'])
-                elif 'list' in v.keys():
-                    var = getattr(self, k)
-                    # print 'list',len(var),len(v['list'])
-                    if len(var) != len(v['list']): continue
-                    self.recursiveSetSetting(var,v['list'])
-                elif 'sentItemsList' in v.keys():
-                    self.setSentItemsList(v['sentItemsList'])
-            except:
-                print 'Error occured in loading data self.'+str(k)
-                pp = pprint.PrettyPrinter(indent=4)
-                pp.pprint(v)
-                import traceback,sys
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60        
-            
-        self.progressBarAdvance(i+1)
-        if '_customSettings' in self.redRGUIObjects.keys():
-            self.loadCustomSettings(self.redRGUIObjects['_customSettings'])
-        else:
-            self.loadCustomSettings(self.redRGUIObjects)
-        
-        print '|##| onLoadSavedSession send %s' % self.windowTitle()
-        for (name, data) in self.sentItems:
-            self.send(name, data)
-        
-        qApp.restoreOverrideCursor()
-        self.progressBarFinished()
-        self.loaded = True
-    def setSentItemsList(self, d):
-        # set the sentItems in the widget
-        for (sentItemName, sentItemDict) in d:
-            print '|##| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
-            self.sentItems.append((sentItemName, self.setSentRvarClass(sentItemDict, sentItemName))) # append a list of sent items to the sent items list, this is the place that we need to place the Red-R data container class into using setSentRvarClass.
-    
-    def setRvarClass(self, d):
-        className = d['class'].split('.')
-        #print '|##|', className
-        className = className[1]
-        print '|##| setting %s' % className
-        #try: # try to reload the output class from the signals
-        if d['package'] != 'base':
-            var = getattr(getattr(signals,d['package']), className)(data = d['data'])
-        else:
-            var = getattr(signals, className)(data = d['data'])
-        # finally: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-            # print 'Class name not found, setting to a variable'
-            # var = signals.RVariable(data = d['data'])
-        for key in d.keys():
-            if key in ['class','package']: continue
-            print '|##| setting %s' % key
-            subvar = getattr(var, key) 
-            subvar = d[key]
-        return var
-
-                
-    def saveSettingsStr(self): # called from outside of this class, used by orngDoc to collect the settings
-        # print 'saveSettingsStr called'
-        settings = self.getSettings()
-        try:
-            return cPickle.dumps(settings)
-        except: 
-            print "ERROR in Pickle", sys.exc_info()[0] 
-            pass

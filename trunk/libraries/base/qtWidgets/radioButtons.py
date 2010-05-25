@@ -34,6 +34,7 @@ class radioButtons(widgetBox,widgetState):
     def setChecked(self,id):
         for i in self.buttons.buttons():
             if i.text() == id: i.setChecked(True)
+            else: i.setChecked(False)
     def getChecked(self):
         button = self.buttons.checkedButton()
         if button == 0 or button == None: return 0

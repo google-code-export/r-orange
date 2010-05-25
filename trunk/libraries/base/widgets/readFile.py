@@ -59,9 +59,11 @@ class readFile(OWRpy):
         
         
         self.delimiter = redRGUI.radioButtons(options, label='Column Seperator',
-        buttons = ['Tab', 'Space', 'Comma'], setChecked='Tab',callback=self.scanNewFile,
+        buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab',callback=self.scanNewFile,
         orientation='horizontal')
-
+        self.otherSepText = redRGUI.lineEdit(self.delimiter.box,text=';',width=20,orientation='horizontal')
+        QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
+        
         box = redRGUI.groupBox(options, label="Row and Column Names", 
         addSpace = True, orientation ='horizontal')
 
@@ -93,22 +95,10 @@ class readFile(OWRpy):
         split.layout().setAlignment(box2,Qt.AlignTop)
         self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
         self.decimal = redRGUI.lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
-        # self.quote.setMaximumWidth(50)
-        # self.quote.setMinimumWidth(50)
         
         self.numLinesScan = redRGUI.lineEdit(box2,text='10',label='# Lines to Scan:',width=50,orientation='horizontal')
-        # self.numLinesScan.setMaximumWidth(50)
-        # self.numLinesScan.setMinimumWidth(50)
 
         self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',width=50,orientation='horizontal')
-        # self.numLinesSkip.setMaximumWidth(50)
-        # self.numLinesSkip.setMinimumWidth(50)
-
-
-        
-        # box.layout().addWidget(self.otherOptions,2,1)
-        
-        
         
         holder = redRGUI.widgetBox(options,orientation='horizontal')
         rescan = redRGUI.button(holder, label = 'Rescan File', callback = self.scanNewFile)
@@ -140,6 +130,9 @@ class readFile(OWRpy):
         self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.setFileList()
 
+    def otherSep(self,text):
+        self.delimiter.setChecked('Other')
+        
     def loadCustomSettings(self,settings):
         print 'loadCustomSettings readfile'
         for i in range(len(self.myColClasses)):
@@ -225,6 +218,8 @@ class readFile(OWRpy):
             sep = ' '
         elif self.delimiter.getChecked() == 'Comma':
             sep = ','
+        elif self.delimiter.getChecked() == 'Other':
+            sep = str(self.otherSepText.text())
         otherOptions = ''
         for i in self.otherOptions.getChecked():
             otherOptions += str(i) + '=TRUE,' 

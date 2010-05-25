@@ -71,7 +71,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
             
             output = {'output': output}
         elif type(output) == type({}):
-            print '#--#'+str(output)
+            #print '#--#'+str(output)
             for key in output:
                 if type(output[key]) not in [list]:  # the key does not point to a list so now we make some choices
                     if type(output[key]) not in [list, dict]:

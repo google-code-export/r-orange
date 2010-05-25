@@ -32,7 +32,7 @@ class table(widgetState,QTableWidget):
         if data==None:
             return
         if not keys:
-            keys = [str(key) for key in self.data.keys()]
+            keys = [str(key) for key in data.keys()]
         self.setHidden(True)
         self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -75,6 +75,7 @@ class table(widgetState,QTableWidget):
         return r
     def loadSettings(self,data):
         self.setTable(data['data'])
+        
         if 'sortIndex' in data.keys():
             self.sortByColumn(data['sortIndex'],data['order'])
         #print 'aaaaaaaaatable#########################'

@@ -252,7 +252,7 @@ class OutputWindow(QDialog):
         self.uploadException(toUpload)
 
         
-def printException(self):
+def printException():
     import sys, traceback
     print '-'*60
     traceback.print_exc(file=sys.stdout)

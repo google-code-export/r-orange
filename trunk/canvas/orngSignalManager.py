@@ -283,16 +283,9 @@ class SignalManager:
 
     def getParents(self,theWidget):
         parents = []
-        print 'getParents\n'*5
-        print 'theWidget', theWidget
-        # print self.links.keys()
-        #print self.links
         for k, v in self.links.items():
             for (widget, signalNameFrom, signalNameTo, enabled) in v:
-                print 'widget', widget
                 if widget == theWidget:
-                    print 'from', k
-                    print 'to',widget
                     parents.append(k)
                     parents.extend(self.getParents(k))
         return parents
