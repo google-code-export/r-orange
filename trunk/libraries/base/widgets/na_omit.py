@@ -18,7 +18,6 @@ class na_omit(OWRpy):
         self.inputs = [("object", signals.RVariable, self.processobject)]
         self.outputs = [('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable)]
         
-        self.help.setHtml('<small>NA omit removes NA\'s from data tables.  This way other functions can work better by not having pesky NA\'s lying around.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")

@@ -170,7 +170,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         _useContexts = canvasDlg.settings["useContexts"],
         _category = widgetInfo.category)
         #_settingsFromSchema = widgetSettings)
-        self.instance.__dict__['_widgetInfo'] = {'fullName':widgetInfo.fullName, 'fileName':widgetInfo.fileName }
+        self.instance.__dict__['_widgetInfo'] = {'fullName':widgetInfo.fullName, 'fileName':widgetInfo.fileName, 'package': widgetInfo.package }
         
         if widgetInfo.name == 'Dummy': 
             print 'Loading dummy step 3'

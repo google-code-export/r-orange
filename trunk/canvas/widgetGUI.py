@@ -6,7 +6,7 @@
 
 import redRGUI 
 from PyQt4 import QtWebKit
-import urllib, os
+import urllib, os, redREnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -119,9 +119,18 @@ class widgetGUI(QMainWindow):
         self.helpBox.setMinimumWidth(minWidth)
         self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         if hasattr(self,'_widgetInfo'):
-            url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo['fullName'])
+            #url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo['fullName'])
+            (file,ext) = os.path.basename(self._widgetInfo['fullName']).split('.')
+            path = os.path.join(redREnviron.directoryNames['libraryDir'],
+            self._widgetInfo['package'],'help',file+'.html')
+            if os.path.exists(path):
+                f = open(path)
+                html = f.read()
+                f.close()
+            else:
+                html = 'No local help file. <a href="http://www.red-r.org/"> Red-R</a>'
             self.help = redRGUI.webViewBox(self.helpBox)
-            self.help.load(QUrl(url))
+            self.help.setHtml(html)
             self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
         
