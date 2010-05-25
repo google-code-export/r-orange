@@ -20,13 +20,17 @@ class BaseRedRVariable:
     def getDataParent(self):
         return self.parent
 
-    def getItem(self, name):
-        ## gets a required item from the signal, this does not query the dictAttrs but could return it.
-        try:
-            attr = getattr(self, name)
-            return attr
-        except:
-            return None
+    # def getItem(self, name):
+        # gets a required item from the signal, this does not query the dictAttrs but could return it.
+        # try:
+            # attr = getattr(self, name)
+            # return attr
+        # except:
+            # return None
+           
+    def getParent(self):
+        return self.parent
+        
     def saveSettings(self):
         return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
         
@@ -34,6 +38,7 @@ class BaseRedRVariable:
         self.data = settings['data']
         self.parent = settings['parent']
         self.dictAttrs = settings['dictAttrs']
+    
     def copyAllOptionalData(self,signal):
         import copy
         self.dictAttrs = copy.deepcopy(signal.dictAttrs)

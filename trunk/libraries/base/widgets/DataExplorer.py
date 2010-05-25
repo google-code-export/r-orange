@@ -331,7 +331,7 @@ class DataExplorer(OWRpy):
             self.status.setText('Please make a logical statement beginning with either \'==\', \'>\', or \'<\'')
             return
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent.getItem('parent')+')[,\''+colName+'\']'+text+')'
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent.getParent()+')[,\''+colName+'\']'+text+')'
         
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)

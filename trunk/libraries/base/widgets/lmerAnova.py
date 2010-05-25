@@ -50,7 +50,7 @@ class lmerAnova(OWRpy):
         if str(self.RFunctionParam_data2) == '': 
             self.status.setText('No data')
             return
-        if self.data.getItem('parent') != self.data2.getItem('parent'):
+        if self.data.getParent() != self.data2.getParent():
             self.status.setText('Data not of the same parent, incompatable models')
             return
         self.R(self.Rvariables['anova']+'<-anova('+str(self.RFunctionParam_data)+','+str(self.RFunctionParam_data2)+')')

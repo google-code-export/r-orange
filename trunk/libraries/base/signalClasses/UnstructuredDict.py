@@ -19,6 +19,13 @@ class UnstructuredDict(BaseRedRVariable):
                 self.keys = self.data.keys()
         else:
             self.keys = None
+    def getItem(self, name):
+        #gets a required item from the signal, this does not query the dictAttrs but could return it.
+        try:
+            attr = getattr(self, name)
+            return attr
+        except:
+            return None
     def convertToClass(self, varClass):
         if varClass == BaseRedRVariable:
             return self
