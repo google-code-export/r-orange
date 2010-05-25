@@ -31,7 +31,9 @@ class performance(OWRpy):
         self.Fpr_stop = redRGUI.lineEdit(self.advancedTab, label = 'False Positive Rate Stop:', toolTip = 'The partial area under the ROC curve up to a given false positive rate can be calculated by\n passing the optional parameter fpr.stop=0.5 (or any other value between 0 and 1) to performance.')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processprediction_obj(self, data):
-        self.require_librarys(["ROCR"]) 
+        if not self.require_librarys(["ROCR"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_prediction_obj=data.getData()
             #self.data = data.copy()

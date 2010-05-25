@@ -24,7 +24,8 @@ class diffExp(OWRpy):
         self.newdata = {}
         self.olddata = {}
         self.saveSettingsList.append(['samplenames', 'sampleA', 'sampleB', 'phenoData', 'modelFormula', 'data', 'newdata', 'olddata'])
-        self.require_librarys(['affy','gcrma','limma'])
+        if not self.require_librarys(['affy','gcrma','limma']):
+            self.status.setText('R Libraries Not Loaded.')
         
         
         self.setRvariableNames(['results','classes','subset', 'diffExp_cm'])

@@ -112,6 +112,7 @@ def getInstalledLibraries():
     return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
+        loadedOK = True
         #print libPath
         installedRPackages = getInstalledLibraries()
         
@@ -123,11 +124,18 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
                 
             else:
-                try:
-                    Rcommand('setRepositories(ind=1:7)')
-                    Rcommand('install.packages("' + library + '", lib="' + libPath + '")')
-                    Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
-                    
-                except:
-                    print 'Library load failed'
-
+                if redREnviron.checkInternetConnection():
+                    mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+                    if mb.exec_() == QMessageBox.Ok:
+                        try:
+                            Rcommand('setRepositories(ind=1:7)')
+                            Rcommand('install.packages("' + library + '", lib="' + libPath + '")')
+                            Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
+                            
+                        except:
+                            print 'Library load failed'
+                            loadedOK = False
+                    else:
+                        loadedOK = False
+                        
+        return loadedOK

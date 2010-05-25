@@ -26,7 +26,9 @@ class prediction(OWRpy):
         self.RFunctionParamlabel_ordering_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "label_ordering:", text = 'NULL')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processlabels(self, data):
-        self.require_librarys(["ROCR"]) 
+        if not self.require_librarys(["ROCR"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_labels=data.getData()
             #self.data = data.copy()
@@ -34,7 +36,9 @@ class prediction(OWRpy):
         else:
             self.RFunctionParam_labels=''
     def processpredictions(self, data):
-        self.require_librarys(["ROCR"]) 
+        if not self.require_librarys(["ROCR"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_predictions=data.getData()
             #self.data = data.copy()

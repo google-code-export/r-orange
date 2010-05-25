@@ -54,7 +54,9 @@ class plotAffy(OWRpy):
     
     def process(self):
         #required librarys
-        self.require_librarys(['affy'])
+        if not self.require_librarys(['affy']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if self.data != '':
             
             #try: 
@@ -68,7 +70,9 @@ class plotAffy(OWRpy):
     
     def myboxplot(self):
         #required librarys
-        self.require_librarys(['affy'])
+        if not self.require_librarys(['affy']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if self.data == '':return
         #try:
         self.Rplot('boxplot('+self.data+')')
@@ -76,7 +80,9 @@ class plotAffy(OWRpy):
         #    self.infob.setText("Data not able to be processed")
         
     def RAffyQC(self):
-        self.require_librarys(['simpleaffy'])
+        if not self.require_librarys(['simpleaffy']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if self.data =='': return
         if self.qcsProcessed == 0:
             self.R(self.Rvariables['qcs']+'<-qc('+self.data+')')

@@ -47,7 +47,9 @@ class panpCalls(OWRpy):
     def process(self, dataset):
         print 'on procress panp'
         
-        self.require_librarys(['affy','gcrma','limma','matchprobes','panp'])
+        if not self.require_librarys(['affy','gcrma','limma','matchprobes','panp']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
 
         if dataset == None: 
             self.status.setText("Blank data recieved")

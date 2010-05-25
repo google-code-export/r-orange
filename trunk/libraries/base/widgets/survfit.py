@@ -27,7 +27,9 @@ class survfit(OWRpy):
         self.RFunctionParamweights_lineEdit =  redRGUI.lineEdit(self.GUIDialog,  label = "weights:", text = '', toolTip = 'The weights applied to the data, should be in the form c(weight1, weight2, ...).')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processfit(self, data):
-        self.require_librarys(['survival'])
+        if not self.require_librarys(['survival']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.times.clear()
             self.event.clear()
@@ -37,7 +39,9 @@ class survfit(OWRpy):
             self.out = signals.RModelFit(data=self.Rvariables["survfit"])
             self.rSend("survfit Output", self.out)
     def processdata(self, data):
-        self.require_librarys(["survival"]) 
+        if not self.require_librarys(["survival"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_data=data.getData()
             colnames = self.R('colnames('+self.RFunctionParam_data+')')

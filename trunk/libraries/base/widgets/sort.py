@@ -25,7 +25,9 @@ class sort(OWRpy):
         self.RFunctionParamdecreasing_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "decreasing:", text = 'FALSE')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
-        self.require_librarys(["base"]) 
+        if not self.require_librarys(["base"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data.copy()

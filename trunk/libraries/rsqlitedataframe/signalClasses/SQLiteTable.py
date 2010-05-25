@@ -105,7 +105,9 @@ class SQLiteTable(RDataFrame, StructuredDict):
                 QMessageBox.information(self, 'SQLite Conversion','Database '+str(database)+' does not exist on your system.\nIf you got this schema from someone else this is normal.\nI\'ll make the connection but no data will be sent.',  QMessageBox.Ok + QMessageBox.Default)
                 return
         database = database.replace('\\','/')
-        self.require_librarys(['RSQLite']) # require the sqlite package
+        if not self.require_librarys(['RSQLite']) # require the sqlite package
+            QMessageBox.information(self, 'SQLite Conversion','Can\'t load the RSQLite package.  Please connect to the internet do download.',  QMessageBox.Ok + QMessageBox.Default)
+            return
         ## convert the data table to a database.  This will actually run the current sql query which will likely inherit from some kind of view
         
         conn = sqlite3.connect(database)

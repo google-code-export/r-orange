@@ -25,7 +25,9 @@ class na_omit(OWRpy):
         self.sendStatus = redRGUI.widgetLabel(self.standardTab, 'Nothing Sent')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processobject(self, data):
-        self.require_librarys(["base"]) 
+        if not self.require_librarys(["base"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data

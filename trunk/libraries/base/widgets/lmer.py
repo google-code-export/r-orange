@@ -38,7 +38,9 @@ class lmer(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processmodel(self, data):
-        self.require_librarys(["lme4"]) 
+        if not self.require_librarys(["lme4"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_model=data.getData()
             #self.data = data.copy()
@@ -46,7 +48,9 @@ class lmer(OWRpy):
         else:
             self.RFunctionParam_model=''
     def processdata(self, data):
-        self.require_librarys(["lme4"]) 
+        if not self.require_librarys(["lme4"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_data=data.data
             #self.data = data.copy()

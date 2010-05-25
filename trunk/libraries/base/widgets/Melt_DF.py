@@ -30,7 +30,9 @@ class Melt_DF(OWRpy):
         self.commitFunction()
     def processdata(self, data):
         if data:
-            self.require_librarys(['reshape'])
+            if not self.require_librarys(['reshape']):
+                self.status.setText('R Libraries Not Loaded.')
+                return
             self.RFunctionParam_data=data.getData()
             self.data = data
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
@@ -39,7 +41,9 @@ class Melt_DF(OWRpy):
 
             self.commitFunction()
     def commitFunction(self):
-        self.require_librarys(['reshape'])
+        if not self.require_librarys(['reshape']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if self.RFunctionParam_na_rm == 0: pna = 'TRUE'
         else: pna = 'FALSE'
         if self.RFunctionParam_data == '': return

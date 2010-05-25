@@ -103,7 +103,8 @@ class widgetMaker(OWRpy):
         
     def loadRPackage(self):
         
-        self.require_librarys([str(self.packageName.text())])
+        if not self.require_librarys([str(self.packageName.text())]):
+            self.status.setText('R Libraries Not Loaded.')
         
     def parseFunction(self):
         self.args = {}
@@ -280,7 +281,8 @@ class widgetMaker(OWRpy):
         for inputName in self.functionInputs.keys():
             self.processSignals += '\tdef process'+inputName+'(self, data):\n'
             if str(self.packageName.text()) != '':
-                self.processSignals += '\t\tself.require_librarys(["'+str(self.packageName.text())+'"]) \n'
+                self.processSignals += '\t\tif not self.require_librarys(["'+str(self.packageName.text())+'"]):\n'
+                self.processSignals += '\t\t\tself.status.setText(\'R Libraries Not Loaded.\')\n\t\t\treturn\n'
             self.processSignals += '\t\tif data:\n'
             self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data.getData()\n'
             self.processSignals += '\t\t\t#self.data = data\n'

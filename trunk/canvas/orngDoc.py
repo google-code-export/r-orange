@@ -891,28 +891,36 @@ class SchemaDoc(QWidget):
             return False
     def resolveRRPDependencies(self, alldeps, repository):
         loadedOk = 1
-        for dep in alldeps:
-            try:
-                print dep
-                [pack, ver] = dep.split('/')
-                ## check to see if the directory exists, if it does then there is no need to worry, unless someone is playing a cruel joke and made the directory with nothing in it.
-                if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], pack)):
-                    print 'Downloading dependencies', dep
-                    try:
-                        ## make the url for the dep
-                        url = repository+'/'+pack+'/'+ver
-                        ## download the package, place in the tempDir for resolution
-                        self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
-                        ## install the package
-                        self.loadRRP(filename = os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
-                    except:
-                        loadedOk = 0
-                        print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
-            except:
-                loadedOk = 0
-                print 'Problem resolving dependencies: '+str(dep)+', this will not be availabel.  Please try again later'
-                continue
-        return loadedOk
+        if not redREnviron.checkInternetConnection():
+            return False
+        mb = QMessageBox("Download Packages", "You are missing some key packages.\n\n"+'\n'.join(alldeps)+"\nDo you want to download them?\nIf you click NO your packages WON\'T WORK!!!", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+        if mb.exec_() == QMessageBox.Ok:
+            for dep in alldeps:
+                try:
+                    [pack, ver] = dep.split('/')
+                    ## check to see if the directory exists, if it does then there is no need to worry, unless someone is playing a cruel joke and made the directory with nothing in it.
+                    if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], pack)):
+                        print 'Downloading dependencies', dep
+                        try:
+                            ## make the url for the dep
+                            url = repository+'/'+pack+'/'+ver
+                            ## download the package, place in the tempDir for resolution
+                            self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
+                            ## install the package
+                            self.loadRRP(filename = os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
+                        except:
+                            loadedOk = 0
+                            print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
+                    else:
+                        return False
+                except:
+                    loadedOk = 0
+                    print 'Problem resolving dependencies: '+str(dep)+', this will not be availabel.  Please try again later'
+                    continue
+            return loadedOk
+        else:
+            return False
+            
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
         e.ignore()

@@ -29,7 +29,9 @@ class aov(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
-        self.require_librarys(["stats"]) 
+        if not self.require_librarys(["stats"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.removeWarning()
             self.RFunctionParam_data=data.getData()

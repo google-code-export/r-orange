@@ -8,7 +8,7 @@ from widgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
-import RSession
+import RSession, redREnviron
 import rpy
 
 class OWRpy(widgetSignals,widgetGUI,widgetSession):   
@@ -158,10 +158,15 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
                 QMessageBox.information(self, 'R Packages','We need to download R packages for this widget to work.',  
                 QMessageBox.Ok + QMessageBox.Default)
                 break
-        
-        RSession.require_librarys(librarys = librarys, repository = repository)
+        if not redREnviron.checkInternetConnection():
+            QMessageBox.information(self, 'R Packages','No active internet connection detected.  Please reconnect and try this again.',  
+                QMessageBox.Ok + QMessageBox.Default)
+            qApp.restoreOverrideCursor()
+            return False
+        success = RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()
+        return success
     def onDeleteWidget(self):
         print '|#| onDeleteWidget OWRpy'
         try:

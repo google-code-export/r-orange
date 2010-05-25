@@ -28,7 +28,9 @@ class kruskal_test(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
-        self.require_librarys(["stats"]) 
+        if not self.require_librarys(["stats"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         self.RoutputWindow.clear()
         self.status.setText('New data recieved')
         if data:

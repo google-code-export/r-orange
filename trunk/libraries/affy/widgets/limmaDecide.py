@@ -58,7 +58,9 @@ class limmaDecide(OWRpy):
     def showModelGroupDialog(self):
         self.modelGroupDialog.show()
     def process(self, dataset):
-        self.require_librarys(['affy', 'limma'])
+        if not self.require_librarys(['affy', 'limma']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         self.data = '' # protect from using obsolete data
         self.removeWarning()
         if dataset == None:

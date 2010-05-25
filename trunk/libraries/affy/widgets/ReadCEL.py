@@ -76,7 +76,9 @@ class ReadCEL(OWRpy):
         dir = self.recentFiles[self.filecombo.currentIndex()].replace('\\', '\\\\')
         self.status.setText("Your data is processing")
         #required librarys
-        self.require_librarys(['affy'])
+        if not self.require_librarys(['affy']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if self.numArrays.getChecked() == 'Less than 40':
             self.R(self.Rvariables['affyBatch']+'<-ReadAffy(celfile.path="'+dir+'")','setRData',True)
             self.status.setText("Your data has been processed with ReadAffy.")

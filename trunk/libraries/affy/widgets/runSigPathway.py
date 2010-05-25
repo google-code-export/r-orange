@@ -83,7 +83,8 @@ class runSigPathway(OWRpy):
         self.infob.setText('Annotation file loaded')
 
     def process(self, data): #collect a preprocessed file for pathway analysis
-        self.require_librarys(['sigPathway'])
+        if not self.require_librarys(['sigPathway']):
+            self.status.setText('R Libraries Not Loaded.')
         self.removeWarning()
         if data:
             self.olddata = data
@@ -113,9 +114,11 @@ class runSigPathway(OWRpy):
     def getChiptype(self):
         if 'Use Annotation Database' in self.usedb.getChecked(): 
             try:
-                self.require_librarys([str(self.chiptype.text() + '.db')]) # require the libraries, these are in the biocLite repository so if fails we need to run a special algorithm to get the packages
-                self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
-                self.infob.setText("Chip type loaded")
+                if self.require_librarys([str(self.chiptype.text() + '.db')]): # require the libraries, these are in the biocLite repository so if fails we need to run a special algorithm to get the packages
+                    self.dboptions = ',annotpkg = "'+str(self.chiptype.text())+'.db"'
+                    self.infob.setText("Chip type loaded")
+                else:
+                    raise Exception, 'R Libraries not loaded'
             except:
                 self.infob.setText('Chip type was not loaded successfully')
         else: return
@@ -149,14 +152,14 @@ class runSigPathway(OWRpy):
             progressBar.setWindowTitle('Loading')
             pbv = 0
             if redREnviron.checkInternetConnection():
-                mb = QMessageBox("Pathway Enrichment", "You are missing some key files for this widget.\n+"+'\n'.join(neededFiles)+"Would you like to download them?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+                mb = QMessageBox("Pathway Enrichment", "You are missing some key files for this widget.\n"+'\n'.join(neededFiles)+"\nWould you like to download them?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
                 if mb.exec_() == QMessageBox.Ok:
                     opener = urllib.FancyURLopener()
                     for geneSet in neededFiles:
-                        #try:
-                        opener.retrieve(url = 'http://chip.org/~ppark/Supplements/PNAS05/%s.RData' % geneSet, filename = os.path.abspath(os.path.join(destpath, geneSet+'.RData')))
-                        # except: 
-                            # print 'Exception
+                        try:
+                            opener.retrieve(url = 'http://chip.org/~ppark/Supplements/PNAS05/%s.RData' % geneSet, filename = os.path.abspath(os.path.join(destpath, geneSet+'.RData')))
+                        except Exception as inst: 
+                            print 'Exception', str(inst)
                         pbv += 1
                         progressBar.setValue(pbv)
 

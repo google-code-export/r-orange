@@ -34,7 +34,9 @@ class writeEset(OWRpy):
         else: return
             
     def write(self):
-        self.require_librarys(['affy'])
+        if not self.require_librarys(['affy']):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if self.data == None or self.data == '':
             self.infoa.setText("Data has not been loaded yet")
             return

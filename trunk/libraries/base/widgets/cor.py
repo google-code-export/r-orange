@@ -28,7 +28,9 @@ class cor(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
-        self.require_librarys(["stats"]) 
+        if not self.require_librarys(["stats"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_y=data.getData()
             #self.data = data.copy()
@@ -36,7 +38,9 @@ class cor(OWRpy):
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
-        self.require_librarys(["stats"]) 
+        if not self.require_librarys(["stats"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_x=data.getData()
             dims = self.R('dim('+self.RFunctionParam_x+')', silent = True, wantType = 'list')

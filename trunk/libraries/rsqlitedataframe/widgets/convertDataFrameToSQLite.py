@@ -58,7 +58,8 @@ class convertDataFrameToSQLite(OWRpy):
         database = database.replace('\\','/')
         
         
-        self.require_librarys(['RSQLite'])
+        if not self.require_librarys(['RSQLite']):
+            QMessageBox.information(self, 'SQLite Conversion','Can\'t load the RSQLite package.  Please connect to the internet to download.',  QMessageBox.Ok + QMessageBox.Default)
         self.R('m<-dbDriver("SQLite")')
         self.R('con<-dbConnect(m, dbname=\''+database+'\')')
         self.R('dbWriteTable(con, \''+str(self.tableNameLineEdit.text())+'\', '+str(self.data.data)+', overwrite = TRUE)')

@@ -32,7 +32,9 @@ class survdiff(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(hbox, label = "RoutputWindow")
     def processdata(self, data):
-        self.require_librarys(["survival"]) 
+        if not self.require_librarys(["survival"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
         if data:
             self.RFunctionParam_data=data.getData()
             self.data = data
