@@ -167,9 +167,9 @@ class DataTable(OWRpy):
             sep = ' '
         elif self.separator.currentText() == 'Comma':
             sep = ','
-        if isinstance(self.data.getParent(), signals.RDataFrame):  #use the R function if the parent of the dict is an R object.
+        if isinstance(self.data.getDataParent(), signals.RDataFrame):  #use the R function if the parent of the dict is an R object.
             
-            self.R('write.table('+self.data.getParent().getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
+            self.R('write.table('+self.data.getDataParent().getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
             string = ''
             for key in self.data.getData().keys():
