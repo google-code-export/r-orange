@@ -17,9 +17,9 @@ class SQLiteTable(RDataFrame, StructuredDict):
             self.parent = data
         self.database = database
         self.newDataName = 'dataFrameConversion_'+str(time.time()) # put this here because we may make many connections from this output and we only want one dataFrameConversion_ in R
-        self.dialog = redRGUI.dialog()
+        
         self.dataFrameData = None
-        self.rownameList = redRGUI.listBox(self.dialog, label = 'Rownames', toolTip = 'Select a column to represent Row Names', callback = self.dialog.accept)
+        
         
     def saveSettings(self):
         return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'database': self.database, 'newDataName': self.newDataName}
@@ -122,11 +122,13 @@ class SQLiteTable(RDataFrame, StructuredDict):
         ### list all of the column names and allow the user to specify one as the rowname column if desired.
         colnames = [type[0] for type in types]
         colnames.insert(0, 'No Names')
-        self.rownameList.update(colnames)
-        r = self.dialog.exec_() ## execute the dialog
-        if r == QDialog.Accepted:
+        dialog = redRGUI.dialog()
+        rownameList = redRGUI.listBox(dialog, label = 'Rownames', toolTip = 'Select a column to represent Row Names', callback = dialog.accept)
+        rownameList.update(colnames)
+        r = dialog.exec_() ## execute the dialog
+        if r == QDialog.Accepted and str(rownameList.selectedItems()[0].text()) != 'No Names':
             
-            rownameSelection = '\''+str(self.rownameList.selectedItems()[0].text())+'\''
+            rownameSelection = '\''+str(rownameList.selectedItems()[0].text())+'\''
         else:
             rownameSelection = 'NULL'
         self.R('m<-dbDriver("SQLite")')
@@ -149,7 +151,7 @@ class SQLiteTable(RDataFrame, StructuredDict):
         
         if rownameSelection != 'NULL':
             self.R('rownames('+self.newDataName+')<-'+self.newDataName+'$'+rownameSelection.strip('\''))
-            self.R(self.newDataName+'<-'+self.newDataName+'[colnames('+self.newDataName+') != '+rownameSelection+',,drop = F]')
+            self.R(self.newDataName+'<-'+self.newDataName+'[,colnames('+self.newDataName+') != '+rownameSelection+',drop = F]')
         ## allow the user to set rownames???
         
         

@@ -230,18 +230,24 @@ class readSQLiteFile(OWRpy):
                 for j in range(len(lineData)): # move across the columns and set the data type to the type of data in the columns.  This might be hard because we don't know about the data yet.
                     try:
                         float(dtl[j])
-                        lineData[j] = str(lineData[j])+' real'
+                        lineData[j] = '"'+str(lineData[j])+'" real'
                     except:
-                        lineData[j] = str(lineData[j])+' text'
+                        lineData[j] = '"'+str(lineData[j]).replace('"', '\'')+'" text'
                 cursor.execute("create table "+tableName+" ("+','.join(lineData)+")")  # insert the column names into the table, this is the command that also makes the table
             else:
                 lineData = line.split(sep)
                 for i in range(len(lineData)):
                     if lineData[i] == '' or lineData[i] == None:
-                        lineData[i] = '\'NA\''
+                        lineData[i] = 'nan'
                     if type(lineData[i]) not in [int, float, bool]:
                         lineData[i] = '\''+str(lineData[i])+'\''
-                cursor.execute("insert into "+tableName+" values ("+','.join(lineData)+")")  # insert the data into the table
+                try:
+                    cursor.execute("insert into "+tableName+" values ("+','.join(lineData)+")")  # insert the data into the table   
+                except Exception as inst:
+                    print str(lineData)
+                    print inst
+                    conn.close()
+                    raise Exception
             i += 1
         #except:
             #print 'Error occured in reading file'

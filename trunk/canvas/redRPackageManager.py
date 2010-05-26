@@ -86,6 +86,14 @@ class packageManager:
                 import shutil
                 shutil.copytree(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName))
                 shutil.rmtree(installDir, True)
+                
+                ### add the package info to the packages.xml
+                fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
+                localPackagesXML = self.readXML(fileDir)
+                
+                
+                ###
+                
                 ## we copied everything now return
                 print 'Installation successful'
                 qApp.canvasDlg.reloadWidgets()
@@ -339,11 +347,11 @@ class PackageManagerDialog(redRGUI.dialog):
                 
     def setAvailable(self, dictionary):
         self.treeViewAvailable.clear()
-        self.treeViewAvailable.setHeaderLabels(['Package', 'Author', 'Summary'])
+        self.treeViewAvailable.setHeaderLabels(['Package', 'Version', 'Author/Stability', 'Summary/Date'])
         if dictionary != None:
             ## there is something in the dict and we need to populate the treeview
             for name in dictionary.keys(): ## move across the package names
-                newChild = redRGUI.treeWidgetItem(self.treeViewAvailable, [name, dictionary[name]['Author'], dictionary[name]['Summary']])
+                newChild = redRGUI.treeWidgetItem(self.treeViewAvailable, [name, 'HeadVersion', dictionary[name]['Author'], dictionary[name]['Summary'], 'Current Version'])
                 for version in dictionary[name]['Versions'].keys(): ## move across all of the versions and show their name
                     n = redRGUI.treeWidgetItem(stringList = [name, version, dictionary[name]['Versions'][version]['Stability'], dictionary[name]['Versions'][version]['Date']])
                     newChild.addChild(n)
@@ -380,7 +388,49 @@ class PackageManagerDialog(redRGUI.dialog):
             if not self.packageManager.resolveRRPDependencies([downloadList[name]['HeadVersion']], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
                 QMessageBox.information(None, "Install Package Information", "There was a problem with getting package "+name+".\nI'm going to get the rest of the packages but just wanted to let you know.\nYou can always try to download again if you lost the internet connection.", QMessageBox.Ok)
     def uninstallPackages(self):
-        pass
-    def installNewPackage(self):
-        pass
+        ## collect the packages that are selected.  Make sure that base isn't in the uninstall list.  Ask the user if he is sure that the files should be uninstalled, uninstall the packages (remove the files).
+        selectedItems = self.treeViewInstalled.selectedItems()
+        uninstallList = []
+        for item in selectedItems:
+            name = str(item.text(0))
+            if name == 'base':  ## special case of trying to delete base.
+                QMessageBox.information(self, "Deleting Base", "You are not allowed to delete base.", QMessageBox.Ok)
+                continue
+            uninstallList.append(name)
             
+        mb = QMessageBox("Uninstall Pakcages", "Are you sure that you want to uninstall these packages?\n\n"+"\n".join(uninstallList), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+        if mb.exec_() != QMessageBox.Ok:
+            return
+            
+        import shutil
+        for name in uninstallList:
+            shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], name), True)
+            ### remove the package from the packages xml!!!
+    def installNewPackage(self):
+        selectedItems = self.treeViewAvailable.selectedItems()
+        downloadList = {}
+        for item in selectedItems:
+            name = str(item.text(0))
+            if str(item.text(1)) == 'HeadVersion': ## it's already installed so get the head version
+                ## pull the headVersion
+                headVersion = self.packageDicts[2][name]['HeadVersion']
+                repository = self.packageDicts[2][name]['Repository']
+            else:
+                headVersion = str(item.text(1))
+                repository = self.packageDicts[2][name]['Repository']
+                
+            if name in downloadList:
+                mb = QMessageBox("Install Package Question", "You already have a version of this set to download.\nDo you want to replace\n\n"+str(downloadList[name]['HeadVersion'])+"\n\nwith\n\n"+str(headVersion), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+                if mb.exec_() == QMessageBox.Ok:
+                    downloadList[name] = {'HeadVersion':headVersion, 'Repository':repository}
+                    
+            else:
+                downloadList[name] = {'HeadVersion':headVersion, 'Repository':repository}
+        
+        mb = QMessageBox("Install Package Question", "Are you sure that you want to install these packages?\n\n"+"\n".join(downloadList.keys()), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+        if mb.exec_() != QMessageBox.Ok:
+            return
+        ## resolve the packages
+        for name in downloadList.keys():  # move across all of the packages and download
+            if not self.packageManager.resolveRRPDependencies([downloadList[name]['HeadVersion']], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
+                QMessageBox.information(None, "Install Package Information", "There was a problem with getting package "+name+".\nI'm going to get the rest of the packages but just wanted to let you know.\nYou can always try to download again if you lost the internet connection.", QMessageBox.Ok)

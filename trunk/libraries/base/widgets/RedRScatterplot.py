@@ -183,7 +183,7 @@ class RedRScatterplot(OWRpy):
         else:
             self.xData = self.data.getData()[xIndex]
             self.yData = self.data.getData()[yIndex]
-            self.graph.points("MyData", xData = self.xData, yData = self.yData, brushColor = 1, penColor = 1)
+            self.graph.points("MyData", xData = self.xData, yData = self.yData, brushColor = 0, penColor = 0)
         # make the plot
         
         
@@ -192,9 +192,12 @@ class RedRScatterplot(OWRpy):
             if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
                 self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
             else:
-                self.status.setText('X or Y data not numeric, can not reset the zoom.')
-                print type(min(self.xData))
-                print type(min(self.yData))
+                try:
+                    self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+                except:
+                    self.status.setText('X or Y data not numeric, can not reset the zoom.')
+                    print type(min(self.xData)), min(self.xData)
+                    print type(min(self.yData)), min(self.yData)
         self.graph.replot()
         
         
