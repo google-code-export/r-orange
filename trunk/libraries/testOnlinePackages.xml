@@ -4,6 +4,7 @@
         <Author>Kyle R Covington kyle@red-r.org</Author>
         <Summary>A short summary</Summary>
         <HeadVersion>base/base-1</HeadVersion>
+        <Repository>http://www.red-r.org/package</Repository>
         <Versions>
             <Version>
                 <Name>base/base-1.0.0.1</Name>
@@ -28,6 +29,7 @@
         <Author>Kyle R Covington kyle@red-r.org</Author>
         <Summary>A short summary</Summary>
         <HeadVersion>base5/base5-1</HeadVersion>
+        <Repository>http://www.red-r.org/package</Repository>
         <Versions>
             <Version>
                 <Name>base5/base5-1.0.0.1</Name>
@@ -52,6 +54,7 @@
         <Author>Kyle R Covington kyle@red-r.org</Author>
         <Summary>A short summary</Summary>
         <HeadVersion>package/package67</HeadVersion>
+        <Repository>http://www.red-r.org/package</Repository>
         <Versions>
             <Version>
                 <Name>package/package67</Name>
@@ -71,6 +74,7 @@
         <Author>Kyle R Covington kyle@red-r.org</Author>
         <Summary>A short summary</Summary>
         <HeadVersion>test/test-0.5</HeadVersion>
+        <Repository>http://www.red-r.org/package</Repository>
         <Versions>
             <Version>
                 <Name>test/test-0.5</Name>
