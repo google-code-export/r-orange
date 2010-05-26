@@ -48,6 +48,6 @@ class RVariable(BaseRedRVariable):
         text += self._fullOutput(subsetting)
         return text
     def _convertToVariable(self):
-        return self.copy()
+        return self
     def convertToClass(self, varClass):
-        return self.copy()
+        return self

@@ -13,7 +13,7 @@ class RList(RVariable):
         else:
             raise Exception
     def _convertToVariable(self):
-        return self.copy()
+        return self
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
         text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'

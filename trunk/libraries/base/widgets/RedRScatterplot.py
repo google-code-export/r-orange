@@ -181,8 +181,8 @@ class RedRScatterplot(OWRpy):
             self.paintLegend.insertHtml('</table>')
             
         else:
-            self.xData = self.data.getData()[xIndex]
-            self.yData = self.data.getData()[yIndex]
+            self.xData = self.asNumeric(self.data.getData()[xIndex])
+            self.yData = self.asNumeric(self.data.getData()[yIndex])
             self.graph.points("MyData", xData = self.xData, yData = self.yData, brushColor = 0, penColor = 0)
         # make the plot
         
@@ -328,6 +328,16 @@ class RedRScatterplot(OWRpy):
             self.yData += yData
         ## make a fake call to the zoom to repaint the points and to add some interest to the graph
             
+    def asNumeric(self, listItems):
+        ## convert a list to a numeric list
+        newList = []
+        for i in listItems:
+            try:
+                newList.append(float(i))
+            except:
+                newList.append(None)
+                
+        return newList
     def sendMe(self):
 
         return

@@ -10,7 +10,8 @@ class RDataFrame(RList, StructuredDict):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
-        
+        self.RListSignal = None
+        self.structuredDict = None
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()
@@ -23,17 +24,23 @@ class RDataFrame(RList, StructuredDict):
         else:
             raise Exception
     def _convertToStructuredDict(self):
-        dictData = self.R(self.data, wantType = 'dict', silent = False)
-        dictData['row_names'] = self.R('rownames('+self.data+')', wantType = 'list')
-        keys = ['row_names']
-        keys += self.R('colnames('+self.data+')')
-        newData = StructuredDict(data = dictData, parent = self, keys = keys)
-        return newData
+        if not self.structuredDict:
+            dictData = self.R(self.data, wantType = 'dict', silent = False)
+            dictData['row_names'] = self.R('rownames('+self.data+')', wantType = 'list')
+            keys = ['row_names']
+            keys += self.R('colnames('+self.data+')')
+            self.structuredDict = StructuredDict(data = dictData, parent = self, keys = keys)
+            return self.structuredDict
+        else:
+            return self.structuredDict
     def _convertToList(self):
-        #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
-        newData = RList(data = 'as.list('+self.data+')', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
+        if not self.RListSignal:
+            #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
+            self.RListSignal = RList(data = 'as.list('+self.data+')', parent = self.parent)
+            self.RListSignal.dictAttrs = self.dictAttrs.copy()
+            return self.RListSignal
+        else:
+            return self.RListSignal
     def getSimpleOutput(self, subsetting = '[1:5, 1:5]'):
         # return the text for a simple output of this variable
         text = 'Simple Output\n\n'

@@ -19,7 +19,7 @@ class SQLiteTable(RDataFrame, StructuredDict):
         self.newDataName = 'dataFrameConversion_'+str(time.time()) # put this here because we may make many connections from this output and we only want one dataFrameConversion_ in R
         
         self.dataFrameData = None
-        
+        self.StructuredDictSignal = None
         
     def saveSettings(self):
         return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'database': self.database, 'newDataName': self.newDataName}
@@ -51,28 +51,31 @@ class SQLiteTable(RDataFrame, StructuredDict):
             database = self.database
         return database
     def _convertToStructuredDict(self):
-        ## convert to a python object that is a structured dict.
-        if 'local|' in self.database:  # convert the database if the local name is present.
-            database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+        if not self.StructuredDictSignal:
+            ## convert to a python object that is a structured dict.
+            if 'local|' in self.database:  # convert the database if the local name is present.
+                database = os.path.join(qApp.canvasDlg.tempDir, self.database.split('|')[1])
+            else:
+                database = self.database
+            conn = sqlite3.connect(database)
+            cursor = conn.cursor()
+            cursor.execute('PRAGMA table_info('+self.data+')')
+            dictData = {}
+            colnames = []
+            for row in cursor:
+                dictData[str(row[1])] = []  # make an empty list in the beginning.
+                colnames.append(str(row[1]))
+            
+            cursor.execute('select * from '+self.data)
+            for row in cursor: ## returns a structured tuple of values that will go into the dict.  But these values are based on rows instead of columns as the dict will be
+                for i in range(len(colnames)):
+                    dictData[colnames[i]].append(row[i])
+                    
+            conn.close()
+            self.StructuredDictSignal = StructuredDict(data = dictData, parent = self, keys = colnames)
+            return self.StructuredDictSignal
         else:
-            database = self.database
-        conn = sqlite3.connect(database)
-        cursor = conn.cursor()
-        cursor.execute('PRAGMA table_info('+self.data+')')
-        dictData = {}
-        colnames = []
-        for row in cursor:
-            dictData[str(row[1])] = []  # make an empty list in the beginning.
-            colnames.append(str(row[1]))
-        
-        cursor.execute('select * from '+self.data)
-        for row in cursor: ## returns a structured tuple of values that will go into the dict.  But these values are based on rows instead of columns as the dict will be
-            for i in range(len(colnames)):
-                dictData[colnames[i]].append(row[i])
-                
-        conn.close()
-        newData = StructuredDict(data = dictData, parent = self, keys = colnames)
-        return newData
+            return self.StructuredDictSignal
     def deleteSignal(self):
         print 'Delete Signal'
         if self.dataFrameData:

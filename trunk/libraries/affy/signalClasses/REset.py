@@ -9,16 +9,15 @@ class REset(RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
         
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
-        
-    # def copy(self):
-        # newData = REset(data = self.data, parent = self.parent)
-        # newData.dictAttrs = self.dictAttrs.copy()
-        # return newData
+        self.RMatrixSignal = None
+        self.RDataFrameSignal = None
+        self.RListSignal = None
+        self.StructuredDictSignal = None
     def convertToClass(self, varClass):
-        # if varClass == RList:
-            # newData = self._convertToList()
-        if varClass == RVariable:
-            newData = self._convertToVariable()
+        if varClass == RList:
+            newData = self._convertToList()
+        elif varClass == RVariable:
+            return self
         elif varClass == RDataFrame:
             newData = self._convertToDataFrame()
         elif varClass == RMatrix:
@@ -31,11 +30,29 @@ class REset(RMatrix):
         description='Converted due to a conversion to rectangular data')
         return newData
         
+    def _convertToList(self):
+        if not self.RListSignal:
+            self.RListSignal = RList(data = 'as.list('+self.data+')')
+            return self.RListSignal
+        else:
+            return self.RListSignal
     def _convertToMatrix(self):
-        newData = RMatrix(data = 'exprs('+self.data+')')
-        return newData
+        if not self.RMatrixSignal:
+            self.RMatrixSignal = RMatrix(data = 'exprs('+self.data+')')
+            self.RMatrixSignal.copyAllOptionalData(self)
+            self.RMatrixSignal.setOptionalData(name='eset', data=self.data,creatorWidget=None,
+            description='Converted due to a conversion to rectangular data')
+            return self.RMatrixSignal
+        else:
+            return self.RMatrixSignal
     def _convertToDataFrame(self):
-        newData = RDataFrame(data = 'as.data.frame(exprs('+self.data+'))')
-        return newData
+        if not self.RDataFrameSignal:
+            self.RDataFrameSignal = RDataFrame(data = 'as.data.frame(exprs('+self.data+'))')
+            self.RDataFrameSignal.copyAllOptionalData(self)
+            self.RDataFrameSignal.setOptionalData(name='eset', data=self.data,creatorWidget=None,
+            description='Converted due to a conversion to rectangular data')
+            return self.RDataFrameSignal
+        else:
+            return self.RDataFrameSignal
         
         

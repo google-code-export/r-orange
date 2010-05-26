@@ -5,10 +5,11 @@ from RMatrix import *
 class RVector(RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
-    # def copy(self):
-        # newVariable = RVector(data = self.data, parent = self.parent)
-        # newVariable.dictAttrs = self.dictAttrs
-        # return newVariable
+
+        self.StructuredDictSignal = None
+        self.RDataFrameSignal = None
+        self.RMatrixSignal = None
+        self.RListSignal = None
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()
@@ -27,36 +28,45 @@ class RVector(RMatrix):
         else:
             raise Exception
     def _convertToStructuredDict(self):
-        data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
-        keys = ['row_names']
-        keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
-        rownames = self.R('rownames('+self.data+')', wantType = 'list')
-        try:
-            if rownames in [None, 'NULL', 'NA']:
+        if not self.StructuredDictSignal:
+            data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
+            keys = ['row_names']
+            keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
+            rownames = self.R('rownames('+self.data+')', wantType = 'list')
+            try:
+                if rownames in [None, 'NULL', 'NA']:
+                    rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
+            except:
                 rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
-        except:
-            rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
-        data['row_names'] = rownames
-        newData = StructuredDict(data = data, parent = self, keys = keys)
-        return newData
+            data['row_names'] = rownames
+            self.StructuredDictSignal = StructuredDict(data = data, parent = self, keys = keys)
+            return self.StructuredDictSignal
+        else:
+            return self.StructuredDictSignal
     def _convertToMatrix(self):
-        newData = RMatrix(data = 'as.matrix('+self.data+')')
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
+        if not self.RMatrixSignal:
+            self.RMatrixSignal = RMatrix(data = 'as.matrix('+self.data+')')
+            self.RMatrixSignal.dictAttrs = self.dictAttrs.copy()
+            return self.RMatrixSignal
+        else:
+            return self.RMatrixSignal
     def _convertToList(self):
-        self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))')
-        newData = RList(data = 'list_of_'+self.data, parent = self.parent)
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
+        if not self.RListSignal:
+            self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))')
+            self.RListSignal = RList(data = 'list_of_'+self.data, parent = self.parent)
+            self.RListSignal.dictAttrs = self.dictAttrs.copy()
+            return self.RListSignal
+        else:
+            return self.RListSignal
     def _convertToDataFrame(self):
-        # self.R('data_frame_of_'+self.data+'<-as.data.frame('+self.data+')')
-        # self.R('colnames(data_frame_of_'+self.data+')<-c(\''+self.data+'\')')
-        newData = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
-        
+        if not self.RDataFrameSignal:
+            self.RDataFrameSignal = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
+            self.RDataFrameSignal.dictAttrs = self.dictAttrs.copy()
+            return self.RDataFrameSignal
+        else:
+            return self.RDataFrameSignal
     def _convertToVariable(self):
-        return self.copy()
+        return self
         
     def getSimpleOutput(self, subsetting = '[1:5]'):
         # return the text for a simple output of this variable

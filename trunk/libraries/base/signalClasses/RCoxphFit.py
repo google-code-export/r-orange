@@ -4,21 +4,27 @@ from RModelFit import *
 class RCoxphFit(RModelFit):
     def __init__(self, data, parent = None, checkVal = True):
         RModelFit.__init__(self, data = data, parent = parent, checkVal = False)
+        self.RListSignal = None
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
         elif varClass == RModelFit:
-            return self.copy()
+            return self
         elif varClass == RCoxphFit:
-            return self.copy()
+            return self
+        elif varClass == RList:
+            return self._convertToList()
         else:
             raise Exception, '%s Not A Known Type' % str(varClass)
     def _convertToModelFit(self):
         return self.copy()
     def _convertToList(self):
-        newData = RList(data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
+        if not self.RListSignal:
+            self.RListSignal = RList(data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
+            self.RListSignal.dictAttrs = self.dictAttrs.copy()
+            return self.RListSignal
+        else:
+            return self.RListSignal
     # def copy(self):
         # newVariable = RModelFit(data = self.data, parent = self.parent)
         # newVariable.dictAttrs = self.dictAttrs.copy()

@@ -7,7 +7,7 @@ from RModelFit import *
 class RMArrayLM(RModelFit):
     def __init__(self, data, parent = None, checkVal = True):
         RModelFit.__init__(self, data = data, parent = parent, checkVal = False)
-    
+        self.RListSignal = None
         #if self.getClass_data() != '
     def getIntercept_call(self):
         return self.data+'$Intercept'
@@ -17,11 +17,11 @@ class RMArrayLM(RModelFit):
         if varClass == RVariable:
             return self._convertToVariable()
         elif varClass == RModelFit:
-            return self.copy()
+            return self
         elif varClass == RList:
             return self._convertToList()
         elif varClass == RMArrayLM:
-            return self.copy()
+            return self
         else:
             raise Exception
     # def copy(self):
@@ -29,6 +29,9 @@ class RMArrayLM(RModelFit):
         # newData.dictAttrs = self.dictAttrs.copy()
         # return newData
     def _convertToList(self):
-        newData = RList(data = 'as.list(as.data.frame('+self.data+'))', parent = self.parent)
-        newData.dictAttrs = self.dictAttrs.copy()
-        return newData
+        if not self.RListSignal:
+            self.RListSignal = RList(data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
+            self.RListSignal.dictAttrs = self.dictAttrs.copy()
+            return self.RListSignal
+        else:
+            return self.RListSignal
