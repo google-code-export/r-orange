@@ -1,0 +1,38 @@
+<packages>
+    <Package>
+        <Name>base</Name>
+        <Author>Kyle R Covington kyle@red-r.org</Author>
+        <Summary>A short summary</Summary>
+        <Stability>Sort of Stable</Stability>
+        <Used>150</Used>
+        <Version>1</Version>
+        <Description>A really long description.</Description>
+    </Package>
+    <Package>
+        <Name>Affy</Name>
+        <Author>Kyle R Covington kyle@red-r.org</Author>
+        <Summary>A short summary</Summary>
+        <Stability>Sort of Stable</Stability>
+        <Used>150</Used>
+        <Version>1</Version>
+        <Description>A really long description.</Description>
+    </Package>
+    <Package>
+        <Name>ROCR</Name>
+        <Author>Kyle R Covington kyle@red-r.org</Author>
+        <Summary>A short summary</Summary>
+        <Stability>Sort of Stable</Stability>
+        <Used>150</Used>
+        <Version>1</Version>
+        <Description>A really long description.</Description>
+    </Package>
+    <Package>
+        <Name>SQLite</Name>
+        <Author>Kyle R Covington kyle@red-r.org</Author>
+        <Summary>A short summary</Summary>
+        <Stability>Sort of Stable</Stability>
+        <Used>150</Used>
+        <Version>1</Version>
+        <Description>A really long description.</Description>
+    </Package>
+</packages>

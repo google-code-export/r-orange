@@ -11,7 +11,7 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
 import globalData
-from redRPackageManager import packageManager
+from redRPackageManager import *
 
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile

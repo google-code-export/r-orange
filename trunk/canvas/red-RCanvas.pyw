@@ -297,8 +297,12 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addSeparator()
         self.menuOptions.addAction( sys.platform == "darwin" and "&Preferences..." or "Canvas &Options...",  self.menuItemCanvasOptions)
 
+        self.packageMenu = QMenu("&Packages", self)
+        self.packageMenu.addAction("Package Manager", self.menuOpenPackageManager)
+        
         localHelp = 0
         self.menuHelp = QMenu("&Help", self)
+        
         if os.path.exists(os.path.join(self.redRDir, r"doc/reference/default.htm")) or os.path.exists(os.path.join(self.redRDir, r"doc/canvas/default.htm")):
             if os.path.exists(os.path.join(self.redRDir, r"doc/reference/default.htm")): self.menuHelp.addAction("Red-R Help", self.menuOpenLocalOrangeHelp)
             if os.path.exists(os.path.join(self.redRDir, r"doc/canvas/default.htm")): self.menuHelp.addAction("Red Canvas Help", self.menuOpenLocalCanvasHelp)
@@ -325,6 +329,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar.addMenu(self.menuFile)
         self.menuBar.addMenu(self.menuOptions)
         self.menuBar.addMenu(self.widgetPopup)
+        self.menuBar.addMenu(self.packageMenu)
         self.menuBar.addMenu(self.menuHelp)
         self.setMenuBar(self.menuBar)
     def importSchema(self):
@@ -510,6 +515,10 @@ class OrangeCanvasDlg(QMainWindow):
                     if os.path.splitext(f)[1].lower() == ".ini":
                         os.remove(os.path.join(self.widgetSettingsDir, f))
 
+    def menuOpenPackageManager(self):
+        import redRPackageManager
+        pm = redRPackageManager.PackageManagerDialog()
+        pm.exec_()
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
         webbrowser.open("file:///" + os.path.join(self.redRDir, "doc/catalog/index.html"))
