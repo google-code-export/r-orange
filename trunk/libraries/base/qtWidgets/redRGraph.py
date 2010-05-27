@@ -9,7 +9,6 @@ import math, time
 # from OWBaseWidget import unisetattr
 #from OWColorPalette import *      # color palletes, ...
 from OWGraphTools import *      # user defined curves, ...
-import OWToolbars
 import numpy
 from redRGUI import widgetState
 

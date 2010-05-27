@@ -9,7 +9,6 @@
 from OWRpy import *
 import OWGUI
 import redRGUI 
-# import OWToolbars
 import re
 import textwrap, numpy
 from PyQt4.QtGui import *
