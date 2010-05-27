@@ -5,6 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI 
 import signals 
+from SQLiteSession import *
 
 
 class widgetSession():
@@ -17,6 +18,7 @@ class widgetSession():
         self.defaultGlobalSettingsList = ['windowState']
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
         self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList','globalSettingsList', 'loaded'])
+        self.sqlite = SQLiteHandler()
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
@@ -53,8 +55,9 @@ class widgetSession():
             settings['outputs'] = aoutputs
         else: settings['outputs'] = None
         
+        settingsID = self.sqlite.saveObject(settings)
         self.progressBarFinished()
-        return settings
+        return settingsID
     def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
         pass
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
@@ -151,8 +154,9 @@ class widgetSession():
                 
         return sentItemsList
         
-    def setSettings(self,settings):
+    def setSettings(self,settingsID):
         print 'on set settings'
+        settings = self.sqlite.setObject(settingsID)
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
@@ -268,8 +272,8 @@ class widgetSession():
         file = self.getGlobalSettingsFile()
         try:
             file = open(file, "r")
-            settings = cPickle.load(file)
-            self.setSettings(settings)
+            settingsID = cPickle.load(file)
+            self.setSettings(settingsID)
         except:
             pass
         
@@ -298,9 +302,10 @@ class widgetSession():
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
         #print '%s' % str(settings)
         if settings:
+            settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()
             file = open(file, "w")
-            cPickle.dump(settings, file)
+            cPickle.dump(settingsID, file)
         
         print '|#| owrpy global save settings done'
 

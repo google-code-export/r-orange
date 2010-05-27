@@ -54,9 +54,10 @@ class SQLiteHandler:
             database = self.dataBase
         if force:
             self.execute('DROP TABLE IF EXISTS '+table, database = database)
-        
-        self.execute("CREATE TABLE "+table+" "+colNames, database = database)
-        
+        try:
+            self.execute("CREATE TABLE "+table+" "+colNames, database = database)
+        except:
+            pass
     def getTableNames(self, database = None):
         if not database:
             database = self.dataBase
@@ -68,6 +69,8 @@ class SQLiteHandler:
         
     def newTableName(self):
         return 'AutoTable_'+str(time.time()).replace('.', '_')
+    def newIDName(self):
+        return 'AutoID_'+str(time.time()).replace('.', '_')
     def dictToTable(self, dictionary, tableName = None, database = None):
         if not database:
             database = self.dataBase
@@ -87,3 +90,19 @@ class SQLiteHandler:
             newDict[cPickle.loads(str(row[0]))] = cPickle.loads(str(row[1]))
             
         return newDict
+        
+    def saveObject(self, object):
+        tableName = 'SavedObjects'
+        dataBase = 'local|SavedObjects.db'
+        self.setTable(tableName, '("ID" key, "Data" text)', database = dataBase)
+        newID = self.newIDName()
+        self.execute('insert into SavedObjects values (?,?)', parameters = (newID, cPickle.dumps(object)), database = dataBase)
+        return newID
+        
+    def setObject(self, oldID):
+        print oldID
+        tableName = 'SavedObjects'
+        dataBase = 'local|SavedObjects.db'
+        response = self.execute('select * from SavedObjects where ID = ?', parameters = (oldID,), database = dataBase)
+        print str(response) 
+        return cPickle.loads(str(response[0][1]))

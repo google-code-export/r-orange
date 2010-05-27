@@ -470,9 +470,9 @@ class SchemaDoc(QWidget):
             
             s = widget.instance.getSettings()
             
-            map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
+            #map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
             #requiredRLibraries.extend()
-            del s['requiredRLibraries']
+            #del s['requiredRLibraries']
             settingsDict[widget.instance.widgetID] = cPickle.dumps(s)
             
             if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
