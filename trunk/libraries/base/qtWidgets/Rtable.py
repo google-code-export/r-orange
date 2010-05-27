@@ -1,16 +1,47 @@
-from table import table
+from redRGUI import widgetState
 from RSession import Rcommand
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy
 
-class Rtable(table):
-    def __init__(self,widget,Rdata=None, rows = 0, columns = 0,sortable=False, selectionMode = -1, addToLayout = 1):
+class Rtable(widgetState,QTableWidget):
+    def __init__(self,widget,Rdata=None, rows = 0, columns = 0, 
+    sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
+        QTableWidget.__init__(self,rows,columns,widget)
+
         self.R = Rcommand
-        table.__init__(self,widget,sortable=sortable,selectionMode = selectionMode,addToLayout=addToLayout)
+        #table.__init__(self,widget,sortable=sortable,selectionMode = selectionMode,addToLayout=addToLayout)
+        self.sortIndex = None
+        self.oldSortingIndex = None
         self.Rdata = None
+        if widget and addToLayout and widget.layout():
+            widget.layout().addWidget(self)
+        elif widget and addToLayout:
+            try:
+                widget.addWidget(self)
+            except: # there seems to be no way to add this widget
+                pass
+        if selectionMode != -1:
+            self.setSelectionMode(selectionMode)
+                
+        if Rdata:
+            self.setRTable(Rdata)
+        if sortable:
+            self.setSortingEnabled(True)
+            self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
+        if callback:
+            QObject.connect(self, SIGNAL('cellClicked(int, int)'), callback)
+
         self.setRTable(Rdata)
     
+    def sort(self, index):
+        if index == self.oldSortingIndex:
+            order = self.oldSortingOrder == Qt.AscendingOrder and Qt.DescendingOrder or Qt.AscendingOrder
+        else:
+            order = Qt.AscendingOrder
+        self.oldSortingIndex = index
+        self.oldSortingOrder = order
+
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         print 'in Rtable set'
         if not Rdata:
@@ -41,27 +72,24 @@ class Rtable(table):
         if setRowHeaders: self.setVerticalHeaderLabels(rownames)
         self.setHidden(False)
     def getSettings(self):
-        #print 'save Rtable'
-        r = table.getSettings(self)
-        del r['data']
-        r['Rdata'] = self.Rdata
-        #print r
+        r = {'Rdata': self.Rdata,
+        'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
+        if self.oldSortingIndex != None:
+            r['sortIndex'] = self.oldSortingIndex
+            r['order'] = self.oldSortingOrder
+
+        print r
         return r
     def loadSettings(self,data):
-        #print data
+        print data
         self.setRTable(data['Rdata'])
         
         if 'sortIndex' in data.keys():
-            # print 'aaaaaaaaa###############'
             self.sortByColumn(data['sortIndex'],data['order'])
-        #print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
-            # print 'table#########################'
             for i in data['selection']:
-                # print i
                 self.setItemSelected(self.item(i[0],i[1]),True)
             
-                #self.selectRow(i[0])
             
         
   

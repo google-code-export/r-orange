@@ -95,7 +95,7 @@ class RDataTable(OWRpy):
         # self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", 
         # callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
-        self.table = redRGUI.Rtable(self.tableBox)
+        self.table = redRGUI.Rtable(self.tableBox,sortable=True)
         #self.resize(700,500)
         #self.move(300, 25)
 
