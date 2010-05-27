@@ -41,25 +41,33 @@ class widgetSession():
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
         
-        if self.inputs and len(self.inputs) != 0:
-            ainputs = []
-            for (a, b, c) in [input for input in self.inputs]:
-                ainputs.append((a, b))
-            settings['inputs'] = ainputs
-        else: settings['inputs'] = None
-        if self.outputs and len(self.outputs) != 0:
-            aoutputs = []
-            ## move across the outputs and get their type
-            for (a,b) in [output for output in self.outputs]:
-                aoutputs.append((a, b))
-            settings['outputs'] = aoutputs
-        else: settings['outputs'] = None
+        
         
         settingsID = self.sqlite.saveObject(settings)
         self.progressBarFinished()
         return settingsID
     def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
         pass
+        
+    def getInputs(self):
+        if self.inputs and len(self.inputs) != 0:
+            ainputs = []
+            for (a, b, c) in [input for input in self.inputs]:
+                ainputs.append((a, b))
+            return ainputs
+        else: 
+            return None
+        
+    def getOutputs(self):
+        if self.outputs and len(self.outputs) != 0:
+            aoutputs = []
+            ## move across the outputs and get their type
+            for (a,b) in [output for output in self.outputs]:
+                aoutputs.append((a, b))
+            return aoutputs
+        else: 
+            return None
+
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
         #if isinstance(d,QObject):

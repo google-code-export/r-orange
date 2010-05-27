@@ -469,11 +469,16 @@ class SchemaDoc(QWidget):
             progressBar.setValue(progress)
             
             s = widget.instance.getSettings()
+            i = widget.instance.getInputs()
+            o = widget.instance.getOutputs()
             
             #map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
             #requiredRLibraries.extend()
             #del s['requiredRLibraries']
-            settingsDict[widget.instance.widgetID] = cPickle.dumps(s)
+            settingsDict[widget.instance.widgetID] = {}
+            settingsDict[widget.instance.widgetID]['settingsID'] = cPickle.dumps(s)
+            settingsDict[widget.instance.widgetID]['inputs'] = cPickle.dumps(i)
+            settingsDict[widget.instance.widgetID]['outputs'] = cPickle.dumps(o)
             
             if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
                 f = open(os.path.join(redREnviron.directoryNames['libraryDir'],
@@ -527,9 +532,15 @@ class SchemaDoc(QWidget):
             # os.remove(tempschema)
             print 'image saved.'
         else :
-            file = open(filename, "wt")
+            ## we need to zip the xml and the 'local|SavedObjects.db'
+            tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
+            file = open(tempschema, "wt")
             file.write(xmlText)
             file.close()
+            zout = zipfile.ZipFile(filename, "w")
+            zout.write(tempschema)
+            zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'SavedObjects.db'))
+            zout.close()
             doc.unlink()
             
         
@@ -594,15 +605,14 @@ class SchemaDoc(QWidget):
             self.schemaName = ""
 
         loadingProgressBar.setLabelText('Loading Schema Data, please wait')
-        if not tmp:
-            zfile = zipfile.ZipFile( str(filename), "r" )
-            for name in zfile.namelist():
-                file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
-                
 
-            doc = parse(os.path.join(redREnviron.directoryNames['tempDir'],'tempSchema.tmp')) # load the doc data for the data in the temp dir.
-        else:
-            doc = parse(str(filename))
+        ### unzip the file ###
+        zfile = zipfile.ZipFile( str(filename), "r" )
+        for name in zfile.namelist():
+            file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
+        doc = parse(os.path.join(redREnviron.directoryNames['tempDir'],'tempSchema.tmp')) # load the doc data for the data in the temp dir.
+
+        ## get info from the schema
         schema = doc.firstChild
         widgets = schema.getElementsByTagName("widgets")[0]
         lines = schema.getElementsByTagName("channels")[0]
@@ -643,6 +653,7 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             widget.instance.setLoadingSavedSession(False)
         qApp.restoreOverrideCursor() 
+        qApp.restoreOverrideCursor()
         qApp.restoreOverrideCursor()
         loadingProgressBar.hide()
         loadingProgressBar.close()
@@ -690,11 +701,10 @@ class SchemaDoc(QWidget):
         for widget in widgets.getElementsByTagName("widget"):
             name = widget.getAttribute("widgetName")
 
-            try:
-                settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')])
-            except:
-                settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('caption')])
-            
+            settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['settingsID'])
+            inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
+            outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
+
             tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
             int(widget.getAttribute("yPos")) + addY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
             
