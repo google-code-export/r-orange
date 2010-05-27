@@ -72,7 +72,7 @@ class runSigPathway(OWRpy):
         
     def loadpAnnot(self):
         file = str(self.pAnnotlist.currentText())
-        rrdir = redREnviron.RDir
+        rrdir = redREnviron.directoryNames['RDir']
         destpath = os.path.join(rrdir, 'R', 'doc', 'geneSets')
         if not os.path.isdir(destpath):
             os.mkdir(destpath)
@@ -125,7 +125,8 @@ class runSigPathway(OWRpy):
     
     def noFile(self): # download all available files from "http://chip.org/~ppark/Supplements/PNAS05.html" and put them into the \R\doc\geneSets folder in the Red-R dir.
         print 'Entered noFile to get files'
-        rrdir = redREnviron.RDir
+        rrdir = redREnviron.directoryNames['RDir']
+
         print rrdir
         
         destpath = os.path.join(rrdir, 'doc', 'geneSets')

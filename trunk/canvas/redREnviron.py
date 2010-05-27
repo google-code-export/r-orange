@@ -1,5 +1,7 @@
 """ Modified by Kyle R. Covington and Anup Parikh """
-import os, sys, user
+import os, sys, user, cPickle
+# from PyQt4.QtCore import *
+# from PyQt4.QtGui import *
 
 def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
@@ -43,7 +45,7 @@ def __getDirectoryNames():
             except: pass
     
     tempDir = setTempDir(canvasSettingsDir, 1)
-    print tempDir
+    # print tempDir
     return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
@@ -64,12 +66,91 @@ def setTempDir(canvasSettingsDir, dirNumber):
         return os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
     else:
         return setTempDir(canvasSettingsDir, int(dirNumber + 1))
+
+        
+# Loads settings from the canvas's .ini file
+def loadSettings():
+    settings = {}
+    filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
+    if os.path.exists(filename):
+        try:
+            settings = cPickle.load(open(filename, "rb"))
+        except:
+            pass
+
+    settings.setdefault("widgetListType", 3)
+    settings.setdefault("iconSize", "40 x 40")
+    settings.setdefault("toolbarIconSize", 2)
+    settings.setdefault("toolboxWidth", 200)
+    settings.setdefault('schemeIconSize', 1)
+    settings.setdefault("snapToGrid", 1)
+    
+    
+    settings.setdefault("saveWidgetsPosition", 1)
+    settings.setdefault("widgetSelectedColor", (0, 255, 0))
+    settings.setdefault("widgetActiveColor", (0,0,255))
+    settings.setdefault("lineColor", (0,255,0))
+
+
+    settings.setdefault("saveSchemaDir", directoryNames['canvasSettingsDir'])
+    settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
+    settings.setdefault("showSignalNames", 1)
+    
+    settings.setdefault("canvasWidth", 700)
+    settings.setdefault("canvasHeight", 600)
+
+        
+    settings.setdefault("useDefaultPalette", 0)
+
+    settings.setdefault('CRANrepos','http://cran.r-project.org')
+    settings.setdefault("writeLogFile", 1)
+    settings.setdefault("dontAskBeforeClose", 0)
+    settings.setdefault("debugMode", 0)
+    settings.setdefault("uploadError", 0)
+    settings.setdefault("askToUploadError", 0)
+    settings.setdefault("focusOnCatchException", 1)
+    settings.setdefault("focusOnCatchOutput" , 0)
+    settings.setdefault("printOutputInStatusBar", 1)
+    settings.setdefault("printExceptionInStatusBar", 1)
+    settings.setdefault("outputVerbosity", 0)
+    settings.setdefault("ocShow", 1)
+    settings.setdefault("owShow", 0)
+    settings.setdefault("ocInfo", 1)
+    settings.setdefault("owInfo", 1)
+    settings.setdefault("ocWarning", 1)
+    settings.setdefault("owWarning", 1)
+    settings.setdefault("ocError", 1)
+    settings.setdefault("owError", 1)
+    
+    settings.setdefault("synchronizeHelp", 1)
+    return settings
+    
+# Saves settings to this widget's .ini file
+def saveSettings():
+    print 'red-r canvas saveSettings'
+    filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
+    file=open(filename, "wb")
+    if settings["widgetListType"] == 1:        # tree view
+        settings["treeItemsOpenness"] = dict([(key, tabs.tabDict[key].isExpanded()) for key in tabs.tabDict.keys()])
+    cPickle.dump(settings, file)
+    file.close()
+def getVersion():
+    if len(version.keys()) ==0:
+        f = open(os.path.join(directoryNames["redRDir"],'version.txt'), 'r')
+        file = f.readlines()
+        f.close()
+        import re
+        for i in file:
+            m = re.search('!define\s(\S+)\s"(.*)"',i)
+            version[m.group(1)] = m.group(2)
+    return version
+        
 def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
 
-    if canvasDir <> None:
-        pathsToAdd.append(canvasDir)
+    if directoryNames['canvasDir'] <> None:
+        pathsToAdd.append(directoryNames['canvasDir'])
 
     if directoryNames['libraryDir'] <> None and os.path.isdir(directoryNames['libraryDir']):
         pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x) for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
@@ -83,5 +164,9 @@ def addOrangeDirectoriesToPath(directoryNames):
             sys.path.insert(0, path)
 
 directoryNames = __getDirectoryNames()
-globals().update(directoryNames)
 addOrangeDirectoriesToPath(directoryNames)
+version = {}
+version = getVersion()
+settings = loadSettings()
+
+

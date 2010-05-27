@@ -378,8 +378,8 @@ class WidgetListBase:
         self.widgetDir = widgetDir
         self.picsDir = picsDir
         self.defaultPic = defaultPic
-        widgetTypeList = self.canvasDlg.settings["widgetListType"]
-        size = min(len(self.canvasDlg.toolbarIconSizeList)-1, self.canvasDlg.settings["toolbarIconSize"])
+        widgetTypeList = redREnviron.settings["widgetListType"]
+        size = min(len(self.canvasDlg.toolbarIconSizeList)-1, redREnviron.settings["toolbarIconSize"])
         iconSize = self.canvasDlg.toolbarIconSizeList[size]
         
         # find tab names that are not in widgetTabList
@@ -393,7 +393,7 @@ class WidgetListBase:
         # f.close()
         treeXML = mainTabs.childNodes[0]
         print treeXML.childNodes
-        self.canvasDlg.settings['widgetXML'] = mainTabs
+        redREnviron.settings['widgetXML'] = mainTabs
         for itab in treeXML.childNodes:
             if itab.nodeName == 'group': #picked a group element
                 
@@ -512,7 +512,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         
         self.setWidget(self.containerWidget)
         
-        iconSize = self.canvasDlg.toolbarIconSizeList[self.canvasDlg.settings["toolbarIconSize"]]
+        iconSize = self.canvasDlg.toolbarIconSizeList[redREnviron.settings["toolbarIconSize"]]
         self.treeWidget.setIconSize(QSize(iconSize, iconSize))
 #        self.treeWidget.setRootIsDecorated(0) 
         #self.setWidget(OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1))
@@ -529,9 +529,9 @@ class WidgetTree(WidgetListBase, QDockWidget):
 
         if not show:
             item.setHidden(1)
-        if self.canvasDlg.settings.has_key("treeItemsOpenness") and self.canvasDlg.settings["treeItemsOpenness"].has_key(name):
-             item.setExpanded(self.canvasDlg.settings["treeItemsOpenness"][name])
-        elif not self.canvasDlg.settings.has_key("treeItemsOpenness") and self.treeWidget.topLevelItemCount() == 1:
+        if redREnviron.settings.has_key("treeItemsOpenness") and redREnviron.settings["treeItemsOpenness"].has_key(name):
+             item.setExpanded(redREnviron.settings["treeItemsOpenness"][name])
+        elif not redREnviron.settings.has_key("treeItemsOpenness") and self.treeWidget.topLevelItemCount() == 1:
             item.setExpanded(1)
         self.tabs.append((name, 2*int(show), item))
 
@@ -547,9 +547,9 @@ class WidgetTree(WidgetListBase, QDockWidget):
 
         if not show:
             item.setHidden(1)
-        if self.canvasDlg.settings.has_key("treeItemsOpenness") and self.canvasDlg.settings["treeItemsOpenness"].has_key(name):
-             item.setExpanded(self.canvasDlg.settings["treeItemsOpenness"][name])
-        elif not self.canvasDlg.settings.has_key("treeItemsOpenness") and self.favoritesTree.topLevelItemCount() == 1:
+        if redREnviron.settings.has_key("treeItemsOpenness") and redREnviron.settings["treeItemsOpenness"].has_key(name):
+             item.setExpanded(redREnviron.settings["treeItemsOpenness"][name])
+        elif not redREnviron.settings.has_key("treeItemsOpenness") and self.favoritesTree.topLevelItemCount() == 1:
             item.setExpanded(1)
         self.tabs.append((name, 2*int(show), item))
 
@@ -595,7 +595,7 @@ class WidgetToolBox(WidgetListBase, QDockWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
         QDockWidget.__init__(self, "Widgets")
-        self.toolbox = MyQToolBox(canvasDlg.settings["toolboxWidth"], self)
+        self.toolbox = MyQToolBox(redREnviron.settings["toolboxWidth"], self)
         self.toolbox.setFocusPolicy(Qt.ClickFocus)    # this is needed otherwise the document window will sometimes strangely lose focus and the output window will be focused
         self.toolbox.layout().setSpacing(0)
         self.setWidget(self.toolbox)
@@ -728,7 +728,7 @@ class CanvasPopup(QMenu):
             else:
                 # filter widgets by allowed signal 
                 # added = False
-                # for category, show in self.canvasDlg.settings["WidgetTabs"]:
+                # for category, show in redREnviron.settings["WidgetTabs"]:
                     # if not show or not self.canvasDlg.widgetRegistry.has_key(category):
                         # continue
     
@@ -746,7 +746,7 @@ class CanvasPopup(QMenu):
         self.clear()
         self.addWidgetSuggest()
         for c in self.candidates:
-            for category, show in self.canvasDlg.settings["WidgetTabs"]:
+            for category, show in redREnviron.settings["WidgetTabs"]:
                 if not show or not self.canvasDlg.widgetRegistry.has_key(category):
                     continue
                 
@@ -786,9 +786,9 @@ def constructCategoriesPopup(canvasDlg):
             categoriesPopup.catActions.append(catmenu) # put the catmenu in the categoriespopup
             insertChildActions(canvasDlg, catmenu, categoriesPopup, itab)
             insertWidgets(canvasDlg, catmenu, categoriesPopup, str(itab.getAttribute('name'))) 
-    #print canvasDlg.settings["WidgetTabs"]
+    #print redREnviron.settings["WidgetTabs"]
     try:
-        for category, show in canvasDlg.settings["WidgetTabs"]:
+        for category, show in redREnviron.settings["WidgetTabs"]:
             if not show or not canvasDlg.widgetRegistry.has_key(category):
                 continue
             catmenu = categoriesPopup.addMenu(category)
@@ -802,8 +802,7 @@ def constructCategoriesPopup(canvasDlg):
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        print inst
-        print 'Error occured in categories popup'
+        orngOutput.printException()
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in canvasDlg.widgetRegistry['templates']:
@@ -813,8 +812,7 @@ def constructCategoriesPopup(canvasDlg):
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            print inst
-            print 'Loading template failed'
+            orngOutput.printException()
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -853,7 +851,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                print inst
+                orngOutput.printException()
                 pass
     except:
         print 'Exception in Tabs with widgetRegistry'#        

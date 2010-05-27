@@ -8,7 +8,7 @@ import sys
 import string
 from datetime import tzinfo, timedelta, datetime
 import traceback
-import os.path, os, redRGUI
+import os.path, os, redRGUI, redREnviron
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
@@ -29,15 +29,15 @@ class OutputWindow(QDialog):
         self.defaultExceptionHandler = sys.excepthook
         self.defaultSysOutHandler = sys.stdout
 
-        self.logFile = open(os.path.join(canvasDlg.canvasSettingsDir, "outputLog.html"), "w") # create the log file
+        self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
         self.unfinishedText = ""
         
         w = h = 500
-        if canvasDlg.settings.has_key("outputWindowPos"):
+        if redREnviron.settings.has_key("outputWindowPos"):
             desktop = qApp.desktop()
             deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
             deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
-            w, h, x, y = canvasDlg.settings["outputWindowPos"]
+            w, h, x, y = redREnviron.settings["outputWindowPos"]
             if x >= 0 and y >= 0 and deskH >= y+h and deskW >= x+w: 
                 self.move(QPoint(x, y))
             else: 
@@ -53,19 +53,19 @@ class OutputWindow(QDialog):
     def showEvent(self, ce):
         ce.accept()
         QDialog.showEvent(self, ce)
-        settings = self.canvasDlg.settings
+        settings = redREnviron.settings
         if settings.has_key("outputWindowPos"):
             w, h, x, y = settings["outputWindowPos"]
             self.move(QPoint(x, y))
             self.resize(w, h)
         
     def hideEvent(self, ce):
-        self.canvasDlg.settings["outputWindowPos"] = (self.width(), self.height(), self.pos().x(), self.pos().y())
+        redREnviron.settings["outputWindowPos"] = (self.width(), self.height(), self.pos().x(), self.pos().y())
         ce.accept()
         QDialog.hideEvent(self, ce)
                 
     def closeEvent(self,ce):
-        self.canvasDlg.settings["outputWindowPos"] = (self.width(), self.height(), self.pos().x(), self.pos().y())
+        redREnviron.settings["outputWindowPos"] = (self.width(), self.height(), self.pos().x(), self.pos().y())
         if getattr(self.canvasDlg, "canvasIsClosing", 0):
             self.catchException(0)
             self.catchOutput(0)
@@ -87,7 +87,7 @@ class OutputWindow(QDialog):
 
     # print text produced by warning and error widget calls
     def widgetEvents(self, text, eventVerbosity = 1):
-        if self.canvasDlg.settings["outputVerbosity"] >= eventVerbosity:
+        if redREnviron.settings["outputVerbosity"] >= eventVerbosity:
             if text != None:
                 self.write(str(text))
             self.canvasDlg.setStatusBarEvent(QString(text))
@@ -100,25 +100,25 @@ class OutputWindow(QDialog):
         # else:
             # self.allOutput += text + "\n"
 
-        if self.canvasDlg.settings["writeLogFile"]:
+        if redREnviron.settings["writeLogFile"]:
             self.logFile.write(text.replace("\n", "<br>\n"))
             
-        if not self.canvasDlg.settings['debugMode']: return 
+        if not redREnviron.settings['debugMode']: return 
         
         import re
         m = re.search('^(\|(#+)\|\s?)(.*)',text)
-        if self.canvasDlg.settings['outputVerbosity'] ==0:
+        if redREnviron.settings['outputVerbosity'] ==0:
             if m:
                 text = str(m.group(3))
             
-        elif m and len(m.group(2)) >= self.canvasDlg.settings['outputVerbosity']:
-            # text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(self.canvasDlg.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (self.canvasDlg.settings['outputVerbosity'])+1)
+        elif m and len(m.group(2)) >= redREnviron.settings['outputVerbosity']:
+            # text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(redREnviron.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (redREnviron.settings['outputVerbosity'])+1)
             text = str(m.group(3)) + "\n"
         else:
             return
 
         
-        if self.canvasDlg.settings["focusOnCatchOutput"]:
+        if redREnviron.settings["focusOnCatchOutput"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
 
@@ -130,7 +130,7 @@ class OutputWindow(QDialog):
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
         if text[-1:] == "\n":
-            if self.canvasDlg.settings["printOutputInStatusBar"]:
+            if redREnviron.settings["printOutputInStatusBar"]:
                 self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
             self.unfinishedText = ""
         else:
@@ -151,7 +151,7 @@ class OutputWindow(QDialog):
     def rememberResponse(self):
         if 'Remember my Response' in self.remember.getChecked():
             self.checked = True
-            self.canvasDlg.settings['askToUploadError'] = 0
+            redREnviron.settings['askToUploadError'] = 0
 
         else:
             self.checked = False
@@ -160,8 +160,8 @@ class OutputWindow(QDialog):
         import httplib,urllib
         import sys,pickle,os
 
-        if not self.canvasDlg.settings['askToUploadError']:
-            res = self.canvasDlg.settings['uploadError']
+        if not redREnviron.settings['askToUploadError']:
+            res = redREnviron.settings['uploadError']
         else:
             self.msg = redRGUI.dialog(parent=self,title='Red-R Error')
             
@@ -174,7 +174,7 @@ class OutputWindow(QDialog):
             self.checked = False
             self.remember = redRGUI.checkBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
             res = self.msg.exec_()
-            self.canvasDlg.settings['uploadError'] = res
+            redREnviron.settings['uploadError'] = res
             
         if res == 1:
             err.update(self.canvasDlg.version)
@@ -193,7 +193,7 @@ class OutputWindow(QDialog):
             return
         
     def exceptionHandler(self, type, value, tracebackInfo):
-        if self.canvasDlg.settings["focusOnCatchException"]:
+        if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
         # print 'exceptionHandler'
         # traceback.extract_tb(tracebackInfo)
@@ -207,7 +207,7 @@ class OutputWindow(QDialog):
         toUpload['errorType'] = self.getSafeString(type.__name__)
 
         
-        if self.canvasDlg.settings["printExceptionInStatusBar"]:
+        if redREnviron.settings["printExceptionInStatusBar"]:
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
 
         
@@ -246,7 +246,7 @@ class OutputWindow(QDialog):
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
 
-        if self.canvasDlg.settings["writeLogFile"]:
+        if redREnviron.settings["writeLogFile"]:
             self.logFile.write(str(text) + "<br>\n")
         
         self.uploadException(toUpload)

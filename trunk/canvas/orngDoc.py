@@ -29,7 +29,7 @@ class SchemaDoc(QWidget):
         self.signalManager = SignalManager()    # signal manager to correctly process signals
 
         self.sessionID = 0
-        self.schemaPath = self.canvasDlg.settings["saveSchemaDir"]
+        self.schemaPath = redREnviron.settings["saveSchemaDir"]
         self.schemaName = ""
         self.loadedSettingsDict = {}
         self.setLayout(QVBoxLayout())
@@ -49,11 +49,11 @@ class SchemaDoc(QWidget):
     def saveTempDoc(self):
         return
         if self.widgets != []:
-            tempName = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
+            tempName = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "tempSchema.tmp")
             self.save(tempName,True)
         
     def removeTempDoc(self):
-        tempName = os.path.join(self.canvasDlg.canvasSettingsDir, "tempSchema.tmp")
+        tempName = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "tempSchema.tmp")
         if os.path.exists(tempName):
             os.remove(tempName)
 
@@ -289,7 +289,7 @@ class SchemaDoc(QWidget):
             newwidget.show()
             newwidget.updateTooltip()
             newwidget.setProcessing(1)
-            # if self.canvasDlg.settings["saveWidgetsPosition"]:
+            # if redREnviron.settings["saveWidgetsPosition"]:
                 # newwidget.instance.restoreWidgetPosition()
             newwidget.setProcessing(0)
             orngHistory.logAddWidget(self.schemaID, id(newwidget), (newwidget.widgetInfo.category, newwidget.widgetInfo.name), newwidget.x(), newwidget.y())
@@ -417,7 +417,7 @@ class SchemaDoc(QWidget):
         return self.save(str(name),template=False)
         
     def saveTemplate(self):
-        name = QFileDialog.getSaveFileName(self, "Save Template", os.path.join(self.canvasDlg.redRDir, 'libraries'), "Red-R Widget Template (*.rrts)")
+        name = QFileDialog.getSaveFileName(self, "Save Template", os.path.join(redREnviron.directoryNames['redRDir'], 'libraries'), "Red-R Widget Template (*.rrts)")
         if not name or name == None: return False
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == '': return False
@@ -507,8 +507,8 @@ class SchemaDoc(QWidget):
         progressBar.setValue(progress)
 
         if not template:
-            tempschema = os.path.join(self.canvasDlg.tempDir, "tempSchema.tmp")
-            tempR = os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/')
+            tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
+            tempR = os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/')
             file = open(tempschema, "wt")
             file.write(xmlText)
             file.close()
@@ -520,8 +520,8 @@ class SchemaDoc(QWidget):
 
             RSession.Rcommand('save.image("' + tempR + '")')  # save the R data
             zout = zipfile.ZipFile(filename, "w")  # create a zip file
-            for fname in os.listdir(self.canvasDlg.tempDir):  # collect the files that are in the tempDir and save them into the zip file.
-                zout.write(os.path.join(self.canvasDlg.tempDir, fname))
+            for fname in os.listdir(redREnviron.directoryNames['tempDir']):  # collect the files that are in the tempDir and save them into the zip file.
+                zout.write(os.path.join(redREnviron.directoryNames['tempDir'], fname))
             zout.close()  # close the zipfile (this is the .rrs)
             # os.remove(tempR)
             # os.remove(tempschema)
@@ -535,7 +535,7 @@ class SchemaDoc(QWidget):
         
         if os.path.splitext(filename)[1].lower() == ".rrs":
             (self.schemaPath, self.schemaName) = os.path.split(filename)
-            self.canvasDlg.settings["saveSchemaDir"] = self.schemaPath
+            redREnviron.settings["saveSchemaDir"] = self.schemaPath
             self.canvasDlg.addToRecentMenu(filename)
             self.canvasDlg.setCaption(self.schemaName)
         progress += 1
@@ -597,10 +597,10 @@ class SchemaDoc(QWidget):
         if not tmp:
             zfile = zipfile.ZipFile( str(filename), "r" )
             for name in zfile.namelist():
-                file(os.path.join(self.canvasDlg.tempDir,os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
+                file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
                 
 
-            doc = parse(os.path.join(self.canvasDlg.tempDir,'tempSchema.tmp')) # load the doc data for the data in the temp dir.
+            doc = parse(os.path.join(redREnviron.directoryNames['tempDir'],'tempSchema.tmp')) # load the doc data for the data in the temp dir.
         else:
             doc = parse(str(filename))
         schema = doc.firstChild
@@ -618,7 +618,7 @@ class SchemaDoc(QWidget):
             ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
             if not self.checkWidgetDuplication(widgets = widgets):
                 return
-            RSession.Rcommand('load("' + os.path.join(self.canvasDlg.tempDir, "tmp.RData").replace('\\','/') +'")')
+            RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
         
         loadingProgressBar.setLabelText('Loading Widgets')
         loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
@@ -741,8 +741,8 @@ class SchemaDoc(QWidget):
                 required = cPickle.loads(required['r'])
             
             if len(required) > 0:
-                if 'CRANrepos' in qApp.canvasDlg.settings.keys():
-                    repo = qApp.canvasDlg.settings['CRANrepos']
+                if 'CRANrepos' in redREnviron.settings.keys():
+                    repo = redREnviron.settings['CRANrepos']
                 else:
                     repo = None
                 loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
@@ -878,7 +878,7 @@ class SignalCanvasView(QGraphicsView):
         self.inWidget.setBrush(brush)
         self.inWidget.setZValue(-100)
         
-        canvasPicsDir  = os.path.join(self.canvasDlg.canvasDir, "icons")
+        canvasPicsDir  = os.path.join(redREnviron.directoryNames['canvasDir'], "icons")
         if os.path.exists(os.path.join(canvasPicsDir, "frame.png")):
             widgetBack = QPixmap(os.path.join(canvasPicsDir, "frame.png"))
         else:

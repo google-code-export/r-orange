@@ -3,8 +3,6 @@ from PyQt4.QtGui import *
 import math, glob
 import redREnviron
 from numpy import *
-#import sys, traceback
-
 YesNo = NoYes = ("No", "Yes")
 groupBoxMargin = 7
 
@@ -39,7 +37,7 @@ def registerQTWidgets(package):
     print '@@@@@@@@@@registerQTWidgets'
     import imp
     m = imp.new_module(package)
-    directory = os.path.join(redREnviron.widgetDir,package,'qtWidgets')
+    directory = os.path.join(redREnviron.directoryNames['widgetDir'],package,'qtWidgets')
     for filename in glob.iglob(os.path.join(directory,  "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
@@ -50,7 +48,8 @@ def registerQTWidgets(package):
         setattr(m, guiClass,c)
     setattr(current_module,package,m)
 
-# registerQTWidgets(redREnviron.directoryNames['qtWidgetsDir'])
+
+
 for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/base/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue

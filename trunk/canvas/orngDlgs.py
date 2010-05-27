@@ -48,7 +48,7 @@ class CanvasOptionsDlg(QDialog):
     def __init__(self, canvasDlg, *args):
         apply(QDialog.__init__,(self,) + args)
         self.canvasDlg = canvasDlg
-        self.settings = dict(canvasDlg.settings)        # create a copy of the settings dict. in case we accept the dialog, we update the canvasDlg.settings with this dict
+        self.settings = dict(redREnviron.settings)        # create a copy of the settings dict. in case we accept the dialog, we update the redREnviron.settings with this dict
         if sys.platform == "darwin":
             self.setWindowTitle("Preferences")
         else:
@@ -252,7 +252,7 @@ class CanvasOptionsDlg(QDialog):
         self.downButton.setEnabled(itemIndex < self.tabOrderList.count()-1)
         catName = str(self.tabOrderList.currentItem().text())
         if not self.canvasDlg.widgetRegistry.has_key(catName): return
-        self.removeButton.setEnabled(os.path.normpath(self.canvasDlg.widgetDir) not in os.path.normpath(self.canvasDlg.widgetRegistry[catName].directory))
+        self.removeButton.setEnabled(os.path.normpath(redREnviron.directoryNames['widgetDir']) not in os.path.normpath(self.canvasDlg.widgetRegistry[catName].directory))
         #self.removeButton.setEnabled(1)
 
     def addCategory(self):
@@ -331,8 +331,8 @@ class WidgetShortcutDlg(QDialog):
 
         self.tabs = QTabWidget(self)
         
-        extraTabs = [(name, 1) for name in canvasDlg.widgetRegistry.keys() if name not in [tab for (tab, s) in canvasDlg.settings["WidgetTabs"]]]
-        for tabName, show in canvasDlg.settings["WidgetTabs"] + extraTabs:
+        extraTabs = [(name, 1) for name in canvasDlg.widgetRegistry.keys() if name not in [tab for (tab, s) in redREnviron.settings["WidgetTabs"]]]
+        for tabName, show in redREnviron.settings["WidgetTabs"] + extraTabs:
             if not canvasDlg.widgetRegistry.has_key(tabName):
                 continue
             scrollArea = QScrollArea()

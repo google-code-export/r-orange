@@ -276,7 +276,7 @@ class widgetSession():
     
     def getGlobalSettingsFile(self):
         # print 'getSettingsFile in owbasewidget'
-        file = os.path.join(redREnviron.widgetSettingsDir, self._widgetInfo['fileName'] + ".ini")
+        file = os.path.join(redREnviron.directoryNames['widgetSettingsDir'], self._widgetInfo['fileName'] + ".ini")
         #print 'getSettingsFile', file
         return file
 

@@ -81,7 +81,7 @@ def registerRedRSignals(package):
     import imp, sys
     # print sys.path
     m = imp.new_module(package)
-    directory = os.path.join(redREnviron.widgetDir,package,'signalClasses')
+    directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'signalClasses')
     for filename in glob.iglob(os.path.join(directory,  "*.py")):
         # print 'import filename', filename
         if os.path.isdir(filename) or os.path.islink(filename):

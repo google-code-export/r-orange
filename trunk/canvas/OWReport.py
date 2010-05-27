@@ -5,7 +5,7 @@ import os, time, tempfile, shutil, urllib, zipfile, re, shutil
 import datetime
 import redREnviron, OWGUI
 
-reportsDir = redREnviron.reportsDir
+reportsDir = redREnviron.directoryNames['reportsDir']
 report = None
 def escape(s):
     return s.replace("\\", "\\\\").replace("\n", "\\n").replace("'", "\\'")

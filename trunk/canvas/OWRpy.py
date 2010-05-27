@@ -100,13 +100,13 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         qApp.restoreOverrideCursor()
         return commandOutput
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
-        #print str(qApp.canvasDlg.settings)
-        if file == None and ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
-            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "PDF (*.PDF)"))
+        #print str(redREnviron.settings)
+        if file == None and ('HomeFolder' not in redREnviron.settings.keys()):
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['saveSchemaDir']), "PDF (*.PDF)"))
         elif file == None: 
-            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "PDF (*.PDF)"))
+            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['HomeFolder']), "PDF (*.PDF)"))
         if file.isEmpty(): return
-        if file: qApp.canvasDlg.settings['HomeFolder'] = os.path.split(file)[0]
+        if file: redREnviron.settings['HomeFolder'] = os.path.split(file)[0]
         self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
         self.R(query, 'setRData')
         self.R('dev.off()')
@@ -148,8 +148,8 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
 
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
-        if not repository and 'CRANrepos' in qApp.canvasDlg.settings.keys():
-            repository = qApp.canvasDlg.settings['CRANrepos']
+        if not repository and 'CRANrepos' in redREnviron.settings.keys():
+            repository = redREnviron.settings['CRANrepos']
         
         print 'Loading required librarys'
         for i in librarys:

@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager
-import signals
+import signals, redREnviron
 ERROR = 0
 WARNING = 1
 
@@ -127,7 +127,7 @@ class CanvasLine(QGraphicsLineItem):
         painter.setPen(QPen(self.canvasDlg.lineColor, 5 , self.getEnabled() and Qt.SolidLine or Qt.DashLine, Qt.RoundCap))
         painter.drawLine(p1, p2)
 
-        if self.canvasDlg.settings["showSignalNames"]:
+        if redREnviron.settings["showSignalNames"]:
             painter.setPen(QColor(80, 80, 80))
             mid = (p1+p2-QPointF(200, 30))/2 
             painter.drawText(mid.x(), mid.y(), 200, 50, Qt.AlignTop | Qt.AlignHCenter, self.caption)
@@ -163,11 +163,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             
         m = __import__(widgetInfo.fileName)
         self.instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
-        _owInfo = canvasDlg.settings["owInfo"],
-        _owWarning = canvasDlg.settings["owWarning"],
-        _owError = canvasDlg.settings["owError"],
-        _owShowStatus = canvasDlg.settings["owShow"],
-        _useContexts = canvasDlg.settings["useContexts"],
+        _owInfo = redREnviron.settings["owInfo"],
+        _owWarning = redREnviron.settings["owWarning"],
+        _owError = redREnviron.settings["owError"],
+        _owShowStatus = redREnviron.settings["owShow"],
         _category = widgetInfo.category)
         #_settingsFromSchema = widgetSettings)
         self.instance.__dict__['_widgetInfo'] = {'fullName':widgetInfo.fullName, 'fileName':widgetInfo.fileName, 'package': widgetInfo.package }
@@ -238,7 +237,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.canvas = canvas
         self.view = view
         self.canvasDlg = canvasDlg
-        canvasPicsDir  = os.path.join(canvasDlg.canvasDir, "icons")
+        canvasPicsDir  = os.path.join(redREnviron.directoryNames['canvasDir'], "icons")
         self.imageLeftEdge = QPixmap(os.path.join(canvasPicsDir,"leftEdge.png"))
         self.imageRightEdge = QPixmap(os.path.join(canvasPicsDir,"rightEdge.png"))
         self.imageLeftEdgeG = QPixmap(os.path.join(canvasPicsDir,"leftEdgeG.png"))
@@ -260,12 +259,12 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.errorIcon.hide()
 
         # do we want to restore last position and size of the widget
-        # if self.canvasDlg.settings["saveWidgetsPosition"]:
+        # if redREnviron.settings["saveWidgetsPosition"]:
             # self.instance.restoreWidgetPosition()
 
 
     def resetWidgetSize(self):
-        size = self.canvasDlg.schemeIconSizeList[self.canvasDlg.settings['schemeIconSize']]
+        size = self.canvasDlg.schemeIconSizeList[redREnviron.settings['schemeIconSize']]
         self.setRect(0,0, size, size)
         self.widgetSize = QSizeF(size, size)
 
@@ -334,14 +333,14 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         yPos = self.y() - 21 - self.progressBarShown * 20
         iconNum = sum([widgetState.get("Info", {}).values() != [],  widgetState.get("Warning", {}).values() != [], widgetState.get("Error", {}).values() != []])
 
-        if self.canvasDlg.settings["ocShow"]:        # if show icons is enabled in canvas options dialog
+        if redREnviron.settings["ocShow"]:        # if show icons is enabled in canvas options dialog
             startX = self.x() + (self.rect().width()/2) - ((iconNum*(self.canvasDlg.widgetIcons["Info"].width()+2))/2)
             off  = 0
-            if len(widgetState.get("Info", {}).values()) > 0 and self.canvasDlg.settings["ocInfo"]:
+            if len(widgetState.get("Info", {}).values()) > 0 and redREnviron.settings["ocInfo"]:
                 off  = self.updateWidgetStateIcon(self.infoIcon, startX, yPos, widgetState["Info"])
-            if len(widgetState.get("Warning", {}).values()) > 0 and self.canvasDlg.settings["ocWarning"]:
+            if len(widgetState.get("Warning", {}).values()) > 0 and redREnviron.settings["ocWarning"]:
                 off += self.updateWidgetStateIcon(self.warningIcon, startX+off, yPos, widgetState["Warning"])
-            if len(widgetState.get("Error", {}).values()) > 0 and self.canvasDlg.settings["ocError"]:
+            if len(widgetState.get("Error", {}).values()) > 0 and redREnviron.settings["ocError"]:
                 off += self.updateWidgetStateIcon(self.errorIcon, startX+off, yPos, widgetState["Error"])
 
 
@@ -360,7 +359,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
     # set coordinates of the widget
     def setCoords(self, x, y):
-        if self.canvasDlg.settings["snapToGrid"]:
+        if redREnviron.settings["snapToGrid"]:
             x = round(x/10)*10
             y = round(y/10)*10
         self.setPos(x, y)
