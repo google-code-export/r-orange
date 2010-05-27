@@ -28,7 +28,7 @@ class table(widgetState,QTableWidget):
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
         if callback:
             QObject.connect(self, SIGNAL('cellClicked(int, int)'), callback)
-        self.sqlite = SQLiteHandler('local|saveDB.db')
+        self.sqlite = SQLiteHandler('local|SavedObjects.db')
     def setTable(self, data, keys = None):
         print 'in table set'
         if data==None:
@@ -81,7 +81,6 @@ class table(widgetState,QTableWidget):
         
         if 'sortIndex' in data.keys():
             self.sortByColumn(data['sortIndex'],data['order'])
-        #print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             for i in data['selection']:
                 self.setItemSelected(self.item(i[0],i[1]),True)

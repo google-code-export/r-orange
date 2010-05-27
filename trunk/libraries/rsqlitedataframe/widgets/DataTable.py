@@ -106,7 +106,6 @@ class DataTable(OWRpy):
         #print dataset
         self.supressTabClick = True
         self.table.show()
-        self.data = dataset
         tableData = dataset.getData()
         
             
@@ -121,13 +120,15 @@ class DataTable(OWRpy):
         self.infoBox.setHidden(False)
 
         #if id in self.link: #start the block for assignment of link data attributes
-        self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
+        self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val: self.itemClicked(val))
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         self.table.setTable(dataset.getData(), keys = dataset.getItem('keys'))
         self.supressTabClick = False
             
-    def itemClicked(self, val, table):
+    def itemClicked(self, val):
+    
+        return
         print 'item clicked'
         
         RclickedRow = int(val.row())+1
@@ -138,7 +139,7 @@ class DataTable(OWRpy):
             url = self.currentLinks[str(item.text())]
             col = url[url.find('{')+1:url.find('}')]
             if col == 0 or col == 'row': #special cases for looking into rownames
-                cellVal = self.data.getData()['row_names'][val.row()]  #self.R('rownames('+table+')['+str(RclickedRow)+']')
+                cellVal = table['row_names'][val.row()]  #self.R('rownames('+table+')['+str(RclickedRow)+']')
             else:
                 cellVal = self.data.getData()[col][val.row()]  #self.R(table+'['+str(RclickedRow)+',"'+col+'"]')
             url = url.replace('{'+col+'}', str(cellVal))
