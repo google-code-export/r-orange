@@ -1,38 +1,23 @@
+<?xml version="1.0" ?>
 <packages>
-    <Package>
-        <Name>base</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <Stability>Sort of Stable</Stability>
-        <Used>150</Used>
-        <Version>1</Version>
-        <Description>A really long description.</Description>
-    </Package>
-    <Package>
-        <Name>Affy</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <Stability>Sort of Stable</Stability>
-        <Used>150</Used>
-        <Version>1</Version>
-        <Description>A really long description.</Description>
-    </Package>
-    <Package>
-        <Name>ROCR</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <Stability>Sort of Stable</Stability>
-        <Used>150</Used>
-        <Version>1</Version>
-        <Description>A really long description.</Description>
-    </Package>
-    <Package>
-        <Name>SQLite</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <Stability>Sort of Stable</Stability>
-        <Used>150</Used>
-        <Version>1</Version>
-        <Description>A really long description.</Description>
-    </Package>
+	<Package>
+		<Name>
+			base
+		</Name>
+		<Author>
+			Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org
+		</Author>
+		<Summary>
+			Base widgets, signals, and templates.
+		</Summary>
+		<Stability>
+			Good
+		</Stability>
+		<Version>
+			base-1.2.rrp
+		</Version>
+		<Description>
+			Base functionality of Red-R.  This functionality includes the base signal classes, base widgets, base gui widgets, common templates, etc.  This package can not be deleted, only upgraded.  Bases are considered stable within an official release, though bug fixes and updates may become available from time to time.
+		</Description>
+	</Package>
 </packages>

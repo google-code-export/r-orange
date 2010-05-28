@@ -587,7 +587,8 @@ class SchemaDoc(QWidget):
         import redREnviron
         ### .rrw functionality
         if filename.split('.')[-1] in ['rrw', 'rrp']:
-            packageManager.loadRRP(filename)
+            pm = packageManager()
+            pm.loadRRP(filename)
             return # we don't need to load anything else, we are not really loading a rrs file. 
         elif filename.split('.')[-1] in ['rrts']:
             tmp=True

@@ -1,6 +1,6 @@
 ## package manager class redRPackageManager.  Contains a dlg for the package manager which reads xml from the red-r.org website and compares it with a local package system on the computer
 
-import os, sys, redREnviron, urllib
+import os, sys, redREnviron, urllib, zipfile, traceback
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import xml.dom.minidom
@@ -11,6 +11,7 @@ import redRGUI
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
+        self.version = 'trunk'
     def loadRRP(self, filename = None, fileText = None, force = False):  # loads either the rrp files or the xml text for resolving dependencies
         try:
             if filename == None and fileText == None:
@@ -48,7 +49,7 @@ class packageManager:
                     # return False
                     
                 ## check the version number before we do anything else, who knows what version the usef downloaded????
-                version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
+                version = self.getXMLText(mainTabs.getElementsByTagName('RedRVersion')[0].childNodes)
                 if self.version not in version:
                     print 'Warning, this widget does not work with your current version.  Please update!!'
                     return False
@@ -83,9 +84,6 @@ class packageManager:
                         
                 ## now move all of the files in the tempDir into the libraries dir of Red-R
                 packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes).split('/')[0] # get the base package name, this is the base folder of the package.
-                import shutil
-                shutil.copytree(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName))
-                shutil.rmtree(installDir, True)
                 
                 ### add the package info to the packages.xml
                 fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
@@ -99,16 +97,20 @@ class packageManager:
                 packageNode.appendChild(mainTabs.getElementsByTagName('Version')[0])
                 packageNode.appendChild(mainTabs.getElementsByTagName('Description')[0])
                 
+                packagesNode = localPackagesXML.getElementsByTagName('packages')[0]
                 
-                localPackagesXML.appendChild(packageNode)
+                packagesNode.insertBefore(packageNode, None)
                 
                 newPackageText = localPackagesXML.toprettyxml()
                 file = open(fileDir, "wt")
-                file.write(xmlText)
+                file.write(newPackageText)
                 file.close()
                 
-                
-                ###
+                # move the package files
+                import shutil
+                shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], packageName), ignore_errors = True)  ## remove the old dir for copying
+                shutil.copytree(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName), ignore=shutil.ignore_patterns('*.svn'))
+                shutil.rmtree(installDir, True)
                 
                 ## we copied everything now return
                 print 'Installation successful'
@@ -147,7 +149,11 @@ class packageManager:
 
                 print 'Package loaded successfully'
                 qApp.canvasDlg.reloadWidgets()
-        except:
+        except Exception as inst:
+            print str(inst)
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60
             print 'Error occured during rrp loading.  Please try again later.'
             return False
     def resolveRRPDependencies(self, alldeps, repository, dontAsk = False):
@@ -187,6 +193,8 @@ class packageManager:
         for node in nodelist:
             if node.nodeType == node.TEXT_NODE:
                 rc = rc + node.data
+                
+        rc = str(rc).strip()
         return rc
     def readXML(self, fileName):
         f = open(fileName, 'r')
@@ -206,9 +214,10 @@ class packageManager:
             version = self.getXMLText(node.getElementsByTagName('Version')[0].childNodes)
             stability = self.getXMLText(node.getElementsByTagName('Stability')[0].childNodes)
             summary = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
-            used = self.getXMLText(node.getElementsByTagName('Used')[0].childNodes)
+            #used = self.getXMLText(node.getElementsByTagName('Used')[0].childNodes)
             description = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
-            packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary, 'Used':used, 'Description':description}
+            packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary,# 'Used':used,
+            'Description':description}
             
         print packageDict
         return packageDict
@@ -271,6 +280,7 @@ class PackageManagerDialog(redRGUI.dialog):
     def __init__(self):
         redRGUI.dialog.__init__(self, title = 'Package Manager')
         
+        self.setMinimumWidth(650)
         self.packageManager = packageManager()
         
         ## GUI ##
@@ -304,7 +314,7 @@ class PackageManagerDialog(redRGUI.dialog):
         #### buttons and the like
         buttonArea2 = redRGUI.widgetBox(self)
         redRGUI.button(buttonArea2, label = 'Reload Packages', callback = self.loadPackagesLists)
-        redRGUI.button(buttonArea2, label = 'Done', callback = self.accept())
+        redRGUI.button(buttonArea2, label = 'Done', callback = self.accept)
         
         self.loadPackagesLists()
     def installItemClicked(self, item1, item2):
@@ -356,11 +366,13 @@ class PackageManagerDialog(redRGUI.dialog):
                 
     def setInstalled(self, dictionary):
         self.treeViewInstalled.clear()
-        self.treeViewInstalled.setHeaderLabels(['Package', 'Version', 'Author', 'Summary', 'Stability', 'Used'])
+        self.treeViewInstalled.setHeaderLabels(['Package', 'Version', 'Author', 'Summary', 'Stability', #'Used'
+        ])
         if dictionary != None:
             ## there is something in the dict and we need to populate the treeview
             for name in dictionary.keys(): ## move across the package names
-                newChild = redRGUI.treeWidgetItem(self.treeViewInstalled, [name, dictionary[name]['Version'], dictionary[name]['Author'], dictionary[name]['Summary'], dictionary[name]['Stability'], dictionary[name]['Used']])
+                newChild = redRGUI.treeWidgetItem(self.treeViewInstalled, [str(name), str(dictionary[name]['Version']), str(dictionary[name]['Author']), str(dictionary[name]['Summary']), str(dictionary[name]['Stability']), #dictionary[name]['Used']
+                ])
                 
     def setAvailable(self, dictionary):
         self.treeViewAvailable.clear()
