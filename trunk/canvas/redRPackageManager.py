@@ -91,6 +91,22 @@ class packageManager:
                 fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
                 localPackagesXML = self.readXML(fileDir)
                 
+                packageNode = localPackagesXML.createElement('Package')
+                packageNode.appendChild(mainTabs.getElementsByTagName('Name')[0])
+                packageNode.appendChild(mainTabs.getElementsByTagName('Author')[0])
+                packageNode.appendChild(mainTabs.getElementsByTagName('Summary')[0])
+                packageNode.appendChild(mainTabs.getElementsByTagName('Stability')[0])
+                packageNode.appendChild(mainTabs.getElementsByTagName('Version')[0])
+                packageNode.appendChild(mainTabs.getElementsByTagName('Description')[0])
+                
+                
+                localPackagesXML.appendChild(packageNode)
+                
+                newPackageText = localPackagesXML.toprettyxml()
+                file = open(fileDir, "wt")
+                file.write(xmlText)
+                file.close()
+                
                 
                 ###
                 
@@ -386,7 +402,7 @@ class PackageManagerDialog(redRGUI.dialog):
             return
         ## resolve the packages
         for name in downloadList.keys():  # move across all of the packages and download
-            if not self.packageManager.resolveRRPDependencies([downloadList[name]['HeadVersion']], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
+            if not self.packageManager.resolveRRPDependencies([str(name)+'/'+str(downloadList[name]['HeadVersion'])], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
                 QMessageBox.information(None, "Install Package Information", "There was a problem with getting package "+name+".\nI'm going to get the rest of the packages but just wanted to let you know.\nYou can always try to download again if you lost the internet connection.", QMessageBox.Ok)
     def uninstallPackages(self):
         ## collect the packages that are selected.  Make sure that base isn't in the uninstall list.  Ask the user if he is sure that the files should be uninstalled, uninstall the packages (remove the files).
@@ -433,5 +449,5 @@ class PackageManagerDialog(redRGUI.dialog):
             return
         ## resolve the packages
         for name in downloadList.keys():  # move across all of the packages and download
-            if not self.packageManager.resolveRRPDependencies([downloadList[name]['HeadVersion']], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
+            if not self.packageManager.resolveRRPDependencies([str(name)+'/'+str(downloadList[name]['HeadVersion'])], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
                 QMessageBox.information(None, "Install Package Information", "There was a problem with getting package "+name+".\nI'm going to get the rest of the packages but just wanted to let you know.\nYou can always try to download again if you lost the internet connection.", QMessageBox.Ok)

@@ -456,6 +456,8 @@ class SchemaDoc(QWidget):
         schema.appendChild(lines)
         schema.appendChild(settings)
         schema.appendChild(required)
+        schema.appendChild(saveTagsList)
+        schema.appendChild(saveDescription)
         
         requiredRLibraries = {}
         requireRedRLibraries = {}

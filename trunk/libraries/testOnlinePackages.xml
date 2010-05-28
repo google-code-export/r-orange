@@ -1,87 +1,32 @@
 <packages>
     <Package>
         <Name>base</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <HeadVersion>base/base-1</HeadVersion>
+        <Author>Kyle R Covington kyle@red-r.org and Anup Parikh anup@red-r.org</Author>
+        <Summary>Base widgets, signals, and templates.</Summary>
+        <HeadVersion>base-1.rrp</HeadVersion>
         <Repository>http://www.red-r.org/package</Repository>
         <Versions>
             <Version>
-                <Name>base/base-1.0.0.1</Name>
-                <Stability>Experimental</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
-            <Version>
-                <Name>base/base-1</Name>
-                <Stability>Sort of Stable</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
-            <Version>
-                <Name>base/base-0.5</Name>
-                <Stability>Depricated</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
-        </Versions>
-        <Description>A really long description.</Description>
-    </Package>
-    <Package>
-        <Name>base5</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <HeadVersion>base5/base5-1</HeadVersion>
-        <Repository>http://www.red-r.org/package</Repository>
-        <Versions>
-            <Version>
-                <Name>base5/base5-1.0.0.1</Name>
-                <Stability>Experimental</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
-            <Version>
-                <Name>base5/base5-1</Name>
-                <Stability>Sort of Stable</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
-            <Version>
-                <Name>base5/base5-0.5</Name>
-                <Stability>Depricated</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
-        </Versions>
-        <Description>A really long description.</Description>
-    </Package>
-    <Package>
-        <Name>package</Name>
-        <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <HeadVersion>package/package67</HeadVersion>
-        <Repository>http://www.red-r.org/package</Repository>
-        <Versions>
-            <Version>
-                <Name>package/package67</Name>
+                <Name>base-1.rrp</Name>
                 <Stability>Good</Stability>
                 <Date>2010-05-12</Date>
             </Version>
-            <Version>
-                <Name>package/package89</Name>
-                <Stability>Sort of Stable</Stability>
-                <Date>2010-05-12</Date>
-            </Version>
         </Versions>
-        <Description>A really long description.</Description>
+        <Description>Base functionality of Red-R.  This functionality includes the base signal classes, base widgets, base gui widgets, common templates, etc.  This package can not be deleted, only upgraded.  Bases are considered stable within an official release, though bug fixes and updates may become available from time to time.</Description>
     </Package>
     <Package>
-        <Name>test</Name>
+        <Name>rsqlitedataframe</Name>
         <Author>Kyle R Covington kyle@red-r.org</Author>
-        <Summary>A short summary</Summary>
-        <HeadVersion>test/test-0.5</HeadVersion>
+        <Summary>Interface for sqlite in Red-R.</Summary>
+        <HeadVersion>rsqlitedataframe-1.rrp</HeadVersion>
         <Repository>http://www.red-r.org/package</Repository>
         <Versions>
             <Version>
-                <Name>test/test-0.5</Name>
-                <Stability>Depricated</Stability>
+                <Name>rsqlitedataframe-1.rrp</Name>
+                <Stability>Good</Stability>
                 <Date>2010-05-12</Date>
             </Version>
         </Versions>
-        <Description>A really long description.</Description>
+        <Description>Interface for sqlite in Red-R.  This is used to interact with sqlite databases and to create them from R objects or text files.  Use this package to work with large datasets and condense them into things that are manageable with R.  Many of these widgets are for advanced users as they require some knowledge of sql syntax.  This package is distributed with Core but may be removed with no loss to functionality.  Updates may become available to allow novice users to have better access to these tools.</Description>
     </Package>
 </packages>
