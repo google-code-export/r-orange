@@ -17,10 +17,10 @@ class runSQLiteQuery(OWRpy):
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "SQLite Quert", wantMainArea = 0, resizingEnabled = 1)
-        
+        #self.saveSettingsList = []
         self.dataList = {}
         self.setRvariableNames(["view"])
-        self.Rvariables['view'] = self.Rvariables['view'].split('.')[0]  # need to get rid of the .XX at the end of system time.
+        self.Rvariables['view'] = self.Rvariables['view'].replace('.', '_')  # need to get rid of the .XX at the end of system time.
         self.inputs = [('Main SQLite Table', signals.rsqlitedataframe.SQLiteTable, self.gotMainTable), ('SQLite Table', signals.rsqlitedataframe.SQLiteTable, self.gotTable, 'Multiple')]
         self.outputs = [('SQLite Table', signals.rsqlitedataframe.SQLiteTable)]
         self.recentFiles=['Select File']
@@ -31,7 +31,9 @@ class runSQLiteQuery(OWRpy):
         leftBox1 = redRGUI.widgetBox(mainBox, orientation = 'vertical')
         rightBox1 = redRGUI.widgetBox(mainBox, orientation = 'vertical')
         rightBox1.setMaximumWidth(150)
+        
         statementBox = redRGUI.groupBox(leftBox1, label = 'Statement', orientation = 'horizontal')
+        self.newTableType = redRGUI.comboBox(statementBox, items = ['CREATE VIEW', 'CREATE TABLE'], toolTip = 'You can make a new table from any combination of database entries.\nNew views can only be created from queries in the main database.')
         self.statementLineEdit = redRGUI.lineEdit(statementBox, width = -1, toolTip = 'Place your SQL statement here the actual statement that will be returned is \'CREATE VIEW XXX AS mystatement\'', callback = self.runStatement)
         submitButton = redRGUI.button(statementBox, 'Commit Statement', callback = self.runStatement)
         infoArea = redRGUI.groupBox(leftBox1, label = 'Info:')
@@ -166,7 +168,7 @@ class runSQLiteQuery(OWRpy):
                 self.outputTextArea.insertHtml('Added database: '+dbName+'<br>')
         cursor.execute('DROP VIEW IF EXISTS '+self.Rvariables['view'])
         try:
-            cursor.execute('CREATE VIEW '+self.Rvariables['view']+' AS '+statement)  # execute the statement
+            cursor.execute(str(self.newTableType.currentText())+' '+self.Rvariables['view']+' AS '+statement)  # execute the statement
         except Exception as inst:
             self.outputTextArea.clear()
             self.outputTextArea.insertHtml('Error occured during processing, please check that the query is formatted correctly.')

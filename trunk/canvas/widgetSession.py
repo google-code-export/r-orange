@@ -13,6 +13,7 @@ class widgetSession():
         #collect the sent items
         
         #dont save these variables
+        self.requiredAtts = ['notes', 'ROutput']
         self.loaded = False
         self.dontSaveList = dontSaveList
         self.defaultGlobalSettingsList = ['windowState']
@@ -25,7 +26,10 @@ class widgetSession():
         print '|##| moving to save'+str(self.captionTitle)
         import re
         settings = {}
-        allAtts = self.__dict__
+        if self.saveSettingsList:  ## if there is a saveSettingsList then we just append the required elements to it.
+            allAtts = self.settingsList + self.requiredAtts
+        else:
+            allAtts = self.__dict__
         self.progressBarInit()
         i = 0
         for att in allAtts:
