@@ -427,6 +427,10 @@ class SchemaDoc(QWidget):
     # save the file
     def save(self, filename = None,template = False):
 
+        if template:
+            tempDialog = TemplateDialog(self)
+            if tempDialog.exec_() == QDialog.Rejected:
+                return
         print '|#| start save schema'
         if filename == None:
             filename = os.path.join(self.schemaPath, self.schemaName)
@@ -445,6 +449,8 @@ class SchemaDoc(QWidget):
         lines = doc.createElement("channels")
         settings = doc.createElement("settings")
         required = doc.createElement("required")
+        saveTagsList = doc.createElement("TagsList")
+        saveDescription = doc.createElement("saveDescription")
         doc.appendChild(schema)
         schema.appendChild(widgets)
         schema.appendChild(lines)
@@ -511,7 +517,12 @@ class SchemaDoc(QWidget):
             temp.setAttribute("signals", str(line.getSignals()))
             lines.appendChild(temp)
 
-        
+        if template:
+            taglist = str(tempDialog.tagsList.text())
+            tempDescription = str(tempDialog.descriptionEdit.toHtml())
+            saveTagsList.setAttribute("tagsList", taglist)
+            saveDescription.setAttribute("tempDescription", tempDescription)
+            print taglist, tempDescription
         xmlText = doc.toprettyxml()
         progress += 1
         progressBar.setValue(progress)
@@ -1224,4 +1235,44 @@ class SignalDialog(QDialog):
     def getLinks(self):
         return self._links
 
-
+class TemplateDialog(QDialog):
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
+        
+        self.setWindowTitle('Save as template')
+        
+        self.setLayout(QVBoxLayout())
+        layout = self.layout()
+        
+        mainWidgetBox = QWidget(self)
+        mainWidgetBox.setLayout(QVBoxLayout())
+        layout.addWidget(mainWidgetBox)
+        
+        topWidgetBox = QWidget(mainWidgetBox)
+        topWidgetBox.setLayout(QHBoxLayout())
+        mainWidgetBox.layout().addWidget(topWidgetBox)
+        
+        topWidgetBox.layout().addWidget(QLabel('Tags:', topWidgetBox))
+        self.tagsList = QLineEdit(topWidgetBox)
+        topWidgetBox.layout().addWidget(self.tagsList)
+        
+        bottomWidgetBox = QWidget(mainWidgetBox)
+        bottomWidgetBox.setLayout(QVBoxLayout())
+        mainWidgetBox.layout().addWidget(bottomWidgetBox)
+        
+        bottomWidgetBox.layout().addWidget(QLabel('Description:', bottomWidgetBox))
+        self.descriptionEdit = QTextEdit(bottomWidgetBox)
+        bottomWidgetBox.layout().addWidget(self.descriptionEdit)
+        
+        buttonWidgetBox = QWidget(mainWidgetBox)
+        buttonWidgetBox.setLayout(QHBoxLayout())
+        mainWidgetBox.layout().addWidget(buttonWidgetBox)
+        
+        acceptButton = QPushButton('Accept', buttonWidgetBox)
+        cancelButton = QPushButton('Cancel', buttonWidgetBox)
+        buttonWidgetBox.layout().addWidget(acceptButton)
+        buttonWidgetBox.layout().addWidget(cancelButton)
+        QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
+        QObject.connect(cancelButton, SIGNAL("clicked()"), self.reject)
+        
+        

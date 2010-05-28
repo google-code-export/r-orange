@@ -104,5 +104,6 @@ class SQLiteHandler:
         tableName = 'SavedObjects'
         dataBase = 'local|SavedObjects.db'
         response = self.execute('select * from SavedObjects where ID = ?', parameters = (oldID,), database = dataBase)
+        self.execute('DELETE FROM '+tableName+' WHERE ID = ?', parameters = (oldID, ), database = dataBase) ## delete the ref
         print str(response) 
         return cPickle.loads(str(response[0][1]))
