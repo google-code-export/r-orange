@@ -476,9 +476,9 @@ class SchemaDoc(QWidget):
             #requiredRLibraries.extend()
             #del s['requiredRLibraries']
             settingsDict[widget.instance.widgetID] = {}
-            settingsDict[widget.instance.widgetID]['settingsID'] = cPickle.dumps(s)
-            settingsDict[widget.instance.widgetID]['inputs'] = cPickle.dumps(i)
-            settingsDict[widget.instance.widgetID]['outputs'] = cPickle.dumps(o)
+            settingsDict[widget.instance.widgetID]['settings'] = cPickle.dumps(s,2)
+            settingsDict[widget.instance.widgetID]['inputs'] = cPickle.dumps(i,2)
+            settingsDict[widget.instance.widgetID]['outputs'] = cPickle.dumps(o,2)
             
             if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
                 f = open(os.path.join(redREnviron.directoryNames['libraryDir'],
@@ -489,11 +489,16 @@ class SchemaDoc(QWidget):
         
             widgets.appendChild(temp)
         
-        settingsDict['_globalData'] = cPickle.dumps(globalData.globalData)
-        settings.setAttribute("settingsDictionary", str(settingsDict))      
+        settingsDict['_globalData'] = cPickle.dumps(globalData.globalData,2)
+        settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),
+        'RedR': requireRedRLibraries.values()})
+        
+        file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
+        file.write(str(settingsDict))
+        file.close()
 
-        r =  cPickle.dumps({'R': requiredRLibraries.keys(), 'RedR': requireRedRLibraries.values()})
-        required.setAttribute("requiredPackages", str({'r':r}))
+        #settings.setAttribute("settingsDictionary", str(settingsDict))
+        #required.setAttribute("requiredPackages", str({'r':r}))
         
         #save connections
         for line in self.lines:
@@ -532,14 +537,13 @@ class SchemaDoc(QWidget):
             # os.remove(tempschema)
             print 'image saved.'
         else :
-            ## we need to zip the xml and the 'local|SavedObjects.db'
             tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
             file = open(tempschema, "wt")
             file.write(xmlText)
             file.close()
             zout = zipfile.ZipFile(filename, "w")
             zout.write(tempschema)
-            zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'SavedObjects.db'))
+            zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'))
             zout.close()
             doc.unlink()
             
@@ -582,8 +586,7 @@ class SchemaDoc(QWidget):
             QMessageBox.Ok + QMessageBox.Default)
 
         loadingProgressBar = self.startProgressBar('Loading '+str(os.path.basename(filename)),
-        'Loading '+str(filename),
-        2)
+        'Loading '+str(filename), 2)
         
         ## What is the purpose of this???
         if not os.path.exists(filename):
@@ -616,10 +619,16 @@ class SchemaDoc(QWidget):
         schema = doc.firstChild
         widgets = schema.getElementsByTagName("widgets")[0]
         lines = schema.getElementsByTagName("channels")[0]
-        settings = schema.getElementsByTagName("settings")
-        settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+        #settings = schema.getElementsByTagName("settings")
+        f = open(os.path.join(redREnviron.directoryNames['tempDir'],'settings.pickle'))
+        settingsDict = eval(str(f.read()))
+        f.close()
+        
+        #settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
         self.loadedSettingsDict = settingsDict
-        self.loadRequiredPackages(schema = schema, loadingProgressBar = loadingProgressBar)
+        
+        self.loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
+
         
         ## make sure that there are no duplicate widgets.
         
@@ -640,7 +649,8 @@ class SchemaDoc(QWidget):
             
         lineList = lines.getElementsByTagName("channel")
         loadingProgressBar.setLabelText('Loading Lines')
-        (loadedOkL, tempFailureTextL) = self.loadLines(lineList, loadingProgressBar = loadingProgressBar, freeze = freeze, tmp = tmp)
+        (loadedOkL, tempFailureTextL) = self.loadLines(lineList, loadingProgressBar = loadingProgressBar, 
+        freeze = freeze, tmp = tmp)
 
         for widget in self.widgets: widget.updateTooltip()
         self.canvas.update()
@@ -701,7 +711,7 @@ class SchemaDoc(QWidget):
         for widget in widgets.getElementsByTagName("widget"):
             name = widget.getAttribute("widgetName")
 
-            settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['settingsID'])
+            settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['settings'])
             inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
             outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
 
@@ -743,13 +753,9 @@ class SchemaDoc(QWidget):
                 return False
         return True
 
-    def loadRequiredPackages(self, schema, loadingProgressBar):
+    def loadRequiredPackages(self, required, loadingProgressBar):
         try:  # protect the required functions in a try statement, we want to load these things and they should be there but we can't force it to exist in older schemas, so this is in a try.
-            required = schema.getElementsByTagName("required")
-            if str(required) not in ['', '[]']: 
-                required = eval(str(required[0].getAttribute("requiredPackages")))
-                required = cPickle.loads(required['r'])
-            
+            required = cPickle.loads(required)
             if len(required) > 0:
                 if 'CRANrepos' in redREnviron.settings.keys():
                     repo = redREnviron.settings['CRANrepos']

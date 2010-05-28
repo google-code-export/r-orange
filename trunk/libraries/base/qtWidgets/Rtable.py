@@ -37,6 +37,7 @@ class Rtable(widgetState,QTableView):
 
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         #print Rdata
+        self.Rdata = Rdata
         tm = MyTableModel(Rdata,self.parent) 
         self.setModel(tm)
     def sort(self, index):
@@ -104,6 +105,7 @@ class MyTableModel(QAbstractTableModel):
         self.R = Rcommand
 
         QAbstractTableModel.__init__(self,parent) 
+        self.Rdata = Rdata
         self.headerdata = self.R('colnames(' +Rdata+ ')', wantType = 'list')
         self.rownames = self.R('rownames(' +Rdata+')', wantType = 'list')
         
@@ -130,6 +132,7 @@ class MyTableModel(QAbstractTableModel):
     def sort(self, Ncol, order):
         """Sort table by given column number.
         """
+        import operator
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.arraydata = sorted(self.arraydata, key=operator.itemgetter(Ncol))        
         if order == Qt.DescendingOrder:

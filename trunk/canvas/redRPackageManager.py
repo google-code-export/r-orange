@@ -199,10 +199,11 @@ class packageManager:
         
     def getRedRPackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-        ##url = ????
-        #self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], 'redRPachages.xml'))
-        #fileDir = os.path.join(redREnviron.directoryNames['tempDir'], 'redRPachages.xml')
-        fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'testOnlinePackages.xml')
+        url = 'http://www.red-r.org/packages/' + redREnviron.version['REDRVERSION'] + '/packages.xml'
+        print url
+        self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], 'redRPachages.xml'))
+        fileDir = os.path.join(redREnviron.directoryNames['tempDir'], 'redRPachages.xml')
+        #fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'testOnlinePackages.xml')
         mainTabs = self.readXML(fileDir)
         
         packageDict = {}

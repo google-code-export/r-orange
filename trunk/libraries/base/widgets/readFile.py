@@ -17,11 +17,10 @@ import pickle
 import types
 class readFile(OWRpy):
     
-    globalSettingsList = ['filecombo','recentFiles','path']
+    globalSettingsList = ['filecombo','path']
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "ReadFile", wantMainArea = 0, resizingEnabled = 1)
-        self.recentFiles=['Select File']
         self.path = os.path.abspath('/')
         self.colClasses = []
         self.myColClasses = []
@@ -50,9 +49,10 @@ class readFile(OWRpy):
         
         box = redRGUI.groupBox(options, label="Load File", 
         addSpace = True, orientation='horizontal')
-        self.filecombo = redRGUI.comboBox(box, 
-        items=self.recentFiles,orientation='horizontal',callback=self.scanNewFile)
-        self.filecombo.setCurrentIndex(0)
+        self.filecombo = redRGUI.fileNamesComboBox(box, 
+        orientation='horizontal',callback=self.scanNewFile)
+        
+        # self.filecombo.setCurrentIndex(0)
         # self.filecombo.setMinimumWidth(200)
         # self.filecombo.setMaximumWidth(200)
         button = redRGUI.button(box, label = 'Browse', callback = self.browseFile)
@@ -128,7 +128,7 @@ class readFile(OWRpy):
         self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
         self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
         self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
-        self.setFileList()
+        #self.setFileList()
 
     def otherSep(self,text):
         self.delimiter.setChecked('Other')
@@ -145,12 +145,6 @@ class readFile(OWRpy):
             self.columnTypes.layout().addWidget(s, i, 1)
             self.columnTypes.layout().addWidget(q, i, 0)
         
-    def setFileList(self):
-        if self.recentFiles == None: self.recentFiles = ['Select File']
-        
-        self.filecombo.clear()
-        for file in self.recentFiles:
-            self.filecombo.addItem(os.path.basename(file))
     
     def browseFile(self): 
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
@@ -158,13 +152,7 @@ class readFile(OWRpy):
         print str(fn)
         if fn.isEmpty(): return
         self.path = os.path.split(str(fn))[0]
-
-        if fn in self.recentFiles:
-            self.recentFiles.remove(str(fn))
-        self.recentFiles.append(str(fn))
-        self.filecombo.addItem(os.path.basename(str(fn)))
-        self.filecombo.setCurrentIndex(len(self.recentFiles)-1)
-        #self.setFileList()
+        self.filecombo.addFile(fn)
         self.saveGlobalSettings()
         self.scanNewFile()
 
@@ -193,20 +181,13 @@ class readFile(OWRpy):
 
         
     def loadFile(self,scan=False):
-        
-        if len(self.recentFiles) ==0 or self.filecombo.currentIndex() == 0:
-            self.scanarea.clear()
+        fn = self.filecombo.getCurrentFile()
+        if not fn:
             return
-        if not os.path.isfile(self.recentFiles[self.filecombo.currentIndex()]):
-            del self.recentFiles[self.filecombo.currentIndex()]
-            self.setFileList()
-            QMessageBox.information(self,'Error', "File does not exist.", 
-            QMessageBox.Ok + QMessageBox.Default)
 
-            return
-            
         self.R(self.Rvariables['filename'] + ' = "' 
-        + self.recentFiles[self.filecombo.currentIndex()].replace('\\', '/') + '"') # should protext if R can't find this file
+        + fn + '"') # should protext if R can't find this file
+        
         # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
             # self.delimiter.setChecked('Tab')
         # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
@@ -320,17 +301,7 @@ class readFile(OWRpy):
                 self.columnTypes.layout().addWidget(q,k,0)
                 self.dataTypes.append([i,s])
             
-    
-    def updateRowNames(self):
-        
-        self.R('rownames(' + self.Rvariables['dataframe_final'] + ') <- ' 
-        + self.Rvariables['dataframe_org'] + '[,' + str(self.rowNamesCombo.currentIndex()+1)  + ']')
-        
-        self.R(self.Rvariables['dataframe_final'] + ' <- ' 
-        +  self.Rvariables['dataframe_org'] + '[,-' + str(self.rowNamesCombo.currentIndex()+1)  + ']')
-        #print self.rowNamesCombo.currentIndex()
-        self.updateScan()
-        
+          
     def html_table(self,lol,rownames):
         s = '<table border="1" cellpadding="3">'
         s+= '  <tr><td>Rownames</td><td><b>'
@@ -351,6 +322,7 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
+        
         # import globalData
         # globalData.setGlobalData(self,'urls',{'dictybase':'http://www.dictybase.org/gene/{db_gene_id}'},description='url')
         sendData = signals.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
@@ -362,9 +334,6 @@ class readFile(OWRpy):
         self.reportRaw(self.fileInfo.toHtml())
         #self.finishReport()
         
-    # def sendReport(self):
-        # self.compileReport()
-        # self.showReport()
         
         
     

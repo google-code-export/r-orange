@@ -43,9 +43,9 @@ class widgetSession():
         
         
         
-        settingsID = self.sqlite.saveObject(settings)
+        #settingsID = self.sqlite.saveObject(settings)
         self.progressBarFinished()
-        return settingsID
+        return settings
     def saveCustomSettings(self): # dummy function that should be overwritten in child classes if they want the function
         pass
         
@@ -162,9 +162,9 @@ class widgetSession():
                 
         return sentItemsList
         
-    def setSettings(self,settingsID):
+    def setSettings(self,settings):
         print 'on set settings'
-        settings = self.sqlite.setObject(settingsID)
+        #settings = self.sqlite.setObject(settingsID)
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
@@ -280,8 +280,8 @@ class widgetSession():
         file = self.getGlobalSettingsFile()
         try:
             file = open(file, "r")
-            settingsID = cPickle.load(file)
-            self.setSettings(settingsID)
+            settings = cPickle.load(file)
+            self.setSettings(settings)
         except:
             pass
         
@@ -310,10 +310,10 @@ class widgetSession():
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
         #print '%s' % str(settings)
         if settings:
-            settingsID = self.sqlite.saveObject(settings)
+            #settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()
             file = open(file, "w")
-            cPickle.dump(settingsID, file)
+            cPickle.dump(settings, file)
         
         print '|#| owrpy global save settings done'
 
