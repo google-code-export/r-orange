@@ -9,7 +9,7 @@ from PyQt4.QtGui import *
 class fileNamesComboBox(comboBox):
     def __init__(self,widget,label=None, files=None, orientation='horizontal',callback = None, callback2 = None, **args):
         
-        comboBox.__init__(self,widget,label=label,items=files, orientation=orientation,
+        comboBox.__init__(self,widget,label=label,items=None, orientation=orientation,
         callback=callback,callback2=callback2, **args)
         if files:
             self.files = files
@@ -18,7 +18,7 @@ class fileNamesComboBox(comboBox):
         self.setFileList()
         
     def getSettings(self):
-        r = {'files':self.files,'current':self.currentIndex()}
+        r = {'files':self.files,'current':self.currentText()}
         # print r
         return r
         
@@ -30,7 +30,9 @@ class fileNamesComboBox(comboBox):
             self.files = [unicode(i) for i in data['files']]
             self.setFileList()
             # self.addItems(self.files)
-            # self.setCurrentIndex(data['current'])
+            ind = self.findText(data['current'])
+            if ind:
+                self.setCurrentIndex(ind)
         except:
             print 'Loading of comboBox encountered an error.'
             import traceback,sys

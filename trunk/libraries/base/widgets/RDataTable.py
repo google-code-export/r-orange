@@ -96,8 +96,7 @@ class RDataTable(OWRpy):
         # callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
 
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
-        #self.resize(700,500)
-        #self.move(300, 25)
+
 
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
@@ -125,6 +124,7 @@ class RDataTable(OWRpy):
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         self.table.setRTable(dataset.getData())
+
         self.supressTabClick = False
             
     def itemClicked(self, val, table):

@@ -10,7 +10,7 @@
 from OWRpy import *
 #import OWGUI
 import redRGUI, os
-import signals
+import signals, globalData
 
 
 class ReadCEL(OWRpy):
@@ -19,7 +19,7 @@ class ReadCEL(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "ReadCEL", wantMainArea = 0, resizingEnabled = 1)
         #self.setStateVariables(['recentFiles'])
         #default values        
-        self.recentFiles = ['Select Directory']
+        # self.recentFiles = ['Select Directory']
         self.path = os.path.abspath('/')
         self.methodcombo = 0
         self.saveSettingsList.append(['recentFiles', 'path', 'methodcombo'])
@@ -34,8 +34,8 @@ class ReadCEL(OWRpy):
         box = redRGUI.groupBox(self.controlArea, "Select Folder",orientation='horizontal')
         #sizePolicy=QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed))
         
-        self.filecombo = redRGUI.comboBox(box, items = self.recentFiles)
-        self.filecombo.setCurrentIndex(0)
+        self.filecombo = redRGUI.fileNamesComboBox(box)
+        #self.filecombo.setCurrentIndex(0)
         button = redRGUI.button(box, 'Browse', callback = self.browseFile)
         
         self.numArrays = redRGUI.radioButtons(self.controlArea, label = 'Number of arrays', 
@@ -43,14 +43,14 @@ class ReadCEL(OWRpy):
 
         button2 = redRGUI.button(self.bottomAreaRight, 'Process Folder', callback = self.process)
         
-        self.setFileList()
+        # self.setFileList()
         
-    def setFileList(self):
-        if self.recentFiles == None: self.recentFiles = ['Select Directory']
+    # def setFileList(self):
+        # if self.recentFiles == None: self.recentFiles = ['Select Directory']
         
-        self.filecombo.clear()
-        for file in self.recentFiles:
-            self.filecombo.addItem(os.path.basename(file))
+        # self.filecombo.clear()
+        # for file in self.recentFiles:
+            # self.filecombo.addItem(os.path.basename(file))
 
         # self.filecombo.setCurrentIndex(data['current'])
         # self.scanFile()
@@ -60,20 +60,22 @@ class ReadCEL(OWRpy):
         
         #print str(fn)
         if fn.isEmpty(): return
-        self.path = os.path.split(str(fn))[0]
-        if fn in self.recentFiles:
-            self.recentFiles.remove(str(fn))
-        self.recentFiles.append(str(fn))
-        self.filecombo.addItem(os.path.basename(str(fn)))
-        self.filecombo.setCurrentIndex(len(self.recentFiles)-1)
-        
+        self.filecombo.addFile(fn)
         self.saveGlobalSettings()
+
+        # self.path = os.path.split(str(fn))[0]
+        # if fn in self.recentFiles:
+            # self.recentFiles.remove(str(fn))
+        # self.recentFiles.append(str(fn))
+        # self.filecombo.addItem(os.path.basename(str(fn)))
+        # self.filecombo.setCurrentIndex(len(self.recentFiles)-1)
+        
+        # self.saveGlobalSettings()
         
     def process(self):
-        
-        if(self.recentFiles[self.filecombo.currentIndex()] == 'Select Directory'):
+        dir = self.filecombo.getCurrentFile()
+        if not dir:
             return
-        dir = self.recentFiles[self.filecombo.currentIndex()].replace('\\', '\\\\')
         self.status.setText("Your data is processing")
         #required librarys
         if not self.require_librarys(['affy']):
@@ -92,6 +94,6 @@ class ReadCEL(OWRpy):
     
     def sendMe(self):
         chipType = self.R('annotation('+self.Rvariables['affyBatch']+')')
-        signals.setGlobalData(self,'chipType',chipType,description='Chip Type')
+        globalData.setGlobalData(self,'chipType',chipType,description='Chip Type')
         out2 = signals.affy.RAffyBatch(data = str(self.Rvariables['affyBatch']))
         self.rSend("affyBatch", out2)
