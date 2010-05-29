@@ -306,6 +306,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 print 'delete instance' 
                 self.instance.onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
                 sip.delete(self.instance)
+                import gc
+                gc.collect()
+                print 'Remaining references '+str(gc.get_referrers(self.instance))
+                sip.delete(self.instance)
 
             except: 
                 import orngOutput

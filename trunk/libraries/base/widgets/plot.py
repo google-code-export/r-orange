@@ -13,10 +13,11 @@ class plot(OWRpy):
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Generic Plot", wantMainArea = 0, resizingEnabled = 1)
-        self.data = {}
+        self.data = None
         self.RFunctionParam_x = ''
-        self.saveSettingsList.append(['data', 'RFunctionParam_x'])
-        self.inputs = [("x", signals.RVariable, self.processx)]
+        self.plotAttributes = {}
+        self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
+        self.inputs = [("x", signals.RVariable, self.processx), ('Plot Attributes', signals.RPlotAttribute, self.gotAttribute, 'Multiple')]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:')
@@ -25,6 +26,11 @@ class plot(OWRpy):
         self.RFunctionParam_cex = redRGUI.lineEdit(box, '100', label = 'Text Magnification Percent:')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
+    def gotAttribute(self, data, id):
+        if data:
+            self.plotAttributes[id[0].widgetID] = data.getData()
+        else:
+            del self.plotAttributes[id[0].widgetID]
     def processx(self, data):
         if data:
             self.data = data
@@ -71,4 +77,6 @@ class plot(OWRpy):
         else: inj = ''
 
         self.Rplot('plot('+str(self.RFunctionParam_x)+inj+')')
+        for name in self.plotAttributes.keys():
+            self.R(self.plotAttributes[name])
 

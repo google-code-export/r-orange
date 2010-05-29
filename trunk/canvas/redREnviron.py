@@ -1,7 +1,7 @@
 """ Modified by Kyle R. Covington and Anup Parikh """
 import os, sys, user, cPickle
-# from PyQt4.QtCore import *
-# from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
@@ -57,6 +57,8 @@ def checkInternetConnection():
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(canvasSettingsDir, dirNumber):
+    print 'setting temp dir'
+    print dirNumber
     try:  # try to make the canvas temp dir.  This should work but I would be cautious given the problems with the Vista system.
         if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp')):
             os.mkdir(os.path.join(canvasSettingsDir, 'temp'))

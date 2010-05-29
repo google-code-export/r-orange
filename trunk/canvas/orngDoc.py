@@ -311,7 +311,10 @@ class SchemaDoc(QWidget):
         self.signalManager.removeWidget(widget.instance) # sending occurs before this point
         widget.remove()
         self.widgets.remove(widget)
-        orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
+        import gc
+        gc.collect()
+        print 'Remaining references '+str(gc.get_referrers(widget))
+        #orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
 
     def clear(self):
         print '|#| orngDoc clear'
@@ -1250,6 +1253,9 @@ class TemplateDialog(QDialog):
         mainWidgetBox = QWidget(self)
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
+        
+        mainWidgetBox.layout().addWidget(QLabel('Set tags as comma ( , ) delimited list', mainWidgetBox))
+        
         
         topWidgetBox = QWidget(mainWidgetBox)
         topWidgetBox.setLayout(QHBoxLayout())
