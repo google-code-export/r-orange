@@ -85,27 +85,6 @@ class packageManager:
                 ## now move all of the files in the tempDir into the libraries dir of Red-R
                 packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes).split('/')[0] # get the base package name, this is the base folder of the package.
                 
-                ### add the package info to the packages.xml
-                fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
-                localPackagesXML = self.readXML(fileDir)
-                
-                packageNode = localPackagesXML.createElement('Package')
-                packageNode.appendChild(mainTabs.getElementsByTagName('Name')[0])
-                packageNode.appendChild(mainTabs.getElementsByTagName('Author')[0])
-                packageNode.appendChild(mainTabs.getElementsByTagName('Summary')[0])
-                packageNode.appendChild(mainTabs.getElementsByTagName('Stability')[0])
-                packageNode.appendChild(mainTabs.getElementsByTagName('Version')[0])
-                packageNode.appendChild(mainTabs.getElementsByTagName('Description')[0])
-                
-                packagesNode = localPackagesXML.getElementsByTagName('packages')[0]
-                
-                packagesNode.insertBefore(packageNode, None)
-                
-                newPackageText = localPackagesXML.toprettyxml()
-                file = open(fileDir, "wt")
-                file.write(newPackageText)
-                file.close()
-                
                 # move the package files
                 import shutil
                 shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], packageName), ignore_errors = True)  ## remove the old dir for copying
@@ -189,38 +168,64 @@ class packageManager:
         return loadedOk
         
     def getXMLText(self, nodelist):
-        rc = ''
-        for node in nodelist:
-            if node.nodeType == node.TEXT_NODE:
-                rc = rc + node.data
-                
-        rc = str(rc).strip()
+        try:
+            rc = ''
+            for node in nodelist:
+                if node.nodeType == node.TEXT_NODE:
+                    rc = rc + node.data
+                    
+            rc = str(rc).strip()
+        except: rc = 'Not Present'
         return rc
     def readXML(self, fileName):
         f = open(fileName, 'r')
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         return mainTabs
+    def getXMLChildNodesByTagName(self, node, name):
+        try:
+            return node.getElementsByTagName(name)[0].childNodes
+        except:
+            return []
     def getLocalPackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-        fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
-        mainTabs = self.readXML(fileDir)
         
         packageDict = {}
-        packageNodes = mainTabs.getElementsByTagName('Package')
-        for node in packageNodes:
-            name = self.getXMLText(node.getElementsByTagName('Name')[0].childNodes)
-            author = self.getXMLText(node.getElementsByTagName('Author')[0].childNodes)
-            version = self.getXMLText(node.getElementsByTagName('Version')[0].childNodes)
-            stability = self.getXMLText(node.getElementsByTagName('Stability')[0].childNodes)
-            summary = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
-            #used = self.getXMLText(node.getElementsByTagName('Used')[0].childNodes)
-            description = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
-            packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary,# 'Used':used,
-            'Description':description}
-            
-        print packageDict
+        widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
+        for dirName in os.listdir(widgetDirName):
+            directory = os.path.join(widgetDirName, dirName)
+            if not os.path.isdir(directory):
+                continue
+            if os.path.isfile(os.path.join(directory,dirName+'.xml')):
+                mainTabs = self.readXML(os.path.join(directory,dirName+'.xml'))
+                name = dirName
+                author = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Author'))
+                version = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Version'))
+                stability = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Stability'))
+                summary = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Summary'))
+                #used = self.getXMLText(mainTabs.getElementsByTagName('Used')[0].childNodes)
+                description = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Description'))
+                packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary,# 'Used':used,
+                'Description':description}
+                
         return packageDict
+        # fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
+        # mainTabs = self.readXML(fileDir)
+        
+        # packageNodes = mainTabs.getElementsByTagName('Package')
+        # for node in packageNodes:
+            # name = self.getXMLText(node.getElementsByTagName('Name')[0].childNodes)
+            # author = self.getXMLText(node.getElementsByTagName('Author')[0].childNodes)
+            # version = self.getXMLText(node.getElementsByTagName('Version')[0].childNodes)
+            # stability = self.getXMLText(node.getElementsByTagName('Stability')[0].childNodes)
+            # summary = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
+            
+            # description = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
+            # packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary,# 'Used':used,
+            # 'Description':description}
+            
+        # print packageDict
+        # return packageDict
         
     def getRedRPackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
@@ -297,34 +302,57 @@ class PackageManagerDialog(redRGUI.dialog):
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewUpdates.setSelectionMode(QAbstractItemView.MultiSelection)
         self.infoViewUpdates = redRGUI.textEdit(self.updatesTab)  ## holds the info for a package
-        redRGUI.button(self.updatesTab, 'Install Updates', callback = self.installUpdates)
+        buttonArea = redRGUI.widgetBox(self.updatesTab, orientation = 'horizontal')
+        redRGUI.button(buttonArea, 'Install Updates', callback = self.installUpdates)
+        redRGUI.button(buttonArea, 'Show All Versions', callback = self.showAllVersions)
         
         self.treeViewInstalled = redRGUI.treeWidget(self.installedTab, callback = self.installItemClicked)
         #self.treeViewInstalled.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewInstalled.setSelectionMode(QAbstractItemView.MultiSelection)
         self.infoViewInstalled = redRGUI.textEdit(self.installedTab)
+        
         redRGUI.button(self.installedTab, 'Remove Packages', callback = self.uninstallPackages)
         
         self.treeViewAvailable = redRGUI.treeWidget(self.availableTab, callback = self.availableItemClicked)
         #self.treeViewAvailable.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewAvailable.setSelectionMode(QAbstractItemView.MultiSelection)
         self.infoViewAvailable = redRGUI.textEdit(self.availableTab)
-        redRGUI.button(self.availableTab, 'Install Packages', callback = self.installNewPackage)
+        buttonArea = redRGUI.widgetBox(self.availableTab, orientation = 'horizontal')
+        redRGUI.button(buttonArea, 'Install Packages', callback = self.installNewPackage)
+        redRGUI.button(buttonArea, 'Show All Versions', callback = self.showAllVersions)
         
         #### buttons and the like
         buttonArea2 = redRGUI.widgetBox(self)
         redRGUI.button(buttonArea2, label = 'Reload Packages', callback = self.loadPackagesLists)
         redRGUI.button(buttonArea2, label = 'Done', callback = self.accept)
         
-        self.loadPackagesLists()
-    def installItemClicked(self, item1, item2):
-        self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])
-        pass
-    def updateItemClicked(self, item1, item2):
+        QObject.connect(self.treeViewAvailable, SIGNAL("clicked()"), self.accept)
+        QObject.connect(self.treeViewInstalled, SIGNAL("clicked()"), self.reject)
+        QObject.connect(self.treeViewUpdates, SIGNAL("clicked()"), self.accept)
         
-        pass
+        self.loadPackagesLists()
+    def showAllVersions(self):
+        ## reload the widgets but show all versions
+        if self.packageDicts:
+            self.setUpdates(self.packageDicts[0], showAll = True)
+            self.setAvailable(self.packageDicts[2], showAll = True)
+        else:
+            return
+    def installItemClicked(self, item1, item2):
+        try:
+            self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])
+        except:
+            self.infoViewInstalled.setHtml('No description available')
+    def updateItemClicked(self, item1, item2):
+        try:
+            self.infoViewUpdates.setHtml(self.packageDicts[2][str(item1.text(0))]['Description'])
+        except:
+            self.infoViewUpdates.setHtml('No description available')
     def availableItemClicked(self, item1, item2):
-        pass
+        try:
+            self.infoViewAvailable.setHtml(self.packageDicts[2][str(item1.text(0))]['Description'])
+        except:
+            self.infoViewAvailable.setHtml('No description available')
     def loadPackagesLists(self):
         #### get the pakcages that are on Red-R.org  we ask before we do this and record the xml so we only have to get it once.
         #if redREnviron.checkInternetConnection():
@@ -353,16 +381,17 @@ class PackageManagerDialog(redRGUI.dialog):
         self.updatesTab.setEnabled(False)
         self.availableTab.setEnabled(False)
         
-    def setUpdates(self, dictionary):
+    def setUpdates(self, dictionary, showAll = False):
         self.treeViewUpdates.clear()
         self.treeViewUpdates.setHeaderLabels(['Package', 'Version', 'Type', 'Author', 'Summary', 'Stability'])
         if dictionary != None:
             ## there is something in the dict and we need to populate the treeview
             for name in dictionary.keys(): ## move across the package names
                 newChild = redRGUI.treeWidgetItem(self.treeViewUpdates, [name, dictionary[name]['Version'], 'Installed', dictionary[name]['Author'], dictionary[name]['Summary'], dictionary[name]['Stability']])
-                for version in self.packageDicts[2][name]['Versions'].keys():
-                    n = redRGUI.treeWidgetItem(stringList = [name, version, 'Available', self.packageDicts[2][name]['Versions'][version]['Stability'], self.packageDicts[2][name]['Versions'][version]['Date']])
-                    newChild.addChild(n)
+                if showAll:
+                    for version in self.packageDicts[2][name]['Versions'].keys():
+                        n = redRGUI.treeWidgetItem(stringList = [name, version, 'Available', self.packageDicts[2][name]['Versions'][version]['Stability'], self.packageDicts[2][name]['Versions'][version]['Date']])
+                        newChild.addChild(n)
                 
     def setInstalled(self, dictionary):
         self.treeViewInstalled.clear()
@@ -374,16 +403,17 @@ class PackageManagerDialog(redRGUI.dialog):
                 newChild = redRGUI.treeWidgetItem(self.treeViewInstalled, [str(name), str(dictionary[name]['Version']), str(dictionary[name]['Author']), str(dictionary[name]['Summary']), str(dictionary[name]['Stability']), #dictionary[name]['Used']
                 ])
                 
-    def setAvailable(self, dictionary):
+    def setAvailable(self, dictionary, showAll = False):
         self.treeViewAvailable.clear()
         self.treeViewAvailable.setHeaderLabels(['Package', 'Version', 'Author/Stability', 'Summary/Date'])
         if dictionary != None:
             ## there is something in the dict and we need to populate the treeview
             for name in dictionary.keys(): ## move across the package names
                 newChild = redRGUI.treeWidgetItem(self.treeViewAvailable, [name, 'HeadVersion', dictionary[name]['Author'], dictionary[name]['Summary'], 'Current Version'])
-                for version in dictionary[name]['Versions'].keys(): ## move across all of the versions and show their name
-                    n = redRGUI.treeWidgetItem(stringList = [name, version, dictionary[name]['Versions'][version]['Stability'], dictionary[name]['Versions'][version]['Date']])
-                    newChild.addChild(n)
+                if showAll:
+                    for version in dictionary[name]['Versions'].keys(): ## move across all of the versions and show their name
+                        n = redRGUI.treeWidgetItem(stringList = [name, version, dictionary[name]['Versions'][version]['Stability'], dictionary[name]['Versions'][version]['Date']])
+                        newChild.addChild(n)
                     
     def installUpdates(self):
         ### move through the selected items in the updates page, get the RRP locations and install the rrp's for the packages.

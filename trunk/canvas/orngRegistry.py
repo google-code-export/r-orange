@@ -30,7 +30,7 @@ class WidgetCategory(dict):
         
 def readCategories():
     global widgetsWithError 
-    widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
+    widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
     cacheFilename = os.path.join(canvasSettingsDir, "cachedWidgetDescriptions.pickle")
 
