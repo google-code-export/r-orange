@@ -394,22 +394,13 @@ class AboutDlg(QDialog):
         logoImage = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         logo = redRGUI.widgetLabel(self, "")
         logo.setPixmap(logoImage)
-        
-        
-        f = open(os.path.join(redREnviron.directoryNames["redRDir"],'version.txt'), 'r')
-        version = f.readlines()
-        f.close()
-#            !define REDRVERSION "Red-R 1.7"
-        info = {}
-        for i in version:
-            m = re.search('!define\s(\S+)\s"(.*)"',i)
-            info[m.group(1)] = m.group(2)
-        # print info
+        info = redREnviron.version
         self.about = redRGUI.webViewBox(self)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.about.setMinimumHeight(150)
-        self.about.setHtml('<h2>' + info['REDRVERSION'] + '</h2>' + 
-        'Revision: ' + info['SVNVERSION'] +  '; Build Time: ' + info['DATE'] + '' + 
+        self.about.setHtml('<h2>' + info['NAME'] + " " + info['VERSION'] + '</h2>' + 
+        'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
+        '; Build Time: ' + info['DATE'] + '' + 
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)

@@ -13,8 +13,8 @@ import xml.etree.ElementTree as etree
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.repository = 'http://www.red-r.org/packages/' + redREnviron.version['REDRVERSION'] 
-        self.version = redREnviron.version['REDRVERSION']
+        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['VERSION'] 
+        self.version = redREnviron.version['VERSION']
         (self.updatePackages, self.localPackages, self.availablePackages) = self.getDiffPackages()
         
     def installRRP(self,packageName,filename):
@@ -245,8 +245,10 @@ class packageManagerDialog(redRGUI.dialog):
         redRGUI.button(self.availableTab, 'Install Packages', callback = self.installNewPackage)
         
         #### buttons and the like
-        buttonArea2 = redRGUI.widgetBox(self)
+        buttonArea2 = redRGUI.widgetBox(self,orientation = 'horizontal')
         redRGUI.button(buttonArea2, label = 'Update from Repository', callback = self.loadPackagesLists)
+        redRGUI.widgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        orientation = 'horizontal')
         redRGUI.button(buttonArea2, label = 'Done', callback = self.accept)
         # self.show()
         # self.loadPackagesLists(force=False)
