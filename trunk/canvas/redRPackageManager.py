@@ -13,8 +13,8 @@ import xml.etree.ElementTree as etree
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['REDRVERSION'] 
-        self.version = redREnviron.version['REDRVERSION']
+        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['VERSION'] 
+        self.version = redREnviron.version['VERSION']
         (self.updatePackages, self.localPackages, self.sitePackages) = self.getDiffPackages()
         
     def installRRP(self,packageName,filename):
@@ -166,8 +166,9 @@ class packageManager:
     
     def getAvailablePackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-        self.updatePackagesFromRepository()
+        
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+        if not os.path.isfile(file): return None
         mainTabs = self.readXML(file)
         if mainTabs == None: return None
         packageDict = {}
@@ -274,10 +275,15 @@ class packageManagerDialog(redRGUI.dialog):
             from datetime import date
             today = date.today()
             diff =  today - redREnviron.settings['red-RPackagesUpdated']
-            if redREnviron.checkInternetConnection() and int(diff.days) > 1:
+            
+            if (redREnviron.checkInternetConnection() and int(diff.days) > 1) or self.packageManager.sitePackages == None:
+                if self.isHidden:
+                    parent = qApp.canvasDlg
+                else:
+                    parent = self
                 mb = QMessageBox("Update Package Repository", "Update package repository for Red-R.org?", 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
-                QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton, self)
+                QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton, parent)
                 if mb.exec_() == QMessageBox.Ok:
                     self.packageManager.updatePackagesFromRepository()
             
@@ -290,8 +296,8 @@ class packageManagerDialog(redRGUI.dialog):
         self.setPackageList(self.treeViewAvailable, self.availablePackages)
         
     def show(self):
-        self.loadPackagesLists(force=False)
         redRGUI.dialog.show(self)
+        self.loadPackagesLists(force=False)
     def exec_(self):
         self.loadPackagesLists(force=False)
         redRGUI.dialog.exec_(self)
@@ -366,7 +372,7 @@ class packageManagerDialog(redRGUI.dialog):
     def askToInstall(self,packages,msg):
         deps = self.packageManager.getDependencies(packages)
         
-        msg = msg + "\nPackages:\n--" + "\n--".join(packages.keys())
+        msg = msg + "\nRepository: Red-R.org\nPackages:\n--" + "\n--".join(packages.keys())
         if len(deps.keys()) > 0:
             msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
             
@@ -424,7 +430,7 @@ class packageManagerDialog(redRGUI.dialog):
             QMessageBox.Ok)
             return
         else:
-            msg = "Are you sure that you want to install this package and its dependencies?\nPackage:\n--" + package['Name']
+            msg = "Are you sure that you want to install this package and its dependencies?\nRepository: Red-R.org\nPackage:\n--" + package['Name']
             if len(download.keys()) > 0:
                 msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
                 
