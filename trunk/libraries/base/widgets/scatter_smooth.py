@@ -2,8 +2,8 @@
 <name>scatter.smooth</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:scatter.smooth</RFunctions>
-<tags>Prototypes</tags>
-<icon>icons/RExecutor.png</icon>
+<tags>Plotting</tags>
+<icon>icons/plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

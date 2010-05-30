@@ -27,10 +27,15 @@ class plot(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
     def gotAttribute(self, data, id):
+        print id
+        print data.getData()
         if data:
             self.plotAttributes[id[0].widgetID] = data.getData()
         else:
-            del self.plotAttributes[id[0].widgetID]
+            try:
+                del self.plotAttributes[id[0].widgetID]
+            except:
+                pass
     def processx(self, data):
         if data:
             self.data = data
