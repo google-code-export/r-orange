@@ -15,9 +15,8 @@ class neuralnet(OWRpy):
 		self.data = {}
 		self.RFunctionParam_data = ''
 		self.inputs = [("data", signals.RDataFrame, self.processdata)]
-		self.outputs = [("neuralnet Output", signals.RModelFit)]
+		self.outputs = [("neuralnet Output", signals.NeuralNet.RNeuralNet)]
 		
-		self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
 		box = redRGUI.tabWidget(self.controlArea)
 		self.standardTab = box.createTabPage(name = "Standard")
 		self.advancedTab = box.createTabPage(name = "Advanced")
@@ -110,6 +109,6 @@ class neuralnet(OWRpy):
 		self.RoutputWindow.clear()
 		tmp = self.R('paste(txt, collapse ="\n")')
 		self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-		newData = signals.RModelFit(data = self.Rvariables["neuralnet"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+		newData = signals.NeuralNet.RNeuralNet(data = self.Rvariables["neuralnet"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("neuralnet Output", newData)

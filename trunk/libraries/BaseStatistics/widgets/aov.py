@@ -18,7 +18,6 @@ class aov(OWRpy):
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
         self.outputs = [("aov Output", signals.RModelFit)]
         
-        self.help.setHtml('<small>This widget runs the aov function in R which allows for simultaneous linear modeling and anova fitting of data.  You can also incorporate such features as Error terms and contrasts.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")

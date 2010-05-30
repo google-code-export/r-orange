@@ -20,7 +20,7 @@ class ggplot(OWRpy):
             self.status.setText('R Libraries Not Loaded.')
             self.controlArea.setEnabled(False)
 
-        self.inputs = [('Input Data Frame', signals.RDataFrame, self.addDataFrame)]
+        self.inputs = [('Input Data Frame', signals.RDataFrame, self.addDataFrame), ('Further Plot', signals.Plotting.RGGPlotPlot, self.gotNewPlot)]
         self.outputs = [('Plot colleciton', signals.RGGPlotPlot)]
         
         ## GUI
@@ -84,6 +84,9 @@ class ggplot(OWRpy):
         self.acceptPlotLineEdit.hide()
         button = redRGUI.button(lBox, 'Add Layer', callback = self.addLayer)
         buttonCommit = redRGUI.button(rBox, 'Plot', callback = self.plotGGPlot)
+    def gotNewPlot(self, data):
+        if data:
+            self.plotAtts['Global'] = {'Global':True, 'data':data.getData(), 'subAtt':False}
     def setAttributeArea(self):
         # populate a line Edit with the data that is in the plotAtts for this selection.  Also give the user the option to delete the attribute
         item = self.plotBox.selectedItems()[0]
@@ -258,7 +261,7 @@ class ggplot(OWRpy):
         fullCommand = ' + '.join(command)
         
         self.R(self.Rvariables['ggplot']+'<-'+self.Rvariables['ggplot']+'+'+fullCommand)
-        self.R('capture.output('+self.Rvariables['ggplot']+')')
+        self.Rplot('capture.output('+self.Rvariables['ggplot']+')')
         
         newData = signals.RGGPlotPlot(data = self.Rvariables['ggplot'])
         #newData.setOptionalData(

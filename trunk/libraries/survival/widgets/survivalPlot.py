@@ -15,7 +15,7 @@ class survivalPlot(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Survival Plot", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RSurvFit, self.processx)]
+        self.inputs = [("x", signals.survival.RSurvFit, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:', text = 'Survival Plot', toolTip = 'The title of the plot')

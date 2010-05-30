@@ -17,7 +17,7 @@ class plot(OWRpy):
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
         self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
-        self.inputs = [("x", signals.RVariable, self.processx), ('Plot Attributes', signals.RPlotAttribute, self.gotAttribute, 'Multiple')]
+        self.inputs = [("x", signals.RVariable, self.processx), ('Plot Attributes', signals.Plotting.RPlotAttribute, self.gotAttribute, 'Multiple')]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:')

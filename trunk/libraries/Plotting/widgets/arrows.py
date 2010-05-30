@@ -13,7 +13,7 @@ class arrows(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "arrows", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["arrows"])
         self.data = {}
-        self.outputs = [("arrows Output", signals.RPlotAttribute)]
+        self.outputs = [("arrows Output", signals.Plotting.RPlotAttribute)]
         self.standardTab = self.controlArea
         self.RFunctionParamx0_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x0:", text = '')
         self.RFunctionParamy0_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "y0:", text = '')
@@ -53,6 +53,6 @@ class arrows(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         
-        newData = signals.RPlotAttribute(data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.Plotting.RPlotAttribute(data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("arrows Output", newData)

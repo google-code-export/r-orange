@@ -1,0 +1,21 @@
+<base>
+    <Name>NeuralNet</Name>
+    <Author>Kyle R Covington kyle@red-r.org</Author>
+    <Version>
+        <Number>NeuralNet-1.rrp</Number>
+        <Stability>Experimental</Stability>
+        <Date>2010-05-30</Date>
+    </Version>
+    <License>GPL (>= 2.0)</License>
+    <Dependencies>base</Dependencies>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Summary>Widgets for making and studying neural nets.</Summary>
+    <Description>Widgets and signals for making and working with neural nets.</Description>
+    <menuTags>
+        <group name="Stats">
+            <group name="Neural Net">
+                <Description>Neural Net Widgets</Description>
+            </group>
+        </group>       
+    </menuTags>
+</base>

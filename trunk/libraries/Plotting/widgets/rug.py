@@ -15,7 +15,7 @@ class rug(OWRpy):
 		self.data = {}
 		self.RFunctionParam_x = ''
 		self.inputs = [("x", signals.RVector, self.processx)]
-		self.outputs = [("rug Output", signals.RPlotAttribute)]
+		self.outputs = [("rug Output", signals.Plotting.RPlotAttribute)]
 		
 		
 		box = redRGUI.tabWidget(self.controlArea)
@@ -57,6 +57,6 @@ class rug(OWRpy):
 			injection.append(string)
 		inj = ','.join(injection)
 		
-		newData = signals.RPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+		newData = signals.Plotting.RPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("rug Output", newData)

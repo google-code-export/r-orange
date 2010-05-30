@@ -14,7 +14,7 @@ class gwplot(OWRpy):
 	def __init__(self, parent=None, signalManager=None):
 		OWRpy.__init__(self, parent, signalManager, "gwplot", wantMainArea = 0, resizingEnabled = 1)
 		self.RFunctionParam_x = ''
-		self.inputs = [("x", signals.RModelFit, self.processx)]
+		self.inputs = [("x", signals.NeuralNet.RNeuralNet, self.processx)]
 		
 		self.standardTab = self.controlArea
 		self.RFunctionParamotherParams_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "Other Parameters:", text = '', toolTip = 'Place any parameters to be plotted from gwplot')

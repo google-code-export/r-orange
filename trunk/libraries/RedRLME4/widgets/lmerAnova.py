@@ -14,14 +14,13 @@ class lmerAnova(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "LMER Anova", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["anova"])
-        self.data = {}
+        self.data = None
+        self.data2 = None
         self.RFunctionParam_model = ''
         self.RFunctionParam_data = ''
         self.RFunctionParam_data2 = ''
-        self.inputs = [("data", signals.RLme4ModelFit, self.processdata), ("data2", signals.RLme4ModelFit, self.processdata2)]
+        self.inputs = [("data", signals.RedRLME4.RLme4ModelFit, self.processdata), ("data2", signals.RedRLME4.RLme4ModelFit, self.processdata2)]
         
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
 
     def processdata(self, data):
@@ -42,7 +41,8 @@ class lmerAnova(OWRpy):
             #self.data = data.copy()
             self.commitFunction()
         else:
-            self.RFunctionParam_data=''
+            self.data2 = None
+            self.RFunctionParam_data2=''
     def commitFunction(self):
         if str(self.RFunctionParam_data) == '': 
             self.status.setText('No data')
@@ -50,10 +50,13 @@ class lmerAnova(OWRpy):
         if str(self.RFunctionParam_data2) == '': 
             self.status.setText('No data')
             return
-        if self.data.getDataParent() != self.data2.getDataParent():
+        if self.data2 and self.data.getDataParent() != self.data2.getDataParent():
             self.status.setText('Data not of the same parent, incompatable models')
             return
-        self.R(self.Rvariables['anova']+'<-anova('+str(self.RFunctionParam_data)+','+str(self.RFunctionParam_data2)+')')
+        if self.data2:
+            self.R(self.Rvariables['anova']+'<-anova('+str(self.RFunctionParam_data)+','+str(self.RFunctionParam_data2)+')')
+        else:
+            self.R(self.Rvariables['anova']+'<-anova('+str(self.RFunctionParam_data)+')')
         self.R('txt<-capture.output('+self.Rvariables['anova']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')

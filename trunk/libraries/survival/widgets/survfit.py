@@ -17,7 +17,7 @@ class survfit(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.inputs = [("data", signals.RVariable, self.processdata), ('Model Fit', signals.RModelFit, self.processfit)]
-        self.outputs = [("survfit Output", signals.RSurvFit)]
+        self.outputs = [("survfit Output", signals.survival.RSurvFit)]
         
         self.help.setHtml('<small>Generates a survival fit to a set of data.  This can be used in plotting.</small>')
         formulaBox = redRGUI.widgetBox(self.controlArea)
@@ -65,6 +65,6 @@ class survfit(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['survfit']+'<-survfit(data='+str(self.RFunctionParam_data)+','+inj+')')
-        self.out = signals.RSurvFit(data=self.Rvariables["survfit"])
+        self.out = signals.survival.RSurvFit(data=self.Rvariables["survfit"])
         self.rSend("survfit Output", self.out)
 

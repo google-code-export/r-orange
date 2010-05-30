@@ -1,0 +1,22 @@
+<base>
+    <Name>RedRLME4</Name>
+    <Author>Kyle R Covington kyle@red-r.org</Author>
+    <Version>
+        <Number>RedRLME4-1.rrp</Number>
+        <Stability>Good, some experimental</Stability>
+        <Date>2010-05-12</Date>
+    </Version>
+    <License>GPL (>= 2.0)</License>
+    <Dependencies>base, BaseStatistics</Dependencies>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Summary>Widget implementations of the lme4 package.</Summary>
+    <Description>Implementations of the lem4 package.  These widgets include an interface for the function lmer.  Also ANOVA widgets are available for comparing models.  These are advanced widgets as model fitting is highly complex.  Novice users should seek help when first using.</Description>
+    <menuTags>
+        <group name="Stats">
+            <Description>Statistics</Description>
+            <group name="Parametric">
+                <Description>Parametric Statistics</Description>
+            </group>
+        </group>      
+    </menuTags>
+</base>

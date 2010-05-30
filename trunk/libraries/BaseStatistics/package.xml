@@ -1,0 +1,25 @@
+<base>
+    <Name>BaseStatistics</Name>
+    <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
+    <Version>
+        <Number>BaseStatistics-1.rrp</Number>
+        <Stability>Good</Stability>
+        <Date>2010-05-12</Date>
+    </Version>
+    <License>GPL (>= 2.0)</License>
+    <Dependencies>base, Plotting</Dependencies>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Summary>Base statistical widgets and signals.</Summary>
+    <Description>A collection of basic statiscical widgets.  These allow for basic statistical tests such as t.test and anova.</Description>
+    <menuTags>
+        <group name="Stats">
+            <Description>Statistics</Description>
+            <group name="Parametric">
+                <Description>Parametric Statistics</Description>
+            </group>
+            <group name="Non Parametric">
+                <Description>Non-Parametric Statistics</Description>
+            </group>
+        </group>      
+    </menuTags>
+</base>

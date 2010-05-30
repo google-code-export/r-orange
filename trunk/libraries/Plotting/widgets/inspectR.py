@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-class inspect(OWRpy): 
+class inspectR(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
 		OWRpy.__init__(self, parent, signalManager, "inspect", wantMainArea = 0, resizingEnabled = 1)
