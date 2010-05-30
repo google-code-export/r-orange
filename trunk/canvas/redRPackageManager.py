@@ -13,9 +13,9 @@ import xml.etree.ElementTree as etree
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['VERSION'] 
-        self.version = redREnviron.version['VERSION']
-        (self.updatePackages, self.localPackages, self.availablePackages) = self.getDiffPackages()
+        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['REDRVERSION'] 
+        self.version = redREnviron.version['REDRVERSION']
+        (self.updatePackages, self.localPackages, self.sitePackages) = self.getDiffPackages()
         
     def installRRP(self,packageName,filename):
 
@@ -166,9 +166,10 @@ class packageManager:
     
     def getAvailablePackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-        
+        self.updatePackagesFromRepository()
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         mainTabs = self.readXML(file)
+        if mainTabs == None: return None
         packageDict = {}
         for package in mainTabs.firstChild.childNodes:
             if package.nodeType !=package.ELEMENT_NODE:
@@ -183,6 +184,9 @@ class packageManager:
         ## returns a collection of packages that have been upgraded since the user last downloaded the packages
         self.localPackages = self.getInstalledPackages()
         self.sitePackages = self.getAvailablePackages()
+        if self.sitePackages == None:
+            return (None, self.localPackages, None)
+        
         self.updatePackages = {}
         
         ## loop through the package names and see what should be upgraded.

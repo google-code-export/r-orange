@@ -172,6 +172,7 @@ directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
 version = {}
 version = getVersion()
+print version
 settings = loadSettings()
 
 
