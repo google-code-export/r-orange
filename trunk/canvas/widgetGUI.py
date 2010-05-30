@@ -119,10 +119,10 @@ class widgetGUI(QMainWindow):
         self.helpBox.setMinimumWidth(minWidth)
         self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         if hasattr(self,'_widgetInfo'):
-            #url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo['fullName'])
-            (file,ext) = os.path.basename(self._widgetInfo['fullName']).split('.')
+            
+            (file,ext) = os.path.basename(self._widgetInfo.fullName).split('.')
             path = os.path.join(redREnviron.directoryNames['libraryDir'],
-            self._widgetInfo['package'],'help',file+'.html')
+            self._widgetInfo.package['Name'],'help',file+'.html')
             if os.path.exists(path):
                 f = open(path)
                 html = f.read()
@@ -466,7 +466,7 @@ class widgetGUI(QMainWindow):
 
         try:
             import webbrowser
-            url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo['fullName'])
+            url = 'http://www.red-r.org/help.php?widget=' + os.path.basename(self._widgetInfo.fullName)
             webbrowser.open(url, 0, 1)
             return
         except:

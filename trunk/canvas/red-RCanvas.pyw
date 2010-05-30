@@ -10,7 +10,7 @@ sys.path.insert(0, mypath)
 import redREnviron
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
-# import user
+import redRPackageManager
 
 
 class OrangeCanvasDlg(QMainWindow):
@@ -104,7 +104,8 @@ class OrangeCanvasDlg(QMainWindow):
             print "Unable to load all necessary icons. Please reinstall Red-R."
 
         self.setStatusBar(MyStatusBar(self))
-                
+        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
+
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         
         # print self.widgetRegistry
@@ -248,8 +249,6 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuSaveID = self.menuFile.addAction(QIcon(self.file_save), "&Save", self.menuItemSave, QKeySequence.Save )
         self.menuSaveAsID = self.menuFile.addAction( "Save &As...", self.menuItemSaveAs)
         self.menuSaveTemplateID = self.menuFile.addAction( "Save As Template", self.menuItemSaveTemplate)
-        #self.menuFile.addAction( "&Save as Application (Tabs)...", self.menuItemSaveAsAppTabs)
-        #self.menuFile.addAction( "&Save as Application (Buttons)...", self.menuItemSaveAsAppButtons)
         self.menuFile.addSeparator()
         self.menuFile.addAction(QIcon(self.file_print), "&Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
         self.menuFile.addSeparator()
@@ -279,7 +278,8 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.packageMenu = QMenu("&Packages", self)
         self.packageMenu.addAction("Package Manager", self.menuOpenPackageManager)
-        
+        self.packageMenu.addAction(QIcon(self.file_open), "&Install Package", self.menuItemInstallPackage)
+
         localHelp = 0
         self.menuHelp = QMenu("&Help", self)
         
@@ -330,6 +330,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.loadDocument(str(name), freeze = 0, importing = False)
         self.addToRecentMenu(str(name))
 
+
     def menuItemOpenFreeze(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
@@ -338,6 +339,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 1)
         self.addToRecentMenu(str(name))
+
 
     def menuItemOpenLastSchema(self):
         fullName = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "lastSchema.tmp")
@@ -349,6 +351,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
         self.widgetRegistry = orngRegistry.readCategories()
+        redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
         #import redRGUI
         self.createWidgetsToolbar()
         #self.widgetsToolBar.show()
@@ -496,9 +499,8 @@ class OrangeCanvasDlg(QMainWindow):
                         os.remove(os.path.join(redREnviron.directoryNames['widgetSettingsDir'], f))
 
     def menuOpenPackageManager(self):
-        import redRPackageManager
-        pm = redRPackageManager.PackageManagerDialog()
-        pm.exec_()
+        self.packageManagerGUI.exec_()
+        
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
         webbrowser.open("file:///" + os.path.join(redREnviron.directoryNames['redRDir'], "doc/catalog/index.html"))
@@ -506,6 +508,13 @@ class OrangeCanvasDlg(QMainWindow):
     def menuOpenLocalCanvasHelp(self):
         import webbrowser
         webbrowser.open(os.path.join(redREnviron.directoryNames['redRDir'], "doc/canvas/default.htm"))
+    def menuItemInstallPackage(self):
+        name = QFileDialog.getOpenFileName(self, "Install Package", 
+        redREnviron.settings["saveSchemaDir"], "Package (*.rrp)")
+        if name.isEmpty(): return
+        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        self.packageManagerGUI.show()
+        self.packageManagerGUI.installPackageFromFile(str(name))
 
     def menuOpenOnlineOrangeHelp(self):
         import webbrowser
@@ -672,7 +681,7 @@ class OrangeCanvasDlg(QMainWindow):
             names.append("%s_%d%s" % (name, num, ext))
             
         #widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)  #os.path.split(self.getFileName())[0]
-        widgetDir = os.path.join(redREnviron.directoryNames['widgetDir'],widgetInfo.package)  #os.path.split(self.getFileName())[0]
+        widgetDir = os.path.join(redREnviron.directoryNames['widgetDir'],widgetInfo.package['Name'])  #os.path.split(self.getFileName())[0]
         #print widgetDir + '\n' *10
         fullPaths = []
         for paths in [(redREnviron.directoryNames['widgetDir'], widgetInfo.category), (redREnviron.directoryNames['widgetDir'],), (redREnviron.directoryNames['picsDir'],), tuple(), (widgetDir,), (widgetDir, "icons")]:
@@ -688,7 +697,7 @@ class OrangeCanvasDlg(QMainWindow):
     
     def getFullIconBackgroundName(self, widgetInfo):
         #widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)
-        widgetDir = os.path.join(redREnviron.directoryNames['widgetDir'],widgetInfo.package)  #os.path.split(self.getFileName())[0]
+        widgetDir = os.path.join(redREnviron.directoryNames['widgetDir'],widgetInfo.package['Name'])  #os.path.split(self.getFileName())[0]
 
         fullPaths = []
         for paths in [(widgetDir, "icons"), (redREnviron.directoryNames['widgetDir'], "base", "icons"), (redREnviron.directoryNames['widgetDir'], "icons"), (redREnviron.directoryNames['picsDir'],), tuple(), (widgetDir,), (widgetDir, "icons")]:

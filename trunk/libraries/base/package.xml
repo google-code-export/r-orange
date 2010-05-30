@@ -1,14 +1,16 @@
-<main>
+<base>
     <Name>base</Name>
-    <RedRVersion>1.7, trunk</RedRVersion>
-    <Version>base-1.2.rrp</Version>
     <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
-    <Summary>Base widgets, signals, and templates.</Summary>
-    <Stability>Good</Stability>
-    <Description>Base functionality of Red-R.  This functionality includes the base signal classes, base widgets, base gui widgets, common templates, etc.  This package can not be deleted, only upgraded.  Bases are considered stable within an official release, though bug fixes and updates may become available from time to time.</Description>
-    <Repository>http://r-orange.googlecode.com/svn/</Repository>
-    <PackageName>base2/base-1.2.rrp</PackageName>
+    <Version>
+        <Number>1</Number>
+        <Stability>Good</Stability>
+        <Date>2010-05-12</Date>
+    </Version>
+    <License>GPL (>= 2.0)</License>
     <Dependencies>None</Dependencies>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Summary>Base widgets, signals, and templates.</Summary>
+    <Description>Base functionality of Red-R.  This functionality includes the base signal classes, base widgets, base gui widgets, common templates, etc.  This package can not be deleted, only upgraded.  Bases are considered stable within an official release, though bug fixes and updates may become available from time to time.</Description>
     <menuTags>
         <group name="Data Input">
             <Description>Widgets for Importing data into redR</Description>
@@ -47,4 +49,4 @@
             <Description>Prototypes</Description>
         </group>        
     </menuTags>
-</main>
+</base>

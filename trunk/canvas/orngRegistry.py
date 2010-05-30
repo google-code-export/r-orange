@@ -5,7 +5,7 @@ import os, sys, re, glob, stat
 from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import redRGUI
+import redRGUI, orngOutput,redRPackageManager
 import signals
 import xml.dom.minidom
 
@@ -52,15 +52,20 @@ def readCategories():
     theTags = xml.dom.minidom.parseString('<tree></tree>')
 
     for dirName, directory, plugin in directories:
-        widgets = readWidgets(os.path.join(directory,'widgets'), dirName, cachedWidgetDescriptions)  # we read in all the widgets in dirName, directory in the directories
-        if os.path.isfile(os.path.join(directory,dirName+'.xml')):
-            f = open(os.path.join(directory,dirName+'.xml'), 'r')
-            mainTabs = xml.dom.minidom.parse(f)
-            f.close() 
+        if not os.path.isfile(os.path.join(directory,'package.xml')): continue
+        f = open(os.path.join(directory,'package.xml'), 'r')
+        mainTabs = xml.dom.minidom.parse(f)
+        f.close()
+        package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
+        
+        # we read in all the widgets in dirName, directory in the directories
+        widgets = readWidgets(os.path.join(directory,'widgets'), package, cachedWidgetDescriptions)  
+        if mainTabs.getElementsByTagName('menuTags'):
             newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
             for tag in newTags:
                 if tag.nodeName == 'group': 
                     addTagsSystemTag(theTags.childNodes[0],tag)
+
         #print '#########widgets',widgets
         allWidgets += widgets
     categories['tags'] = theTags
@@ -72,7 +77,7 @@ def readCategories():
     for dirName, directory, plugin in directories:
         templates = readTemplates(os.path.join(directory,'templates'), dirName, cachedWidgetDescriptions) # a function to read in the templates that are in the directories
         allTemplates += templates
-        print templates
+        #print templates
     categories['templates'] = allTemplates
     cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
@@ -125,7 +130,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
             widgets.append((cachedDescription.name, cachedDescription))
             continue
-        widgetID = str(package+'_'+os.path.split(filename)[1].split('.')[0])
+        widgetID = str(package['Name']+'_'+os.path.split(filename)[1].split('.')[0])
         data = file(filename).read()
         istart = data.find("<name>")
         iend = data.find("</name>")
@@ -136,9 +141,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         outputList = getSignalList(re_outputs, data)
         
         dirname, fname = os.path.split(filename)
-        # dirname, package = os.path.split(dirname)
         widgetName = os.path.splitext(fname)[0]
-        #widgetName = package + '_' + widget
         try:
             import redREnviron
             if not splashWindow:
@@ -158,25 +161,22 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             if not dirnameInPath:
                 sys.path.append(dirname)
             
-            wmod = imp.load_source(package + '_' + widgetName, filename)
+            wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
 
             #wmod.__dict__['widgetFilename'] = filename
             if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
                 sys.path.remove(dirname)
             
-            # inputClasses = set(eval(x[1], wmod.__dict__).__name__ for x in eval(inputList))
-            # outputClasses = set(y.__name__ for x in eval(outputList) for y in eval(x[1], wmod.__dict__).mro())
-            #print 'OUTPUT CLASSES: '+str(outputClasses)
             widgetInfo = WidgetDescription(
-                             name = data[istart+6:iend],
-                             category = package,
-                             package = package,
-                             time = datetime,
-                             fileName = package + '_' + widgetName,
-                             widgetName = widgetName,
-                             fullName = filename,
-                             inputList = inputList, outputList = outputList
-                             )
+                         name = data[istart+6:iend],
+                         category = package['Name'],
+                         package = package,
+                         time = datetime,
+                         fileName = package['Name'] + '_' + widgetName,
+                         widgetName = widgetName,
+                         fullName = filename,
+                         inputList = inputList, outputList = outputList
+                         )
     
             for attr, deflt in (("contact>", "") , ("icon>", "icons/Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
@@ -186,7 +186,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
             ## set the icon, this might not exist so we need to check
             try:
-                widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], package, widgetInfo.icon))
+                widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], package['Name'], widgetInfo.icon))
                 if not os.path.exists(widgetInfo.icon):
                     if os.path.exists(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png')): 
                         widgetInfo.icon = os.path.abspath(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png'))
@@ -254,17 +254,19 @@ def readTemplates(directory, package, cachedWidgetDescriptions):
             templateInfo = TemplateDescription(name = templateName, file = filename) 
             templates.append(templateInfo)
         except Exception, msg:
-            print msg
+            orngOutput.printException()
         
     return templates
 def loadPackage(package):
-    # import imp
-    # m = imp.new_module(package)
-    #print '######## %s' % str(hasattr(redRGUI,package))
-    if not hasattr(redRGUI,package):
-        redRGUI.registerQTWidgets(package)
-    if not hasattr(signals,package):
-        signals.registerRedRSignals(package)
+    downloadList = {}
+    downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+    deps = redRPackageManager.packageManager.getDependencies(downloadList)
+    downloadList.update(deps)
+    for name in downloadList.keys():
+        if not hasattr(redRGUI,name):
+            redRGUI.registerQTWidgets(name)
+        if not hasattr(signals,name):
+            signals.registerRedRSignals(name)
     
     
 ### we really need to change this...

@@ -11,7 +11,7 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession
 import globalData
-from redRPackageManager import *
+import redRPackageManager
 
 from orngSignalManager import SignalManager
 import cPickle, math, orngHistory, zipfile
@@ -491,19 +491,14 @@ class SchemaDoc(QWidget):
             settingsDict[widget.instance.widgetID]['inputs'] = cPickle.dumps(i,2)
             settingsDict[widget.instance.widgetID]['outputs'] = cPickle.dumps(o,2)
             
-            if widget.widgetInfo.package != 'base' and widget.widgetInfo.package not in requireRedRLibraries.keys():
-                f = open(os.path.join(redREnviron.directoryNames['libraryDir'],
-                widget.widgetInfo.package,widget.widgetInfo.package + '.xml'),'r')
-                rrp = f.read()
-                f.close()
-                requireRedRLibraries[widget.widgetInfo.package] = rrp
+            if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
+                requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
         
             widgets.appendChild(temp)
         
         settingsDict['_globalData'] = cPickle.dumps(globalData.globalData,2)
-        settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),
-        'RedR': requireRedRLibraries.values()})
-        
+        settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),'RedR': requireRedRLibraries},2)
+        print requireRedRLibraries
         file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
         file.write(str(settingsDict))
         file.close()
@@ -588,12 +583,7 @@ class SchemaDoc(QWidget):
     def loadDocument(self, filename, caption = None, freeze = 0, importing = 0):
         
         import redREnviron
-        ### .rrw functionality
-        if filename.split('.')[-1] in ['rrw', 'rrp']:
-            pm = packageManager()
-            pm.loadRRP(filename)
-            return # we don't need to load anything else, we are not really loading a rrs file. 
-        elif filename.split('.')[-1] in ['rrts']:
+        if filename.split('.')[-1] in ['rrts']:
             tmp=True
         elif filename.split('.')[-1] in ['rrs']:
             tmp=False
@@ -645,11 +635,8 @@ class SchemaDoc(QWidget):
         self.loadedSettingsDict = settingsDict
         
         self.loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
-
         
         ## make sure that there are no duplicate widgets.
-        
-
         if not tmp:
             ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
             if not self.checkWidgetDuplication(widgets = widgets):
@@ -781,9 +768,21 @@ class SchemaDoc(QWidget):
                 loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
                 RSession.require_librarys(required['R'], repository=repo)
             
+            installedPackages = redRPackageManager.packageManager.getInstalledPackages()
+            downloadList = {}
+            print type(required['RedR'])
+            print required['RedR']
             
-            for i in required['RedR']:
-                packageManager.loadRRP(fileText = i)
+            for name,package in required['RedR'].items():
+                print package
+                if not (package['Name'] in installedPackages.keys() 
+                and package['Version']['Number'] == installedPackages[package['Name']]['Version']['Number']):
+                    downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+
+            if len(downloadList.keys()) > 0:
+                self.canvasDlg.packageManagerGUI.show()
+                self.canvasDlg.packageManagerGUI.askToInstall(downloadList,
+                'The following packages need to be installed before the session can be loaded.')
         except: 
             import sys, traceback
             print '-'*60

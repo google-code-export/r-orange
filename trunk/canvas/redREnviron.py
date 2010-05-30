@@ -31,26 +31,26 @@ def __getDirectoryNames():
     ## check that the settings directories are in place, this would be skipped over in the try
     if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
         os.mkdir(os.path.join(os.environ['APPDATA'], 'red-r'))
-    orangeSettingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
+    settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     
-    reportsDir = os.path.join(orangeSettingsDir, "RedRReports")
-    canvasSettingsDir = os.path.join(orangeSettingsDir, "RedRCanvas") 
-    
-    
-    widgetSettingsDir = os.path.join(orangeSettingsDir, "RedRWidgetSettings")
+    reportsDir = os.path.join(settingsDir, "RedRReports")
+    canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
+    widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
+    downloadsDir = os.path.join(settingsDir, "downloads")
 
-    for dname in [orangeSettingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir]:
+    for dname in [settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir,downloadsDir]:
         if dname <> None and not os.path.isdir(dname):
-            try: os.makedirs(dname)        # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
+            try: os.makedirs(dname)        
+            # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
     
     tempDir = setTempDir(canvasSettingsDir, 1)
     # print tempDir
-    return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "orangeSettingsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
-        urllib.urlopen('http://www.red-r.org/')
+        urllib.urlopen('http://www.google.com/')
         return True
     except:
         return False
@@ -105,6 +105,9 @@ def loadSettings():
     settings.setdefault("useDefaultPalette", 0)
 
     settings.setdefault('CRANrepos','http://cran.r-project.org')
+    settings.setdefault('red-RPackagesUpdated',0)
+    
+    
     settings.setdefault("writeLogFile", 1)
     settings.setdefault("dontAskBeforeClose", 0)
     settings.setdefault("debugMode", 0)

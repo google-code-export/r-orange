@@ -1,0 +1,22 @@
+<affy>
+    <Name>affy</Name>
+    <Author>Kyle R Covington kyle@red-r.org and Anup Parikh anup@red-r.org</Author>
+    <Version>
+        <Number>1</Number>
+        <Stability>Good</Stability>
+        <Date>2010-05-12</Date>
+    </Version>
+    <Dependencies>None</Dependencies>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Summary>Affymetrix microarray analysis.</Summary>
+    <Description>Widgets for reading in and manipulating Affymetrix gene expression microarray data using the Bioconductor packages.</Description>
+    <License>GPL (>= 2.0)</License>
+    <menuTags>
+            <group name = 'Bioinformatics'>
+                <Description>General Bioinformatics Widgets</Description>
+                <group name = 'Microarray'>
+                    <Description>Widgets for microarray analysis</Description>
+                </group>
+            </group>
+    </menuTags>
+</affy>

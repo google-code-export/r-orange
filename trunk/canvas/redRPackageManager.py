@@ -4,292 +4,213 @@ import os, sys, redREnviron, urllib, zipfile, traceback
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import xml.dom.minidom
-import redRGUI
+import redRGUI, orngOutput
+import xmlToDict, pprint
+import xml.etree.ElementTree as etree
 
 
 ## packageManager class handles package functions such as resolving rrp's resolving dependencies, appending packages to the package xml or any function that remotely has to do with handling packages
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.version = 'trunk'
-    def loadRRP(self, filename = None, fileText = None, force = False):  # loads either the rrp files or the xml text for resolving dependencies
-        try:
-            if filename == None and fileText == None:
-                raise Exception, 'Must specify either a fileName or fileText'
-            if filename != None and fileText != None:
-                raise Exception, 'Only one of fileName or fileText can be specified'
-                
-            
-            print 'Loading RRP file.  This will update your system.'
-            
-                
-            if filename: ## if we specify an rrp zipfile then we should load that into the temp directory and work with it.
-                #try:
-                tempDir = redREnviron.directoryNames['tempDir']
-                installDir = os.path.join(os.path.abspath(tempDir), str(os.path.split(filename)[1].split('.')[0]))
-                print installDir
-                os.mkdir(installDir) ## make the directory to store the zipfile into
-                ## here we need to unzip the zip file and place it into the tempDir
-                import re
-                zfile = zipfile.ZipFile(str(filename), "r" )
-                zfile.extractall(installDir)
-                zfile.close()
-                tempPackageName = os.path.split(filename)[1].split('-')[0]  ## this should be the package name
-                if os.path.isfile(os.path.join(str(installDir), tempPackageName+'.xml')):
-                    f = open(os.path.join(str(installDir), tempPackageName+'.xml'), 'r') # read in the special file for the rrp_structure
-                elif os.path.isfile(os.path.join(str(installDir), 'rrp_structure.xml')):
-                    f = open(os.path.join(str(installDir), 'rrp_structure.xml'), 'r')
-                else:
-                    print 'No structure file, aborting insallation!!!'
-                    return False
-                mainTabs = xml.dom.minidom.parse(f)
-                f.close() 
-                # except: 
-                    # print 'Can\'t open the file or something is wrong'
-                    # return False
-                    
-                ## check the version number before we do anything else, who knows what version the usef downloaded????
-                version = self.getXMLText(mainTabs.getElementsByTagName('RedRVersion')[0].childNodes)
-                if self.version not in version:
-                    print 'Warning, this widget does not work with your current version.  Please update!!'
-                    return False
-                    
-                ## resolve the package dependencies first
-                ## set the repository for downloading the package if it is needed.
-                try:
-                    repository = self.getXMLText(mainTabs.getElementsByTagName('Repository')[0].childNodes)
-                except:
-                    repository = 'http://www.red-r.org/Libraries/'
-                    
-                ## attach the version number to the repository
-                repository += str(self.version)
-                ### resolve the dependencies
-                dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
-                if dependencies != 'None':
-                    alldeps = dependencies.split(',')
-                    print '|##| Dependencies are:'+str(alldeps)
-                    if not self.resolveRRPDependencies(alldeps, repository):
-                        print 'Error occured during resolution of dependencies.'
-                        QMessageBox.information(None, "Dependencies Failed", "Error occured during resolution of dependencies.\nWe will continue loading the file, but you may have problems with the widgets.\nPlease try to reload this package later to fix the dependencies.", QMessageBox.Ok)
+        self.repository = 'http://www.red-r.org/packages/' + redREnviron.version['REDRVERSION'] 
+        self.version = redREnviron.version['REDRVERSION']
+        (self.updatePackages, self.localPackages, self.availablePackages) = self.getDiffPackages()
+        
+    def installRRP(self,packageName,filename):
 
-                # run the install file if there is one, this should take care of the dependencies that are non-R related and install the needed files for the package
-                
-                if os.path.isfile(os.path.join(str(installDir), 'installFile.py')):
-                    ## need to import and execute the run statement of the installFile.  installFile may import many other modules at it's discression.
-                    print 'Executing file'
-                    passed = True
-                    execfile(os.path.join(str(installDir), 'installFile.py'))
-                    if passed == False: # there was an error in loading.  We should stop the installation, clear the tempdirectory of the failed zipfile and return
-                        QMessageBox.information(None, "Installation Failed", "Error occured during resolution of dependencies.\nWe will continue loading the file, but you may have problems with the widgets.\nPlease try to reload this package later to fix the dependencies.", QMessageBox.Ok)
-                        
-                ## now move all of the files in the tempDir into the libraries dir of Red-R
-                packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes).split('/')[0] # get the base package name, this is the base folder of the package.
-                
-                # move the package files
-                import shutil
-                shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], packageName), ignore_errors = True)  ## remove the old dir for copying
-                shutil.copytree(os.path.abspath(installDir), os.path.join(redREnviron.directoryNames['libraryDir'], packageName), ignore=shutil.ignore_patterns('*.svn'))
-                shutil.rmtree(installDir, True)
-                
-                ## we copied everything now return
-                print 'Installation successful'
-                qApp.canvasDlg.reloadWidgets()
-                return True
-            elif fileText:
-                mainTabs = xml.dom.minidom.parseString(fileText)
-            
-                # check the version number to make sure that it is compatible
-                version = self.getXMLText(mainTabs.getElementsByTagName('Version')[0].childNodes)
-                if self.version not in version:
-                    print 'Warning, this widget does not work with your current version.  Please update!!'
-                    return False
-                
-                    
-                packageName = self.getXMLText(mainTabs.getElementsByTagName('PackageName')[0].childNodes)
-                
-                ## set the repository for downloading the package if it is needed.
-                try:
-                    repository = self.getXMLText(mainTabs.getElementsByTagName('Repository')[0].childNodes)
-                except:
-                    repository = 'http://www.red-r.org/Libraries/'
-                    
-                ## attach the version number to the repository
-                repository += str(self.version)
-                ### resolve the dependencies
-                dependencies = self.getXMLText(mainTabs.getElementsByTagName('Dependencies')[0].childNodes)
-                if dependencies != 'None':
-                    alldeps = dependencies.split(',')
-                    alldeps.append(packageName)
-                else:
-                    alldeps = [packageName]
-                if not self.resolveRRPDependencies(alldeps, repository):
-                    print 'Error occured during resolution of dependencies.'
-                    QMessageBox.information(self, "Dependencies Failed", "Error occured during resolution of dependencies.\nWe will continue loading the file, but you may have problems with the widgets.\nPlease try to reload this package later to fix the dependencies.", QMessageBox.Ok)
-
-                print 'Package loaded successfully'
-                qApp.canvasDlg.reloadWidgets()
-        except Exception as inst:
-            print str(inst)
-            print '-'*60
-            traceback.print_exc(file=sys.stdout)
-            print '-'*60
-            print 'Error occured during rrp loading.  Please try again later.'
-            return False
-    def resolveRRPDependencies(self, alldeps, repository, dontAsk = False):
-        loadedOk = 1
+        installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
+        print 'installDinstallDir', installDir
+        import shutil
+        shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying        
+        
+        os.mkdir(installDir) ## make the directory to store the zipfile into
+        zfile = zipfile.ZipFile(filename, "r" )
+        zfile.extractall(installDir)
+        zfile.close()
+        ## here we need to unzip the zip file and place it into the tempDir
+        
+    def getPackageInfo(self,filename):
+        zfile = zipfile.ZipFile(filename, "r" )
+        f = zfile.open('package.xml')
+        xmlStr = f.read()
+        f.close()
+        packageXML = xml.dom.minidom.parseString(xmlStr)
+        package = self.parsePackageXML(packageXML)
+        return package
+    
+    def downloadPackages(self,packages):
         if not redREnviron.checkInternetConnection():
             return False
-            
-        if not dontAsk:
-            mb = QMessageBox("Download Packages", "You are missing some key packages.\n\n"+'\n'.join(alldeps)+"\nDo you want to download them?\nIf you click NO your packages WON\'T WORK!!!", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
-            if mb.exec_() != QMessageBox.Ok: return False
-        for dep in alldeps:
+        progressBar = QProgressDialog(qApp.canvasDlg)
+        progressBar.setCancelButtonText(QString())
+        progressBar.setWindowTitle('Installing Packages')
+        progressBar.setLabelText('Installing Packages...')
+        progressBar.setMaximum(len(packages.keys()))
+        i = 0
+        progressBar.setValue(i)
+        progressBar.show()
+        OK = True
+        for package,version in packages.items():
+            if version['installed']: continue
             try:
-                [pack, ver] = dep.split('/')
-                ## check to see if the directory exists, if it does then there is no need to worry, unless someone is playing a cruel joke and made the directory with nothing in it.
-                if not os.path.exists(os.path.join(redREnviron.directoryNames['libraryDir'], pack)):
-                    print 'Downloading dependencies', dep
-                    try:
-                        ## make the url for the dep
-                        url = repository+'/'+pack+'/'+ver
-                        ## download the package, place in the tempDir for resolution
-                        self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
-                        ## install the package
-                        self.loadRRP(filename = os.path.join(redREnviron.directoryNames['tempDir'], pack, ver))
-                    except:
-                        loadedOk = 0
-                        print 'Problem resolving dependencies, some will not be availabel.  Please try again later'
-                else:
-                    return False
+                i = i + 1
+                progressBar.setValue(i)
+                packageName = str(package+'-'+version['Version']+'.rrp')
+                print packageName
+                print redREnviron.directoryNames['downloadsDir']
+                url = str(self.repository+'/'+package+'/'+packageName)
+                print 'url: ' + url
+                path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
+                print 'download started'
+                self.urlOpener.retrieve(url, path)
+                print 'download done'
+                print 'install started'
+                self.installRRP(package,path)
+                print 'install done'
             except:
-                loadedOk = 0
-                print 'Problem resolving dependencies: '+str(dep)+', this will not be availabel.  Please try again later'
-                continue
-        return loadedOk
-        
+                orngOutput.printException()
+                OK=False
+        qApp.canvasDlg.reloadWidgets()
+        print 'hide downloadPackages'
+        progressBar.hide()
+        return OK
+
+    def getDependencies(self,packages):
+        # print 'in getDependencies', packages
+        deps = {}
+        for name, package in packages.items():
+            # print 'name', name
+            # print len(self.sitePackages[name]['Dependencies']), self.sitePackages[name]['Dependencies']
+            if (name in self.sitePackages.keys() and self.sitePackages[name]['Version']['Number'] == package['Version'] 
+            and len(self.sitePackages[name]['Dependencies'])):
+                for dep in self.sitePackages[name]['Dependencies']:
+                    if (dep['Package'] in self.localPackages.keys() 
+                    and self.localPackages[dep['Package']]['Version']['Number'] == dep['Version']): 
+                        installed=True
+                    else:
+                        installed=False
+                    t = {}
+                    t[dep['Package']] = {'Version':dep['Version'], 'installed':installed}
+                    deps.update(t)
+                    deps.update(self.getDependencies(t))
+
+        return deps
     def getXMLText(self, nodelist):
-        try:
-            rc = ''
-            for node in nodelist:
-                if node.nodeType == node.TEXT_NODE:
-                    rc = rc + node.data
-                    
-            rc = str(rc).strip()
-        except: rc = 'Not Present'
+        rc = ''
+        for node in nodelist:
+            if node.nodeType == node.TEXT_NODE:
+                rc = rc + node.data
+                
+        rc = str(rc).strip()
         return rc
     def readXML(self, fileName):
         f = open(fileName, 'r')
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         return mainTabs
-    def getXMLChildNodesByTagName(self, node, name):
-        try:
-            return node.getElementsByTagName(name)[0].childNodes
-        except:
-            return []
-    def getLocalPackages(self):
-        ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-        
+
+    def parsePackageXML(self,node):
         packageDict = {}
-        widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
-        for dirName in os.listdir(widgetDirName):
-            directory = os.path.join(widgetDirName, dirName)
-            if not os.path.isdir(directory):
+        packageDict['Name'] = self.getXMLText(node.getElementsByTagName('Name')[0].childNodes)
+        packageDict['Author'] = self.getXMLText(node.getElementsByTagName('Author')[0].childNodes)
+        packageDict['License'] = self.getXMLText(node.getElementsByTagName('License')[0].childNodes)
+        
+        deps = node.getElementsByTagName('Dependencies')[0]
+        packageDict['Dependencies'] = []
+        for dep in deps.childNodes:
+            if dep.nodeType !=dep.ELEMENT_NODE:
                 continue
-            if os.path.isfile(os.path.join(directory,dirName+'.xml')):
-                mainTabs = self.readXML(os.path.join(directory,dirName+'.xml'))
-                name = dirName
-                author = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Author'))
-                version = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Version'))
-                stability = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Stability'))
-                summary = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Summary'))
-                #used = self.getXMLText(mainTabs.getElementsByTagName('Used')[0].childNodes)
-                description = self.getXMLText(self.getXMLChildNodesByTagName(mainTabs, 'Description'))
-                packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary,# 'Used':used,
-                'Description':description}
-                
+
+            packageDict['Dependencies'].append({
+            'Package': self.getXMLText(dep.getElementsByTagName('Package')[0].childNodes),
+            'Version': self.getXMLText(dep.getElementsByTagName('Version')[0].childNodes)})
+            
+        packageDict['Summary'] = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
+        packageDict['Description'] = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
+
+        version = node.getElementsByTagName('Version')[0]
+        # print node, version
+        packageDict['Version'] = {}
+        packageDict['Version']['Number'] = self.getXMLText(version.getElementsByTagName('Number')[0].childNodes)
+        packageDict['Version']['Stability'] = self.getXMLText(version.getElementsByTagName('Stability')[0].childNodes)
+        packageDict['Version']['Date'] = self.getXMLText(version.getElementsByTagName('Date')[0].childNodes)
+
         return packageDict
-        # fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'packages.xml')
-        # mainTabs = self.readXML(fileDir)
-        
-        # packageNodes = mainTabs.getElementsByTagName('Package')
-        # for node in packageNodes:
-            # name = self.getXMLText(node.getElementsByTagName('Name')[0].childNodes)
-            # author = self.getXMLText(node.getElementsByTagName('Author')[0].childNodes)
-            # version = self.getXMLText(node.getElementsByTagName('Version')[0].childNodes)
-            # stability = self.getXMLText(node.getElementsByTagName('Stability')[0].childNodes)
-            # summary = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
             
-            # description = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
-            # packageDict[name] = {'Author':author, 'Stability':stability, 'Version':version, 'Summary':summary,# 'Used':used,
-            # 'Description':description}
-            
-        # print packageDict
-        # return packageDict
-        
-    def getRedRPackages(self):
+    def getInstalledPackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
-        url = 'http://www.red-r.org/packages/' + redREnviron.version['REDRVERSION'] + '/packages.xml'
-        print url
-        self.urlOpener.retrieve(url, os.path.join(redREnviron.directoryNames['tempDir'], 'redRPachages.xml'))
-        fileDir = os.path.join(redREnviron.directoryNames['tempDir'], 'redRPachages.xml')
-        #fileDir = os.path.join(redREnviron.directoryNames['libraryDir'], 'testOnlinePackages.xml')
-        mainTabs = self.readXML(fileDir)
-        
+
         packageDict = {}
-        packageNodes = mainTabs.getElementsByTagName('Package')
-        for node in packageNodes:
-            name = self.getXMLText(node.getElementsByTagName('Name')[0].childNodes)
-            author = self.getXMLText(node.getElementsByTagName('Author')[0].childNodes)
-            summary = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
-            description = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
-            versions = self.getRedRPackagesVersions(node)
-            headVersion = self.getXMLText(node.getElementsByTagName('HeadVersion')[0].childNodes)
-            repository = self.getXMLText(node.getElementsByTagName('Repository')[0].childNodes)
+        for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+            if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+            and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+                continue
+    
+            packageXML = self.readXML(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))
             
-            packageDict[name] = {'Author':author, 'Summary':summary, 'Description':description, 'Repository':repository, 'Versions':versions, 'HeadVersion':headVersion}
+            packageDict[package] = self.parsePackageXML(packageXML)
             
-        print packageDict
+        
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(packageDict)
         return packageDict
-    def getRedRPackagesVersions(self, node):
-        versionDict = {}
-        for version in node.getElementsByTagName('Version'):
-            name = self.getXMLText(version.getElementsByTagName('Name')[0].childNodes)
-            stability = self.getXMLText(version.getElementsByTagName('Stability')[0].childNodes)
-            date = self.getXMLText(version.getElementsByTagName('Date')[0].childNodes)
-            
-            versionDict[name] = {'Stability':stability, 'Date':date}
-            
-        return versionDict
+        
+    def updatePackagesFromRepository(self):
+        url = self.repository + '/packages.xml'
+        file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+        from datetime import date
+        redREnviron.settings['red-RPackagesUpdated'] = today = date.today()
+        print url, file
+        self.urlOpener.retrieve(url, file)
+    
+    def getAvailablePackages(self):
+        ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
+        
+        file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
+        mainTabs = self.readXML(file)
+        packageDict = {}
+        for package in mainTabs.firstChild.childNodes:
+            if package.nodeType !=package.ELEMENT_NODE:
+                continue
+            packageDict[package.tagName] =  self.parsePackageXML(package)
+        
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(packageDict)        
+        return packageDict
         
     def getDiffPackages(self):
         ## returns a collection of packages that have been upgraded since the user last downloaded the packages
-        homePackages = self.getLocalPackages()
-        sitePackages = self.getRedRPackages()
+        self.localPackages = self.getInstalledPackages()
+        self.sitePackages = self.getAvailablePackages()
+        self.updatePackages = {}
         
-        updatePackages = {}
         ## loop through the package names and see what should be upgraded.
-        for name in homePackages.keys():
-            try:
-                spName = sitePackages[name]
-            except:  # this package must not be on Red-R.org any more.
+        for name,localPackage in self.localPackages.items():
+            # this package must not be on Red-R.org any more.
+            if name not in self.sitePackages.keys():
                 continue
-            if homePackages[name]['Version'] != spName['HeadVersion']:
-                updatePackages[name] = spName
-                updatePackages[name]['Version'] = homePackages[name]['Version']
-                updatePackages[name]['Stability'] = homePackages[name]['Stability']
-        print updatePackages
-        return (updatePackages, homePackages, sitePackages)
+            else:
+                remotePackage = self.sitePackages[name]
+
+            if localPackage['Version']['Number'] != remotePackage['Version']['Number']:
+                self.updatePackages[name] = {}
+                self.updatePackages[name]['new'] = remotePackage
+                self.updatePackages[name]['current'] = localPackage
+
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.updatePackages)        
+
+        return (self.updatePackages, self.localPackages, self.sitePackages)
         
-class PackageManagerDialog(redRGUI.dialog):
-    def __init__(self):
-        redRGUI.dialog.__init__(self, title = 'Package Manager')
+class packageManagerDialog(redRGUI.dialog):
+    def __init__(self,widget):
+        redRGUI.dialog.__init__(self,widget, title = 'Package Manager')
         
         self.setMinimumWidth(650)
-        self.packageManager = packageManager()
+        self.packageManager = packageManager
         
         ## GUI ##
-        
         #### set up a screen that will show a listbox of packages that are on the system that should be updated, 
         
         self.tabsArea = redRGUI.tabWidget(self)
@@ -299,156 +220,120 @@ class PackageManagerDialog(redRGUI.dialog):
         
         #### layout of the tabsArea
         self.treeViewUpdates = redRGUI.treeWidget(self.updatesTab, callback = self.updateItemClicked)  ## holds the tree view of all of the packages that need updating
+        self.treeViewUpdates.setHeaderLabels(['Package', 'Author', 'Summary', 
+        'Current Version', 'Current Version Stability', 'New Version', 'New Version Stability'])
+
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
-        self.treeViewUpdates.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.treeViewUpdates.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.infoViewUpdates = redRGUI.textEdit(self.updatesTab)  ## holds the info for a package
-        buttonArea = redRGUI.widgetBox(self.updatesTab, orientation = 'horizontal')
-        redRGUI.button(buttonArea, 'Install Updates', callback = self.installUpdates)
-        redRGUI.button(buttonArea, 'Show All Versions', callback = self.showAllVersions)
+        redRGUI.button(self.updatesTab, 'Install Updates', callback = self.installUpdates)
         
         self.treeViewInstalled = redRGUI.treeWidget(self.installedTab, callback = self.installItemClicked)
+        self.treeViewInstalled.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
+
         #self.treeViewInstalled.setSelectionModel(QItemSelectModel.Rows)
-        self.treeViewInstalled.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.treeViewInstalled.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.infoViewInstalled = redRGUI.textEdit(self.installedTab)
-        
         redRGUI.button(self.installedTab, 'Remove Packages', callback = self.uninstallPackages)
         
         self.treeViewAvailable = redRGUI.treeWidget(self.availableTab, callback = self.availableItemClicked)
+        self.treeViewAvailable.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
+
         #self.treeViewAvailable.setSelectionModel(QItemSelectModel.Rows)
-        self.treeViewAvailable.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.treeViewAvailable.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.infoViewAvailable = redRGUI.textEdit(self.availableTab)
-        buttonArea = redRGUI.widgetBox(self.availableTab, orientation = 'horizontal')
-        redRGUI.button(buttonArea, 'Install Packages', callback = self.installNewPackage)
-        redRGUI.button(buttonArea, 'Show All Versions', callback = self.showAllVersions)
+        redRGUI.button(self.availableTab, 'Install Packages', callback = self.installNewPackage)
         
         #### buttons and the like
         buttonArea2 = redRGUI.widgetBox(self)
-        redRGUI.button(buttonArea2, label = 'Reload Packages', callback = self.loadPackagesLists)
+        redRGUI.button(buttonArea2, label = 'Update from Repository', callback = self.loadPackagesLists)
         redRGUI.button(buttonArea2, label = 'Done', callback = self.accept)
-        
-        QObject.connect(self.treeViewAvailable, SIGNAL("clicked()"), self.accept)
-        QObject.connect(self.treeViewInstalled, SIGNAL("clicked()"), self.reject)
-        QObject.connect(self.treeViewUpdates, SIGNAL("clicked()"), self.accept)
-        
-        self.loadPackagesLists()
-    def showAllVersions(self):
-        ## reload the widgets but show all versions
-        if self.packageDicts:
-            self.setUpdates(self.packageDicts[0], showAll = True)
-            self.setAvailable(self.packageDicts[2], showAll = True)
-        else:
-            return
+        # self.show()
+        # self.loadPackagesLists(force=False)
     def installItemClicked(self, item1, item2):
-        try:
+        if item1:
             self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])
-        except:
-            self.infoViewInstalled.setHtml('No description available')
     def updateItemClicked(self, item1, item2):
-        try:
-            self.infoViewUpdates.setHtml(self.packageDicts[2][str(item1.text(0))]['Description'])
-        except:
-            self.infoViewUpdates.setHtml('No description available')
+        if item1:
+            self.infoViewUpdates.setHtml(self.availablePackages[str(item1.text(0))]['Description'])
     def availableItemClicked(self, item1, item2):
-        try:
-            self.infoViewAvailable.setHtml(self.packageDicts[2][str(item1.text(0))]['Description'])
-        except:
-            self.infoViewAvailable.setHtml('No description available')
-    def loadPackagesLists(self):
+        if item1:
+            self.infoViewAvailable.setHtml(self.availablePackages[str(item1.text(0))]['Description'])
+    def loadPackagesLists(self,force=True):
         #### get the pakcages that are on Red-R.org  we ask before we do this and record the xml so we only have to get it once.
-        #if redREnviron.checkInternetConnection():
-        if True:
-            mb = QMessageBox("Check Packages", "I need to go online to check for available packages.\nDo you want me to do this?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
-            if mb.exec_() == QMessageBox.Ok:
-                self.connectionOKGetTuple()
-                
-            else: self.noConnectGetLocal()
+        
+        if force:
+            self.packageManager.updatePackagesFromRepository()
         else:
-            self.noConnectGetLocal()
-    def connectionOKGetTuple(self):
-        self.packageDicts = self.packageManager.getDiffPackages()
-        self.localPackages = self.packageDicts[1]
+            from datetime import date
+            today = date.today()
+            diff =  today - redREnviron.settings['red-RPackagesUpdated']
+            if redREnviron.checkInternetConnection() and int(diff.days) > 1:
+                mb = QMessageBox("Update Package Repository", "Update package repository for Red-R.org?", 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton, self)
+                if mb.exec_() == QMessageBox.Ok:
+                    self.packageManager.updatePackagesFromRepository()
+            
+        (self.updates, self.localPackages, self.availablePackages) = self.packageManager.getDiffPackages()
+
         self.updatesTab.setEnabled(True)
         self.availableTab.setEnabled(True)
-        self.setUpdates(self.packageDicts[0])
-        self.setInstalled(self.packageDicts[1])
-        self.setAvailable(self.packageDicts[2])
-    def noConnectGetLocal(self):
-        self.packageDicts = None
-        self.localPackages = self.packageManager.getLocalPackages()
-        self.setUpdates(None)
-        self.setInstalled(self.localPackages)
-        self.setAvailable(None)
-        self.updatesTab.setEnabled(False)
-        self.availableTab.setEnabled(False)
+        self.setUpdates(self.updates)
+        self.setPackageList(self.treeViewInstalled, self.localPackages)
+        self.setPackageList(self.treeViewAvailable, self.availablePackages)
         
-    def setUpdates(self, dictionary, showAll = False):
+    def show(self):
+        self.loadPackagesLists(force=False)
+        redRGUI.dialog.show(self)
+    def exec_(self):
+        self.loadPackagesLists(force=False)
+        redRGUI.dialog.exec_(self)
+        
+    def setUpdates(self, packages):
         self.treeViewUpdates.clear()
-        self.treeViewUpdates.setHeaderLabels(['Package', 'Version', 'Type', 'Author', 'Summary', 'Stability'])
-        if dictionary != None:
-            ## there is something in the dict and we need to populate the treeview
-            for name in dictionary.keys(): ## move across the package names
-                newChild = redRGUI.treeWidgetItem(self.treeViewUpdates, [name, dictionary[name]['Version'], 'Installed', dictionary[name]['Author'], dictionary[name]['Summary'], dictionary[name]['Stability']])
-                if showAll:
-                    for version in self.packageDicts[2][name]['Versions'].keys():
-                        n = redRGUI.treeWidgetItem(stringList = [name, version, 'Available', self.packageDicts[2][name]['Versions'][version]['Stability'], self.packageDicts[2][name]['Versions'][version]['Date']])
-                        newChild.addChild(n)
+        if not packages:
+            return 
+        
+        for name,package in packages.items(): ## move across the package names
+            current = package['current']
+            new = package['new']
+            
+            line = [name, current['Author'], current['Summary'], 
+            current['Version']['Number'], current['Version']['Stability'],
+            new['Version']['Number'], new['Version']['Stability']]
+
+            newChild = redRGUI.treeWidgetItem(self.treeViewUpdates, line)
+            
                 
-    def setInstalled(self, dictionary):
-        self.treeViewInstalled.clear()
-        self.treeViewInstalled.setHeaderLabels(['Package', 'Version', 'Author', 'Summary', 'Stability', #'Used'
-        ])
-        if dictionary != None:
-            ## there is something in the dict and we need to populate the treeview
-            for name in dictionary.keys(): ## move across the package names
-                newChild = redRGUI.treeWidgetItem(self.treeViewInstalled, [str(name), str(dictionary[name]['Version']), str(dictionary[name]['Author']), str(dictionary[name]['Summary']), str(dictionary[name]['Stability']), #dictionary[name]['Used']
-                ])
-                
-    def setAvailable(self, dictionary, showAll = False):
-        self.treeViewAvailable.clear()
-        self.treeViewAvailable.setHeaderLabels(['Package', 'Version', 'Author/Stability', 'Summary/Date'])
-        if dictionary != None:
-            ## there is something in the dict and we need to populate the treeview
-            for name in dictionary.keys(): ## move across the package names
-                newChild = redRGUI.treeWidgetItem(self.treeViewAvailable, [name, 'HeadVersion', dictionary[name]['Author'], dictionary[name]['Summary'], 'Current Version'])
-                if showAll:
-                    for version in dictionary[name]['Versions'].keys(): ## move across all of the versions and show their name
-                        n = redRGUI.treeWidgetItem(stringList = [name, version, dictionary[name]['Versions'][version]['Stability'], dictionary[name]['Versions'][version]['Date']])
-                        newChild.addChild(n)
+    def setPackageList(self, view, packages):
+        ## there is something in the dict and we need to populate the treeview
+        view.clear()
+        if not packages:
+            return 
+        for name,package in packages.items(): ## move across the package names
+            line = [name, package['Author'], package['Summary'], 
+            package['Version']['Number'], package['Version']['Stability']]
+            newChild = redRGUI.treeWidgetItem(view, line)
+            
                     
     def installUpdates(self):
         ### move through the selected items in the updates page, get the RRP locations and install the rrp's for the packages.
         selectedItems = self.treeViewUpdates.selectedItems()
-        
+        if len(selectedItems) ==0: return
         ### make the download list
         downloadList = {}
-        for item in selectedItems:  ## move across the selected items, check if it is one of the sub pakcages or not, if so; put the version number in the downloadList, otherwise put the HeadVersion in the download List.  Collect the repository also.
+        for item in selectedItems:  
             name = str(item.text(0))
-            ## check if main package or not
-            if str(item.text(2)) == 'Installed': ## it's already installed so get the head version
-                ## pull the headVersion
-                headVersion = self.packageDicts[2][name]['HeadVersion']
-                repository = self.packageDicts[2][name]['Repository']
-            else:
-                headVersion = str(item.text(1))
-                repository = self.packageDicts[2][name]['Repository']
+            downloadList[name] = {'Version':str(item.text(5)), 'installed':False}
+        # print downloadList
+        self.askToInstall(downloadList,"Are you sure that you want to update these packages?")
                 
-            if name in downloadList:
-                mb = QMessageBox("Install Package Question", "You already have a version of this set to download.\nDo you want to replace\n\n"+str(downloadList[name]['HeadVersion'])+"\n\nwith\n\n"+str(headVersion), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
-                if mb.exec_() == QMessageBox.Ok:
-                    downloadList[name] = {'HeadVersion':headVersion, 'Repository':repository}
-                    
-            else:
-                downloadList[name] = {'HeadVersion':headVersion, 'Repository':repository}
-        mb = QMessageBox("Install Package Question", "Are you sure that you want to install these packages?\n\n"+"\n".join(downloadList.keys()), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
-        if mb.exec_() != QMessageBox.Ok:
-            return
-        ## resolve the packages
-        for name in downloadList.keys():  # move across all of the packages and download
-            if not self.packageManager.resolveRRPDependencies([str(name)+'/'+str(downloadList[name]['HeadVersion'])], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
-                QMessageBox.information(None, "Install Package Information", "There was a problem with getting package "+name+".\nI'm going to get the rest of the packages but just wanted to let you know.\nYou can always try to download again if you lost the internet connection.", QMessageBox.Ok)
     def uninstallPackages(self):
         ## collect the packages that are selected.  Make sure that base isn't in the uninstall list.  Ask the user if he is sure that the files should be uninstalled, uninstall the packages (remove the files).
         selectedItems = self.treeViewInstalled.selectedItems()
+        if len(selectedItems) ==0: return
+
         uninstallList = []
         for item in selectedItems:
             name = str(item.text(0))
@@ -456,40 +341,99 @@ class PackageManagerDialog(redRGUI.dialog):
                 QMessageBox.information(self, "Deleting Base", "You are not allowed to delete base.", QMessageBox.Ok)
                 continue
             uninstallList.append(name)
-            
-        mb = QMessageBox("Uninstall Pakcages", "Are you sure that you want to uninstall these packages?\n\n"+"\n".join(uninstallList), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+        if len(uninstallList) ==0: return
+        
+        mb = QMessageBox("Uninstall Packages", "Are you sure that you want to uninstall these packages?\n\n"+
+        "\n".join(uninstallList), QMessageBox.Information, 
+        QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
+        
         if mb.exec_() != QMessageBox.Ok:
             return
             
         import shutil
         for name in uninstallList:
             shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], name), True)
-            ### remove the package from the packages xml!!!
-    def installNewPackage(self):
-        selectedItems = self.treeViewAvailable.selectedItems()
-        downloadList = {}
-        for item in selectedItems:
-            name = str(item.text(0))
-            if str(item.text(1)) == 'HeadVersion': ## it's already installed so get the head version
-                ## pull the headVersion
-                headVersion = self.packageDicts[2][name]['HeadVersion']
-                repository = self.packageDicts[2][name]['Repository']
-            else:
-                headVersion = str(item.text(1))
-                repository = self.packageDicts[2][name]['Repository']
-                
-            if name in downloadList:
-                mb = QMessageBox("Install Package Question", "You already have a version of this set to download.\nDo you want to replace\n\n"+str(downloadList[name]['HeadVersion'])+"\n\nwith\n\n"+str(headVersion), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
-                if mb.exec_() == QMessageBox.Ok:
-                    downloadList[name] = {'HeadVersion':headVersion, 'Repository':repository}
-                    
-            else:
-                downloadList[name] = {'HeadVersion':headVersion, 'Repository':repository}
         
-        mb = QMessageBox("Install Package Question", "Are you sure that you want to install these packages?\n\n"+"\n".join(downloadList.keys()), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+        qApp.canvasDlg.reloadWidgets()
+        self.loadPackagesLists()
+    
+    def askToInstall(self,packages,msg):
+        deps = self.packageManager.getDependencies(packages)
+        
+        msg = msg + "\nPackages:\n--" + "\n--".join(packages.keys())
+        if len(deps.keys()) > 0:
+            msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
+            
+        mb = QMessageBox("Install Packages", msg, 
+        QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+        QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
         if mb.exec_() != QMessageBox.Ok:
             return
+
         ## resolve the packages
-        for name in downloadList.keys():  # move across all of the packages and download
-            if not self.packageManager.resolveRRPDependencies([str(name)+'/'+str(downloadList[name]['HeadVersion'])], downloadList[name]['Repository'], dontAsk = True):  ## the user has already committed so we go ahead
-                QMessageBox.information(None, "Install Package Information", "There was a problem with getting package "+name+".\nI'm going to get the rest of the packages but just wanted to let you know.\nYou can always try to download again if you lost the internet connection.", QMessageBox.Ok)
+        packages.update(deps)
+        print packages
+        results = self.packageManager.downloadPackages(packages)
+        self.loadPackagesLists()
+        self.tabsArea.setCurrentIndex(1)
+    
+    
+    def installNewPackage(self):
+        selectedItems = self.treeViewAvailable.selectedItems()
+        if len(selectedItems) ==0: return
+        downloadList = {}
+        for item in selectedItems:  
+            name = str(item.text(0))
+            downloadList[name] = {'Version':str(item.text(3)), 'installed':False}
+
+        self.askToInstall(downloadList,"Are you sure that you want to install these packages?")
+
+    def installPackageFromFile(self,filename):
+        package = self.packageManager.getPackageInfo(filename)
+        
+        if package['Name'] in self.localPackages.keys() and self.localPackages[package]['Version']['Number'] == package['Version']['Number']: 
+            mb = QMessageBox("Install Package", 'Package "'+package['Name']+
+            '" is already installed. Do you want to remove the current version and continue installation?', 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
+            if mb.exec_() != QMessageBox.Ok:
+                return
+
+            
+        downloadList = {}
+        downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+        deps = self.packageManager.getDependencies(downloadList)
+        
+        notFound = []
+        download = {}
+        for name,version in deps.items():
+            if name in self.availablePackages.keys() and version['Version'] == self.availablePackages[name]['Version']['Number']:
+                download[name] = version
+            else:
+                notFound.append(name)
+        if len(notFound) > 0:
+            mb = QMessageBox.warning(self,"Install Package", 
+            'The following packages are required but not found in the Red-R.org repository. Installation will not proceed.\n\n--'+
+            '\n--'.join(notFound),
+            QMessageBox.Ok)
+            return
+        else:
+            msg = "Are you sure that you want to install this package and its dependencies?\nPackage:\n--" + package['Name']
+            if len(download.keys()) > 0:
+                msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
+                
+            mb = QMessageBox("Install Package", msg, 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
+            if mb.exec_() != QMessageBox.Ok:
+                return
+        
+        self.packageManager.installRRP(package['Name'], filename)
+        if len(download.keys()) > 0:
+            results = self.packageManager.downloadPackages(download)
+        else: #need to do this to refresh the widget tree
+            qApp.canvasDlg.reloadWidgets()
+        self.loadPackagesLists()
+        
+
+packageManager = packageManager()
