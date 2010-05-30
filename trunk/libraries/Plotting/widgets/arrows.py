@@ -1,9 +1,9 @@
 """
-<name>arrows</name>
+<name>Arrow</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>graphics:arrows</RFunctions>
 <tags>Prototypes</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>icons/plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 
