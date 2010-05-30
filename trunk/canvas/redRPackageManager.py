@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import xml.dom.minidom
 import redRGUI, orngOutput
-import xmlToDict, pprint
+import pprint
 import xml.etree.ElementTree as etree
 
 
