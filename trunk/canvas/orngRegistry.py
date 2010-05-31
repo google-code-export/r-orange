@@ -83,9 +83,6 @@ def readCategories():
     cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
         splashWindow.hide()
-    if widgetsWithError != []:
-        print "The following widgets could not be imported and will not be available: " + ", ".join(widgetsWithError)
-        widgetsWithError = []
     return categories ## return the widgets and the templates
 
 hasErrors = False
@@ -260,23 +257,25 @@ def readTemplates(directory, package, cachedWidgetDescriptions):
     return templates
 def loadPackage(package):
     print package
-    #downloadList = [package['Name']]
-    print package['Dependencies']
-    # downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
-    # deps = redRPackageManager.packageManager.getDependencies(downloadList)
-    # downloadList.update(deps)
-    if not hasattr(redRGUI,package['Name']):
-        redRGUI.registerQTWidgets(package['Name'])
-    if not hasattr(signals,package['Name']):
-        signals.registerRedRSignals(package['Name'])
+    downloadList = {}
+    downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+    deps = redRPackageManager.packageManager.getDependencies(downloadList)
+    downloadList.update(deps)
+    # print downloadList
+    for name,version in downloadList.items():
+        if package =='base': continue
+        if not hasattr(redRGUI,name):
+            redRGUI.registerQTWidgets(name)
+        if not hasattr(signals,name):
+            signals.registerRedRSignals(name)
     
-    for name1 in package['Dependencies']:
-        name = name1.strip()
-        if name == 'base': continue
-        if name in redRPackageManager.packageManager.localPackages:
-            loadPackage(redRPackageManager.packageManager.localPackages[name])
-        else:
-            print 'You don\'t have package '+name+' please download using Package Manager.'
+    # for name1 in package['Dependencies']:
+        # name = name1.strip()
+        # if name == 'base': continue
+        # if name in redRPackageManager.packageManager.localPackages:
+            # loadPackage(redRPackageManager.packageManager.localPackages[name])
+        # else:
+            # print 'You don\'t have package '+name+' please download using Package Manager.'
     
     
     

@@ -4,7 +4,7 @@ import os, sys, redREnviron, urllib, zipfile, traceback
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import xml.dom.minidom
-import redRGUI, orngOutput
+import redRGUI, orngOutput,re 
 import pprint
 import xml.etree.ElementTree as etree
 
@@ -13,8 +13,8 @@ import xml.etree.ElementTree as etree
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['REDRVERSION'] 
-        self.version = redREnviron.version['REDRVERSION']
+        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['VERSION'] 
+        self.version = redREnviron.version['VERSION']
         (self.updatePackages, self.localPackages, self.sitePackages) = self.getDiffPackages()
         
     def installRRP(self,packageName,filename):
@@ -82,11 +82,9 @@ class packageManager:
         for name, package in packages.items():
             # print 'name', name
             # print len(self.sitePackages[name]['Dependencies']), self.sitePackages[name]['Dependencies']
-            if (name in self.sitePackages.keys() and self.sitePackages[name]['Version']['Number'] == package['Version'] 
-            and len(self.sitePackages[name]['Dependencies'])):
+            if (name in self.sitePackages.keys() and len(self.sitePackages[name]['Dependencies'])):
                 for dep in self.sitePackages[name]['Dependencies']:
-                    if (dep['Package'] in self.localPackages.keys() 
-                    and self.localPackages[dep['Package']]['Version']['Number'] == dep['Version']): 
+                    if (dep['Package'] in self.localPackages.keys()): 
                         installed=True
                     else:
                         installed=False
@@ -117,7 +115,10 @@ class packageManager:
         packageDict['License'] = self.getXMLText(node.getElementsByTagName('License')[0].childNodes)
         
         deps = self.getXMLText(node.getElementsByTagName('Dependencies')[0].childNodes)
-        packageDict['Dependencies'] = deps.split(',')
+        if (deps.lower() == 'none' or deps.lower() == 'base' or deps.lower() == ''):
+            packageDict['Dependencies'] = []
+        else:
+            packageDict['Dependencies'] = deps.split(',')
         # for dep in deps.childNodes:
             # if dep.nodeType !=dep.ELEMENT_NODE:
                 # continue
@@ -157,6 +158,7 @@ class packageManager:
         return packageDict
         
     def updatePackagesFromRepository(self):
+        print '|#| updatePackagesFromRepository'
         url = self.repository + '/packages.xml'
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         from datetime import date
@@ -271,12 +273,19 @@ class packageManagerDialog(redRGUI.dialog):
         
         if force:
             self.packageManager.updatePackagesFromRepository()
+            self.tabsArea.setCurrentIndex(2)
+
+            ask=False
+        elif self.packageManager.sitePackages == None or redREnviron.settings['red-RPackagesUpdated'] == 0:
+            ask=True
         else:
             from datetime import date
             today = date.today()
             diff =  today - redREnviron.settings['red-RPackagesUpdated']
-            
-            if (redREnviron.checkInternetConnection() and int(diff.days) > 1) or self.packageManager.sitePackages == None:
+            if int(diff.days) > 10: ask=True
+            else: ask=False
+        
+        if ask and redREnviron.checkInternetConnection():
                 if self.isHidden:
                     parent = qApp.canvasDlg
                 else:
@@ -286,6 +295,7 @@ class packageManagerDialog(redRGUI.dialog):
                 QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton, parent)
                 if mb.exec_() == QMessageBox.Ok:
                     self.packageManager.updatePackagesFromRepository()
+                    self.tabsArea.setCurrentIndex(2)
             
         (self.updates, self.localPackages, self.availablePackages) = self.packageManager.getDiffPackages()
 
@@ -367,7 +377,7 @@ class packageManagerDialog(redRGUI.dialog):
             shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], name), True)
         
         qApp.canvasDlg.reloadWidgets()
-        self.loadPackagesLists()
+        self.loadPackagesLists(force=False)
     
     def askToInstall(self,packages,msg):
         deps = self.packageManager.getDependencies(packages)

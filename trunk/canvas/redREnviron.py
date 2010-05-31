@@ -57,8 +57,8 @@ def checkInternetConnection():
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(canvasSettingsDir, dirNumber):
-    print 'setting temp dir'
-    print dirNumber
+    # print 'setting temp dir'
+    # print dirNumber
     try:  # try to make the canvas temp dir.  This should work but I would be cautious given the problems with the Vista system.
         if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp')):
             os.mkdir(os.path.join(canvasSettingsDir, 'temp'))
@@ -172,7 +172,6 @@ directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
 version = {}
 version = getVersion()
-print version
 settings = loadSettings()
 
 

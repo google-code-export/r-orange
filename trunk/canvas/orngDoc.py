@@ -311,9 +311,11 @@ class SchemaDoc(QWidget):
         self.signalManager.removeWidget(widget.instance) # sending occurs before this point
         widget.remove()
         self.widgets.remove(widget)
-        import gc
-        gc.collect()
-        print 'Remaining references '+str(gc.get_referrers(widget))
+        
+        # import gc
+        # gc.collect()
+        # print 'Remaining references to '+str(gc.get_referrers(widget))
+        # print 'Remaining references from '+str(gc.get_referents(widget))
         #orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
 
     def clear(self):
@@ -426,6 +428,47 @@ class SchemaDoc(QWidget):
         if os.path.splitext(str(name))[0] == '': return False
         if os.path.splitext(str(name))[1].lower() != ".rrts": name = name + '.rrts'
         return self.save(str(name),template=True)
+  
+    def toZip(self, file, filename):
+        zip_file = zipfile.ZipFile(filename, 'w')
+        if os.path.isfile(file):
+            zip_file.write(file)
+        else:
+            self.addFolderToZip(zip_file, file)
+        zip_file.close()
+
+    def addFolderToZip(self, zip_file, folder): 
+        for file in os.listdir(folder):
+            full_path = os.path.join(folder, file)
+            if os.path.isfile(full_path):
+                print 'File added: ' + str(full_path)
+                zip_file.write(full_path)
+            elif os.path.isdir(full_path):
+                print 'Entering folder: ' + str(full_path)
+                self.addFolderToZip(zip_file, full_path)  
+    def addFolderToZip(self,myZipFile,folder):
+        import glob
+        folder = folder.encode('ascii') #convert path to ascii for ZipFile Method
+        for file in glob.glob(folder+"/*"):
+                if os.path.isfile(file):
+                    print file
+                    myZipFile.write(file, os.path.basename(file), zipfile.ZIP_DEFLATED)
+                elif os.path.isdir(file):
+                    addFolderToZip(myZipFile,file)
+
+    def createZipFile(self,zipFilename,files,folders):
+        
+        myZipFile = zipfile.ZipFile( zipFilename, "w" ) # Open the zip file for writing 
+        for file in files:
+            file = file.encode('ascii') #convert path to ascii for ZipFile Method
+            if os.path.isfile(file):
+                (filepath, filename) = os.path.split(file)
+                myZipFile.write( file, filename, zipfile.ZIP_DEFLATED )
+
+        for folder in  folders:   
+            self.addFolderToZip(myZipFile,folder)  
+        myZipFile.close()
+        return (1,zipFilename)
         
     # save the file
     def save(self, filename = None,template = False):
@@ -540,21 +583,16 @@ class SchemaDoc(QWidget):
             progressBar.setValue(progress)
 
             RSession.Rcommand('save.image("' + tempR + '")')  # save the R data
-            zout = zipfile.ZipFile(filename, "w")  # create a zip file
-            for fname in os.listdir(redREnviron.directoryNames['tempDir']):  # collect the files that are in the tempDir and save them into the zip file.
-                zout.write(os.path.join(redREnviron.directoryNames['tempDir'], fname))
-            zout.close()  # close the zipfile (this is the .rrs)
-            # os.remove(tempR)
-            # os.remove(tempschema)
             print 'image saved.'
+            self.createZipFile(filename,[],[redREnviron.directoryNames['tempDir']])# collect the files that are in the tempDir and save them into the zip file.
         else :
             tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
             file = open(tempschema, "wt")
             file.write(xmlText)
             file.close()
             zout = zipfile.ZipFile(filename, "w")
-            zout.write(tempschema)
-            zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'))
+            zout.write(tempschema,"tempSchema.tmp")
+            zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'),'settings.pickle')
             zout.close()
             doc.unlink()
             
