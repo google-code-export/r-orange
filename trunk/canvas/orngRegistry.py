@@ -27,7 +27,7 @@ class WidgetCategory(dict):
         self.update(widgets)
         self.directory = directory
 
-        
+AllPackages = {}
 def readCategories():
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
@@ -59,7 +59,8 @@ def readCategories():
         package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
         
         # we read in all the widgets in dirName, directory in the directories
-        widgets = readWidgets(os.path.join(directory,'widgets'), package, cachedWidgetDescriptions)  
+        widgets = readWidgets(os.path.join(directory,'widgets'), package, cachedWidgetDescriptions)  ## calls an internal function
+        AllPackages[package['Name']] = package
         if mainTabs.getElementsByTagName('menuTags'):
             newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
             for tag in newTags:
@@ -258,15 +259,25 @@ def readTemplates(directory, package, cachedWidgetDescriptions):
         
     return templates
 def loadPackage(package):
-    downloadList = {}
-    downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
-    deps = redRPackageManager.packageManager.getDependencies(downloadList)
-    downloadList.update(deps)
-    for name in downloadList.keys():
-        if not hasattr(redRGUI,name):
-            redRGUI.registerQTWidgets(name)
-        if not hasattr(signals,name):
-            signals.registerRedRSignals(name)
+    print package
+    #downloadList = [package['Name']]
+    print package['Dependencies']
+    # downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+    # deps = redRPackageManager.packageManager.getDependencies(downloadList)
+    # downloadList.update(deps)
+    if not hasattr(redRGUI,package['Name']):
+        redRGUI.registerQTWidgets(package['Name'])
+    if not hasattr(signals,package['Name']):
+        signals.registerRedRSignals(package['Name'])
+    
+    for name1 in package['Dependencies']:
+        name = name1.strip()
+        if name == 'base': continue
+        if name in redRPackageManager.packageManager.localPackages:
+            loadPackage(redRPackageManager.packageManager.localPackages[name])
+        else:
+            print 'You don\'t have package '+name+' please download using Package Manager.'
+    
     
     
 ### we really need to change this...

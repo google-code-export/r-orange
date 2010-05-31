@@ -89,6 +89,8 @@ def registerRedRSignals(package):
         guiClass = os.path.basename(filename).split('.')[0]
         RedRSignals.append(guiClass)
         c = forname(guiClass,guiClass)
+        print c, 'forname return'
+        print package, 'package'
         c.__dict__['__package__'] = package
         setattr(m, guiClass,c)
     setattr(current_module,package,m)

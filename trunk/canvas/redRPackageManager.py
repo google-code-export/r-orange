@@ -116,15 +116,15 @@ class packageManager:
         packageDict['Author'] = self.getXMLText(node.getElementsByTagName('Author')[0].childNodes)
         packageDict['License'] = self.getXMLText(node.getElementsByTagName('License')[0].childNodes)
         
-        deps = node.getElementsByTagName('Dependencies')[0]
-        packageDict['Dependencies'] = []
-        for dep in deps.childNodes:
-            if dep.nodeType !=dep.ELEMENT_NODE:
-                continue
+        deps = self.getXMLText(node.getElementsByTagName('Dependencies')[0].childNodes)
+        packageDict['Dependencies'] = deps.split(',')
+        # for dep in deps.childNodes:
+            # if dep.nodeType !=dep.ELEMENT_NODE:
+                # continue
 
-            packageDict['Dependencies'].append({
-            'Package': self.getXMLText(dep.getElementsByTagName('Package')[0].childNodes),
-            'Version': self.getXMLText(dep.getElementsByTagName('Version')[0].childNodes)})
+            # packageDict['Dependencies'].append({
+            # 'Package': self.getXMLText(dep.getElementsByTagName('Package')[0].childNodes),
+            # 'Version': self.getXMLText(dep.getElementsByTagName('Version')[0].childNodes)})
             
         packageDict['Summary'] = self.getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
         packageDict['Description'] = self.getXMLText(node.getElementsByTagName('Description')[0].childNodes)
