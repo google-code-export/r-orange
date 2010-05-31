@@ -15,7 +15,7 @@ class mathWidget(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Math", wantMainArea = 0, resizingEnabled = 1)
         
         self.counter = 1
-        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide']
+        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match']
         
         self.inputs = [('Data Frame', signals.RDataFrame, self.gotData)]
         self.outputs = [('Data Frame', signals.RDataFrame)]
@@ -90,7 +90,8 @@ class mathWidget(OWRpy):
                 if str(self.dialogBottomLineEdit.text()) != '':
                     bottomText = str(self.dialogBottomLineEdit.text())
                     try:
-                        a = float(bottomText)
+                        if str(self.dialogLabel.text()) not in ['match']:
+                            a = float(bottomText)
                     except:
                         self.status.setText('Top Text Area Does Not Contain A Number')
                         return
@@ -101,34 +102,41 @@ class mathWidget(OWRpy):
             
             if function in ['log10', 'log2']:
                 try:
-                    self.R(self.data+'$'+function+'_'+topText+'_'+str(self.counter)+'<-'+function+'('+topText+')')
+                    self.R(self.data+'$'+function+'_'+str(self.dialogLabel.text())+'_'+str(self.counter)+'<-'+function+'('+topText+')')
                     self.table.setRTable(self.data)
                     self.counter += 1
                 except:
                     self.status.setText('An error occured in your function')
                     
+            elif function in ['match']:
+                try:
+                    self.R(self.data+'$'+function+'_'+str(self.dialogLabel.text())+'_'+str(self.counter)+'<-'+function+'('+topText+', levels('+topText+'))')
+                    self.table.setRTable(self.data)
+                    self.counter += 1
+                except:
+                    self.status.setText('An error occured in your function')
             else:
                 if function == 'add':
                     try:
-                        self.R(self.data+'$'+function+str('_'+topText+'_plus_'+bottomText)+str(self.counter)+'<-'+topText+' + '+bottomText)
+                        self.R(self.data+'$'+function+str('_'+str(self.dialogLabel.text())+'_plus_'+bottomText)+str(self.counter)+'<-'+topText+' + '+bottomText)
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'subtract':
                     try:
-                        self.R(self.data+'$'+function+str('_'+topText+'_minus_'+bottomText)+str(self.counter)+'<-'+topText+' - '+bottomText)
+                        self.R(self.data+'$'+function+str('_'+str(self.dialogLabel.text())+'_minus_'+bottomText)+str(self.counter)+'<-'+topText+' - '+bottomText)
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'multiply':
                     try:
-                        self.R(self.data+'$'+function+str('_'+topText+'_times_'+bottomText)+str(self.counter)+'<-'+topText+' * '+bottomText)
+                        self.R(self.data+'$'+function+str('_'+str(self.dialogLabel.text())+'_times_'+bottomText)+str(self.counter)+'<-'+topText+' * '+bottomText)
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'divide':
                     try:
-                        self.R(self.data+'$'+function+str('_'+topText+'_divide_'+bottomText)+str(self.counter)+'<-'+topText+' + '+bottomText)
+                        self.R(self.data+'$'+function+str('_'+str(self.dialogLabel.text())+'_divide_'+bottomText)+str(self.counter)+'<-'+topText+' / '+bottomText)
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
