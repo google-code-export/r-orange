@@ -32,10 +32,8 @@ class plot(OWRpy):
         if data:
             self.plotAttributes[id[0].widgetID] = data.getData()
         else:
-            try:
-                del self.plotAttributes[id[0].widgetID]
-            except:
-                pass
+            print 'removing signal '+str(id[0])
+            self.plotAttributes[id[0].widgetID = None
     def processx(self, data):
         if data:
             self.data = data
@@ -83,5 +81,6 @@ class plot(OWRpy):
 
         self.Rplot('plot('+str(self.RFunctionParam_x)+inj+')')
         for name in self.plotAttributes.keys():
-            self.R(self.plotAttributes[name])
+            if self.plotAttributes[name] != None:
+                self.R(self.plotAttributes[name])
 

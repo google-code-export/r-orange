@@ -322,6 +322,7 @@ class SignalManager:
                     if not self.freezing and not self.signalProcessingInProgress: 
                         self.processNewSignals(widgetFrom)
                         #print 'processing signals'
+        
         widgetTo.removeInputConnection(widgetFrom, signalNameTo)
 
 

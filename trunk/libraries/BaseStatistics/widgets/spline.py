@@ -1,9 +1,10 @@
 """
 <name>spline</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<Description>Generates a spline fit to X, Y data.  This can be used for plotting or for interogating the splines.</Description>
 <RFunctions>stats:spline</RFunctions>
 <tags>Prototypes</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>icons/plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 
