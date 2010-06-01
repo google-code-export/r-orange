@@ -1,13 +1,13 @@
-<base>
+<package>
     <Name>Plotting</Name>
     <Author>Kyle R Covington kyle@red-r.org</Author>
     <Version>
-        <Number>Plotting-1.rrp</Number>
+        <Number>1</Number>
         <Stability>Generally Good Some Experimental</Stability>
         <Date>2010-05-30</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
-    <Dependencies>None</Dependencies>
+    <Dependencies></Dependencies>
     <Red-RVersion>Red-R-1.7</Red-RVersion>
     <Summary>Plotting widgets and signals</Summary>
     <Description>Package contains plotting widgets and signals.  Some of these may include non-R based plotting tools that make use of Python plotting libraries.  In general, most R objects can be plotted using Generic Plot, though this is not guaranteed.</Description>
@@ -16,4 +16,4 @@
             <Description>Visualizing Data</Description>
         </group>
     </menuTags>
-</base>
+</package>

@@ -90,14 +90,14 @@ class RDataTable(OWRpy):
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #boxSettings = redRGUI.groupBox(self.advancedOptions, label = "Settings")
         
-
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
-        self.setRvariableNames(['x'])
-        self.R(self.Rvariables['x'] + '<- data.frame(rnorm(500000),rnorm(500000))')
-        self.table.setRTable(self.Rvariables['x'])
-        self.table.show()
-        for x in self.findChildren(QAbstractTableModel):
-            print 'in table', x
+        
+        # self.setRvariableNames(['x'])
+        # self.R(self.Rvariables['x'] + '<- data.frame(rnorm(500000),rnorm(500000))')
+        # self.table.setRTable(self.Rvariables['x'])
+        # self.table.show()
+        # for x in self.findChildren(QAbstractTableModel):
+            # print 'in table', x
 
     def customWidgetDelete(self):
         print 'start'

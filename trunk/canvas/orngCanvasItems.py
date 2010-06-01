@@ -304,13 +304,13 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.instance.linksOut.clear()      # this helps python to more quickly delete the unused objects
                 self.instance.linksIn.clear()
                 self.instance.onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
-                for x in self.instance.findChildren(QAbstractTableModel):
-                    print 'in canvasItems', x
+                # for x in self.instance.findChildren(QAbstractTableModel):
+                    # print 'in canvasItems', x
                 print 'delete instance' 
                 sip.delete(self.instance)
                 print '###################################' 
-                for x in self.canvasDlg.findChildren(QAbstractTableModel):
-                    print x
+                # for x in self.canvasDlg.findChildren(QAbstractTableModel):
+                    # print x
                 # import gc
                 # gc.collect()
                 # print 'Remaining references to '+str(gc.get_referrers(self.instance))

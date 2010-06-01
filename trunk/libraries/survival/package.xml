@@ -1,13 +1,13 @@
-<base>
+<package>
     <Name>survival</Name>
     <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
     <Version>
-        <Number>survival-1.rrp</Number>
+        <Number>1</Number>
         <Stability>Good</Stability>
         <Date>2010-05-30</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
-    <Dependencies>None</Dependencies>
+    <Dependencies></Dependencies>
     <Red-RVersion>Red-R-1.7</Red-RVersion>
     <Summary>Widgets for making and analyzing survival data</Summary>
     <Description>Supports making and comparing survival data.  Widgets exist for making survival curves using the Kaplan-Meyer method, comparing groups using the log-rank method or the Cox method, and interogating survival fits.</Description>
@@ -18,4 +18,4 @@
             </group>
         </group>
     </menuTags>
-</base>
+</package>

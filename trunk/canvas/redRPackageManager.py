@@ -15,7 +15,7 @@ class packageManager:
         self.urlOpener = urllib.FancyURLopener()
         self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['VERSION'] 
         self.version = redREnviron.version['VERSION']
-        (self.updatePackages, self.localPackages, self.sitePackages) = self.getDiffPackages()
+        (self.updatePackages, self.localPackages, self.sitePackages) = self.getPackages()
         
     def installRRP(self,packageName,filename):
 
@@ -166,15 +166,31 @@ class packageManager:
         print url, file
         self.urlOpener.retrieve(url, file)
     
+    def createAvailablePackagesXML(self):
+        xml = '<packages>'
+        for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+            if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+            and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+                f = open(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'),'r')
+                xml = xml + '\n' + f.read()
+                f.close()
+        
+        f = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml'),'w')
+        f.write(xml + '\n</packages>')
+        f.close()
+
     def getAvailablePackages(self):
         ## moves through the local package file and returns a dict of packages with version, stability, update date, etc
         
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
-        if not os.path.isfile(file): return None
-        mainTabs = self.readXML(file)
-        if mainTabs == None: return None
+        if not os.path.isfile(file):
+            self.createAvailablePackagesXML()
+        packages = self.readXML(file)
+        if packages == None: 
+            self.createAvailablePackagesXML()
+        
         packageDict = {}
-        for package in mainTabs.firstChild.childNodes:
+        for package in packages.firstChild.childNodes:
             if package.nodeType !=package.ELEMENT_NODE:
                 continue
             packageDict[package.tagName] =  self.parsePackageXML(package)
@@ -183,7 +199,7 @@ class packageManager:
         # pp.pprint(packageDict)        
         return packageDict
         
-    def getDiffPackages(self):
+    def getPackages(self):
         ## returns a collection of packages that have been upgraded since the user last downloaded the packages
         self.localPackages = self.getInstalledPackages()
         self.sitePackages = self.getAvailablePackages()
@@ -295,7 +311,7 @@ class packageManagerDialog(redRGUI.dialog):
                     self.packageManager.updatePackagesFromRepository()
                     self.tabsArea.setCurrentIndex(2)
             
-        (self.updates, self.localPackages, self.availablePackages) = self.packageManager.getDiffPackages()
+        (self.updates, self.localPackages, self.availablePackages) = self.packageManager.getPackages()
 
         self.updatesTab.setEnabled(True)
         self.availableTab.setEnabled(True)

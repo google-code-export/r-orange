@@ -1,4 +1,4 @@
-<affy>
+<package>
     <Name>affy</Name>
     <Author>Kyle R Covington kyle@red-r.org and Anup Parikh anup@red-r.org</Author>
     <Version>
@@ -6,7 +6,7 @@
         <Stability>Good</Stability>
         <Date>2010-05-12</Date>
     </Version>
-    <Dependencies>None</Dependencies>
+    <Dependencies></Dependencies>
     <Red-RVersion>Red-R-1.7</Red-RVersion>
     <Summary>Affymetrix microarray analysis.</Summary>
     <Description>Widgets for reading in and manipulating Affymetrix gene expression microarray data using the Bioconductor packages.</Description>
@@ -19,4 +19,4 @@
                 </group>
             </group>
     </menuTags>
-</affy>
+</package>

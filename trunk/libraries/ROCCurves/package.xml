@@ -1,4 +1,4 @@
-<ROCCurves>
+<package>
     <Name>ROCCurves</Name>
     <Author>Kyle R Covington kyle@red-r.org</Author>
     <Version>
@@ -7,7 +7,7 @@
         <Date>2010-05-12</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
-    <Dependencies>None</Dependencies>
+    <Dependencies></Dependencies>
     <Red-RVersion>Red-R-1.7</Red-RVersion>
     <Summary>Generates ROC Curves.</Summary>
     <Description>Generates ROC Curves.</Description>
@@ -18,4 +18,4 @@
             </group>
         </group>
     </menuTags>
-</ROCCurves>
+</package>
