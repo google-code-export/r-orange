@@ -27,7 +27,7 @@ class widgetSession():
         import re
         settings = {}
         if self.saveSettingsList:  ## if there is a saveSettingsList then we just append the required elements to it.
-            allAtts = self.settingsList + self.requiredAtts
+            allAtts = self.saveSettingsList + self.requiredAtts
         else:
             allAtts = self.__dict__
         self.progressBarInit()

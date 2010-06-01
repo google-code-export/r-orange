@@ -84,7 +84,7 @@ class widgetMaker(OWRpy):
         import redREnviron, orngRegistry
         widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
-        path = widgetDirName +  "\\base\\widgets\\" + self.functionName.text().replace('.', '_') + ".py"
+        path = widgetDirName +  "\\base\\widgets\\RedR" + self.functionName.text().replace('.', '_') + ".py"
         #print 'path:' + path
         file = open(os.path.abspath(path), "wt")
         tmpCode = self.completeCode
@@ -219,7 +219,7 @@ class widgetMaker(OWRpy):
         
     def makeHeader(self):
         self.headerCode = '"""\n'
-        self.headerCode += '&lt;name&gt;'+self.functionName.text()+'&lt;/name&gt;\n'
+        self.headerCode += '&lt;name&gt;RedR'+self.functionName.text()+'&lt;/name&gt;\n'
         self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
         self.headerCode += '&lt;RFunctions&gt;'+self.packageName.text()+':'+self.functionName.text()+'&lt;/RFunctions&gt;\n'
         self.headerCode += '&lt;tags&gt;Prototypes&lt;/tags&gt;\n'
@@ -230,7 +230,7 @@ class widgetMaker(OWRpy):
         
     def makeInitHeader(self):
         self.initCode = ''
-        self.initCode += 'class '+self.functionName.text().replace('.', '_')+'(OWRpy): \n'
+        self.initCode += 'class RedR'+self.functionName.text().replace('.', '_')+'(OWRpy): \n'
         self.initCode += '\tsettingsList = []\n'
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
 
