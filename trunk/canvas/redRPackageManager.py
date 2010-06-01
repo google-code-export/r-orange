@@ -13,8 +13,8 @@ import xml.etree.ElementTree as etree
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['VERSION'] 
-        self.version = redREnviron.version['VERSION']
+        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['REDRVERSION'] 
+        self.version = redREnviron.version['REDRVERSION']
         (self.updatePackages, self.localPackages, self.sitePackages) = self.getPackages()
         
     def installRRP(self,packageName,filename):

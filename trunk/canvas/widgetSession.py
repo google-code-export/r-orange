@@ -56,8 +56,9 @@ class widgetSession():
     def getInputs(self):
         if self.inputs and len(self.inputs) != 0:
             ainputs = []
-            for (a, b, c) in [input for input in self.inputs]:
-                ainputs.append((a, b))
+            print self.inputs
+            for input in self.inputs:
+                ainputs.append((input[0], input[1]))
             return ainputs
         else: 
             return None
@@ -66,8 +67,9 @@ class widgetSession():
         if self.outputs and len(self.outputs) != 0:
             aoutputs = []
             ## move across the outputs and get their type
-            for (a,b) in [output for output in self.outputs]:
-                aoutputs.append((a, b))
+            print self.outputs
+            for output in self.outputs:
+                aoutputs.append((output[0], output[1]))
             return aoutputs
         else: 
             return None
