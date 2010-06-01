@@ -277,52 +277,7 @@ if __name__ == "__main__":
     lineEdit.listbox.addItems(names)
     lineEdit.setAllListItems(names)
     
-#    dlg.text = ""
-#    
-#    s = lineEditHint(dlg.controlArea, dlg, "text", useRE = 1, items = ["janez", "joza", "danica", "jani", "jok", "jure", "jaz"], delimiters = ",; ")
-    
-    
-##    def getFullWidgetIconName(category, widgetInfo):
-##        import os
-##        iconName = widgetInfo.icon
-##        names = []
-##        name, ext = os.path.splitext(iconName)
-##        for num in [16, 32, 42, 60]:
-##            names.append("%s_%d%s" % (name, num, ext))
-##            
-##        widgetDir = str(category.directory)  
-##        fullPaths = []
-##        dirs = redREnviron.directoryNames
-##        for paths in [(dirs["picsDir"],), (dirs["widgetDir"],), (dirs["widgetDir"], "icons")]:
-##            for name in names + [iconName]:
-##                fname = os.path.join(*paths + (name,))
-##                if os.path.exists(fname):
-##                    fullPaths.append(fname)
-##            if len(fullPaths) > 1 and fullPaths[-1].endswith(iconName):
-##                fullPaths.pop()     # if we have the new icons we can remove the default icon
-##            if fullPaths != []:
-##                return fullPaths    
-##        return ""  
-##
-##
-##    s = lineEditHint(dlg.controlArea, dlg, "text", useRE = 0, caseSensitive = 0, matchAnywhere = 0)
-##    s.listWidget.setSpacing(2)
-##    s.setStyleSheet(""" QLineEdit { background: #fffff0; border: 1px solid blue} """)
-##    s.listWidget.setStyleSheet(""" QListView { background: #fffff0; } QListView::item {padding: 3px 0px 3px 0px} QListView::item:selected, QListView::item:hover { color: white; background: blue;} """)
-##    import orngRegistry, redREnviron
-##    cats = orngRegistry.readCategories()
-##    items = []
-##    for cat in cats.values():
-##        for widget in cat.values():
-##            iconNames = getFullWidgetIconName(cat, widget)
-##            icon = QIcon()
-##            for name in iconNames:
-##                icon.addPixmap(QPixmap(name))
-##            item = QListWidgetItem(icon, widget.name)
-##            #item.setSizeHint(QSize(100, 32))
-##            #
-##            items.append(item)
-##    s.setItems(items)
+
         
     dlg.show()
     a.exec_()

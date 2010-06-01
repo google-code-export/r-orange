@@ -3,7 +3,7 @@
 <description>Obtains an affybatch and plots the images of the files</description>
 <tags>Microarray</tags>
 <RFunctions>affy:image</RFunctions>
-<icon>icons/plotaffy.png</icon>
+<icon>plotaffy.png</icon>
 """
 
 from OWRpy import *

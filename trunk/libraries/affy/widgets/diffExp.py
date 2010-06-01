@@ -3,7 +3,7 @@
 <description>Calculates differential expression of genes from an eSet object</description>
 <tags>Microarray</tags>
 <RFunctions>limma:lmFit</RFunctions>
-<icon>icons/diffexp.png</icon>
+<icon>diffexp.png</icon>
 <priority>70</priority>
 """
 

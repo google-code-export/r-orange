@@ -5,7 +5,7 @@
 weights (Intrator and Intrator, 1993) for one specific covariate and one response variable.</Description>
 <RFunctions>neuralnet:gwplot</RFunctions>
 <tags>Neural Net, Prototypes</tags>
-<icon>icons/plot.png</icon>
+<icon>plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

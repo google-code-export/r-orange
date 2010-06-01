@@ -4,7 +4,7 @@
 <description>Makes a histogram of data.  This data should be in the form of a single 'vector'.  Use of the Row of Column selectors or perhaps the list selector may be helpful in this.</description>
 <RFunctions>graphics:hist</RFunctions>
 <tags>Plotting</tags>
-<icon>icons/histogram.png</icon>
+<icon>histogram.png</icon>
 """
 from OWRpy import * 
 import OWGUI 

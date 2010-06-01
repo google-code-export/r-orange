@@ -167,7 +167,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         _owWarning = redREnviron.settings["owWarning"],
         _owError = redREnviron.settings["owError"],
         _owShowStatus = redREnviron.settings["owShow"],
-        _category = widgetInfo.category)
+        _packageName = widgetInfo.packageName)
         #_settingsFromSchema = widgetSettings)
         self.instance.__dict__['_widgetInfo'] = widgetInfo
         
@@ -199,7 +199,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.instance.setProcessingHandler(view.processingHandler)
         self.instance.setWidgetStateHandler(self.updateWidgetState)
         self.instance.setEventHandler(canvasDlg.output.widgetEvents)
-        self.instance.setWidgetIcon(canvasDlg.getFullWidgetIconName(widgetInfo))
+        self.instance.setWidgetWindowIcon(widgetInfo.icon)
         #self.instance.updateStatusBarState()
 
         QGraphicsRectItem.__init__(self, None, canvas)

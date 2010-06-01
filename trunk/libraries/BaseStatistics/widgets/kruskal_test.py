@@ -3,7 +3,7 @@
 <description>Performs the Kruskal Walis test on data.</description>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 
-<icon>icons/stats.png</icon>
+<icon>stats.png</icon>
 <tags>Non Parametric</tags>
 <RFunctions>stats:kruskal.test</RFunctions>
 """

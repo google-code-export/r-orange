@@ -3,7 +3,7 @@
 <description>Shows data in a spreadsheet.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>base:intersect</RFunctions>
-<icon>icons/datatable.png</icon>
+<icon>datatable.png</icon>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 """
 from OWRpy import * 

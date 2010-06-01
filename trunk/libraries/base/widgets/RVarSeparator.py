@@ -3,7 +3,7 @@
 <author>Kyle R. Covington</author>
 <description>Separates variables from an environment and sends them.  Generally used with the R Loader Widget.</description>
 <tags>R</tags>
-<icon>icons/rexecutor.png</icon>
+<icon>rexecutor.png</icon>
 <priority>10</priority>
 """
 from OWRpy import * 

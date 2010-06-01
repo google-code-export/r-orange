@@ -167,7 +167,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             
             widgetInfo = WidgetDescription(
                          name = data[istart+6:iend],
-                         category = package['Name'],
+                         packageName = package['Name'],
                          package = package,
                          time = datetime,
                          fileName = package['Name'] + '_' + widgetName,
@@ -176,27 +176,29 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          inputList = inputList, outputList = outputList
                          )
     
-            for attr, deflt in (("contact>", "") , ("icon>", "icons/Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
+            for attr, deflt in (("contact>", "") , ("icon>", "Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 
             widgetInfo.tags = widgetInfo.tags.replace(' ', '')
             widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
             ## set the icon, this might not exist so we need to check
-            try:
-                widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], package['Name'], widgetInfo.icon))
-                if not os.path.exists(widgetInfo.icon):
-                    if os.path.exists(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png')): 
-                        widgetInfo.icon = os.path.abspath(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png'))
-                    else:
-                        widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'icons', 'Unknown.png'))
+            for paths in [(redREnviron.directoryNames['widgetDir'], widgetInfo.packageName,'icons'), 
+            (redREnviron.directoryNames['widgetDir'], 'base','icons')]:
+                fname = os.path.join(*paths + (widgetInfo.icon,))
+                if os.path.isfile(fname):
+                    widgetInfo.icon = fname
+                    break
                 
-            except Exception as inst:
-                print 'Exception occured in the registry for the icon.'
-                print inst
-                widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'icons', 'Unknown.png')
+            # widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], package['Name'],'icons', widgetInfo.icon))
+            # if not os.path.exists(widgetInfo.icon):
+                # if os.path.exists(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png')): 
+                    # widgetInfo.icon = os.path.abspath(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png'))
+                # else:
+                    # widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], 
+                    # 'base', 'icons', 'Unknown.png'))
+                
             # build the tooltip
-            
             ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.
             widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
             if len(widgetInfo.inputs) == 0:
@@ -269,13 +271,6 @@ def loadPackage(package):
         if not hasattr(signals,name):
             signals.registerRedRSignals(name)
     
-    # for name1 in package['Dependencies']:
-        # name = name1.strip()
-        # if name == 'base': continue
-        # if name in redRPackageManager.packageManager.localPackages:
-            # loadPackage(redRPackageManager.packageManager.localPackages[name])
-        # else:
-            # print 'You don\'t have package '+name+' please download using Package Manager.'
     
     
     

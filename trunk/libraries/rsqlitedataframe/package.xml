@@ -7,12 +7,7 @@
         <Date>2010-05-12</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
-    <Dependencies>
-        <Depend>
-            <Package>affy</Package>
-            <Version>1</Version>
-        </Depend>
-    </Dependencies>
+    <Dependencies>None</Dependencies>
     <Red-RVersion>Red-R-1.7</Red-RVersion>
     <Summary>Interface for sqlite in Red-R.</Summary>
     <Description>Interface for sqlite in Red-R.  This is used to interact with sqlite databases and to create them from R objects or text files.  Use this package to work with large datasets and condense them into things that are manageable with R.  Many of these widgets are for advanced users as they require some knowledge of sql syntax.  This package is distributed with Core but may be removed with no loss to functionality.  Updates may become available to allow novice users to have better access to these tools.</Description>

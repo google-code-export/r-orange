@@ -76,7 +76,7 @@ class MyTableModel(QAbstractTableModel):
         """
         self.R = Rcommand
         print parent
-        QAbstractTableModel.__init__(self) 
+        QAbstractTableModel.__init__(self,parent) 
         self.Rdata = Rdata
         self.colnames = self.R('colnames(' +Rdata+ ')', wantType = 'list')
         self.colnames.insert(0,'Row Names')

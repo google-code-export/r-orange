@@ -3,7 +3,7 @@
 <description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.</description>
 <tags>Plotting</tags>
 <RFunctions>stats:heatmap</RFunctions>
-<icon>icons/heatmap.png</icon>
+<icon>heatmap.png</icon>
 <priority>2040</priority>
 """
 

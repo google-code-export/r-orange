@@ -4,7 +4,7 @@
 <description>Generates a survival fit of either a data table or a fit model.  This widget can be connected to a plotting widget for generating survival curves.</description>
 <RFunctions>survival:survfit</RFunctions>
 <tags>Survival</tags>
-<icon>icons/survival.png</icon>
+<icon>survival.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

@@ -3,7 +3,7 @@
 <description>Performs Pathway Analysis on a genelist or subset (must specify gene list as either a full list or a subset on connecting)</description>
 <tags>Microarray</tags>
 <RFunctions>sigPathway:runSigPathway</RFunctions>
-<icon>icons/readcel.png</icon>
+<icon>readcel.png</icon>
 <priority>2030</priority>
 """
 

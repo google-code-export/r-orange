@@ -3,7 +3,7 @@
 <author>Generates sophisticated plots using the garmmar of graphics orriginally written by Hadley Wickham.  This plot takes a data frame of data and uses multiple graphics parameters to construct a plot.  These parameters can be added to generate ever more complicated plotts.</author>
 <RFunctions>ggplot2:ggplot</RFunctions>
 <tags>Plotting</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>RExecutor.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

@@ -4,7 +4,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>survival:survdiff</RFunctions>
 <tags>Survival</tags>
-<icon>icons/survival.png</icon>
+<icon>survival.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

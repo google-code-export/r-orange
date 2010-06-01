@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:scatter.smooth</RFunctions>
 <tags>Plotting</tags>
-<icon>icons/plot.png</icon>
+<icon>plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

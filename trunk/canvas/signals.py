@@ -86,13 +86,13 @@ def registerRedRSignals(package):
         # print 'import filename', filename
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
-        guiClass = os.path.basename(filename).split('.')[0]
-        RedRSignals.append(guiClass)
-        c = forname(guiClass,guiClass)
-        print c, 'forname return'
-        print package, 'package'
-        c.__dict__['__package__'] = package
-        setattr(m, guiClass,c)
+        signalClass = os.path.basename(filename).split('.')[0]
+        RedRSignals.append(signalClass)
+        c = forname(signalClass,signalClass)
+        # print c, 'forname return'
+        # print package, 'package'
+        setattr(c,'__package__',package)
+        setattr(m, signalClass,c)
     setattr(current_module,package,m)
     
 def forname(modname, classname):
@@ -113,7 +113,7 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir']
     signalClasses = os.path.basename(filename).split('.')[0]
     RedRSignals.append(signalClasses)
     c = forname(signalClasses,signalClasses)
-    c.__dict__['__package__'] = 'base'
+    setattr(c,'__package__','base')
     setattr(current_module, signalClasses,c)
 
 

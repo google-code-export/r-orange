@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:cor</RFunctions>
 <tags>Prototypes</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>RExecutor.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

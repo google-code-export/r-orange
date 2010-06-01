@@ -44,9 +44,10 @@ def registerQTWidgets(package):
         guiClass = os.path.basename(filename).split('.')[0]
         qtWidgets.append(guiClass)
         c = forname(guiClass,guiClass)
-        print c, 'forname return'
-        print package, 'package return'
-        c.__dict__['__package__'] = package
+        # print c, 'forname return'
+        # print package, 'package return'
+        setattr(c,'__package__',package)
+        #c.__dict__['__package__'] = package
         setattr(m, guiClass,c)
     setattr(current_module,package,m)
 
@@ -57,7 +58,9 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] 
         continue
     guiClass = os.path.basename(filename).split('.')[0]
     qtWidgets.append(guiClass)
-    setattr(current_module, guiClass,forname(guiClass,guiClass))
+    c = forname(guiClass,guiClass)
+    setattr(c,'__package__','base')
+    setattr(current_module, guiClass,c)
 
     
     

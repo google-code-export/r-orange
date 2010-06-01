@@ -1,10 +1,9 @@
 """
-<name>View R Data Table</name>
+<name>View Data Table</name>
 <description>Shows data in a spreadsheet.</description>
 <tags>View Data</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
-<icon>icons/datatable.png</icon>
-<priority>1010</priority>
+<icon>datatable.png</icon>
 <author>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</author>
 """
 
@@ -92,11 +91,21 @@ class RDataTable(OWRpy):
         #boxSettings = redRGUI.groupBox(self.advancedOptions, label = "Settings")
         
 
-        # self.btnResetSort = redRGUI.button(boxSettings, label = "Restore Order of Examples", 
-        # callback = self.btnResetSortClicked, tooltip = "Show examples in the same order as they appear in the file")
-
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
+        self.setRvariableNames(['x'])
+        self.R(self.Rvariables['x'] + '<- data.frame(rnorm(500000),rnorm(500000))')
+        self.table.setRTable(self.Rvariables['x'])
+        self.table.show()
+        for x in self.findChildren(QAbstractTableModel):
+            print 'in table', x
 
+    def customWidgetDelete(self):
+        print 'start'
+        if hasattr(self.table,'tm'):
+            print 'asdfadsf'
+            self.table.tm.deleteLater()
+            import sip
+            sip.delete(self.table.tm)
 
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""

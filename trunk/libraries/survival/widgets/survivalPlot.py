@@ -2,7 +2,7 @@
 <name>Survival Plot</name>
 <author>Based on Plot which was Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Plots a survival object, usually from Survival Fit</description>
-<icon>icons/survival.png</icon>
+<icon>survival.png</icon>
 <tags>Survival</tags>
 <RFunctions>graphics:plot, survival:Surv</RFunctions>
 """

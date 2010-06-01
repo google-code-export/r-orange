@@ -3,7 +3,7 @@
 <author>Appends a class manager to a data table or matrix.  This wll allow classificaiton widgets to work on the data and share those manipulations across all of the downstream widgets.  These widgets will create the class manager themselves if none exists, but using the Class Coordinator is generally better.</author>
 <RFunctions>None</RFunctions>
 <tags>Data Classification</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>RExecutor.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

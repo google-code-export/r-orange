@@ -2,7 +2,7 @@
 <name>Principal Component</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>This widget performs principal component analysis on a data table containing numeric data.  The entire data fit is returned in the prcomp Output channel and the fit to the principal components is returned from the Scaled Data channel.  To view the prinicpal components graphically you may want to select the desired principal components and pass that on to a plotting widget.</description>
-<icon>icons/stats.png</icon>
+<icon>stats.png</icon>
 <tags>Parametric</tags>
 <RFunctions>stats:prcomp</RFunctions>
 """

@@ -3,7 +3,7 @@
 <description>Writes an eSet to a tab delimited file.</description>
 <tags>Microarray</tags>
 <RFunctions>affy:write.exprs</RFunctions>
-<icon>icons/readcel.png</icon>
+<icon>readcel.png</icon>
 <priority>80</priority>
 """
 from OWRpy import *

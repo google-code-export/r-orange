@@ -292,7 +292,7 @@ class SchemaDoc(QWidget):
             # if redREnviron.settings["saveWidgetsPosition"]:
                 # newwidget.instance.restoreWidgetPosition()
             newwidget.setProcessing(0)
-            orngHistory.logAddWidget(self.schemaID, id(newwidget), (newwidget.widgetInfo.category, newwidget.widgetInfo.name), newwidget.x(), newwidget.y())
+            orngHistory.logAddWidget(self.schemaID, id(newwidget), (newwidget.widgetInfo.packageName, newwidget.widgetInfo.name), newwidget.x(), newwidget.y())
         except:
             type, val, traceback = sys.exc_info()
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
@@ -316,7 +316,7 @@ class SchemaDoc(QWidget):
         # gc.collect()
         # print 'Remaining references to '+str(gc.get_referrers(widget))
         # print 'Remaining references from '+str(gc.get_referents(widget))
-        #orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.category, widget.widgetInfo.name))
+        #orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.packageName, widget.widgetInfo.name))
 
     def clear(self):
         print '|#| orngDoc clear'

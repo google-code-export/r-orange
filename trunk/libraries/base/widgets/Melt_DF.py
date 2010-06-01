@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <tags>Data Manipulation</tags>
 <RFunctions>reshape:melf</RFunctions>
-<icon>icons/rexecutor.png</icon>
+<icon>rexecutor.png</icon>
 <priority>2060</priority>
 """
 from OWRpy import * 

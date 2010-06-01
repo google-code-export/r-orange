@@ -3,7 +3,7 @@
 <description>Calculates differential expression of genes from an eSet object</description>
 <tags>Microarray</tags>
 <RFunctions>panp:pa.calls</RFunctions>
-<icon>icons/readcel.png</icon>
+<icon>readcel.png</icon>
 <priority>2010</priority>
 """
 from OWRpy import *

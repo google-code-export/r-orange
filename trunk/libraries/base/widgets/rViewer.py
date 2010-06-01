@@ -3,7 +3,7 @@
 <author>Kyle R. Covington</author>
 <description>Shows the output of an R variable, equivalent to typing the variable name in the R Executor</description>
 <tags>R</tags>
-<icon>icons/rexecutor.png</icon>
+<icon>rexecutor.png</icon>
 <priority>10</priority>
 """
 from OWRpy import * 

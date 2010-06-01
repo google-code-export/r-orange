@@ -1,10 +1,9 @@
 """
-<name>View Data Table</name>
+<name>View SQLite Data</name>
 <description>Shows data in a spreadsheet.</description>
-<tags>View Data</tags>
+<tags>View Data, SQLite</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
-<icon>icons/datatable.png</icon>
-<priority>1010</priority>
+<icon>datatable.png</icon>
 <author>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</author>
 """
 

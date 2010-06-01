@@ -28,7 +28,7 @@ class widgetGUI(QMainWindow):
 
         
         for key in args:
-            if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_category"]:
+            if key in ["_owInfo", "_owWarning", "_owError", "_owShowStatus", "_useContexts", "_packageName"]:
                 self.__dict__[key] = args[key]        # we cannot use __dict__.update(args) since we can have many other
 
         return self
@@ -359,37 +359,9 @@ class widgetGUI(QMainWindow):
         qApp.processEvents()
 
 
-    def getIconNames(self, iconName):
-        if type(iconName) == list:      # if canvas sent us a prepared list of valid names, just return those
-            return iconName
-        
-        names = []
-        name, ext = os.path.splitext(iconName)
-        for num in [16, 32, 42, 60]:
-            names.append("%s_%d%s" % (name, num, ext))
-        fullPaths = []
-        for paths in [(self.widgetDir, name), (self.widgetDir, "icons", name), (os.path.dirname(sys.modules[self.__module__].__file__), "icons", name)]:
-            for name in names + [iconName]:
-                fname = os.path.join(*paths)
-                if os.path.exists(fname):
-                    fullPaths.append(fname)
-            if fullPaths != []:
-                break
-
-        if len(fullPaths) > 1 and fullPaths[-1].endswith(iconName):
-            fullPaths.pop()     # if we have the new icons we can remove the default icon
-        return fullPaths
-    
-
-    def setWidgetIcon(self, iconName):
-        iconNames = self.getIconNames(iconName)
-            
-        icon = QIcon()
-        for name in iconNames:
-            pix = QPixmap(name)
-            icon.addPixmap(pix)
-
-
+    def setWidgetWindowIcon(self, iconName):
+        print '|#| setWidgetIcon widgetGUI'
+        icon = QIcon(iconName)
         self.setWindowIcon(icon)
         
 

@@ -257,8 +257,6 @@ class packageManagerDialog(redRGUI.dialog):
         redRGUI.widgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
         redRGUI.button(buttonArea2, label = 'Done', callback = self.accept)
-        # self.show()
-        # self.loadPackagesLists(force=False)
     def installItemClicked(self, item1, item2):
         if item1:
             self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])

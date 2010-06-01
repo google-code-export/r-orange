@@ -4,7 +4,7 @@
 <name>Show Sequence Info</name>
 <description></description>
 <tags>Data Input, Biopython</tags>
-<icon>icons/readfile.png</icon>
+<icon>readfile.png</icon>
 <priority>10</priority>
 """
 

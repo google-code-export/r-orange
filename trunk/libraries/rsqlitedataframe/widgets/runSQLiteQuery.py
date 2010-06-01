@@ -3,7 +3,7 @@
 <name>Run SQLite Query</name>
 <description>Runs the query 'QUERY', sets a new view as the result of that query and then sends it through the output slot.</description>
 <tags>Data Input, SQLite</tags>
-<icon>icons/readfile.png</icon>
+<icon>readfile.png</icon>
 <priority>10</priority>
 """
 

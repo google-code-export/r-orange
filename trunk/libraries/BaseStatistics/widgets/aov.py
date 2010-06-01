@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:aov</RFunctions>
 <tags>Prototypes</tags>
-<icon>icons/stats.png</icon>
+<icon>stats.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

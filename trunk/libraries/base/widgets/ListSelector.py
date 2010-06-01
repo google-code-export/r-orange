@@ -3,7 +3,7 @@
 <description>Allows viewing of a list and picks parts of a list and sends them.</description>
 <tags>Subsetting</tags>
 <RFunctions>base:list</RFunctions>
-<icon>icons/rexecutor.png</icon>
+<icon>rexecutor.png</icon>
 <author>Kyle R. Covington</author>
 """
 

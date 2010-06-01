@@ -3,7 +3,7 @@
 <author>Kyle R. Covington</author>
 <description>Appends a column to a data frame with the classifications of rows based on the values of a column being greater than some percentile.</description>
 <tags>Data Classification</tags>
-<icon>icons/RExecutor.png</icon>
+<icon>RExecutor.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

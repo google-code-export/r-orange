@@ -5,7 +5,7 @@
 <description>Reads files from a text file and brings them into RedR in the form of an SQLite structure.  These files should be like a table and should have values that are separated either by a tab, space, or comma.  You can use the scan feature to scan a small part of your data and make sure that it is in the correct format.  You can also set a column to represent the row names of your data.  This is encouraged if you have row names as some widgets rely on row names to help them function.  By specifying a column as a rownames column that column will have the reserved word of Rownames no matter what the column name is in the data table that you are reading.  SQLite tables can be connected to any RDataFrame or RList accepting widget.</description>
 <tags>Data Input, SQLite</tags>
 <RFunctions>utils:read.table</RFunctions>
-<icon>icons/readfile.png</icon>
+<icon>readfile.png</icon>
 <priority>10</priority>
 """
 

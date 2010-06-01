@@ -4,7 +4,7 @@
 <description>Transposes a data table and sends.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>utils:t</RFunctions>
-<icon>icons/rexecutor.png</icon>
+<icon>rexecutor.png</icon>
 <priority>2040</priority>
 """
 from OWRpy import * 

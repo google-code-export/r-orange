@@ -4,7 +4,7 @@
 <name>Get Entrez Data</name>
 <description>Retrieves data from a connection to Entrez.</description>
 <tags>Biopython</tags>
-<icon>icons/readfile.png</icon>
+<icon>readfile.png</icon>
 <priority>10</priority>
 """
 

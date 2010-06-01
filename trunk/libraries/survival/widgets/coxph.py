@@ -4,7 +4,7 @@
 <description>Performs Cox Proportional Hazards on a collection of data with event times, event status, and a set of grouping variables.  This widget can perform complex comparisons inculding interactions.</description>
 <RFunctions>survival:coxph</RFunctions>
 <tags>Survival</tags>
-<icon>icons/survival.png</icon>
+<icon>survival.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

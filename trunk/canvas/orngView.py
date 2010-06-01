@@ -282,7 +282,7 @@ class SchemaView(QGraphicsView):
                     item.restorePosition()
                 item.updateTooltip()
                 item.setAllLinesFinished(True)
-                orngHistory.logChangeWidgetPosition(self.doc.schemaID, id(item), (item.widgetInfo.category, item.widgetInfo.name), item.x(), item.y())
+                orngHistory.logChangeWidgetPosition(self.doc.schemaID, id(item), (item.widgetInfo.packageName, item.widgetInfo.name), item.x(), item.y())
 
 
         # if we are drawing line

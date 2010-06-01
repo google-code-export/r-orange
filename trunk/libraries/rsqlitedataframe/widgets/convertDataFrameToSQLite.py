@@ -3,7 +3,7 @@
 <name>Convert DataFrame to SQLite Table</name>
 <description>Converts an R data frame to an sqlite table.  The defaut behavior is to place the table into the local|temp.db directory though this can be changed by the user.</description>
 <tags>SQLite</tags>
-<icon>icons/readfile.png</icon>
+<icon>readfile.png</icon>
 <priority>10</priority>
 """
 

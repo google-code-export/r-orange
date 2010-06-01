@@ -21,9 +21,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.setWindowTitle("Red-R Canvas")
         self.windows = []    # list of id for windows in Window menu
         self.recentDocs = []
-        self.iconNameToIcon = {}
-        self.toolbarIconSizeList = [16, 32, 40, 48, 60]
-        self.schemeIconSizeList = [32, 40, 48]
+        self.toolbarIconSizeList = [16, 32, 40]
+        self.schemeIconSizeList = [32, 40]
         self.widgetsToolBar = None
         self.originalPalette = QApplication.palette()
         
@@ -489,7 +488,7 @@ class OrangeCanvasDlg(QMainWindow):
             self.widgetShortcuts = dict([(y, x) for x, y in dlg.invDict.items()])
             shf = file(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "shortcuts.txt"), "wt")
             for k, widgetInfo in self.widgetShortcuts.items():
-                shf.write("%s: %s\n" % (k, (widgetInfo.category, widgetInfo.name)))
+                shf.write("%s: %s\n" % (k, (widgetInfo.packageName, widgetInfo.name)))
 
     def menuItemDeleteWidgetSettings(self):
         if QMessageBox.warning(self,'Red Canvas','If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
@@ -553,7 +552,6 @@ class OrangeCanvasDlg(QMainWindow):
             
             # update settings in widgets in current documents
             for widget in self.schema.widgets:
-                widget.instance._useContexts = redREnviron.settings["useContexts"]
                 widget.instance._owInfo      = redREnviron.settings["owInfo"]
                 widget.instance._owWarning   = redREnviron.settings["owWarning"]
                 widget.instance._owError     = redREnviron.settings["owError"]
@@ -654,63 +652,14 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowTitle("Red Canvas")
     
     def getWidgetIcon(self, widgetInfo):
-        if self.iconNameToIcon.has_key(widgetInfo.icon):
-            return self.iconNameToIcon[widgetInfo.icon]
+        # print '|#| getWidgetIcon redRCanvas', widgetInfo.icon
         
-        iconNames = self.getFullWidgetIconName(widgetInfo)
-        iconBackgrounds = self.getFullIconBackgroundName(widgetInfo)
-        icon = QIcon()
-        if len(iconNames) == 1:
-            iconSize = QPixmap(iconNames[0]).width()
-            iconBackgrounds = [name for name in iconBackgrounds if QPixmap(name).width() == iconSize]
-        for name, back in zip(iconNames, iconBackgrounds):
-            image = QPixmap(back).toImage()
-            painter = QPainter(image)
-            painter.drawPixmap(0, 0, QPixmap(name))
-            painter.end()
-            icon.addPixmap(QPixmap.fromImage(image))
-        self.iconNameToIcon[widgetInfo.icon] = icon
+        icon = QIcon(widgetInfo.icon)
+        # icon.addPixmap(QPixmap.fromImage(widgetInfo))
+        # self.iconNameToIcon[widgetInfo.icon] = icon
         return icon
-            
-    
-    def getFullWidgetIconName(self, widgetInfo):
-        iconName = widgetInfo.icon
-        names = []
-        name, ext = os.path.splitext(iconName)
-        for num in [16, 32, 40, 48, 60]:
-            names.append("%s_%d%s" % (name, num, ext))
-            
-        #widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)  #os.path.split(self.getFileName())[0]
-        widgetDir = os.path.join(redREnviron.directoryNames['widgetDir'],widgetInfo.package['Name'])  #os.path.split(self.getFileName())[0]
-        #print widgetDir + '\n' *10
-        fullPaths = []
-        for paths in [(redREnviron.directoryNames['widgetDir'], widgetInfo.category), (redREnviron.directoryNames['widgetDir'],), (redREnviron.directoryNames['picsDir'],), tuple(), (widgetDir,), (widgetDir, "icons")]:
-            for name in names + [iconName]:
-                fname = os.path.join(*paths + (name,))
-                if os.path.exists(fname):
-                    fullPaths.append(fname)
-            if len(fullPaths) > 1 and fullPaths[-1].endswith(iconName):
-                fullPaths.pop()     # if we have the new icons we can remove the default icon
-            if fullPaths != []:
-                return fullPaths    
-        return [self.defaultPic]
-    
-    def getFullIconBackgroundName(self, widgetInfo):
-        #widgetDir = str(self.widgetRegistry[widgetInfo.category].directory)
-        widgetDir = os.path.join(redREnviron.directoryNames['widgetDir'],widgetInfo.package['Name'])  #os.path.split(self.getFileName())[0]
+        
 
-        fullPaths = []
-        for paths in [(widgetDir, "icons"), (redREnviron.directoryNames['widgetDir'], "base", "icons"), (redREnviron.directoryNames['widgetDir'], "icons"), (redREnviron.directoryNames['picsDir'],), tuple(), (widgetDir,), (widgetDir, "icons")]:
-            for name in ["background_%d.png" % num for num in [16, 32, 40, 48, 60]]:
-                fname = os.path.join(*paths + (name,))
-                # print fname
-                if os.path.exists(fname):
-                    fullPaths.append(fname)
-            if fullPaths != []:
-                return fullPaths    
-        return [self.defaultBackground]
-    
-    
 class MyStatusBar(QStatusBar):
     def __init__(self, parent):
         QStatusBar.__init__(self, parent)

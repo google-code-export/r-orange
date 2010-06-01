@@ -4,7 +4,7 @@
 <author>Kyle R. Covington</author>
 <tags>R</tags>
 <RFunctions>base:make.names</RFunctions>
-<icon>icons/RExecutor.PNG</icon>
+<icon>RExecutor.PNG</icon>
 <priority>4010</priority>
 """
 from OWRpy import * 

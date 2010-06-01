@@ -4,7 +4,7 @@
 <Description>Generates a spline fit to X, Y data.  This can be used for plotting or for interogating the splines.</Description>
 <RFunctions>stats:spline</RFunctions>
 <tags>Prototypes</tags>
-<icon>icons/plot.png</icon>
+<icon>plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

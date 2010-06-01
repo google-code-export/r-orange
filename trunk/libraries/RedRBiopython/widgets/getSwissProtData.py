@@ -4,7 +4,7 @@
 <name>Get SwissProt Data</name>
 <description>Retrieves data from a connection to SwissProt.</description>
 <tags>Biopython</tags>
-<icon>icons/readfile.png</icon>
+<icon>readfile.png</icon>
 <priority>10</priority>
 """
 
