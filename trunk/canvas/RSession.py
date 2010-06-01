@@ -137,5 +137,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                             loadedOK = False
                     else:
                         loadedOK = False
+                else:
+                    loadedOK = False
                         
         return loadedOK

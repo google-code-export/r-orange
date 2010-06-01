@@ -152,17 +152,17 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             repository = redREnviron.settings['CRANrepos']
         
         print 'Loading required librarys'
-        for i in librarys:
-            if not i in RSession.getInstalledLibraries():
-                print 'need to download'
-                QMessageBox.information(self, 'R Packages','We need to download R packages for this widget to work.',  
-                QMessageBox.Ok + QMessageBox.Default)
-                break
-        if not redREnviron.checkInternetConnection():
-            QMessageBox.information(self, 'R Packages','No active internet connection detected.  Please reconnect and try this again.',  
-                QMessageBox.Ok + QMessageBox.Default)
-            qApp.restoreOverrideCursor()
-            return False
+        # for i in librarys:
+            # if not i in RSession.getInstalledLibraries():
+                # print 'need to download'
+                # QMessageBox.information(self, 'R Packages','We need to download R packages for this widget to work.',  
+                # QMessageBox.Ok + QMessageBox.Default)
+                # break
+        # if not redREnviron.checkInternetConnection():
+            # QMessageBox.information(self, 'R Packages','No active internet connection detected.  Please reconnect and try this again.',  
+                # QMessageBox.Ok + QMessageBox.Default)
+            # qApp.restoreOverrideCursor()
+            # return False
         success = RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()
