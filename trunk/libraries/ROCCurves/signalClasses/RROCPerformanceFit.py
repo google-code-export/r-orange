@@ -12,7 +12,7 @@ class RROCPerformanceFit(RModelFit):
         elif varClass == RROCPerformanceFit:
             return self
         elif varClass == RList:
-            return self._convertToList():
+            return self._convertToList()
         else:
             raise Exception, '%s Not A Known Type' % str(varClass)
     def _convertToList(self):

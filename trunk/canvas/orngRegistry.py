@@ -183,20 +183,14 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             widgetInfo.tags = widgetInfo.tags.replace(' ', '')
             widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
             ## set the icon, this might not exist so we need to check
-            for paths in [(redREnviron.directoryNames['widgetDir'], widgetInfo.packageName,'icons'), 
-            (redREnviron.directoryNames['widgetDir'], 'base','icons')]:
-                fname = os.path.join(*paths + (widgetInfo.icon,))
-                if os.path.isfile(fname):
-                    widgetInfo.icon = fname
-                    break
+
                 
-            # widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], package['Name'],'icons', widgetInfo.icon))
-            # if not os.path.exists(widgetInfo.icon):
-                # if os.path.exists(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png')): 
-                    # widgetInfo.icon = os.path.abspath(os.path.join(os.path.split(widgetInfo.icon)[0], 'Default.png'))
-                # else:
-                    # widgetInfo.icon = os.path.abspath(os.path.join(redREnviron.directoryNames['libraryDir'], 
-                    # 'base', 'icons', 'Unknown.png'))
+            widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', widgetInfo.icon)
+            if not os.path.isfile(widgetInfo.icon):
+                if os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', 'Default.png')): 
+                    widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', 'Default.png')
+                else:
+                    widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'],'base', 'icons', 'Unknown.png')
                 
             # build the tooltip
             ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.

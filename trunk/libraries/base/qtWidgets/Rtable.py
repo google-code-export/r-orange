@@ -2,7 +2,7 @@ from redRGUI import widgetState
 from RSession import Rcommand
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import numpy
+import numpy,sip
 
 class Rtable(widgetState,QTableView):
     def __init__(self,widget,Rdata=None, rows = 0, columns = 0, 
@@ -14,6 +14,7 @@ class Rtable(widgetState,QTableView):
         self.oldSortingIndex = None
         self.Rdata = None
         self.parent = widget
+        self.tm=None
         
         if widget and addToLayout and widget.layout():
             widget.layout().addWidget(self)
@@ -68,14 +69,16 @@ class Rtable(widgetState,QTableView):
         if 'selection' in data.keys() and len(data['selection']):
             for i in data['selection']:
                 self.setItemSelected(self.item(i[0],i[1]),True)
+    def delete(self):
+        sip.delete(self)
 
 class MyTableModel(QAbstractTableModel): 
-    def __init__(self, Rdata, parent=None): 
+    def __init__(self, Rdata, parent): 
         """ datain: a list of lists
             headerdata: a list of strings
         """
         self.R = Rcommand
-        print parent
+        #print parent
         QAbstractTableModel.__init__(self,parent) 
         self.Rdata = Rdata
         self.colnames = self.R('colnames(' +Rdata+ ')', wantType = 'list')
@@ -116,4 +119,5 @@ class MyTableModel(QAbstractTableModel):
 
         self.emit(SIGNAL("layoutChanged()"))
 
-  
+    def delete(self):
+        sip.delete(self)  

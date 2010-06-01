@@ -77,7 +77,7 @@ class BaseRedRVariable:
 ##############################################################
 
 def registerRedRSignals(package):
-    print '|#| registerRedRSignals for %s' % package
+    # print '|#| registerRedRSignals for %s' % package
     import imp, sys
     # print sys.path
     m = imp.new_module(package)
@@ -116,4 +116,8 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir']
     setattr(c,'__package__','base')
     setattr(current_module, signalClasses,c)
 
+for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+    if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+    and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+        registerRedRSignals(package)
 

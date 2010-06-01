@@ -34,10 +34,10 @@ qtWidgets = []
 current_module = __import__(__name__)
 
 def registerQTWidgets(package):
-    print '@@@@@@@@@@registerQTWidgets'
+    # print '@@@@@@@@@@registerQTWidgets'
     import imp
     m = imp.new_module(package)
-    directory = os.path.join(redREnviron.directoryNames['widgetDir'],package,'qtWidgets')
+    directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'qtWidgets')
     for filename in glob.iglob(os.path.join(directory,  "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
@@ -53,7 +53,7 @@ def registerQTWidgets(package):
 
 
 
-for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/base/qtWidgets', "*.py")):
+for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'] + '/base/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
     guiClass = os.path.basename(filename).split('.')[0]
@@ -62,6 +62,10 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] 
     setattr(c,'__package__','base')
     setattr(current_module, guiClass,c)
 
+for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+    if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+    and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+        registerQTWidgets(package)
     
     
 def separator(widget, width=8, height=8):

@@ -154,12 +154,12 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
         
         # import widget class and create a class instance
-        print str(forceInSignals)
-        print str(forceOutSignals)
-        print 'Initializing widget'
-        if widgetInfo.package['Name'] !='base':
-            import orngRegistry
-            orngRegistry.loadPackage(widgetInfo.package)
+        # print str(forceInSignals)
+        # print str(forceOutSignals)
+        # print 'Initializing widget'
+        # if widgetInfo.package['Name'] !='base':
+            # import orngRegistry
+            # orngRegistry.loadPackage(widgetInfo.package)
             
         m = __import__(widgetInfo.fileName)
         self.instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
@@ -304,11 +304,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.instance.linksOut.clear()      # this helps python to more quickly delete the unused objects
                 self.instance.linksIn.clear()
                 self.instance.onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
-                # for x in self.instance.findChildren(QAbstractTableModel):
-                    # print 'in canvasItems', x
+                for x in self.instance.findChildren(QAbstractTableModel):
+                    print 'in canvasItems', x
                 print 'delete instance' 
                 sip.delete(self.instance)
-                print '###################################' 
                 # for x in self.canvasDlg.findChildren(QAbstractTableModel):
                     # print x
                 # import gc

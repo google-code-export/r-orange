@@ -17,7 +17,6 @@ from OWRpy import *
 import OWGUI, redRGUI
 import math
 import globalData
-#from orngDataCaching import *
 
 ##############################################################################
 
@@ -96,16 +95,35 @@ class RDataTable(OWRpy):
         # self.R(self.Rvariables['x'] + '<- data.frame(rnorm(500000),rnorm(500000))')
         # self.table.setRTable(self.Rvariables['x'])
         # self.table.show()
+        # import sip
         # for x in self.findChildren(QAbstractTableModel):
             # print 'in table', x
+            # import gc
+            # gc.collect()
+            # print 'Remaining references to '+str(gc.get_referrers(x))
+            # print 'Remaining references from '+str(gc.get_referents(x))
+            # sip.delete(x)
+        # del self.table.tm
 
-    def customWidgetDelete(self):
-        print 'start'
-        if hasattr(self.table,'tm'):
-            print 'asdfadsf'
-            self.table.tm.deleteLater()
-            import sip
-            sip.delete(self.table.tm)
+    # def customWidgetDelete(self):
+        # import sip
+        # import gc
+        # print 'start'
+        # for x in gc.get_referents(self.table.tm):
+            # x = None
+            # del x
+        # del self.table.tm.arraydata            
+        # sip.delete(self.table.tm)
+        # del self.table.tm    
+        # for x in self.findChildren(QAbstractTableModel):
+            # print 'in table delete', x
+            # sip.delete(x)
+
+        # gc.collect()
+        # print 'Remaining references to '+str(gc.get_referrers(self.table))
+        # print 'Remaining references from '+str(gc.get_referents(self.table))
+
+
 
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
