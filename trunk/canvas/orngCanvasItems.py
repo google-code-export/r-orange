@@ -175,7 +175,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             print 'Loading dummy step 3'
             self.instance.__init__(signalManager = signalManager,
             forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
-        else: self.instance.__init__(signalManager = signalManager,parent=canvasDlg)
+        else: self.instance.__init__(signalManager = signalManager)
         
         if widgetSettings:
             self.instance.setSettings(widgetSettings)
