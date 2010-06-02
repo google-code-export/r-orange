@@ -79,6 +79,12 @@ Section "" ;this is the section that will install Red-R and all of it's files
     
     SetOutPath "$INSTDIR\${NAME}-${VERSION}\libraries\base"
 	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\base\*
+    
+    SetOutPath "$INSTDIR\${NAME}-${VERSION}\libraries\plotting"
+	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\plotting\*
+    
+    SetOutPath "$INSTDIR\${NAME}-${VERSION}\libraries\stats"
+	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\stats\*
 
     SetOutPath "$INSTDIR\${NAME}-${VERSION}\Examples"
 	File /r /x .svn /x *.pyc /x .nsi ${EXAMPLES}\*
@@ -97,6 +103,10 @@ Section "" ;this is the section that will install Red-R and all of it's files
 
 ;------------------------
 ; Create the shortcuts    
+    
+    CreateDirectory "$DOCUMENTS\Red-R"
+    CreateDirectory "$DOCUMENTS\Red-R\Templates"
+    CreateDirectory "$DOCUMENTS\Red-R\Schemas"
 	CreateDirectory "$SMPROGRAMS\Red-R\${NAME}-${VERSION}"
 	CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${VERSION}\Red-R Canvas.lnk" "$INSTDIR\${NAME}-${VERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${VERSION}\canvas\icons\orange.ico" 0
     CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${VERSION}\Uninstall Red-R.lnk" "$INSTDIR\${NAME}-${VERSION}\uninst ${NAME}-${VERSION}.exe"

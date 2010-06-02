@@ -23,7 +23,7 @@ class panpCalls(OWRpy):
         self.tightCut = '0.01'
         self.percentA = '20'
         
-        self.saveSettingsList.append(['data', 'eset', 'panpinfo', 'looseCut', 'tightCut', 'percentA'])
+        self.saveSettingsList.extend(['data', 'eset', 'panpinfo', 'looseCut', 'tightCut', 'percentA'])
         
         self.setRvariableNames(['PA','PAcalls','PAcalls_sum','Present','peset'])
         

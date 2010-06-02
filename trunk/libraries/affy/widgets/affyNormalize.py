@@ -25,7 +25,7 @@ class affyNormalize(OWRpy):
         self.enableMethBox = False
         self.norminfo = ''
         
-        self.saveSettingsList.append(['norm', 'normmeth', 'normoptions', 'data', 'enableMethBox', 'norminfo'])
+        self.saveSettingsList.extend(['norm', 'normmeth', 'normoptions', 'data', 'enableMethBox', 'norminfo'])
         
         if not self.require_librarys(['affy']):
             self.status.setText('R Libraries Not Loaded.')

@@ -23,7 +23,7 @@ class diffExp(OWRpy):
         self.data = ''
         self.newdata = {}
         self.olddata = {}
-        self.saveSettingsList.append(['samplenames', 'sampleA', 'sampleB', 'phenoData', 'modelFormula', 'data', 'newdata', 'olddata'])
+        self.saveSettingsList.extend(['samplenames', 'sampleA', 'sampleB', 'phenoData', 'modelFormula', 'data', 'newdata', 'olddata'])
         if not self.require_librarys(['affy','gcrma','limma']):
             self.status.setText('R Libraries Not Loaded.')
         

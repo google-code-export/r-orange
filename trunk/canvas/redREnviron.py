@@ -30,13 +30,20 @@ def __getDirectoryNames():
 
     ## check that the settings directories are in place, this would be skipped over in the try
     if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
-        os.mkdir(os.path.join(os.environ['APPDATA'], 'red-r'))
+        os.makedirs(os.path.join(os.environ['APPDATA'], 'red-r'))
     settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
     downloadsDir = os.path.join(settingsDir, "downloads")
+    
+    documentsDir = os.path.join(os.environ['HOME'], 'Documents', 'Red-R')
+    if not os.path.isdir(documentsDir):
+        os.makedirs(documentsDir)
+    templatesDir = os.path.join(documentsDir, 'Templates')
+    if not os.path.isdir(templatesDir): os.makedirs(templatesDir)
+        
 
     for dname in [settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir,downloadsDir]:
         if dname <> None and not os.path.isdir(dname):
@@ -46,7 +53,7 @@ def __getDirectoryNames():
     
     tempDir = setTempDir(canvasSettingsDir, 1)
     # print tempDir
-    return dict([(name, vars()[name]) for name in ["tempDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ["tempDir", "templatesDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -94,7 +101,7 @@ def loadSettings():
     settings.setdefault("lineColor", (0,255,0))
 
 
-    settings.setdefault("saveSchemaDir", directoryNames['canvasSettingsDir'])
+    settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
     settings.setdefault("showSignalNames", 1)
     

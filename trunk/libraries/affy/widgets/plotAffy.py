@@ -22,7 +22,7 @@ class plotAffy(OWRpy):
         self.qcsProcessed = 0
         self.data = ''
         
-        self.saveSettingsList.append(['qcsProcessed', 'data'])
+        self.saveSettingsList.extend(['qcsProcessed', 'data'])
 
         self.inputs = [("Affybatch", signals.affy.RAffyBatch, self.init)]
         

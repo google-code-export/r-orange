@@ -33,14 +33,18 @@ class widgetSession():
         self.progressBarInit()
         i = 0
         for att in allAtts:
-            if att in self.dontSaveList or re.search('^_', att):
-                continue
-            i += 1
-            self.progressBarAdvance(i)
-            #print 'frist att: ' + att
-            var = getattr(self, att)
-            settings[att] = self.returnSettings(var)
-
+            print att
+            try:
+                if att in self.dontSaveList or re.search('^_', att):
+                    continue
+                i += 1
+                self.progressBarAdvance(i)
+                #print 'frist att: ' + att
+                var = getattr(self, att)
+                settings[att] = self.returnSettings(var)
+            except Exception as inst:
+                print str(inst)
+                print 'Exception occured in saving', att,
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}

@@ -15,7 +15,7 @@ class writeEset(OWRpy):
         
         self.data = None
         self.fileName = ""
-        self.saveSettingsList.append(['data', 'fileName'])
+        self.saveSettingsList.extend(['data', 'fileName'])
         
         self.inputs = [("Affybatch", signals.RVariable, self.nothingb)]
         self.outputs = None

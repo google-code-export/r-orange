@@ -14,7 +14,7 @@ class aov(OWRpy):
         self.setRvariableNames(["aov"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.saveSettingsList.append(['data', 'RFunctionParam_data'])
+        self.saveSettingsList.extend(['data', 'RFunctionParam_data'])
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
         self.outputs = [("aov Output", signals.RModelFit)]
         

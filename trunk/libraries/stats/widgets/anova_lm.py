@@ -14,7 +14,7 @@ class anova_lm(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Anova LM", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_object = ''
-        self.saveSettingsList.append(['RFunctionParam_object'])
+        self.saveSettingsList.extend(['RFunctionParam_object'])
         self.inputs = [("object", signals.stats.RLMFit, self.processobject)]
         
         box = redRGUI.groupBox(self.controlArea, "Output")

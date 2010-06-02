@@ -76,9 +76,11 @@ def readCategories():
 
     allTemplates = []
     for dirName, directory, plugin in directories:
-        templates = readTemplates(os.path.join(directory,'templates'), dirName, cachedWidgetDescriptions) # a function to read in the templates that are in the directories
+        templates = readTemplates(os.path.join(directory,'templates')) # a function to read in the templates that are in the directories
         allTemplates += templates
         #print templates
+        
+    allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
     categories['templates'] = allTemplates
     cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
@@ -221,7 +223,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         
     return widgets
 
-def readTemplates(directory, package, cachedWidgetDescriptions):
+def readTemplates(directory):
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     

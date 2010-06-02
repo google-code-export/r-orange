@@ -23,7 +23,7 @@ class limmaDecide(OWRpy):
         self.eset = None
         self.sending = None
         self.modelProcessed = 0
-        self.saveSettingsList.append(['data', 'ebdata', 'olddata', 'newdata', 'eset', 'sending', 'modelProcessed'])
+        self.saveSettingsList.extend(['data', 'ebdata', 'olddata', 'newdata', 'eset', 'sending', 'modelProcessed'])
         
         
         self.setRvariableNames(['gcm', 'eset_sub', 'geneissig', 'dfsg', 'cm', 'gcm_matrix'])

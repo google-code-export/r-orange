@@ -422,7 +422,7 @@ class SchemaDoc(QWidget):
         return self.save(str(name),template=False)
         
     def saveTemplate(self):
-        name = QFileDialog.getSaveFileName(self, "Save Template", os.path.join(redREnviron.directoryNames['redRDir'], 'libraries'), "Red-R Widget Template (*.rrts)")
+        name = QFileDialog.getSaveFileName(self, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
         if not name or name == None: return False
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == '': return False
