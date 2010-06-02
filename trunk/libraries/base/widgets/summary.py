@@ -1,8 +1,8 @@
 """
-<name>summary</name>
+<name>Summary</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>base:summary</RFunctions>
-<tags>Prototypes</tags>
+<tags>R</tags>
 <icon>RExecutor.png</icon>
 """
 from OWRpy import * 
@@ -15,7 +15,7 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs = [("object", RvarClasses.RVariable, self.processobject)]
+        self.inputs = [("object", signals.RVariable, self.processobject)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)

@@ -1,9 +1,9 @@
 """
-<name>inspect</name>
+<name>Inspect Model Fit</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>asuR:inspect</RFunctions>
-<tags>Prototypes</tags>
-<icon>RExecutor.png</icon>
+<tags>Plotting, Stats</tags>
+<icon>plot.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

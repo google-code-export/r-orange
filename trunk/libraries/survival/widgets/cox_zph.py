@@ -1,9 +1,9 @@
 """
-<name>cox.zph</name>
+<name>Cox ZPH</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>survival:cox.zph</RFunctions>
-<tags>Prototypes</tags>
-<icon>RExecutor.png</icon>
+<tags>Survival</tags>
+<icon>survival.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

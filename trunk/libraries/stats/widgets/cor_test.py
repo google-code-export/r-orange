@@ -1,9 +1,9 @@
 """
-<name>cor.test</name>
+<name>Test For Correlation (Single)</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:cor.test</RFunctions>
-<tags>Prototypes</tags>
-<icon>RExecutor.png</icon>
+<tags>Parametric</tags>
+<icon>stats.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

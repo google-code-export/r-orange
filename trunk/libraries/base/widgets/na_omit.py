@@ -1,8 +1,8 @@
 """
-<name>na.omit</name>
+<name>Remove NA</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>base:na.omit</RFunctions>
-<tags>Prototypes</tags>
+<tags>R</tags>
 <icon>RExecutor.png</icon>
 """
 from OWRpy import * 

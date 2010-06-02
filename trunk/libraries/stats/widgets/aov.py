@@ -2,7 +2,7 @@
 <name>ANOVA</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:aov</RFunctions>
-<tags>Prototypes</tags>
+<tags>Parametric</tags>
 <icon>stats.png</icon>
 """
 from OWRpy import * 

@@ -2,7 +2,7 @@
 <name>image</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>graphics:image</RFunctions>
-<tags>Prototypes</tags>
+<tags>Plotting</tags>
 <icon>plot.png</icon>
 """
 from OWRpy import * 

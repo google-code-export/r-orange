@@ -2,8 +2,8 @@
 <name>Correlation</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:cor</RFunctions>
-<tags>Prototypes</tags>
-<icon>RExecutor.png</icon>
+<tags>Parametric</tags>
+<icon>stats.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

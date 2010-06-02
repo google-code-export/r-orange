@@ -4,7 +4,7 @@
 <Description>gwplot, a method for objects of class nn, typically produced by neuralnet. Plots the generalized
 weights (Intrator and Intrator, 1993) for one specific covariate and one response variable.</Description>
 <RFunctions>neuralnet:gwplot</RFunctions>
-<tags>Neural Net, Prototypes</tags>
+<tags>Neural Net</tags>
 <icon>plot.png</icon>
 """
 from OWRpy import * 

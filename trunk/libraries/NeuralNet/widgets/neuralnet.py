@@ -1,9 +1,10 @@
 """
-<name>neuralnet</name>
+<name>Make Neural Net</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
+<Description>Generates a neural net.</Description>
 <RFunctions>neuralnet:neuralnet</RFunctions>
-<tags>Prototypes</tags>
-<icon>RExecutor.png</icon>
+<tags>Neural Net</tags>
+<icon>Default.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

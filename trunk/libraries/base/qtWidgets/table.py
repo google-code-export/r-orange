@@ -9,6 +9,7 @@ class table(widgetState,QTableWidget):
         self.sortIndex = None
         self.oldSortingIndex = None
         self.data = None
+        self.dataTable = None
         ### should turn this into a function as all widgets use it to some degree
         if widget and addToLayout and widget.layout():
             widget.layout().addWidget(self)
@@ -68,13 +69,16 @@ class table(widgetState,QTableWidget):
         self.oldSortingOrder = order
         
     def getSettings(self):
-    
-        r = {'data': self.dataTable,'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
-        if self.oldSortingIndex:
-            r['sortIndex'] = self.oldSortingIndex
-            r['order'] = self.oldSortingOrder
+        try:
+            r = {'data': self.dataTable,'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
+            if self.oldSortingIndex:
+                r['sortIndex'] = self.oldSortingIndex
+                r['order'] = self.oldSortingOrder
             
-        # print r
+        except Exception as inst:
+            print r
+            print inst
+            r = {'data':None}
         return r
     def loadSettings(self,data):
         self.setTable(self.sqlite.tableToDict(data['data']))

@@ -4,8 +4,8 @@
 <name>LMER Anova</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:anova</RFunctions>
-<tags>Stats</tags>
-<icon>RExecutor.png</icon>
+<tags>Parametric</tags>
+<icon>stats.png</icon>
 """
 from OWRpy import * 
 import redRGUI 

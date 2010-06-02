@@ -11,4 +11,9 @@
     <Red-RVersion>Red-R-1.7</Red-RVersion>
     <Summary>BioPython.</Summary>
     <Description>BioPython.</Description>
+    <menuTags>
+        <group name="Biopython">
+                <Description>BioPython Widgets</Description>
+        </group>       
+    </menuTags>
 </package>
