@@ -193,7 +193,8 @@ class packageManager:
         for package in packages.firstChild.childNodes:
             if package.nodeType !=package.ELEMENT_NODE:
                 continue
-            packageDict[package.tagName] =  self.parsePackageXML(package)
+            p = self.parsePackageXML(package)
+            packageDict[p['Name']] =  p
         
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(packageDict)        
