@@ -9,26 +9,25 @@
 """
 from OWRpy import * 
 import redRGUI
-import sys, redREnviron, os
-import matplotlib.pyplot as plt
-import numpy as np
+
 class matplotlibBoxplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "mplBoxplot", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "mplBoxplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         
         self.data = None
         self.inputs = [('Vector List', signals.UnstructuredDict, self.gotData)]
         
         
         ### GUI ###
-        self.plotNotch = redRGUI.radioButtons(self.controlArea, label = 'Notch?', buttons = ['True', 'False'], callback = self.replot)
+        topArea = redRGUI.groupBox(self.GUIDialog, label = 'Plotting Attributes')
+        self.plotNotch = redRGUI.radioButtons(topArea, label = 'Notch?', buttons = ['True', 'False'], callback = self.replot)
         self.plotNotch.setChecked('True')
-        self.symbol = redRGUI.lineEdit(self.controlArea, label = 'Flier Symbol', callback = self.replot)
-        self.vertical = redRGUI.radioButtons(self.controlArea, label = 'Orientation:', buttons = ['Vertical', 'Horizontal'], callback = self.replot)
+        self.symbol = redRGUI.lineEdit(topArea, label = 'Flier Symbol', text = '+', callback = self.replot)
+        self.vertical = redRGUI.radioButtons(topArea, label = 'Orientation:', buttons = ['Vertical', 'Horizontal'], callback = self.replot)
         self.vertical.setChecked('Vertical')
         
-        self.myPlot = redRGUI.RedRmatplotlib.mplPlot(self.controlArea)
+        self.myPlot = redRGUI.RedRmatplotlib.mplBoxplot(self.controlArea)
         
     def gotData(self, data):
         if data:
@@ -41,5 +40,10 @@ class matplotlibBoxplot(OWRpy):
         if self.data:
             items = []
             for name in self.data.keys():
+                if name == 'row_names': continue
                 items.append(self.data[name])
-            plt.boxplot(items, notch = (str(self.plotNotch.getChecked()) == 'True'), sym = str(self.symbol.text()), vert = (str(self.vertical.getChecked()) == 'Vertical'))
+            try:
+                self.myPlot.makePlot(items, notch = str(self.plotNotch.getChecked()) == 'True', sym = str(self.symbol.text()), vert = str(self.vertical.getChecked()) == 'Vertical')
+            except Exception as inst:
+                print items
+                print inst
