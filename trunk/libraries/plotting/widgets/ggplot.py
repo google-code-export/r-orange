@@ -20,8 +20,8 @@ class ggplot(OWRpy):
             self.status.setText('R Libraries Not Loaded.')
             self.controlArea.setEnabled(False)
 
-        self.inputs = [('Input Data Frame', signals.RDataFrame, self.addDataFrame), ('Further Plot', signals.Plotting.RGGPlotPlot, self.gotNewPlot)]
-        self.outputs = [('Plot colleciton', signals.RGGPlotPlot)]
+        self.inputs = [('Input Data Frame', signals.RDataFrame, self.addDataFrame), ('Further Plot', signals.plotting.RGGPlotPlot, self.gotNewPlot)]
+        self.outputs = [('Plot colleciton', signals.plotting.RGGPlotPlot)]
         
         ## GUI
         
@@ -263,6 +263,6 @@ class ggplot(OWRpy):
         self.R(self.Rvariables['ggplot']+'<-'+self.Rvariables['ggplot']+'+'+fullCommand)
         self.Rplot('capture.output('+self.Rvariables['ggplot']+')')
         
-        newData = signals.RGGPlotPlot(data = self.Rvariables['ggplot'])
+        newData = signals.plotting.RGGPlotPlot(data = self.Rvariables['ggplot'])
         #newData.setOptionalData(
         self.rSend('Plot colleciton', newData)

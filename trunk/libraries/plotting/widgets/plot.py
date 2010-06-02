@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Generic plot is the basis of most RedR plotting.  This accepts fits, data tables, or other RedR outputs and attempts to plot them.  However, there is no guarantee that your data will plot correctly.</description>
 <tags>Plotting</tags>
-<icon>plot.png</icon>
+<icon>icons/plot.png</icon>
 
 """
 from OWRpy import * 
@@ -17,7 +17,7 @@ class plot(OWRpy):
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
         self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
-        self.inputs = [("x", signals.RVariable, self.processx), ('Plot Attributes', signals.Plotting.RPlotAttribute, self.gotAttribute, 'Multiple')]
+        self.inputs = [("x", signals.RVariable, self.processx), ('Plot Attributes', signals.plotting.RPlotAttribute, self.gotAttribute, 'Multiple')]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:')
@@ -28,12 +28,12 @@ class plot(OWRpy):
         redRGUI.button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
     def gotAttribute(self, data, id):
         print id
-        print data.getData()
+        
         if data:
             self.plotAttributes[id[0].widgetID] = data.getData()
         else:
             print 'removing signal '+str(id[0])
-            self.plotAttributes[id[0].widgetID = None
+            self.plotAttributes[id[0].widgetID] = None
     def processx(self, data):
         if data:
             self.data = data

@@ -19,7 +19,7 @@ class lm(OWRpy):
         self.processingComplete = 0
         
         self.inputs = [("data", signals.RDataFrame, self.processdata)]
-        self.outputs = [("lm Output", signals.stats.RLMFit), ('lm plot attribute', signals.Plotting.RPlotAttribute)]
+        self.outputs = [("lm Output", signals.stats.RLMFit), ('lm plot attribute', signals.plotting.RPlotAttribute)]
         
         #GUI
         
@@ -68,6 +68,6 @@ class lm(OWRpy):
         newData = signals.stats.RLMFit(data = self.Rvariables['lm'])
         self.rSend("lm Output", newData)
         
-        newPlotAtt = signals.Plotting.RPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
+        newPlotAtt = signals.plotting.RPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
         self.rSend('lm plot attribute', newPlotAtt)
         

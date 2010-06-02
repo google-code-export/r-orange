@@ -42,6 +42,11 @@ class Rtable(widgetState,QTableView):
         self.tm = MyTableModel(Rdata,self) 
         self.setModel(self.tm)
 
+    def columnCount(self):
+        if self.tm:
+            return self.tm.columnCount()
+        else:
+            return 0
 
     def sort(self, index):
         if index == self.oldSortingIndex:

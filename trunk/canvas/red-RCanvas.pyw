@@ -669,7 +669,7 @@ class MyStatusBar(QStatusBar):
         self.parentWidget.menuItemShowOutputWindow()
         
         
-class OrangeQApplication(QApplication):
+class RedRQApplication(QApplication):
     def __init__(self, *args):
         QApplication.__init__(self, *args)
 
@@ -715,7 +715,7 @@ def main(argv = None):
     # manager.start()
     # qApp.R = manager.Rclass()
 #####################Forked verions of R##############################
-    app = OrangeQApplication(sys.argv)
+    app = RedRQApplication(sys.argv)
     QCoreApplication.setOrganizationName("Red-r");
     QCoreApplication.setOrganizationDomain("red-r.com");
     QCoreApplication.setApplicationName("Red-r");
@@ -737,4 +737,5 @@ def main(argv = None):
 
 if __name__ == "__main__":
     # freeze_support()
+    
     sys.exit(main())
