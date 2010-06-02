@@ -1,7 +1,6 @@
-# Kyle R Covington
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import glob,os.path,redREnviron
+import glob,os.path,redREnviron,orngOutput
 
 
 
@@ -119,5 +118,8 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir']
 for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
     if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
     and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
-        registerRedRSignals(package)
+        try:
+            registerRedRSignals(package)
+        except:
+            orngOutput.printException()    
 
