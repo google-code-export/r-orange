@@ -14,6 +14,7 @@ class mplBoxplot(mplPlot):
         self.sym = sym
         
     def makePlot(self, data, notch = None, sym = None, vert = None, whis = None, positions = None, widths = None):
+        self.data = data
         if not notch:
             notch = self.notch
         if not sym:
@@ -34,3 +35,19 @@ class mplBoxplot(mplPlot):
             positions = positions,
             widths = widths)
         self.canvas.draw()
+    def getSettings(self):
+        r = {}
+        r['data'] = self.data
+        r['notch'] = self.notch
+        r['sym'] = self.sym
+        r['vert'] = self.vert
+        r['whis'] = self.whis
+        r['positions'] = self.positions
+        r['widths'] = self.widths
+        print r
+        return r
+    def loadSettings(self,data):
+        print data
+        if data['data']:
+            self.makePlot(data = data['data'], notch = data['notch'], sym = data['sym'], vert = data['vert'], whis = data['whis'], positions = data['positions'], widths = data['widths'])
+            

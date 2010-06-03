@@ -45,7 +45,7 @@ class survfit(OWRpy):
         if data:
             self.RFunctionParam_data=data.getData()
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
-            self.groupings.update(colnames)
+            self.groupings.update([''] + colnames)
             self.times.update(colnames)
             self.event.update(colnames)
             self.data = data
@@ -58,6 +58,8 @@ class survfit(OWRpy):
         formula = 'formula = Surv('+str(self.times.currentText())+','+str(self.event.currentText())+')'
         if str(self.groupings.currentText()) != '':
             formula += '~'+str(self.groupings.currentText())
+        else:
+            formula += '~ 1'
         injection.append(formula)
         self.formula = formula
         if str(self.RFunctionParamweights_lineEdit.text()) != '':

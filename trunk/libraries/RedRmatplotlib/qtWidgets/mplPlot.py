@@ -1,23 +1,5 @@
 ## mplPlot.  a qtClass that embeds a matplotlib plot.  Heavily copied from Eli Bendersky's blog "matplotlib with PyQt GUI's (http://eli.thegreenplace.net/files/prog_code/qt_mpl_bars.py.txt) modified by Kyle R Covington kyle@red-r.org
-
-
-"""
-This demo demonstrates how to embed a matplotlib (mpl) plot 
-into a PyQt4 GUI application, including:
-
-* Using the navigation toolbar
-* Adding data to the plot
-* Dynamically modifying the plot's properties
-* Processing mpl events
-* Saving the plot to a file from a menu
-
-The main goal is to serve as a basis for developing rich PyQt GUI
-applications featuring mpl plots (using the mpl OO API).
-
-Eli Bendersky (eliben@gmail.com)
-License: this code is in the public domain
-Last modified: 19.01.2009
-"""
+from redRGUI import widgetState
 import sys, os, random
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -28,7 +10,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as Naviga
 from matplotlib.figure import Figure
 
 
-class mplPlot(QWidget):
+class mplPlot(widgetState, QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         #self.setWindowTitle('Demo: PyQt with matplotlib')
@@ -36,6 +18,7 @@ class mplPlot(QWidget):
         if parent.layout():
             parent.layout().addWidget(self)
             
+        self.data = None
         #self.create_menu()
         self.create_main_frame()
         #self.create_status_bar()

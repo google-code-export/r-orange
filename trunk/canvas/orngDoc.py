@@ -718,9 +718,10 @@ class SchemaDoc(QWidget):
             inIndex = line.getAttribute("inWidgetIndex")
             outIndex = line.getAttribute("outWidgetIndex")
             #print inIndex, outIndex, '###################HFJSDADSHFAK#############'
-            inIndex = line.getAttribute("inWidgetIndex")
-            outIndex = line.getAttribute("outWidgetIndex")
+            
             if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
+                print inIndex, outIndex 
+                
                 raise Exception
             if freeze: enabled = 0
             else:      enabled = int(line.getAttribute("enabled"))
@@ -731,7 +732,13 @@ class SchemaDoc(QWidget):
                 print inIndex, outIndex, 'Settings template ID to these values'
             inWidget = self.getWidgetByID(inIndex)
             outWidget = self.getWidgetByID(outIndex)
+            
+            #print inWidget, outWidget, '#########$$$$$#########$$$$$$#######'
             if inWidget == None or outWidget == None:
+                print 'Expected ID\'s', inIndex, outIndex
+                print '\n\nAvailable indicies are listed here.\'\''
+                for widget in self.widgets:
+                    print widget.instance.widgetID
                 failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
                 loadedOk = 0
                 continue
@@ -758,6 +765,7 @@ class SchemaDoc(QWidget):
             inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
             outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
 
+            print 'Settings', settings
             tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
             int(widget.getAttribute("yPos")) + addY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
             
@@ -778,9 +786,11 @@ class SchemaDoc(QWidget):
                     continue
             tempWidget.updateWidgetState()
             ## if tmp then adjust the widgetID to match the sessionID
+            #print 'Widget ID orriginal is ', widget.getAttribute('widgetID')
+            tempWidget.instance.widgetID = widget.getAttribute('widgetID')  ## reset the widgetID.
             if tmp:
                 tempWidget.instance.widgetID += '_'+str(self.sessionID)
-                print tempWidget.instance.widgetID
+                #print tempWidget.instance.widgetID
             tempWidget.instance.setLoadingSavedSession(True)
             lpb += 1
             loadingProgressBar.setValue(lpb)

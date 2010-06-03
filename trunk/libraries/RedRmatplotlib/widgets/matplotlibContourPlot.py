@@ -28,6 +28,7 @@ class matplotlibContourPlot(OWRpy):
         self.lineWidths = redRGUI.lineEdit(optArea, label = 'Line Widths', toolTip = 'An optional list of line widths.  Separate by comma.', callback = self.makePlot)
         
         self.plot = redRGUI.RedRmatplotlib.mplContour(self.controlArea)
+        redRGUI.button(self.bottomAreaRight, 'Replot', callback = self.makePlot)
         
     def gotData(self, data):
         if data:

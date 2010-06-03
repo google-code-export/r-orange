@@ -37,7 +37,7 @@ class dataEntry(OWRpy):
         # self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
         # redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
         
-        self.columnDialog = QDialog()
+        self.columnDialog = QDialog(self)
         self.columnDialog.setLayout(QVBoxLayout())
         self.columnDialog.hide()
         self.columnNameLineEdit = redRGUI.lineEdit(self.columnDialog, label = 'Column Name:')
