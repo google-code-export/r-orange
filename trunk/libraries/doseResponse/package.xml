@@ -1,7 +1,7 @@
 <main>
     <Name>doseResonse</Name>
     <Author>Kyle R Covington kyle@red-r.org</Author>
-    <RLibraries>drc<RLibraries>
+    <RLibraries>drc</RLibraries>
     <Version>
         <Number>1</Number>
         <Stability>Good</Stability>

@@ -17,18 +17,26 @@ class packageManager:
         self.version = redREnviron.version['REDRVERSION']
         (self.updatePackages, self.localPackages, self.sitePackages) = self.getPackages()
         
+    def resolveRDependencies(self, packageList):
+        import RSession
+        RSession.require_librarys(packageList)
     def installRRP(self,packageName,filename):
 
         installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
         print 'installDinstallDir', installDir
         import shutil
-        shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying        
+        shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying
         
         os.mkdir(installDir) ## make the directory to store the zipfile into
         zfile = zipfile.ZipFile(filename, "r" )
         zfile.extractall(installDir)
         zfile.close()
-        ## here we need to unzip the zip file and place it into the tempDir
+        
+        ## now process the requires for R
+        
+        pack = self.readXML(os.path.join(installDir, 'package.xml'))
+        Rpacks = self.getXMLText(pack.getElementsByTagName('RLibraries')[0].childNodes)
+        self.resolveRDependencies(Rpacks.split(','))
         
     def getPackageInfo(self,filename):
         zfile = zipfile.ZipFile(filename, "r" )
@@ -104,6 +112,7 @@ class packageManager:
         return rc
     def readXML(self, fileName):
         f = open(fileName, 'r')
+        print fileName
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         return mainTabs
