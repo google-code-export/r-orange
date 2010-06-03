@@ -1177,8 +1177,12 @@ class SignalDialog(QDialog):
                 continue
             for inS in inputs:
                 inType = self.inWidget.instance.getInputType(inS.name)
+                print outType, inType
+                print issubclass(outType, inType)
+                print '######'
                 if inType == None:
-                    continue        #print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
+                    print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
+                    continue
                 if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
                     possibleLinks.append((outS.name, inS.name))
                     continue
@@ -1221,6 +1225,7 @@ class SignalDialog(QDialog):
             if not self.outWidget.instance.hasOutputName(s.name):
                 return -1
 
+        print majorInputs, majorOutputs, minorInputs, minorOutputs
         pl1 = self.getPossibleConnections(majorOutputs, majorInputs)
         pl2 = self.getPossibleConnections(majorOutputs, minorInputs)
         pl3 = self.getPossibleConnections(minorOutputs, majorInputs)
@@ -1228,7 +1233,9 @@ class SignalDialog(QDialog):
 
         all = pl1 + pl2 + pl3 + pl4
 
-        if not all: return 0
+        if not all: 
+            print all, 'All'
+            return 0
 
         # try to find a link to any inputs that hasn't been previously connected
         self.allSignalsTaken = 1
@@ -1247,6 +1254,7 @@ class SignalDialog(QDialog):
                 self.multiplePossibleConnections = 1
             if len(pl) > 0:     # when we find a first non-empty list we stop searching
                 break
+        print all, 'all'
         return len(all) > 0
 
     def addLink(self, outName, inName):

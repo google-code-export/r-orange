@@ -23,7 +23,7 @@ class dataEntry(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs = [('Data Table', signals.StructuredDict, self.processDF)]
+        self.inputs = [('Data Table', signals.RDataFrame, self.processDF)]
         self.outputs = [('Data Table', signals.RDataFrame)] # trace problem with outputs
         #GUI.
         
@@ -89,10 +89,10 @@ class dataEntry(OWRpy):
             return
     def populateTable(self):
         #pythonData = self.R('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
-        pythonData = self.data
+        pythonData = self.savedData.convertToStructuredDict()
         self.dataTable.setTable(pythonData)
         print 'Done Table Set'
-        dims = (len(self.data[self.data.keys()[0]]), len(self.data.keys()))
+        dims = (len(self.data[data.keys()[0]]), len(data.keys()))
         self.colCount = dims[1]+1
         self.rowCount = dims[0]
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
@@ -160,12 +160,14 @@ class dataEntry(OWRpy):
         # self.status.setText('Classes Set')
     def commitTable(self):
         #run through the table and make the output
-        trange = self.dataTable.selectedRanges()[0]
-        if trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow():
+        try:
+            trange = self.dataTable.selectedRanges()[0]
+        except:
+            trange = None
+        if trange and trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow():
             rowi = range(0, self.maxRow+1)
             coli = range(0, self.maxCol+1)
         else:
-
             rowi = range(trange.topRow(), trange.bottomRow())
             coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
