@@ -18,7 +18,7 @@ from PyQt4.QtGui import *
 
 mutex = QMutex()
 
-def Rcommand(query, silent = False, wantType = None, listOfLists = True):
+def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     
     unlocked = mutex.tryLock()
     if not unlocked:
@@ -56,13 +56,34 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
     elif wantType == 'list':
         if type(output) in [str, int, float, bool]:
             output =  [output]
-        elif type(output) in [list, numpy.ndarray] and len(output) == 1 and not listOfLists:
-            output = output[0]
-            
+        elif type(output) in [dict]:
+            newOutput = []
+            for name in output.keys():
+                nl = output[name]
+                
+                newOutput.append(nl)
+                
+            output = newOutput
         else:
-            pass
+            print 'Warning, conversion was not of a known type;', str(type(output))
+    elif wantType == 'listOfLists' or listOfLists:
+        if type(output) in [str, int, float, bool]:
+            output =  [[output]]
+        elif type(output) in [dict]:
+            newOutput = []
+            for name in output.keys():
+                nl = output[name]
+                if type(nl) not in [list]:
+                    nl = [nl]
+                newOutput.append(nl)
+                
+            output = newOutput
+        elif type(output) in [list, numpy.ndarray] and type(output[0]) not in [list]:
+            output = [output]
+        else:
+            print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'dict':
-        if type(output) == type(''):
+        if type(output) in [str, int, float, bool]:
             output =  {'output':[output]}
         elif type(output) == type([]):
             
@@ -71,7 +92,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
             #print '#--#'+str(output)
             for key in output:
                 if type(output[key]) not in [list]:  # the key does not point to a list so now we make some choices
-                    if type(output[key]) not in [list, dict]:
+                    if type(output[key]) in [str, int, float, bool]:
                         nd = output.copy()[key]
                         print nd, output[key]
                         output[key] = [nd]  ## forces coersion to a list
@@ -82,7 +103,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
                             nd.append(output[key][key2])
                         output[key] = nd
         else:
-            pass
+            print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'array': # want a numpy array
         if type(output) == list:
             output = numpy.array(output)
@@ -98,7 +119,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
         elif type(output) in [numpy.ndarray]:
             pass
         else:
-            print type(output), 'Non normal type, please add to RSession array logic'
+            print 'Warning, conversion was not of a known type;', str(type(output))
             
     else:
         pass
