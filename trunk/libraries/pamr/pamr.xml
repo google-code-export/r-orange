@@ -1,0 +1,13 @@
+<main>
+    <Version>1.5, 1.7, 2.0, trunk</Version>
+    <PackageName>pamr/pamr-1.rrp</PackageName>
+    <Repository>http://r-orange.googlecode.com/svn/</Repository>
+    <Dependencies>affy/affy-1.rrp</Dependencies>
+    <menuTags>
+        <group name = 'Bioinformatics'>
+            <group name = 'PAMR'>
+                <Description>Generates Dose Response Curves</Description>
+            </group>
+        </group>
+    </menuTags>
+</main>

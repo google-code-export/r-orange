@@ -1,0 +1,13 @@
+<main>
+    <Version>1.5, 1.7, 2.0, trunk</Version>
+    <PackageName>doseResponse/doseResponse-1.rrp</PackageName>
+    <Repository>http://r-orange.googlecode.com/svn/</Repository>
+    <Dependencies>None</Dependencies>
+    <menuTags>
+        <group name = 'Stats'>
+            <group name = 'Dose Response'>
+                <Description>Generates Dose Response Curves</Description>
+            </group>
+        </group>
+    </menuTags>
+</main>
