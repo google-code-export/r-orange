@@ -13,7 +13,7 @@ from OWRpy import *
 class dataEntry(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, parent, signalManager, "Data Entry", wantMainArea = 0, resizingEnabled = 1)
 
         self.rowCount = 1
         self.colCount = 1
@@ -23,19 +23,19 @@ class dataEntry(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs = [('Data Table', signals.RDataFrame, self.processDF)]
+        self.inputs = [('Data Table', signals.StructuredDict, self.processDF)]
         self.outputs = [('Data Table', signals.RDataFrame)] # trace problem with outputs
         #GUI.
         
         
-        box = redRGUI.groupBox(self.GUIDialog, label = "Options")
+        # box = redRGUI.groupBox(self.GUIDialog, label = "Options")
         redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
-        self.rowHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
+        # self.rowHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Column Headers'])
-        self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
+        #self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders.setChecked(['Use Column Headers'])
-        self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
-        redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
+        # self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
+        # redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
         
         self.columnDialog = QDialog()
         self.columnDialog.setLayout(QVBoxLayout())
@@ -43,13 +43,15 @@ class dataEntry(OWRpy):
         self.columnNameLineEdit = redRGUI.lineEdit(self.columnDialog, label = 'Column Name:')
         redRGUI.button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
         redRGUI.button(self.bottomAreaRight, "Add Column", callback = self.columnDialog.show)
+        
+        
         box = redRGUI.groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         
 
         
-        self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount+1)
+        self.dataTable = redRGUI.base.table(box, data = None, rows = self.rowCount+1, columns = self.colCount)
         if self.dataTable.columnCount() < 1:
             self.dataTable.setColumnCount(1)
             self.dataTable.setHorizontalHeaderLabels(['Rownames'])
@@ -59,20 +61,22 @@ class dataEntry(OWRpy):
         
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
-        self.window = QDialog(self)
-        self.window.setLayout(QVBoxLayout())
-        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
+        # self.window = QDialog(self)
+        # self.window.setLayout(QVBoxLayout())
+        # self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
         self.resize(700,500)
         self.move(300, 25)
     def commitNewColumn(self):
         labels = []
-        for i in range(self.colCount):
+        for i in range(self.dataTable.columnCount()):
             item = self.dataTable.horizontalHeaderItem(i)
-            labels.append(item.text())
+            
+            if item:
+                labels.append(item.text())
         labels.append(str(self.columnNameLineEdit.text()))
-        self.dataTable.setColumnCount(self.colCount+1)
+        self.dataTable.setColumnCount(self.dataTable.columnCount()+1)
         self.dataTable.setHorizontalHeaderLabels(labels)
-        self.colCount += 1
+        self.colCount = self.dataTable.columnCount()
         self.columnNameLineEdit.clear()
         self.columnDialog.hide()
     def processDF(self, data):
@@ -83,9 +87,11 @@ class dataEntry(OWRpy):
         else:
             return
     def populateTable(self):
-        pythonData = self.R('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
+        #pythonData = self.R('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
+        pythonData = self.data
         self.dataTable.setTable(pythonData)
-        dims = self.R('dim('+self.data+')', wantType = 'list')
+        print 'Done Table Set'
+        dims = (len(self.data[self.data.keys()[0]]), len(self.data.keys()))
         self.colCount = dims[1]+1
         self.rowCount = dims[0]
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
@@ -108,49 +114,49 @@ class dataEntry(OWRpy):
         if col > self.maxCol: self.maxCol = col
         self.dataTable.setCurrentCell(row+1, col)
 
-    def setCustomClasses(self):
-        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
-        for j in range(1, self.colCount+1):
-            cb = QComboBox()
-            item = self.dataTable.item(0, j)
-            if item == None:
-                newitem = QTableWidgetItem(str('NA'))
-            else:
-                newitem = QTableWidgetItem(str(item.text()))
-            cb.addItems(['Default', 'Factor', 'Numeric', 'Character'])
-            self.classTable.setCellWidget(j-1, 1, cb)
-            newitem.setToolTip(str('Set the data type for column '+str(newitem.text())))
-            self.classTable.setItem(j-1, 0, newitem)
+    # def setCustomClasses(self):
+        # self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
+        # for j in range(1, self.colCount+1):
+            # cb = QComboBox()
+            # item = self.dataTable.item(0, j)
+            # if item == None:
+                # newitem = QTableWidgetItem(str('NA'))
+            # else:
+                # newitem = QTableWidgetItem(str(item.text()))
+            # cb.addItems(['Default', 'Factor', 'Numeric', 'Character'])
+            # self.classTable.setCellWidget(j-1, 1, cb)
+            # newitem.setToolTip(str('Set the data type for column '+str(newitem.text())))
+            # self.classTable.setItem(j-1, 0, newitem)
             
-        redRGUI.button(self.window, 'Set Classes', callback = self.setClasses)
-        redRGUI.button(self.window, 'Clear Classes', callback = self.clearClasses)
-        self.window.show()
-    def clearClasses(self):
-        self.classes = None
-        self.window.hide()
+        # redRGUI.button(self.window, 'Set Classes', callback = self.setClasses)
+        # redRGUI.button(self.window, 'Clear Classes', callback = self.clearClasses)
+        # self.window.show()
+    # def clearClasses(self):
+        # self.classes = None
+        # self.window.hide()
         
-    def setClasses(self):
-        if self.classTable.rowCount() != self.maxCol:
-            print self.classTable.rowCount()
-            print self.maxCol
-            self.window.hide()
-            self.setCustomClasses()
-            return
-        else:
-            self.classes = []
-            for j in range(0, self.classTable.rowCount()):
-                txt = self.classTable.cellWidget(j,1)
-                ct = txt.currentText()
-                if ct == 'Default':
-                    self.classes.append(('', ''))
-                elif ct == 'Factor':
-                    self.classes.append(('as.factor(', ')'))
-                elif ct == 'Numeric':
-                    self.classes.append(('as.numeric(', ')'))
-                elif ct == 'Character':
-                    self.classes.append(('as.character(', ')'))
-        self.window.hide()
-        self.status.setText('Classes Set')
+    # def setClasses(self):
+        # if self.classTable.rowCount() != self.maxCol:
+            # print self.classTable.rowCount()
+            # print self.maxCol
+            # self.window.hide()
+            # self.setCustomClasses()
+            # return
+        # else:
+            # self.classes = []
+            # for j in range(0, self.classTable.rowCount()):
+                # txt = self.classTable.cellWidget(j,1)
+                # ct = txt.currentText()
+                # if ct == 'Default':
+                    # self.classes.append(('', ''))
+                # elif ct == 'Factor':
+                    # self.classes.append(('as.factor(', ')'))
+                # elif ct == 'Numeric':
+                    # self.classes.append(('as.numeric(', ')'))
+                # elif ct == 'Character':
+                    # self.classes.append(('as.character(', ')'))
+        # self.window.hide()
+        # self.status.setText('Classes Set')
     def commitTable(self):
         #run through the table and make the output
         trange = self.dataTable.selectedRanges()[0]
@@ -162,35 +168,35 @@ class dataEntry(OWRpy):
             rowi = range(trange.topRow(), trange.bottomRow())
             coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
-        if self.dataTable.item(rowi[0], coli[0]) == None: 
+        # if self.dataTable.item(rowi[0], coli[0]) == None: 
 
-            self.rowHeaders.setChecked(['Use Row Headers'])
-            self.rowHeaders.setChecked(['Use Column Headers'])
+            # self.rowHeaders.setChecked(['Use Row Headers'])
+            # self.rowHeaders.setChecked(['Use Column Headers'])
         rownames = {}  
         colnames = {}        
-        if 'Use Row Headers' in self.rowHeaders.getChecked():
+        #if 'Use Row Headers' in self.rowHeaders.getChecked():
             
-            for i in rowi:
-                item = self.dataTable.item(i, coli[0])
-                if item != None:
-                    thisText = item.text()
-                else: thisText = str(i)
-                if thisText == None or thisText == '':
-                    thisText = str(i)
-                    
-                rownames[str(i)] = (str(thisText))
-            coli = coli[1:] #index up the cols
+        for i in rowi:
+            item = self.dataTable.item(i, coli[0])
+            if item != None:
+                thisText = item.text()
+            else: thisText = str(i)
+            if thisText == None or thisText == '':
+                thisText = str(i)
+                
+            rownames[str(i)] = (str(thisText))
+        coli = coli[1:] #index up the cols
 
-        if 'Use Column Headers' in self.rowHeaders.getChecked():
-            for j in coli:
-                item = self.dataTable.horizontalHeaderItem(j)
-                if item != None:
-                    thisText = item.text()
-                else: thisText = '"'+str(j)+'"'
-                if thisText == None or thisText == '':
-                    thisText = '"'+str(j)+'"'
-                thisText = thisText.split(' ')[0]
-                colnames[str(j)] = (str(thisText))
+       # if 'Use Column Headers' in self.rowHeaders.getChecked():
+        for j in coli:
+            item = self.dataTable.horizontalHeaderItem(j)
+            if item != None:
+                thisText = item.text()
+            else: thisText = '"'+str(j)+'"'
+            if thisText == None or thisText == '':
+                thisText = '"'+str(j)+'"'
+            thisText = thisText.split(' ')[0]
+            colnames[str(j)] = (str(thisText))
 
         rinsertion = []
         
@@ -198,8 +204,8 @@ class dataEntry(OWRpy):
             element = ''
             if colnames:
                 element += colnames[str(j)]+'='
-            if self.classes:
-                element += self.classes[j-1][0]
+            # if self.classes:
+                # element += self.classes[j-1][0]
             element += 'c('
             inserts = []
             for i in rowi:
@@ -246,9 +252,10 @@ class dataEntry(OWRpy):
         self.newData = signals.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
         
         self.rSend('Data Table', self.newData)
-    def loadCustomSettings(self,settings=None):
-        print settings
-        if settings and 'newData' in settings.keys():
-            if self.newData != None:
-                self.processDF(self.newData)
+        self.processDF(self.newData)  ## a good way to ensure loading and saving.
+    # def loadCustomSettings(self,settings=None):
+        # print settings
+        # if settings and 'newData' in settings.keys():
+            # if self.newData != None:
+                # self.processDF(self.newData)
             

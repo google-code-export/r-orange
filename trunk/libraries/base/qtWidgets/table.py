@@ -34,16 +34,20 @@ class table(widgetState,QTableWidget):
         if not keys:
             keys = [str(key) for key in data.keys()]
         self.setHidden(True)
+        print 'Set data'
         self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
+        print 'Set Table'
         self.clear()
         self.setRowCount(len(data[data.keys()[0]]))
         self.setColumnCount(len(data.keys()))
 
+        print 'Set Labels'
         self.setHorizontalHeaderLabels(keys)
         if 'row_names' in self.data.keys(): ## special case if the keyword row_names is present we want to populate the rownames of the table
             self.setVerticalHeaderLabels([str(item) for item in self.data['row_names']])
+        print 'Set Items'
         n = 0
         for key in keys:
             m = 0
@@ -52,7 +56,7 @@ class table(widgetState,QTableWidget):
                 self.setItem(m, n, newitem)
                 m += 1
             n += 1
-        
+        print 'Done'
         self.setHidden(False)
         qApp.restoreOverrideCursor()
 
