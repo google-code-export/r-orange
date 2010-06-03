@@ -1,6 +1,7 @@
 <package>
     <Name>affy</Name>
     <Author>Kyle R Covington kyle@red-r.org and Anup Parikh anup@red-r.org</Author>
+    <RLibraries>affy, limma, sigPathway</RLibraries>
     <Version>
         <Number>1</Number>
         <Stability>Good</Stability>

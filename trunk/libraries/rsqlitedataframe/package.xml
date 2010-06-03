@@ -1,6 +1,7 @@
 <package>
     <Name>rsqlitedataframe</Name>
     <Author>Kyle R Covington kyle@red-r.org</Author>
+    <RLibraries>RSQLite</RLibraries>
     <Version>
         <Number>1</Number>
         <Stability>Good</Stability>

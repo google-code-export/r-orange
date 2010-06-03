@@ -8,8 +8,8 @@
 """
 from OWRpy import *
 import redRGUI
-
-class writeEset(OWRpy):
+## depricated may bring back later
+    class writeEset(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Write Eset")
         

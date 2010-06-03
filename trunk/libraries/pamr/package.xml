@@ -1,20 +1,22 @@
-<package>
-    <Name>plotting</Name>
+<main>
+    <Name>pamr</Name>
     <Author>Kyle R Covington kyle@red-r.org</Author>
-    <RLibraries>graphics, ggplot2, asuR, stats</RLibraries>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <RLibraries>pamr</RLibraries>
     <Version>
         <Number>1</Number>
         <Stability>Generally Good Some Experimental</Stability>
         <Date>2010-05-30</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
-    <Dependencies></Dependencies>
-    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Dependencies>affy</Dependencies>
     <Summary>Plotting widgets and signals</Summary>
     <Description>Package contains plotting widgets and signals.  Some of these may include non-R based plotting tools that make use of Python plotting libraries.  In general, most R objects can be plotted using Generic Plot, though this is not guaranteed.</Description>
     <menuTags>
-        <group name="Plotting">
-            <Description>Visualizing Data</Description>
+        <group name = 'Bioinformatics'>
+            <group name = 'PAMR'>
+                <Description>Generates Dose Response Curves</Description>
+            </group>
         </group>
     </menuTags>
-</package>
+</main>

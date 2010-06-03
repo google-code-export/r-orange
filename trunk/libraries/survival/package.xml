@@ -1,6 +1,7 @@
 <package>
     <Name>survival</Name>
     <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
+    <RLibraries>survival</RLibraries>
     <Version>
         <Number>1</Number>
         <Stability>Good</Stability>
