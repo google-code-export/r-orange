@@ -46,11 +46,8 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = True):
         output = rpy.r(query)
     except rpy.RPyRException as inst:
         print inst
-        # print showException
-        #self.status.setText('Error occured!!')
         mutex.unlock()
         raise rpy.RPyRException(str(inst))
-        
         return None # now processes can catch potential errors
         
     

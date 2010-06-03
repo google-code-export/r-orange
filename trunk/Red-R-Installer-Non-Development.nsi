@@ -20,14 +20,14 @@
 !system '"${SubWCRev}" "${Red-RDIR}" "${Red-RDIR}\version.tpl" "${Red-RDIR}\version.txt"'
 
 ; get revision number and date
-; creates variables ${NAME}-${VERSION}, ${DATE}, ${SVNVERSION}
+; creates variables ${NAME}-${REDRVERSION}, ${DATE}, ${SVNVERSION}
 !include "${Red-RDIR}\version.txt"
 
-Name "${NAME}-${VERSION}"
+Name "${NAME}-${REDRVERSION}"
 
 ;---------------------------------
 ; General
-  OutFile "C:\Users\anup\Documents\red\develop\installer\${NAME}-${VERSION}-${DATE}.r${SVNVERSION}.exe"
+  OutFile "C:\Users\anup\Documents\red\develop\installer\${NAME}-${REDRVERSION}-${DATE}.r${SVNVERSION}.exe"
   ;Default installation folder
   InstallDir "$PROGRAMFILES\Red-R" ;"C:\Program Files\Red-R"
 
@@ -68,29 +68,29 @@ Section "" ;this is the section that will install Red-R and all of it's files
 	not_installed_before:
 
 	
-    SetOutPath "$INSTDIR\${NAME}-${VERSION}"
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}"
 	File ${Red-RDIR}\version.txt
 
-	SetOutPath "$INSTDIR\${NAME}-${VERSION}\bin"
+	SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\bin"
     File /r /x .svn ${BIN}\*
     
-    SetOutPath "$INSTDIR\${NAME}-${VERSION}\canvas\icons"
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons"
 	File /r /x .svn /x *.pyc /x .nsi ${CANVASICONS}\*
     
-    SetOutPath "$INSTDIR\${NAME}-${VERSION}\libraries\base"
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\libraries\base"
 	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\base\*
     
-    SetOutPath "$INSTDIR\${NAME}-${VERSION}\libraries\plotting"
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\libraries\plotting"
 	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\plotting\*
     
-    SetOutPath "$INSTDIR\${NAME}-${VERSION}\libraries\stats"
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\libraries\stats"
 	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\stats\*
 
-    SetOutPath "$INSTDIR\${NAME}-${VERSION}\Examples"
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\Examples"
 	File /r /x .svn /x *.pyc /x .nsi ${EXAMPLES}\*
 
 
-    AccessControl::GrantOnFile "$INSTDIR\${NAME}-${VERSION}" "(BU)" "FullAccess" 
+    AccessControl::GrantOnFile "$INSTDIR\${NAME}-${REDRVERSION}" "(BU)" "FullAccess" 
     
     IfFileExists $INSTDIR\R\README.${RVER}.* has_R
         SetOutPath $INSTDIR\R
@@ -107,45 +107,45 @@ Section "" ;this is the section that will install Red-R and all of it's files
     CreateDirectory "$DOCUMENTS\Red-R"
     CreateDirectory "$DOCUMENTS\Red-R\Templates"
     CreateDirectory "$DOCUMENTS\Red-R\Schemas"
-	CreateDirectory "$SMPROGRAMS\Red-R\${NAME}-${VERSION}"
-	CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${VERSION}\Red-R Canvas.lnk" "$INSTDIR\${NAME}-${VERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${VERSION}\canvas\icons\orange.ico" 0
-    CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${VERSION}\Uninstall Red-R.lnk" "$INSTDIR\${NAME}-${VERSION}\uninst ${NAME}-${VERSION}.exe"
+	CreateDirectory "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}"
+	CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Red-R Canvas.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\orange.ico" 0
+    CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Uninstall Red-R.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\uninst ${NAME}-${REDRVERSION}.exe"
 
-	CreateShortCut "$DESKTOP\Red-R Canvas ${NAME}-${VERSION}.lnk" "$INSTDIR\${NAME}-${VERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${VERSION}\canvas\icons\orange.ico" 0
+	CreateShortCut "$DESKTOP\Red-R Canvas ${NAME}-${REDRVERSION}.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\orange.ico" 0
 	
 ;-------------------------
 ; Write the registry settings
-	; WriteRegStr SHELL_CONTEXT "SOFTWARE\Red-R\${NAME}-${VERSION}" "" "$INSTDIR\${NAME}-${VERSION};$INSTDIR\${NAME}-${VERSION}\OrangeWidgets$INSTDIR\${NAME}-${VERSION}\OrangeCanvas"
+	; WriteRegStr SHELL_CONTEXT "SOFTWARE\Red-R\${NAME}-${REDRVERSION}" "" "$INSTDIR\${NAME}-${REDRVERSION};$INSTDIR\${NAME}-${REDRVERSION}\OrangeWidgets$INSTDIR\${NAME}-${REDRVERSION}\OrangeCanvas"
 	
 ;-------------------------
 ; Write the registry settings Uninstall
     
-    WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${VERSION}" "DisplayName" "${NAME}-${VERSION}"
+    WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${REDRVERSION}" "DisplayName" "${NAME}-${REDRVERSION}"
     
-	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${VERSION}" "UninstallString" '"$INSTDIR\${NAME}-${VERSION}\uninst ${NAME}-${VERSION}.exe"'
-	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${VERSION}" "Publisher" "Red-R Core Development Team"
+	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${REDRVERSION}" "UninstallString" '"$INSTDIR\${NAME}-${REDRVERSION}\uninst ${NAME}-${REDRVERSION}.exe"'
+	WriteRegStr SHELL_CONTEXT "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${REDRVERSION}" "Publisher" "Red-R Core Development Team"
     
 
 	WriteRegStr HKEY_CLASSES_ROOT ".rrs" "" "Red R Canvas"
 	WriteRegStr HKEY_CLASSES_ROOT ".rrp" "" "Red R Canvas"
 	WriteRegStr HKEY_CLASSES_ROOT ".rrts" "" "Red R Canvas"
-	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${NAME}-${VERSION}\canvas\icons\redrOWS.ico"
-	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$INSTDIR\${NAME}-${VERSION}\bin\red-RCanvas.exe "%1"';name is appended into the sys.argv variables for opening by Red-R
+	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\redrOWS.ico"
+	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe "%1"';name is appended into the sys.argv variables for opening by Red-R
     
-	WriteUninstaller "$INSTDIR\${NAME}-${VERSION}\uninst ${NAME}-${VERSION}.exe"
+	WriteUninstaller "$INSTDIR\${NAME}-${REDRVERSION}\uninst ${NAME}-${REDRVERSION}.exe"
 
 SectionEnd
 
 Section Uninstall
     MessageBox MB_YESNO "Are you sure you want to remove Red-R?" /SD IDYES IDNO end
 	
-    Delete "$INSTDIR\uninst ${NAME}-${VERSION}.exe"
+    Delete "$INSTDIR\uninst ${NAME}-${REDRVERSION}.exe"
     
     RmDir /r /REBOOTOK "$INSTDIR"
 	
-    RmDir /r /REBOOTOK "$SMPROGRAMS\Red-R\${NAME}-${VERSION}"
+    RmDir /r /REBOOTOK "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}"
     
-    MessageBox MB_YESNO "Would you like to remove your Red-R ${NAME}-${VERSION} settings?" /SD IDYES IDNO remove_keys
+    MessageBox MB_YESNO "Would you like to remove your Red-R ${NAME}-${REDRVERSION} settings?" /SD IDYES IDNO remove_keys
     
         ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
         StrCmp $0 "" 0 +2
@@ -155,10 +155,10 @@ Section Uninstall
 	
     remove_keys:
 
-    DeleteRegKey SHELL_CONTEXT "SOFTWARE\Red-R\${NAME}-${VERSION}"
-    DeleteRegKey SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${VERSION}"
+    DeleteRegKey SHELL_CONTEXT "SOFTWARE\Red-R\${NAME}-${REDRVERSION}"
+    DeleteRegKey SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${REDRVERSION}"
 	
-	Delete "$DESKTOP\Red-R Canvas ${NAME}-${VERSION}.lnk"
+	Delete "$DESKTOP\Red-R Canvas ${NAME}-${REDRVERSION}.lnk"
 
 	DeleteRegKey HKEY_CLASSES_ROOT ".rrs"
 	DeleteRegKey HKEY_CLASSES_ROOT "Red R Canvas"
@@ -166,14 +166,14 @@ Section Uninstall
     ; IfErrors jumpto_iferror 
         IfRebootFlag jumpto_IfRebootFlag jumpto_IfNoRebootFlag
         jumpto_IfRebootFlag:
-            MessageBox MB_OK "Red-R ${NAME}-${VERSION} has been successfully removed from your system.$\r$\nYou may need to reboot your machine." /SD IDOK
+            MessageBox MB_OK "Red-R ${NAME}-${REDRVERSION} has been successfully removed from your system.$\r$\nYou may need to reboot your machine." /SD IDOK
             Goto end
         jumpto_IfNoRebootFlag:
-            MessageBox MB_OK "Red-R ${NAME}-${VERSION} has been successfully removed from your system." /SD IDOK
+            MessageBox MB_OK "Red-R ${NAME}-${REDRVERSION} has been successfully removed from your system." /SD IDOK
             Goto end
         
     ; jumpto_iferror:
-        ; MessageBox MB_OK "Red-R ${NAME}-${VERSION} Error!" /SD IDOK
+        ; MessageBox MB_OK "Red-R ${NAME}-${REDRVERSION} Error!" /SD IDOK
 
    end:
 SectionEnd

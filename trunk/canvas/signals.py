@@ -75,25 +75,30 @@ class BaseRedRVariable:
 
 ##############################################################
 
-def registerRedRSignals(package):
-    # print '|#| registerRedRSignals for %s' % package
+def registerRedRSignals():
     import imp, sys
-    # print sys.path
-    m = imp.new_module(package)
-    directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'signalClasses')
-    for filename in glob.iglob(os.path.join(directory,  "*.py")):
-        # print 'import filename', filename
-        if os.path.isdir(filename) or os.path.islink(filename):
+    for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+        if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+        and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
             continue
-        signalClass = os.path.basename(filename).split('.')[0]
-        RedRSignals.append(signalClass)
-        c = forname(signalClass,signalClass)
-        # print c, 'forname return'
-        # print package, 'package'
-        setattr(c,'__package__',package)
-        setattr(m, signalClass,c)
-    setattr(current_module,package,m)
-    
+        try:
+            m = imp.new_module(package)
+            directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'signalClasses')
+            for filename in glob.iglob(os.path.join(directory,  "*.py")):
+                # print 'import filename', filename
+                if os.path.isdir(filename) or os.path.islink(filename):
+                    continue
+                signalClass = os.path.basename(filename).split('.')[0]
+                RedRSignals.append(signalClass)
+                c = forname(signalClass,signalClass)
+                # print c, 'forname return'
+                # print package, 'package'
+                setattr(c,'__package__',package)
+                setattr(m, signalClass,c)
+            setattr(current_module,package,m)
+        except:
+            orngOutput.printException()    
+
 def forname(modname, classname):
     ''' Returns a class of "classname" from module "modname". '''
     module = __import__(modname)
@@ -115,11 +120,4 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir']
     setattr(c,'__package__','base')
     setattr(current_module, signalClasses,c)
 
-for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
-    if (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
-    and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
-        try:
-            registerRedRSignals(package)
-        except:
-            orngOutput.printException()    
-
+registerRedRSignals()

@@ -655,6 +655,7 @@ class SchemaDoc(QWidget):
         loadingProgressBar.setLabelText('Loading Schema Data, please wait')
 
         ### unzip the file ###
+        print filename
         zfile = zipfile.ZipFile( str(filename), "r" )
         for name in zfile.namelist():
             file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.

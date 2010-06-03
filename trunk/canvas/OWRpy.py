@@ -186,8 +186,9 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
 
         self.customWidgetDelete()
-        for output in self.outputs:
-            self.callSignalDelete(output[0])
+        if self.outputs:
+            for output in self.outputs:
+                self.callSignalDelete(output[0])
 
     def customWidgetDelete(self):
         pass #holder function for other widgets

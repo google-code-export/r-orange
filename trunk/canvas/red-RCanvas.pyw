@@ -10,7 +10,7 @@ sys.path.insert(0, mypath)
 import redREnviron
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
-import redRPackageManager
+import redRPackageManager, redRGUI,signals
 
 
 class OrangeCanvasDlg(QMainWindow):
@@ -351,9 +351,10 @@ class OrangeCanvasDlg(QMainWindow):
     def reloadWidgets(self): # should have a way to set the desired tab location 
         self.widgetRegistry = orngRegistry.readCategories()
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
-        #import redRGUI
         self.createWidgetsToolbar()
-        #self.widgetsToolBar.show()
+        signals.registerRedRSignals()
+        redRGUI.registerQTWidgets()
+        
     def menuItemSaveAs(self):
         self.schema.saveDocumentAs()
 

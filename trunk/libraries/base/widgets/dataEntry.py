@@ -11,7 +11,7 @@ import redRGUI
 from OWRpy import *
 
 class dataEntry(OWRpy):
-    settingsList = ['savedData']
+    
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Data Entry", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
 
@@ -49,7 +49,7 @@ class dataEntry(OWRpy):
         
 
         
-        self.dataTable = redRGUI.Rtable(box, Rdata = None, rows = self.rowCount+1, columns = self.colCount+1)
+        self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount+1)
         if self.dataTable.columnCount() < 1:
             self.dataTable.setColumnCount(1)
             self.dataTable.setHorizontalHeaderLabels(['Rownames'])
@@ -83,7 +83,8 @@ class dataEntry(OWRpy):
         else:
             return
     def populateTable(self):
-        self.dataTable.setRTable('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
+        pythonData = self.R('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
+        self.dataTable.setTable(pythonData)
         dims = self.R('dim('+self.data+')', wantType = 'list')
         self.colCount = dims[1]+1
         self.rowCount = dims[0]

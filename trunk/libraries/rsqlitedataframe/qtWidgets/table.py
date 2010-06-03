@@ -1,6 +1,7 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from SQLiteSession import *
 
 class table(widgetState,QTableWidget):
     def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
@@ -8,6 +9,7 @@ class table(widgetState,QTableWidget):
         self.sortIndex = None
         self.oldSortingIndex = None
         self.data = None
+        self.dataTable = None
         ### should turn this into a function as all widgets use it to some degree
         if widget and addToLayout and widget.layout():
             widget.layout().addWidget(self)
@@ -27,14 +29,16 @@ class table(widgetState,QTableWidget):
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
         if callback:
             QObject.connect(self, SIGNAL('cellClicked(int, int)'), callback)
+        self.sqlite = SQLiteHandler('local|SavedObjects.db')
     def setTable(self, data, keys = None):
         print 'in table set'
         if data==None:
+            print 'No data to place in table'
             return
         if not keys:
             keys = [str(key) for key in data.keys()]
         self.setHidden(True)
-        self.data = data
+        self.dataTable = self.sqlite.dictToTable(data)
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
         self.clear()
@@ -42,8 +46,8 @@ class table(widgetState,QTableWidget):
         self.setColumnCount(len(data.keys()))
 
         self.setHorizontalHeaderLabels(keys)
-        if 'row_names' in self.data.keys(): ## special case if the keyword row_names is present we want to populate the rownames of the table
-            self.setVerticalHeaderLabels([str(item) for item in self.data['row_names']])
+        if 'row_names' in data.keys(): ## special case if the keyword row_names is present we want to populate the rownames of the table
+            self.setVerticalHeaderLabels([str(item) for item in data['row_names']])
         n = 0
         for key in keys:
             m = 0
@@ -65,20 +69,22 @@ class table(widgetState,QTableWidget):
         self.oldSortingOrder = order
         
     def getSettings(self):
-    
-        r = {'data': self.data,'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
-        if self.oldSortingIndex:
-            r['sortIndex'] = self.oldSortingIndex
-            r['order'] = self.oldSortingOrder
+        try:
+            r = {'data': self.dataTable,'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
+            if self.oldSortingIndex:
+                r['sortIndex'] = self.oldSortingIndex
+                r['order'] = self.oldSortingOrder
             
-        # print r
+        except Exception as inst:
+            print r
+            print inst
+            r = {'data':None}
         return r
     def loadSettings(self,data):
-        self.setTable(data['data'])
+        self.setTable(self.sqlite.tableToDict(data['data']))
         
         if 'sortIndex' in data.keys():
             self.sortByColumn(data['sortIndex'],data['order'])
-        #print 'aaaaaaaaatable#########################'
         if 'selection' in data.keys() and len(data['selection']):
             for i in data['selection']:
                 self.setItemSelected(self.item(i[0],i[1]),True)
