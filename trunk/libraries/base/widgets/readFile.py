@@ -28,6 +28,21 @@ class readFile(OWRpy):
         self.dataTypes = []
         self.useheader = 1
         
+        a = self.R('data.frame(as.matrix("a",nrow=10,ncol=10))',wantType='list')
+        print type(a)
+
+        a = self.R('data.frame(as.matrix("a",nrow=10,ncol=10))',wantType='array')
+        print type(a)
+
+        a = self.R('data.frame(as.matrix("a",nrow=1,ncol=1))',wantType='list')
+        print type(a)
+
+        a = self.R('data.frame(as.matrix("a",nrow=10,ncol=1))',wantType='list')
+        print type(a)
+
+        a = self.R('data.frame(as.matrix("a",nrow=1,ncol=10))',wantType='list')
+        print type(a)
+
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         

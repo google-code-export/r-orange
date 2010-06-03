@@ -11,7 +11,7 @@
 from OWRpy import *
 # import OWGUI
 import signals
-import redRGUI 
+import redRGUI, globalData
 
 
 class affyNormalize(OWRpy):
@@ -161,7 +161,7 @@ class affyNormalize(OWRpy):
                 self.normselector.setEnabled(True)
 
     def toSend(self):
-        signals.setGlobalData(self,'eset',self.Rvariables['normalized_Eset'],description='Normalized Eset')
+        globalData.setGlobalData(self,'eset',self.Rvariables['normalized_Eset'],description='Normalized Eset')
         
         newData = signals.affy.REset(data = self.Rvariables['normalized_Eset'])
         self.rSend("Normalized Eset", newData)

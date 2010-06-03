@@ -17,6 +17,7 @@ class Rtable(widgetState,QTableView):
         self.tm=None
         self.editable=editable
         
+        
         self.setAlternatingRowColors(True)
         
         if widget and addToLayout and widget.layout():
@@ -34,6 +35,9 @@ class Rtable(widgetState,QTableView):
         if sortable:
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
+        # if editable:
+            # self.horizontalHeader().hide()
+            # self.verticalHeader().hide()
         if callback:
             QObject.connect(self, SIGNAL('cellClicked(int, int)'), callback)
 
@@ -44,20 +48,17 @@ class Rtable(widgetState,QTableView):
         self.Rdata = Rdata
         self.tm = MyTableModel(Rdata,self,editable=self.editable) 
         self.setModel(self.tm)
-        # self.tm.setData(self.tm.index(1,1), QColor(Qt.red), Qt.BackgroundRole);
-        # d = self.itemDelegate(self.tm.index(1,1))
-        # d.paint(QBrush(Qt.red))
 
     def columnCount(self):
         if self.tm:
             return self.tm.columnCount(self)
         else:
             return 0
-    def addRow(self):
-        self.tm.insertRows(self.tm.rowCount(self),1)
-    def addColumn(self):
-        self.tm.insertColumns(self.tm.columnCount(self),1)
-
+    def addRows(self,count,headers=None):
+        self.tm.insertRows(self.tm.rowCount(self),count,headers=headers)
+    def addColumns(self,count,headers=None):
+        self.tm.insertColumns(self.tm.columnCount(self),count,headers)
+        
     def sort(self, index):
         if index == self.oldSortingIndex:
             order = self.oldSortingOrder == Qt.AscendingOrder and Qt.DescendingOrder or Qt.AscendingOrder
@@ -96,16 +97,25 @@ class MyTableModel(QAbstractTableModel):
         """
         self.R = Rcommand
         self.editable = editable
+
         #print parent
         QAbstractTableModel.__init__(self,parent) 
         self.Rdata = Rdata
-        self.colnames = self.R('colnames(' +Rdata+ ')', wantType = 'list')
-        if self.colnames:
-            self.colnames.insert(0,'Row Names')
-        self.rownames = self.R('rownames(' +Rdata+')', wantType = 'list')
         
-        self.arraydata = self.R('as.matrix(cbind(rownames(' +Rdata+'),'+Rdata+'))', wantType = 'list')
+        self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list')
+        self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list')
         
+        #print 'length rownams %d' % len(self.rownames)
+        
+        # if self.editable:
+            # self.arraydata = self.R('as.matrix(rbind(c("rownames",colnames(as.data.frame(' +Rdata+ '))), cbind(rownames(as.data.frame(' +Rdata+')),'+Rdata+')))', wantType = 'list')
+            # self.colnames.insert(0,'Row Names')
+            # self.rownames.insert(0,'Row Names')
+        # else:
+        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
+        
+        # print self.arraydata
+        # print 'arraydata type:' ,type(self.arraydata)
     def flags(self,index):
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
@@ -118,6 +128,7 @@ class MyTableModel(QAbstractTableModel):
         return len(self.arraydata[0])
  
     def data(self, index, role): 
+        # print 'in data'
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 
@@ -125,11 +136,17 @@ class MyTableModel(QAbstractTableModel):
         return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
-        print 'in setData', data, index, role
+        print 'in setData', data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
         elif role == Qt.EditRole: 
+            print self.arraydata[index.row()][index.column()]
             self.arraydata[index.row()][index.column()] = data.toString()
+            Rcmd = '%s[%d,%d]="%s"' % (self.Rdata, index.row(), index.column(), data.toString())
+            # print Rcmd
+            self.R(Rcmd)
+            print self.arraydata
+            print self.arraydata[index.row()][index.column()]
             self.emit(SIGNAL("dataChanged()"))
             return True
         # elif role == Qt.BackgroundRole:
@@ -141,13 +158,15 @@ class MyTableModel(QAbstractTableModel):
         return False
     
     def headerData(self, col, orientation, role):
+        # print 'in headerData', col
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
-        # elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
-            # return QVariant(self.rownames[col])
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
+            return QVariant(self.rownames[col])
         return QVariant()
     
     def setHeaderData(self,col,orientation,data,role):
+        # print 'in setHeaderData'
         if orientation == Qt.Horizontal and role == Qt.EditRole:
             self.colnames[col] = data.toString()
             self.emit(SIGNAL("headerDataChanged()"))
@@ -155,32 +174,54 @@ class MyTableModel(QAbstractTableModel):
         else:
             return False
 
-    def insertRows(self,beforeRow,count):
+    def insertRows(self,beforeRow,count,headers=None):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.emit(SIGNAL("beginInsertRows()"))
-        
-        # print self.arraydata
-        # print type(self.arraydata)
-        # print self.arraydata.shape
-        # self.arraydata.resize(self.rowCount(self)+1)
-        # print self.arraydata.shape
-        # print self.arraydata
-        #self.arraydata = [[1,1,1,1,1],[2,2,2,2,2]]
-        self.arraydata.append(['' for i in xrange(self.columnCount(self))])
-        self.rownames.append('')
-        #numpy.append(self.arraydata, [[''] for i in xrange(self.columnCount(self))])
-        #print d
+        size= self.columnCount(self)
+        toAppend= ['' for i in xrange(self.columnCount(self))]
+        # print size
+        # print toAppend
+        # print count
+        for i in xrange(count):
+            self.arraydata.append(toAppend)
+
+        if headers:
+            self.rownames.extend(headers)
+        else:
+            size = len(self.rownames)+1
+            # print self.rownames
+            # print size
+            headers = [str(i) for i in range(size,size+count)]
+            # print headers
+            self.rownames.extend(headers)
+        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))')
+        self.R('colnames(t) = colnames('+self.Rdata+')')
+        self.R('rownames(t) = rownames("%s")' % '","'.join(headers))
+        self.R(self.Rdata+'=rbind('+self.Rdata+',t)')
+
+
         self.emit(SIGNAL("endInsertRows()"))
         self.emit(SIGNAL("layoutChanged()"))
         return True
-    def insertColumns(self,beforeColumn,count):
+    def insertColumns(self,beforeColumn,count,headers=None):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.emit(SIGNAL("beginInsertRows()"))
 
+        toAppend = ['' for i in xrange(count)]
         for x in self.arraydata:
-            x.append('')
-        #self.arraydata.append(['' for i in xrange(self.columnCount(self))])
-        self.colnames.append('')
+            x.extend(toAppend)
+
+        if headers:
+            self.colnames.extend(headers)
+        else:
+            size = len(self.colnames)+1
+            # print self.colnames
+            # print size
+            headers = ['V'  +str(i) for i in range(size,size+count)]
+            # print headers
+            self.colnames.extend(headers)
+        
+        #self.R('%s = cbind(%s,
 
         self.emit(SIGNAL("endInsertRows()"))
         self.emit(SIGNAL("layoutChanged()"))
@@ -188,13 +229,20 @@ class MyTableModel(QAbstractTableModel):
     def sort(self, Ncol, order):
         """Sort table by given column number.
         """
+        if self.editable: return
+        # print 'in sort'
         import operator
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        
+        for r,x in zip(self.rownames, self.arraydata):
+            x.append(r)
+        # self.arraydata.append(self.rownames)
         self.arraydata = sorted(self.arraydata, key=operator.itemgetter(Ncol))
         
         if order == Qt.DescendingOrder:
             self.arraydata.reverse()
-
+       
+        self.rownames = [x.pop() for x in self.arraydata]
         self.emit(SIGNAL("layoutChanged()"))
 
     def delete(self):

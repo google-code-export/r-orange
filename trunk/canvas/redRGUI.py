@@ -4,7 +4,7 @@ import math, glob, orngOutput
 import redREnviron
 from numpy import *
 import os.path
-
+import imp
         
 enter_icon = None
 class widgetState:
@@ -32,8 +32,9 @@ current_module = __import__(__name__)
 
 def registerQTWidgets():
     # print '@@@@@@@@@@registerQTWidgets'
-    import imp
+
     for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+        if package =='base': continue
         if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
         and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
             continue
@@ -45,11 +46,10 @@ def registerQTWidgets():
                     continue
                 guiClass = os.path.basename(filename).split('.')[0]
                 qtWidgets.append(guiClass)
-                c = forname(guiClass,guiClass)
-                # print c, 'forname return'
-                # print package, 'package return'
+                qtwidget = imp.load_source(package+guiClass,filename)
+                c = getattr(qtwidget,guiClass)
                 setattr(c,'__package__',package)
-                #c.__dict__['__package__'] = package
+                
                 setattr(m, guiClass,c)
             setattr(current_module,package,m)
         except:
@@ -61,12 +61,13 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir']
         continue
     guiClass = os.path.basename(filename).split('.')[0]
     qtWidgets.append(guiClass)
-    c = forname(guiClass,guiClass)
+    qtwidget = imp.load_source('base' + guiClass,filename)
+    c = getattr(qtwidget,guiClass)
     setattr(c,'__package__','base')
     setattr(current_module, guiClass,c)
 
 registerQTWidgets()
-    
+
 def separator(widget, width=8, height=8):
     sep = QWidget(widget)
     if widget.layout(): widget.layout().addWidget(sep)

@@ -92,7 +92,7 @@ class RDataTable(OWRpy):
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
         
         # self.setRvariableNames(['x'])
-        # self.R(self.Rvariables['x'] + '<- data.frame(rnorm(500000),rnorm(500000))')
+        # self.R(self.Rvariables['x'] + '<- data.frame(1:20,c("a",22:40))')
         # self.table.setRTable(self.Rvariables['x'])
         # self.table.show()
         # import sip

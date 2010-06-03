@@ -7,5 +7,7 @@ class RAffyBatch(RVariable):
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self
+        elif varClass == RAffyBatch:
+            return self
         else:
             raise Exception
