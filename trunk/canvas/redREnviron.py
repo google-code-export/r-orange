@@ -38,6 +38,8 @@ def __getDirectoryNames():
             if not os.path.isdir(os.path.join(os.environ['HOME'], '.redr', 'red-r')):
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
+        except:
+            print 'Error occured in setting the settingsDir'
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
