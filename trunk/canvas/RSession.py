@@ -137,7 +137,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
             libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
         else:
             libPath = '\"'+str(Rcommand('.libPaths()[1]'))+'\"'
-        Rcommand('Sys.chmod('+libPath+'mode = "7777")') ## set the file permissions
+        Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
         loadedOK = True
         #print libPath
         installedRPackages = getInstalledLibraries()
