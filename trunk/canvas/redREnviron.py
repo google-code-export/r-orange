@@ -29,9 +29,15 @@ def __getDirectoryNames():
     
 
     ## check that the settings directories are in place, this would be skipped over in the try
-    if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
-        os.makedirs(os.path.join(os.environ['APPDATA'], 'red-r'))
-    settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
+    try:
+        if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
+            os.makedirs(os.path.join(os.environ['APPDATA'], 'red-r'))
+        settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
+    except:
+        try:
+            if not os.path.isdir(os.path.join(os.environ['HOME'], '.redr', 'red-r')):
+                os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
+            settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
