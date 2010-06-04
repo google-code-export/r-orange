@@ -1177,8 +1177,8 @@ class SignalDialog(QDialog):
                 continue
             for inS in inputs:
                 inType = self.inWidget.instance.getInputType(inS.name)
-                print outType, inType
-                print issubclass(outType, inType)
+                # print outType, inType
+                # print issubclass(outType, inType)
                 print '######'
                 if inType == None:
                     print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
