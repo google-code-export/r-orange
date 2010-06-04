@@ -1,7 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import glob,os.path,redREnviron,orngOutput
-import imp, sys
 
 
 
@@ -77,6 +76,7 @@ class BaseRedRVariable:
 ##############################################################
 
 def registerRedRSignals():
+    import imp, sys
     for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
         if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
         and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
@@ -101,6 +101,12 @@ def registerRedRSignals():
         except:
             orngOutput.printException()    
 
+def forname(modname, classname):
+    ''' Returns a class of "classname" from module "modname". '''
+    module = __import__(modname)
+    classobj = getattr(module, classname)
+    return classobj
+          
 ################Run on Init###############
 
 
@@ -110,11 +116,10 @@ RedRSignals = []
 for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'],'base','signalClasses',"*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
         continue
-    signalClass = os.path.basename(filename).split('.')[0]
-    RedRSignals.append(signalClass)
-    qtwidget = imp.load_source('base' + signalClass,filename)
-    c = getattr(qtwidget,signalClass)
+    signalClasses = os.path.basename(filename).split('.')[0]
+    RedRSignals.append(signalClasses)
+    c = forname(signalClasses,signalClasses)
     setattr(c,'__package__','base')
-    setattr(current_module, signalClass,c)
+    setattr(current_module, signalClasses,c)
 
 registerRedRSignals()

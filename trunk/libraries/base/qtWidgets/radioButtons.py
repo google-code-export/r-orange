@@ -31,6 +31,13 @@ class radioButtons(widgetBox,widgetState):
         if setChecked:
             self.setChecked(setChecked)
         
+    def addButton(self,text,toolTip=None):
+        w = QRadioButton(text)
+        if toolTip:
+            w.setToolTip(toolTip)
+        self.buttons.addButton(w)
+        self.box.layout().addWidget(w)
+        
     def setChecked(self,id):
         for i in self.buttons.buttons():
             if i.text() == id: i.setChecked(True)

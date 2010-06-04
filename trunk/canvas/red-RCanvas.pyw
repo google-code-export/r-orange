@@ -6,12 +6,16 @@ from PyQt4.QtGui import *
 
 import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
-sys.path.insert(0, mypath)
+sys.path.append(mypath)
 import redREnviron
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import redRPackageManager, redRGUI,signals
 
+# print signals.RDataFrame
+# print signals.RList
+# print issubclass(signals.RDataFrame,signals.RList)
+# print issubclass(signals.RList,signals.RDataFrame)
 
 class OrangeCanvasDlg(QMainWindow):
     

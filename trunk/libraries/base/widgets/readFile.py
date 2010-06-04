@@ -27,22 +27,8 @@ class readFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
+        self.require_librarys(['RODBC'])
         
-        a = self.R('data.frame(as.matrix("a",nrow=10,ncol=10))',wantType='list')
-        print type(a)
-
-        a = self.R('data.frame(as.matrix("a",nrow=10,ncol=10))',wantType='array')
-        print type(a)
-
-        a = self.R('data.frame(as.matrix("a",nrow=1,ncol=1))',wantType='list')
-        print type(a)
-
-        a = self.R('data.frame(as.matrix("a",nrow=10,ncol=1))',wantType='list')
-        print type(a)
-
-        a = self.R('data.frame(as.matrix("a",nrow=1,ncol=10))',wantType='list')
-        print type(a)
-
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
@@ -60,18 +46,17 @@ class readFile(OWRpy):
         area.layout().setAlignment(options,Qt.AlignTop)
         
         
-        #options.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
-        
         box = redRGUI.groupBox(options, label="Load File", 
         addSpace = True, orientation='horizontal')
         self.filecombo = redRGUI.fileNamesComboBox(box, 
         orientation='horizontal',callback=self.scanNewFile)
         
-        # self.filecombo.setCurrentIndex(0)
-        # self.filecombo.setMinimumWidth(200)
-        # self.filecombo.setMaximumWidth(200)
         button = redRGUI.button(box, label = 'Browse', callback = self.browseFile)
         
+        self.fileType = redRGUI.radioButtons(options, label='File Type',
+        buttons = ['Text', 'Excel'], setChecked='Text',callback=self.scanNewFile,
+        orientation='horizontal')
+
         
         self.delimiter = redRGUI.radioButtons(options, label='Column Seperator',
         buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab',callback=self.scanNewFile,
@@ -79,20 +64,20 @@ class readFile(OWRpy):
         self.otherSepText = redRGUI.lineEdit(self.delimiter.box,text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
         
-        box = redRGUI.groupBox(options, label="Row and Column Names", 
+        self.headersBox = redRGUI.groupBox(options, label="Row and Column Names", 
         addSpace = True, orientation ='horizontal')
 
-        self.hasHeader = redRGUI.checkBox(box, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
+        self.hasHeader = redRGUI.checkBox(self.headersBox, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
-        self.rowNamesCombo = redRGUI.comboBox(box,label='Select Row Names', items=[],
+        self.rowNamesCombo = redRGUI.comboBox(self.headersBox,label='Select Row Names', items=[],
         orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
         
-        box = redRGUI.groupBox(options, label="Other Options", 
+        self.otherOptionsBox = redRGUI.groupBox(options, label="Other Options", 
         addSpace = True, orientation ='vertical')
         # box.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        split = redRGUI.widgetBox(box,orientation='horizontal')
+        split = redRGUI.widgetBox(self.otherOptionsBox,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.otherOptions = redRGUI.checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
@@ -151,10 +136,12 @@ class readFile(OWRpy):
     def loadCustomSettings(self,settings):
         print 'loadCustomSettings readfile'
         for i in range(len(self.myColClasses)):
-            s = redRGUI.comboBox(self.columnTypes, items = ['factor','numeric','character','integer','logical'], orientation = 'horizontal', callback = self.updateColClasses)
-            index = s.findText(self.myColClasses[i])
-            if index != -1:
-                s.setCurrentIndex(index)
+            s = redRGUI.radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
+            orientation = 'horizontal', callback = self.updateColClasses)
+            s.setChecked(self.myColClasses[i])
+            # index = s.findText(self.myColClasses[i])
+            # if index != -1:
+                # s.setCurrentIndex(index)
             s.setEnabled(False)
             q = redRGUI.widgetLabel(self.columnTypes,label=self.colNames[i])
             self.columnTypes.layout().addWidget(s, i, 1)
@@ -174,7 +161,18 @@ class readFile(OWRpy):
     def scanNewFile(self):
         self.removeInformation()
         self.removeWarning()
-
+        
+        if self.fileType.getChecked() == 'Excel':
+            self.delimiter.setDisabled(True)
+            self.otherOptionsBox.setDisabled(True)
+            self.headersBox.setDisabled(True)
+            self.columnTypes.setDisabled(True)
+        else:
+            self.delimiter.setEnabled(True)
+            self.otherOptionsBox.setEnabled(True)
+            self.headersBox.setEnabled(True)
+            self.columnTypes.setEnabled(True)
+        
         for i in self.columnTypes.findChildren(QWidget):
             i.setHidden(True)
           
@@ -182,6 +180,7 @@ class readFile(OWRpy):
         self.colClasses = []
         self.colNames = []
         self.dataTypes = []
+        
         self.loadFile(scan=True)
     
     def updateColClasses(self):
@@ -194,14 +193,14 @@ class readFile(OWRpy):
     def scanFile(self):
         self.loadFile(scan=True)
 
-        
+
+    
     def loadFile(self,scan=False):
         fn = self.filecombo.getCurrentFile()
         if not fn:
             return
 
-        self.R(self.Rvariables['filename'] + ' = "' 
-        + fn + '"') # should protext if R can't find this file
+        self.R(self.Rvariables['filename'] + ' = "' + fn + '"') # should protext if R can't find this file
         
         # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
             # self.delimiter.setChecked('Tab')
@@ -248,11 +247,20 @@ class readFile(OWRpy):
             ccl = 'c(' + ','.join(cls) + ')'
         else:
             ccl = 'NA'
+        
         try:
-        # +', quote='+self.quote.text()
-            RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
-            # print RStr
-            self.R(RStr, processingNotice=True)
+            if self.fileType.getChecked() == 'Excel':
+                self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']))
+                table = self.R('sqlTables(channel)$TABLE_NAME[1]')
+                if not scan:
+                    nrows = '0'
+               
+                self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
+                processingNotice=True)
+            else:
+                RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
+                # print RStr
+                self.R(RStr, processingNotice=True)
         except:
             # print sys.exc_info() 
             # print RStr
@@ -302,14 +310,15 @@ class readFile(OWRpy):
             self.dataTypes = []
             
             for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                s = redRGUI.comboBox(self.columnTypes,items=types,orientation='horizontal',callback=self.updateColClasses)
+                s = redRGUI.radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
                 
                 # print k,i,str(v)
                 if str(v) in types:
-                    s.setCurrentIndex(types.index(str(v)))
+                    #s.setCurrentIndex(types.index(str(v)))
+                    s.setChecked(str(v))
                 else:
-                    s.addItem(str(v))
-                    s.setCurrentIndex(s.count()-1)
+                    s.addButton(str(v))
+                    s.setChecked(str(v))
                 s.setMinimumWidth(100)
                 q = redRGUI.widgetLabel(self.columnTypes,label=i)
                 self.columnTypes.layout().addWidget(s,k,1)
