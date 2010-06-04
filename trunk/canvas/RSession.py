@@ -151,7 +151,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
             librarys = [librarys]
         for library in librarys:
             if library in installedRPackages:
-                Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
+                Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
                 
             else:
                 if redREnviron.checkInternetConnection():
