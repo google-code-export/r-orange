@@ -132,10 +132,12 @@ def getInstalledLibraries():
     else:
         return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
+        
         if sys.platform=="win32":
             libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
         else:
-            libPath = 'NULL'
+            libPath = '\"'+str(Rcommand('.libPaths()[1]'))+'\"'
+        Rcommand('Sys.chmod('+libPath+'mode = "7777")') ## set the file permissions
         loadedOK = True
         #print libPath
         installedRPackages = getInstalledLibraries()
