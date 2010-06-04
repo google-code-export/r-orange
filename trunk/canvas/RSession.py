@@ -126,10 +126,16 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     mutex.unlock()
     return output
 def getInstalledLibraries():
-    libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
-    return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
-def require_librarys(librarys, repository = 'http://cran.r-project.org'):
+    if sys.platform=="win32":
         libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
+        return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
+    else:
+        return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
+def require_librarys(librarys, repository = 'http://cran.r-project.org'):
+        if sys.platform=="win32":
+            libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
+        else:
+            libPath = 'NULL'
         loadedOK = True
         #print libPath
         installedRPackages = getInstalledLibraries()
@@ -147,8 +153,8 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                     if mb.exec_() == QMessageBox.Ok:
                         try:
                             Rcommand('setRepositories(ind=1:7)')
-                            Rcommand('install.packages("' + library + '", lib="' + libPath + '")')
-                            Rcommand('require(' + library + ', lib.loc="' + libPath + '")')
+                            Rcommand('install.packages("' + library + '", lib=' + libPath + ')')
+                            Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
                             
                         except:
                             print 'Library load failed'
