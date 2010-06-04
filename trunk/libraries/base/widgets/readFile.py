@@ -27,7 +27,7 @@ class readFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
-        self.require_librarys(['RODBC'])
+        
         
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
@@ -56,6 +56,7 @@ class readFile(OWRpy):
         self.fileType = redRGUI.radioButtons(options, label='File Type',
         buttons = ['Text', 'Excel'], setChecked='Text',callback=self.scanNewFile,
         orientation='horizontal')
+        self.fileType.hide()
 
         
         self.delimiter = redRGUI.radioButtons(options, label='Column Seperator',
@@ -129,7 +130,12 @@ class readFile(OWRpy):
         self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
         self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         #self.setFileList()
-
+        import sys
+        if sys.platform=="win32":
+            self.require_librarys(['RODBC'])
+            self.setForExcel()
+    def setForExcel(self):
+        self.fileType.show()
     def otherSep(self,text):
         self.delimiter.setChecked('Other')
         
