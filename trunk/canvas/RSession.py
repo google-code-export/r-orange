@@ -8,6 +8,9 @@ if sys.platform=="win32":
     set_options(RHOME=redREnviron.directoryNames['RDir'])
     set_options(VERBOSE=False)
 else: # need this because linux doesn't need to use the RPATH
+    personalLibDir = os.path.join(redREnviron.directoryNames['settingsDir'], 'RLibraries')
+    if not os.path.isdir(personalLibDir):
+        os.makedirs(personalLibDir)
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
     
@@ -130,14 +133,15 @@ def getInstalledLibraries():
         libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
         return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
     else:
+        Rcommand('.libPaths(new = "'+personalLibDir+'")')
         return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
         if sys.platform=="win32":
             libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
         else:
-            libPath = '\"'+str(Rcommand('.libPaths()[1]'))+'\"'
-        Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
+            libPath = '\"'+personalLibDir+'\"'
+        #Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
         loadedOK = True
         #print libPath
         installedRPackages = getInstalledLibraries()
