@@ -173,7 +173,9 @@ class MyTableModel(QAbstractTableModel):
             return True
         else:
             return False
-
+    def clear(self):
+        pass
+        ## please reimplement in a later version
     def insertRows(self,beforeRow,count,headers=None):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         self.emit(SIGNAL("beginInsertRows()"))

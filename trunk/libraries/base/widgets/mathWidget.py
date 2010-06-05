@@ -3,7 +3,7 @@
 """
 <name>Math</name>
 <author>Written by Kyle R. Covington, inspired by Anup Parikh</author>
-<Description>Applies math to columns of a data frame.</Description>
+<description>Performs basic mathematical opperations on a table.  These include changing the class of a column.  Opperations such as log, exponent, addition, sumtraction, multiplication, and division are supported.</description>
 <RFunctions></RFunctions>
 <tags>Data Manipulation</tags>
 """
@@ -13,6 +13,8 @@ class mathWidget(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Math", wantMainArea = 0, resizingEnabled = 1)
+        
+        self.setRvariableNames(['math'])
         
         self.counter = 1
         self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp']
@@ -47,7 +49,8 @@ class mathWidget(OWRpy):
         self.dialog.hide()
     def gotData(self, data):
         if data:
-            self.data = data.getData()
+            self.R(self.Rvariables['math'] + '<-' + data.getData())
+            self.data = self.Rvariables['math']
             self.table.setRTable(data.getData())
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))

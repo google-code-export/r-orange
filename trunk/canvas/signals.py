@@ -1,6 +1,8 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import glob,os.path,redREnviron,orngOutput
+import imp, sys
+import imp, sys
 
 
 
