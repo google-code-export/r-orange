@@ -177,7 +177,7 @@ class OutputWindow(QDialog):
             redREnviron.settings['uploadError'] = res
             
         if res == 1:
-            err.update(self.canvasDlg.version)
+            err['version'] = redREnviron.version
             err['output'] = self.allOutput
             err['os'] = os.name
             params = urllib.urlencode(err)
