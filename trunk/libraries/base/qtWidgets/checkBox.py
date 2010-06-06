@@ -33,12 +33,12 @@ class checkBox(widgetBox,widgetState):
             
     def setChecked(self,ids):
         for i in self.buttons.buttons():
-            if i.text() in ids: i.setChecked(True)
+            if str(i.text()) in ids: i.setChecked(True)
             else: i.setChecked(False)
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
-            if i.isChecked(): checked.append(i.text())
+            if i.isChecked(): checked.append(str(i.text()))
 
         return checked
     def hide(self):

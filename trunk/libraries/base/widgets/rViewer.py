@@ -41,7 +41,7 @@ class rViewer(OWRpy):
 
     
     def commitFunction(self):
-        
+        if not self.data: return
         self.RoutputWindow.clear()
         try:
             text = self.data.showSummary()

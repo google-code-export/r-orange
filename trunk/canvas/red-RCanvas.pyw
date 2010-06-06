@@ -10,7 +10,7 @@ sys.path.append(mypath)
 import redREnviron
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
-import redRPackageManager, redRGUI,signals
+import redRPackageManager, redRGUI,signals, redRInitWizard
 
 # print signals.RDataFrame
 # print signals.RList
@@ -190,16 +190,30 @@ class OrangeCanvasDlg(QMainWindow):
         if splashWindow:
             splashWindow.hide()
 
+        if redREnviron.settings['firstLoad']:
+            self.startSetupWizard()
         qApp.processEvents()
-        # try:
-            # import numpy
-        # except:
-            # if QMessageBox.warning(self,'Red Canvas','Several widgets now use numpy module, \nthat is not yet installed on this computer. \nDo you wish to download it?',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
-                # import webbrowser
-                # webbrowser.open("http://sourceforge.net/projects/numpy/")
-        
-        
 
+
+    def startSetupWizard(self):
+        setupWizard = redRInitWizard.RedRInitWizard()
+        if setupWizard.exec_() == QDialog.Accepted:
+            redREnviron.settings['email'] = str(setupWizard.email.text())
+            redREnviron.settings['canContact'] = str(setupWizard.allowContact.getChecked()) == 'Yes'
+            redREnviron.settings['firstLoad'] = 'Don\'t Show at Startup' not in setupWizard.showAtStartup.getChecked()
+            try:
+                redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
+            except:
+                pass
+            redREnviron.settings['focusOnCatchException'] = 'Show output window on exception' in setupWizard.exceptionHandling.getChecked()
+            redREnviron.settings['printExceptionInStatusBar'] = 'Print last exception in status bar' in setupWizard.exceptionHandling.getChecked()
+            redREnviron.settings['uploadError'] = 'Submit Error Report' in setupWizard.exceptionHandling.getChecked()
+            redREnviron.settings['askToUploadError'] = 'Always ask before submitting error report' in setupWizard.exceptionHandling.getChecked()
+            
+        if 'Start Example' in setupWizard.showExample.getChecked():
+            self.schema.loadDocument(os.path.join(redREnviron.directoryNames['canvasDir'], 'firstSchema.rrs'))
+        print redREnviron.settings
+                
         
     def createWidgetsToolbar(self):
         orngTabs.constructCategoriesPopup(self)
