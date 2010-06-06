@@ -27,14 +27,14 @@ class SandBox(OWRpy):
         self.table2 = redRGUI.Rtable(self.controlArea,Rdata = 'data')        
         self.table2.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        if not os.path.isfile(os.path.join(redREnviron.directoryNames['canvasDir'], 'SandBoxTest.pickle')):
+        if not os.path.isfile(os.path.join(redREnviron.directoryNames['tempDir'], 'SandBoxTest.pickle')):
         
-            f = open(os.path.join(redREnviron.directoryNames['canvasDir'], 'SandBoxTest.pickle'), 'wb')
+            f = open(os.path.join(redREnviron.directoryNames['tempDir'], 'SandBoxTest.pickle'), 'wb')
             cPickle.dump(self.table2, f, 2)
             f.close()
             
         else:
-            f = open(os.path.join(redREnviron.directoryNames['canvasDir'], 'SandBoxTest.pickle'), 'rb')
+            f = open(os.path.join(redREnviron.directoryNames['tempDir'], 'SandBoxTest.pickle'), 'rb')
             c = cPickle.load(f)
             f.close()
             
