@@ -151,7 +151,7 @@ Section Uninstall
         StrCmp $0 "" 0 +2
           ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
         StrCmp $0 "" +2 0
-          RmDir /r /REBOOTOK "$0\red-r\settings"
+          RmDir /r /REBOOTOK "$0\red-r"
 	
     remove_keys:
 

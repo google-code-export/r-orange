@@ -20,22 +20,20 @@ class RedRScatterplot(OWRpy):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
-        self.inputs = [('x', signals.StructuredDict, self.gotX)]
+        self.inputs = [('x', signals.RDataFrame, self.gotX)]
         self.outputs = [('Scatterplot Output', signals.RDataFrame)]
         self.data = None
         self.parent = None
-        self.dataParent = {}
         self.cm = None
 
         # GUI
-        self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[], callback = self.plot, callback2 = self.refresh)
+        self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[])
         self.forceXNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
-        self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[], callback = self.plot, callback2 = self.refresh)
+        self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[])
         self.forceYNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
-        self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''], callback = self.plot)
+        self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''])
         self.replotCheckbox = redRGUI.checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
         self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
-        self.paintLegend = redRGUI.textEdit(self.GUIDialog)
         
         # plot area
         plotarea = redRGUI.groupBox(self.controlArea, label = "Graph")
@@ -43,13 +41,15 @@ class RedRScatterplot(OWRpy):
         
         self.graph = redRGUI.redRGraph(plotarea)
         plotarea.layout().addWidget(self.graph)
-        self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
-        self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.zoomSelectToolbarBox, self.graph)
-        redRGUI.button(self.bottomAreaRight, label = "Print", callback = self.printGraph, tooltip = 'Print your selection to the default printer')
-        redRGUI.button(self.bottomAreaRight, label = "Select", callback = self.showSelected, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        #self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
+        self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.GUIDialog, self.graph)
+        buttonBox = redRGUI.widgetBox(self.GUIDialog,orientation='horizontal')
+        redRGUI.button(buttonBox, label = "Plot", callback = self.plot, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        redRGUI.button(buttonBox, label = "Select", callback = self.sendMe, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        self.paintLegend = redRGUI.textEdit(self.GUIDialog)
         
         self.resize(600, 500)
-        self.move(300, 25)
+
     def printGraph(self):
         printer = QPrinter()
         printerDialog = QPrintDialog(printer)
@@ -99,14 +99,16 @@ class RedRScatterplot(OWRpy):
         
     def gotX(self, data):
         if data:
-            self.data = data
+            self.dataParent = data
+            self.data = data.getData()
+            colnames = self.R('colnames(%s)' % self.data)
             keys = ['']
-            keys += self.data.getItem('keys')
+            keys += colnames
             self.paintCMSelector.update(keys)
             
             ## might be good to limit the user to selecting only those indicies that have numeric values
-            self.xColumnSelector.update(self.data.getItem('keys'))
-            self.yColumnSelector.update(self.data.getItem('keys'))
+            self.xColumnSelector.update(colnames)
+            self.yColumnSelector.update(colnames)
             self.plot()
         else:
             self.data = None
@@ -129,7 +131,7 @@ class RedRScatterplot(OWRpy):
             result.append(item) 
         return result
     def plot(self, newZoom = True):
-        
+        """
         ## remake the plot function to work on dictionaries.  This will be much better than only being able to work on data frames.
         if self.data == None:
             self.status.setText('No Data, nothing to plot')
@@ -201,6 +203,7 @@ class RedRScatterplot(OWRpy):
         
         
         return
+        """
         # populate the cm class columns
         #cmSelector = str(self.subsetCMSelector.currentText())
         #cmClass = str(self.subsetCMClass.currentText())
@@ -326,7 +329,7 @@ class RedRScatterplot(OWRpy):
             self.xData += xData
             self.yData += yData
         ## make a fake call to the zoom to repaint the points and to add some interest to the graph
-            
+        self.graph.replot()
     def asNumeric(self, listItems):
         ## convert a list to a numeric list
         newList = []
@@ -338,9 +341,9 @@ class RedRScatterplot(OWRpy):
                 
         return newList
     def sendMe(self):
-
-        return
-        data = signals.RDataFrame(data = self.dataParent.parent+'[rownames('+self.dataParent.parent+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.parent) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        print 'asdfasdf' + self.dataParent.getDataParent()
+        print self.cm
+        data = signals.RDataFrame(data = self.dataParent.getDataParent()+'[rownames('+self.dataParent.getDataParent()+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.dataParent.getDataParent()) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         data.copyAllOptionalData(self.dataParent)
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()

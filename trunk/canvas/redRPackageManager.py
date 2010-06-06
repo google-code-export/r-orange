@@ -112,7 +112,7 @@ class packageManager:
         return rc
     def readXML(self, fileName):
         f = open(fileName, 'r')
-        print fileName
+        #print fileName
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         return mainTabs

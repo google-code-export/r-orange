@@ -142,10 +142,6 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.R('dev.off()')
             raise Exception, 'R Plotting Error'
             ## there was an exception and we need to roll back the processor.
-            
-        
-        
-
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         if not repository and 'CRANrepos' in redREnviron.settings.keys():

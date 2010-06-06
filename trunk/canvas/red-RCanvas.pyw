@@ -12,10 +12,6 @@ import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import redRPackageManager, redRGUI,signals, redRInitWizard
 
-# print signals.RDataFrame
-# print signals.RList
-# print issubclass(signals.RDataFrame,signals.RList)
-# print issubclass(signals.RList,signals.RDataFrame)
 
 class OrangeCanvasDlg(QMainWindow):
     
@@ -648,6 +644,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         if closed:
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
+            self.schema.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
             #self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.

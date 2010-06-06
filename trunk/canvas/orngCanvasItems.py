@@ -176,10 +176,15 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             self.instance.__init__(signalManager = signalManager,
             forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
         else: self.instance.__init__(signalManager = signalManager)
-        
+        print '###################################', widgetSettings
+        #print widgetSettings
         if widgetSettings:
             self.instance.setSettings(widgetSettings)
-        
+            if '_customSettings' in widgetSettings.keys():
+                self.instance.loadCustomSettings(widgetSettings['_customSettings'])
+            else:
+                self.instance.loadCustomSettings(widgetSettings)
+
         self.instance.loadGlobalSettings()
         
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget

@@ -114,7 +114,7 @@ class readFile(OWRpy):
         
         
         self.tableArea = redRGUI.groupBox(area)
-        self.tableArea.setMinimumWidth(200)
+        self.tableArea.setMinimumWidth(500)
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
@@ -126,8 +126,9 @@ class readFile(OWRpy):
         self.columnTypes = redRGUI.widgetBox(self,orientation=QGridLayout(),margin=10);
         self.scroll.setWidget(self.columnTypes)
         #self.columnTypes.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
+        self.columnTypes.setMinimumWidth(460)
         self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
-        self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.Minimum ,QSizePolicy.Preferred ))
+        self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding ))
         self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         #self.setFileList()
         import sys
@@ -156,7 +157,7 @@ class readFile(OWRpy):
     
     def browseFile(self): 
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
-        "Text file (*.txt *.csv *.tab);; All Files (*.*)")
+        "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
         print str(fn)
         if fn.isEmpty(): return
         self.path = os.path.split(str(fn))[0]
@@ -310,7 +311,6 @@ class readFile(OWRpy):
         if len(self.colClasses) ==0:
             self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
             self.myColClasses = self.colClasses
-        
         if len(self.dataTypes) ==0:
             types = ['factor','numeric','character','integer','logical']
             self.dataTypes = []
@@ -320,7 +320,6 @@ class readFile(OWRpy):
                 
                 # print k,i,str(v)
                 if str(v) in types:
-                    #s.setCurrentIndex(types.index(str(v)))
                     s.setChecked(str(v))
                 else:
                     s.addButton(str(v))
