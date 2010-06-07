@@ -92,12 +92,12 @@ class packageManager:
             # print len(self.sitePackages[name]['Dependencies']), self.sitePackages[name]['Dependencies']
             if (name in self.sitePackages.keys() and len(self.sitePackages[name]['Dependencies'])):
                 for dep in self.sitePackages[name]['Dependencies']:
-                    if (dep['Package'] in self.localPackages.keys()): 
+                    if (dep in self.localPackages.keys()): 
                         installed=True
                     else:
                         installed=False
                     t = {}
-                    t[dep['Package']] = {'Version':dep['Version'], 'installed':installed}
+                    t[dep] = {'installed':installed}
                     deps.update(t)
                     deps.update(self.getDependencies(t))
 
@@ -162,8 +162,8 @@ class packageManager:
             packageDict[package] = self.parsePackageXML(packageXML)
             
         
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(packageDict)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(packageDict)
         return packageDict
         
     def updatePackagesFromRepository(self):
