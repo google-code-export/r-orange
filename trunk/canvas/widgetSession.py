@@ -172,7 +172,7 @@ class widgetSession():
                 
         return sentItemsList
         
-    def setSettings(self,settings):
+    def setSettings(self,settings, globalSettings = False):
         print 'on set settings'
         #settings = self.sqlite.setObject(settingsID)
         # pp = pprint.PrettyPrinter(indent=4)
@@ -222,6 +222,12 @@ class widgetSession():
             except Exception as inst:
                 print inst
                 print 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'
+        
+        ## commented out because already called in loadSettings
+        if '_customSettings' in settings.keys():
+            self.loadCustomSettings(settings['_customSettings'])
+        elif not globalSettings:
+            self.loadCustomSettings(settings)
         
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
@@ -284,7 +290,7 @@ class widgetSession():
         try:
             file = open(file, "r")
             settings = cPickle.load(file)
-            self.setSettings(settings)
+            self.setSettings(settings, globalSettings = True)
         except:
             pass
         

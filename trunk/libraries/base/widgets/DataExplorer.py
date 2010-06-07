@@ -99,6 +99,7 @@ class DataExplorer(OWRpy):
             if type(self.colnames) == str:
                 self.colnames = [self.colnames]
             if newData == True:
+                print 'Orriginal Data'
                 self.orriginalData = data.getData()
                 
                 self.criteriaDialogList = []
@@ -136,8 +137,7 @@ class DataExplorer(OWRpy):
                 self.rowListBox.addRItems(self.rownames)
                 self.rowListHint.setItems(self.rownames)
                 ### Set the dialogs for row subsetting ###
-                # orriginalData_matrix = self.R('as.matrix('+self.orriginalData+')')
-                # orriginalData_matrix = numpy.array(orriginalData_matrix)
+                
                 for j in range(1, len(self.colnames)+1):
                     
                     thisClass = self.R('class('+self.orriginalData+'[,'+str(j)+'])', silent = True)
@@ -237,6 +237,7 @@ class DataExplorer(OWRpy):
                         self.criteriaDialogList[j-1]['dialog'].setWindowTitle(self.captionTitle+' '+self.colnames[j-1]+' Seleciton')
                         self.criteriaDialogList[j-1]['cw'] = redRGUI.widgetLabel(self.criteriaDialogList[j-1]['dialog'], 'Unsupported column type subsetting is disabled')
             else:
+                print 'Not orriginal data'
                 dims = self.R('dim(as.data.frame('+self.data+'))')
                 self.dimsInfoArea.setText('Data Table with '+str(dims[1])+' columns, and '+str(dims[0])+'rows.')
                 if int(dims[0]) > 200 and int(dims[1]) > 200:
@@ -369,7 +370,9 @@ class DataExplorer(OWRpy):
                 #criteria.append('!is.na('+self.orriginalData+'[,\''+item['colname']+'\'])')
         # join these together into a single call across the columns
         print self.criteriaList
-        newData = signals.RDataFrame(data = self.orriginalData+'['+'&'.join(self.criteriaList)+',, drop = F]', parent = self.orriginalData) # reprocess the table
+        newDataString = self.orriginalData+'['+'&'.join(self.criteriaList)+',, drop = F]'
+        print newDataString, 'New Data String'
+        newData = signals.RDataFrame(data = newDataString, parent = self.orriginalData) # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
@@ -392,19 +395,32 @@ class DataExplorer(OWRpy):
         self.status.setText('Data Sent')
         
         self.sendRefresh()
+        
+    def saveCustomSettings(self):
+        ## make a dict of settings for each of the dialogs.  These will be reloaded on reload.
+        
+        settings = []
+        for i in self.criteriaDialogList:
+            settings.append({'criteriaCollection':i['criteriaCollection'], 'colname':i['colname']})
+            
+        return settings
     def loadCustomSettings(self,settings=None):
         # custom function for reloading the widget
-        
+        print 'Loading Custom Settings for DataExplorer'
         # process the data again
         if self.dataParent != None:
+            print 'Processing Data Parent'
             self.processData(self.dataParent) # this sets the criteriaDialogList and the widget, I'll think of a smarter way of doing this...
-           
-            for i in range(0, len(self.criteriaList)):
-                print 'Set Criteria '+str(i)+' to '+str(self.criteriaList[i])
-                self.criteriaDialogList[i]['widgetLabel'].setHtml('<pre>'+self.criteriaList[i]+'</pre>')
-                self.criteriaDialogList[i]['criteriaCollection'] = self.criteriaList[i]
-            self.commitCriteriaDialog()
-            print 'Previously Committed data has been displayed.'
+            print 'Done processing the parent, everything should be ready to process the criteria'
+            if settings:
+                for i in settings:
+                    for d in self.criteriaDialogList:
+                        if d['colname'] == i['colname']:
+                            d['criteriaCollection'] = i['criteriaCollection']
+                            d['widgetLabel'].setHtml('<pre>'+i['criteriaCollection']+'</pre>')
+                            print 'Setting ', d['colname'], 'to ', i['criteriaCollection']
+                self.commitCriteriaDialog()
+                print 'Previously Committed data has been displayed.'
         # pass
     def customCloseEvent(self):
         qApp.setOverrideCursor(Qt.WaitCursor)

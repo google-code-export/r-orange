@@ -87,7 +87,7 @@ class dataEntry(OWRpy):
             return
     def populateTable(self):
         #pythonData = self.R('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
-        pythonData = self.savedData.convertToStructuredDict()
+        pythonData = self.savedData._convertToStructuredDict()
         self.dataTable.setTable(pythonData)
         print 'Done Table Set'
         dims = (len(self.data[data.keys()[0]]), len(data.keys()))
