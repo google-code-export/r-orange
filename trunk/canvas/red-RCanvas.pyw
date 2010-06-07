@@ -207,7 +207,7 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings['askToUploadError'] = 'Always ask before submitting error report' in setupWizard.exceptionHandling.getChecked()
             
         if 'Start Example' in setupWizard.showExample.getChecked():
-            self.schema.loadDocument(os.path.join(redREnviron.directoryNames['canvasDir'], 'firstSchema.rrs'))
+            self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
         print redREnviron.settings
                 
         

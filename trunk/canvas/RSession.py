@@ -63,10 +63,11 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
             newOutput = []
             for name in output.keys():
                 nl = output[name]
-                
                 newOutput.append(nl)
-                
             output = newOutput
+        elif type(output) is numpy.ndarray:
+            output = output.tolist()
+            
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'listOfLists' or listOfLists:

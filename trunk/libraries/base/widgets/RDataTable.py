@@ -92,9 +92,13 @@ class RDataTable(OWRpy):
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
         
         # self.setRvariableNames(['x'])
-        # self.R(self.Rvariables['x'] + '<- data.frame(1:20,c("a",22:40))')
+        # self.R(self.Rvariables['x'] + '<- data.frame(1:20,1:20,1:20)')
         # self.table.setRTable(self.Rvariables['x'])
+        # self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), 
+        # lambda val, tableData = self.Rvariables['x']: self.itemClicked(val, self.Rvariables['x']))
+        # self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         # self.table.show()
+        
         # import sip
         # for x in self.findChildren(QAbstractTableModel):
             # print 'in table', x

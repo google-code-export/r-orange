@@ -1,7 +1,7 @@
 """
 <name>Data Entry2</name>
 <description>A table input data entry into a data.frame.</description>
-<tags>Data Input</tags>
+<tags>Prototypes</tags>
 <RFunctions>base:data.frame</RFunctions>
 <icon>readfile.png</icon>
 <priority>20</priority>

@@ -15,7 +15,7 @@ class RedRInitWizard(QWizard):
         self.registerPage = QWizardPage()
         self.registerPage.setLayout(QVBoxLayout())
         self.registerPage.setTitle('Please Register Red-R')
-        self.registerPage.setSubTitle('Restration will help us track errors to make Red-R better.')
+        self.registerPage.setSubTitle('Registration will help us track errors to make Red-R better.')
         
         self.email = redRGUI.lineEdit(self.registerPage, label = 'Email Address (Optional):', width = -1)
         self.allowContact = redRGUI.radioButtons(self.registerPage, label = 'Red-R can contact me to ask about errors:', buttons = ['Yes', 'No'])
@@ -56,6 +56,7 @@ class RedRInitWizard(QWizard):
         self.addPage(self.errorReportingPage)
         self.addPage(self.RSetupPage)
         self.addPage(self.runExamplePage)
+        
     def setMirror(self):
         item = self.libListBox.currentRow()
         self.settings['CRANrepos'] = str(self.libs['URL'][item])

@@ -1,7 +1,7 @@
 """
 <name>Pairwise T-Test</name>
 <description>This widget performs pairwise t-tests on the supplied samples.  This is also effective at performing t-tests on two samples if supplied.  Data should be supplied in the form of a two columned table with one column representing values and the other the groupings.  Use of Melt DF and Column Selector may be helpful in transforming your data.</description>
-<tags>Parametric, Stats</tags>
+<tags>Parametric</tags>
 <icon>stats.png</icon>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>stats:pairwise.t.test</RFunctions>

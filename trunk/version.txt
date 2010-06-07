@@ -2,4 +2,4 @@
 !define REDRVERSION "1.7"
 !define TYPE "compiled"
 !define DATE "2010.06.06"
-!define SVNVERSION "814"
+!define SVNVERSION "818"

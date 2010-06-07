@@ -50,9 +50,7 @@ class dataEntry(OWRpy):
         #self.splitCanvas.addWidget(box)
         
 
-        # print redRGUI.table
-        # print redRGUI.rsqlitedataframe.table
-        self.dataTable = redRGUI.rsqlitedataframe.table(box, data = None, rows = self.rowCount+1, columns = self.colCount)
+        self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount)
         if self.dataTable.columnCount() < 1:
             self.dataTable.setColumnCount(1)
             self.dataTable.setHorizontalHeaderLabels(['Rownames'])

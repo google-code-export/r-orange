@@ -398,7 +398,7 @@ class AboutDlg(QDialog):
         self.about = redRGUI.webViewBox(self)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.about.setMinimumHeight(150)
-        self.about.setHtml('<h2>' + info['NAME'] + " " + info['VERSION'] + '</h2>' + 
+        self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
         '; Build Time: ' + info['DATE'] + '' + 
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')

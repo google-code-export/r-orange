@@ -16,7 +16,7 @@ def __getDirectoryNames():
     libraryDir = os.path.join(redRDir, "libraries")
     qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')
     redRSignalsDir = os.path.join(redRDir, "libraries",'base','signalClasses')
-    tagsDir = os.path.join(redRDir, "tagsSystem")
+    examplesDir = os.path.join(redRDir, "Examples")
     picsDir = os.path.join(widgetDir,'base', "icons")
     addOnsDir = os.path.join(redRDir, "add-ons")
     
@@ -61,7 +61,7 @@ def __getDirectoryNames():
     
     tempDir = setTempDir(canvasSettingsDir, 1)
     # print tempDir
-    return dict([(name, vars()[name]) for name in ["tempDir", "templatesDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "tagsDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ["tempDir", "templatesDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -155,7 +155,7 @@ def saveSettings():
     file=open(filename, "wb")
     if settings["widgetListType"] == 1:        # tree view
         settings["treeItemsOpenness"] = dict([(key, tabs.tabDict[key].isExpanded()) for key in tabs.tabDict.keys()])
-    cPickle.dump(settings, file)
+    cPickle.dump(settings, file,2)
     file.close()
 def getVersion():
     if len(version.keys()) ==0:

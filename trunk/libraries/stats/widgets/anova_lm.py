@@ -2,7 +2,7 @@
 <name>ANOVA-LM</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Performs ANOVA on a linear model, usually made using the LM widget.  Returns an output of the ANOV comparison.</description>
-<tags>Parametric, Stats</tags>
+<tags>Parametric</tags>
 <icon>stats.png</icon>
 <RFunctions>stats:anova, stats:lm, stats:anova.lm</RFunctions>
 """
