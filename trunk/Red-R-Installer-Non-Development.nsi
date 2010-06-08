@@ -145,7 +145,7 @@ Section Uninstall
 	
     RmDir /r /REBOOTOK "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}"
     
-    MessageBox MB_YESNO "Would you like to remove your Red-R ${NAME}-${REDRVERSION} settings?" /SD IDYES IDNO remove_R
+    MessageBox MB_YESNO "Would you like to remove your Red-R ${NAME}-${REDRVERSION} settings?" /SD IDYES IDNO remove_keys
     
         ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
         StrCmp $0 "" 0 +2
@@ -153,18 +153,14 @@ Section Uninstall
         StrCmp $0 "" +2 0
           RmDir /r /REBOOTOK "$0\red-r"
 	
-    remove_R:
-
-    ; MessageBox MB_YESNO "Would you like to remove the version of R that came with ${NAME}?" /SD IDYES IDNO remove_keys
+    remove_keys:
     
-        ; ReadRegStr $0 HKCU "${SHELLFOLDERS}" AppData
-        ; StrCmp $0 "" 0 +2
-          ; ReadRegStr $0 HKLM "${SHELLFOLDERS}" "Common AppData"
-        ; StrCmp $0 "" +2 0
-          ; RmDir /r /REBOOTOK "$0\red-r"
-	
-    ; remove_keys:
-
+    MessageBox MB_YESNO "Would you like to remove all previous versions of Red-R?$\r$\nRemoves the entire Red-R directory." /SD IDYES IDNO removed_OK
+    
+    RmDir /R /REBOOTOK "$INSTDIR"
+    RmDir /R /REBOOTOK "$SMPROGRAMS\Red-R"
+    
+    removed_OK:
 
     DeleteRegKey SHELL_CONTEXT "SOFTWARE\Red-R\${NAME}-${REDRVERSION}"
     DeleteRegKey SHELL_CONTEXT "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}-${REDRVERSION}"
