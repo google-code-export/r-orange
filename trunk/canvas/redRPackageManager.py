@@ -35,8 +35,9 @@ class packageManager:
         ## now process the requires for R
         
         pack = self.readXML(os.path.join(installDir, 'package.xml'))
-        Rpacks = self.getXMLText(pack.getElementsByTagName('RLibraries')[0].childNodes)
-        self.resolveRDependencies(Rpacks.split(','))
+        if pack.getElementsByTagName('RLibraries'):
+            Rpacks = self.getXMLText(pack.getElementsByTagName('RLibraries')[0].childNodes)
+            self.resolveRDependencies(Rpacks.split(','))
         
     def getPackageInfo(self,filename):
         zfile = zipfile.ZipFile(filename, "r" )
@@ -61,10 +62,12 @@ class packageManager:
         OK = True
         for package,version in packages.items():
             if version['installed']: continue
+            if not package in self.sitePackages: continue
+            
             try:
                 i = i + 1
                 progressBar.setValue(i)
-                packageName = str(package+'-'+version['Version']+'.rrp')
+                packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.rrp')
                 print packageName
                 print redREnviron.directoryNames['downloadsDir']
                 url = str(self.repository+'/'+package+'/'+packageName)
@@ -405,7 +408,6 @@ class packageManagerDialog(redRGUI.dialog):
     
     def askToInstall(self,packages,msg):
         deps = self.packageManager.getDependencies(packages)
-        
         msg = msg + "\nRepository: Red-R.org\nPackages:\n--" + "\n--".join(packages.keys())
         if len(deps.keys()) > 0:
             msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
