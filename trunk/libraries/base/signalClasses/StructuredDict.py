@@ -30,6 +30,8 @@ class StructuredDict(UnstructuredDict):
         else:
             self.keys = None
             self.length = None
+    def getKeys(self):
+        return self.keys
     def transpose(self):
         ## transpose the structured data
         
