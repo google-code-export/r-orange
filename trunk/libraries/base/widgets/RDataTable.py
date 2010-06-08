@@ -65,7 +65,7 @@ class RDataTable(OWRpy):
         self.separator = redRGUI.comboBox(saveTab, label = 'Seperator:', 
         items = ['Tab', 'Space', 'Comma'], orientation = 'horizontal')
         save = redRGUI.button(saveTab, label="Save As File", callback=self.writeFile,
-        tooltip = "Write the table to a text file.")
+        toolTip = "Write the table to a text file.")
         saveTab.layout().setAlignment(save,Qt.AlignRight)
 
         #links:
@@ -73,15 +73,15 @@ class RDataTable(OWRpy):
         self.linkListBox = redRGUI.listBox(linksTab)
         self.linkListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.customLink = redRGUI.lineEdit(linksTab, label = 'Add Link:')
-        b = redRGUI.button(linksTab, label = 'Add', tooltip = 'Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.', callback=self.addCustomLink)
+        b = redRGUI.button(linksTab, label = 'Add', toolTip = 'Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.', callback=self.addCustomLink)
         linksTab.layout().setAlignment(b,Qt.AlignRight)
         
         resizeColsBox = redRGUI.groupBox(self.advancedOptions, orientation="horizontal")
         redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
         redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
-        tooltip = "Increase the width of the columns", width=30)
+        toolTip = "Increase the width of the columns", width=30)
         redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
-        tooltip = "Decrease the width of the columns", width=30)
+        toolTip = "Decrease the width of the columns", width=30)
         redRGUI.rubber(resizeColsBox)
 
         #The table
@@ -90,7 +90,7 @@ class RDataTable(OWRpy):
         #boxSettings = redRGUI.groupBox(self.advancedOptions, label = "Settings")
         
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
-        
+        save = redRGUI.button(saveTab, label="asdfadf", callback=self.table.clear)
         # self.setRvariableNames(['x'])
         # self.R(self.Rvariables['x'] + '<- data.frame(1:20,1:20,1:20)')
         # self.table.setRTable(self.Rvariables['x'])

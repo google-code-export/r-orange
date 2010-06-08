@@ -44,8 +44,8 @@ class RedRScatterplot(OWRpy):
         #self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
         self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.GUIDialog, self.graph)
         buttonBox = redRGUI.widgetBox(self.GUIDialog,orientation='horizontal')
-        redRGUI.button(buttonBox, label = "Plot", callback = self.plot, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
-        redRGUI.button(buttonBox, label = "Select", callback = self.sendMe, tooltip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        redRGUI.button(buttonBox, label = "Plot", callback = self.plot, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        redRGUI.button(buttonBox, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
         self.paintLegend = redRGUI.textEdit(self.GUIDialog)
         
         self.resize(600, 500)

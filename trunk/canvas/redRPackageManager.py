@@ -162,8 +162,8 @@ class packageManager:
             packageDict[package] = self.parsePackageXML(packageXML)
             
         
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(packageDict)
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(packageDict)
         return packageDict
         
     def updatePackagesFromRepository(self):

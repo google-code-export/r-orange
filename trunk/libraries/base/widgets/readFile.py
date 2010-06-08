@@ -97,13 +97,19 @@ class readFile(OWRpy):
         self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
         self.decimal = redRGUI.lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
         
-        self.numLinesScan = redRGUI.lineEdit(box2,text='10',label='# Lines to Scan:',width=50,orientation='horizontal')
+        self.numLinesScan = redRGUI.lineEdit(box2,text='10',label='# Lines to Scan:', 
+        toolTip='The maximum number of rows to read in while previewing the file. Negative values are ignored.', 
+        width=50,orientation='horizontal')
 
-        self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',width=50,orientation='horizontal')
+        self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',
+        toolTip="The number of lines of the data file to skip before beginning to read data.", 
+        width=50,orientation='horizontal')
         
         holder = redRGUI.widgetBox(options,orientation='horizontal')
-        rescan = redRGUI.button(holder, label = 'Rescan File', callback = self.scanNewFile)
-        load = redRGUI.button(holder, label = 'Load File', callback = self.loadFile)
+        rescan = redRGUI.button(holder, label = 'Rescan File',toolTip="Preview a small portion of the file",
+        callback = self.scanNewFile)
+        load = redRGUI.button(holder, label = 'Load File',toolTip="Load the file into Red-R",
+        callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
         self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       

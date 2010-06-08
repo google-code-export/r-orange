@@ -46,7 +46,10 @@ class Rtable(widgetState,QTableView):
     def setRTable(self,Rdata, setRowHeaders = 1, setColHeaders = 1):
         #print Rdata
         self.Rdata = Rdata
-        self.tm = MyTableModel(Rdata,self,editable=self.editable) 
+        # if self.tm:
+            # self.tm.initData(Rdata)
+        # else:
+        self.tm = MyTableModel(Rdata,self,editable=self.editable)
         self.setModel(self.tm)
 
     def columnCount(self):
@@ -67,6 +70,9 @@ class Rtable(widgetState,QTableView):
         self.oldSortingIndex = index
         self.oldSortingOrder = order
 
+    def clear(self):
+        self.setRTable('matrix("")')
+        
 
     def getSettings(self):
         r = {'Rdata': self.Rdata,
@@ -100,10 +106,6 @@ class MyTableModel(QAbstractTableModel):
 
         #print parent
         QAbstractTableModel.__init__(self,parent) 
-        self.Rdata = Rdata
-        
-        self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list')
-        self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list')
         
         #print 'length rownams %d' % len(self.rownames)
         
@@ -112,8 +114,8 @@ class MyTableModel(QAbstractTableModel):
             # self.colnames.insert(0,'Row Names')
             # self.rownames.insert(0,'Row Names')
         # else:
-        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
-        
+        #self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
+        self.initData(Rdata)
         # print self.arraydata
         # print 'arraydata type:' ,type(self.arraydata)
     def flags(self,index):
@@ -124,6 +126,11 @@ class MyTableModel(QAbstractTableModel):
     def rowCount(self, parent): 
         return len(self.arraydata)
  
+    def initData(self,Rdata):
+        self.Rdata = Rdata
+        self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list')
+        self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list')
+        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
     def columnCount(self, parent): 
         return len(self.arraydata[0])
  
@@ -173,8 +180,6 @@ class MyTableModel(QAbstractTableModel):
             return True
         else:
             return False
-    def clear(self):
-        pass
         ## please reimplement in a later version
     def insertRows(self,beforeRow,count,headers=None):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))

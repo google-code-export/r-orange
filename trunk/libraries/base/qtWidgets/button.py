@@ -4,10 +4,10 @@ from PyQt4.QtGui import *
 
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, 
-    tooltip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
+    toolTip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
         QPushButton.__init__(self,label,widget)
 
-# def button(widget,  label, callback = None, disabled=0, tooltip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
+# def button(widget,  label, callback = None, disabled=0, toolTip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
     # btn = QPushButton(label, widget)
     # w = widgetBox(widget)
     # w.layout().setAlignment(Qt.AlignRight)
@@ -28,8 +28,8 @@ class button(QPushButton,widgetState):
             self.setFixedHeight(height)
         self.setDisabled(disabled)
         
-        if tooltip:
-            self.setToolTip(tooltip)
+        if toolTip:
+            self.setToolTip(toolTip)
             
         if toggleButton:
             self.setCheckable(True)

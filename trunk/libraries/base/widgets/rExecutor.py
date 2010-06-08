@@ -62,7 +62,7 @@ class rExecutor(OWRpy):
 
         self.thistext = redRGUI.textEdit(rightArea)
 
-        sendbutton = redRGUI.button(runbox, label = "&Send", tooltip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
+        sendbutton = redRGUI.button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
 
         
     def clearOutput(self):

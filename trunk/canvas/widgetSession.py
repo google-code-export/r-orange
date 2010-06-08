@@ -223,11 +223,6 @@ class widgetSession():
                 print inst
                 print 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'
         
-        ## commented out because already called in loadSettings
-        if '_customSettings' in settings.keys():
-            self.loadCustomSettings(settings['_customSettings'])
-        elif not globalSettings:
-            self.loadCustomSettings(settings)
         
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
