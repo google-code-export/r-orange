@@ -366,8 +366,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetRegistry = orngRegistry.readCategories()
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
         self.createWidgetsToolbar()
-        signals.registerRedRSignals()
-        redRGUI.registerQTWidgets()
+        #signals.registerRedRSignals()
+        #redRGUI.registerQTWidgets()
         
     def menuItemSaveAs(self):
         self.schema.saveDocumentAs()
