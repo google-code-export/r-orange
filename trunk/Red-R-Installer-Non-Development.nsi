@@ -109,7 +109,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
     CreateDirectory "$DOCUMENTS\Red-R\Schemas"
 	CreateDirectory "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}"
 	CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Red-R Canvas.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\orange.ico" 0
-    CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Uninstall Red-R.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\uninst ${NAME}-${REDRVERSION}.exe"
+    CreateShortCut "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}\Uninstall Red-R.lnk" "$INSTDIR\uninst ${NAME}-${REDRVERSION}.exe"
 
 	CreateShortCut "$DESKTOP\Red-R Canvas ${NAME}-${REDRVERSION}.lnk" "$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\orange.ico" 0
 	
@@ -132,7 +132,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\DefaultIcon" "" "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons\redrOWS.ico"
 	WriteRegStr HKEY_CLASSES_ROOT "Red R Canvas\Shell\Open\Command\" "" '$INSTDIR\${NAME}-${REDRVERSION}\bin\red-RCanvas.exe "%1"';name is appended into the sys.argv variables for opening by Red-R
     
-	WriteUninstaller "$INSTDIR\${NAME}-${REDRVERSION}\uninst ${NAME}-${REDRVERSION}.exe"
+	WriteUninstaller "$INSTDIR\uninst ${NAME}-${REDRVERSION}.exe"
 
 SectionEnd
 
@@ -141,7 +141,7 @@ Section Uninstall
 	
     Delete "$INSTDIR\uninst ${NAME}-${REDRVERSION}.exe"
     
-    RmDir /r /REBOOTOK "$INSTDIR"
+    RmDir /r /REBOOTOK "$INSTDIR\${NAME}-${REDRVERSION}"
 	
     RmDir /r /REBOOTOK "$SMPROGRAMS\Red-R\${NAME}-${REDRVERSION}"
     
