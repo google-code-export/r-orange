@@ -90,7 +90,6 @@ class RDataTable(OWRpy):
         #boxSettings = redRGUI.groupBox(self.advancedOptions, label = "Settings")
         
         self.table = redRGUI.Rtable(self.tableBox,sortable=True)
-        save = redRGUI.button(saveTab, label="asdfadf", callback=self.table.clear)
         # self.setRvariableNames(['x'])
         # self.R(self.Rvariables['x'] + '<- data.frame(1:20,1:20,1:20)')
         # self.table.setRTable(self.Rvariables['x'])
