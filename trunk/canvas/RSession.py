@@ -53,7 +53,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         raise rpy.RPyRException(str(inst))
         return None # now processes can catch potential errors
         
-    
+    print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists
     if wantType == None:
         pass
     elif wantType == 'list':
@@ -70,22 +70,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
             
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
-    elif wantType == 'listOfLists' or listOfLists:
-        if type(output) in [str, int, float, bool]:
-            output =  [[output]]
-        elif type(output) in [dict]:
-            newOutput = []
-            for name in output.keys():
-                nl = output[name]
-                if type(nl) not in [list]:
-                    nl = [nl]
-                newOutput.append(nl)
-                
-            output = newOutput
-        elif type(output) in [list, numpy.ndarray] and type(output[0]) not in [list]:
-            output = [output]
-        else:
-            print 'Warning, conversion was not of a known type;', str(type(output))
+    
     elif wantType == 'dict':
         if type(output) in [str, int, float, bool]:
             output =  {'output':[output]}
@@ -110,18 +95,39 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
             print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'array': # want a numpy array
         if type(output) == list:
+            print 'Converting list to array'
             output = numpy.array(output)
             
         elif type(output) in [str, int, float, bool]:
+            print 'Converting single type to array'
             output = numpy.array([output])
             
         elif type(output) == dict:
+            print 'Converting Dict to Array'
             newOutput = []
             for key in output.keys():
                 newOutput.append(output[key])
             output = newOutput
         elif type(output) in [numpy.ndarray]:
+            print 'Type is already array'
             pass
+        else:
+            print 'Warning, conversion was not of a known type;', str(type(output))
+    elif wantType == 'listOfLists' or listOfLists:
+        print 'Converting to list of lists'
+        if type(output) in [str, int, float, bool]:
+            output =  [[output]]
+        elif type(output) in [dict]:
+            newOutput = []
+            for name in output.keys():
+                nl = output[name]
+                if type(nl) not in [list]:
+                    nl = [nl]
+                newOutput.append(nl)
+                
+            output = newOutput
+        elif type(output) in [list, numpy.ndarray] and type(output[0]) not in [list]:
+            output = [output]
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
             

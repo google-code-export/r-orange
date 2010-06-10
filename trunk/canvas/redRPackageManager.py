@@ -438,8 +438,13 @@ class packageManagerDialog(redRGUI.dialog):
 
     def installPackageFromFile(self,filename):
         package = self.packageManager.getPackageInfo(filename)
-        
-        if package['Name'] in self.localPackages.keys() and self.localPackages[package]['Version']['Number'] == package['Version']['Number']: 
+        try:
+            print package
+            print package['Name'], self.localPackages.keys()
+            print self.localPackages[package['Name']]['Version']['Number'], '##########'
+            print package['Version']['Number'], '$$$$$$$$$$$'
+        except: pass
+        if package['Name'] in self.localPackages.keys() and self.localPackages[package['Name']]['Version']['Number'] == package['Version']['Number']: 
             mb = QMessageBox("Install Package", 'Package "'+package['Name']+
             '" is already installed. Do you want to remove the current version and continue installation?', 
             QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
@@ -451,7 +456,7 @@ class packageManagerDialog(redRGUI.dialog):
         downloadList = {}
         downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
         deps = self.packageManager.getDependencies(downloadList)
-        
+        print deps
         notFound = []
         download = {}
         for name,version in deps.items():
@@ -475,7 +480,7 @@ class packageManagerDialog(redRGUI.dialog):
             QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
             if mb.exec_() != QMessageBox.Ok:
                 return
-        
+        print filename
         self.packageManager.installRRP(package['Name'], filename)
         if len(download.keys()) > 0:
             results = self.packageManager.downloadPackages(download)

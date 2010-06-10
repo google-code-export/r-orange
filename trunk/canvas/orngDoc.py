@@ -629,7 +629,7 @@ class SchemaDoc(QWidget):
             QMessageBox.information(self, 'Red-R Error', 
             'Cannot load file with extension ' + str(filename.split('.')[-1]),  
             QMessageBox.Ok + QMessageBox.Default)
-
+            return
         loadingProgressBar = self.startProgressBar('Loading '+str(os.path.basename(filename)),
         'Loading '+str(filename), 2)
         
