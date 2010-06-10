@@ -437,56 +437,62 @@ class packageManagerDialog(redRGUI.dialog):
         self.askToInstall(downloadList,"Are you sure that you want to install these packages?")
 
     def installPackageFromFile(self,filename):
-        package = self.packageManager.getPackageInfo(filename)
         try:
-            print package
-            print package['Name'], self.localPackages.keys()
-            print self.localPackages[package['Name']]['Version']['Number'], '##########'
-            print package['Version']['Number'], '$$$$$$$$$$$'
-        except: pass
-        if package['Name'] in self.localPackages.keys() and self.localPackages[package['Name']]['Version']['Number'] == package['Version']['Number']: 
-            mb = QMessageBox("Install Package", 'Package "'+package['Name']+
-            '" is already installed. Do you want to remove the current version and continue installation?', 
-            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
-            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
-            if mb.exec_() != QMessageBox.Ok:
-                return
+            package = self.packageManager.getPackageInfo(filename)
+            try:
+                print package
+                print package['Name'], self.localPackages.keys()
+                print self.localPackages[package['Name']]['Version']['Number'], '##########'
+                print package['Version']['Number'], '$$$$$$$$$$$'
+            except: pass
+            if package['Name'] in self.localPackages.keys() and self.localPackages[package['Name']]['Version']['Number'] == package['Version']['Number']: 
+                mb = QMessageBox("Install Package", 'Package "'+package['Name']+
+                '" is already installed. Do you want to remove the current version and continue installation?', 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
+                if mb.exec_() != QMessageBox.Ok:
+                    return
 
-            
-        downloadList = {}
-        downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
-        deps = self.packageManager.getDependencies(downloadList)
-        print deps
-        notFound = []
-        download = {}
-        for name,version in deps.items():
-            if name in self.availablePackages.keys() and version['Version'] == self.availablePackages[name]['Version']['Number']:
-                download[name] = version
-            else:
-                notFound.append(name)
-        if len(notFound) > 0:
-            mb = QMessageBox.warning(self,"Install Package", 
-            'The following packages are required but not found in the Red-R.org repository. Installation will not proceed.\n\n--'+
-            '\n--'.join(notFound),
-            QMessageBox.Ok)
-            return
-        else:
-            msg = "Are you sure that you want to install this package and its dependencies?\nRepository: Red-R.org\nPackage:\n--" + package['Name']
-            if len(download.keys()) > 0:
-                msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
                 
-            mb = QMessageBox("Install Package", msg, 
-            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
-            QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
-            if mb.exec_() != QMessageBox.Ok:
+            downloadList = {}
+            downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+            deps = self.packageManager.getDependencies(downloadList)
+            print deps
+            notFound = []
+            download = {}
+            for name,version in deps.items():
+                if name in self.availablePackages.keys() and version['Version'] == self.availablePackages[name]['Version']['Number']:
+                    download[name] = version
+                else:
+                    notFound.append(name)
+            if len(notFound) > 0:
+                mb = QMessageBox.warning(self,"Install Package", 
+                'The following packages are required but not found in the Red-R.org repository. Installation will not proceed.\n\n--'+
+                '\n--'.join(notFound),
+                QMessageBox.Ok)
                 return
-        print filename
-        self.packageManager.installRRP(package['Name'], filename)
-        if len(download.keys()) > 0:
-            results = self.packageManager.downloadPackages(download)
-        else: #need to do this to refresh the widget tree
-            qApp.canvasDlg.reloadWidgets()
-        self.loadPackagesLists()
-        
+            else:
+                msg = "Are you sure that you want to install this package and its dependencies?\nRepository: Red-R.org\nPackage:\n--" + package['Name']
+                if len(download.keys()) > 0:
+                    msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
+                    
+                mb = QMessageBox("Install Package", msg, 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
+                if mb.exec_() != QMessageBox.Ok:
+                    return
+            print filename
+            self.packageManager.installRRP(package['Name'], filename)
+            if len(download.keys()) > 0:
+                results = self.packageManager.downloadPackages(download)
+            else: #need to do this to refresh the widget tree
+                qApp.canvasDlg.reloadWidgets()
+            self.loadPackagesLists()
+        except Exception as inst:
+            mb = QMessageBox.warning(self,"Install Package", 
+                'The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n'+str(inst),
+                QMessageBox.Ok)
+            raise Exception, str(inst)
+            
 
 packageManager = packageManager()
