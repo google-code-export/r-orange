@@ -64,3 +64,4 @@ class ListSelector(OWRpy):
         else:
             newData = signals.RVariable(data = self.Rvariables['listelement'])
             self.rSend('R Variable', newData)
+            print 'Send Variable', myclass

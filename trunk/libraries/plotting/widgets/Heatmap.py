@@ -95,7 +95,7 @@ class Heatmap(OWRpy):
             start = float(float(self.startSaturation.value())/100)
             end = float(float(self.endSaturation.value())/100)
             print start, end
-            col = 'rainbow(50, start = '+str(start)+', end = '+str(end)+')'
+            col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
         else:
             col = colorType+'(50)'
         self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')', 3, 4)
@@ -104,7 +104,7 @@ class Heatmap(OWRpy):
             start = float(float(self.startSaturation.value())/100)
             end = float(float(self.endSaturation.value())/100)
             print start, end
-            col = 'rainbow(10, start = '+str(start)+', end = '+str(end)+')'
+            col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
         else:
             col = colorType+'(10)'
         self.Rplot('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2)

@@ -20,7 +20,6 @@ class intersect(OWRpy):
         self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]
         self.outputs = [("intersect Output", signals.RVector)]
         
-        self.help.setHtml('<small>Returns the intersection (common elements) between two vectors.  Elements of data tables can be converted to vectors by selecting their column in Row Col Picker or their rownames in Rownames. Associated data of X will be sent forward and the data of Y will be lost to downstream widgets.</small>')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "Intersect Output")
         self.resize(500, 200)

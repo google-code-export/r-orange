@@ -167,7 +167,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                         try:
                             Rcommand('setRepositories(ind=1:7)')
                             Rcommand('install.packages("' + library + '", lib=' + libPath + ')')
-                            Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
+                            loadedOK = Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
                             
                         except:
                             print 'Library load failed'
