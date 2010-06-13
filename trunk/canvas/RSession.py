@@ -150,16 +150,20 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
             libPath = '\"'+personalLibDir+'\"'
         #Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
         loadedOK = True
-        #print libPath
+        # print 'libPath', libPath
         installedRPackages = getInstalledLibraries()
         
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]
+        # print 'librarys', librarys
+        # print 'installedRPackages', installedRPackages
+        
         for library in librarys:
+            # print 'in loop', library, library in installedRPackages
+            # print installedRPackages
             if library in installedRPackages:
                 Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
-                
             else:
                 if redREnviron.checkInternetConnection():
                     mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
