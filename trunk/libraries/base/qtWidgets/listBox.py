@@ -167,6 +167,19 @@ class listBox(QListWidget,widgetState):
             traceback.print_exc(file=sys.stdout)
             print '-'*60        
 
+    def invertSelection(self):
+        for i in range(self.count()):
+            if self.isItemSelected(self.item(i)):
+                self.item(i).setSelected(False)
+            else:
+                self.item(i).setSelected(True)
+    def selectionCount(self):
+        return len(self.selectedIndexes())
+        # i = 0
+        # for i in range(self.count()):
+            # if self.isItemSelected(self.item(i)): i = i + 1
+        # return i
+        
     def items(self):
         items = []
         for i in range(0, self.count()-1):
@@ -197,3 +210,5 @@ class listBox(QListWidget,widgetState):
             self.hb.show()
         else:
             QListWidget.show(self)
+
+    

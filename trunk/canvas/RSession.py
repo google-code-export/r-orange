@@ -53,13 +53,15 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         raise rpy.RPyRException(str(inst))
         return None # now processes can catch potential errors
         
-    print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists
+    # print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists
     if wantType == None:
         pass
     elif wantType == 'list':
-        if type(output) in [str, int, float, bool]:
+        if type(output) is list:
+            pass
+        elif type(output) in [str, int, float, bool]:
             output =  [output]
-        elif type(output) in [dict]:
+        elif type(output) is dict:
             newOutput = []
             for name in output.keys():
                 nl = output[name]
@@ -67,15 +69,15 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
             output = newOutput
         elif type(output) is numpy.ndarray:
             output = output.tolist()
-            
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
     
     elif wantType == 'dict':
-        if type(output) in [str, int, float, bool]:
+        if type(output) is dict:
+            pass
+        elif type(output) in [str, int, float, bool]:
             output =  {'output':[output]}
         elif type(output) == type([]):
-            
             output = {'output': output}
         elif type(output) == type({}):
             #print '#--#'+str(output)

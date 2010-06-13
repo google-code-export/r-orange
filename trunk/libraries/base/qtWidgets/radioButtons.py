@@ -44,9 +44,17 @@ class radioButtons(widgetBox,widgetState):
             else: i.setChecked(False)
     def getChecked(self):
         button = self.buttons.checkedButton()
-        if button == 0 or button == None: return 0
+        if button == 0 or button == None or button.isEnabled()==False: return 0
         else: return button.text()
     
+    def disable(self,buttons):
+        for i in self.buttons.buttons():
+            if i.text() in buttons: i.setDisabled(True)
+
+    def enable(self,buttons):
+        for i in self.buttons.buttons():
+            if i.text() in buttons: i.setEnabled(True)
+
     def hide(self):
         self.box.hide()
     def show(self):

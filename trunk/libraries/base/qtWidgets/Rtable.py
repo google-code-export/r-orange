@@ -128,9 +128,9 @@ class MyTableModel(QAbstractTableModel):
  
     def initData(self,Rdata):
         self.Rdata = Rdata
-        self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list')
-        self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list')
-        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
+        self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list',silent=True)
+        self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
+        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list',silent=True)
     def columnCount(self, parent): 
         return len(self.arraydata[0])
  
