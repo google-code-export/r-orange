@@ -21,7 +21,11 @@ class lineEdit(QLineEdit,widgetState):
             else:
                 widget.layout().addWidget(self)
                 self.hasLabel = False
-        if toolTip: self.setToolTip(toolTip)
+        if toolTip and label: 
+            self.hb.setToolTip(toolTip)
+        elif toolTip:
+            self.setToolTip(toolTip)
+            
         if width == 0:
             self.setMaximumWidth(175)
             self.setMinimumWidth(175)

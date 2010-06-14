@@ -70,7 +70,8 @@ class widgetGUI(QMainWindow):
         self.setCentralWidget(topWidgetPart)
         self.controlArea = redRGUI.widgetBox(topWidgetPart, orientation="vertical", margin=4)
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        
+        # topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
+
         bottomArea = redRGUI.widgetBox(topWidgetPart, orientation="horizontal", margin=4)
         self.bottomAreaLeft = redRGUI.widgetBox(bottomArea, orientation = 'horizontal')
         self.bottomAreaCenter = redRGUI.widgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),

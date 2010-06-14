@@ -32,7 +32,6 @@ class listBox(QListWidget,widgetState):
             self.setDropIndicatorShown(1)
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             self.dragStartPosition = 0
-        #redRGUI.connectControl(self, self.widget, value, callback, 'itemSelectionChanged()', redRGUI.CallFrontListBox(self), redRGUI.CallBackListBox(self, self.widget))
         if items and type(items) == type([]):
             self.addItems(items)
         if toolTip:
@@ -179,7 +178,9 @@ class listBox(QListWidget,widgetState):
         # for i in range(self.count()):
             # if self.isItemSelected(self.item(i)): i = i + 1
         # return i
-        
+    def getCurrentSelection(self):
+            return [str(i.text()) for i in self.selectedItems()]
+                
     def items(self):
         items = []
         for i in range(0, self.count()-1):

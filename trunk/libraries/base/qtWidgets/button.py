@@ -4,7 +4,7 @@ from PyQt4.QtGui import *
 
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, 
-    toolTip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
+    toolTip=None, width = None, height = None,align='left', toggleButton = False, addToLayout = 1):
         QPushButton.__init__(self,label,widget)
 
 # def button(widget,  label, callback = None, disabled=0, toolTip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
@@ -14,6 +14,10 @@ class button(QPushButton,widgetState):
     # w.layout().addWidget(btn)
         if addToLayout and widget.layout():
             widget.layout().addWidget(self)
+            if align=='left':
+                widget.layout().setAlignment(self, Qt.AlignLeft)
+            elif align=='right':
+                widget.layout().setAlignment(self, Qt.AlignRight)
         
         if width == -1:
             pass

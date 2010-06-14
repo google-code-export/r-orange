@@ -29,17 +29,17 @@ class OrangeCanvasDlg(QMainWindow):
 
         # self.__dict__.update(redREnviron.directoryNames)
         # print self.tempDir
-        if int(str(os.path.split(redREnviron.directoryNames['tempDir'])[1]).strip('temp')) > 5:
-            mb = QMessageBox("Setting Temp Directory", "You seem to have a lot of temp directories.\nThis can happen if Red-R has crashed.\nWould you like to clear them?\n\nDon't do this if you have multiple sessions of Red-R open.", QMessageBox.Information, QMessageBox.Yes | QMessageBox.Default, QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
-            if mb.exec_() == QMessageBox.Yes: 
-                import shutil
-                for dirName in os.listdir(os.path.split(redREnviron.directoryNames['tempDir'])[0]):
-                    if dirName == os.path.split(redREnviron.directoryNames['tempDir'][1]): continue
-                    else:
-                        try:
-                            shutil.rmtree(os.path.join(os.path.split(redREnviron.directoryNames['tempDir'])[0], dirName))
-                        except:
-                            pass
+        # if int(str(os.path.split(redREnviron.directoryNames['tempDir'])[1]).strip('temp')) > 5:
+            # mb = QMessageBox("Setting Temp Directory", "You seem to have a lot of temp directories.\nThis can happen if Red-R has crashed.\nWould you like to clear them?\n\nDon't do this if you have multiple sessions of Red-R open.", QMessageBox.Information, QMessageBox.Yes | QMessageBox.Default, QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+            # if mb.exec_() == QMessageBox.Yes: 
+                # import shutil
+                # for dirName in os.listdir(os.path.split(redREnviron.directoryNames['tempDir'])[0]):
+                    # if dirName == os.path.split(redREnviron.directoryNames['tempDir'][1]): continue
+                    # else:
+                        # try:
+                            # shutil.rmtree(os.path.join(os.path.split(redREnviron.directoryNames['tempDir'])[0], dirName))
+                        # except:
+                            # pass
         logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
         splashWindow.setMask(logo.mask())

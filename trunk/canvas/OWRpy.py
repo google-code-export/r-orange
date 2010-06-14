@@ -83,7 +83,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
                 QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
                 QMessageBox.Ok + QMessageBox.Default)
             
-            raise rpy.RPyRException
+            raise RuntimeError(str(inst))
             return None # now processes can catch potential errors
 
         #except: 

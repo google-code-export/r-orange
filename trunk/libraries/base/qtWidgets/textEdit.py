@@ -34,10 +34,6 @@ class textEdit(QTextEdit,widgetState):
         # print r['text']
         return r
     def loadSettings(self,data):
-        # print 'in textEdit loadSettings'
-        #print data
-        #print '##################################\n<br>'
-        # print data['text']
         self.clear()
         self.insertHtml(data['text'])
         # self.setEnabled(data['enabled'])

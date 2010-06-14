@@ -1,15 +1,14 @@
 """
-<name>Get Rownames</name>
+<name>Row or Column Names</name>
 <description>Returns a vector of rownames coresponding to the row names of a data table.</description>
 <tags>Subsetting</tags>
 <icon>readfile.png</icon>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>base:rownames</RFunctions>
+<author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
+<RFunctions>base:rownames, base:colnames</RFunctions>
 """
 from OWRpy import * 
 import redRGUI 
 class rownames(OWRpy): 
-    settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Rownames", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["rownames"])
@@ -17,37 +16,57 @@ class rownames(OWRpy):
          
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame, self.processx)]
-        self.outputs = [("rownames Output", signals.RVector)]
+        self.outputs = [("Names Output", signals.RVector)]
         
-        self.help.setHtml('<small>Returns a vector of rownames coresponding to the row names of a data table.</small>')
-        box = redRGUI.tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamprefix_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "prefix:")
-        self.RFunctionParamdo_NULL_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "do_NULL:")
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        box = redRGUI.widgetBox(self.controlArea)
+        self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
+        redRGUI.widgetLabel(box,'Get row or column names from input object.')
+        redRGUI.separator(box,height=10)
+        self.function =  redRGUI.radioButtons(box, 
+        buttons=['Row Names','Column Names'],setChecked='Row Names', orientation='horizontal')
+        redRGUI.separator(box,height=10)
+
+        self.RFunctionParamprefix_lineEdit =  redRGUI.lineEdit(box,  label = "prefix:", 
+        toolTip='prepend prefix to simple numbers when creating names.')
+        redRGUI.separator(box,height=10)
+        
+        self.doNullButton =  redRGUI.radioButtons(box,  label = "do.NULL:",
+        toolTips=['logical. Should this create names if they are NULL?']*2,
+        buttons=['TRUE','FALSE'],setChecked='TRUE', orientation='horizontal')
+        buttonBox = redRGUI.widgetBox(box,orientation='horizontal')
+        redRGUI.button(buttonBox, "Commit", callback = self.commitFunction)
+        self.autoCommit = redRGUI.checkBox(buttonBox,buttons=['Commit on Input'],setChecked=['Commit on Input'])
+        
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
             self.data = data
-            self.commitFunction()
+            self.commitFunction(userClick=False)
         else:
             self.RFunctionParam_x = ''
-    def commitFunction(self):
+    def commitFunction(self,userClick=True):
+        if not userClick and 'Commit on Input' not in self.autoCommit.getChecked():
+            return
         if str(self.RFunctionParam_x) == '': 
             self.status.setText('No data')
             return
+            
         injection = []
+        if self.function.getChecked() =='Row Names':
+            function = 'rownames'
+        else:
+            function = 'colnames'
+
         if str(self.RFunctionParamprefix_lineEdit.text()) != '':
-            string = 'prefix='+str(self.RFunctionParamprefix_lineEdit.text())
+            string = 'prefix="'+str(self.RFunctionParamprefix_lineEdit.text())+'"'
             injection.append(string)
-        if str(self.RFunctionParamdo_NULL_lineEdit.text()) != '':
-            string = 'do_NULL='+str(self.RFunctionParamdo_NULL_lineEdit.text())
+        if str(self.doNullButton.getChecked()):
+            string = 'do.NULL='+str(self.doNullButton.getChecked())
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['rownames']+'<-rownames(x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')')
         
         newData = signals.RVector(data = self.Rvariables["rownames"])
 
-        self.rSend("rownames Output", newData)
+        self.rSend("Names Output", newData)
 
