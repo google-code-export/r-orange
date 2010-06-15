@@ -19,8 +19,8 @@ class t(OWRpy):
         self.data={}
         
         
-        self.inputs = [("x", signals.RDataFrame, self.processx)]
-        self.outputs = [("t Output", signals.RDataFrame)]
+        self.inputs = [("x", rdf.RDataFrame, self.processx)]
+        self.outputs = [("t Output", rdf.RDataFrame)]
         
         #box = redRGUI.widgetBox(self.controlArea, "Widget Box")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -34,6 +34,6 @@ class t(OWRpy):
         
         self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+str(self.RFunctionParam_x)+'))')
         
-        newData = signals.RDataFrame(data = self.Rvariables['t'])
+        newData = rdf.RDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("t Output", newData)

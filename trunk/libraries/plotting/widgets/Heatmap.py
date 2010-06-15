@@ -20,7 +20,7 @@ class Heatmap(OWRpy):
         self.plotdata = ''
         self.rowvChoice = None
         
-        self.inputs = [("Expression Matrix", signals.RDataFrame, self.processMatrix), ('Classes Data', signals.RDataFrame, self.processClasses)]
+        self.inputs = [("Expression Matrix", rdf.RDataFrame, self.processMatrix), ('Classes Data', rdf.RDataFrame, self.processClasses)]
         self.outputs = [("Cluster Subset List", signals.RList)]
         
 

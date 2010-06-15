@@ -18,7 +18,7 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_g = ""
         self.RFunctionParam_p_adjust_method = "p.adjust.methods"
         self.indata = ''
-        self.inputs = [('R Data Frame', signals.RDataFrame, self.process)]
+        self.inputs = [('R Data Frame', rdf.RDataFrame, self.process)]
         self.outputs = [("pairwise.t.test Output", signals.RVariable)]
         
         box = redRGUI.widgetBox(self.controlArea)

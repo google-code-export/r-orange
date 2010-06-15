@@ -15,7 +15,7 @@ class cor(OWRpy):
         self.RFunctionParam_y = None
         self.RFunctionParam_x = None
         
-        self.inputs = [("x", signals.RDataFrame, self.processx),("y", signals.RDataFrame, self.processy)]
+        self.inputs = [("x", rdf.RDataFrame, self.processx),("y", rdf.RDataFrame, self.processy)]
         self.outputs = [("cor Output", signals.RMatrix)]
         
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       

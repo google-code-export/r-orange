@@ -16,7 +16,7 @@ class spline(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", signals.RVector, self.processy),("x", signals.RDataFrame, self.processx)]
+        self.inputs = [("y", signals.RVector, self.processy),("x", rdf.RDataFrame, self.processx)]
         self.outputs = [("spline Output", signals.RModelFit), ('spline plot attribute', signals.plotting.RPlotAttribute)]
         
         self.standardTab = redRGUI.groupBox(self.controlArea, label = 'Parameters')

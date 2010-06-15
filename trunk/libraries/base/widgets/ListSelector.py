@@ -9,6 +9,11 @@
 
 from OWRpy import *
 import redRGUI
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RList as rlist
+import libraries.base.signalClasses.RMatrix as rmat
+import libraries.base.signalClasses.RVariable as rvar
 
 class ListSelector(OWRpy):
     #This widget has no settings list
@@ -19,8 +24,8 @@ class ListSelector(OWRpy):
         self.setRvariableNames(['cm', 'listelement'])
         self.data = None
         
-        self.inputs = [('R List', signals.RList, self.process)]
-        self.outputs = [('R Data Frame', signals.RDataFrame), ('R Vector', signals.RVector), ('R List', signals.RList), ('R Variable', signals.RVariable)]
+        self.inputs = [('R List', rlist.RList, self.process)]
+        self.outputs = [('R Data Frame', rdf.RDataFrame), ('R Vector', rvec.RVector), ('R List', rlist.RList), ('R Variable', rvar.RVariable), ('R Matrix', rmat.RMatrix)]
         
         #GUI
         box = redRGUI.groupBox(self.controlArea, "List Data")
@@ -50,18 +55,22 @@ class ListSelector(OWRpy):
         print 'myclass',myclass
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
-            newData = signals.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
+            newData = rdf.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
             self.rSend('R Data Frame', newData)
             print 'Sent Data Frame'
         elif myclass == 'list':
-            newData = signals.RList(data = self.Rvariables['listelement'])
+            newData = rlist.RList(data = self.Rvariables['listelement'])
             self.rSend('R List', newData)
             print 'Sent List'
         elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer']:
-            newData = signals.RVector(data = self.Rvariables['listelement'])
+            newData = rvec.RVector(data = self.Rvariables['listelement'])
             self.rSend('R Vector', newData)
             print 'Sent Vector'
+        elif myclass in ['matrix']:
+            newData = rmat.RMatrix(data = self.Rvariables['listelement'])
+            self.rSend('R Matrix', newData)
+            print 'Sent Matrix'
         else:
-            newData = signals.RVariable(data = self.Rvariables['listelement'])
+            newData = rvar.RVariable(data = self.Rvariables['listelement'])
             self.rSend('R Variable', newData)
             print 'Send Variable', myclass

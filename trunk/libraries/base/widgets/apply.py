@@ -16,7 +16,7 @@ class apply(OWRpy):
             self.data = {}
              
             self.RFunctionParam_X = ''
-            self.inputs = [("X", signals.RDataFrame, self.processX)]
+            self.inputs = [("X", rdf.RDataFrame, self.processX)]
             self.outputs = [("apply Output", signals.RVector)]
             
             area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       

@@ -375,9 +375,11 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveTemplate(self):
         self.schema.saveTemplate()
     def menuItemSaveAsAppButtons(self):
+        return ## depricated
         self.schema.saveDocumentAsApp(asTabs = 0)
 
     def menuItemSaveAsAppTabs(self):
+        return ## depricated
         self.schema.saveDocumentAsApp(asTabs = 1)
 
     def menuItemPrinter(self):

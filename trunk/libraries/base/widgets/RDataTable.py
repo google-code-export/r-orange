@@ -29,7 +29,7 @@ class RDataTable(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
         #OWRpy.__init__(self)
         
-        self.inputs = [("Rectangular Data", signals.RDataFrame, self.dataset)]
+        self.inputs = [("Rectangular Data", rdf.RDataFrame, self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation
@@ -198,9 +198,9 @@ class RDataTable(OWRpy):
         elif self.separator.currentText() == 'Comma':
             sep = ','
         #use the R function if the parent of the dict is an R object.
-        if isinstance(self.data.getDataParent(), signals.RDataFrame):  
+        if isinstance(self.data.getDataParent(), rdf.RDataFrame):  
             self.R('write.table('+self.data.getDataParent().getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
-        elif isinstance(self.data, signals.RDataFrame):
+        elif isinstance(self.data, rdf.RDataFrame):
             self.R('write.table('+self.data.getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
             string = ''

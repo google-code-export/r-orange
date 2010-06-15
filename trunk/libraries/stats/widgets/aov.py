@@ -15,7 +15,7 @@ class aov(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.saveSettingsList.extend(['data', 'RFunctionParam_data'])
-        self.inputs = [("data", signals.RDataFrame, self.processdata)]
+        self.inputs = [("data", rdf.RDataFrame, self.processdata)]
         self.outputs = [("aov Output", signals.RModelFit)]
         
         box = redRGUI.tabWidget(self.controlArea)

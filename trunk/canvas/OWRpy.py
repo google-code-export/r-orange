@@ -99,6 +99,17 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
         qApp.restoreOverrideCursor()
         return commandOutput
+    def assignR(self, name, object):
+        histquery = 'Assign '+str(name)+' to '+str(object)
+        histquery = histquery.replace('<', '&lt;') #convert for html
+        histquery = histquery.replace('>', '&gt;')
+        histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
+        self.Rhistory += histquery + '</code><br><code>'
+        assignOK = RSession.assign(name, object)
+        if not assignOK:
+            QMessageBox.information(self, 'Red-R Canvas','Object was not assigned correctly in R, please tell package manager.',  
+            QMessageBox.Ok + QMessageBox.Default)
+            raise Exception, 'Object was not assigned correctly in R, please tell package manager.'
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
         #print str(redREnviron.settings)
         if file == None and ('HomeFolder' not in redREnviron.settings.keys()):

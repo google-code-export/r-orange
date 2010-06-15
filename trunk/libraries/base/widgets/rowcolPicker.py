@@ -21,11 +21,11 @@ class rowcolPicker(OWRpy):
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
         
         
-        self.inputs = [('Data Table', signals.RDataFrame, self.setWidget), 
-        ('Subsetting Vector', signals.RDataFrame, self.setSubsettingVector)]
+        self.inputs = [('Data Table', rdf.RDataFrame, self.setWidget), 
+        ('Subsetting Vector', rdf.RDataFrame, self.setSubsettingVector)]
         
-        self.outputs = [('Data Table', signals.RDataFrame), 
-        ('Not Data Table', signals.RDataFrame), 
+        self.outputs = [('Data Table', rdf.RDataFrame), 
+        ('Not Data Table', rdf.RDataFrame), 
         ('Reduced Vector', signals.RVector),
         ('Not Reduced Vector', signals.RVector)]
         
@@ -136,9 +136,9 @@ class rowcolPicker(OWRpy):
             ' %in% '+self.ssv+'[,'+col+']]')
                 
         print 'asdfasdf'
-        newData = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
-        newDataNot = signals.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('Not Data Table', newDataNot)
         
         # self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')
@@ -171,10 +171,10 @@ class rowcolPicker(OWRpy):
             self.rSend('Not Reduced Vector', newVector)
             
         
-        newData = signals.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = signals.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('Not Data Table', newDataNot)
                 
         

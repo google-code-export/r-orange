@@ -12,16 +12,16 @@ import redRGUI
 import re
 import textwrap, numpy
 from PyQt4.QtGui import *
-
-class RedRScatterplot(OWRpy):
+    ### currently depricated until fixed
+    class RedRScatterplot(OWRpy):
     
     globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
         self.setRvariableNames(['Plot'])
-        self.inputs = [('x', signals.RDataFrame, self.gotX)]
-        self.outputs = [('Scatterplot Output', signals.RDataFrame)]
+        self.inputs = [('x', rdf.RDataFrame, self.gotX)]
+        self.outputs = [('Scatterplot Output', rdf.RDataFrame)]
         self.data = None
         self.parent = None
         self.cm = None
@@ -343,7 +343,7 @@ class RedRScatterplot(OWRpy):
     def sendMe(self):
         print 'asdfasdf' + self.dataParent.getDataParent()
         print self.cm
-        data = signals.RDataFrame(data = self.dataParent.getDataParent()+'[rownames('+self.dataParent.getDataParent()+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.dataParent.getDataParent()) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        data = rdf.RDataFrame(data = self.dataParent.getDataParent()+'[rownames('+self.dataParent.getDataParent()+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.dataParent.getDataParent()) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
         data.copyAllOptionalData(self.dataParent)
         self.rSend('Scatterplot Output', data)
         self.sendRefresh()

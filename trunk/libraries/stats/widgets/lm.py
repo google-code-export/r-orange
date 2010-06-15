@@ -18,7 +18,7 @@ class lm(OWRpy):
         self.modelFormula = ''
         self.processingComplete = 0
         
-        self.inputs = [("data", signals.RDataFrame, self.processdata)]
+        self.inputs = [("data", rdf.RDataFrame, self.processdata)]
         self.outputs = [("lm Output", signals.stats.RLMFit), ('lm plot attribute', signals.plotting.RPlotAttribute)]
         
         #GUI

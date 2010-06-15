@@ -90,7 +90,7 @@ class rExecutor(OWRpy):
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
-                newData = signals.RDataFrame(data = str(self.command.text()))
+                newData = rdf.RDataFrame(data = str(self.command.text()))
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:

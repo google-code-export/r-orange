@@ -9,6 +9,7 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
 class mathWidget(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,8 +20,8 @@ class mathWidget(OWRpy):
         self.counter = 1
         self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp']
         
-        self.inputs = [('Data Frame', signals.RDataFrame, self.gotData)]
-        self.outputs = [('Data Frame', signals.RDataFrame)]
+        self.inputs = [('Data Frame', rdf.RDataFrame, self.gotData)]
+        self.outputs = [('Data Frame', rdf.RDataFrame)]
         #GUI#
         
         mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
@@ -146,7 +147,7 @@ class mathWidget(OWRpy):
                         
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
-            newData = signals.RDataFrame(data = self.data, parent = self.data)
+            newData = rdf.RDataFrame(data = self.data, parent = self.data)
             self.rSend('Data Frame', newData)
             self.dialog.hide()
         except:

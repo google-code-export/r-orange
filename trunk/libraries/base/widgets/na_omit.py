@@ -16,7 +16,7 @@ class na_omit(OWRpy):
          
         self.RFunctionParam_object = ''
         self.inputs = [("object", signals.RVariable, self.processobject)]
-        self.outputs = [('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable)]
+        self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable)]
         
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
@@ -53,7 +53,7 @@ class na_omit(OWRpy):
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText('Data  sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                newData = signals.RDataFrame(data = self.Rvariables['na.omit'])
+                newData = rdf.RDataFrame(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText('Data  sent through the R Data Frame channel')

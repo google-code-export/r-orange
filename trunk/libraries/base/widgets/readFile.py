@@ -34,7 +34,7 @@ class readFile(OWRpy):
         
         #signals
         self.inputs = None
-        self.outputs = [("data.frame", signals.RDataFrame)]
+        self.outputs = [("data.frame", rdf.RDataFrame)]
         #GUI
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
@@ -360,7 +360,7 @@ class readFile(OWRpy):
         
         # import globalData
         # globalData.setGlobalData(self,'urls',{'dictybase':'http://www.dictybase.org/gene/{db_gene_id}'},description='url')
-        sendData = signals.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
+        sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("data.frame", sendData)
         
     def compileReport(self):

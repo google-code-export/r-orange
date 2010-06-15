@@ -13,8 +13,8 @@ class classCoordinator(OWRpy):
         OWRpy.__init__(self, parent, signalManager, "Class Coordinator", wantMainArea = 0, resizingEnabled = 1)
         
         self.setRvariableNames(["cm"])
-        self.inputs = [('In Data', signals.RDataFrame, self.gotData)]
-        self.outputs = [('Out Data', signals.RDataFrame)]
+        self.inputs = [('In Data', rdf.RDataFrame, self.gotData)]
+        self.outputs = [('Out Data', rdf.RDataFrame)]
         self.outputWindow = redRGUI.textEdit(self.controlArea, label = 'Class Manager Output')
     def gotData(self, data):
         if data:

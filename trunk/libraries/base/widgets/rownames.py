@@ -15,7 +15,7 @@ class rownames(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RDataFrame, self.processx)]
+        self.inputs = [("x", rdf.RDataFrame, self.processx)]
         self.outputs = [("Names Output", signals.RVector)]
         
         box = redRGUI.widgetBox(self.controlArea)

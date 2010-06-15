@@ -9,6 +9,8 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
+import libraries.base.signalClasses.RVariable as rvar
+import libraries.plotting.signalClasses.RPlotAttribute as rplt
 class plot(OWRpy): 
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
@@ -17,7 +19,7 @@ class plot(OWRpy):
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
         self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
-        self.inputs = [("x", signals.RVariable, self.processx), ('Plot Attributes', signals.plotting.RPlotAttribute, self.gotAttribute, 'Multiple')]
+        self.inputs = [("x", rvar.RVariable, self.processx), ('Plot Attributes', rplt.RPlotAttribute, self.gotAttribute, 'Multiple')]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = redRGUI.lineEdit(box, label = 'Main Title:')
@@ -65,14 +67,14 @@ class plot(OWRpy):
         injection = []
         if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
             injection.append('pch=rownames('+self.RFunctionParam_x+')')
-        if self.RFunctionParam_main.text() != '':
-            injection.append('main = "'+self.RFunctionParam_main.text()+'"')
-        if self.RFunctionParam_xlab.text() != '':
-            injection.append('xlab = "'+self.RFunctionParam_xlab.text()+'"')
-        if self.RFunctionParam_ylab.text() != '':
-            injection.append('ylab = "'+self.RFunctionParam_ylab.text()+'"')
-        if self.RFunctionParam_cex.text() != '100':
-            mag = float(self.RFunctionParam_cex.text())/100
+        if str(self.RFunctionParam_main.text()) != '':
+            injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
+        if str(self.RFunctionParam_xlab.text()) != '':
+            injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+        if str(self.RFunctionParam_ylab.text()) != '':
+            injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+        if str(self.RFunctionParam_cex.text()) != '100':
+            mag = float(str(self.RFunctionParam_cex.text()))/100
             injection.append('cex.lab = '+str(mag))
             injection.append('cex.axis = '+str(mag))
         if injection != []:

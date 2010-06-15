@@ -23,8 +23,8 @@ class mergeR(OWRpy):
         self.dataB = ''
         
         
-        self.inputs = [("RExampleTable A", signals.RDataFrame, self.processA), ("RExampleTable B", signals.RDataFrame, self.processB)]
-        self.outputs = [("Merged Examples All", signals.RDataFrame),("Merged Examples A+B", signals.RDataFrame), ("Merged Examples B+A", signals.RDataFrame)]
+        self.inputs = [("RExampleTable A", rdf.RDataFrame, self.processA), ("RExampleTable B", rdf.RDataFrame, self.processB)]
+        self.outputs = [("Merged Examples All", rdf.RDataFrame),("Merged Examples A+B", rdf.RDataFrame), ("Merged Examples B+A", rdf.RDataFrame)]
 
         #default values        
         self.colAsel = None
@@ -175,17 +175,17 @@ class mergeR(OWRpy):
                 self.R('cm_'+self.Rvariables['merged_dataAll'] + '<-c('+self.dataParentA.dictAttrs['cm']+','+self.dataParentB.dictAttrs['cm']+')')
                 self.R('cm_'+self.Rvariables['merged_dataBA'] + '<-c('+self.dataParentA.dictAttrs['cm']+','+self.dataParentB.dictAttrs['cm']+')')
                 mergedCM = True
-            newDataAB = signals.RDataFrame(data = self.Rvariables['merged_dataAB'])
+            newDataAB = rdf.RDataFrame(data = self.Rvariables['merged_dataAB'])
             newDataAB.dictAttrs = self.dataParentB.dictAttrs.copy()
             newDataAB.dictAttrs.update(self.dataParentA.dictAttrs) # A data takes presedence over B data
             
             
-            newDataBA = signals.RDataFrame(data = self.Rvariables['merged_dataBA'])
+            newDataBA = rdf.RDataFrame(data = self.Rvariables['merged_dataBA'])
             newDataBA.dictAttrs = self.dataParentB.dictAttrs.copy()
             newDataBA.dictAttrs.update(self.dataParentA.dictAttrs) # A data takes presedence over B data
             
             
-            newDataAll = signals.RDataFrame(data = self.Rvariables['merged_dataAll'])
+            newDataAll = rdf.RDataFrame(data = self.Rvariables['merged_dataAll'])
             newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
             newDataAll.dictAttrs.update(self.dataParentA.dictAttrs) # A data takes presedence over B data
             

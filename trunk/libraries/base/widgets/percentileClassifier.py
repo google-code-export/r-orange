@@ -14,8 +14,8 @@ class percentileClassifier(OWRpy):
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
         self.data = ''
         self.dataParent = None
-        self.inputs = [('Data Frame', signals.RDataFrame, self.processData)]
-        self.outputs = [('Data Frame', signals.RDataFrame)]
+        self.inputs = [('Data Frame', rdf.RDataFrame, self.processData)]
+        self.outputs = [('Data Frame', rdf.RDataFrame)]
         
         ### GUI ###
         self.colNames_listBox = redRGUI.listBox(self.controlArea, label = 'Column Names:')

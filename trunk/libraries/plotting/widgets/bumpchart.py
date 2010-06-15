@@ -7,12 +7,13 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
 class bumpchart(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "bumpchart", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_y = ''
-        self.inputs = [("y", signals.RDataFrame, self.processy)]
+        self.inputs = [("y", rdf.RDataFrame, self.processy)]
         
         self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)

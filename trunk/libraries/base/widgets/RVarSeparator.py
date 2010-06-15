@@ -16,7 +16,7 @@ class RVarSeparator(OWRpy):
         self.setRvariableNames(['separator_cm'])
         
         self.inputs = [('R Session', signals.REnvironment, self.process)]
-        self.outputs = [('R Session', signals.REnvironment), ('R.object', signals.RVariable), ('R Data Frame', signals.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector)]
+        self.outputs = [('R Session', signals.REnvironment), ('R.object', signals.RVariable), ('R Data Frame', rdf.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector)]
         self.setRvariableNames(['sessionEnviron'])
         self.envName = ''
         self.sendthis = {}
@@ -66,7 +66,7 @@ class RVarSeparator(OWRpy):
                 self.sendStatus.setText('Data sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
 
-                newData = signals.RDataFrame(data = self.sendthis['data'])
+                newData = rdf.RDataFrame(data = self.sendthis['data'])
                 self.rSend('R Data Frame', newData)
                 self.status.setText('Data frame sent')
                 self.sendStatus.setText('Data sent through the R Data Frame channel')

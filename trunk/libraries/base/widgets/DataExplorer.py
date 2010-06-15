@@ -30,8 +30,8 @@ class DataExplorer(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', signals.RDataFrame, self.processData), ('Row Subset Vector', signals.RVector, self.setRowSelectVector)]
-        self.outputs = [('Data Subset', signals.RDataFrame)]
+        self.inputs = [('Data Table', rdf.RDataFrame, self.processData), ('Row Subset Vector', signals.RVector, self.setRowSelectVector)]
+        self.outputs = [('Data Subset', rdf.RDataFrame)]
         
         # a special section that sets when the shift key is heald or not 
         #self.shiftPressed = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.NoModifier)
@@ -372,7 +372,7 @@ class DataExplorer(OWRpy):
         print self.criteriaList
         newDataString = self.orriginalData+'['+'&'.join(self.criteriaList)+',, drop = F]'
         print newDataString, 'New Data String'
-        newData = signals.RDataFrame(data = newDataString, parent = self.orriginalData) # reprocess the table
+        newData = rdf.RDataFrame(data = newDataString, parent = self.orriginalData) # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
@@ -388,7 +388,7 @@ class DataExplorer(OWRpy):
         print self.criteriaList
         if len(self.criteriaList) > 0:
             self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
-            newData = signals.RDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
+            newData = rdf.RDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
             self.rSend('Data Subset', newData)
         else:
             self.rSend('Data Subset', self.dataParent)
