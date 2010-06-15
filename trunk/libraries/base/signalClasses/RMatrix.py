@@ -1,4 +1,4 @@
-from RDataFrame import *
+from libraries.base.signalClasses.RDataFrame import *
 
 class RMatrix(RDataFrame):
     def __init__(self, data, parent = None, checkVal = True):

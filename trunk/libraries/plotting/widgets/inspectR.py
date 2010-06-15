@@ -7,14 +7,14 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RModelFit as rmf
 class inspectR(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
 		OWRpy.__init__(self, parent, signalManager, "inspect", wantMainArea = 0, resizingEnabled = 1)
 		self.RFunctionParam_mymodel = ''
-		self.inputs = [("mymodel", signals.RModelFit, self.processmymodel)]
+		self.inputs = [("mymodel", rmf.RModelFit, self.processmymodel)]
 		
-		self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
 		box = redRGUI.tabWidget(self.controlArea)
 		self.standardTab = box.createTabPage(name = "Standard")
 		self.advancedTab = box.createTabPage(name = "Advanced")

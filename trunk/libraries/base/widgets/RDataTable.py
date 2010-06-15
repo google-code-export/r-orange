@@ -17,7 +17,7 @@ from OWRpy import *
 import OWGUI, redRGUI
 import math
 import globalData
-
+import libraries.base.signalClasses.RDataFrame as rdf
 ##############################################################################
 
 OrangeValueRole = Qt.UserRole + 1

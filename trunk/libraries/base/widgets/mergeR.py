@@ -9,7 +9,7 @@
 
 from OWRpy import *
 import redRGUI
-
+import libraries.base.signalClasses.RDataFrame as rdf
 
 class mergeR(OWRpy):
     settingsList = ['dataA','dataB','colAsel', 'colBsel']

@@ -9,7 +9,8 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-
+import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RVariable as rvar
 class wilcox_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,8 +19,8 @@ class wilcox_test(OWRpy):
          
         self.RFunctionParam_x = ''
         self.RFunctionParam_y = ''
-        self.inputs = [("x", signals.RVector, self.processx), ('y', signals.RVector, self.processy)]
-        self.outputs = [("wilcox.test Output", signals.RVariable)]
+        self.inputs = [("x", rvec.RVector, self.processx), ('y', rvec.RVector, self.processy)]
+        self.outputs = [("wilcox.test Output", rvar.RVariable)]
         
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)

@@ -7,6 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RMatrix as rmat
 class dotchart(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -14,7 +15,7 @@ class dotchart(OWRpy):
 		self.setRvariableNames(["dotchart"])
 		self.data = {}
 		self.RFunctionParam_x = ''
-		self.inputs = [("x", signals.RMatrix, self.processx)]
+		self.inputs = [("x", rmat.RMatrix, self.processx)]
 		
 		self.standardTab = self.controlArea
 		self.RFunctionParamxlab_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')

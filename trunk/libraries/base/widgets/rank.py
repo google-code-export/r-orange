@@ -10,6 +10,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
+import libraries.base.signalClasses.RMatrix as rmat
 class rank(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,8 +20,8 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RMatrix, self.processx)]
-        self.outputs = [("rank Output", signals.RMatrix)]
+        self.inputs = [("x", rmat.RMatrix, self.processx)]
+        self.outputs = [("rank Output", rmat.RMatrix)]
         
         self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
         box = redRGUI.tabWidget(self.controlArea)
@@ -48,6 +49,6 @@ class rank(OWRpy):
             # injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
-        newData = signals.RMatrix(data = self.Rvariables['rank'])
+        newData = rmat.RMatrix(data = self.Rvariables['rank'])
         self.rSend("rank Output", newData)
 

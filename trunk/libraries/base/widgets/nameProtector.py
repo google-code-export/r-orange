@@ -9,6 +9,8 @@
 """
 from OWRpy import * 
 import OWGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
 class nameProtector(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
@@ -17,8 +19,8 @@ class nameProtector(OWRpy):
         self.parentData = {}
         self.data = ''
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector', 'newDataFromNameProtector_cm'])
-        self.inputs = [("Data Frame", rdf.RDataFrame, self.gotDF), ("Vector", signals.RVector, self.gotV)]
-        self.outputs = [("Data Frame", rdf.RDataFrame), ("Vector", signals.RVector)]
+        self.inputs = [("Data Frame", rdf.RDataFrame, self.gotDF), ("Vector", rvec.RVector, self.gotV)]
+        self.outputs = [("Data Frame", rdf.RDataFrame), ("Vector", rvec.RVector)]
         
         ### The data frame GUI
         self.dfbox = redRGUI.widgetBox(self.controlArea)

@@ -2,7 +2,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from RList import *
+from libraries.base.signalClasses.RList import *
 
 class RModelFit(RList):
     def __init__(self, data, parent = None, checkVal = True):

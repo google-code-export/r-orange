@@ -15,6 +15,7 @@ import textwrap
 import cPickle
 import pickle
 import types
+import libraries.base.signalClasses.RDataFrame as rdf
 class readFile(OWRpy):
     
     globalSettingsList = ['filecombo','path']

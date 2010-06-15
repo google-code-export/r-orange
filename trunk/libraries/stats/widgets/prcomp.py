@@ -9,6 +9,9 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rvec
+import libraries.base.signalClasses.RMatrix as rmat
+import libraries.base.signalClasses.RModelFit as rmf
 class prcomp(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -17,7 +20,7 @@ class prcomp(OWRpy):
          
         self.RFunctionParam_x = ''
         self.inputs = [("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("prcomp Output", signals.RModelFit), ("Scaled Data", signals.RMatrix)]
+        self.outputs = [("prcomp Output", rmf.RModelFit), ("Scaled Data", rmat.RMatrix)]
         self.help.setHtml('<small>This widget performs principal component analysis on a data table containing numeric data.  The entire data fit is returned in the prcomp Output channel and the fit to the principal components is returned from the Scaled Data channel.  To view the prinicpal components graphically you may want to select the desired principal components and pass that on to a plotting widget.  More infromation on this function can be seen <a href="http://sekhon.berkeley.edu/stats/html/prcomp.html">here</a>.</small>')
         redRGUI.button(self.controlArea, "Commit", callback = self.commitFunction)
     def processx(self, data):
@@ -30,7 +33,7 @@ class prcomp(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), scale = TRUE, retx=TRUE, '+inj+')')
         
-        newPRComp = signals.RModelFit(data = self.Rvariables['prcomp'])
+        newPRComp = rmf.RModelFit(data = self.Rvariables['prcomp'])
         self.rSend("prcomp Output", newPRComp)
-        newPRCompMatrix = signals.RMatrix(data = self.Rvariables['prcomp']+'$x')
+        newPRCompMatrix = rmat.RMatrix(data = self.Rvariables['prcomp']+'$x')
         self.rSend("Scaled Data", newPRCompMatrix)

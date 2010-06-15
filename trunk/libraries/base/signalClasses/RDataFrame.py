@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from RList import *
-from StructuredDict import *
+from libraries.base.signalClasses.RList import *
+from libraries.base.signalClasses.StructuredDict import *
 
 
 class RDataFrame(RList, StructuredDict):

@@ -9,7 +9,8 @@
 
 from OWRpy import *
 import OWGUI
-
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RList as rlist
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
@@ -21,7 +22,7 @@ class Heatmap(OWRpy):
         self.rowvChoice = None
         
         self.inputs = [("Expression Matrix", rdf.RDataFrame, self.processMatrix), ('Classes Data', rdf.RDataFrame, self.processClasses)]
-        self.outputs = [("Cluster Subset List", signals.RList)]
+        self.outputs = [("Cluster Subset List", rlist.RList)]
         
 
         
@@ -124,7 +125,7 @@ class Heatmap(OWRpy):
         self.Rplot('plot('+self.Rvariables['hclust']+')', devNumber = 1)
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
-        newData = signals.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
+        newData = rlist.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
         hclust = signals.RModelFit(data = self.Rvariables['hclust'])
         newData.dictAttrs['cluster'] = hclust
         self.rSend("Cluster Subset List", newData)

@@ -7,6 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
 class classCoordinator(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):

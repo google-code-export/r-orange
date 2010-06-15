@@ -7,6 +7,8 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RMatrix as rmat
+import libraries.base.signalClasses.RModelFit as rmf
 class RedRisa(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -14,10 +16,9 @@ class RedRisa(OWRpy):
 		self.setRvariableNames(["isa"])
 		self.data = {}
 		self.RFunctionParam_data = ''
-		self.inputs = [("data", signals.RMatrix, self.processdata)]
-		self.outputs = [("isa Output", signals.RModelFit)]
+		self.inputs = [("data", rmat.RMatrix, self.processdata)]
+		self.outputs = [("isa Output", rmf.RModelFit)]
 		
-		self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
 		box = redRGUI.tabWidget(self.controlArea)
 		self.standardTab = box.createTabPage(name = "Standard")
 		self.advancedTab = box.createTabPage(name = "Advanced")
@@ -36,6 +37,6 @@ class RedRisa(OWRpy):
 		if str(self.RFunctionParam_data) == '': return
 		
 		self.R(self.Rvariables['isa']+'<-isa(data='+str(self.RFunctionParam_data)+')')
-		newData = signals.RModelFit(data = self.Rvariables["isa"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+		newData = rmf.RModelFit(data = self.Rvariables["isa"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("isa Output", newData)

@@ -7,13 +7,14 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RVector as rvec
 class scatter_smooth(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
 		OWRpy.__init__(self, parent, signalManager, "scatter_smooth", wantMainArea = 0, resizingEnabled = 1)
 		self.RFunctionParam_y = ''
 		self.RFunctionParam_x = ''
-		self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]
+		self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
 		
 		box = redRGUI.tabWidget(self.controlArea)
 		self.standardTab = box.createTabPage(name = "Standard")

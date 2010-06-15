@@ -8,6 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RVector as rvec
 class intersect(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -17,8 +18,8 @@ class intersect(OWRpy):
          
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]
-        self.outputs = [("intersect Output", signals.RVector)]
+        self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
+        self.outputs = [("intersect Output", rvec.RVector)]
         
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "Intersect Output")
@@ -50,7 +51,7 @@ class intersect(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse =" \n")')
         self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+str(tmp)+'</pre>')        
-        newData = signals.RVector(data = self.Rvariables["intersect"])
+        newData = rvec.RVector(data = self.Rvariables["intersect"])
         
         self.rSend("intersect Output", newData)
 

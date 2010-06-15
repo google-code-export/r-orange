@@ -8,7 +8,7 @@ from PyQt4.QtGui import *
 import signals
 from string import *
 from orngSignalManager import *
-
+import canvas.signals as signals
 
 
 class widgetSignals():

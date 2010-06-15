@@ -1,4 +1,4 @@
-from RVariable import *
+from libraries.base.signalClasses.RVariable import *
 class RList(RVariable):
     def __init__(self, data, parent = None, checkVal = True):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)

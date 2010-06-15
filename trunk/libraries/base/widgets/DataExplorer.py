@@ -12,7 +12,8 @@ from OWRpy import *
 import OWGUI, redRGUI
 import OWGUIEx
 import math, sip
-
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
 class DataExplorer(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager = None):
@@ -30,7 +31,7 @@ class DataExplorer(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', rdf.RDataFrame, self.processData), ('Row Subset Vector', signals.RVector, self.setRowSelectVector)]
+        self.inputs = [('Data Table', rdf.RDataFrame, self.processData), ('Row Subset Vector', rvec.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', rdf.RDataFrame)]
         
         # a special section that sets when the shift key is heald or not 

@@ -7,6 +7,8 @@
 """
 from OWRpy import * 
 import redRGUI
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RMatrix as rmat
 class cor(OWRpy): 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Correlation", wantMainArea = 0, resizingEnabled = 1)
@@ -16,7 +18,7 @@ class cor(OWRpy):
         self.RFunctionParam_x = None
         
         self.inputs = [("x", rdf.RDataFrame, self.processx),("y", rdf.RDataFrame, self.processy)]
-        self.outputs = [("cor Output", signals.RMatrix)]
+        self.outputs = [("cor Output", rmat.RMatrix)]
         
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
         
@@ -102,5 +104,5 @@ class cor(OWRpy):
         # tmp = self.R('paste(txt, collapse ="\n")')
         # self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
         
-        newData = signals.RMatrix(data = self.Rvariables["cor"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = rmat.RMatrix(data = self.Rvariables["cor"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         self.rSend("cor Output", newData)

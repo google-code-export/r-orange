@@ -7,6 +7,11 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVariable as rvar
+import libraries.base.signalClasses.RList as rlist
+import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RMatrix as rmat
 class na_omit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -16,7 +21,7 @@ class na_omit(OWRpy):
          
         self.RFunctionParam_object = ''
         self.inputs = [("object", signals.RVariable, self.processobject)]
-        self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable)]
+        self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector), ('R.object', rvar.RVariable)]
         
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
@@ -43,12 +48,12 @@ class na_omit(OWRpy):
             self.rSend('R.object', self.data)
         elif type(thisdataclass) == str:
             if thisdataclass == 'numeric': # we have a numeric vector as the object
-                newData = signals.RVector(data = self.Rvariables['na.omit'])
+                newData = rvec.RVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText('Data  sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
-                newData = signals.RVector(data = self.Rvariables['na.omit'])
+                newData = rvec.RVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText('Data  sent through the R Vector channel')
@@ -58,22 +63,22 @@ class na_omit(OWRpy):
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText('Data  sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
-                newData = signals.RMatrix(data = self.Rvariables['na.omit'])
+                newData = rmat.RMatrix(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText('Data  sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
-                newData = signals.RList(data = self.Rvariables['na.omit'])
+                newData = rlist.RList(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R List', newData)
                 self.sendStatus.setText('Data  sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                newData = signals.RVariable(data = self.Rvariables['na.omit'])
+                newData = rvar.RVariable(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R.object', newData)
                 self.sendStatus.setText('Data  sent through the R Object channel')
         else:
-            newData = signals.RVariable(data = self.Rvariables['na.omit'])
+            newData = rvar.RVariable(data = self.Rvariables['na.omit'])
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend('R.object', newData)
             self.sendStatus.setText('Data  sent through the R Object channel')

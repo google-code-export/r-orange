@@ -8,6 +8,9 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RModelFit as rmf
 class spline(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -16,8 +19,8 @@ class spline(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", signals.RVector, self.processy),("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("spline Output", signals.RModelFit), ('spline plot attribute', signals.plotting.RPlotAttribute)]
+        self.inputs = [("y", rvec.RVector, self.processy),("x", rdf.RDataFrame, self.processx)]
+        self.outputs = [("spline Output", rmf.RModelFit), ('spline plot attribute', signals.plotting.RPlotAttribute)]
         
         self.standardTab = redRGUI.groupBox(self.controlArea, label = 'Parameters')
         self.RFunctionParamxmin_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
@@ -89,7 +92,7 @@ class spline(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = signals.RModelFit(data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = rmf.RModelFit(data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("spline Output", newData)
         

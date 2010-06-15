@@ -15,7 +15,6 @@ class bumpchart(OWRpy):
         self.RFunctionParam_y = ''
         self.inputs = [("y", rdf.RDataFrame, self.processy)]
         
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")

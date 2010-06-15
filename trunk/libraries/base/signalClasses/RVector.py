@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
-from RMatrix import *
+from libraries.base.signalClasses.RMatrix import *
 class RVector(RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)

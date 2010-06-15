@@ -11,7 +11,8 @@ from OWRpy import *
 import OWGUI
 import OWGUIEx
 import redRGUI
-
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
 class rowcolPicker(OWRpy): 
 
     def __init__(self, parent=None, signalManager=None):
@@ -26,8 +27,8 @@ class rowcolPicker(OWRpy):
         
         self.outputs = [('Data Table', rdf.RDataFrame), 
         ('Not Data Table', rdf.RDataFrame), 
-        ('Reduced Vector', signals.RVector),
-        ('Not Reduced Vector', signals.RVector)]
+        ('Reduced Vector', rvec.RVector),
+        ('Not Reduced Vector', rvec.RVector)]
         
         #set the gui
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
@@ -162,12 +163,12 @@ class rowcolPicker(OWRpy):
             
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
-            newVector = signals.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
             self.rSend('Reduced Vector', newVector)
             
         if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))')
-            newVector = signals.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
+            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
             self.rSend('Not Reduced Vector', newVector)
             
         

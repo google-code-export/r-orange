@@ -8,6 +8,8 @@
 """
 from OWRpy import * 
 import OWGUI 
+import libraries.base.signalClasses.RVariable as rvar
+import libraries.base.signalClasses.RDataFrame as rdf
 class pairwise_t_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,7 +21,7 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_p_adjust_method = "p.adjust.methods"
         self.indata = ''
         self.inputs = [('R Data Frame', rdf.RDataFrame, self.process)]
-        self.outputs = [("pairwise.t.test Output", signals.RVariable)]
+        self.outputs = [("pairwise.t.test Output", rvar.RVariable)]
         
         box = redRGUI.widgetBox(self.controlArea)
         self.RFunctionParam_x = redRGUI.comboBox(box, label = "Values:")
@@ -56,5 +58,5 @@ class pairwise_t_test(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         #print tmp
         self.RoutputWindow.insertPlainText(tmp)
-        out = signals.RVariable(data=self.Rvariables["pairwise.t.test"])
+        out = rvar.RVariable(data=self.Rvariables["pairwise.t.test"])
         self.rSend("pairwise.t.test Output", out)

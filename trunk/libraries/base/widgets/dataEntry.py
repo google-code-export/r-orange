@@ -9,7 +9,7 @@
 
 import redRGUI
 from OWRpy import *
-
+import libraries.base.signalClasses.RDataFrame as rdf
 class dataEntry(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):

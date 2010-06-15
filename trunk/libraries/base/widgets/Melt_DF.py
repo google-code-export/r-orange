@@ -8,6 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
 class Melt_DF(OWRpy): 
     settingsList = ['RFunctionParam_data']
     def __init__(self, parent=None, signalManager=None):

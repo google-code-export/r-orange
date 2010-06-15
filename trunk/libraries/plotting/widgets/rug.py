@@ -7,6 +7,8 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RVector as rvec
+import libraries.plotting.signalClasses.RPlotAttribute as rpa
 class rug(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -14,8 +16,8 @@ class rug(OWRpy):
 		self.setRvariableNames(["rug"])
 		self.data = {}
 		self.RFunctionParam_x = ''
-		self.inputs = [("x", signals.RVector, self.processx)]
-		self.outputs = [("rug Output", signals.plotting.RPlotAttribute)]
+		self.inputs = [("x", rvec.RVector, self.processx)]
+		self.outputs = [("rug Output", rpa.RPlotAttribute)]
 		
 		
 		box = redRGUI.tabWidget(self.controlArea)
@@ -57,6 +59,6 @@ class rug(OWRpy):
 			injection.append(string)
 		inj = ','.join(injection)
 		
-		newData = signals.plotting.RPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+		newData = rpa.RPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("rug Output", newData)

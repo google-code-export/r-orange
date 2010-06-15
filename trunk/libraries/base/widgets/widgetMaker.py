@@ -84,8 +84,10 @@ class widgetMaker(OWRpy):
         import redREnviron, orngRegistry
         widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
         #print 'dir:' + widgetDirName
-        path = widgetDirName +  "\\base\\widgets\\RedR" + self.functionName.text().replace('.', '_') + ".py"
+        path = widgetDirName +  "\\blank\\widgets\\RedR" + self.functionName.text().replace('.', '_') + ".py"
         #print 'path:' + path
+        if not os.path.exists(os.path.abspath(path)):
+            os.path.mkdirs(os.path.abspath(path))
         file = open(os.path.abspath(path), "wt")
         tmpCode = self.completeCode
         tmpCode = tmpCode.replace('<pre>', '')
@@ -227,6 +229,7 @@ class widgetMaker(OWRpy):
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
         self.headerCode += 'import redRGUI \n'
+        self.headerCode += 'import libraries.base.signalClasses as signals'
         
     def makeInitHeader(self):
         self.initCode = ''
@@ -244,11 +247,11 @@ class widgetMaker(OWRpy):
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
             self.initCode += '\t\tself.inputs = ['
             for element in self.functionInputs.keys():
-                self.initCode += '("'+element+'", signals.'+self.functionInputs[element]+', self.process'+element+'),'
+                self.initCode += '("'+element+'", signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+'),'
             self.initCode = self.initCode[:len(self.initCode)-1]
             self.initCode += ']\n'
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.initCode += '\t\tself.outputs = [("'+self.functionName.text()+' Output", signals.'+str(self.outputsCombobox.currentText())+')]\n'
+            self.initCode += '\t\tself.outputs = [("'+self.functionName.text()+' Output", signals.'+str(self.outputsCombobox.currentText())+'.'+str(self.outputsCombobox.currentText())+')]\n'
         self.initCode += '\t\t\n'
         
     def makeGUI(self):

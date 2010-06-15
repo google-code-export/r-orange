@@ -8,6 +8,7 @@
 """
 from OWRpy import * 
 import OWGUI 
+import libraries.base.signalClasses.RVariable as rvar
 class hist(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -15,7 +16,7 @@ class hist(OWRpy):
         self.RFunctionParam_x = ''
         self.column = ''
         self.needsColumns = 0
-        self.inputs = [("x", signals.RVariable, self.processx)]
+        self.inputs = [("x", rvar.RVariable, self.processx)]
         
         box = redRGUI.groupBox(self.controlArea, "Widget Box")
         #self.infoa = redRGUI.widgetLabel(box, "")

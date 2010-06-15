@@ -10,12 +10,13 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
+import libraries.base.signalClasses.REnvironment as renv
 class RLoader(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self,parent, signalManager, "RLoader", wantMainArea = 0, resizingEnabled = 1)
         self.inputs = None
-        self.outputs = [('R Session', signals.REnvironment)]
+        self.outputs = [('R Session', renv.REnvironment)]
         self.setRvariableNames(['sessionEnviron'])
         OWGUI.button(self.controlArea, self, 'Load Session', callback = self.loadSession)
         self.infoa = redRGUI.widgetLabel(self.controlArea, '')
@@ -33,7 +34,7 @@ class RLoader(OWRpy):
         
         # logic to handle exceptions to loading
         self.infoa.setText('Data loaded from '+str(file)+'. Please use the R Variable Separator widget to extract your data.')
-        newData = signals.REnvironment(data = self.Rvariables['sessionEnviron'])
+        newData = renv.REnvironment(data = self.Rvariables['sessionEnviron'])
         self.rSend('R Session', newData)
         self.status.setText('Session loaded from memory, please use the variable separator to parse the widget output.')
         

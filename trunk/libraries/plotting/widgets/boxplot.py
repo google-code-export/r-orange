@@ -8,12 +8,13 @@
 """
 from OWRpy import * 
 import OWGUI, redRGUI
+import libraries.base.signalClasses.RList as rlist
 class boxplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "BoxPlot", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RList, self.processx)]
+        self.inputs = [("x", rlist.RList, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         redRGUI.button(box, 'Save as PDF', callback = self.savePlot)

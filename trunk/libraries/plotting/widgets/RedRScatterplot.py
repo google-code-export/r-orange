@@ -11,6 +11,7 @@ import OWGUI
 import redRGUI 
 import re
 import textwrap, numpy
+import libraries.base.signalClasses.RDataFrame as rdf
 from PyQt4.QtGui import *
     ### currently depricated until fixed
     class RedRScatterplot(OWRpy):

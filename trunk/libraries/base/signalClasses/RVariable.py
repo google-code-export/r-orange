@@ -1,4 +1,4 @@
-from signals import BaseRedRVariable
+from canvas.signals import BaseRedRVariable
 from RSession import Rcommand
 from RSession import require_librarys
 

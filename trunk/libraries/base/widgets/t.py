@@ -10,6 +10,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
+import libraries.base.signalClasses.RDataFrame as rdf
 class t(OWRpy): 
     settingsList = ['sentItems']
     def __init__(self, parent=None, signalManager=None):

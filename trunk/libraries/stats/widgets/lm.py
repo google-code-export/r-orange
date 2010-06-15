@@ -8,6 +8,9 @@
 """
 from OWRpy import * 
 import redRGUI, redRGUI
+import libraries.plotting.signalClasses.RPlotAttribute as rpa
+import libraries.stats.signalClasses.RLMFit as rlm
+import libraries.base.signalClasses.RDataFrame as rdf
 class lm(OWRpy): 
     settingsList = ['RFunctionParam_data', 'RFunctionParam_formula', 'modelFormula', 'sentItems']
     def __init__(self, parent=None, signalManager=None):
@@ -19,7 +22,7 @@ class lm(OWRpy):
         self.processingComplete = 0
         
         self.inputs = [("data", rdf.RDataFrame, self.processdata)]
-        self.outputs = [("lm Output", signals.stats.RLMFit), ('lm plot attribute', signals.plotting.RPlotAttribute)]
+        self.outputs = [("lm Output", rlm.RLMFit), ('lm plot attribute', rpa.RPlotAttribute)]
         
         #GUI
         
@@ -65,9 +68,9 @@ class lm(OWRpy):
 
         
         self.R(self.Rvariables['lm']+'<-lm(data='+str(self.RFunctionParam_data)+',subset='+str(self.RFunctionParam_subset.text())+',qr='+str(self.RFunctionParam_qr.text())+',formula='+str(self.RFunctionParam_formula)+',singular_ok='+str(self.RFunctionParam_singular_ok.text())+',y='+str(self.RFunctionParam_y.text())+',weights='+str(self.RFunctionParam_weights.text())+',offset='+str(self.RFunctionParam_offset.text())+',contrasts='+str(self.RFunctionParam_contrasts.text())+',x='+str(self.RFunctionParam_x.text())+',model='+str(self.RFunctionParam_model.text())+',method="'+str(self.RFunctionParam_method.text())+'")')
-        newData = signals.stats.RLMFit(data = self.Rvariables['lm'])
+        newData = rlm.RLMFit(data = self.Rvariables['lm'])
         self.rSend("lm Output", newData)
         
-        newPlotAtt = signals.plotting.RPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
+        newPlotAtt = rpa.RPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
         self.rSend('lm plot attribute', newPlotAtt)
         

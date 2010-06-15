@@ -9,14 +9,19 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
+import libraries.base.signalClasses.REnvironment as renv
+import libraries.base.signalClasses.RVariable as rvar
+import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RList as rlist
+import libraries.base.signalClasses.RMatrix as rmat
 class RVarSeparator(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self,parent, signalManager, "RVarSeparator", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(['separator_cm'])
         
-        self.inputs = [('R Session', signals.REnvironment, self.process)]
-        self.outputs = [('R Session', signals.REnvironment), ('R.object', signals.RVariable), ('R Data Frame', rdf.RDataFrame), ('R List', signals.RList), ('R Vector', signals.RVector)]
+        self.inputs = [('R Session', renv.REnvironment, self.process)]
+        self.outputs = [('R Session', renv.REnvironment), ('R.object', rvar.RVariable), ('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector)]
         self.setRvariableNames(['sessionEnviron'])
         self.envName = ''
         self.sendthis = {}
@@ -49,18 +54,18 @@ class RVarSeparator(OWRpy):
         
         thisdataclass = self.R('class('+self.sendthis['data']+')')
         if type(thisdataclass) == type([]): #this is a special R type so just send as generic
-            newData = signals.RVariable(data = self.sendthis['data'])
+            newData = rvar.RVariable(data = self.sendthis['data'])
             self.rSend('R.object', newData)
             self.status.setText('Ambiguous class Sent')
             
         elif type(thisdataclass) == type(''):
             if thisdataclass == 'numeric': # we have a numeric vector as the object
-                newData = signals.RVector(data = self.sendthis['data'])
+                newData = rvec.RVector(data = self.sendthis['data'])
                 self.rSend('R Vector', newData)
                 self.status.setText('Numeric vector sent')
                 self.sendStatus.setText('Data sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
-                newData = signals.RVector(data = self.sendthis['data'])
+                newData = rvec.RVector(data = self.sendthis['data'])
                 self.rSend('R Vector', newData)
                 self.status.setText('Character vector sent')
                 self.sendStatus.setText('Data sent through the R Vector channel')
@@ -72,24 +77,24 @@ class RVarSeparator(OWRpy):
                 self.sendStatus.setText('Data sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
                 
-                newData = signals.RMatrix(data = self.sendthis['data'])
+                newData = rmat.RMatrix(data = self.sendthis['data'])
                 
                 self.rSend('R Data Frame', newData)
                 self.status.setText('Matrix sent')
                 self.sendStatus.setText('Data sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
-                newData = signals.RList(data = self.sendthis['data'])
+                newData = rlist.RList(data = self.sendthis['data'])
                 self.rSend('R List', newData)
                 self.status.setText('List sent')
                 self.sendStatus.setText('Data sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic  
-                newData = signals.RVariable(data = self.sendthis['data'])
+                newData = rvar.RVariable(data = self.sendthis['data'])
                 self.rSend('R.object', newData)
                 self.status.setText('Ambiguous class sent')
                 self.sendStatus.setText('Data sent through the R Object channel')
             
         else:
-            newData = signals.RVariable(data = self.sendthis['data'])
+            newData = rvar.RVariable(data = self.sendthis['data'])
             self.rSend('R.object', newData)
             self.status.setText('Ambiguous class sent')
             self.sendStatus.setText('Data sent through the R Object channel')

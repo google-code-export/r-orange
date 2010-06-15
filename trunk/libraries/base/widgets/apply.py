@@ -8,6 +8,8 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
 class apply(OWRpy): 
         globalSettingsList = ['functions']
         def __init__(self, parent=None, signalManager=None):
@@ -17,7 +19,7 @@ class apply(OWRpy):
              
             self.RFunctionParam_X = ''
             self.inputs = [("X", rdf.RDataFrame, self.processX)]
-            self.outputs = [("apply Output", signals.RVector)]
+            self.outputs = [("apply Output", rvec.RVector)]
             
             area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
             
@@ -83,6 +85,6 @@ class apply(OWRpy):
             
             self.outputTable.setRTable(self.Rvariables['apply'])
             
-            newData = signals.RVector(data = self.Rvariables['apply'])
+            newData = rvec.RVector(data = self.Rvariables['apply'])
 
             self.rSend("apply Output", newData)

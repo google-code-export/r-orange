@@ -1,7 +1,7 @@
 ### Python Structured Dictionary Class.  Contains python dictionary objects and can be the parent class of other classes, even R classes.
 ### Dict must be a dictionary of lists and the lists must be of the same length.
 
-from UnstructuredDict import *
+from libraries.base.signalClasses.UnstructuredDict import *
 
 class StructuredDict(UnstructuredDict):
     def __init__(self, data, parent = None, keys = None, checkVal = True):

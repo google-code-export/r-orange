@@ -8,6 +8,8 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
 class rownames(OWRpy): 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Rownames", wantMainArea = 0, resizingEnabled = 1)
@@ -16,7 +18,7 @@ class rownames(OWRpy):
          
         self.RFunctionParam_x = ''
         self.inputs = [("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("Names Output", signals.RVector)]
+        self.outputs = [("Names Output", rvec.RVector)]
         
         box = redRGUI.widgetBox(self.controlArea)
         self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
@@ -66,7 +68,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')')
         
-        newData = signals.RVector(data = self.Rvariables["rownames"])
+        newData = rvec.RVector(data = self.Rvariables["rownames"])
 
         self.rSend("Names Output", newData)
 

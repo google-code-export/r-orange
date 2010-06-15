@@ -8,7 +8,11 @@
 
 from OWRpy import *
 import redRGUI
-
+import libraries.base.signalClasses.RVariable as rvar
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RMatrix as rmat
+import libraries.base.signalClasses.RList as rlist
+import libraries.base.signalClasses.RVector as rvec
 class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
     def __init__(self, parent=None, signalManager=None):
@@ -22,8 +26,8 @@ class rExecutor(OWRpy):
         self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
         
         
-        self.inputs = [('R.object', signals.RVariable, self.process)]
-        self.outputs = [('R Data Frame', 'All'), ('R List', signals.RList), ('R Vector', signals.RVector), ('R.object', signals.RVariable), ('R Matrix', signals.RMatrix)]
+        self.inputs = [('R.object', rvar.RVariable, self.process)]
+        self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector), ('R.object', 'All'), ('R Matrix', rmat.RMatrix)]
         #self.breakme()
         
         self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
@@ -81,12 +85,12 @@ class rExecutor(OWRpy):
         thisdata = str(self.command.text())
         # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
-            newData = signals.RVariable(data = str(self.command.text()))
+            newData = rvar.RVariable(data = str(self.command.text()))
             self.rSend('R.object', newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
                 self.R(self.Rvariables['rExecutor_cm']+'<-list()')
-                newData = signals.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
+                newData = rvec.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
@@ -94,19 +98,19 @@ class rExecutor(OWRpy):
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:
-                newData = signals.RMatrix(data = str(self.command.text()))
+                newData = rmat.RMatrix(data = str(self.command.text()))
                 self.rSend('R Matrix', newData)
-                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
+                self.sendStatus.setText(thisdata+' sent through the Matrix channel')
             elif thisdataclass == 'list': # the object is a list
-                newData = signals.RList(data = str(self.command.text()))
+                newData = rlist.RList(data = str(self.command.text()))
                 self.rSend('R List', newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                newData = signals.RVariable(data = str(self.command.text()))
+                newData = rvar.RVariable(data = str(self.command.text()))
                 self.rSend('R.object', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
-            newData = signals.RVariable(data = str(self.command.text()))
+            newData = rvar.RVariable(data = str(self.command.text()))
             self.rSend('R.object', newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):

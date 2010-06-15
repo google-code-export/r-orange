@@ -9,13 +9,14 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses.RVariable as rvar
 class kruskal_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Kruskal Test", wantMainArea = 0, resizingEnabled = 1)
          
         self.RFunctionParam_data = ''
-        self.inputs = [("data", signals.RVariable, self.processdata)]
+        self.inputs = [("data", rvar.RVariable, self.processdata)]
         
         self.help.setHtml('<small>Performs the Kruskal Walis test on a set of data.  This should be a data.frame or data tabel with one column representing the outcome and another representing a group or grouping variable.  The Formula section should be entered in the form of outcom variable ~ grouping variable.  If multiple groups are used you may use the * key to separate them.  Example: height ~ foodQuality * genes.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         #box = redRGUI.tabWidget(self.controlArea)

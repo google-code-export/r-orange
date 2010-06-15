@@ -9,13 +9,14 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
+import libraries.stats.signalClasses.RLMFit as rlm
 class anova_lm(OWRpy): 
     settingsList = ['RFunctionParam_object']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Anova LM", wantMainArea = 0, resizingEnabled = 1)
         self.RFunctionParam_object = ''
         self.saveSettingsList.extend(['RFunctionParam_object'])
-        self.inputs = [("object", signals.stats.RLMFit, self.processobject)]
+        self.inputs = [("object", rlm.RLMFit, self.processobject)]
         
         box = redRGUI.groupBox(self.controlArea, "Output")
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
