@@ -299,19 +299,13 @@ class SchemaView(QGraphicsView):
             # we must check if we have really connected some output to input
             if start and end and start != end:
                 if self.doc.signalManager.signalProcessingInProgress:
-                     QMessageBox.information( self, "Orange Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
+                     QMessageBox.information( self, "Red-R Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
                 else:
                     self.doc.addLine(start, end)
             else:
                 state = [self.doc.widgets[i].widgetInfo.name for i in range(min(len(self.doc.widgets), 5))]
                 predictedWidgets = orngHistory.predictWidgets(state, 20)
-                # if start:
-                    # orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'inputClasses', start.widgetInfo.outputClasses)
-                    # orngTabs.categoriesPopup.updateWidgetsByInputs(start.widgetInfo)
-                # else:
-                    # orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'outputClasses', end.widgetInfo.inputClasses)
-                    # orngTabs.categoriesPopup.updateWidgesByOutputs(end.widgetInfo)
-                    
+
                 newCoords = QPoint(ev.globalPos())
                 orngTabs.categoriesPopup.updateMenu()
                 action = orngTabs.categoriesPopup.exec_(newCoords- QPoint(0, orngTabs.categoriesPopup.categoriesYOffset))
@@ -320,7 +314,7 @@ class SchemaView(QGraphicsView):
                     newWidget = self.doc.addWidget(action.widgetInfo, point.x()+xOff, point.y()-24)
                     if newWidget != None:
                         if self.doc.signalManager.signalProcessingInProgress:
-                            QMessageBox.information( self, "Orange Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
+                            QMessageBox.information( self, "Red-R Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
                         else:
                             self.doc.addLine(start or newWidget, end or newWidget)
 
