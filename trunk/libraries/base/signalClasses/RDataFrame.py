@@ -2,16 +2,28 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
 from libraries.base.signalClasses.StructuredDict import *
-
+import time
 
 class RDataFrame(RList, StructuredDict):
+    convertFromList = [StructuredDict]
     def __init__(self, data, parent = None, checkVal = True):
         StructuredDict.__init__(self, data = data, parent = parent, checkVal = False)
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
+        self.newDataID = str(time.time()).replace('.', '_')
         self.RListSignal = None
         self.structuredDict = None
+    def convertFromClass(self, signal):
+        if isinstance(signal, StructuredDict):
+            return self._convertFromStructuredDict(signal)
+    def _convertFromStructuredDict(self, signal):
+        self.assignR('DataFrameConversion_'+self.newDataID, signal.getData())
+        self.R('DataFrameConversion_'+self.newDataID+'<-as.data.frame('+'DataFrameConversion_'+self.newDataID+')')
+        if 'row_names' in signal.getData().keys():
+            self.R('rownames('+'DataFrameConversion_'+self.newDataID+')<-'+'DataFrameConversion_'+self.newDataID+'$row_names')
+            self.R('DataFrameConversion_'+self.newDataID+'$row_names<-NULL')
+        return RDataFrame(data = 'DataFrameConversion_'+self.newDataID)  
     def convertToClass(self, varClass):
         if varClass == RList:
             return self._convertToList()

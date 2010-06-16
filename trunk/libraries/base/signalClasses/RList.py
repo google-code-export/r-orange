@@ -1,17 +1,37 @@
 from libraries.base.signalClasses.RVariable import *
-class RList(RVariable):
+from libraries.base.signalClasses.UnstructuredDict import *
+from libraries.base.signalClasses.StructuredDict import *
+import time
+class RList(RVariable, UnstructuredDict):
+    convertFromList = [UnstructuredDict, StructuredDict]
     def __init__(self, data, parent = None, checkVal = True):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
-    
+        self.newDataID = str(time.time()).replace('.', '_')
+    def convertFromClass(self, signal):
+        if isinstance(signal, UnstructuredDict):
+            return self._convertFromUnstructuredDict(signal)
+        elif isinstance(signal, StructuredDict):
+            return self._convertFromStructuredDict(signal)
+            
+    def _convertFromStructuredDict(self, signal):
+        newVar = self.assignR('RListConversion_'+self.newDataID, signal.getData())
+        return RList(data = 'as.list('+newVar+')')
+    def _convertFromUnstructuredDict(self, signal):
+        newVar = self.assignR('RListConversion_'+self.newDataID, signal.getData())
+        return RList(data = 'as.list('+newVar+')')
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
         elif varClass == BaseRedRVariable:
             return self._convertToVariable()
+        elif varClass == UnstructuredDict:
+            return self._convertToUnstructuredDict()
         else:
             raise Exception
+    def _convertToUnstructuredDict(self):
+        return UnstructuredDict(data = self.R(self.getData(), wantType = 'dict'))
     def _convertToVariable(self):
         return self
     def _fullOutput(self, subsetting = ''):

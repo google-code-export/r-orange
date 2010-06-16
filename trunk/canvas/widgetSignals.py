@@ -226,14 +226,21 @@ class widgetSignals():
                             if oldValue == None:
                                 value = oldValue
                             else: # the value had better be one of our signals or a child of one
-                                if not isinstance(oldValue, signals.BaseRedRVariable):
+                                if not isinstance(oldValue, signals.BaseRedRVariable):  ## if not a BaseRedRVariable except
                                     raise Exception, 'Signal not a child of a Red-R signal'
                                 
                                 if signal[1] != 'All':
                                     print '|#| CONVERSION of %s to ' % oldValue.__class__, signal[1]
-                                    value = oldValue.convertToClass(signal[1])
+                                    if isinstance(oldValue, signal[1]):
+                                        value = oldValue.convertToClass(signal[1])
+                                    else:
+                                        #try:
+                                        value = signal[1](data = '', checkVal = False) ## make a dummy signal to handle the conversion
+                                        value = value.convertFromClass(oldValue)
+                                        # except:
+                                            # raise Exception, 'No conversion function'
                                 else:
-                                    value = oldValue.convertToClass(oldValue.__class__) ## conversion to self.
+                                    value = oldValue ## send self with no conversion
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
                                 if not self.loadSavedSession:

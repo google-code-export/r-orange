@@ -1,6 +1,7 @@
 from canvas.signals import BaseRedRVariable
 from RSession import Rcommand
 from RSession import require_librarys
+from RSession import assign
 
 class RVariable(BaseRedRVariable): 
     def __init__(self, data, parent = None, checkVal = False):
@@ -10,6 +11,7 @@ class RVariable(BaseRedRVariable):
             parent = data
         self.parent = parent
         self.R = Rcommand
+        self.assignR = assign
         self.require_librarys = require_librarys
         self.reserved = ['data', 'parent', 'R', 'dictAttrs']
     def __str__(self):

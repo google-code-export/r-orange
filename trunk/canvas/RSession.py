@@ -20,7 +20,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 mutex = QMutex()
-
+def assign(name, object):
+    try:
+        rpy.r.assign(name, object)
+        return True
+    except:
+        return False
 def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     
     unlocked = mutex.tryLock()

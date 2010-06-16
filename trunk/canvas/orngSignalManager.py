@@ -233,8 +233,12 @@ class SignalManager:
                     possibleLinks.append((outS.name, inS.name))
                     continue
                     
-                if type(inType) not in [list]:
+                if type(inType) not in [list, tuple]:
                     if issubclass(outType, inType):
+                        possibleLinks.append((outS.name, inS.name))
+                        print 'Signal appended', outS.name, inS.name
+                        continue
+                    elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
                         possibleLinks.append((outS.name, inS.name))
                         print 'Signal appended', outS.name, inS.name
                         continue
@@ -242,6 +246,10 @@ class SignalManager:
                     for i in inType:
                         if issubclass(outType, i):
                             possibleLinks.append((outS.name, inS.name))
+                            continue
+                        elif outType in i.convertToList:
+                            possibleLinks.append((outS.name, inS.name))
+                            print 'Signal appended', outS.name, inS.name
                             continue
         print possibleLinks
         return possibleLinks

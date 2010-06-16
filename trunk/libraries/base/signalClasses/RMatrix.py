@@ -1,6 +1,7 @@
 from libraries.base.signalClasses.RDataFrame import *
-
+import time
 class RMatrix(RDataFrame):
+    convertFromList = [RDataFrame, StructuredDict]
     def __init__(self, data, parent = None, checkVal = True):
         RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'matrix':
@@ -9,7 +10,20 @@ class RMatrix(RDataFrame):
         self.RDataFrameSignal = None
         self.RListSignal = None
         self.StructuredDictSignal = None
-
+        self.newDataID = str(time.time()).replace('.', '_')
+        
+        
+    def convertFromClass(self, signal):
+        if isinstance(signal, RDataFrame):
+            return self._convertFromRDataFrame(signal)
+        elif isinstance(signal, StructuredDict):
+            return self._convertFromStructuredDict(signl)
+            
+    def _convertFromStructuredDict(self, signal):
+        self.assignR('matrixConversion'+self.newDataID, signal.getData())
+        return RMatrix(data = 'as.matrix('+'matrixConversion'+self.newDataID+')')
+    def _convertFromRDataFrame(self, signal):
+        return RMatrix(data = 'as.matrix('+signal.getData()+')')
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
