@@ -132,7 +132,7 @@ class widgetSession():
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
         #elif isinstance(var, signals.BaseRedRVariable):
-        elif var.__class__.__name__ in signals.RedRSignals:    
+        elif isinstance(var, signals.BaseRedRVariable):
             settings['signalsObject'] = var.saveSettings()
             print '|#|  Saving signalsObject '#, settings['signalsObject']
         elif not checkIfPickleable: 
@@ -226,14 +226,16 @@ class widgetSession():
         
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
-        className = d['class'].split('.')[1]
         
         # print 'setting ', className
         try: # try to reload the output class from the signals
-            if d['package'] != 'base':
-                var = getattr(getattr(signals,d['package']), className)(data = d['data']) 
-            else:
-                var = getattr(signals, className)(data = d['data'])
+            
+            # try to get the class variabel (var) this will be done by accessing the class info of the class attribute of data
+            import libraries
+            varc = libraries
+            for mod in d['class'].split('.')[1:]:
+                varc = getattr(varc, mod)
+            var = varc(data = d['data']) 
             var.loadSettings(d)
         except Exception as inst: # if it doesn't exist we need to set the class something so we look to the outputs. 
             print '############################################'
@@ -247,7 +249,8 @@ class widgetSession():
                         
                 if var == None: raise Exception
                 var.loadSettings(d['data'])
-            except: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+            except Exception as inst: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+                print inst
                 print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
                 try:
                     var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)

@@ -22,7 +22,7 @@ class BaseRedRVariable:
         return self.parent
         
     def saveSettings(self):
-        return {'package': self.__package__, 'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
+        return {'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
         
     def loadSettings(self, settings):
         self.data = settings['data']

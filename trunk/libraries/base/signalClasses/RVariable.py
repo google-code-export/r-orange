@@ -14,6 +14,7 @@ class RVariable(BaseRedRVariable):
         self.assignR = assign
         self.require_librarys = require_librarys
         self.reserved = ['data', 'parent', 'R', 'dictAttrs']
+        self.__package__ = 'base'
     def __str__(self):
         ## print output for the class
         return '###Signal Class: '+str(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+str(self.dictAttrs)
