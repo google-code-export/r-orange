@@ -87,6 +87,7 @@ class SchemaDoc(QWidget):
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
         if len(possibleConnections) > 1:
+            dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
             if dialog.exec_() == QDialog.Rejected:
                 return None
             possibleConnections = dialog.getLinks()
