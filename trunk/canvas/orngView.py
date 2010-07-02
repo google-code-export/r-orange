@@ -346,7 +346,7 @@ class SchemaView(QGraphicsView):
     def mouseDoubleClickEvent(self, ev):
         point = self.mapToScene(ev.pos())
         activeItem = self.scene().itemAt(point)
-        if type(activeItem) == orngCanvasItems.CanvasWidget:        # if we clicked on a widget
+        if type(activeItem) in [orngCanvasItems.CanvasWidget, orngCanvasItems.GhostWidget]:        # if we clicked on a widget
             self.tempWidget = activeItem
             self.openActiveWidget()
         elif type(activeItem) == orngCanvasItems.CanvasLine:
