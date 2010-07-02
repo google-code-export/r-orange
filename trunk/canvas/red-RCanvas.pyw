@@ -654,7 +654,8 @@ class OrangeCanvasDlg(QMainWindow):
             RSession.Rcommand('quit("no")') # close the entire session dropping anything that was open in case it was left by something else, makes the closing much cleaner than just loosing the session.
             self.output.logFile.close()
             self.output.hide()
-            
+            import redRHistory
+            redRHistory.saveConnectionHistory()
             ce.accept()
             QMainWindow.closeEvent(self,ce)
         else:

@@ -1,0 +1,60 @@
+"""
+<name>RedReigen</name>
+<author>Generated using Widget Maker written by Kyle R. Covington</author>
+<RFunctions>base:eigen</RFunctions>
+<tags>Prototypes</tags>
+<icon>icons/RExecutor.png</icon>
+"""
+from OWRpy import * 
+import redRGUI 
+import libraries.base.signalClasses as signals
+class RedReigen(OWRpy): 
+    settingsList = []
+    def __init__(self, parent=None, signalManager=None):
+        OWRpy.__init__(self, parent, signalManager, "eigen", wantMainArea = 0, resizingEnabled = 1)
+        self.setRvariableNames(["eigen"])
+        self.data = {}
+        self.RFunctionParam_x = ''
+        self.inputs = [("x", signals.RMatrix.RMatrix, self.processx)]
+        self.outputs = [("eigen Output", signals.RList.RList)]
+        
+        self.RFunctionParamsymmetric_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "symmetric:", buttons = ['Yes', 'No'], setChecked = 'Yes')
+        self.RFunctionParamonly_values_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "only_values:", buttons = ['Yes', 'No'], setChecked = 'Yes')
+        self.RFunctionParamEISPACK_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "EISPACK:", buttons = ['Yes', 'No'], setChecked = 'Yes')
+        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+    def processx(self, data):
+        if not self.require_librarys(["base"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
+        if data:
+            self.RFunctionParam_x=data.getData()
+            #self.data = data
+            self.commitFunction()
+        else:
+            self.RFunctionParam_x=''
+    def commitFunction(self):
+        if str(self.RFunctionParam_x) == '': return
+        injection = []
+        if str(self.RFunctionParamsymmetric_radioButtons.text()) == 'Yes':
+            string = 'symmetric=TRUE'
+            injection.append(string)
+        else:
+            string = 'symmetric=FALSE'
+            injection.append(string)
+        if str(self.RFunctionParamonly_values_radioButtons.text()) == 'Yes':
+            string = 'only.values=TRUE'
+            injection.append(string)
+        else:
+            string = 'only.values=FALSE'
+            injection.append(string)
+        if str(self.RFunctionParamEISPACK_radioButtons.text()) == 'Yes':
+            string = 'EISPACK=TRUE'
+            injection.append(string)
+        else:
+            string = 'EISPACK=FALSE'
+            injection.append(string)
+        inj = ','.join(injection)
+        self.R(self.Rvariables['eigen']+'<-eigen(x='+str(self.RFunctionParam_x)+','+inj+')')
+        newData = signals.RList.RList(data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
+        self.rSend("eigen Output", newData)

@@ -203,17 +203,22 @@ class SchemaView(QGraphicsView):
 
         # we clicked on a widget or on a line
         else:
-            if type(activeItem) == orngCanvasItems.CanvasWidget:        # if we clicked on a widget
+            if type(activeItem) in [orngCanvasItems.CanvasWidget, orngCanvasItems.GhostWidget]:        # if we clicked on a widget
                 self.tempWidget = activeItem
 
+                ## if it was a ghost widget we need to do something
+                print type(self.tempWidget)
+                
+                if isinstance(self.tempWidget, orngCanvasItems.GhostWidget) and self.tempWidget.ghost:
+                    self.tempWidget.convertToCanvasWidget()
                 # did we click inside the boxes to draw connections
-                if ev.button() == Qt.LeftButton:
+                elif ev.button() == Qt.LeftButton:
                     self.bWidgetDragging = True
                     if self.doc.ctrlPressed:
                         activeItem.setSelected(not activeItem.isSelected())
                     elif activeItem.isSelected() == 0:
                         self.unselectAllWidgets()
-                        activeItem.setSelected(1)
+                        activeItem.setSelected(1) # set the active widget to be selected
 
                     for w in self.getSelectedWidgets():
                         w.savePosition()

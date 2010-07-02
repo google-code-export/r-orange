@@ -1,0 +1,23 @@
+<package>
+    <Name>pls</Name>
+    <Author>Kyle R Covington kyle@red-r.org</Author>
+    <RLibraries>pls</RLibraries>
+    <Version>
+        <Number>1</Number>
+        <Stability>Prototype</Stability>
+        <Date>2010-07-02</Date>
+    </Version>
+    <License>GPL (>= 2.0)</License>
+    <Dependencies></Dependencies>
+    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Summary>Red-R package for the R pls package.</Summary>
+    <Description>This package is an experimental package for bringing the functionality of the R pls package into Red-R.  Comments and suggestions are welcome to make the package function more optimally.  Beta testing indicates that this package is able to perform the functions of the pls package as indicated in http://cran.r-project.org/doc/Rnews/Rnews_2006-3.pdf.</Description>
+    <menuTags>
+        <group name="Stats">
+            <Description>Statistics</Description>
+            <group name="PLS">
+                <Description>PLS Widgets</Description>
+            </group>
+        </group>    
+    </menuTags>
+</package>

@@ -67,7 +67,7 @@ class SchemaDoc(QWidget):
             
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
-    def addLine(self, outWidget, inWidget, enabled = True):
+    def addLine(self, outWidget, inWidget, enabled = True, ghost = False):
         print '############ ADDING LINE ##################'
         if outWidget == inWidget: 
             return None
@@ -86,7 +86,7 @@ class SchemaDoc(QWidget):
         dialog.setOutInWidgets(outWidget, inWidget)
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
-        if len(possibleConnections) > 1:
+        if len(possibleConnections) > 1 and not ghost:
             dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
             if dialog.exec_() == QDialog.Rejected:
                 return None
@@ -179,7 +179,7 @@ class SchemaDoc(QWidget):
         ok = self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)
-            QMessageBox.information( self, "Orange Canvas", "Unable to add link. Something is really wrong; try restarting Orange Canvas.", QMessageBox.Ok + QMessageBox.Default )
+            QMessageBox.information( self, "Red-R Canvas", "Unable to add link. Something is really wrong; try restarting Red-R Canvas.", QMessageBox.Ok + QMessageBox.Default )
             
 
             return 0
@@ -187,6 +187,10 @@ class SchemaDoc(QWidget):
             orngHistory.logAddLink(self.schemaID, outWidget, inWidget, outSignalName)
 
         line.updateTooltip()
+        
+        import redRHistory
+        redRHistory.addConnectionHistory(outWidget, inWidget)
+        
         return 1
 
 
@@ -226,7 +230,72 @@ class SchemaDoc(QWidget):
         line = self.getLine(outWidget, inWidget)
         if line:
             self.removeLine1(line)
+            
+    def addGhostWidgetsForWidget(self, newwidget):
+        #return []
+        if newwidget.instance.outputs != []:
+            try:
+                print newwidget.widgetInfo.fileName
+                ## add the chost widgets to the canvas and attach ghost lines to them
+                import redRHistory
+                topCons = redRHistory.getTopConnections(newwidget)
+                print topCons
+                widgets = []
+                off = [150, 50, -50, -150]
+                i = 0
+                for con in topCons:
+                    ## con is the fileName of the widget we need to find the info from the filename
+                    for w in self.widgets:
+                        if w.widgetInfo.fileName == con:
+                            wInfo = w.widgetInfo
+                            break
+                    
+                    widgets.append(self.addGhostWidget(wInfo, x = newwidget.x() + 150, y = newwidget.y() + off[i], creatingWidget = newwidget)) # add the ghost widget
+                    self.addLine(newwidget, widgets[-1], ghost = True)
+                    i += 1
+            except: 
+                type, val, traceback = sys.exc_info()
+                sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas           
+                widgets = []
+            return widgets
+    def killGhost(self, widget): # remove the ghost widgets
+        self.removeWidget(widget)
+    # add new ghost widget
+    def addGhostWidget(self, widgetInfo, x= -1, y=-1, caption = '', widgetSettings = None, saveTempDoc = True, creatingWidget = None):
+        qApp.setOverrideCursor(Qt.WaitCursor)
+        
+        ## add the ghost widget to the canvas
+        newGhostWidget = orngCanvasItems.GhostWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, creatingWidget = creatingWidget)
+        
+        ## resolve collisions
+        self.resolveCollisions(newGhostWidget, x, y)
+        
+        ## set the caption and add the new widget to the list of widgets
+        if caption == "": caption = newGhostWidget.caption
 
+        if self.getWidgetByCaption(caption):
+            i = 2
+            while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
+            caption = caption + " (" + str(i) + ")"
+        newGhostWidget.updateText(caption)
+        newGhostWidget.instance.setWindowTitle(caption)
+        
+
+        self.widgets.append(newGhostWidget)
+        self.canvas.update()
+        # show the widget and activate the settings
+        try:
+            self.signalManager.addWidget(newGhostWidget.instance)
+            newGhostWidget.show()
+            newGhostWidget.updateTooltip()
+            newGhostWidget.setProcessing(0)
+            orngHistory.logAddWidget(self.schemaID, id(newGhostWidget), (newGhostWidget.widgetInfo.packageName, newGhostWidget.widgetInfo.name), newGhostWidget.x(), newGhostWidget.y())
+        except:
+            type, val, traceback = sys.exc_info()
+            sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
+
+        qApp.restoreOverrideCursor()
+        return newGhostWidget  # now the ghost widgets are ready to be used.  To activate we just click them and make them permanent.  So we need a new setting (ghost and non ghost)
     # add new widget
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -237,6 +306,7 @@ class SchemaDoc(QWidget):
             if widgetInfo.name == 'Dummy': print 'Loading dummy step 2'
             newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
+            
         except:
             type, val, traceback = sys.exc_info()
             print str(traceback)
@@ -244,28 +314,7 @@ class SchemaDoc(QWidget):
             qApp.restoreOverrideCursor()
             return None
 
-        if x==-1 or y==-1:
-            if self.widgets != []:
-                x = self.widgets[-1].x() + 110
-                y = self.widgets[-1].y()
-            else:
-                x = 30
-                y = 50
-        newwidget.setCoords(x, y)
-        # move the widget to a valid position if necessary
-        invalidPosition = (self.canvasView.findItemTypeCount(self.canvas.collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
-        if invalidPosition:
-            for r in range(20, 200, 20):
-                for fi in [90, -90, 180, 0, 45, -45, 135, -135]:
-                    xOff = r * math.cos(math.radians(fi))
-                    yOff = r * math.sin(math.radians(fi))
-                    rect = QRectF(x+xOff, y+yOff, 48, 48)
-                    invalidPosition = self.canvasView.findItemTypeCount(self.canvas.items(rect), orngCanvasItems.CanvasWidget) > 0
-                    if not invalidPosition:
-                        newwidget.setCoords(x+xOff, y+yOff)
-                        break
-                if not invalidPosition:
-                    break
+        self.resolveCollisions(newwidget, x, y)
             
         #self.canvasView.ensureVisible(newwidget)
 
@@ -298,9 +347,33 @@ class SchemaDoc(QWidget):
             type, val, traceback = sys.exc_info()
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
 
+            
+        ## try to set up the ghost widgets
         qApp.restoreOverrideCursor()
         return newwidget
-
+    def resolveCollisions(self, newwidget, x, y):
+        if x==-1 or y==-1:
+            if self.widgets != []:
+                x = self.widgets[-1].x() + 110
+                y = self.widgets[-1].y()
+            else:
+                x = 30
+                y = 50
+        newwidget.setCoords(x, y)
+        # move the widget to a valid position if necessary
+        invalidPosition = (self.canvasView.findItemTypeCount(self.canvas.collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
+        if invalidPosition:
+            for r in range(20, 200, 20):
+                for fi in [90, -90, 180, 0, 45, -45, 135, -135]:
+                    xOff = r * math.cos(math.radians(fi))
+                    yOff = r * math.sin(math.radians(fi))
+                    rect = QRectF(x+xOff, y+yOff, 48, 48)
+                    invalidPosition = self.canvasView.findItemTypeCount(self.canvas.items(rect), orngCanvasItems.CanvasWidget) > 0
+                    if not invalidPosition:
+                        newwidget.setCoords(x+xOff, y+yOff)
+                        break
+                if not invalidPosition:
+                    break
     # remove widget
     def removeWidget(self, widget, saveTempDoc = True):
         if not widget:
@@ -308,17 +381,15 @@ class SchemaDoc(QWidget):
         #widget.closing = close
         while widget.inLines != []: self.removeLine1(widget.inLines[0])
         while widget.outLines != []:  self.removeLine1(widget.outLines[0])
-
-        self.signalManager.removeWidget(widget.instance) # sending occurs before this point
-        widget.remove()
-        self.widgets.remove(widget)
         
-        # import gc
-        # gc.collect()
-        # print 'Remaining references to '+str(gc.get_referrers(widget))
-        # print 'Remaining references from '+str(gc.get_referents(widget))
-        #orngHistory.logRemoveWidget(self.schemaID, id(widget), (widget.widgetInfo.packageName, widget.widgetInfo.name))
-
+        try:
+            self.signalManager.removeWidget(widget.instance) # sending occurs before this point
+            
+            widget.remove()
+            if widget in self.widgets:
+                self.widgets.remove(widget)
+        except:
+            pass
     def clear(self):
         print '|#| orngDoc clear'
         self.canvasDlg.setCaption()

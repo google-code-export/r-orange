@@ -169,7 +169,8 @@ class SignalManager:
         if self.verbosity >= 2:
             self.addEvent("remove widget " + widget.captionTitle, eventVerbosity = 2)
         print "remove widget " + widget.captionTitle
-        self.widgets.remove(widget)
+        if widget in self.widgets:
+            self.widgets.remove(widget)
 
 
     # send list of widgets, that send their signal to widget's signalName
@@ -207,15 +208,15 @@ class SignalManager:
         toInstance = widgetTo.instance
         fromInfo = widgetFrom.widgetInfo
         toInfo = widgetTo.widgetInfo
-        print fromInstace, toInstance, fromInfo, toInfo
+        #print fromInstace, toInstance, fromInfo, toInfo
         ## collect the input and output signal classes (the classes not the object)
         inputs = [signal for signal in toInfo.inputs]
         outputs = [signal for signal in fromInfo.outputs]
-        print 'In/Out puts', inputs, outputs
+        #print 'In/Out puts', inputs, outputs
         return self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
         
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
-        print 'getPossibleConnections'
+        #print 'getPossibleConnections'
         possibleLinks = []
         for outS in outputs:
             outType = fromInstace.getOutputType(outS.name)
@@ -223,9 +224,9 @@ class SignalManager:
                 continue
             for inS in inputs:
                 inType = toInstance.getInputType(inS.name)
-                print outType, inType
+                #print outType, inType
                 #print issubclass(outType, inType)
-                print '######', inS.name, outS.name
+                #print '######', inS.name, outS.name
                 if inType == None:
                     print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
                     continue
@@ -236,11 +237,11 @@ class SignalManager:
                 if type(inType) not in [list, tuple]:
                     if issubclass(outType, inType):
                         possibleLinks.append((outS.name, inS.name))
-                        print 'Signal appended', outS.name, inS.name
+                        #print 'Signal appended', outS.name, inS.name
                         continue
                     elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
                         possibleLinks.append((outS.name, inS.name))
-                        print 'Signal appended', outS.name, inS.name
+                        #print 'Signal appended', outS.name, inS.name
                         continue
                 else:
                     for i in inType:
@@ -249,9 +250,9 @@ class SignalManager:
                             continue
                         elif outType in i.convertToList:
                             possibleLinks.append((outS.name, inS.name))
-                            print 'Signal appended', outS.name, inS.name
+                            #print 'Signal appended', outS.name, inS.name
                             continue
-        print possibleLinks
+        #print possibleLinks
         return possibleLinks
     def addLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo, enabled):
         ## adds a link between two widgets.  This will also make the connection between the signalNameFrom and signalNameTo
@@ -791,7 +792,7 @@ class SignalCanvasView(QGraphicsView):
     # ###################################################################
     # mouse button was pressed
     def mousePressEvent(self, ev):
-        print ' SignalCanvasView mousePressEvent'
+        #print ' SignalCanvasView mousePressEvent'
         self.bMouseDown = 1
         point = self.mapToScene(ev.pos())
         activeItem = self.scene().itemAt(QPointF(ev.pos()))

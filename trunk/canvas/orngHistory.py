@@ -1,4 +1,4 @@
-# Author: Miha Stajdohar (miha.stajdohar@fri.uni-lj.si)
+# Author: Miha Stajdohar (miha.stajdohar@fri.uni-lj.si), modifications by Kyle R Covington
 # This module 
 
 import os, sys, time, smtplib

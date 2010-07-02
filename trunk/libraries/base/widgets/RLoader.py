@@ -23,10 +23,9 @@ class RLoader(OWRpy):
     def loadSession(self, file = None):
         # open a dialog to pick a file and load it.
         self.R(self.Rvariables['sessionEnviron']+'<-new.env()') # make a new environment for the data
-        if file == None and ('HomeFolder' not in qApp.canvasDlg.settings.keys()):
-            file = QFileDialog.getOpenFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['saveSchemaDir']), "RData (*.RData)")
-        elif file == None: 
-            file = QFileDialog.getOpenFileName(self, "Save File", os.path.abspath(qApp.canvasDlg.settings['HomeFolder']), "RData (*.RData)")
+        if file == None:
+            file = QFileDialog.getOpenFileName(self, "Load File", os.environ['HOME'], "RData (*.RData) ;; All (*.*)")
+        
         if file.isEmpty(): return
         file = str(os.path.abspath(file))
         file = file.replace('\\', '/')

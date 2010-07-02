@@ -7,6 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
+import libraries.base.signalClasses as signals
 class summary(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -15,12 +16,7 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs = [("object", signals.RVariable, self.processobject)]
-        
-        box = redRGUI.tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        
+        self.inputs = [("object", signals.RVariable.RVariable, self.processobject)]
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         if not self.require_librarys(["base"]):
@@ -34,10 +30,7 @@ class summary(OWRpy):
             self.RFunctionParam_object=''
     def commitFunction(self):
         if str(self.RFunctionParam_object) == '': return
-        injection = []
-        inj = ','.join(injection)
-        self.R(self.Rvariables['summary']+'<-summary(object='+str(self.RFunctionParam_object)+','+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['summary']+')')
+        self.R('txt<-capture.output(summary(object='+str(self.RFunctionParam_object)+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

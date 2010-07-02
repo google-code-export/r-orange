@@ -198,8 +198,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.selected = False
         self.inLines = []               # list of connected lines on input
         self.outLines = []              # list of connected lines on output
+        self.ghostWidgets = []          # list of ghost widgets that this widget could connect to
+        self.ghost = False
         self.icon = QIcon(widgetInfo.icon)
-        
+        self.instance.ghost = False
         self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
         self.instance.setProcessingHandler(view.processingHandler)
         self.instance.setWidgetStateHandler(self.updateWidgetState)
@@ -368,7 +370,15 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     def setSelected(self, selected):
         self.selected = selected
         #self.repaintWidget()
-
+        print 'Setting widget to selected'
+        if selected:
+            print 'Searching for Ghost Widgets'
+            self.ghostWidgets = self.canvasDlg.schema.addGhostWidgetsForWidget(self)
+        elif self.ghostWidgets != None:
+            for widget in self.ghostWidgets:
+                print widget.widgetInfo.fileName, widget.ghost
+                if widget.ghost:
+                    self.canvasDlg.schema.killGhost(widget)
     # set coordinates of the widget
     def setCoords(self, x, y):
         if redREnviron.settings["snapToGrid"]:
@@ -417,34 +427,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         
     def canConnect(self, outWidget, inWidget):  ## returns a list of what can and can't connect, this should be handled by signal manager.
         if outWidget == inWidget: return
-        ## here is where we make the decision as to weather widgets can connect or not.  This should be decieded based on the signals that are in the widget and not what is in the widgetInfo
-        #outputs = [outWidget.instance.getOutputType(output.name) for output in outWidget.widgetInfo.outputs]
-        #inputs = [inWidget.instance.getInputType(input.name) for input in inWidget.widgetInfo.inputs]
-        # try:
-            # if outWidget.instance.outputs and outWidget.instance.outputs != None:
-                # outputs = [output[1] for output in outWidget.instance.outputs]
-            # else:
-                # outputs = None
-            # if inWidget.instance.inputs and inWidget.instance.inputs != None:
-                # inputs = [input[1] for input in inWidget.instance.inputs] 
-            # else:
-                # inputs = None
-        # except Exception as inst:
-            # print inst
-            # raise Excpetion, inst
-        # canConnect = 0
-        # if outputs != None and inputs != None:
-            # if 'All' not in outputs + inputs:
-                # for outtype in outputs:
-                    
-                    # if True in [issubclass(outtype, intype) for intype in inputs]:
-                        # canConnect = 1
-                        # break
-            # else:
-                # canConnect = 1
-        # else:
-            # canConnect = 1
-        
+       
         signalManager = orngSignalManager.SignalManager()
         canConnect = len(signalManager.canConnect(outWidget, inWidget)) > 0
         print 'can connect in orngCanvasItems'
@@ -593,8 +576,26 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         qApp.processEvents()
 ##        self.repaintWidget()
 
-
-
+# ######################################
+# # CANVAS GHOST WIDGET
+# ######################################
+class GhostWidget(CanvasWidget):  # graphical representation of a ghost widget.  Inherits all of the functions as the CanvasWidget and may override some functions.  This should be a widget with a slightly dimmed appearance.  Clicking will activate the wiget and init an addition of the widget to the canvas
+    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = None, forceInSignals = None, forceOutSignals = None, creatingWidget = None):
+        CanvasWidget.__init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings)
+        self.setOpacity(0.5)
+        self.creatingWidget = creatingWidget
+        # put the settings to be a ghost.  This will be removed if the widget is clicked.  In which case data will be sent through the widget as though it were just added to the canvas.
+        self.ghost = True
+        self.instance.ghost = True
+    def convertToCanvasWidget(self):
+        self.setOpacity(1)
+        self.ghost = False
+        self.instance.ghost = False
+        self.canvasDlg.schema.signalManager.addWidget(self.instance)
+        self.canvasDlg.schema.addLine(self.creatingWidget, self)
+        
+        
+        
 class MyCanvasText(QGraphicsSimpleTextItem):
     def __init__(self, canvas, text, x, y, flags=Qt.AlignLeft, bold=0, show=1):
         QGraphicsSimpleTextItem.__init__(self, text, None, canvas)

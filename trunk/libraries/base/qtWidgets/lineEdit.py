@@ -7,15 +7,17 @@ from PyQt4.QtGui import *
 
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='', label=None,orientation='horizontal', toolTip = None,  width = 0, callback = None, **args):
+    def __init__(self,widget,text='', label=None,orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
         QLineEdit.__init__(self,widget)
         if widget:
             if label:
                 self.hb = widgetBox(widget,orientation=orientation)
+                if sp == 'shrinking':
+                    self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
                 widgetLabel(self.hb, label)
                 if width != -1:
                     sb = widgetBox(self.hb)
-                    sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                    sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
                 self.hb.layout().addWidget(self)
                 self.hasLabel = True
             else:
