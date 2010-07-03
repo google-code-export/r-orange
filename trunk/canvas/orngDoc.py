@@ -12,7 +12,7 @@ from orngDlgs import *
 import RSession
 import globalData
 import redRPackageManager
-
+import redRHistory
 from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, orngHistory, zipfile
 import pprint, urllib
@@ -190,7 +190,7 @@ class SchemaDoc(QWidget):
         
         import redRHistory
         redRHistory.addConnectionHistory(outWidget, inWidget)
-        
+        redRHistory.saveConnectionHistory()
         return 1
 
 
@@ -237,27 +237,37 @@ class SchemaDoc(QWidget):
             try:
                 print newwidget.widgetInfo.fileName
                 ## add the chost widgets to the canvas and attach ghost lines to them
-                import redRHistory
+                
                 topCons = redRHistory.getTopConnections(newwidget)
                 print topCons
                 widgets = []
                 off = [150, 50, -50, -150]
                 i = 0
                 for con in topCons:
+                    print con
                     ## con is the fileName of the widget we need to find the info from the filename
-                    for w in self.widgets:
-                        if w.widgetInfo.fileName == con:
-                            wInfo = w.widgetInfo
-                            break
+                    
+                    wInfo = self.canvasDlg.widgetRegistry['widgets'][con]
+                    
                     
                     widgets.append(self.addGhostWidget(wInfo, x = newwidget.x() + 150, y = newwidget.y() + off[i], creatingWidget = newwidget)) # add the ghost widget
-                    self.addLine(newwidget, widgets[-1], ghost = True)
+                    #self.addLine(newwidget, widgets[-1], ghost = True)
                     i += 1
             except: 
                 type, val, traceback = sys.exc_info()
                 sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas           
                 widgets = []
             return widgets
+    def getSuggestWidgets(self, newwidget):
+        topCons = redRHistory.getTopConnections(newwidget)
+        actions = []
+        for con in topCons:
+            wInfo = self.canvasDlg.widgetRegistry['widgets'][con]
+            newAct = QTreeWidgetItem([wInfo.name])
+            newAct.setIcon(0, QIcon(wInfo.icon))
+            newAct.widgetInfo = wInfo
+            actions.append(newAct)
+        return actions
     def killGhost(self, widget): # remove the ghost widgets
         self.removeWidget(widget)
     # add new ghost widget
@@ -278,14 +288,14 @@ class SchemaDoc(QWidget):
             while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
             caption = caption + " (" + str(i) + ")"
         newGhostWidget.updateText(caption)
-        newGhostWidget.instance.setWindowTitle(caption)
+        newGhostWidget.caption = caption
         
 
         self.widgets.append(newGhostWidget)
         self.canvas.update()
         # show the widget and activate the settings
         try:
-            self.signalManager.addWidget(newGhostWidget.instance)
+            #self.signalManager.addWidget(newGhostWidget.instance)
             newGhostWidget.show()
             newGhostWidget.updateTooltip()
             newGhostWidget.setProcessing(0)

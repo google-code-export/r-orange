@@ -150,43 +150,44 @@ class CanvasLine(QGraphicsLineItem):
 # # CANVAS WIDGET
 # #######################################
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
-    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = None, forceInSignals = None, forceOutSignals = None):        
+    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = None, forceInSignals = None, forceOutSignals = None, ghost = False):        
 
-        
-        # import widget class and create a class instance
-        # print str(forceInSignals)
-        # print str(forceOutSignals)
-        # print 'Initializing widget'
-        # if widgetInfo.package['Name'] !='base':
-            # import orngRegistry
-            # orngRegistry.loadPackage(widgetInfo.package)
+        self.signalManager = signalManager
+        self.widgetInfo = widgetInfo
+        self.widgetSettings = widgetSettings
+        if not ghost:
+            m = __import__(widgetInfo.fileName)
+            self.instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
+            _owInfo = redREnviron.settings["owInfo"],
+            _owWarning = redREnviron.settings["owWarning"],
+            _owError = redREnviron.settings["owError"],
+            _owShowStatus = redREnviron.settings["owShow"],
+            _packageName = widgetInfo.packageName)
+            #_settingsFromSchema = widgetSettings)
+            self.instance.__dict__['_widgetInfo'] = widgetInfo
             
-        m = __import__(widgetInfo.fileName)
-        self.instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
-        _owInfo = redREnviron.settings["owInfo"],
-        _owWarning = redREnviron.settings["owWarning"],
-        _owError = redREnviron.settings["owError"],
-        _owShowStatus = redREnviron.settings["owShow"],
-        _packageName = widgetInfo.packageName)
-        #_settingsFromSchema = widgetSettings)
-        self.instance.__dict__['_widgetInfo'] = widgetInfo
-        
-        if widgetInfo.name == 'Dummy': 
-            print 'Loading dummy step 3'
-            self.instance.__init__(signalManager = signalManager,
-            forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
-        else: self.instance.__init__(signalManager = signalManager)
-        print '###################################', widgetSettings
-        #print widgetSettings
-        if widgetSettings:
-            self.instance.setSettings(widgetSettings)
-            if '_customSettings' in widgetSettings.keys():
-                self.instance.loadCustomSettings(widgetSettings['_customSettings'])
-            else:
-                self.instance.loadCustomSettings(widgetSettings)
+            if widgetInfo.name == 'Dummy': 
+                print 'Loading dummy step 3'
+                self.instance.__init__(signalManager = signalManager,
+                forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+            else: self.instance.__init__(signalManager = signalManager)
+            
+            #print widgetSettings
+            if widgetSettings:
+                self.instance.setSettings(widgetSettings)
+                if '_customSettings' in widgetSettings.keys():
+                    self.instance.loadCustomSettings(widgetSettings['_customSettings'])
+                else:
+                    self.instance.loadCustomSettings(widgetSettings)
 
-        self.instance.loadGlobalSettings()
-        
+            self.instance.loadGlobalSettings()
+            self.instance.ghost = False
+            self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
+            self.instance.setProcessingHandler(view.processingHandler)
+            self.instance.setWidgetStateHandler(self.updateWidgetState)
+            self.instance.setEventHandler(canvasDlg.output.widgetEvents)
+            self.instance.setWidgetWindowIcon(widgetInfo.icon)
+            
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget
         self.isProcessing = 0   # is this widget currently processing signals
         self.needsProcessing = 0 # is this widget in need of processing data
@@ -201,16 +202,10 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.ghostWidgets = []          # list of ghost widgets that this widget could connect to
         self.ghost = False
         self.icon = QIcon(widgetInfo.icon)
-        self.instance.ghost = False
-        self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
-        self.instance.setProcessingHandler(view.processingHandler)
-        self.instance.setWidgetStateHandler(self.updateWidgetState)
-        self.instance.setEventHandler(canvasDlg.output.widgetEvents)
-        self.instance.setWidgetWindowIcon(widgetInfo.icon)
         #self.instance.updateStatusBarState()
 
         QGraphicsRectItem.__init__(self, None, canvas)
-        self.signalManager = signalManager
+        
         
         if widgetInfo.fileName == 'dummy': # we need to add the inputs and outputs
             print widgetInfo.__dict__['inputs']
@@ -338,24 +333,25 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.updateTooltip()
 
     def updateWidgetState(self):
-        widgetState = self.instance.widgetState
+        if not self.ghost:
+            widgetState = self.instance.widgetState
 
-        self.infoIcon.hide()
-        self.warningIcon.hide()
-        self.errorIcon.hide()
+            self.infoIcon.hide()
+            self.warningIcon.hide()
+            self.errorIcon.hide()
 
-        yPos = self.y() - 21 - self.progressBarShown * 20
-        iconNum = sum([widgetState.get("Info", {}).values() != [],  widgetState.get("Warning", {}).values() != [], widgetState.get("Error", {}).values() != []])
+            yPos = self.y() - 21 - self.progressBarShown * 20
+            iconNum = sum([widgetState.get("Info", {}).values() != [],  widgetState.get("Warning", {}).values() != [], widgetState.get("Error", {}).values() != []])
 
-        if redREnviron.settings["ocShow"]:        # if show icons is enabled in canvas options dialog
-            startX = self.x() + (self.rect().width()/2) - ((iconNum*(self.canvasDlg.widgetIcons["Info"].width()+2))/2)
-            off  = 0
-            if len(widgetState.get("Info", {}).values()) > 0 and redREnviron.settings["ocInfo"]:
-                off  = self.updateWidgetStateIcon(self.infoIcon, startX, yPos, widgetState["Info"])
-            if len(widgetState.get("Warning", {}).values()) > 0 and redREnviron.settings["ocWarning"]:
-                off += self.updateWidgetStateIcon(self.warningIcon, startX+off, yPos, widgetState["Warning"])
-            if len(widgetState.get("Error", {}).values()) > 0 and redREnviron.settings["ocError"]:
-                off += self.updateWidgetStateIcon(self.errorIcon, startX+off, yPos, widgetState["Error"])
+            if redREnviron.settings["ocShow"]:        # if show icons is enabled in canvas options dialog
+                startX = self.x() + (self.rect().width()/2) - ((iconNum*(self.canvasDlg.widgetIcons["Info"].width()+2))/2)
+                off  = 0
+                if len(widgetState.get("Info", {}).values()) > 0 and redREnviron.settings["ocInfo"]:
+                    off  = self.updateWidgetStateIcon(self.infoIcon, startX, yPos, widgetState["Info"])
+                if len(widgetState.get("Warning", {}).values()) > 0 and redREnviron.settings["ocWarning"]:
+                    off += self.updateWidgetStateIcon(self.warningIcon, startX+off, yPos, widgetState["Warning"])
+                if len(widgetState.get("Error", {}).values()) > 0 and redREnviron.settings["ocError"]:
+                    off += self.updateWidgetStateIcon(self.errorIcon, startX+off, yPos, widgetState["Error"])
 
 
     def updateWidgetStateIcon(self, icon, x, y, stateDict):
@@ -368,17 +364,39 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         return self.selected
 
     def setSelected(self, selected):
-        self.selected = selected
+        
         #self.repaintWidget()
-        print 'Setting widget to selected'
-        if selected:
-            print 'Searching for Ghost Widgets'
-            self.ghostWidgets = self.canvasDlg.schema.addGhostWidgetsForWidget(self)
-        elif self.ghostWidgets != None:
-            for widget in self.ghostWidgets:
-                print widget.widgetInfo.fileName, widget.ghost
-                if widget.ghost:
-                    self.canvasDlg.schema.killGhost(widget)
+        # if not self.selected: ## if the item wasn't selected already we need to do this, otherwies the item is already selected so there is no point in reinitializing the ghost widgets.
+            # if selected:
+                
+                # print 'Setting widget to selected'
+                # print 'Searching for Ghost Widgets'
+                # self.ghostWidgets = self.canvasDlg.schema.addGhostWidgetsForWidget(self)
+                # print 'My ghost widgets are ', self.ghostWidgets
+            # elif self.ghostWidgets != None:
+                # print 'Setting widget to unselected', self.widgetInfo.fileName
+                # print 'Ghost widgets', self.ghostWidgets
+                # for widget in self.ghostWidgets:
+                    # print widget.widgetInfo.fileName, widget.ghost
+                    # if widget.ghost:
+                        # self.canvasDlg.schema.killGhost(widget)
+        # elif self.ghostWidgets != None:
+            # for widget in self.ghostWidgets:
+                # print widget.widgetInfo.fileName, widget.ghost
+                # if widget.ghost:
+                    # self.canvasDlg.schema.killGhost(widget)
+                    
+        self.canvasDlg.tabs.suggestButtonsList.clear()
+        newActions = self.canvasDlg.schema.getSuggestWidgets(self)
+        if len(newActions) > 0:
+            self.canvasDlg.tabs.suggestButtonsList.show()
+            self.canvasDlg.tabs.suggestButtonsList.addTopLevelItems(newActions)
+            self.canvasDlg.tabs.suggestButtonsList.suggestingWidget = self
+            self.canvasDlg.tabs.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+str(self.widgetInfo.name)])
+        else:
+            self.canvasDlg.tabs.suggestButtonsList.hide()
+        
+        self.selected = selected
     # set coordinates of the widget
     def setCoords(self, x, y):
         if redREnviron.settings["snapToGrid"]:
@@ -398,15 +416,19 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         
         #rect = QRectF(-10-width, -4, +10+width, +25)
         rect = QRectF(QPointF(0, 0), self.widgetSize).adjusted(-10-width, -4, +10+width, +25)
-        if self.progressBarShown:
-            rect.setTop(rect.top()-20)
-        widgetState = self.instance.widgetState
-        if widgetState.get("Info", {}).values() + widgetState.get("Warning", {}).values() + widgetState.get("Error", {}).values() != []:
-            rect.setTop(rect.top()-21)
+        if not self.ghost:
+            try:
+                if self.progressBarShown:
+                    rect.setTop(rect.top()-20)
+                widgetState = self.instance.widgetState
+                if widgetState.get("Info", {}).values() + widgetState.get("Warning", {}).values() + widgetState.get("Error", {}).values() != []:
+                    rect.setTop(rect.top()-21)
+            except: pass
         return rect
 
     # is mouse position inside the left signal channel
     def mouseInsideLeftChannel(self, pos):
+        if self.ghost: return
         if self.instance.inputs == [] or self.instance.inputs == None: return False
 
         boxRect = QRectF(self.x()-self.edgeSize.width(), self.y() + (self.widgetSize.height()-self.edgeSize.height())/2, self.edgeSize.width(), self.edgeSize.height())
@@ -417,6 +439,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
     # is mouse position inside the right signal channel
     def mouseInsideRightChannel(self, pos):
+        if self.ghost: return
         if self.instance.outputs == [] or self.instance.outputs == None: return False
 
         boxRect = QRectF(self.x()+self.widgetSize.width(), self.y() + (self.widgetSize.height()-self.edgeSize.height())/2, self.edgeSize.width(), self.edgeSize.height())
@@ -484,8 +507,9 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
-        if self.instance.inputs != [] and self.instance.inputs != None:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-        if self.instance.outputs != [] and self.instance.outputs != None:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+        if not self.ghost:
+            if self.instance.inputs != [] and self.instance.inputs != None:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+            if self.instance.outputs != [] and self.instance.outputs != None:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
 
         # draw the label
         painter.setPen(QPen(QColor(0,0,0)))
@@ -526,6 +550,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
 
     def updateTooltip(self):
+        if self.ghost: return
         string = "<nobr><b>" + self.caption + "</b></nobr><hr>Inputs:<br>"
 
         if self.instance.inputs == [] or self.instance.inputs == None: string += "&nbsp; &nbsp; None<br>"
@@ -581,21 +606,31 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 # ######################################
 class GhostWidget(CanvasWidget):  # graphical representation of a ghost widget.  Inherits all of the functions as the CanvasWidget and may override some functions.  This should be a widget with a slightly dimmed appearance.  Clicking will activate the wiget and init an addition of the widget to the canvas
     def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = None, forceInSignals = None, forceOutSignals = None, creatingWidget = None):
-        CanvasWidget.__init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings)
+        CanvasWidget.__init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings, ghost = True)
         self.setOpacity(0.5)
         self.creatingWidget = creatingWidget
         # put the settings to be a ghost.  This will be removed if the widget is clicked.  In which case data will be sent through the widget as though it were just added to the canvas.
         self.ghost = True
-        self.instance.ghost = True
     def convertToCanvasWidget(self):
         self.setOpacity(1)
         self.ghost = False
+        m = __import__(self.widgetInfo.fileName)
+        self.instance = m.__dict__[self.widgetInfo.widgetName].__new__(m.__dict__[self.widgetInfo.widgetName],
+        _owInfo = redREnviron.settings["owInfo"],
+        _owWarning = redREnviron.settings["owWarning"],
+        _owError = redREnviron.settings["owError"],
+        _owShowStatus = redREnviron.settings["owShow"],
+        _packageName = self.widgetInfo.packageName)
+        #_settingsFromSchema = widgetSettings)
+        self.instance.__dict__['_widgetInfo'] = self.widgetInfo
+        
+        self.instance.__init__(signalManager = self.signalManager)
+        
         self.instance.ghost = False
+        
         self.canvasDlg.schema.signalManager.addWidget(self.instance)
         self.canvasDlg.schema.addLine(self.creatingWidget, self)
-        
-        
-        
+        self.instance.setCaption(self.caption)
 class MyCanvasText(QGraphicsSimpleTextItem):
     def __init__(self, canvas, text, x, y, flags=Qt.AlignLeft, bold=0, show=1):
         QGraphicsSimpleTextItem.__init__(self, text, None, canvas)

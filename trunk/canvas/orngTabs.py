@@ -506,8 +506,15 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.widgetSuggestEdit.addItems([QListWidgetItem(action.icon(), action.templateInfo.name) for action in self.templateActions])
         #self.favoritesTree = MyTreeWidget(canvasDlg, self) # tree that will contain a set of favorite widgets that the user will set
         #tmpBoxLayout.insertWidget(0, CanvasPopup)
+        
         tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
         tmpBoxLayout.insertWidget(1, self.treeWidget)
+        self.suggestButtonsList = QTreeWidget()
+        self.suggestButtonsList.setHeaderLabels(['Suggested Widgets'])
+        tmpBoxLayout.insertWidget(2, self.suggestButtonsList)
+        QObject.connect(self.suggestButtonsList, SIGNAL('itemClicked (QTreeWidgetItem *,int)'), lambda action: self.activateSuggestWidget(action))
+        self.suggestButtonsList.hide()
+            
         #tmpBoxLayout.insertWidget(2, self.favoritesTree)
         
         self.setWidget(self.containerWidget)
@@ -517,7 +524,12 @@ class WidgetTree(WidgetListBase, QDockWidget):
 #        self.treeWidget.setRootIsDecorated(0) 
         #self.setWidget(OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1))
         
-
+    def activateSuggestWidget(self, action):
+        print action
+        print action.widgetInfo
+        newwidget = self.canvasDlg.schema.addWidget(action.widgetInfo)
+        if self.suggestButtonsList.suggestingWidget:
+            self.canvasDlg.schema.addLine(self.suggestButtonsList.suggestingWidget, newwidget)
     def insertWidgetTab(self, name, show = 1):
         if self.tabDict.has_key(name):
             self.tabDict[name].setHidden(not show)

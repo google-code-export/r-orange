@@ -12,7 +12,9 @@ try:
     f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistory.rrdf'))
     hDict = cPickle.load(f)
     f.close()
-except:
+except Exception as inst:
+    print inst
+    print 'widgetHistory not found'
     hDict = {}
     
 def getTopConnections(newwidget):
@@ -38,6 +40,6 @@ def addConnectionHistory(newwidget, connectingWidget):
     
     print 'WidwidgetConns', widgetConns
 def saveConnectionHistory():
-    f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistory.rrdf'))
+    f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistory.rrdf'), 'w')
     cPickle.dump(hDict, f)
     f.close()

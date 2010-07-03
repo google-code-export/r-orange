@@ -157,7 +157,7 @@ class SchemaView(QGraphicsView):
             pos = QGraphicsRectItem(QRectF(pos, QSizeF(1,1)))
         items = self.scene().collidingItems(pos)
         if itemType != None:
-            items = [item for item in items if type(item) == itemType]
+            items = [item for item in items if isinstance(item, itemType)]
         return items
 
     # ###########################################
