@@ -1,7 +1,7 @@
 ; need the nsisdt and AccessControl plugins
 ;--------------------------------
 ; Defines
-!define Red-RDIR C:\Users\anup\Documents\red\develop\red
+!define Red-RDIR C:\Users\anup\Documents\red\develop\red-trunk
 !define SubWCRev "C:\Program Files\TortoiseSVN\bin\SubWCRev.exe"
 !define LICENSE ${Red-RDIR}\licence.txt 
 !define BIN ${Red-RDIR}\dist

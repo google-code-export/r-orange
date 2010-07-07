@@ -173,7 +173,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
             else:
                 if redREnviron.checkInternetConnection():
-                    mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
+                    mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
                             Rcommand('setRepositories(ind=1:7)')

@@ -13,7 +13,9 @@ import OWGUI, redRGUI
 import OWGUIEx
 import math, sip
 import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RVector as RVector
+
+
 class DataExplorer(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager = None):
@@ -31,7 +33,7 @@ class DataExplorer(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', rdf.RDataFrame, self.processData), ('Row Subset Vector', rvec.RVector, self.setRowSelectVector)]
+        self.inputs = [('Data Table', rdf.RDataFrame, self.processData), ('Row Subset Vector', RVector.RVector, self.setRowSelectVector)]
         self.outputs = [('Data Subset', rdf.RDataFrame)]
         
         # a special section that sets when the shift key is heald or not 
@@ -321,7 +323,7 @@ class DataExplorer(OWRpy):
         cw = self.criteriaDialogList[k]['cw']
         text = str(cw.text())
         colName = str(self.table.item(1, k+1).text())
-        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent['parent']+')[,\"'+colName+'\"] == \''+text+'\')'  # reduces to a vector of 1 and 0
+        self.criteriaDialogList[k]['criteriaCollection'] += logic+'(as.data.frame('+self.dataParent.getDataParent()+')[,\"'+colName+'\"] == \''+text+'\')'  # reduces to a vector of 1 and 0
         
         self.criteriaDialogList[k]['widgetLabel'].setHtml('<pre>'+self.criteriaDialogList[k]['criteriaCollection']+'</pre>')
         self.setDialogState(k, 0)
@@ -384,11 +386,11 @@ class DataExplorer(OWRpy):
             self.criteriaList.append(self.rowNameSelectionCriteria)
         for item in self.criteriaDialogList:
             if item['criteriaCollection'] != '':
-                self.criteriaList.append('(!is.na('+self.dataParent.parent+'[,\''+item['colname']+'\', drop = F])&('+item['criteriaCollection']+'))')
+                self.criteriaList.append('(!is.na('+self.dataParent.getDataParent()+'[,\''+item['colname']+'\', drop = F])&('+item['criteriaCollection']+'))')
 
         print self.criteriaList
         if len(self.criteriaList) > 0:
-            self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.parent+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.parent+'[!('+'&'.join(self.criteriaList)+'),]))')
+            self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.getDataParent()+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.getDataParent()+'[!('+'&'.join(self.criteriaList)+'),]))')
             newData = rdf.RDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
             self.rSend('Data Subset', newData)
         else:

@@ -83,8 +83,8 @@ def registerRedRSignals():
     # if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
         # and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))): ## check that the package is really a package, if not then ignore.
             # continue
-    print 'registerRedRSignals is depricated'
-    return
+    # print 'registerRedRSignals is depricated'
+    # return
     import imp, sys
     for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
         if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
@@ -125,15 +125,15 @@ def forname(modname, classname):
 current_module = __import__(__name__)
 RedRSignals = []
 
-for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'],'base','signalClasses',"*.py")):
-    if os.path.isdir(filename) or os.path.islink(filename):
-        continue
-    try:
-        signalClasses = os.path.basename(filename).split('.')[0]
-        RedRSignals.append(signalClasses)
-        c = forname(signalClasses,signalClasses)
-        setattr(c,'__package__','base')
-        setattr(current_module, signalClasses,c)
-    except Exception as inst:
-        print inst
-registerRedRSignals()
+# for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'],'base','signalClasses',"*.py")):
+    # if os.path.isdir(filename) or os.path.islink(filename):
+        # continue
+    # try:
+        # signalClasses = os.path.basename(filename).split('.')[0]
+        # RedRSignals.append(signalClasses)
+        # c = forname(signalClasses,signalClasses)
+        # setattr(c,'__package__','base')
+        # setattr(current_module, signalClasses,c)
+    # except Exception as inst:
+        # print inst
+#registerRedRSignals()

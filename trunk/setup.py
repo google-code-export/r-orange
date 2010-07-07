@@ -2,7 +2,7 @@ import os, sys
 from distutils.core import setup
 import py2exe
 
-base = 'C:/Users/anup/Documents/red/develop/red/'
+base = 'C:/Users/anup/Documents/red/develop/red-trunk/'
 sys.path.insert(0, base)
 sys.path.insert(0, os.path.join(base,'canvas'))
 sys.path.insert(0, os.path.join(base,'OrangeWidgets'))

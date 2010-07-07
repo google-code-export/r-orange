@@ -498,7 +498,8 @@ globalSignalManager = SignalManager()
 # #######################################
 class SignalDialog(QDialog):
     def __init__(self, canvasDlg, *args):
-        apply(QDialog.__init__,(self,) + args)
+        #apply(QDialog.__init__,(self,) + args)
+        QDialog.__init__(self,canvasDlg)
         self.canvasDlg = canvasDlg
 
         self.signals = []
