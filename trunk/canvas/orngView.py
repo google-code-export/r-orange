@@ -260,10 +260,7 @@ class SchemaView(QGraphicsView):
         elif self.widgetSelectionRect:
             self.widgetSelectionRect.setRect(QRectF(self.mouseDownPosition, point))            
 
-            # select widgets in rectangle
-            widgets = self.getItemsAtPos(self.widgetSelectionRect, orngCanvasItems.CanvasWidget)
-            for widget in self.doc.widgets:
-                widget.setSelected(widget in widgets)
+            
 
         self.scene().update()
 
@@ -272,6 +269,10 @@ class SchemaView(QGraphicsView):
     def mouseReleaseEvent(self, ev):
         point = self.mapToScene(ev.pos())
         if self.widgetSelectionRect:
+            # select widgets in rectangle
+            widgets = self.getItemsAtPos(self.widgetSelectionRect, orngCanvasItems.CanvasWidget)
+            for widget in self.doc.widgets:
+                widget.setSelected(widget in widgets)
             self.widgetSelectionRect.hide()
             self.widgetSelectionRect = None
 
