@@ -4,6 +4,8 @@
 <description>Generic plot is the basis of most RedR plotting.  This accepts fits, data tables, or other RedR outputs and attempts to plot them.  However, there is no guarantee that your data will plot correctly.</description>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
+<inputWidgets></inputWidgets>
+<outputWidgets></outputWidgets>
 
 """
 from OWRpy import * 

@@ -363,10 +363,15 @@ class OrangeCanvasDlg(QMainWindow):
         print 'click save'
         self.schema.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
+        print 'step 1'
         self.widgetRegistry = orngRegistry.readCategories()
+        print 'step 2'
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
+        print 'step 3'
         self.createWidgetsToolbar()
+        print 'step 4'
         signals.registerRedRSignals()
+        print 'step 5'
         redRGUI.registerQTWidgets()
         
     def menuItemSaveAs(self):

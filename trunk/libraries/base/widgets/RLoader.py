@@ -6,6 +6,8 @@
 <RFunctions>base:new.env,base:load</RFunctions>
 <icon>rexecutor.png</icon>
 <priority>10</priority>
+<inputWidgets></inputWidgets>
+<outputWidgets>base_RVarSeparator</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI

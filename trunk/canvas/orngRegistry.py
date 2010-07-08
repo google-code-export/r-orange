@@ -178,13 +178,16 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          inputList = inputList, outputList = outputList
                          )
     
-            for attr, deflt in (("contact>", "") , ("icon>", "Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes")):
+            for attr, deflt in (("contact>", "") , ("icon>", "Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes"), ("outputWidgets>", ""), ("inputWidgets>", "")):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 
             widgetInfo.tags = widgetInfo.tags.replace(' ', '')
             widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
             ## set the icon, this might not exist so we need to check
+            widgetInfo.outputWidgets = widgetInfo.outputWidgets.replace(' ', '').split(',')
+            widgetInfo.inputWidgets = widgetInfo.inputWidgets.replace(' ', '')
+            widgetInfo.inputWidgets = widgetInfo.inputWidgets.split(',')
 
                 
             widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', widgetInfo.icon)

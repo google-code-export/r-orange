@@ -262,11 +262,14 @@ class SchemaDoc(QWidget):
         topCons = redRHistory.getTopConnections(newwidget)
         actions = []
         for con in topCons:
-            wInfo = self.canvasDlg.widgetRegistry['widgets'][con]
-            newAct = QTreeWidgetItem([wInfo.name])
-            newAct.setIcon(0, QIcon(wInfo.icon))
-            newAct.widgetInfo = wInfo
-            actions.append(newAct)
+            try:
+                wInfo = self.canvasDlg.widgetRegistry['widgets'][con]
+                newAct = QTreeWidgetItem([wInfo.name])
+                newAct.setIcon(0, QIcon(wInfo.icon))
+                newAct.widgetInfo = wInfo
+                actions.append(newAct)
+            except:
+                continue
         return actions
     def killGhost(self, widget): # remove the ghost widgets
         self.removeWidget(widget)
@@ -836,47 +839,52 @@ class SchemaDoc(QWidget):
             
         return (loadedOk, failureText)
     def loadWidgets(self, widgets, loadingProgressBar, tmp):
+        
         lpb = 0
         loadedOk = 1
         failureText = ''
         addY = self.minimumY()
         for widget in widgets.getElementsByTagName("widget"):
-            name = widget.getAttribute("widgetName")
+            try:
+                name = widget.getAttribute("widgetName")
 
-            settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['settings'])
-            inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
-            outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
+                settings = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['settings'])
+                inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
+                outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
 
-            print 'Settings', settings
-            tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
-            int(widget.getAttribute("yPos")) + addY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
-            
-            
-            if not tempWidget:
-                #print settings
-                print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
-                # we must build a fake widget this will involve getting the inputs and outputs and joining 
-                #them at the widget creation 
+                print 'Settings', settings
+                tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
+                int(widget.getAttribute("yPos")) + addY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
                 
-                tempWidget = self.addWidgetByFileName('base_dummy', int(widget.getAttribute("xPos")), int(int(widget.getAttribute("yPos")) + addY), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
                 
                 if not tempWidget:
-                    failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
-                    loadedOk = 0
-                    print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                    if 'inputs' not in settings: settings['inputs'] = []
+                    if 'outputs' not in settings: settings['outputs'] = []
+                    #print settings
+                    print 'Widget loading disrupted.  Loading dummy widget with ' + str(settings['inputs']) + ' and ' + str(settings['outputs']) + ' into the schema'
+                    # we must build a fake widget this will involve getting the inputs and outputs and joining 
+                    #them at the widget creation 
                     
-                    continue
-            tempWidget.updateWidgetState()
-            ## if tmp then adjust the widgetID to match the sessionID
-            #print 'Widget ID orriginal is ', widget.getAttribute('widgetID')
-            tempWidget.instance.widgetID = widget.getAttribute('widgetID')  ## reset the widgetID.
-            if tmp:
-                tempWidget.instance.widgetID += '_'+str(self.sessionID)
-                #print tempWidget.instance.widgetID
-            tempWidget.instance.setLoadingSavedSession(True)
-            lpb += 1
-            loadingProgressBar.setValue(lpb)
-            
+                    tempWidget = self.addWidgetByFileName('base_dummy', int(widget.getAttribute("xPos")), int(int(widget.getAttribute("yPos")) + addY), widget.getAttribute("caption"), settings, saveTempDoc = False, forceInSignals = settings['inputs'], forceOutSignals = settings['outputs']) 
+                    
+                    if not tempWidget:
+                        failureText += '<nobr>Unable to create instance of a widget <b>%s</b></nobr><br>' %(name)
+                        loadedOk = 0
+                        print widget.getAttribute("caption") + ' settings did not exist, this widget does not conform to current loading criteria.  This should be changed in the widget as soon as possible.  Please report this to the widget creator.'
+                        
+                        continue
+                tempWidget.updateWidgetState()
+                ## if tmp then adjust the widgetID to match the sessionID
+                #print 'Widget ID orriginal is ', widget.getAttribute('widgetID')
+                tempWidget.instance.widgetID = widget.getAttribute('widgetID')  ## reset the widgetID.
+                if tmp:
+                    tempWidget.instance.widgetID += '_'+str(self.sessionID)
+                    #print tempWidget.instance.widgetID
+                tempWidget.instance.setLoadingSavedSession(True)
+                lpb += 1
+                loadingProgressBar.setValue(lpb)
+            except Exception as inst:
+                print str(inst), 'Widget load failure'
         return (loadedOk, failureText)
     def checkWidgetDuplication(self, widgets):
         for widget in widgets.getElementsByTagName("widget"):

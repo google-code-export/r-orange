@@ -4,6 +4,8 @@
 <description>Split a vector of data by some text.  Returns a list of data containing the split results for each element in the vector and an optional vector of data of all of the splits pasted together.</description>
 <RFunctions>base:strsplit</RFunctions>
 <tags>Prototypes</tags>
+<inputWidgets></inputWidgets>
+<outputWidgets>base_summary, base_ListSelector</outputWidgets>
 <icon>icons/RExecutor.png</icon>
 """
 from OWRpy import * 

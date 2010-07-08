@@ -4,6 +4,8 @@
 <RFunctions>base:summary</RFunctions>
 <tags>R</tags>
 <icon>RExecutor.png</icon>
+<inputWidgets></inputWidgets>
+<outputWidgets>base_RDataTable, base_ListSelector, base_DataExplorer</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

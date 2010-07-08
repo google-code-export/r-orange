@@ -5,6 +5,8 @@
 <tags>R</tags>
 <icon>rexecutor.png</icon>
 <priority>10</priority>
+<inputWidgets></inputWidgets>
+<outputWidgets>plotting_plot, base_rViewer, base_summary</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

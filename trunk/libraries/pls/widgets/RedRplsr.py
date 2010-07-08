@@ -5,6 +5,8 @@
 <RFunctions>pls:plsr</RFunctions>
 <tags>PLS</tags>
 <icon></icon>
+<inputWidgets></inputWidgets>
+<outputWidgets>pls_RedRRMSEP, pls_RedRcorrplot, pls_RedRplot_mvr, pls_RedRplot_mvrVar</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

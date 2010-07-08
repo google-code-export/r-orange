@@ -5,6 +5,8 @@
 <RFunctions>base:apply</RFunctions>
 <tags>Data Manipulation</tags>
 <icon>rexecutor.png</icon>
+<inputWidgets></inputWidgets>
+<outputWidgets>plotting_plot, base_RDataTable, base_ListSelector, base_DataExplorer, base_rowcolPicker, base_rViewer</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

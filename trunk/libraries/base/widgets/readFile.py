@@ -5,6 +5,8 @@
 <RFunctions>utils:read.table</RFunctions>
 <icon>readfile.png</icon>
 <priority>10</priority>
+<inputWidgets></inputWidgets>
+<outputWidgets>plotting_plot, base_RDataTable, base_Melt_DF, base_ListSelector, base_DataExplorer</outputWidgets>
 """
 
 from OWRpy import *
