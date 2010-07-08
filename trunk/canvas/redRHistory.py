@@ -13,8 +13,8 @@ try:
     hDict = cPickle.load(f)
     f.close()
 except Exception as inst:
-    print inst
-    print 'widgetHistory not found'
+    # print inst
+    # print 'widgetHistory not found'
     hDict = {}
     
 def getTopConnections(newwidget):

@@ -164,6 +164,7 @@ class readFile(OWRpy):
         
     
     def browseFile(self): 
+        print self.path
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
         print str(fn)
