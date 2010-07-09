@@ -13,7 +13,7 @@ import rpy
 
 class OWRpy(widgetSignals,widgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
-    
+    globalRHistory = []
     def __init__(self,parent=None, signalManager=None, 
     title="R Widget", wantGUIDialog = 0, **args):
         
@@ -39,9 +39,8 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.setRvariableNames(['title'])
         self.requiredRLibraries = []
         self.device = {}
-        self.Rhistory = '<code>'
         self.packagesLoaded = 0
-        
+        self.widgetRHistory = []
         
 
 
@@ -69,11 +68,6 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         #try:
         if processingNotice:
             self.status.setText('Processing Started...')
-        histquery = query
-        histquery = histquery.replace('<', '&lt;') #convert for html
-        histquery = histquery.replace('>', '&gt;')
-        histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
-        self.Rhistory += histquery + '</code><br><code>'
         try:
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except rpy.RPyRException as inst:
@@ -93,23 +87,30 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.status.setText('Processing complete.')
             #self.progressBarFinished()
         if not silent:
-            try:
-                self.ROutput.setCursorToEnd()
-                self.ROutput.append(str(query.replace('<-', '='))+'<br><br>') #Keep track automatically of what R functions were performed.
-            except: pass #there must not be any ROutput to add to, that would be strange as this is in OWRpy
+            OWRpy.globalRHistory.append(query)
+            self.widgetRHistory.append(query)
+            
+            self.ROutput.setCursorToEnd()
+            self.ROutput.append('> '+ query) #Keep track automatically of what R functions were performed.
+
         qApp.restoreOverrideCursor()
         return commandOutput
+   
+    def escape(self, html):
+        """Returns the given HTML with ampersands, quotes and carets encoded."""
+        return unicode(html).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
+    
     def assignR(self, name, object):
-        histquery = 'Assign '+str(name)+' to '+str(object)
-        histquery = histquery.replace('<', '&lt;') #convert for html
-        histquery = histquery.replace('>', '&gt;')
-        histquery = histquery.replace("\t", "\x5ct") # convert \t to unicode \t
-        self.Rhistory += histquery + '</code><br><code>'
         assignOK = RSession.assign(name, object)
         if not assignOK:
             QMessageBox.information(self, 'Red-R Canvas','Object was not assigned correctly in R, please tell package manager.',  
             QMessageBox.Ok + QMessageBox.Default)
             raise Exception, 'Object was not assigned correctly in R, please tell package manager.'
+        else:
+            histquery = 'Assign '+str(name)+' to '+str(object)
+            self.ROutput.setCursorToEnd()
+            self.ROutput.insertHtml('> '+ self.escape(histquery))
+
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
         #print str(redREnviron.settings)
         if file == None and ('HomeFolder' not in redREnviron.settings.keys()):
@@ -208,5 +209,5 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
     def refresh(self):
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.
 
-        
+
 ###########################################

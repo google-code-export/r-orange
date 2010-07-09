@@ -49,7 +49,7 @@ class rExecutor(OWRpy):
 
         runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.command = redRGUI.lineEdit(runbox, "", label = "R Command", orientation=QHBoxLayout(), callback = self.runR, width = -1)
+        self.command = redRGUI.lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
         self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         processbutton = redRGUI.button(runbox, label = "&Run", callback = self.runR, width=100)
         statusBox = redRGUI.groupBox(rightArea, label = "Status")
@@ -121,12 +121,12 @@ class rExecutor(OWRpy):
         # if type(pasted) != type(''):
             # pasted = 'Error occured with evaluation, please chech output for error.'
         self.thistext.insertPlainText('>>>'+str(self.command.text())+'##Done')
-        self.thistext.insertHtml('<br><pre>'+pasted+'<\pre><br>')
+        self.thistext.insertPlainText('\n'+pasted+'\n')
         self.thistext.setAlignment(Qt.AlignBottom)
     
     def putRHistory(self):
         self.thistext.clear()
-        self.thistext.insertHtml(OWRpy.Rhistory)
+        self.thistext.insertPlainText('\n'.join(OWRpy.globalRHistory))
     def process(self, data):
         for output in self.outputs:
             self.rSend(output[0], None, 0)
