@@ -33,8 +33,8 @@ class cor(OWRpy):
         buttons = ['pearson', 'kendall', 'spearman'],setChecked='pearson',
         orientation='vertical')
 
-        self.useButtons =  redRGUI.radioButtons(options, label='Handing Missing Values', 
-        buttons = ["all.obs", "complete.obs", "pairwise.complete.obs"],
+        self.useButtons =  redRGUI.radioButtons(options, label='Handing Missing Values', setChecked='everything',
+        buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
 
         redRGUI.button(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
