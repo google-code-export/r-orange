@@ -171,9 +171,8 @@ def getVersion():
 def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
-
-    if directoryNames['canvasDir'] <> None:
-        pathsToAdd.append(directoryNames['canvasDir'])
+    pathsToAdd.append(directoryNames['canvasDir'])
+    pathsToAdd.append(directoryNames['libraryDir'])
 
     if directoryNames['libraryDir'] <> None and os.path.isdir(directoryNames['libraryDir']):
         pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x) for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
@@ -188,6 +187,7 @@ def addOrangeDirectoriesToPath(directoryNames):
 
 directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
+
 version = {}
 version = getVersion()
 settings = loadSettings()

@@ -122,8 +122,11 @@ def forname(modname, classname):
 ################Run on Init###############
 
 
-current_module = __import__(__name__)
-RedRSignals = []
+# current_module = __import__(__name__)
+# RedRSignals = []
+
+# import libraries.base.signalClasses.RVariable 
+# import libraries.base.signalClasses.RVector
 
 # for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'],'base','signalClasses',"*.py")):
     # if os.path.isdir(filename) or os.path.islink(filename):

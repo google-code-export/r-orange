@@ -8,10 +8,10 @@ import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redREnviron
+
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
 import redRPackageManager, redRGUI,signals, redRInitWizard
-
 
 class OrangeCanvasDlg(QMainWindow):
     
@@ -27,19 +27,6 @@ class OrangeCanvasDlg(QMainWindow):
         self.originalPalette = QApplication.palette()
         
 
-        # self.__dict__.update(redREnviron.directoryNames)
-        # print self.tempDir
-        # if int(str(os.path.split(redREnviron.directoryNames['tempDir'])[1]).strip('temp')) > 5:
-            # mb = QMessageBox("Setting Temp Directory", "You seem to have a lot of temp directories.\nThis can happen if Red-R has crashed.\nWould you like to clear them?\n\nDon't do this if you have multiple sessions of Red-R open.", QMessageBox.Information, QMessageBox.Yes | QMessageBox.Default, QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
-            # if mb.exec_() == QMessageBox.Yes: 
-                # import shutil
-                # for dirName in os.listdir(os.path.split(redREnviron.directoryNames['tempDir'])[0]):
-                    # if dirName == os.path.split(redREnviron.directoryNames['tempDir'][1]): continue
-                    # else:
-                        # try:
-                            # shutil.rmtree(os.path.join(os.path.split(redREnviron.directoryNames['tempDir'])[0], dirName))
-                        # except:
-                            # pass
         logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
         splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
         splashWindow.setMask(logo.mask())
@@ -84,6 +71,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.output = orngOutput.OutputWindow(self)
         self.output.catchException(1)
         self.output.catchOutput(1)
+        print sys.path
 
         # create error and warning icons
         splashWindow.showMessage("Setting Icons", Qt.AlignHCenter + Qt.AlignBottom)

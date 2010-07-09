@@ -9,8 +9,9 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-import libraries.base.signalClasses.RVector as rvec
 import libraries.base.signalClasses.RVariable as rvar
+import libraries.base.signalClasses.RVector as rvec
+
 class wilcox_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):

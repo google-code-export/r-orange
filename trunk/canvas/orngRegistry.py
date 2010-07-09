@@ -160,12 +160,12 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             dirnameInPath = dirname in sys.path
             if not dirnameInPath:
                 sys.path.append(dirname)
-            
+        
             wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
 
             #wmod.__dict__['widgetFilename'] = filename
-            if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
-                sys.path.remove(dirname)
+            # if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
+                # sys.path.remove(dirname)
             
             widgetInfo = WidgetDescription(
                          name = data[istart+6:iend],
@@ -218,11 +218,12 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s<hr>%s<hr>%s" % (name, widgetInfo.description, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))
         except Exception, msg:
-            if not hasErrors:
-                print "There were problems importing the following widgets:"
-                hasErrors = True
-            print "   %s: %s" % (widgetName, msg)
-            widgetsWithError.append(widgetName)
+            orngOutput.printException()
+            # if not hasErrors:
+                # print "There were problems importing the following widgets:"
+                # hasErrors = True
+            # print "   %s: %s" % (widgetName, msg)
+            # widgetsWithError.append(widgetName)
         
     return widgets
 
