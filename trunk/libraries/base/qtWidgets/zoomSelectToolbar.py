@@ -75,7 +75,7 @@ class zoomSelectToolbar(QGroupBox,widgetState):
         self.exclusiveList = exclusiveList
 
         self.widget = None
-        self.functions = [type(f) == int and self.builtinFunctions[f] or f for f in buttons]
+        self.functions = [type(f) == int and zoomSelectToolbar.builtinFunctions[f] or f for f in buttons]
         for b, f in enumerate(self.functions):
             if not f:
                 self.layout().addSpacing(10)

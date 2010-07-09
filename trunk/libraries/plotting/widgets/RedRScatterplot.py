@@ -13,14 +13,14 @@ import re
 import textwrap, numpy
 import libraries.base.signalClasses.RDataFrame as rdf
 from PyQt4.QtGui import *
-    ### currently depricated until fixed
-    class RedRScatterplot(OWRpy):
+### currently depricated until fixed
+class RedRScatterplot(OWRpy):
     
     globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
 
         OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
-        self.setRvariableNames(['Plot'])
+        self.setRvariableNames(['Plot','paint','selected'])
         self.inputs = [('x', rdf.RDataFrame, self.gotX)]
         self.outputs = [('Scatterplot Output', rdf.RDataFrame)]
         self.data = None
@@ -29,9 +29,9 @@ from PyQt4.QtGui import *
 
         # GUI
         self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[])
-        self.forceXNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
+        # self.forceXNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
         self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[])
-        self.forceYNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
+        # self.forceYNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
         self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''])
         self.replotCheckbox = redRGUI.checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
         self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
@@ -43,39 +43,17 @@ from PyQt4.QtGui import *
         self.graph = redRGUI.redRGraph(plotarea)
         plotarea.layout().addWidget(self.graph)
         #self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
-        self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.GUIDialog, self.graph)
+        
+        redRGUI.separator(self.GUIDialog,height=8)
         buttonBox = redRGUI.widgetBox(self.GUIDialog,orientation='horizontal')
         redRGUI.button(buttonBox, label = "Plot", callback = self.plot, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
         redRGUI.button(buttonBox, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        redRGUI.separator(self.GUIDialog,height=8)
+        self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.GUIDialog, self.graph)
         self.paintLegend = redRGUI.textEdit(self.GUIDialog)
         
         self.resize(600, 500)
 
-    def printGraph(self):
-        printer = QPrinter()
-        printerDialog = QPrintDialog(printer)
-
-        if printerDialog.exec_() == QDialog.Rejected: 
-            print 'Printing Rejected'
-            return
-        print printer
-        self.graph.print_(printer)
-    def refresh(self):
-        if self.cm != None:
-            try:
-                names = self.R('names('+self.cm+')')
-                if type(names) == str and names != None and names != 'NULL':
-                    names = [names]
-                else:
-                    names = []
-                names += self.R('colnames('+self.data+')')
-                names.insert(0, '')
-                self.paintCMSelector.update(names)
-                
-                self.plot(newZoom = False)
-                
-            except:
-                pass
         
     def showSelected(self):
         if self.data == None:
@@ -116,98 +94,7 @@ from PyQt4.QtGui import *
             self.xData = []
             self.yData = []
             self.graph.clear()
-    def unique(self, seq, idfun=None):  
-        # order preserving 
-        if idfun is None: 
-            def idfun(x): return x 
-        seen = {} 
-        result = [] 
-        for item in seq: 
-            marker = idfun(item) 
-            # in old Python versions: 
-            # if seen.has_key(marker) 
-            # but in new ones: 
-            if marker in seen: continue 
-            seen[marker] = 1 
-            result.append(item) 
-        return result
     def plot(self, newZoom = True):
-        """
-        ## remake the plot function to work on dictionaries.  This will be much better than only being able to work on data frames.
-        if self.data == None:
-            self.status.setText('No Data, nothing to plot')
-            return
-        xIndex = str(self.xColumnSelector.currentText())
-        yIndex = str(self.yColumnSelector.currentText())
-        paintClass = str(self.paintCMSelector.currentText())
-        self.xData = []
-        self.yData = []
-        if xIndex == yIndex: 
-            self.status.setText('X and Y data are the same, can\'t plot.')
-            return
-        
-        # prepare the graph
-        self.graph.setXaxisTitle(str(xIndex))
-        self.graph.setYLaxisTitle(str(yIndex))
-        self.graph.setShowXaxisTitle(True)
-        self.graph.setShowYLaxisTitle(True)
-        self.graph.clear()
-
-        # start to make the plot we need to move across all of the levels (though they may not be levels in the dict case) of the paintclass and plot those points.
-        if paintClass not in ['', ' ']:  # There are paintClass and we now need to find out what they are.
-            paintclasses = self.unique(self.data.getData()[paintClass]) # returns the unique items.
-            if len(paintclasses) > 50:
-                runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
-                if runMe == QMessageBox.No: return
-            pc = 0
-            self.paintLegend.insertHtml('<h5>Color Legend</h5>')
-            self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
-                
-            for pclass in paintclasses: # move across all of the paint classes.
-                index = []
-                for i, v in enumerate(self.data.getData()[paintClass]):
-                    if v == pclass:
-                        index.append(i)
-                ## form the list for the data
-                xData = []
-                yData = []
-                for i in index:
-                    xData.append(self.data.getData()[xIndex][i])
-                    yData.append(self.data.getData()[yIndex][i])
-                lColor = self.setColor(pc)
-                self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+str(pclass)+'</td></tr>')
-                self.graph.points("MyData", xData = xData, yData = yData, brushColor = pc, penColor=pc)
-                self.xData += xData
-                self.yData += yData
-                pc += 1
-            self.paintLegend.insertHtml('</table>')
-            
-        else:
-            self.xData = self.asNumeric(self.data.getData()[xIndex])
-            self.yData = self.asNumeric(self.data.getData()[yIndex])
-            self.graph.points("MyData", xData = self.xData, yData = self.yData, brushColor = 0, penColor = 0)
-        # make the plot
-        
-        
-        if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
-             
-            if type(min(self.xData)) in [int, float, long] and type(min(self.yData)) in [int, float, long]:
-                self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
-            else:
-                try:
-                    self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
-                except:
-                    self.status.setText('X or Y data not numeric, can not reset the zoom.')
-                    print type(min(self.xData)), min(self.xData)
-                    print type(min(self.yData)), min(self.yData)
-        self.graph.replot()
-        
-        
-        return
-        """
-        # populate the cm class columns
-        #cmSelector = str(self.subsetCMSelector.currentText())
-        #cmClass = str(self.subsetCMClass.currentText())
         xCol = str(self.xColumnSelector.currentText())
         yCol = str(self.yColumnSelector.currentText())
         paintClass = str(self.paintCMSelector.currentText())
@@ -219,118 +106,75 @@ from PyQt4.QtGui import *
         self.graph.setShowXaxisTitle(True)
         self.graph.setShowYLaxisTitle(True)
         self.graph.clear()
-        print paintClass
-        if paintClass not in ['', ' ']: # there is a paintclass selected so we should paint on the levels of the paintclass
-            self.paintLegend.clear()
-            subset = []
-            if paintClass in self.R('colnames('+self.data+')'): # the data comes from the parent data frame and not the cm
-                d = self.data
-                vectorClass = self.R('class('+self.data+'[,\''+paintClass+'\'])')
-                print vectorClass
-                if vectorClass in ['character']: 
-                    QMessageBox.information(self, 'Red-R Canvas','Class of the paint vector is not appropriate\nfor this widget.',  QMessageBox.Ok + QMessageBox.Default)
-                    print vectorClass
-                    return
-                    
-                elif vectorClass in ['numeric', 'integer']:
-                    levelType = 'numeric'
-                    levels = self.R('levels(as.factor('+self.data+'[,\''+paintClass+'\']))', wantType = 'list')
-                    if len(levels) > 50:
-                        runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
-                        if runMe == QMessageBox.No: return
-                        
-                    for level in levels:
-                        subset.append((level, self.data+'[,\''+paintClass+'\'] == '+level))
-                elif vectorClass in ['logical']:
-                    levelType = 'logical'
-                    levels = ['FALSE', 'TRUE']
-                    for level in levels:
-                        subset.append((level, '!is.na('+self.data+'$'+paintClass+') & '+self.data+'[,\''+paintClass+'\'] == '+level))
-                    subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
-                    levels.append('NA')
-                else:
-                    levelType = 'other'
-                    levels = self.R('levels(as.factor(na.omit('+self.data+'[,\''+paintClass+'\'])))', wantType = 'list')
-                    if len(levels) > 50:
-                        runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
-                        if runMe == QMessageBox.No: return
-                    for level in levels:
-                        subset.append((level, '!is.na('+self.data+'$'+paintClass+') & '+self.data+'[,\''+paintClass+'\'] == \''+level+'\''))
-                    subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
-                    levels.append('NA')
-            else: # we made it this far so the data must be in the cm
-                d = self.cm # be mindful that the cm is a list and should be subset as such
-                # in this case we need to subset on the rownames making groups that are either in or out of the set, so these cm's will only be 1 or 0
-                levels = self.R('names('+self.cm+'$'+paintClass+')', wantType = 'list')
-                for level in levels:
-                    levelType = 'cm'
-                    subset.append((level, '(rownames('+self.data+') %in% '+self.cm+'$'+paintClass+'$'+level+')'))
-                    
-            
-            
-            pc = 0
-            xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
-            yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
-            self.paintLegend.insertHtml('<h5>Color Legend</h5>')
-            self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
-            for (p, subset) in subset:
-                print p
-                # collect the color
-                if levelType not in ['logical', 'numeric', 'cm'] and p != 'NA':
-                    pc = self.R('match(\''+p+'\', levels(as.factor('+d+'[,\''+paintClass+'\'])))', silent = True)
-                elif levelType not in ['logical', 'numeric'] and p == 'NA':
-                    pc = 0
-                elif levelType in ['cm']:
-                    pc = self.R('match(\''+p+'\', names('+d+'$'+paintClass+'))')
-                lColor = self.setColor(pc)
-                self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
-                # generate the subset
-                # check if the column is a factor
-                print '|#| '+str(self.forceXNumeric.getChecked())
-                if xDataClass in ['factor'] and 'Force Numeric' not in self.forceXNumeric.getChecked():
-                    print 'Setting xData as factor'
-                    xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
-                else:
-                    xData = self.R('as.numeric('+self.data+'['+subset+',\''+str(xCol)+'\'])', wantType = 'list')
-                if yDataClass in ['factor'] and 'Force Numeric' not in self.forceYNumeric.getChecked():
-                    print 'Setting yData as factor'
-                    yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
-                else:
-                    yData = self.R('as.numeric('+self.data+'['+subset+',\''+str(yCol)+'\'])', wantType = 'list')
-                print xData
-                print yData
+        # there is a paintclass selected so we should paint on the levels of the paintclass
+        subset = []
+        d = self.data
+        self.paintLegend.clear()
+        if paintClass in self.R('colnames('+self.data+')'): 
+            self.R(self.Rvariables['paint'] + ' <-as.factor('+self.data+'[,\''+paintClass+'\'])')
+            levels = self.R('levels('+self.Rvariables['paint']+')', wantType = 'list')
+            #print vectorClass
+            if len(levels) > 50:
+                runMe = QMessageBox.information(None, 'RedRWarning', 'You are asking to paint on more than 50 colors.\nRed-R supports a limited number of colors in this plot widget.\nIt is unlikely that you will be able to interperte this data\nand plotting may take a very long time.\nAre you sure you want to plot this???', QMessageBox.Yes, QMessageBox.No)
+                if runMe == QMessageBox.No: return
                 
-                if len(xData) == 0 or len(yData) == 0:
-                    pc += 1
-                    continue
-                self.graph.points("MyData", xData = xData, yData = yData, brushColor = pc, penColor=pc)
-                self.xData += xData
-                self.yData += yData
-                pc += 1
-            self.paintLegend.insertHtml('</table>')
-        # make the plot
+            for level in levels:
+                subset.append((level, self.data+'[,\''+paintClass+'\'] == "'+level + '"'))
+
+            if self.R('sum(is.na('+self.data+'[,\''+paintClass+'\']))') > 0:
+                subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
+                levels.append('NA')
         else:
-            self.paintLegend.clear()
-            self.paintLegend.insertHtml('<h5>Color Legend</h5><table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
-            lColor = self.setColor(1)
-            self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor = \"'+lColor+'\">&nbsp;</td><td width = "75%">All</td></tr></table>')
-            xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
-            yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
-            # check if the column is a factor
-            if xDataClass in ['factor'] and 'Force Numeric' not in self.forceXNumeric.getChecked():
-                xData = self.R('match('+self.data+'[!is.na('+self.data+'$'+str(xCol)+'),\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list')
-            else:
-                xData = self.R(self.data+'[!is.na('+self.data+'$'+str(xCol)+'),\''+str(xCol)+'\']', wantType = 'list')
-            if yDataClass in ['factor'] and 'Force Numeric' not in self.forceYNumeric.getChecked():
-                yData = self.R('match('+self.data+'[!is.na('+self.data+'$'+str(yCol)+'),\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list')
-            else:
-                yData = self.R(self.data+'[!is.na('+self.data+'$'+str(yCol)+'),\''+str(yCol)+'\']', wantType = 'list')
+            self.R(self.Rvariables['paint']+'<-TRUE')
+            levels = ['ALL']
+            subset.append(('ALL','TRUE'))
             
-            self.graph.points("MyData", xData = xData, yData = yData)
+        pc = 0
+        xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
+        yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
+        self.paintLegend.insertHtml('<h5>Color Legend</h5>')
+        self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
+        for (p, subset) in subset:
+            print p
+            if p in ['NA','ALL']:
+                pc=0
+            else:
+                pc = levels.index(p)+1
+                
+            lColor = self.setColor(pc)
+            
+            self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor="'+lColor+'">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
+            # generate the subset
+            # check if the column is a factor
+            # print '|#| '+str(self.forceXNumeric.getChecked())
+            
+            # if xDataClass in ['factor'] and 'Force Numeric' not in self.forceXNumeric.getChecked():
+                # print 'Setting xData as factor'
+                # xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
+            # else:
+            xData = self.R('as.numeric('+self.data+'['+subset+',\''+str(xCol)+'\'])', wantType = 'list')
+
+            # if yDataClass in ['factor'] and 'Force Numeric' not in self.forceYNumeric.getChecked():
+                # print 'Setting yData as factor'
+                # yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
+            # else:
+            yData = self.R('as.numeric('+self.data+'['+subset+',\''+str(yCol)+'\'])', wantType = 'list')
+
+            # print xData
+            # print yData
+            
+            if len(xData) == 0 or len(yData) == 0: continue
+            self.graph.points("MyData", xData = xData, yData = yData, brushColor = pc, penColor=pc)
             self.xData += xData
             self.yData += yData
+        self.paintLegend.insertHtml('</table>')
+        
         ## make a fake call to the zoom to repaint the points and to add some interest to the graph
+        if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
+            self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+            
         self.graph.replot()
+        
     def asNumeric(self, listItems):
         ## convert a list to a numeric list
         newList = []
@@ -342,12 +186,28 @@ from PyQt4.QtGui import *
                 
         return newList
     def sendMe(self):
-        print 'asdfasdf' + self.dataParent.getDataParent()
-        print self.cm
-        data = rdf.RDataFrame(data = self.dataParent.getDataParent()+'[rownames('+self.dataParent.getDataParent()+') %in% '+self.cm+'$'+self.Rvariables['Plot']+'$True,]', parent = self.dataParent.getDataParent()) # data is sent forward relative to self parent as opposed to relative to the data that was recieved.  This makes the code much cleaner as recursive subsetting often generates NA's due to restriction.
+        xCol = str(self.xColumnSelector.currentText())
+        yCol = str(self.yColumnSelector.currentText())
+
+        xData = self.R('as.numeric('+self.data+'[,"'+str(xCol)+'"])', wantType = 'list')
+        yData = self.R('as.numeric('+self.data+'[,"'+str(yCol)+'"])', wantType = 'list')
+        
+        selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
+        print selected
+        print unselected
+        index = []
+        for x in selected:
+            if x ==1: index.append('T')
+            else: index.append('F')
+            
+        index = 'c('+','.join(index) + ')'
+        self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
+        
+        data = rdf.RDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
         data.copyAllOptionalData(self.dataParent)
         self.rSend('Scatterplot Output', data)
-        self.sendRefresh()
+        #self.sendRefresh()
+        
     def loadCustomSettings(self, settings = None):
         # custom function to replot the data that is in the scatterplot
         self.plot()
@@ -356,6 +216,12 @@ from PyQt4.QtGui import *
             self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
             self.sendRefresh()
     def setColor(self, colorint):
+        # import colorsys
+        # N = 50
+        # HSV_tuples = [(x*1.0/N, 0.5, 0.5) for x in range(N)]
+        # RGB_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), HSV_tuples)
+        # return RGB_tuples[colorint]
+        
         if colorint == 0 or colorint == 'FALSE':
             return '#000000'
         elif colorint == 1 or colorint == 'TRUE':
