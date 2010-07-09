@@ -10,6 +10,7 @@ import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RMatrix as rmat
 class cor(OWRpy): 
+    globalSettingsList = ['sendOnSelect']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, parent, signalManager, "Correlation", wantMainArea = 0, resizingEnabled = 1)
         self.setRvariableNames(["cor"])
@@ -36,8 +37,10 @@ class cor(OWRpy):
         buttons = ["all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
 
-        redRGUI.button(options, "Commit", callback = self.commitFunction)
-        
+        redRGUI.button(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
+        self.sendOnSelect = redRGUI.checkBox(options,buttons=['Calculate on data Input'], 
+        toolTips=['Calculate variance on data input.'])
+
         self.RoutputWindow = redRGUI.Rtable(area,sortable=True)
         
     def changeType(self):
@@ -57,17 +60,17 @@ class cor(OWRpy):
     def processy(self, data):
         if data:
             self.RFunctionParam_y=data.getData()
-            self.commitFunction()
+            if 'Calculate on data Input' in self.sendOnSelect.getChecked():
+                self.commitFunction()
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
             dims = self.R('dim('+self.RFunctionParam_x+')', silent = True, wantType = 'list')
-            # if dims[0] == 1 or dims[1] == 1:
-                # self.RFunctionParam_x = 'as.vector('+self.RFunctionParam_x+')'
-            self.commitFunction()
+            if 'Calculate on data Input' in self.sendOnSelect.getChecked():
+                self.commitFunction()
             
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': 
+        if not self.RFunctionParam_x: 
             self.status.setText('X data is missing')
             return
 
