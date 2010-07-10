@@ -16,7 +16,6 @@ import redRHistory
 from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, orngHistory, zipfile
 import pprint, urllib
-import redRGUI
 pp = pprint.PrettyPrinter(indent=4)
 
 class SchemaDoc(QWidget):
@@ -42,8 +41,6 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
-        self.searchBox = redRGUI.SearchDialog()
-        self.searchBox.hide()
    
 
 
@@ -87,10 +84,10 @@ class SchemaDoc(QWidget):
                 QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
             if mb.exec_() == QMessageBox.Ok:
                 ## go to the website and see if there are templates with the widgets in question
-                self.searchBox.show()
+                import webbrowser
                 url = 'http://www.red-r.org/?s='+outWidget.widgetInfo.name+'+'+inWidget.widgetInfo.name
                 print url
-                self.searchBox.updateUrl(url)
+                webbrowser.open(url)
                 
             
             return None

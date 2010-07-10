@@ -11,6 +11,7 @@ import redRGUI
 import libraries.base.signalClasses.RVector as rvec
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RModelFit as rmf
+import libraries.plotting.signalClasses as plotting
 class spline(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,8 +20,8 @@ class spline(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", rvec.RVector, self.processy),("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("spline Output", rmf.RModelFit), ('spline plot attribute', signals.plotting.RPlotAttribute)]
+        self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
+        self.outputs = [("spline Output", rmf.RModelFit), ('spline plot attribute', plotting.RPlotAttribute.RPlotAttribute)]
         
         self.standardTab = redRGUI.groupBox(self.controlArea, label = 'Parameters')
         self.RFunctionParamxmin_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
@@ -96,5 +97,5 @@ class spline(OWRpy):
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("spline Output", newData)
         
-        newLine = signals.plotting.RPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
+        newLine = plotting.RPlotAttribute.RPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
         self.rSend('spline plot attribute', newLine)

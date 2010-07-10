@@ -9,7 +9,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rvec
+import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RModelFit as rmf
 class prcomp(OWRpy): 
