@@ -364,39 +364,20 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         return self.selected
 
     def setSelected(self, selected):
-        
-        #self.repaintWidget()
-        # if not self.selected: ## if the item wasn't selected already we need to do this, otherwies the item is already selected so there is no point in reinitializing the ghost widgets.
-            # if selected:
-                
-                # print 'Setting widget to selected'
-                # print 'Searching for Ghost Widgets'
-                # self.ghostWidgets = self.canvasDlg.schema.addGhostWidgetsForWidget(self)
-                # print 'My ghost widgets are ', self.ghostWidgets
-            # elif self.ghostWidgets != None:
-                # print 'Setting widget to unselected', self.widgetInfo.fileName
-                # print 'Ghost widgets', self.ghostWidgets
-                # for widget in self.ghostWidgets:
-                    # print widget.widgetInfo.fileName, widget.ghost
-                    # if widget.ghost:
-                        # self.canvasDlg.schema.killGhost(widget)
-        # elif self.ghostWidgets != None:
-            # for widget in self.ghostWidgets:
-                # print widget.widgetInfo.fileName, widget.ghost
-                # if widget.ghost:
-                    # self.canvasDlg.schema.killGhost(widget)
-                    
-        self.canvasDlg.tabs.suggestButtonsList.clear()
-        newActions = self.canvasDlg.schema.getSuggestWidgets(self)
-        if len(newActions) > 0:
-            self.canvasDlg.tabs.suggestButtonsList.show()
-            self.canvasDlg.tabs.suggestButtonsList.addTopLevelItems(newActions)
-            self.canvasDlg.tabs.suggestButtonsList.suggestingWidget = self
-            self.canvasDlg.tabs.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+str(self.widgetInfo.name)])
-        else:
-            self.canvasDlg.tabs.suggestButtonsList.hide()
-        
         self.selected = selected
+        self.canvasDlg.tabs.suggestButtonsList.hide()
+        if self.selected:
+            self.canvasDlg.tabs.suggestButtonsList.clear()
+            newActions = self.canvasDlg.schema.getSuggestWidgets(self)
+            if len(newActions) > 0:
+                self.canvasDlg.tabs.suggestButtonsList.show()
+                self.canvasDlg.tabs.suggestButtonsList.addTopLevelItems(newActions)
+                self.canvasDlg.tabs.suggestButtonsList.suggestingWidget = self
+                self.canvasDlg.tabs.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+str(self.widgetInfo.name)])
+            else:
+                self.canvasDlg.tabs.suggestButtonsList.hide()
+            
+        
     # set coordinates of the widget
     def setCoords(self, x, y):
         if redREnviron.settings["snapToGrid"]:

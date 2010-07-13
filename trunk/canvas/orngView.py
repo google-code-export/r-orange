@@ -207,12 +207,12 @@ class SchemaView(QGraphicsView):
                 self.tempWidget = activeItem
 
                 ## if it was a ghost widget we need to do something
-                print type(self.tempWidget)
+                # print type(self.tempWidget)
                 
-                if isinstance(self.tempWidget, orngCanvasItems.GhostWidget) and self.tempWidget.ghost:
-                    self.tempWidget.convertToCanvasWidget()
+                # if isinstance(self.tempWidget, orngCanvasItems.GhostWidget) and self.tempWidget.ghost:
+                    # self.tempWidget.convertToCanvasWidget()
                 # did we click inside the boxes to draw connections
-                elif ev.button() == Qt.LeftButton:
+                if ev.button() == Qt.LeftButton:
                     self.bWidgetDragging = True
                     if self.doc.ctrlPressed:
                         activeItem.setSelected(not activeItem.isSelected())
