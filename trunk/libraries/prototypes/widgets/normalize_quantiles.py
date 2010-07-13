@@ -8,7 +8,7 @@ import redRGUI
 class normalize_quantiles(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "NormalizeQuantiles", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["normalize.quantiles"])
         self.RFunctionParam_x = ""
         self.RFunctionParam_copy = "TRUE"

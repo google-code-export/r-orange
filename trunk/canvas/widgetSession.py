@@ -314,7 +314,7 @@ class widgetSession():
             try:
                 settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
             except:
-                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self.captionTitle)
+                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
         #print '%s' % str(settings)
         if settings:
             #settingsID = self.sqlite.saveObject(settings)

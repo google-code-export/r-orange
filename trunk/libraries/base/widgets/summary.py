@@ -13,7 +13,7 @@ import libraries.base.signalClasses as signals
 class summary(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Summary", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["summary"])
         self.data = {}
          

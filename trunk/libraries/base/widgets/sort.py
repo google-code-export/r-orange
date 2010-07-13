@@ -11,7 +11,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class sort(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Sort", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["sort"])
         self.data = {}
          

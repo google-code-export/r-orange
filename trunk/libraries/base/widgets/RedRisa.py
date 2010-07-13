@@ -12,7 +12,7 @@ import libraries.base.signalClasses.RModelFit as rmf
 class RedRisa(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "isa", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.setRvariableNames(["isa"])
 		self.data = {}
 		self.RFunctionParam_data = ''

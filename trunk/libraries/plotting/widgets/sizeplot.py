@@ -11,7 +11,7 @@ import libraries.base.signalClasses.RVector as rvec
 class sizeplot(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "sizeplot", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.RFunctionParam_y = ''
 		self.RFunctionParam_x = ''
 		self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]

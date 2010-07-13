@@ -11,7 +11,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class classCoordinator(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Class Coordinator", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         
         self.setRvariableNames(["cm"])
         self.inputs = [('In Data', rdf.RDataFrame, self.gotData)]

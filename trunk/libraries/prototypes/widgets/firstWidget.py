@@ -15,7 +15,7 @@ class firstWidget(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
         #must initalize the parent OWRpy class
-        OWRpy.__init__(self, parent, signalManager, "firstWidget")
+        OWRpy.__init__(self)
         
         ### GUI ###
         #create input line

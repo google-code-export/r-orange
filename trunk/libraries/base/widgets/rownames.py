@@ -12,7 +12,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as rvec
 class rownames(OWRpy): 
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Rownames", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["rownames"])
         self.data = {}
          

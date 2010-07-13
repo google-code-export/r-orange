@@ -42,13 +42,14 @@ class widgetGUI(QMainWindow):
             wantGraph - displays a save graph button or not
         """
 
-        if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
-        else:               QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
+        # if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
+        # else:               
+        QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
 
         # directories are better defined this way, otherwise .ini files get written in many places
         #self.__dict__.update(redREnviron.directoryNames)
 
-        self.setCaption(title.replace("&","")) # used for widget caption
+        # self.setCaption(title.replace("&","")) # used for widget caption
 
 
         self.progressBarHandler = None  # handler for progress bar events
@@ -368,13 +369,12 @@ class widgetGUI(QMainWindow):
         
 
 
-    def setCaption(self, caption):
+    # def setCaption(self, caption):
         # if self.parent != None and isinstance(self.parent, QTabWidget):
             # self.parent.setTabText(self.parent.indexOf(self), caption)
         # else:
-        self.captionTitle = caption     # we have to save caption title in case progressbar will change it
-        self.setWindowTitle(caption)
-
+        # self.captionTitle = caption     # we have to save caption title in case progressbar will change it
+        # self.setWindowTitle(caption)
 
     def setWidgetStateHandler(self, handler):
         self.widgetStateHandler = handler

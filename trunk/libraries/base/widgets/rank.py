@@ -14,7 +14,7 @@ import libraries.base.signalClasses.RMatrix as rmat
 class rank(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Rank", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["rank"])
         self.RFunctionParam_ties_method = ''
         #self.RFunctionParam_na_last = "TRUE"

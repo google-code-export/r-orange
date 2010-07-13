@@ -35,7 +35,7 @@ class cor(OWRpy):
     # Here you put all the code that will run as soon as the widget is put on the canvas
     def __init__(self, parent=None, signalManager=None):
         #Here we init the parent class of our widget OWRpy.
-        OWRpy.__init__(self, parent, signalManager, "Correlation", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         
         #create a R variable cor in the R session.
         #the cor variable will not conflict with some other widgets cor function

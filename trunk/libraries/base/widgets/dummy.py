@@ -11,7 +11,7 @@ import OWGUI
 class dummy(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
-        OWRpy.__init__(self, parent, signalManager, "Dummy Widget", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.inputs = []
         self.outputs = []
         print str(forceInSignals) +' and ' + str(forceOutSignals) + ' appending to dummy'

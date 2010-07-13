@@ -14,7 +14,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class t(OWRpy): 
     settingsList = ['sentItems']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Transpose", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["t"])
         self.RFunctionParam_x = ''
         self.data={}

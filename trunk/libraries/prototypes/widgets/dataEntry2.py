@@ -13,7 +13,7 @@ from OWRpy import *
 class dataEntry2(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Data Entry2", wantGUIDialog = 1, wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self, wantGUIDialog = 1)
 
         self.rowCount = 1
         self.colCount = 1

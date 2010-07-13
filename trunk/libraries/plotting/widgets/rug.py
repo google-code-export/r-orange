@@ -12,7 +12,7 @@ import libraries.plotting.signalClasses.RPlotAttribute as rpa
 class rug(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "rug", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.setRvariableNames(["rug"])
 		self.data = {}
 		self.RFunctionParam_x = ''

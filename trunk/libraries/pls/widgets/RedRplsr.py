@@ -15,7 +15,7 @@ import libraries.base.signalClasses as signals
 class RedRplsr(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "plsr", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["plsr"])
         self.data = {}
         self.RFunctionParam_data = ''

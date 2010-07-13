@@ -14,7 +14,7 @@ import libraries.base.signalClasses as signals
 class RedRstrsplit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "strsplit", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["strsplit"])
         self.data = {}
         self.RFunctionParam_x = ''

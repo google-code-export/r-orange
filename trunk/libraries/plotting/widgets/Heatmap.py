@@ -14,7 +14,7 @@ import libraries.base.signalClasses.RList as rlist
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Heatmap", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         
         self.setRvariableNames(['heatsubset', 'hclust'])
         self.plotOnConnect = 0

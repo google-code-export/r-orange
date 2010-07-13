@@ -13,7 +13,7 @@ import libraries.base.signalClasses as signals
 class RedRscale(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "scale", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["scale"])
         self.data = {}
         self.RFunctionParam_x = ''

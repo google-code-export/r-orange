@@ -15,7 +15,7 @@ import libraries.plotting.signalClasses as plotting
 class spline(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "spline", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["spline"])
         self.data = {}
         self.RFunctionParam_y = ''

@@ -11,7 +11,7 @@ import libraries.base.signalClasses as signals
 class RedReigen(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "eigen", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["eigen"])
         self.data = {}
         self.RFunctionParam_x = ''

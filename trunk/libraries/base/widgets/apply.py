@@ -15,7 +15,7 @@ import libraries.base.signalClasses.RVector as rvec
 class apply(OWRpy): 
         globalSettingsList = ['functions']
         def __init__(self, parent=None, signalManager=None):
-            OWRpy.__init__(self, parent, signalManager, "Apply", wantMainArea = 0, resizingEnabled = 1)
+            OWRpy.__init__(self)
             self.setRvariableNames(["apply"])
             self.data = {}
              

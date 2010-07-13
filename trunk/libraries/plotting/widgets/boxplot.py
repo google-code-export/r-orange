@@ -12,7 +12,7 @@ import libraries.base.signalClasses.RList as rlist
 class boxplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "BoxPlot", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.RFunctionParam_x = ''
         self.inputs = [("x", rlist.RList, self.processx)]
         

@@ -13,7 +13,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class mergeR(OWRpy):
     settingsList = ['dataA','dataB','colAsel', 'colBsel']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Merge Data")
+        OWRpy.__init__(self)
         #self.setStateVariables(['dataA','dataB','colAsel', 'colBsel'])
         
         self.dataParentA = {}

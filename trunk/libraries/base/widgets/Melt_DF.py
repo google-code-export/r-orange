@@ -12,7 +12,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class Melt_DF(OWRpy): 
     settingsList = ['RFunctionParam_data']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "MeltDF", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}

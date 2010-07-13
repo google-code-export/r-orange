@@ -11,7 +11,7 @@ import libraries.plotting.signalClasses.RPlotAttribute as rpa
 class arrows(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "arrows", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["arrows"])
         self.data = {}
         self.outputs = [("arrows Output", rpa.RPlotAttribute)]

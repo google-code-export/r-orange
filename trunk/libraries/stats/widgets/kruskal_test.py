@@ -13,7 +13,7 @@ import libraries.base.signalClasses.RVariable as rvar
 class kruskal_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Kruskal Test", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
          
         self.RFunctionParam_data = ''
         self.inputs = [("data", rvar.RVariable, self.processdata)]

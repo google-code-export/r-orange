@@ -14,7 +14,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class lm(OWRpy): 
     settingsList = ['RFunctionParam_data', 'RFunctionParam_formula', 'modelFormula', 'sentItems']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "LM", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
+        OWRpy.__init__(self, wantGUIDialog = 1)
         self.setRvariableNames(["lm"])
         self.RFunctionParam_formula = ""
         self.RFunctionParam_data = ''

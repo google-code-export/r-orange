@@ -15,7 +15,7 @@ import libraries.base.signalClasses as signals
 class RedRRMSEP(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "RMSEP", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.setRvariableNames(["RMSEP"])
 		self.data = {}
 		self.RFunctionParam_object = ''

@@ -13,7 +13,7 @@ import libraries.stats.signalClasses.RLMFit as rlm
 class anova_lm(OWRpy): 
     settingsList = ['RFunctionParam_object']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Anova LM", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.RFunctionParam_object = ''
         self.saveSettingsList.extend(['RFunctionParam_object'])
         self.inputs = [("object", rlm.RLMFit, self.processobject)]

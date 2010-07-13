@@ -13,7 +13,7 @@ import libraries.base.signalClasses as signals
 class RedRplot_mvr(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "plot_mvr", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.RFunctionParam_x = ''
 		self.inputs = [("x", signals.RModelFit.RModelFit, self.processx)]
 		

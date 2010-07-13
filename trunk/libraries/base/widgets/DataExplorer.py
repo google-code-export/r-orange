@@ -18,7 +18,7 @@ import libraries.base.signalClasses.RVector as RVector
 class DataExplorer(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager = None):
-        OWRpy.__init__(self, parent, signalManager, "Data Explorer", wantMainArea = 0)
+        OWRpy.__init__(self)
         
         self.data = None
         self.orriginalData = '' # a holder for data that we get from a connection

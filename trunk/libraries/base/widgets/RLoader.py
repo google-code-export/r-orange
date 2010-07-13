@@ -6,8 +6,6 @@
 <RFunctions>base:new.env,base:load</RFunctions>
 <icon>rexecutor.png</icon>
 <priority>10</priority>
-<inputWidgets></inputWidgets>
-<outputWidgets>base_RVarSeparator</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI
@@ -17,7 +15,7 @@ class RLoader(OWRpy):
     globalSettingsList = ['filecombo','path']
 
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self,parent, signalManager, "RLoader", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.inputs = None
         self.outputs = [('R Session', renv.REnvironment)]
         print os.path.abspath('/')

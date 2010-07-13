@@ -11,7 +11,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class bumpchart(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "bumpchart", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.RFunctionParam_y = ''
         self.inputs = [("y", rdf.RDataFrame, self.processy)]
         

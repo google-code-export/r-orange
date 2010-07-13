@@ -15,7 +15,7 @@ import libraries.base.signalClasses.RMatrix as rmat
 class na_omit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "NA Omit", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["na.omit"])
         self.data = {}
          

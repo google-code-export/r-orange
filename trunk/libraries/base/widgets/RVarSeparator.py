@@ -19,7 +19,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 class RVarSeparator(OWRpy): 
     globalSettingsList = ['sendOnSelect']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self,parent, signalManager, "RVarSeparator", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
        
         self.inputs = [('R Session', renv.REnvironment, self.process)]
         self.outputs = [('R Session', renv.REnvironment), ('R.object', rvar.RVariable), 

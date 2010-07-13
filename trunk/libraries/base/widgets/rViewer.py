@@ -12,7 +12,7 @@ import libraries.base.signalClasses.RVariable as rvar
 class rViewer(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "RViewer", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         
         self.RFunctionParam_data = None
         

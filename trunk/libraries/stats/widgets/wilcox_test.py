@@ -15,7 +15,7 @@ import libraries.base.signalClasses.RVector as rvec
 class wilcox_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Wilcox Test", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["wilcox.test"])
          
         self.RFunctionParam_x = ''

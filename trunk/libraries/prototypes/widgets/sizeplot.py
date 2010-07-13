@@ -10,7 +10,7 @@ import redRGUI
 class sizeplot(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "sizeplot", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.RFunctionParam_y = ''
 		self.RFunctionParam_x = ''
 		self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]

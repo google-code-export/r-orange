@@ -11,7 +11,7 @@ import libraries.base.signalClasses.RModelFit as rmf
 class inspectR(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "inspect", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.RFunctionParam_mymodel = ''
 		self.inputs = [("mymodel", rmf.RModelFit, self.processmymodel)]
 		

@@ -16,7 +16,7 @@ import libraries.plotting.signalClasses.RPlotAttribute as rplt
 class plot(OWRpy): 
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "Generic Plot", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.data = None
         self.RFunctionParam_x = ''
         self.plotAttributes = {}

@@ -14,15 +14,14 @@ import rpy
 class OWRpy(widgetSignals,widgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
     globalRHistory = []
-    def __init__(self,parent=None, signalManager=None, 
-    title="R Widget", wantGUIDialog = 0, **args):
+    def __init__(self,wantGUIDialog = 0):
         
-        widgetSignals.__init__(self, parent, signalManager)
+        widgetSignals.__init__(self, None, None)
         self.dontSaveList = self.__dict__.keys()
         #print self.dontSaveList
 
-        widgetGUI.__init__(self, parent=parent, signalManager=signalManager, title=title,
-        wantGUIDialog=wantGUIDialog, **args)
+        widgetGUI.__init__(self, parent=None, signalManager=None, title=None,
+        wantGUIDialog=wantGUIDialog)
         self.dontSaveList = self.__dict__.keys()
         for x in ['status','notes','ROutput','widgetState']: self.dontSaveList.remove(x)
         

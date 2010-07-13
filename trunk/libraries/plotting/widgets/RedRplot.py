@@ -14,7 +14,7 @@ import libraries.plotting.signalClasses as plotSignals
 class RedRplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "plot", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.plotAttributes = {}

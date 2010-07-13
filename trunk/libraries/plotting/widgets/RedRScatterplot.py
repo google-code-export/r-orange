@@ -16,10 +16,9 @@ from PyQt4.QtGui import *
 ### currently depricated until fixed
 class RedRScatterplot(OWRpy):
     
-    globalSettingsList = ['recentFiles']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,parent, signalManager, "RedR Scatterplot", wantMainArea = 0, resizingEnabled = 1, wantGUIDialog = 1)
+        OWRpy.__init__(self,wantGUIDialog = 1)
         self.setRvariableNames(['Plot','paint','selected'])
         self.inputs = [('x', rdf.RDataFrame, self.gotX)]
         self.outputs = [('Scatterplot Output', rdf.RDataFrame)]

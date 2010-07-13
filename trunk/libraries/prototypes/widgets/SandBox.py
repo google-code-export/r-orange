@@ -15,7 +15,7 @@ from libraries.conversion.signalClasses import *
 
 class SandBox(OWRpy):
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "sandBox")
+        OWRpy.__init__(self)
         self.lineEditText = ''
         
         ### GUI ###

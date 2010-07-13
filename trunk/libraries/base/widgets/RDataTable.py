@@ -26,7 +26,7 @@ class RDataTable(OWRpy):
     #settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
 
     def __init__(self, parent=None, signalManager = None):
-        OWRpy.__init__(self, parent, signalManager, "Data Table", wantGUIDialog = 1, wantMainArea = 0)
+        OWRpy.__init__(self, wantGUIDialog = 1)
         #OWRpy.__init__(self)
         
         self.inputs = [("Rectangular Data", rdf.RDataFrame, self.dataset)]
