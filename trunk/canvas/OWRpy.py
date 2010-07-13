@@ -53,6 +53,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
             self.RvariablesNames.append(x)
+            
     def makeCM(self, Variable):
         self.R(Variable+'<-list()')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):
@@ -96,10 +97,6 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         qApp.restoreOverrideCursor()
         return commandOutput
    
-    def escape(self, html):
-        """Returns the given HTML with ampersands, quotes and carets encoded."""
-        return unicode(html).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
-    
     def assignR(self, name, object):
         assignOK = RSession.assign(name, object)
         if not assignOK:
@@ -108,8 +105,11 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             raise Exception, 'Object was not assigned correctly in R, please tell package manager.'
         else:
             histquery = 'Assign '+str(name)+' to '+str(object)
+            OWRpy.globalRHistory.append(histquery)
+            self.widgetRHistory.append(histquery)
+
             self.ROutput.setCursorToEnd()
-            self.ROutput.insertHtml('> '+ self.escape(histquery))
+            self.ROutput.append('> '+ histquery)
 
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
         #print str(redREnviron.settings)

@@ -3,8 +3,7 @@
 <description>Merges or subsets two datasets depending on options.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>base:match,base:merge</RFunctions>
-<icon>merge.png</icon>
-<priority>2030</priority>
+<icon>merge2.png</icon>
 """
 
 from OWRpy import *

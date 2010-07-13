@@ -151,7 +151,7 @@ class readFile(OWRpy):
         self.delimiter.setChecked('Other')
         
     def loadCustomSettings(self,settings):
-        print 'loadCustomSettings readfile'
+        # print 'loadCustomSettings readfile'
         for i in range(len(self.myColClasses)):
             s = redRGUI.radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
@@ -205,7 +205,7 @@ class readFile(OWRpy):
 
         self.myColClasses = []
         for i in self.dataTypes:
-            self.myColClasses.append(str(i[1].currentText()))
+            self.myColClasses.append(str(i[1].getChecked()))
         # print 'colClasses' , self.colClasses
         self.loadFile(scan=True)
     def scanFile(self):
@@ -335,10 +335,10 @@ class readFile(OWRpy):
                 else:
                     s.addButton(str(v))
                     s.setChecked(str(v))
-                s.setMinimumWidth(100)
-                q = redRGUI.widgetLabel(self.columnTypes,label=i)
+                label = redRGUI.widgetLabel(self.columnTypes,label=i)
+                self.columnTypes.layout().addWidget(label,k,0)
                 self.columnTypes.layout().addWidget(s,k,1)
-                self.columnTypes.layout().addWidget(q,k,0)
+                
                 self.dataTypes.append([i,s])
             
           

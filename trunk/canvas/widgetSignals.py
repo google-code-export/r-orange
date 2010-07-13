@@ -221,7 +221,6 @@ class widgetSignals():
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
-                        
                         for (oldValue, id, nameFrom) in signalData:
                             if oldValue == None:
                                 value = oldValue
@@ -243,15 +242,11 @@ class widgetSignals():
                                     value = oldValue ## send self with no conversion
                             if self.signalIsOnlySingleConnection(key):
                                 self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
-                                if not self.loadSavedSession:
-                                    # print 'process handler'
-                                    handler(value)
+                                handler(value)
                                 
                             else:
                                 self.printEvent("ProcessSignals: Calling %s with %s (%s, %s)" % (handler, value, nameFrom, id), eventVerbosity = 2)
-                                if not self.loadSavedSession:
-                                    # print 'process handler'
-                                    handler(value, (widgetFrom, nameFrom, id))
+                                handler(value, (widgetFrom, nameFrom, id))
                             
                     except:
                         thistype, val, traceback = sys.exc_info()
@@ -259,8 +254,7 @@ class widgetSignals():
                         sys.excepthook(thistype, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 
-                    if not self.loadSavedSession:
-                        self.linksIn[key][i] = (0, widgetFrom, handler, []) # clear the dirty flag
+                    self.linksIn[key][i] = (0, widgetFrom, handler, []) # clear the dirty flag
 
         if newSignal == 1:
             self.handleNewSignals()

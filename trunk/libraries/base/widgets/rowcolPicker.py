@@ -4,7 +4,7 @@
 <tags>Subsetting</tags>
 <author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
 <RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
-<icon>Subset.png</icon>
+<icon>subset2.png</icon>
 """
 
 from OWRpy import *

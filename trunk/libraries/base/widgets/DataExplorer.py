@@ -3,8 +3,7 @@
 <description>Shows data in a spreadsheet.  The data can be subset and passed to other widgets.</description>
 <tags>Data Visualization, Subsetting</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
-<icon>datatable.png</icon>
-<priority>1010</priority>
+<icon>filter.png</icon>
 <author>Kyle R Covington and Anup Parikh</author>
 """
 

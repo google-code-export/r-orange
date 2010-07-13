@@ -37,7 +37,6 @@ class radioButtons(widgetBox,widgetState):
             w.setToolTip(toolTip)
         self.buttons.addButton(w)
         self.box.layout().addWidget(w)
-        
     def setChecked(self,id):
         for i in self.buttons.buttons():
             if i.text() == id: i.setChecked(True)
