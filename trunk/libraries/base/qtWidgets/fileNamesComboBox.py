@@ -24,7 +24,7 @@ class fileNamesComboBox(comboBox):
         
     def loadSettings(self,data):
         # print 'in comboBox load'
-        print data
+        # print data
         try:
             self.clear()
             self.files = [unicode(i) for i in data['files']]
@@ -43,9 +43,13 @@ class fileNamesComboBox(comboBox):
     def setFileList(self):
         if self.files == None: self.files = ['Select File']
         self.clear()
+        # print self.files
         for file in self.files:
             if os.path.exists(file) or file =='Select File':
                 self.addItem(os.path.basename(file))
+            else:
+                self.files.remove(file)
+        
         if len(self.files) > 1:
             self.setCurrentIndex(1)
         else:

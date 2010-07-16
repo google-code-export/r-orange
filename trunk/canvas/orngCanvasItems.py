@@ -173,6 +173,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             else: self.instance.__init__(signalManager = signalManager)
             
             #print widgetSettings
+            self.instance.loadGlobalSettings()
             if widgetSettings:
                 self.instance.setSettings(widgetSettings)
                 if '_customSettings' in widgetSettings.keys():
@@ -180,7 +181,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 else:
                     self.instance.loadCustomSettings(widgetSettings)
 
-            self.instance.loadGlobalSettings()
+            
             self.instance.ghost = False
             self.instance.setProgressBarHandler(view.progressBarHandler)   # set progress bar event handler
             self.instance.setProcessingHandler(view.processingHandler)
