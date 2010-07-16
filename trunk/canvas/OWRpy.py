@@ -20,8 +20,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.dontSaveList = self.__dict__.keys()
         #print self.dontSaveList
 
-        widgetGUI.__init__(self, parent=None, signalManager=None, title=None,
-        wantGUIDialog=wantGUIDialog)
+        widgetGUI.__init__(self, parent=None, signalManager=None, title=None, wantGUIDialog=wantGUIDialog)
         self.dontSaveList = self.__dict__.keys()
         for x in ['status','notes','ROutput','widgetState']: self.dontSaveList.remove(x)
         

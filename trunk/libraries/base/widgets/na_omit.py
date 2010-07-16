@@ -20,7 +20,7 @@ class na_omit(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs = [("object", signals.RVariable, self.processobject)]
+        self.inputs = [("object", rvar.RVariable, self.processobject)]
         self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector), ('R.object', rvar.RVariable)]
         
         box = redRGUI.tabWidget(self.controlArea)

@@ -42,16 +42,17 @@ class widgetGUI(QMainWindow):
             wantGraph - displays a save graph button or not
         """
 
-        # if resizingEnabled: QMainWindow.__init__(self, parent, Qt.Window)
+        # if resizingEnabled: 
+        QMainWindow.__init__(self, parent, Qt.Window)
         # else:               
-        QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
+        #QMainWindow.__init__(self, parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)# | Qt.WindowMinimizeButtonHint)
 
         # directories are better defined this way, otherwise .ini files get written in many places
         #self.__dict__.update(redREnviron.directoryNames)
 
         # self.setCaption(title.replace("&","")) # used for widget caption
 
-
+        self.captionTitle = self._widgetInfo.widgetName
         self.progressBarHandler = None  # handler for progress bar events
         self.processingHandler = None   # handler for processing events
 
