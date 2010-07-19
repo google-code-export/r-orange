@@ -258,7 +258,7 @@ def readTemplates(directory):
         
     return templates
 def loadPackage(package):
-    print package
+    # print package
     downloadList = {}
     downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
     deps = redRPackageManager.packageManager.getDependencies(downloadList)

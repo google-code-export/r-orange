@@ -32,7 +32,7 @@ class rowcolPicker(OWRpy):
         area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
         options = redRGUI.widgetBox(area, orientation = 'vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
-
+        self.selectOutputCheckbox = redRGUI.checkBox(options, label = 'Send Output Where Selection Is:', buttons = ['True', 'False'], setChecked = 'True')
         info = redRGUI.widgetBox(options)
         self.infoBox = redRGUI.widgetLabel(info)
         redRGUI.separator(info,height=4)
@@ -83,7 +83,32 @@ class rowcolPicker(OWRpy):
         else: #by exclusion we haven't picked anything yet
             self.status.setText('You must select either Row or Column to procede')
         
-
+    def subOnAttached(self):
+        if self.data == None or self.data == '': return
+                
+        col=str(self.subsetColumn.currentText())
+        
+        if self.rowcolBox.getChecked() == 'Row':
+            if 'True' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[,"'+col+'"],]')
+                newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+                self.rSend('Data Table', newData)
+            if 'False' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[,"'+col+'"],]')
+                newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                self.rSend('Not Data Table', newDataNot)
+        elif self.rowcolBox.getChecked() == 'Column':
+            if 'True' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,colnames('+self.data+')'+
+            ' %in% '+self.ssv+'[,'+col+']]')
+                newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+                self.rSend('Data Table', newData)
+            if 'False' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+
+            ' %in% '+self.ssv+'[,'+col+']]')
+                newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                self.rSend('Not Data Table', newDataNot)
+        
     def subset(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None or self.data == '': return
         
@@ -92,28 +117,39 @@ class rowcolPicker(OWRpy):
             selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
-            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])')
+            if 'True' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
+                newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+                self.rSend('Data Table', newData)
+            if 'False' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])')
+                newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                self.rSend('Not Data Table', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
-            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
+            if 'True' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
+                newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+                self.rSend('Data Table', newData)
+            if 'False' in self.selectOutputCheckbox.getChecked():
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
+                newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                self.rSend('Not Data Table', newDataNot)
+        # if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
+            # self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
+            # newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+            # self.rSend('Reduced Vector', newVector)
             
-        if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
-            self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
-            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
-            self.rSend('Reduced Vector', newVector)
-            
-        if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
-            self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))')
-            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
-            self.rSend('Not Reduced Vector', newVector)
+        # if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
+            # self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))')
+            # newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
+            # self.rSend('Not Reduced Vector', newVector)
             
         
-        newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
-        self.rSend('Data Table', newData)
+        # newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        # self.rSend('Data Table', newData)
 
-        newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
-        self.rSend('Not Data Table', newDataNot)
+        # newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        # self.rSend('Not Data Table', newDataNot)
                 
         
         # self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')

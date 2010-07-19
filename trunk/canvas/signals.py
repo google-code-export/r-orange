@@ -83,8 +83,8 @@ def registerRedRSignals():
     # if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
         # and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))): ## check that the package is really a package, if not then ignore.
             # continue
-    # print 'registerRedRSignals is depricated'
-    # return
+    #print 'registerRedRSignals is depricated'
+    return
     import imp, sys
     for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
         if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
