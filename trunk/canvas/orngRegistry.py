@@ -5,7 +5,8 @@ import os, sys, re, glob, stat
 from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import redRGUI, orngOutput,redRPackageManager
+print 'Importing orngRegistry.py'
+import orngOutput, redRGUI,redRPackageManager
 import signals
 import xml.dom.minidom
 

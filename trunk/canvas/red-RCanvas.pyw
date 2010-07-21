@@ -8,9 +8,9 @@ import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redREnviron
-
+import orngOutput
 import orngRegistry, OWGUI
-import orngTabs, orngDoc, orngDlgs, orngOutput, orngHelp, OWReport
+import orngTabs, orngDoc, orngDlgs, orngHelp, OWReport
 import redRPackageManager, redRGUI,signals, redRInitWizard
 
 class OrangeCanvasDlg(QMainWindow):
@@ -201,6 +201,7 @@ class OrangeCanvasDlg(QMainWindow):
         
     def createWidgetsToolbar(self):
         orngTabs.constructCategoriesPopup(self)
+        print 'Step 3a'
         float = False
         if self.widgetsToolBar:
             if self.widgetsToolBar.isFloating():
@@ -210,12 +211,12 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
             self.removeDockWidget(self.widgetsToolBar)
 
-            
+        print 'Step 3b'    
         self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
         self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         self.widgetsToolBar.setFloating(float)
-
+        print 'Step 3c'
         redREnviron.settings["WidgetTabs"] = self.tabs.createWidgetTabs(redREnviron.settings["WidgetTabs"], self.widgetRegistry, redREnviron.directoryNames['widgetDir'], redREnviron.directoryNames['picsDir'], self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
         

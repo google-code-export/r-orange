@@ -1,7 +1,9 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import math, glob, orngOutput
+import math, glob 
+print 'Importing in redRGUI'
 import redREnviron
+import orngOutput
 from numpy import *
 import os.path
 import imp
@@ -53,8 +55,11 @@ def registerQTWidgets():
                 setattr(m, guiClass,c)
             setattr(current_module,package,m)
         except:
-            orngOutput.printException()    
-
+            print 'Exception Ocurred'
+            try:
+                orngOutput.printException()    
+            except:
+                print 'printException failed in orngOutput.py'
 
 for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'] + '/base/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):

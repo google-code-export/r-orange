@@ -2,7 +2,7 @@
 import os, sys, user, cPickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+print 'Importing redREnviron.py'
 def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
     try:

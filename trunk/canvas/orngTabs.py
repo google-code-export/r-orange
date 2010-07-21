@@ -392,7 +392,7 @@ class WidgetListBase:
         mainTabs = widgetRegistry['tags']
         # f.close()
         treeXML = mainTabs.childNodes[0]
-        print treeXML.childNodes
+        #print treeXML.childNodes
         redREnviron.settings['widgetXML'] = mainTabs
         for itab in treeXML.childNodes:
             if itab.nodeName == 'group': #picked a group element
@@ -848,7 +848,7 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
     widgets = None
-    print str(canvasDlg.widgetRegistry['templates'])
+    #print str(canvasDlg.widgetRegistry['templates'])
     try:
         for wName in canvasDlg.widgetRegistry['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
             widgetInfo = canvasDlg.widgetRegistry['widgets'][wName]

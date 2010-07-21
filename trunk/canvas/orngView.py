@@ -94,15 +94,18 @@ class SchemaView(QGraphicsView):
 
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
+        print "Trying to remove the widget"
         if self.doc.signalManager.signalProcessingInProgress:
             QMessageBox.information( self, "Orange Canvas", "Unable to remove widgets while signal processing is in progress. Please wait.")
             return
 
         selectedWidgets = self.getSelectedWidgets()
+        print selectedWidgets
         if selectedWidgets == []:
             selectedWidgets = [self.tempWidget]
 
         for item in selectedWidgets:
+            print item
             self.doc.removeWidget(item)
 
         self.scene().update()

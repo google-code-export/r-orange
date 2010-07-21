@@ -400,6 +400,7 @@ class SchemaDoc(QWidget):
     # remove widget
     def removeWidget(self, widget, saveTempDoc = True):
         if not widget:
+            print "widget is not true"
             return
         #widget.closing = close
         while widget.inLines != []: self.removeLine1(widget.inLines[0])
@@ -412,7 +413,8 @@ class SchemaDoc(QWidget):
             if widget in self.widgets:
                 self.widgets.remove(widget)
         except:
-            pass
+            import orngOutput
+            orngOutput.printException()
     def clear(self):
         print '|#| orngDoc clear'
         self.canvasDlg.setCaption()

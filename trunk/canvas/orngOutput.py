@@ -10,6 +10,8 @@ from datetime import tzinfo, timedelta, datetime
 import traceback
 import os.path, os, redRGUI, redREnviron
 
+print 'Importing orngOutput.py'
+
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)

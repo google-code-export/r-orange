@@ -158,7 +158,7 @@ class SignalManager:
     # add widget to list, ## should be removed and use the universal widget list
     def addWidget(self, widget):
         if self.verbosity >= 2:
-            self.addEvent("added widget " + widget.captionTitle, eventVerbosity = 2)
+            self.addEvent("added widget ", eventVerbosity = 2)
 
         if widget not in self.widgets:
             #self.widgets.insert(0, widget)
@@ -167,8 +167,7 @@ class SignalManager:
     # remove widget from list ## should ref the universal widget list
     def removeWidget(self, widget):
         if self.verbosity >= 2:
-            self.addEvent("remove widget " + widget.captionTitle, eventVerbosity = 2)
-        print "remove widget " + widget.captionTitle
+            self.addEvent("remove widget ", eventVerbosity = 2)
         if widget in self.widgets:
             self.widgets.remove(widget)
 
@@ -257,7 +256,7 @@ class SignalManager:
     def addLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo, enabled):
         ## adds a link between two widgets.  This will also make the connection between the signalNameFrom and signalNameTo
         if self.verbosity >= 2:
-            self.addEvent("add link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle, eventVerbosity = 2)
+            self.addEvent("add link", eventVerbosity = 2)
 
         if not self.canConnect(widgetFrom, widgetTo): 
             try:
@@ -270,7 +269,6 @@ class SignalManager:
             output = OutputSignal(*o)
             if output.name == signalNameFrom: found=1
         if not found: # this could be a dummy and we need to add the signal
-            print "Error. Widget %s changed its output signals. It does not have signal %s anymore." % (str(getattr(widgetFrom, "captionTitle", "")), signalNameFrom)
             return 0
 
         found = 0
@@ -278,7 +276,6 @@ class SignalManager:
             input = InputSignal(*i)
             if input.name == signalNameTo: found=1
         if not found:
-            print "Error. Widget %s changed its input signals. It does not have signal %s anymore." % (str(getattr(widgetTo, "captionTitle", "")), signalNameTo)
             return 0
 
         ## now we know that the signals still exist so se can proceed with making the connection
@@ -355,8 +352,7 @@ class SignalManager:
 
     def removeLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo):
         if self.verbosity >= 2:
-            self.addEvent("remove link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle, eventVerbosity = 2)
-        print "remove link from " + widgetFrom.captionTitle + " to " + widgetTo.captionTitle
+            self.addEvent("remove link", eventVerbosity = 2)
         # no need to update topology, just remove the link
         
         if self.links.has_key(widgetFrom):
@@ -401,8 +397,7 @@ class SignalManager:
         # add all target widgets new value and mark them as dirty
         # if not freezed -> process dirty widgets
         if self.verbosity >= 2:
-            self.addEvent("send data from " + widgetFrom.captionTitle + ". Signal = " + signalNameFrom, value, eventVerbosity = 2)
-        print str("send data from " + widgetFrom.captionTitle + ". Signal = " + signalNameFrom)
+            self.addEvent("send data", value, eventVerbosity = 2)
         #print 'Load saved session is set to '+str(self.loadSavedSession)
 
         if not self.links.has_key(widgetFrom): return
@@ -445,7 +440,7 @@ class SignalManager:
         if self.signalProcessingInProgress: return
 
         if self.verbosity >= 2:
-            self.addEvent("process new signals from " + firstWidget.captionTitle, eventVerbosity = 2)
+            self.addEvent("process new signals", eventVerbosity = 2)
 
         
         if firstWidget not in self.widgets:
