@@ -169,9 +169,9 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         for library in librarys:
             # print 'in loop', library, library in installedRPackages
             # print installedRPackages
-            if library in installedRPackages:
+            if installedRPackages and library and (library in installedRPackages):
                 Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
-            else:
+            elif library:
                 if redREnviron.checkInternetConnection():
                     mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
@@ -179,7 +179,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                             Rcommand('setRepositories(ind=1:7)')
                             Rcommand('install.packages("' + library + '", lib=' + libPath + ')')
                             loadedOK = Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
-                            
+                            installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
                         except:
                             print 'Library load failed'
                             loadedOK = False

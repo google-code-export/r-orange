@@ -33,7 +33,7 @@ class rowcolPicker(OWRpy):
         options = redRGUI.widgetBox(area, orientation = 'vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
         
-        self.sendSection = redRGUI.checkBox(options, label = "Send Where Selection Is:", buttons = ["True", "False"], setChecked = "True")
+        self.sendSection = redRGUI.checkBox(options, label = "Send Where Selection Is:", buttons = ["True", "False"], setChecked = "True", toolTip = "Select True to send data from the Data slot where the selections that you made are True.\nSelect False to send data from the Not Data slot that are not the selections you made.")
         self.rowcolBox = redRGUI.radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
         callback=self.rowcolButtonSelected)
         
@@ -126,7 +126,9 @@ class rowcolPicker(OWRpy):
                 self.rSend('Not Data Table', newDataNot)
 
     def subset(self): # now we need to make the R command that will handle the subsetting.
-        if self.data == None or self.data == '': return
+        if self.data == None or self.data == '': 
+            self.status.setText("Connect data before processing")
+            return
         
         selectedDFItems = []
         for name in self.attributes.selectedItems():

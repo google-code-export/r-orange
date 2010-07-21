@@ -32,8 +32,11 @@ class table(widgetState,QTableWidget):
         print 'in table set'
         if data==None:
             return
-        if not keys:
+        if not keys and type(data) == dict:
             keys = [str(key) for key in data.keys()]
+        elif not keys:
+            keys = range(len(data))
+            
         self.setHidden(True)
         print 'Set data'
         self.data = data
