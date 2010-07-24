@@ -12,7 +12,7 @@
 from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
-
+import rpy2.conversion2rpy as c2rpy
 import re
 import textwrap
 import cPickle
@@ -217,14 +217,7 @@ class readFile(OWRpy):
         fn = self.filecombo.getCurrentFile()
         if not fn:
             return
-
         self.R(self.Rvariables['filename'] + ' = "' + fn + '"') # should protext if R can't find this file
-        
-        # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
-            # self.delimiter.setChecked('Tab')
-        # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
-            # self.delimiter.setChecked('Comma')
-
         if self.delimiter.getChecked() == 'Tab': #'tab'
             sep = '\\t'
         elif self.delimiter.getChecked() == 'Space':
@@ -280,8 +273,6 @@ class readFile(OWRpy):
                 # print RStr
                 self.R(RStr, processingNotice=True)
         except:
-            # print sys.exc_info() 
-            # print RStr
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
@@ -298,14 +289,10 @@ class readFile(OWRpy):
             self.rowNamesCombo.addItem('NULL')
             self.rowNamesCombo.addItems(self.colNames)
         self.scanarea.clear()
-        # print self.R(self.Rvariables['dataframe_org'])
-        # return
+        # fill the scan area with the R data
+        data = self.R(self.Rvariables['dataframe_org'], wantType = 'rpy2')
         
-        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
-        rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-        #print data
-        txt = self.html_table(data,rownames)
+        txt = self.html_table(data)
         # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
         # try:
             #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
@@ -342,22 +329,32 @@ class readFile(OWRpy):
                 self.dataTypes.append([i,s])
             
           
-    def html_table(self,lol,rownames):
+    def html_table(self,data):
+        print data, data.names, data.rownames()
+        
         s = '<table border="1" cellpadding="3">'
         s+= '  <tr><td>Rownames</td><td><b>'
-        s+= '    </b></td><td><b>'.join(lol[0])
+        s+= '    </b></td><td><b>'.join(c2rpy.rvec2list(data.names))
         s+= '  </b></td></tr>'
+        lol = []
+        lol.append(c2rpy.rvec2list(data.rownames()))
+        dataDict = c2rpy.rdf2dict(data)
+        for name in data.names:
+            lol.append(dataDict[name])
+        print lol
         
-        for row, sublist in zip(rownames,lol[1:]):
-            s+= '  <tr><td><b>' +row + '</b></td><td>'
-            s+= '    </td><td>'.join(sublist)
-            s+= '  </td></tr>'
+        print lol
+        for j in range(len(lol[0])):
+            s += '  <tr>'
+            for i in range(len(lol)):
+                s+= '  <td>' +lol[i][j] + '</td>'
+            s += '  </tr>'
         s+= '</table>'
         return s
         
     def updateGUI(self):
         dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', 'getRData')
-        self.infob.setText(self.R(self.Rvariables['filename']))
+        self.infob.setText(self.R(self.Rvariables['filename'])[0])
         self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
     def commit(self):
