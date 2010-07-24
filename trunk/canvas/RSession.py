@@ -16,7 +16,7 @@ else: # need this because linux doesn't need to use the RPATH
     
     
 import rpy2.robjects as rpy
-import rpy2.conversion2rpy as conversion2rpy
+import conversion2rpy as conversion2rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
