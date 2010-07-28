@@ -69,6 +69,8 @@ class lineEdit(QLineEdit,widgetState):
         t = 'Text Edit:'
         if self.label:
             t += self.label+': '
-        t += str(self.text())+'</br>'
-        print t
+        if str(self.text()) != '':
+            t += str(self.text())+'</br>'
+        else:
+            t += '<div style="color:#00FF00">No data input</div></br>'
         return t
