@@ -39,6 +39,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.device = {}
         self.packagesLoaded = 0
         self.widgetRHistory = []
+        self.reportOrder = None
         
 
 
@@ -152,6 +153,32 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.R('dev.off()')
             raise Exception, 'R Plotting Error'
             ## there was an exception and we need to roll back the processor.
+    def getReportText(self, fileDir):
+        ## move through all of the qtWidgets in self and show their report outputs
+        children = self.controlArea.children()
+        print children
+        import re
+        text = ''
+        # if self.reportOrder and self.reportOrder != None:
+            # ro = self.report
+        # else:
+            # ro = dir(self)
+        # print ro
+        for i in children:
+            try:
+                print i.__class__.__name__
+                if isinstance(i, QBoxLayout):
+                    c = i.children()
+                    for c1 in c:
+                        text += c1.getReportText(fileDir)
+                elif re.search('PyQt4|OWGUIEx|OWToolbars',str(type(i))) or i.__class__.__name__ in redRGUI.qtWidgets:
+                    ## we can try to get the settings of this.
+                    text += i.getReportText(fileDir)
+                    print i.__class__.__name__
+            except Exception as inst:
+                print inst
+                continue
+        return text
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         if not repository and 'CRANrepos' in redREnviron.settings.keys():

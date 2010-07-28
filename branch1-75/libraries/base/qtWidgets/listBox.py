@@ -38,6 +38,7 @@ class listBox(QListWidget,widgetState):
             self.setToolTip(toolTip)
         if callback:
             QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
+        self.label = label
     def sizeHint(self):
         return self.defaultSizeHint
     def hide(self):
@@ -211,5 +212,20 @@ class listBox(QListWidget,widgetState):
             self.hb.show()
         else:
             QListWidget.show(self)
-
-    
+    def getReportText(self, fileDir):
+        text = ''
+        if self.label:
+            text += self.label+': '
+        else:
+            text += 'Line Edit: '
+        text += '</br>'
+        text += '</br><table border="1"><tr><th>Items</th><th>Selected</th></tr>'
+        for i in range(self.count()):
+            # print i
+            text += '<tr><td>'+str(self.item(i).text()))+'</td>'
+            if self.isItemSelected(self.item(i)):
+                text += '<td>X</td></tr>'
+            else:
+                text += '<td></td></tr>'
+        text += '</table></br>'
+        return text

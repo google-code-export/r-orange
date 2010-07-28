@@ -240,7 +240,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuRecent = QMenu("Recent Schemas", self)
 
         self.menuFile = QMenu("&File", self)
-        self.menuFile.addAction( "New Scheme",  self.menuItemNewScheme, QKeySequence.New)
+        self.menuFile.addAction( "New Schema",  self.menuItemNewScheme, QKeySequence.New)
         self.menuFile.addAction(QIcon(self.file_open), "&Open...", self.menuItemOpen, QKeySequence.Open )
         self.menuFile.addAction(QIcon(self.file_open), "&Open and Freeze...", self.menuItemOpenFreeze)
         self.menuFile.addAction("Import Schema", self.importSchema)
@@ -252,7 +252,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuSaveAsID = self.menuFile.addAction( "Save &As...", self.menuItemSaveAs)
         self.menuSaveTemplateID = self.menuFile.addAction( "Save As Template", self.menuItemSaveTemplate)
         self.menuFile.addSeparator()
-        self.menuFile.addAction(QIcon(self.file_print), "&Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
+        self.menuFile.addAction(QIcon(self.file_print), "Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
+        self.menuFile.addAction("&Print Report", self.menuItemReport)
         self.menuFile.addSeparator()
         self.menuFile.addMenu(self.menuRecent)
         self.menuFile.addSeparator()
@@ -464,10 +465,42 @@ class OrangeCanvasDlg(QMainWindow):
         self.output.hide()
         self.output.show()
         #self.output.setFocus()
-
+    def menuItemReport(self):
+        ## start the report generator, handled in orngDoc (where else)
+        import datetime
+        qname = QFileDialog.getSaveFileName(self, "Write Report to File", redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".html", "HTML Document (*.html)")
+        if qname.isEmpty(): return
+        
+        
+        name = str(qname) # this is the file name of the Report
+        fileDir = os.path.split(name)[0]
+        
+        ## first take a picture of the canvas and save as png.
+        image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
+        painter = QPainter(image)
+        self.schema.canvasView.render(painter) #
+        painter.end()
+        if not image.save(os.path.join(fileDir, 'canvas-image.png')):
+            print 'Error in saving schema'
+            print image
+            print image.width(), 'width'
+        text = '<html><body><h3>Red-R Report compiled on '+str(datetime.date.today())+'</h3>'
+        text += '<h5>Summary</h5>'
+        text += 'Schema Image</br><img src="canvas-image.png" alt="Schema Image" /></br>'
+        text += '<h5>Schema Information</h5>'
+        text += self.schema.getReportText(fileDir)
+        text += '</body></html>'
+        file = open(name, "wt")
+        file.write(text)
+        file.close()
+        
+        import webbrowser
+        webbrowser.open(name)
+        
     def menuItemClearOutputWindow(self):
         self.output.textOutput.clear()
         self.statusBar().showMessage("")
+        
 
     def menuItemSaveOutputWindow(self):
         qname = QFileDialog.getSaveFileName(self, "Save Output To File", redREnviron.directoryNames['canvasSettingsDir'] + "/Output.html", "HTML Document (*.html)")

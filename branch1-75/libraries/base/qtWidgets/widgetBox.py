@@ -54,3 +54,17 @@ class widgetBox(QWidget,widgetState):
             # sip.delete(item)
         sip.delete(self)
         
+    def getReportText(self, fileDir):
+        print 'getting report for widgetBox'
+        children = self.children()
+        print children
+        text = ''
+        for i in children:
+            try:
+                text += i.getReportText(fileDir)
+            except Exception as inst:
+                print inst
+                continue
+        print text
+        return text
+        

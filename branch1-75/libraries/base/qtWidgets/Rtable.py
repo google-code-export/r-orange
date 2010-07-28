@@ -1,5 +1,6 @@
 from redRGUI import widgetState
 from RSession import Rcommand
+from RSession import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy,sip
@@ -95,6 +96,17 @@ class Rtable(widgetState,QTableView):
                 self.setItemSelected(self.item(i[0],i[1]),True)
     def delete(self):
         sip.delete(self)
+    def getReportText(self, fileDir):
+        require_librarys(['R2HTML'])
+        import os
+        fname = str(os.path.join(fileDir, self.Rdata+'.html'))
+        self.R('HTML('+self.Rdata+', file = file.path("'+fileDir+'", "'+self.Rdata+'.html"), border = 1, append = FALSE)')
+        text = '<a href="'+fname.replace('\\', '/')+'">Data table</a>'
+        text += '</br>'
+        self.R('txt<-capture.output(summary('+self.Rdata+'))')
+        tmp = self.R('paste(txt, collapse ="\n")')
+        text += '<br><pre>'+tmp+'</pre>'
+        return text
 
 class MyTableModel(QAbstractTableModel): 
     def __init__(self, Rdata, parent,editable=False): 

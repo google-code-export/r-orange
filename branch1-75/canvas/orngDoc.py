@@ -976,6 +976,26 @@ class SchemaDoc(QWidget):
         else:
             #e.ignore()
             QWidget.keyPressEvent(self, e)
+            
+    
+# #######################################
+# # Report Generator
+# #######################################
+    def getReportText(self, fileDir):
+        ## very simply we need to loop through the widgets and get some info about them and put that into the report.
+        
+        text = ''
+        for widget in self.widgets:
+            tt = ''
+            tt += '<h3>%s</h3>' % (widget.caption)
+            try:
+                tt += widget.instance.getReportText(fileDir)
+            except Exception as inst:
+                print inst
+                tt += 'Error occured in report generation for this widget'
+            text += tt+'</br>'
+            text += '<hr />'
+        return text
 # #######################################
 # # Progress Bar
 # #######################################
