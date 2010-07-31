@@ -129,3 +129,49 @@ class Heatmap(OWRpy):
         hclust = signals.RModelFit(data = self.Rvariables['hclust'])
         newData.dictAttrs['cluster'] = hclust
         self.rSend("Cluster Subset List", newData)
+        
+    def getReportText(self, fileDir):
+        ## print the plot to the fileDir and then send a text for an image of the plot
+        if self.plotdata != '':
+            self.R('png(file="'+fileDir+'/heatmap'+str(self.widgetID)+'.png")')
+            if str(self.classesDropdown.currentText()) != '':
+                self.classes = self.classesData+'$'+str(self.classesDropdown.currentText())
+            if self.classes and ('Show Classes' in self.showClasses.getChecked()):
+                colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
+            else:
+                colClasses = ''
+            colorType = str(self.colorTypeCombo.currentText())
+            if colorType == 'rainbow':
+                start = float(float(self.startSaturation.value())/100)
+                end = float(float(self.endSaturation.value())/100)
+                print start, end
+                col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
+            else:
+                col = colorType+'(50)'
+            self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
+            self.R('dev.off()')
+            # for making the pie plot
+            self.R('png(file="'+fileDir+'/pie'+str(self.widgetID)+'.png")')
+            if colorType == 'rainbow':
+                start = float(float(self.startSaturation.value())/100)
+                end = float(float(self.endSaturation.value())/100)
+                print start, end
+                col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
+            else:
+                col = colorType+'(10)'
+            self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
+            self.R('dev.off()')
+            self.R('png(file="'+fileDir+'/identify'+str(self.widgetID)+'.png")')
+            self.R('plot(hclust(dist(t('+self.plotdata+'))))')
+            self.R('dev.off()')
+            text = 'The following plot was generated:</br>'
+            text += '<img src="heatmap'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+            text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
+            text += '<img src="pie'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+            text += '<strong>Figure Intensity Chart:</strong> Intensity levels are shown in this pie chart from low values to high.</br>'
+            text += '<img src="identify'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+            text += '<strong>Figure Clustering:</strong> A cluster dendrogram of the column data.</br>'
+        else:
+            text = 'Nothing to plot from this widget'
+            
+        return text

@@ -362,17 +362,48 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
-        
-        # import globalData
-        # globalData.setGlobalData(self,'urls',{'dictybase':'http://www.dictybase.org/gene/{db_gene_id}'},description='url')
         sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("data.frame", sendData)
         
-    def compileReport(self):
-        self.reportSettings("File Name", [(self.Rvariables['filename'], self.R(self.Rvariables['filename']))])
+    def getReportText(self, fileDir):
+        ## custom implementation of the reporting system for read Files.
+        text = ''
+        try:
+            text += '<strong>File Source:</strong> '+str(self.filecombo.currentText())+'</br>'
+            text += '<strong>Reading Data</strong></br>Data was read into the canvas using the following settings:</br>'
+            text += 'Column Seperator: '+str(self.delimiter.getChecked())+'</br>'
+            text += 'Use Column Header:'
+            if 'Column Headers' in self.hasHeader.getChecked():
+                text += ' Yes</br>'
+            else:
+                text += ' No</br>'
+            text += 'The following column in the orriginal data was used as the Rownames for the table: %s</br>' %(self.rownames)
+            text += 'Other options include the following:</br>'
+            for i in self.otherOptions.getChecked():
+                text += str(i) + '=TRUE</br>'
+                
+            text += '</br>Classes for the columns are as follows:</br>'
+            for i in range(len(rownames)):
+                text += '%s set to %s </br>' % (self.colNames[i], self.colClasses[i])
+            text += '<strong>Data section</strong>'
+            try:
+                self.R('write.table('+self.Rvariables['dataframe_org']+', file = file.path("'+fileDir+'", "'+self.Rvariables['dataframe_org']+'.txt"), sep = "\\t")')
+                import os
+                fname = os.path.split(fileDir)[1]
+                text += 'Sent data can be accessed Here: <a href="'+fname+'/'+self.Rvariables['dataframe_org']+'.txt'+'">Data table</a></br>'
+            except:
+                text += 'There was a problem compiling the data to be added to this report.  The data should have been saved in the R session as %s.  This can be accessed by opening the .rrs file and using R Executor to query the data object.</br>' % self.Rvariables['dataframe_org']
+            
+            text += '<strong>Notes</strong>'
+            text += 'The following notes were entered by the user:</br>'
+            text += self.notes.toPlainText()
+            text += '</br>'
+        except Exception as inst:
+            print '<strong>', str(inst), '</strong>'
+            pass
         
-        self.reportRaw(self.fileInfo.toHtml())
-        #self.finishReport()
+        
+        return text
         
         
         

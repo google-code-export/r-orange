@@ -197,4 +197,12 @@ class rExecutor(OWRpy):
     def isList(self):
         self.status.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
         
+    def getReportText(self, fileDir):
+        ## report for this entry
+        text = ''
+        text += 'The following is entered into the R Executor:</br>'
+        text += '<pre>'+str(self.thistext.toPlainText())+'</pre>'
+        
+        return text
+        
         

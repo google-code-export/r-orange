@@ -422,6 +422,7 @@ class SchemaDoc(QWidget):
             self.removeWidget(widget, saveTempDoc = False)   # remove widgets from last to first
         RSession.Rcommand('rm(list = ls())')
         self.canvas.update()
+        self.schemaName = ""
         self.saveTempDoc()
         
 
@@ -985,16 +986,41 @@ class SchemaDoc(QWidget):
         ## very simply we need to loop through the widgets and get some info about them and put that into the report.
         
         text = ''
+        contents = ''
         for widget in self.widgets:
             tt = ''
-            tt += '<h3>%s</h3>' % (widget.caption)
+            tt += '<h3><a name = "%s">%s</a></h3>' % (widget.caption, widget.caption)
             try:
                 tt += widget.instance.getReportText(fileDir)
+                
+                try:
+                    if widget.instance.inputs:
+                        tt += '<h4>Signals</h4><strong>The following signals were sent to this widget:</strong></br>'
+                        
+                        for input in widget.instance.inputs:
+                            for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
+                                tt += 'The Signal <div style="color:Blue">%s</div>is linked to widget <div style="color:Blue">%s</div></br>' % (input[0], iwidget.captionTitle)
+                except: pass
+                try:
+                    if widget.instance.outputs:
+                        tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
+                        for output in widget.instance.outputs:
+                            for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
+                                tt += 'This widget sends the signal <div style="color:Blue">%s</div> to widget <div style="color:Blue">%s</div></br>' % (output[0], owidget.captionTitle)
+                except:
+                    pass
             except Exception as inst:
-                print inst
+                print '##########################'
+                print str(inst)
+                print '##########################'
                 tt += 'Error occured in report generation for this widget'
+            contents += '<a href="contentPannel.html#%s" target = "mainPage">%s</a></br>' % (widget.caption, widget.caption)
             text += tt+'</br>'
             text += '<hr />'
+            
+        file = open(os.path.join(fileDir, 'contents.html'), 'wt')
+        file.write(contents)
+        file.close()
         return text
 # #######################################
 # # Progress Bar

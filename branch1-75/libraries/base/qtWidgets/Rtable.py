@@ -99,9 +99,11 @@ class Rtable(widgetState,QTableView):
     def getReportText(self, fileDir):
         require_librarys(['R2HTML'])
         import os
-        fname = str(os.path.join(fileDir, self.Rdata+'.html'))
-        self.R('HTML('+self.Rdata+', file = file.path("'+fileDir+'", "'+self.Rdata+'.html"), border = 1, append = FALSE)')
-        text = '<a href="'+fname.replace('\\', '/')+'">Data table</a>'
+        fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
+        fname = fname.replace('\\', '/')
+        print fname
+        self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
+        text = '<a href="'+str(os.path.split(fname)[1])+'">Data table</a>'
         text += '</br>'
         self.R('txt<-capture.output(summary('+self.Rdata+'))')
         tmp = self.R('paste(txt, collapse ="\n")')
