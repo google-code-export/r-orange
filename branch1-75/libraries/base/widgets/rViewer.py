@@ -50,3 +50,7 @@ class rViewer(OWRpy):
             print str(msg), 'Show Summary must not exist in this signal type'
             text = self.R('paste(capture.output(str('+str(self.data.getData())+')), collapse = \'\\n\')')
         self.RoutputWindow.setHtml('<pre>'+str(text)+'</pre>')
+    def getReportText(self, fileDir):
+        text = 'The following was displayed in the rViewer widget:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

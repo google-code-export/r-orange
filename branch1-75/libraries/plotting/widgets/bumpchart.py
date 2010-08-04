@@ -67,3 +67,42 @@ class bumpchart(OWRpy):
         inj = ','.join(injection)
         self.R('y<-'+str(self.RFunctionParam_y))
         self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')')
+    def getReportText(self, fileDir):
+        if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+        
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            
+       injection = []
+        if str(self.RFunctionParammar_lineEdit.text()) != '':
+            string = 'mar='+str(self.RFunctionParammar_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamlty_lineEdit.text()) != '':
+            string = 'lty='+str(self.RFunctionParamlty_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamlabels_lineEdit.text()) != '':
+            string = 'labels='+str(self.RFunctionParamlabels_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamrank_lineEdit.text()) != '':
+            string = 'rank='+str(self.RFunctionParamrank_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParampch_lineEdit.text()) != '':
+            string = 'pch='+str(self.RFunctionParampch_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamtop_labels_lineEdit.text()) != '':
+            string = 'top.labels='+str(self.RFunctionParamtop_labels_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamcol_lineEdit.text()) != '':
+            string = 'col='+str(self.RFunctionParamcol_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamlwd_lineEdit.text()) != '':
+            string = 'lwd='+str(self.RFunctionParamlwd_lineEdit.text())+''
+            injection.append(string)
+        inj = ','.join(injection)
+        self.R('y<-'+str(self.RFunctionParam_y))
+        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 505%\n\n'
+            
+        return text

@@ -152,3 +152,7 @@ class mathWidget(OWRpy):
             self.dialog.hide()
         except:
             self.status.setText('An error occured in your function')
+            
+    def getReportText(self, fileDir):
+        text = 'Performed one or more mathematical opperations on the columns of the data.  See the Red-R .rrs file or the included notes for more information on what procedures were performed.\n\n'
+        return text

@@ -94,3 +94,7 @@ class RVarSeparator(OWRpy):
             newData = rvar.RVariable(data = self.sendThis)
             self.rSend('R.object', newData)
             self.status.setText('Data sent through the R Object channel')
+            
+    def getReportText(self, fileDir):
+        text = 'The variable listed below was sent from this widget.\n\n'
+        return text

@@ -75,3 +75,31 @@ class RedRstrsplit(OWRpy):
         if str(self.RFunctionParamunlist_radioButtons.getChecked()) == 'Send list and vector':
             newData = signals.RVector.RVector(data = 'unlist('+self.Rvariables['strsplit']+')')
             self.rSend('strsplit Vector', newData)
+            
+    def getReportText(self, fileDir):
+        text = 'Split the incomming strings (words) into fragments based on the following criteria:\n\n'
+        injection = []
+        if str(self.RFunctionParamfixed_radioButtons.getChecked()) == 'Yes':
+            string = 'fixed=TRUE'
+            injection.append(string)
+        else:
+            string = 'fixed=FALSE'
+            injection.append(string)
+        if str(self.RFunctionParamextended_radiButtons.getChecked()) == 'Yes':
+            string = 'extended=TRUE'
+            injection.append(string)
+        else:
+            string = 'extended=FALSE'
+            injection.append(string)
+        if str(self.RFunctionParamsplit_lineEdit.text()) != '':
+            string = 'split='+str(self.RFunctionParamsplit_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamperl_radioButtons.getChecked()) == 'Yes':
+            string = 'perl=TRUE'
+            injection.append(string)
+        else:
+            string = 'perl=FALSE'
+            injection.append(string)
+        inj = '\n\n'.join(injection)
+        text += inj + '\n\n'
+        return text

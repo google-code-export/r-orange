@@ -369,35 +369,23 @@ class readFile(OWRpy):
         ## custom implementation of the reporting system for read Files.
         text = ''
         try:
-            text += '<strong>File Source:</strong> '+str(self.filecombo.currentText())+'</br>'
-            text += '<strong>Reading Data</strong></br>Data was read into the canvas using the following settings:</br>'
-            text += 'Column Seperator: '+str(self.delimiter.getChecked())+'</br>'
+            text += 'File Source: '+str(self.filecombo.currentText())+'\n\n'
+            text += 'Reading Data\n\nData was read into the canvas using the following settings:\n\n'
+            text += 'Column Seperator: '+str(self.delimiter.getChecked())+'\n\n'
             text += 'Use Column Header:'
             if 'Column Headers' in self.hasHeader.getChecked():
-                text += ' Yes</br>'
+                text += ' Yes\n\n'
             else:
-                text += ' No</br>'
-            text += 'The following column in the orriginal data was used as the Rownames for the table: %s</br>' %(self.rownames)
-            text += 'Other options include the following:</br>'
+                text += ' No\n\n'
+            text += 'The following column in the orriginal data was used as the Rownames for the table: %s\n\n' %(self.rownames)
+            text += 'Other options include the following:\n\n'
             for i in self.otherOptions.getChecked():
-                text += str(i) + '=TRUE</br>'
+                text += str(i) + '=TRUE\n\n'
                 
-            text += '</br>Classes for the columns are as follows:</br>'
+            text += '\n\nClasses for the columns are as follows:\n\n'
             for i in range(len(rownames)):
-                text += '%s set to %s </br>' % (self.colNames[i], self.colClasses[i])
-            text += '<strong>Data section</strong>'
-            try:
-                self.R('write.table('+self.Rvariables['dataframe_org']+', file = file.path("'+fileDir+'", "'+self.Rvariables['dataframe_org']+'.txt"), sep = "\\t")')
-                import os
-                fname = os.path.split(fileDir)[1]
-                text += 'Sent data can be accessed Here: <a href="'+fname+'/'+self.Rvariables['dataframe_org']+'.txt'+'">Data table</a></br>'
-            except:
-                text += 'There was a problem compiling the data to be added to this report.  The data should have been saved in the R session as %s.  This can be accessed by opening the .rrs file and using R Executor to query the data object.</br>' % self.Rvariables['dataframe_org']
-            
-            text += '<strong>Notes</strong>'
-            text += 'The following notes were entered by the user:</br>'
-            text += self.notes.toPlainText()
-            text += '</br>'
+                text += '%s set to %s \n\n' % (self.colNames[i], self.colClasses[i])
+            text += '\n\n'
         except Exception as inst:
             print '<strong>', str(inst), '</strong>'
             pass

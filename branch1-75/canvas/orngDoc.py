@@ -989,24 +989,31 @@ class SchemaDoc(QWidget):
         contents = ''
         for widget in self.widgets:
             tt = ''
-            tt += '<h3><a name = "%s">%s</a></h3>' % (widget.caption, widget.caption)
+            tt += '\n\n\n--------------------\n\n\n'
+            tt += '\n\n\n--------------------\n\n\n'
+            tt += '\n%s\n%s\n'%(widget.caption, '))))))))))))))))))))))))))))))))))))')
             try:
                 tt += widget.instance.getReportText(fileDir)
-                
+                tt += '\n\n\n--------------------\n\n\n'
+                tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
+                tt += str(widget.instance.notes.toPlainText())+'\n\n'
+                tt += '\n\n\n--------------------\n\n\n'
+                tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
                 try:
                     if widget.instance.inputs:
-                        tt += '<h4>Signals</h4><strong>The following signals were sent to this widget:</strong></br>'
+                        #tt += '<h4>Signals</h4><strong>The following signals were sent to this widget:</strong></br>'
+                        
                         
                         for input in widget.instance.inputs:
                             for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
-                                tt += 'The Signal <div style="color:Blue">%s</div>is linked to widget <div style="color:Blue">%s</div></br>' % (input[0], iwidget.captionTitle)
+                                tt += '-The Signal *%s* is linked to widget *%s*\n\n' % (input[0], iwidget.captionTitle)
                 except: pass
                 try:
                     if widget.instance.outputs:
-                        tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
+                        #tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
                         for output in widget.instance.outputs:
                             for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
-                                tt += 'This widget sends the signal <div style="color:Blue">%s</div> to widget <div style="color:Blue">%s</div></br>' % (output[0], owidget.captionTitle)
+                                tt += '-This widget sends the signal *%s* to widget *%s*\n\n' % (output[0], owidget.captionTitle)
                 except:
                     pass
             except Exception as inst:
@@ -1014,13 +1021,8 @@ class SchemaDoc(QWidget):
                 print str(inst)
                 print '##########################'
                 tt += 'Error occured in report generation for this widget'
-            contents += '<a href="contentPannel.html#%s" target = "mainPage">%s</a></br>' % (widget.caption, widget.caption)
-            text += tt+'</br>'
-            text += '<hr />'
+            text += tt+'\n\n'
             
-        file = open(os.path.join(fileDir, 'contents.html'), 'wt')
-        file.write(contents)
-        file.close()
         return text
 # #######################################
 # # Progress Bar

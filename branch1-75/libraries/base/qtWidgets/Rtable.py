@@ -97,17 +97,14 @@ class Rtable(widgetState,QTableView):
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):
-        require_librarys(['R2HTML'])
-        import os
-        fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
-        fname = fname.replace('\\', '/')
-        print fname
-        self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
-        text = '<a href="'+str(os.path.split(fname)[1])+'">Data table</a>'
-        text += '</br>'
-        self.R('txt<-capture.output(summary('+self.Rdata+'))')
-        tmp = self.R('paste(txt, collapse ="\n")')
-        text += '<br><pre>'+tmp+'</pre>'
+        # import os
+        # fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
+        # fname = fname.replace('\\', '/')
+        # print fname
+        #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
+        # self.R('txt<-capture.output(summary('+self.Rdata+'))')
+        # tmp = self.R('paste(txt, collapse ="\n      ")')
+        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.'
         return text
 
 class MyTableModel(QAbstractTableModel): 

@@ -49,7 +49,7 @@ class ListSelector(OWRpy):
                 
     def sendSelection(self):
         print self.names.selectedItems()[0]
-        self.R(self.Rvariables['listelement']+'<-'+self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]')
+        self.Rvariables['listelement'] = self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]'
         # use signals converter in OWWidget to convert to the signals class
         myclass = self.R('class('+self.Rvariables['listelement']+')')
         print 'myclass',myclass
@@ -74,3 +74,5 @@ class ListSelector(OWRpy):
             newData = rvar.RVariable(data = self.Rvariables['listelement'])
             self.rSend('R Variable', newData)
             print 'Send Variable', myclass
+    def getReportText(self, fileDir):
+        return 'The %s element of the incomming data was sent.\n\n' % (self.Rvariables['listelement'])

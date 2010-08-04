@@ -164,13 +164,13 @@ class Heatmap(OWRpy):
             self.R('png(file="'+fileDir+'/identify'+str(self.widgetID)+'.png")')
             self.R('plot(hclust(dist(t('+self.plotdata+'))))')
             self.R('dev.off()')
-            text = 'The following plot was generated:</br>'
-            text += '<img src="heatmap'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-            text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
-            text += '<img src="pie'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-            text += '<strong>Figure Intensity Chart:</strong> Intensity levels are shown in this pie chart from low values to high.</br>'
-            text += '<img src="identify'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-            text += '<strong>Figure Clustering:</strong> A cluster dendrogram of the column data.</br>'
+            text = 'The following plot was generated in the Heatmap Widget:\n\n'
+            text += '.. image:: '+fileDir+'/heatmap'+str(self.widgetID)+'.png\n     :scale: 50%%\n\n'
+            #text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
+            text += '.. image:: '+fileDir+'/pie'+str(self.widgetID)+'.png\n     :scale: 30%%\n\n'
+            text += '**Intensity Chart:** Intensity levels are shown in this pie chart from low values to high.\n\n'
+            text += '.. image:: '+fileDir+'/identify'+str(self.widgetID)+'.png\n   :scale: 50%%\n\n\n'
+            text += '**Clustering:** A cluster dendrogram of the column data.\n\n'
         else:
             text = 'Nothing to plot from this widget'
             

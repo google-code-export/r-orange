@@ -90,3 +90,6 @@ class apply(OWRpy):
             newData = rvec.RVector(data = self.Rvariables['apply'])
 
             self.rSend("apply Output", newData)
+            
+    def getReportText(self, fileDir):
+        return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (str(self.functionText.toPlainText()), self.RFunctionParamMARGIN_radioButtons.getChecked())

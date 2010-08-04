@@ -70,3 +70,25 @@ class aov(OWRpy):
         newData = rmf.RModelFit(data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("aov Output", newData)
+    def getReportText(self, fileD):
+        text = 'Performed ANOVA analysis on the attached data.  The following parameters were used:\n\n'
+        formula = self.RFunctionParamformula_formulaEntry.Formula()
+        if formula[0] == '' or formula[1] == '': 
+            self.setWarning(id = 'BadFormula', text = 'Formula not entered correctly')
+        injection = []
+        string = 'formula='+formula[0]+ ' ~ '+formula[1]
+        injection.append(string)
+        if str(self.RFunctionParamcontrasts_lineEdit.text()) != '':
+            string = 'contrasts='+str(self.RFunctionParamcontrasts_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamqr_lineEdit.text()) != '':
+            string = 'qr='+str(self.RFunctionParamqr_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamprojections_lineEdit.text()) != '':
+            string = 'projections='+str(self.RFunctionParamprojections_lineEdit.text())+''
+            injection.append(string)
+        inj = '\n\n'.join(injection)
+        text += inj
+        text += '\n\nThe following is a summary of the output:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

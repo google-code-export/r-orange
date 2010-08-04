@@ -35,3 +35,7 @@ class anova_lm(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
+    def getReportText(self, fileDir):
+        text = 'ANOVA-LM analysis performted.  The following is a summary of the results:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

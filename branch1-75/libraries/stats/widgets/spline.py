@@ -99,3 +99,7 @@ class spline(OWRpy):
         
         newLine = plotting.RPlotAttribute.RPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
         self.rSend('spline plot attribute', newLine)
+        
+    def getReportText(self, fileDir):
+        text = 'A spline fit was made to the incoming data.  This fit can be used in downstream statistical analysis.  A plot attribute was also generated for this fit and can be appended to any plot from Generic Plot or some other plotting widgets.  Please see the .rrs file or the specific plotting or analysis widgets for more details.\n\n'
+        return text

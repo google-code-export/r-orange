@@ -19,10 +19,8 @@ class sort(OWRpy):
         self.inputs = [("x", rdf.RDataFrame, self.processx)]
         self.outputs = [("sort Output", rdf.RDataFrame)]
         
-        self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
         self.RFunctionParamdecreasing_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "decreasing:", text = 'FALSE')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
@@ -47,3 +45,11 @@ class sort(OWRpy):
         newData = rdf.RDataFrame(data = self.Rvariables["sort"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("sort Output", newData)
+    def getReportText(self, fileDir):
+        text = 'Sorted the incomming data in '
+        if str(self.RFunctionParamdecreasing_lineEdit.text()) != 'FALSE':
+            text += 'increasing'
+        else:
+            text += 'decreasing'
+        text += 'order.\n\n'
+        return text

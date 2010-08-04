@@ -71,4 +71,6 @@ class rownames(OWRpy):
         newData = rvec.RVector(data = self.Rvariables["rownames"])
 
         self.rSend("Names Output", newData)
-
+    def getReportText(self, fileDir):
+        text = str(self.function.getChecked())+' were sent from this widget.\n\n'
+        return text

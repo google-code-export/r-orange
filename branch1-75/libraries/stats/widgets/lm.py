@@ -74,3 +74,6 @@ class lm(OWRpy):
         newPlotAtt = rpa.RPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
         self.rSend('lm plot attribute', newPlotAtt)
         
+    def getReportText(self, fileDir):
+        return 'Generates a linear model fit to attached data and a linear model plot attribute.  The data fit was generated based on the following formula:\n\n%s\n\nOther parameters are as follows:\n\n%s\n\n' % (self.formulEntry.Formula()[0] + ' ~ ' + self.formulEntry.Formula()[1], '(data='+str(self.RFunctionParam_data)+',subset='+str(self.RFunctionParam_subset.text())+',qr='+str(self.RFunctionParam_qr.text())+',formula='+str(self.RFunctionParam_formula)+',singular_ok='+str(self.RFunctionParam_singular_ok.text())+',y='+str(self.RFunctionParam_y.text())+',weights='+str(self.RFunctionParam_weights.text())+',offset='+str(self.RFunctionParam_offset.text())+',contrasts='+str(self.RFunctionParam_contrasts.text())+',x='+str(self.RFunctionParam_x.text())+',model='+str(self.RFunctionParam_model.text())+',method="'+str(self.RFunctionParam_method.text())+'")')
+        

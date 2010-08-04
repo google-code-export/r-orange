@@ -156,4 +156,21 @@ class cor(OWRpy):
             self.useButtons.disable(['pairwise.complete.obs'])
         elif self.type.getChecked() =='Correlation':
             self.useButtons.enable(['pairwise.complete.obs'])
+    
+    # getReportText returns a string of text in restructuredtext format that will be used to generate the report of the data.
+    # We should send back a general representation of what happened in the widget to the user.
+    def getReportText(self, fileDir):
+        text = 'Correlation Variance widget calculates pairwise correlation or variance against two matricies or data frames.\n\n'
+        text += '**Parameters:**\n\n'
+        text += 'Type: '+self.type.getChecked()+'\n\n'
+        text += 'Values to use:  '+str(self.useButtons.getChecked())+'\n\n'
+        text += 'Method:  '+str(self.methodButtons.getChecked())+'\n\n'
+        self.R('write.csv('+self.RoutputWindow.Rdata+', file = "'+fileDir+'/table'+str(self.widgetID)+'.csv")')
+        text += '.. csv-table:: Correlation-Variance Table\n  :file: '+fileDir+'/table'+str(self.widgetID)+'.csv\n\n'
+        
+        return text
+        
+        
+        
+        
         

@@ -204,5 +204,8 @@ class dataEntry(OWRpy):
         
         self.rSend('Data Table', self.newData)
         self.processDF(self.newData)  ## a good way to ensure loading and saving.
+        
+    def getReportText(self, fileDir):
+        return 'Data was entered into the R session manually through this widget.  For more informaiton please see the Red-R .rrs file or some output from the Red-R file.\n\n'
 
             

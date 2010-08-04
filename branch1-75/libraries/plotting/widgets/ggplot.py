@@ -263,8 +263,28 @@ class ggplot(OWRpy):
         fullCommand = ' + '.join(command)
         
         self.R(self.Rvariables['ggplot']+'<-'+self.Rvariables['ggplot']+'+'+fullCommand)
-        self.Rplot('capture.output('+self.Rvariables['ggplot']+')')
+        self.Rplot('plot('+self.Rvariables['ggplot']+')')
         
         newData = rggplot.RGGPlotPlot(data = self.Rvariables['ggplot'])
         #newData.setOptionalData(
         self.rSend('Plot colleciton', newData)
+    def getReportText(self, fileDir):
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            
+        command = []
+        for item in self.plotAtts.keys():
+            if self.plotAtts[item]['subAtt']: continue #this is a sub att so we should have already added it.
+            if self.plotAtts[item]['Global']: 
+                self.R(self.Rvariables['ggplot']+'<-'+self.plotAtts[item]['data']) 
+                continue
+            command.append(self.plotAtts[item]['data'])
+        fullCommand = ' + '.join(command)
+        
+        self.R(self.Rvariables['ggplot']+'<-'+self.Rvariables['ggplot']+'+'+fullCommand)
+        self.R('plot('+self.Rvariables['ggplot']+')')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+            
+        return text

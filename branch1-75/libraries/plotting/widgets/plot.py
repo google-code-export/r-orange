@@ -91,7 +91,7 @@ class plot(OWRpy):
         ## print the plot to the fileDir and then send a text for an image of the plot
         if self.RFunctionParam_x != '':
             self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
-            if self.RFunctionParam_x == '': return
+            if self.RFunctionParam_x == '': return 'Nothing to plot from this widget'
             injection = []
             if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
                 injection.append('pch=rownames('+self.RFunctionParam_x+')')
@@ -114,8 +114,9 @@ class plot(OWRpy):
                 if self.plotAttributes[name] != None:
                     self.R(self.plotAttributes[name])
             self.R('dev.off()')
-            text = 'The following plot was generated:</br>'
-            text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+            text = 'The following plot was generated:\n\n'
+            #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+            text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
         else:
             text = 'Nothing to plot from this widget'
             

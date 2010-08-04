@@ -82,4 +82,7 @@ class na_omit(OWRpy):
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend('R.object', newData)
             self.sendStatus.setText('Data  sent through the R Object channel')
+            
+    def getReportText(self, fileDir):
+        return "NA's were removed from the data and the modified data structure was sent to downstream widgets.\n\n"
 
