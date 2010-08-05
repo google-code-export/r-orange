@@ -55,17 +55,6 @@ class checkBox(widgetBox,widgetState):
         # return
         
     def getReportText(self, fileDir):
-        print 'getting report for checkBox'
-        t = ''
-        if self.label:
-            t += str(self.label)+': '
-
-        t += '</br><table border = "1"><tr><th>Items</th><th>Checked</th></tr>'
-        for i in self.buttons.buttons():
-            t += '<tr><td>'+str(i.text())+'</td><td>'
-            if i.isChecked():
-                t += 'X'
-            t += '</td></tr>'
-        t += '</table></br>'
+        t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
         return t
 

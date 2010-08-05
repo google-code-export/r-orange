@@ -66,11 +66,11 @@ class lineEdit(QLineEdit,widgetState):
             
     def getReportText(self, fileDir):
         print 'getting report text for lineEdit'
-        t = 'Text Edit:'
+        t = ''
         if self.label:
             t += self.label+': '
         if str(self.text()) != '':
-            t += str(self.text())+'</br>'
+            t += str(self.text())+'\n\n'
         else:
-            t += '<div style="color:#00FF00">No data input</div></br>'
+            t += 'No data input\n\n'
         return t

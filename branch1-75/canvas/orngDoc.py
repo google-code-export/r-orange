@@ -990,7 +990,6 @@ class SchemaDoc(QWidget):
         for widget in self.widgets:
             tt = ''
             tt += '\n\n\n--------------------\n\n\n'
-            tt += '\n\n\n--------------------\n\n\n'
             tt += '\n%s\n%s\n'%(widget.caption, '))))))))))))))))))))))))))))))))))))')
             try:
                 tt += widget.instance.getReportText(fileDir)

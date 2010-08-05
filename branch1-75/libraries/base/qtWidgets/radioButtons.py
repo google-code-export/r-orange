@@ -66,5 +66,9 @@ class radioButtons(widgetBox,widgetState):
     def loadSettings(self,data):
         #print 'radioButtons loadSettings' + data
         self.setChecked(data['checked'])
+        
+    def getReportText(self, fileDir):
+        text = '%s with the following element selected:\n\n' % (self.label, self.getChecked())
+        return text
 
 

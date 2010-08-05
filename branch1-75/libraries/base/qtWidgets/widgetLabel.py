@@ -16,6 +16,7 @@ class widgetLabel(QLabel,widgetState):
         # print 'in widgetLabel loadSettings'
         # print data
         self.setText(data['text'])
-    
+    def getReportText(self, fileDir):
+        return ''
         
 

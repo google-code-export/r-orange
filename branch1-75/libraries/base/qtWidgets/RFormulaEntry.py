@@ -110,4 +110,7 @@ class RFormulaEntry(groupBox, widgetState):
         else: # all of the same items are in the elementsListBox so we don't need to change it 
             self.outcomeVariable.update(items)
             self.elementsListBox.update(items)
+            
+    def getReportText(self, fileDir):
+        return 'The following formula was used: %s ~ %s' % self.formula()
         

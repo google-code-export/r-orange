@@ -70,3 +70,6 @@ class spinBox(QSpinBox,widgetState):
             self.hb.show()
         else:
             QSpinBox.show(self)
+            
+    def getReportText(self, fileDir):
+        return '%s set to %s' % (self.label, self.value())

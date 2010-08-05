@@ -104,7 +104,7 @@ class Rtable(widgetState,QTableView):
         #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
         # self.R('txt<-capture.output(summary('+self.Rdata+'))')
         # tmp = self.R('paste(txt, collapse ="\n      ")')
-        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.'
+        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.\n\n'
         return text
 
 class MyTableModel(QAbstractTableModel): 

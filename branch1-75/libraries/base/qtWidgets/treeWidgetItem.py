@@ -54,3 +54,5 @@ class treeWidgetItem(QTreeWidgetItem, widgetState):
                         continue
         except Exception as inst:
             print inst, 'Exception occured in loading child items.'
+    def getReportText(self, fileDir):
+        return 'Please see the Red-R .rrs file for more information on this widget element.\n\n'

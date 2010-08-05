@@ -214,37 +214,4 @@ class listBox(QListWidget,widgetState):
             QListWidget.show(self)
     def getReportText(self, fileDir):
     
-        ## set a new file to hold the line edit data in because there might be a lot of selections.
-        
-        text = ''
-        if self.label:
-            text += self.label+': '
-        else:
-            text += 'Line Edit Data: '
-        text += '</br>'
-        text += '</br><table border="1"><tr><th>Items</th><th>Selected</th></tr>'
-        for i in range(self.count()):
-            # print i
-            text += '<tr><td>'+str(self.item(i).text())+'</td>'
-            if self.isItemSelected(self.item(i)):
-                text += '<td>X</td></tr>'
-            else:
-                text += '<td></td></tr>'
-        text += '</table></br>'
-        import os
-        import time
-        ctime = str(time.time())
-        name = str(os.path.abspath(os.path.join(fileDir, 'labelData'+ctime+'.html')))
-        name = name.replace('\\', '/')
-        file = open(name, "wt")
-        file.write(text)
-        file.close()
-        
-        text2 = ''
-        if self.label:
-            text2 += self.label+': '
-        else:
-            text2 += 'Line Edit Data:'
-        text2 += '<a href="'+name+'">Data</a> (click here to see the data and the selections).</br>'
-        
-        return text2
+        return 'Please see the Red-R .rrs file for more information.\n\n'

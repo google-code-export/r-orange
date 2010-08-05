@@ -47,5 +47,6 @@ class textEdit(QTextEdit,widgetState):
             self.hb.show()
         else:
             QTextEdit.show(self)
-
+    def getReportText(self, fileDir):
+        return self.toPlainText()+'\n\n'
         

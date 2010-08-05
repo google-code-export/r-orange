@@ -81,19 +81,4 @@ class comboBox(QComboBox,widgetState):
         if index != -1:
             self.setCurrentIndex(index)
     def getReportText(self, fileDir):
-        print 'getting report text for comboBox'
-        t = 'ComboBox'
-        if self.label:
-            t += str(self.label)+': '
-            
-        r = self.getSettings()
-        current = str(self.currentText())
-        t += '</br><table border="1"><tr><th>Items</th><th>Checked</th></tr>'
-        for i in r['items']:
-            t += '<tr><td>'+str(i)+'</td><td>'
-            if i == current:
-                t += 'X'
-            t += '</td></tr>'
-        t += '</table>'
-        print t+'</br>'
-        return t+'</br>'
+        return '%s set to %s' % (self.label, self.currentText())
