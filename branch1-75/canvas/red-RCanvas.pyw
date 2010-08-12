@@ -478,7 +478,6 @@ class OrangeCanvasDlg(QMainWindow):
         try:
             fileDir2 = os.path.join(fileDir, os.path.splitext("Data-"+str(os.path.split(name)[1]))[0])
             fileDir2 = str(fileDir2).replace('\\', '/')
-            os.mkdir(fileDir2)  # makes a file to place the temp data into.  This will be deleted once the odt file is made.
             fd3 = []
             for p in fileDir2.split('/'):
                 if len(p) > 8 and ' ' in p:
@@ -486,8 +485,10 @@ class OrangeCanvasDlg(QMainWindow):
                 else:
                     fd3.append(p)
             fileDir2 = '/'.join(fd3)
-        except:
-            print 'Exception, Data directory must exist.'
+            os.mkdir(fileDir2)  # makes a file to place the temp data into.  This will be deleted once the odt file is made.
+            
+        except Exception as inst:
+            print 'Exception, Data directory must exist.', str(inst)
         print fileDir2
         
         ## first take a picture of the canvas and save as png.
@@ -511,13 +512,19 @@ class OrangeCanvasDlg(QMainWindow):
         file.write(text)
         file.close()
         
-        os.system('rst2odt.py "%s" "%s"' % (str(os.path.join(fileDir2, 'content.rst')), name)) ## make system call to generate the document
-        #QMessageBox.information( self, "Red-R Canvas", "Your report should be ready to view.", QMessageBox.Ok + QMessageBox.Default )
-        os.system(name) # make system call to open the document
+        from docutils.core import publish_string
+        from docutils.writers.odf_odt import Writer, Reader
         
+        reader = Reader()
+        writer = Writer()
         
-        # import webbrowser
-        # webbrowser.open(name)
+        output = publish_string(str(text), reader = reader, writer = writer)
+        file = open(name, 'wb')
+        file.write(output)
+        file.close()
+        
+        QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
+
         
     def menuItemClearOutputWindow(self):
         self.output.textOutput.clear()

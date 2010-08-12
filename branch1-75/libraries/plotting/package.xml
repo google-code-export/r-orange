@@ -1,7 +1,7 @@
 <package>
     <Name>plotting</Name>
     <Author>Kyle R Covington kyle@red-r.org</Author>
-    <RLibraries>graphics, ggplot2, asuR, stats</RLibraries>
+    <RLibraries>graphics, stats</RLibraries>
     <Version>
         <Number>1</Number>
         <Stability>Generally Good Some Experimental</Stability>

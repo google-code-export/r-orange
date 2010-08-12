@@ -79,7 +79,6 @@ class hist(OWRpy):
         
         
             self.R('hist(x='+str(self.RFunctionParam_x)+'[,"'+str(self.column.currentText())+'"]'+','+inj+')')
-            return
         else:
             try:
                 self.R('hist(x='+str(self.RFunctionParam_x)+')')

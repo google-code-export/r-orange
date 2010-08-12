@@ -114,6 +114,7 @@ class readFile(OWRpy):
         callback = self.scanNewFile)
         load = redRGUI.button(holder, label = 'Load File',toolTip="Load the file into Red-R",
         callback = self.loadFile)
+        clipboard = redRGUI.button(holder, label = 'Load Clipboard', toolTip = 'Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.', callback = self.loadClipboard)
         holder.layout().setAlignment(Qt.AlignRight)
 
         self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       
@@ -211,9 +212,11 @@ class readFile(OWRpy):
     def scanFile(self):
         self.loadFile(scan=True)
 
-
+    def loadClipboard(self):
+        self.loadFile(scan = 'clipboard')
     
     def loadFile(self,scan=False):
+        print scan
         fn = self.filecombo.getCurrentFile()
         if not fn:
             return
@@ -243,7 +246,7 @@ class readFile(OWRpy):
             header = 'FALSE'
         
         
-        if scan:
+        if scan and scan != 'clipboard':
             nrows = str(self.numLinesScan.text())
         else:
             nrows = '-1'
@@ -275,13 +278,17 @@ class readFile(OWRpy):
                
                 self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
                 processingNotice=True)
+            elif scan == 'clipboard':
+                RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
+                self.R(RStr, processingNotice=True)
+                print 'scan was to clipboard'
             else:
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
-                # print RStr
+                print RStr
                 self.R(RStr, processingNotice=True)
         except:
-            # print sys.exc_info() 
-            # print RStr
+            print sys.exc_info() 
+            print RStr
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
@@ -292,55 +299,59 @@ class readFile(OWRpy):
             self.commit()
 
     def updateScan(self):
-        if self.rowNamesCombo.count() == 0:
-            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-            self.rowNamesCombo.clear()
-            self.rowNamesCombo.addItem('NULL')
-            self.rowNamesCombo.addItems(self.colNames)
-        self.scanarea.clear()
-        # print self.R(self.Rvariables['dataframe_org'])
-        # return
-        
-        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
-        rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-        #print data
-        txt = self.html_table(data,rownames)
-        # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
-        # try:
-            #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
-        # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
-        
-        self.scanarea.setText(txt)
-        # except:
-            # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
-            # QMessageBox.Ok + QMessageBox.Default)
+        try:
+            if self.rowNamesCombo.count() == 0:
+                self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+                self.rowNamesCombo.clear()
+                self.rowNamesCombo.addItem('NULL')
+                self.rowNamesCombo.addItems(self.colNames)
+            self.scanarea.clear()
+            # print self.R(self.Rvariables['dataframe_org'])
             # return
             
-        
-        
-        if len(self.colClasses) ==0:
-            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-            self.myColClasses = self.colClasses
-        if len(self.dataTypes) ==0:
-            types = ['factor','numeric','character','integer','logical']
-            self.dataTypes = []
+            data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
+            + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
+            rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+            #print data
+            txt = self.html_table(data,rownames)
+            # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
+            # try:
+                #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
+            # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
             
-            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                s = redRGUI.radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+            self.scanarea.setText(txt)
+            # except:
+                # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+                # QMessageBox.Ok + QMessageBox.Default)
+                # return
                 
-                # print k,i,str(v)
-                if str(v) in types:
-                    s.setChecked(str(v))
-                else:
-                    s.addButton(str(v))
-                    s.setChecked(str(v))
-                label = redRGUI.widgetLabel(self.columnTypes,label=i)
-                self.columnTypes.layout().addWidget(label,k,0)
-                self.columnTypes.layout().addWidget(s,k,1)
-                
-                self.dataTypes.append([i,s])
             
+            
+            if len(self.colClasses) ==0:
+                self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
+                self.myColClasses = self.colClasses
+            if len(self.dataTypes) ==0:
+                types = ['factor','numeric','character','integer','logical']
+                self.dataTypes = []
+                
+                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                    s = redRGUI.radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                    
+                    # print k,i,str(v)
+                    if str(v) in types:
+                        s.setChecked(str(v))
+                    else:
+                        s.addButton(str(v))
+                        s.setChecked(str(v))
+                    label = redRGUI.widgetLabel(self.columnTypes,label=i)
+                    self.columnTypes.layout().addWidget(label,k,0)
+                    self.columnTypes.layout().addWidget(s,k,1)
+                    
+                    self.dataTypes.append([i,s])
+        except:
+            # there must not have been any way to update the scan, perhaps one of the file names was wrong
+            self.scanarea.clear()
+            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
           
     def html_table(self,lol,rownames):
         s = '<table border="1" cellpadding="3">'

@@ -1,6 +1,6 @@
 """
 <name>Heatmap</name>
-<description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.</description>
+<description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.  You may use the identify functions to create a collection of subclasses of your data.  This function uses the R identify function and will send two signals; one is the list generated from the selections, the second is a vector of class labels matching the columns of the data.  Clustering is done by columns as this is common in expression data.</description>
 <tags>Plotting</tags>
 <RFunctions>stats:heatmap</RFunctions>
 <icon>heatmap.png</icon>
@@ -11,18 +11,20 @@ from OWRpy import *
 import OWGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RList as rlist
+import libraries.base.signalClasses.RModelFit as rmf
+import libraries.base.signalClasses.RVector as rvect
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         
-        self.setRvariableNames(['heatsubset', 'hclust'])
+        self.setRvariableNames(['heatsubset', 'hclust', 'heatvect'])
         self.plotOnConnect = 0
         self.plotdata = ''
         self.rowvChoice = None
         
         self.inputs = [("Expression Matrix", rdf.RDataFrame, self.processMatrix), ('Classes Data', rdf.RDataFrame, self.processClasses)]
-        self.outputs = [("Cluster Subset List", rlist.RList)]
+        self.outputs = [("Cluster Subset List", rlist.RList), ('Cluster Classes', rvect.RVector)]
         
 
         
@@ -126,9 +128,13 @@ class Heatmap(OWRpy):
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
         newData = rlist.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
-        hclust = signals.RModelFit(data = self.Rvariables['hclust'])
-        newData.dictAttrs['cluster'] = hclust
         self.rSend("Cluster Subset List", newData)
+        
+        self.R(self.Rvariables['heatvect']+'<-rep(0, length(colnames('+self.plotdata+')))')
+        self.R('for(i in 1:length('+self.Rvariables['heatsubset']+')){for(j in 1:length(colnames('+self.plotdata+'))){if(colnames('+self.plotdata+')[j] %in%  '+self.Rvariables['heatsubset']+'[[i]]){'+self.Rvariables['heatvect']+'[j]<-i}}}')
+        
+        newDataVect = rvect.RVector(data = self.Rvariables['heatvect'])
+        self.rSend('Cluster Classes', newDataVect)
         
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot

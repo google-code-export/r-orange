@@ -116,12 +116,12 @@ class rowcolPicker(OWRpy):
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[,'+col+']]')
+            ' %in% '+self.ssv+'[,\''+col+'\']]')
                 newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('Data Table', newData)
             if "False" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[,'+col+']]')
+            ' %in% '+self.ssv+'[,\''+col+'\']]')
                 newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('Not Data Table', newDataNot)
         self.SubsetByAttached = 1
