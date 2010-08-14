@@ -18,7 +18,7 @@ class rViewer(OWRpy):
         
         self.inputs = [("data", rvar.RVariable, self.processdata)]
         self.showAll = redRGUI.checkBox(self.bottomAreaRight, 
-        buttons = ['Str only', 'Show All'],orientation="horizontal", setChecked = 'Str only')
+        buttons = ['String', 'Show All'],orientation="horizontal", setChecked = 'String')
         redRGUI.button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
@@ -47,7 +47,8 @@ class rViewer(OWRpy):
         text = ''
         if 'String' in self.showAll.getChecked():
             text += self.R('paste(capture.output(str('+str(self.data.getData())+')), collapse = \'\\n\')')
-            text += '\\n'
+            text += '\n'
+        text += '\n'
         if 'Show All' in self.showAll.getChecked():
             text += self.R('paste(capture.output('+str(self.data.getData())+'), collapse = \'\\n\')')
         self.RoutputWindow.setHtml('<pre>'+str(text)+'</pre>')

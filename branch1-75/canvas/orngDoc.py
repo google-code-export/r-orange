@@ -987,7 +987,12 @@ class SchemaDoc(QWidget):
         
         text = ''
         contents = ''
+        # show the report list and allow the user to select widgets to include in the report.
+        
+        
+        ## get the report info for the included widgets.
         for widget in self.widgets:
+            if not widget.instance.includeInReport.isChecked(): continue # don't include those that don't need to be in the report.
             tt = ''
             tt += '\n\n\n--------------------\n\n\n'
             tt += '\n%s\n%s\n'%(widget.caption, '))))))))))))))))))))))))))))))))))))')
@@ -1040,7 +1045,8 @@ class SchemaDoc(QWidget):
         progressBar.show()
         return progressBar
 
-
+class ReportDialog(QDialog):
+    def __init__(self, parent)
 
 class TemplateDialog(QDialog):
     def __init__(self, parent):

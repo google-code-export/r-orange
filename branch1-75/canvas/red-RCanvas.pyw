@@ -468,12 +468,12 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemReport(self):
         ## start the report generator, handled in orngDoc (where else)
         import datetime
-        qname = QFileDialog.getSaveFileName(self, "Write Report to File", redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", "Open Office Text (*.odt)")
+        qname = QFileDialog.getSaveFileName(self, "Write Report to File", redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
         if qname.isEmpty(): return
         
         
         name = str(qname) # this is the file name of the Report
-        if os.path.splitext(str(name))[1].lower() != ".odt": name = name + '.odt'
+        if os.path.splitext(str(name))[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
         fileDir = os.path.split(name)[0]
         try:
             fileDir2 = os.path.join(fileDir, os.path.splitext("Data-"+str(os.path.split(name)[1]))[0])
@@ -496,7 +496,7 @@ class OrangeCanvasDlg(QMainWindow):
         painter = QPainter(image)
         self.schema.canvasView.scene().render(painter) #
         painter.end()
-        imageFile = os.path.join(fileDir2, 'canvas-image.png')
+        imageFile = os.path.join(fileDir2, 'canvas-image.png').replace('\\', '/')
         if not image.save(imageFile):
             print 'Error in saving schema'
             print image
@@ -513,17 +513,36 @@ class OrangeCanvasDlg(QMainWindow):
         file.close()
         
         from docutils.core import publish_string
-        from docutils.writers.odf_odt import Writer, Reader
-        
-        reader = Reader()
-        writer = Writer()
-        
-        output = publish_string(str(text), reader = reader, writer = writer)
-        file = open(name, 'wb')
-        file.write(output)
-        file.close()
-        
-        QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
+        if os.path.splitext(str(name))[1].lower() in [".odt"]:#, ".html", ".tex"]
+            from docutils.writers.odf_odt import Writer, Reader
+            reader = Reader()
+            writer = Writer()
+            output = publish_string(str(text), reader = reader, writer = writer)
+            file = open(name, 'wb')
+            file.write(output)
+            file.close()
+            
+            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
+        elif os.path.splitext(str(name))[1].lower() in [".tex"]:# , ".tex"]
+            output = publish_string(str(text), writer_name='latex')#, writer = writer, reader = reader)
+
+            file = open(name, 'w')
+            file.write(output)
+            file.close()
+            
+            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
+
+        elif os.path.splitext(str(name))[1].lower() in [".html"]:# , ".tex"]
+            
+            output = publish_string(str(text), writer_name='html')
+            print output
+            print type(output)
+            print str(output)
+            file = open(name, 'w')
+            file.write(output)
+            file.close()
+            
+            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
 
         
     def menuItemClearOutputWindow(self):
