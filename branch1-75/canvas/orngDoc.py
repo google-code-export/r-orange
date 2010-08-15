@@ -988,8 +988,9 @@ class SchemaDoc(QWidget):
         text = ''
         contents = ''
         # show the report list and allow the user to select widgets to include in the report.
-        
-        
+        repDlg = ReportDialog(self.canvasDlg, self.widgets)
+        if repDlg.exec_() == QDialog.Rejected:
+            return
         ## get the report info for the included widgets.
         for widget in self.widgets:
             if not widget.instance.includeInReport.isChecked(): continue # don't include those that don't need to be in the report.
@@ -1046,7 +1047,51 @@ class SchemaDoc(QWidget):
         return progressBar
 
 class ReportDialog(QDialog):
-    def __init__(self, parent)
+    def __init__(self, parent, widgets = None):
+        QDialog.__init__(self, parent)
+        
+        self.setWindowTitle('Report Widget Selector')
+        
+        self.setLayout(QVBoxLayout())
+        layout = self.layout()
+        
+        mainWidgetBox = QWidget(self)
+        mainWidgetBox.setLayout(QVBoxLayout())
+        layout.addWidget(mainWidgetBox)
+
+        topWidgetBox = QWidget(mainWidgetBox)
+        topWidgetBox.setLayout(QHBoxLayout())
+        mainWidgetBox.layout().addWidget(topWidgetBox)
+        
+        topWidgetBox.layout().addWidget(QLabel('Tags:', topWidgetBox))
+        self.widgetList = QListWidget(topWidgetBox)
+        self.widgetList.setSelectionMode(QAbstractItemView.MultiSelection)
+        topWidgetBox.layout().addWidget(self.widgetList)
+        
+        self.widgetNames = {}
+        for widget in widgets:
+            self.widgetNames[widget.caption] = {'inReport': widget.instance.includeInReport.isChecked(), 'widget':widget}
+        print self.widgetNames.keys()
+        self.widgetList.addItems(self.widgetNames.keys())
+        count = int(self.widgetList.count())
+        
+        for i in range(count):
+            item = self.widgetList.item(i)
+            if self.widgetNames[str(item.text())]['inReport']:
+                self.widgetList.setItemSelected(item, True)
+        buttonWidgetBox = QWidget(mainWidgetBox)
+        buttonWidgetBox.setLayout(QHBoxLayout())
+        mainWidgetBox.layout().addWidget(buttonWidgetBox)
+        
+        acceptButton = QPushButton('Accept', buttonWidgetBox)
+        buttonWidgetBox.layout().addWidget(acceptButton)
+        QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
+        QObject.connect(self.widgetList, SIGNAL("itemClicked(QListWidgetItem *)"), self.widgetListItemClicked)
+        
+    def widgetListItemClicked(self, item):
+        itemText = str(item.text())
+        self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
+        
 
 class TemplateDialog(QDialog):
     def __init__(self, parent):
