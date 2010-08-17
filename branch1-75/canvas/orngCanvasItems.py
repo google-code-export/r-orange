@@ -151,7 +151,7 @@ class CanvasLine(QGraphicsLineItem):
 # #######################################
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
     def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, widgetSettings = None, forceInSignals = None, forceOutSignals = None, ghost = False):        
-
+        # print widgetSettings
         self.signalManager = signalManager
         self.widgetInfo = widgetInfo
         self.widgetSettings = widgetSettings

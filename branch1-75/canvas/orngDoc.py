@@ -323,13 +323,15 @@ class SchemaDoc(QWidget):
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            print str(forceInSignals) 
-            print str(forceOutSignals)
+            #print str(forceInSignals) 
+            #print str(forceOutSignals)
             #print 'adding widget '+caption
+            #print widgetSettings
             if widgetInfo.name == 'Dummy': print 'Loading dummy step 2'
-            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+            # print 'asdfasdfasfasdfasdfasdfasdfasd'
+            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings = widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
-            
+            print newwidget
         except:
             type, val, traceback = sys.exc_info()
             print str(traceback)
@@ -865,7 +867,7 @@ class SchemaDoc(QWidget):
                 inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
                 outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
 
-                print 'Settings', settings
+                #print 'Settings', settings
                 tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
                 int(widget.getAttribute("yPos")) + addY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
                 

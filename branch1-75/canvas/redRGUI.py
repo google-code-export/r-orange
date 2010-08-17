@@ -4,7 +4,6 @@ import math, glob
 print 'Importing in redRGUI'
 import redREnviron
 import orngOutput
-from numpy import *
 import os.path
 import imp
         

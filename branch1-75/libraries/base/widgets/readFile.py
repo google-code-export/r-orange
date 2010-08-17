@@ -50,8 +50,9 @@ class readFile(OWRpy):
         area.layout().setAlignment(options,Qt.AlignTop)
         
         
-        box = redRGUI.groupBox(options, label="Load File", 
-        addSpace = True, orientation='horizontal')
+        self.browseBox = redRGUI.groupBox(options, label="Load File", 
+        addSpace = True, orientation='vertical')
+        box = redRGUI.widgetBox(self.browseBox,orientation='horizontal')
         self.filecombo = redRGUI.fileNamesComboBox(box, 
         orientation='horizontal',callback=self.scanNewFile)
         
@@ -110,11 +111,13 @@ class readFile(OWRpy):
         width=50,orientation='horizontal')
         
         holder = redRGUI.widgetBox(options,orientation='horizontal')
+        clipboard = redRGUI.button(holder, label = 'Load Clipboard', 
+        toolTip = 'Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.', 
+        callback = self.loadClipboard)
         rescan = redRGUI.button(holder, label = 'Rescan File',toolTip="Preview a small portion of the file",
         callback = self.scanNewFile)
         load = redRGUI.button(holder, label = 'Load File',toolTip="Load the file into Red-R",
         callback = self.loadFile)
-        clipboard = redRGUI.button(holder, label = 'Load Clipboard', toolTip = 'Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.', callback = self.loadClipboard)
         holder.layout().setAlignment(Qt.AlignRight)
 
         self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       
@@ -152,15 +155,15 @@ class readFile(OWRpy):
         self.delimiter.setChecked('Other')
         
     def loadCustomSettings(self,settings):
-        # print 'loadCustomSettings readfile'
+        #print settings
+        if not self.filecombo.getCurrentFile():
+            redRGUI.widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
         for i in range(len(self.myColClasses)):
             s = redRGUI.radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
             s.setChecked(self.myColClasses[i])
-            # index = s.findText(self.myColClasses[i])
-            # if index != -1:
-                # s.setCurrentIndex(index)
-            s.setEnabled(False)
+            if not self.filecombo.getCurrentFile():
+                s.setEnabled(False)
             q = redRGUI.widgetLabel(self.columnTypes,label=self.colNames[i])
             self.columnTypes.layout().addWidget(s, i, 1)
             self.columnTypes.layout().addWidget(q, i, 0)
@@ -216,7 +219,7 @@ class readFile(OWRpy):
         self.loadFile(scan = 'clipboard')
     
     def loadFile(self,scan=False):
-        print scan
+        #print scan
         fn = self.filecombo.getCurrentFile()
         if not fn:
             return
