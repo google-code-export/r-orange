@@ -130,8 +130,8 @@ class Heatmap(OWRpy):
         newData = rlist.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
         self.rSend("Cluster Subset List", newData)
         
-        self.R(self.Rvariables['heatvect']+'<-rep(0, length(colnames('+self.plotdata+')))')
-        self.R('for(i in 1:length('+self.Rvariables['heatsubset']+')){for(j in 1:length(colnames('+self.plotdata+'))){if(colnames('+self.plotdata+')[j] %in%  '+self.Rvariables['heatsubset']+'[[i]]){'+self.Rvariables['heatvect']+'[j]<-i}}}')
+        self.R(self.Rvariables['heatvect']+'<-NULL; k<-1')
+        self.R('for(i in colnames('+self.plotdata+')){for(j in 1:length('+self.Rvariables['heatsubset']+')){if(i %in%  '+self.Rvariables['heatsubset']+'[[j]]){'+self.Rvariables['heatvect']+'[k]<-j; k <- k+1}}}')
         
         newDataVect = rvect.RVector(data = self.Rvariables['heatvect'])
         self.rSend('Cluster Classes', newDataVect)
