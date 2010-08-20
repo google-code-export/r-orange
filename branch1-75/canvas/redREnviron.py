@@ -46,7 +46,7 @@ def __getDirectoryNames():
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
     downloadsDir = os.path.join(settingsDir, "downloads")
     
-    documentsDir = os.path.join(os.path.expanduser('~'), 'Documents', 'Red-R')
+    documentsDir = os.path.join(os.path.expanduser('~'), 'Red-R')
     if not os.path.isdir(documentsDir):
         os.makedirs(documentsDir)
     templatesDir = os.path.join(documentsDir, 'Templates')
