@@ -18,6 +18,7 @@ class comboBox(QComboBox,widgetState):
         else:
             widget.layout().addWidget(self)
             self.hasLabel = False
+        self.label = label
         if items:
             self.addItems([unicode(i) for i in items])
         # print callback
@@ -79,4 +80,5 @@ class comboBox(QComboBox,widgetState):
         index = self.findText(current)
         if index != -1:
             self.setCurrentIndex(index)
-    
+    def getReportText(self, fileDir):
+        return '%s set to %s' % (self.label, self.currentText())

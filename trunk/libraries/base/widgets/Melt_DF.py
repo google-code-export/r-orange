@@ -74,3 +74,16 @@ class Melt_DF(OWRpy):
         newData = rdf.RDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("melt.data.frame Output", newData)
+        
+    def getReportText(self, fileDir):
+        text = 'Reshaped (melted) the data using the following parameters:\n\n'
+        text += 'Remove NA: '
+        if self.RFunctionParam_na_rm == 0: text += 'TRUE'
+        else: text += 'FALSE'
+        text += '\n\nVariable Name For Reshaping: %s\n\n' % str(self.RFunctionParam_variable_name.text())
+        text += 'ID Variables: '
+        for item in ivItem:
+            text += str(ivItem.text())+', '
+        text += '\n\n'
+        return text
+        

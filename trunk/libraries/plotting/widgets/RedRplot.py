@@ -73,3 +73,28 @@ class RedRplot(OWRpy):
         for name in self.plotAttributes.keys():
             if self.plotAttributes[name] != None:
                 self.R(self.plotAttributes[name])
+    
+    def getReportText(self, fileDir):
+        if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            
+        injection = []
+        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab=\''+str(self.RFunctionParamxlab_lineEdit.text())+'\''
+            injection.append(string)
+        if str(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = 'ylab=\''+str(self.RFunctionParamylab_lineEdit.text())+'\''
+            injection.append(string)
+        if str(self.RFunctionParammain_lineEdit.text()) != '':
+            string = 'main=\''+str(self.RFunctionParammain_lineEdit.text())+'\''
+            injection.append(string)
+        inj = ','.join(injection)
+        self.R('plot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+            
+        return text

@@ -26,6 +26,8 @@ class RList(RVariable, UnstructuredDict):
             return self._convertToVariable()
         elif varClass == BaseRedRVariable:
             return self._convertToVariable()
+        elif varClass == RList:
+            return self
         elif varClass == UnstructuredDict:
             return self._convertToUnstructuredDict()
         else:

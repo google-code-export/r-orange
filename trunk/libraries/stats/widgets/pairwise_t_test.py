@@ -60,3 +60,7 @@ class pairwise_t_test(OWRpy):
         self.RoutputWindow.insertPlainText(tmp)
         out = rvar.RVariable(data=self.Rvariables["pairwise.t.test"])
         self.rSend("pairwise.t.test Output", out)
+    def getReportText(self, fileDir):
+        text = 'Pairwise T-Test of the attached data.  Result below:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

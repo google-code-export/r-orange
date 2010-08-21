@@ -1,7 +1,7 @@
 """
 <name>View R Output</name>
 <author>Kyle R. Covington</author>
-<description>Shows the output of an R variable, equivalent to typing the variable name in the R Executor</description>
+<description>Shows the output of an R variable, equivalent to typing the variable name in the R Executor.</description>
 <tags>R</tags>
 <icon>rexecutor.png</icon>
 <priority>10</priority>
@@ -18,7 +18,7 @@ class rViewer(OWRpy):
         
         self.inputs = [("data", rvar.RVariable, self.processdata)]
         self.showAll = redRGUI.checkBox(self.bottomAreaRight, 
-        buttons = ['Show All Rows', 'Show All Columns'],orientation="horizontal")
+        buttons = ['String', 'Show All'],orientation="horizontal", setChecked = 'String')
         redRGUI.button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea)
@@ -44,9 +44,15 @@ class rViewer(OWRpy):
     def commitFunction(self):
         if not self.data: return
         self.RoutputWindow.clear()
-        try:
-            text = self.data.showSummary()
-        except Exception, msg:
-            print str(msg), 'Show Summary must not exist in this signal type'
-            text = self.R('paste(capture.output(str('+str(self.data.getData())+')), collapse = \'\\n\')')
+        text = ''
+        if 'String' in self.showAll.getChecked():
+            text += self.R('paste(capture.output(str('+str(self.data.getData())+')), collapse = \'\\n\')')
+            text += '\n'
+        text += '\n'
+        if 'Show All' in self.showAll.getChecked():
+            text += self.R('paste(capture.output('+str(self.data.getData())+'), collapse = \'\\n\')')
         self.RoutputWindow.setHtml('<pre>'+str(text)+'</pre>')
+    def getReportText(self, fileDir):
+        text = 'The following was displayed in the rViewer widget:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

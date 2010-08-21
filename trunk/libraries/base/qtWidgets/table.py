@@ -93,3 +93,6 @@ class table(widgetState,QTableWidget):
 
     def delete(self):
         sip.delete(self)
+        
+    def getReportText(self, fileDir):
+        return 'Please see the Red-R .rrs file for more information on this widget element.\n\n'

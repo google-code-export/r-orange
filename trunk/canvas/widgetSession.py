@@ -184,16 +184,16 @@ class widgetSession():
                 if v == None:
                     continue
                 elif 'pythonObject' in v.keys():
-                    print '|#| Setting pythonObject %s to %s' % (k,str(v['pythonObject']))
+                    #print '|#| Setting pythonObject %s to %s' % (k,str(v['pythonObject']))
                     self.__setattr__(k, v['pythonObject'])
                 elif 'signalsObject' in v.keys():
-                    print '|#| Setting signalsObject'
+                    #print '|#| Setting signalsObject'
                     varClass = self.setSignalClass(v['signalsObject'])
                     self.__setattr__(k, varClass)
                 elif 'sentItemsList' in v.keys():
                     #self.setSentItemsList(v['sentItemsList'])        
                     for (sentItemName, sentItemDict) in v['sentItemsList']:
-                        print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
+                        #print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
                         for kk,vv in sentItemDict.items():
                             var = self.setSignalClass(vv)
                             self.send(sentItemName, var,id=kk)

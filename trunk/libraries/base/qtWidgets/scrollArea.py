@@ -43,3 +43,5 @@ class scrollArea(QScrollArea,widgetState):
             separator(widget, 0, addSpace)
         elif addSpace:
             separator(widget)
+    def getReportText(self, fileDir):
+        return ''

@@ -1,6 +1,6 @@
 """
 <name>Heatmap</name>
-<description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.</description>
+<description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.  You may use the identify functions to create a collection of subclasses of your data.  This function uses the R identify function and will send two signals; one is the list generated from the selections, the second is a vector of class labels matching the columns of the data.  Clustering is done by columns as this is common in expression data.</description>
 <tags>Plotting</tags>
 <RFunctions>stats:heatmap</RFunctions>
 <icon>heatmap.png</icon>
@@ -11,18 +11,20 @@ from OWRpy import *
 import OWGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RList as rlist
+import libraries.base.signalClasses.RModelFit as rmf
+import libraries.base.signalClasses.RVector as rvect
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         
-        self.setRvariableNames(['heatsubset', 'hclust'])
+        self.setRvariableNames(['heatsubset', 'hclust', 'heatvect'])
         self.plotOnConnect = 0
         self.plotdata = ''
         self.rowvChoice = None
         
         self.inputs = [("Expression Matrix", rdf.RDataFrame, self.processMatrix), ('Classes Data', rdf.RDataFrame, self.processClasses)]
-        self.outputs = [("Cluster Subset List", rlist.RList)]
+        self.outputs = [("Cluster Subset List", rlist.RList), ('Cluster Classes', rvect.RVector)]
         
 
         
@@ -126,6 +128,56 @@ class Heatmap(OWRpy):
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
         newData = rlist.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
-        hclust = signals.RModelFit(data = self.Rvariables['hclust'])
-        newData.dictAttrs['cluster'] = hclust
         self.rSend("Cluster Subset List", newData)
+        
+        self.R(self.Rvariables['heatvect']+'<-NULL; k<-1')
+        self.R('for(i in colnames('+self.plotdata+')){for(j in 1:length('+self.Rvariables['heatsubset']+')){if(i %in%  '+self.Rvariables['heatsubset']+'[[j]]){'+self.Rvariables['heatvect']+'[k]<-j; k <- k+1}}}')
+        
+        newDataVect = rvect.RVector(data = self.Rvariables['heatvect'])
+        self.rSend('Cluster Classes', newDataVect)
+        
+    def getReportText(self, fileDir):
+        ## print the plot to the fileDir and then send a text for an image of the plot
+        if self.plotdata != '':
+            self.R('png(file="'+fileDir+'/heatmap'+str(self.widgetID)+'.png")')
+            if str(self.classesDropdown.currentText()) != '':
+                self.classes = self.classesData+'$'+str(self.classesDropdown.currentText())
+            if self.classes and ('Show Classes' in self.showClasses.getChecked()):
+                colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
+            else:
+                colClasses = ''
+            colorType = str(self.colorTypeCombo.currentText())
+            if colorType == 'rainbow':
+                start = float(float(self.startSaturation.value())/100)
+                end = float(float(self.endSaturation.value())/100)
+                print start, end
+                col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
+            else:
+                col = colorType+'(50)'
+            self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
+            self.R('dev.off()')
+            # for making the pie plot
+            self.R('png(file="'+fileDir+'/pie'+str(self.widgetID)+'.png")')
+            if colorType == 'rainbow':
+                start = float(float(self.startSaturation.value())/100)
+                end = float(float(self.endSaturation.value())/100)
+                print start, end
+                col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
+            else:
+                col = colorType+'(10)'
+            self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
+            self.R('dev.off()')
+            self.R('png(file="'+fileDir+'/identify'+str(self.widgetID)+'.png")')
+            self.R('plot(hclust(dist(t('+self.plotdata+'))))')
+            self.R('dev.off()')
+            text = 'The following plot was generated in the Heatmap Widget:\n\n'
+            text += '.. image:: '+fileDir+'/heatmap'+str(self.widgetID)+'.png\n     :scale: 50%%\n\n'
+            #text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
+            text += '.. image:: '+fileDir+'/pie'+str(self.widgetID)+'.png\n     :scale: 30%%\n\n'
+            text += '**Intensity Chart:** Intensity levels are shown in this pie chart from low values to high.\n\n'
+            text += '.. image:: '+fileDir+'/identify'+str(self.widgetID)+'.png\n   :scale: 50%%\n\n\n'
+            text += '**Clustering:** A cluster dendrogram of the column data.\n\n'
+        else:
+            text = 'Nothing to plot from this widget'
+            
+        return text

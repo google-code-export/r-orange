@@ -402,12 +402,20 @@ class AboutDlg(QDialog):
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
         '; Build Time: ' + info['DATE'] + '' + 
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
+        self.licenceButton = redRGUI.button(self, 'Licence', callback = self.showLicence)
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)
         self.layout().addWidget(b)
         butt = b.addButton(QDialogButtonBox.Close)
         self.connect(butt, SIGNAL("clicked()"), self.accept)
+    def showLicence(self):
+        ## show the Red-R licence
         
+        file = open(os.path.join(redREnviron.directoryNames['redRDir'], 'licence.txt'), 'r')
+        text = file.read()
+        file.close()
+        
+        self.about.setHtml('<pre>'+text+'</pre>')
         
 if __name__=="__main__":
     import sys

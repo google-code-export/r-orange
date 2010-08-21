@@ -1,5 +1,6 @@
 from redRGUI import widgetState
 from RSession import Rcommand
+from RSession import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy,sip
@@ -95,6 +96,16 @@ class Rtable(widgetState,QTableView):
                 self.setItemSelected(self.item(i[0],i[1]),True)
     def delete(self):
         sip.delete(self)
+    def getReportText(self, fileDir):
+        # import os
+        # fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
+        # fname = fname.replace('\\', '/')
+        # print fname
+        #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
+        # self.R('txt<-capture.output(summary('+self.Rdata+'))')
+        # tmp = self.R('paste(txt, collapse ="\n      ")')
+        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.\n\n'
+        return text
 
 class MyTableModel(QAbstractTableModel): 
     def __init__(self, Rdata, parent,editable=False): 
@@ -107,25 +118,32 @@ class MyTableModel(QAbstractTableModel):
         #print parent
         QAbstractTableModel.__init__(self,parent) 
         
+        #print 'length rownams %d' % len(self.rownames)
+        
+        # if self.editable:
+            # self.arraydata = self.R('as.matrix(rbind(c("rownames",colnames(as.data.frame(' +Rdata+ '))), cbind(rownames(as.data.frame(' +Rdata+')),'+Rdata+')))', wantType = 'list')
+            # self.colnames.insert(0,'Row Names')
+            # self.rownames.insert(0,'Row Names')
+        # else:
+        #self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
         self.initData(Rdata)
+        # print self.arraydata
+        # print 'arraydata type:' ,type(self.arraydata)
     def flags(self,index):
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
         else:
             return (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
     def rowCount(self, parent): 
-        return len(self.arraydata[0])
+        return len(self.arraydata)
  
     def initData(self,Rdata):
         self.Rdata = Rdata
         self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list',silent=True)
         self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
-        print self.colnames
-        print self.rownames
-        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'array',silent=True)
-        print self.arraydata, '# this is the array'
+        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'listOfLists',silent=True)
     def columnCount(self, parent): 
-        return len(self.arraydata)
+        return len(self.arraydata[0])
  
     def data(self, index, role): 
         # print 'in data'
@@ -133,20 +151,20 @@ class MyTableModel(QAbstractTableModel):
             return QVariant() 
         elif role != Qt.DisplayRole: 
             return QVariant() 
-        return QVariant(self.arraydata[index.column()][index.row()]) 
+        return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
         print 'in setData', data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
         elif role == Qt.EditRole: 
-            print self.arraydata[index.column()][index.row()]
-            self.arraydata[index.column()][index.row()] = data.toString()
+            print self.arraydata[index.row()][index.column()]
+            self.arraydata[index.row()][index.column()] = data.toString()
             Rcmd = '%s[%d,%d]="%s"' % (self.Rdata, index.row(), index.column(), data.toString())
             # print Rcmd
             self.R(Rcmd)
             print self.arraydata
-            print self.arraydata[index.column()][index.row()]
+            print self.arraydata[index.row()][index.column()]
             self.emit(SIGNAL("dataChanged()"))
             return True
         # elif role == Qt.BackgroundRole:
@@ -158,15 +176,13 @@ class MyTableModel(QAbstractTableModel):
         return False
     
     def headerData(self, col, orientation, role):
-        try:
-            if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-                return QVariant(self.colnames[col])
-            elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
-                return QVariant(self.rownames[col])
-            return QVariant()
-        except:
-            print 'Exception in headerData'
-            return QVariant()
+        # print 'in headerData', col
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return QVariant(self.colnames[col])
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
+            return QVariant(self.rownames[col])
+        return QVariant()
+    
     def setHeaderData(self,col,orientation,data,role):
         # print 'in setHeaderData'
         if orientation == Qt.Horizontal and role == Qt.EditRole:
@@ -231,8 +247,7 @@ class MyTableModel(QAbstractTableModel):
     def sort(self, Ncol, order):
         """Sort table by given column number.
         """
-        #if self.editable: 
-        return
+        if self.editable: return
         print 'in sort'
         import operator
         self.emit(SIGNAL("layoutAboutToBeChanged()"))

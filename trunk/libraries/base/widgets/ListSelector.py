@@ -29,6 +29,7 @@ class ListSelector(OWRpy):
         
         #GUI
         box = redRGUI.groupBox(self.controlArea, "List Data")
+        self.infoa = redRGUI.widgetLabel(self.controlArea, '')
         self.names = redRGUI.listBox(box, callback = self.sendSelection)
         
     def process(self, data):
@@ -49,28 +50,29 @@ class ListSelector(OWRpy):
                 
     def sendSelection(self):
         print self.names.selectedItems()[0]
-        self.R(self.Rvariables['listelement']+'<-'+self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]')
+        self.Rvariables['listelement'] = self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]'
         # use signals converter in OWWidget to convert to the signals class
         myclass = self.R('class('+self.Rvariables['listelement']+')')[0]
-        print 'myclass',myclass
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
             newData = rdf.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
             self.rSend('R Data Frame', newData)
-            print 'Sent Data Frame'
+            self.infoa.setText('Sent Data Frame')
         elif myclass == 'list':
             newData = rlist.RList(data = self.Rvariables['listelement'])
             self.rSend('R List', newData)
-            print 'Sent List'
+            self.infoa.setText('Sent List')
         elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer']:
             newData = rvec.RVector(data = self.Rvariables['listelement'])
             self.rSend('R Vector', newData)
-            print 'Sent Vector'
+            self.infoa.setText('Sent Vector')
         elif myclass in ['matrix']:
             newData = rmat.RMatrix(data = self.Rvariables['listelement'])
             self.rSend('R Matrix', newData)
-            print 'Sent Matrix'
+            self.infoa.setText('Sent Matrix')
         else:
             newData = rvar.RVariable(data = self.Rvariables['listelement'])
             self.rSend('R Variable', newData)
-            print 'Send Variable', myclass
+            self.infoa.setText('Send Variable', myclass)
+    def getReportText(self, fileDir):
+        return 'The %s element of the incomming data was sent.\n\n' % (self.Rvariables['listelement'])

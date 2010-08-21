@@ -61,3 +61,32 @@ class hist(OWRpy):
                 self.Rplot('hist(x='+str(self.RFunctionParam_x)+')', 3, 3)
             except:
                 self.status.setText('Please make sure that you used the right kind of data.')
+    def getReportText(self, fileDir):
+        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            
+        if self.needsColumns:
+            injection = []
+            if self.RFunctionParam_main.text() != '':
+                injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
+            if self.RFunctionParam_xlab.text() != '':
+                injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+                
+            if injection != []:
+                inj = ','.join(injection)
+            else: inj = ''
+        
+        
+            self.R('hist(x='+str(self.RFunctionParam_x)+'[,"'+str(self.column.currentText())+'"]'+','+inj+')')
+        else:
+            try:
+                self.R('hist(x='+str(self.RFunctionParam_x)+')')
+            except:
+                self.status.setText('Please make sure that you used the right kind of data.')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+            
+        return text

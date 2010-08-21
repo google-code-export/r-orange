@@ -36,3 +36,7 @@ class summary(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+    def getReportText(self, fileDir):
+        text = 'Summary of attached data:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

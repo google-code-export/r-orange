@@ -54,4 +54,6 @@ class intersect(OWRpy):
         newData = rvec.RVector(data = self.Rvariables["intersect"])
         
         self.rSend("intersect Output", newData)
+    def getReportText(self, fileDir):
+        return 'Sends the intersecting element, those that are the same, in the two incomming data vectors.\n\n'
 

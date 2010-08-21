@@ -208,4 +208,6 @@ class mergeR(OWRpy):
             if self.colBsel == '\'Rownames\'':
                 self.colBsel = '0'
         except: return
+    def getReportText(self, fileDir):
+        return 'Data from %s was merged with data from %s using the %s column in the first table and %s in the second.\n\n' % (self.dataA, self.dataB, self.colAsel, self.colBsel)
     

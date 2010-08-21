@@ -20,7 +20,7 @@ class rowcolPicker(OWRpy):
         self.dataClass = None
         self.dataParent = None
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
-        
+        self.SubsetByAttached = 0
         
         self.inputs = [('Data Table', rdf.RDataFrame, self.setWidget), 
         ('Subsetting Vector', rdf.RDataFrame, self.setSubsettingVector)]
@@ -116,15 +116,15 @@ class rowcolPicker(OWRpy):
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[,'+col+']]')
+            ' %in% '+self.ssv+'[,\''+col+'\']]')
                 newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('Data Table', newData)
             if "False" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[,'+col+']]')
+            ' %in% '+self.ssv+'[,\''+col+'\']]')
                 newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('Not Data Table', newDataNot)
-
+        self.SubsetByAttached = 1
     def subset(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None or self.data == '': 
             self.status.setText("Connect data before processing")
@@ -152,3 +152,18 @@ class rowcolPicker(OWRpy):
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
                 newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('Not Data Table', newDataNot)
+        self.SubsetByAttached = 0
+    def getReportText(self, fileDir):
+        if self.SubsetByAttached:
+            text = 'Data was subset by '+str(self.rowcolBox.getChecked())+' '+str(self.subsetColumn.currentText())+'\n\n'
+        else:
+            text = 'Data was subset by the following selections:\n\n'
+            selectedDFItems = []
+            for name in self.attributes.selectedItems():
+                selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
+                
+            for name in selectedDFItems:
+                text += '-'+str(name)+'\n\n'
+                
+        text += '\n\n'
+        return text

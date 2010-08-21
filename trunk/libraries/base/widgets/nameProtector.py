@@ -88,3 +88,5 @@ class nameProtector(OWRpy):
         self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')')
         self.parentData['data'] = self.Rvariables['nameProtector']
         self.rSend("Vector", self.parentData)
+    def getReportText(self, fileDir):
+        return 'Names of the incomming data were changed to fit valid names in R.\n\n'

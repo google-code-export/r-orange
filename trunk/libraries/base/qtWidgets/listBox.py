@@ -38,6 +38,7 @@ class listBox(QListWidget,widgetState):
             self.setToolTip(toolTip)
         if callback:
             QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
+        self.label = label
     def sizeHint(self):
         return self.defaultSizeHint
     def hide(self):
@@ -211,5 +212,6 @@ class listBox(QListWidget,widgetState):
             self.hb.show()
         else:
             QListWidget.show(self)
-
+    def getReportText(self, fileDir):
     
+        return 'Please see the Red-R .rrs file for more information.\n\n'

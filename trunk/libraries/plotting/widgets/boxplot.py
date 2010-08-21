@@ -18,6 +18,7 @@ class boxplot(OWRpy):
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         redRGUI.button(box, 'Save as PDF', callback = self.savePlot)
+        self.commandLine = redRGUI.lineEdit(box, label = 'Command Line')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
@@ -25,15 +26,27 @@ class boxplot(OWRpy):
             self.commitFunction()
     def savePlot(self):
         if self.x == '': return
-        self.savePDF('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')
+        self.savePDF('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE'+str(self.commandLine.text())+')')
         self.status.setText('Plot Saved')
     def commitFunction(self):
         if self.x == '': 
             self.status.setText('Do data. Can not plot')
             return
         try:
-            self.Rplot('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE)')
+            self.Rplot('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE'+str(self.commandLine.text())+')')
         except:
             QMessageBox.information(self,'R Error', "Plotting failed.  Try to format the data in a way that is acceptable for this widget.\nSee the documentation for help.", 
             QMessageBox.Ok + QMessageBox.Default)
             return
+    def getReportText(self, fileDir):
+        if self.x == '': return 'Nothing to plot from this widget.\n\n'
+        
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            
+        self.R('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE'+str(self.commandLine.text())+')')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+            
+        return text

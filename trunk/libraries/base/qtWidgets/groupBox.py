@@ -5,7 +5,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class groupBox(QGroupBox,widgetState):
-    def __init__(self,widget, label = None, orientation='vertical', addSpace=False, sizePolicy = None, margin = -1, spacing = -1, flat = 0):
+    def __init__(self,widget, label = None, orientation='vertical', addSpace=False, 
+    sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop):
         if label:
             QGroupBox.__init__(self,label)
         else:
@@ -27,7 +28,7 @@ class groupBox(QGroupBox,widgetState):
         if self.layout() == 0 or self.layout() == None:
             self.setLayout(QVBoxLayout())
 
-        if spacing == -1: spacing = 4
+        if spacing == -1: spacing = 8
         self.layout().setSpacing(spacing)
         if margin != -1:
             self.layout().setMargin(margin)
@@ -41,10 +42,8 @@ class groupBox(QGroupBox,widgetState):
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
 
-    # def getSettings(self):
-        # return self.getState()
-    # def loadSettings(self,data):
-        # self.setState(data)
+        self.layout().setAlignment(alignment)
+
     def delete(self):
         
         # itemRange = self.layout().count()
@@ -56,7 +55,16 @@ class groupBox(QGroupBox,widgetState):
                 # except: pass
             # sip.delete(item)
         sip.delete(self)
-        
+    def getReportText(self, fileDir):
+        children = self.children()
+        text = ''
+        for i in children:
+            try:
+                text += i.getReportText(fileDir)
+            except Exception as inst:
+                print inst
+                continue
+        return text
 
         
 

@@ -1047,3 +1047,6 @@ drawLegend(items)\n""" % (str(legendItems)))
         
     def loadSettings(self,data):
         pass # there are no settings to set at the moment
+        
+    def getReportText(self, fileDir):
+        return 'Please see the Red-R .rrs file for more information about the plot in this widget.\n\n'

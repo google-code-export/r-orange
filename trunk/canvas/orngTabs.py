@@ -433,19 +433,21 @@ class WidgetListBase:
     def insertWidgets(self, itab, tab, widgetRegistry):
         #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
         widgets = None
-        # for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
-        for wName in widgetRegistry['widgets'].keys():
-            widgetInfo = widgetRegistry['widgets'][wName]
-            try:
-                if str(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
-                    button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
-                    if button not in tab.widgets:
-                        tab.widgets.append(button)
-                    self.allWidgets.append(button)
-                        
-            except Exception as inst: 
-                print inst
-                pass
+        try:
+            for wName in widgetRegistry['widgets'].keys():
+                widgetInfo = widgetRegistry['widgets'][wName]
+                try:
+                    if str(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
+                        button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
+                        if button not in tab.widgets:
+                            tab.widgets.append(button)
+                        self.allWidgets.append(button)
+                            
+                except Exception as inst: 
+                    print inst
+                    pass
+        except:
+            pass
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)

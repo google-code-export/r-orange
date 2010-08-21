@@ -40,6 +40,7 @@ class lineEdit(QLineEdit,widgetState):
         # self.setText('asdf')
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
+        self.label = label
     def getSettings(self):
         #print 'in get settings' + self.text()
         r = {'text': self.text()}
@@ -62,3 +63,14 @@ class lineEdit(QLineEdit,widgetState):
             #self.setEnabled(data['enabled'])
         except:
             print 'Loading of lineEdit encountered an error.'
+            
+    def getReportText(self, fileDir):
+        print 'getting report text for lineEdit'
+        t = ''
+        if self.label:
+            t += self.label+': '
+        if str(self.text()) != '':
+            t += str(self.text())+'\n\n'
+        else:
+            t += 'No data input\n\n'
+        return t

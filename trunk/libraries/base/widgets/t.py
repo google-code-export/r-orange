@@ -38,3 +38,6 @@ class t(OWRpy):
         newData = rdf.RDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("t Output", newData)
+    def getReportText(self, fileDir):
+        text = 'Data transposed and sent to downstream widgets.\n\n'
+        return text

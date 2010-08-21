@@ -17,14 +17,7 @@ class kruskal_test(OWRpy):
          
         self.RFunctionParam_data = ''
         self.inputs = [("data", rvar.RVariable, self.processdata)]
-        
-        self.help.setHtml('<small>Performs the Kruskal Walis test on a set of data.  This should be a data.frame or data tabel with one column representing the outcome and another representing a group or grouping variable.  The Formula section should be entered in the form of outcom variable ~ grouping variable.  If multiple groups are used you may use the * key to separate them.  Example: height ~ foodQuality * genes.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-        #box = redRGUI.tabWidget(self.controlArea)
-        #self.standardTab = box.createTabPage(name = "Standard")
-        #self.advancedTab = box.createTabPage(name = "Advanced")
-        #self.RFunctionParamsubset_lineEdit =  redRGUI.lineEdit(self.controlArea, label = "Subset:")
-        #self.RFunctionParamx_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x:")
-        #self.RFunctionParamg_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "g:")
+
         self.RFunctionParamformula =  redRGUI.RFormulaEntry(self.controlArea)
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
@@ -60,4 +53,7 @@ class kruskal_test(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
         self.status.setText('Data sent')
-
+    def getReportText(self, fileDir):
+        text = 'Perform a kruskal test of the attached data.  A summary of the output is below:\n\n'
+        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        return text

@@ -436,3 +436,6 @@ class DataExplorer(OWRpy):
         qApp.restoreOverrideCursor()
     def deleteWidget(self):
         self.rowcolDialog.close()
+        
+    def getReportText(self, fileDir):
+        return 'Data was examined and possibly subset based on some Column Critera.  Please see the Red-R .rrs file or the included notes for more information on this subsetting.\n\n'

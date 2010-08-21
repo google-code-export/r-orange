@@ -31,8 +31,11 @@ class fileNamesComboBox(comboBox):
             self.setFileList()
             # self.addItems(self.files)
             ind = self.findText(data['current'])
-            if ind:
+            #print 'aaaaaaaaaaa', ind
+            if ind != -1:
                 self.setCurrentIndex(ind)
+            else:
+                self.setCurrentIndex(0)
         except:
             print 'Loading of comboBox encountered an error.'
             import traceback,sys
@@ -41,19 +44,27 @@ class fileNamesComboBox(comboBox):
             print '-'*60        
 
     def setFileList(self):
+        import copy
         if self.files == None: self.files = ['Select File']
         self.clear()
-        # print self.files
+        newFiles = []
         for file in self.files:
+            #print file
             if os.path.exists(file) or file =='Select File':
                 self.addItem(os.path.basename(file))
-            else:
-                self.files.remove(file)
-        
+                newFiles.append(file)
+           # else:
+                #self.addItem('Not Found - ' + os.path.basename(file))
+                #newFiles.append(file)
+        self.files = newFiles
+        # print self.files
+        # print len(self.files)
         if len(self.files) > 1:
             self.setCurrentIndex(1)
         else:
             self.setCurrentIndex(0)
+            
+        
     def addFile(self,fn):
         if fn in self.files:
             self.files.remove(str(fn))

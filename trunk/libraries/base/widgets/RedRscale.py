@@ -54,3 +54,7 @@ class RedRscale(OWRpy):
         newData = signals.RMatrix.RMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("scale Output", newData)
+    def getReportText(self, fileDir):
+        text = 'Data was centered: %s \n\n' % (str(self.RFunctionParamcenter_radioButtons.getChecked()))
+        text += 'Data was scaled: %s \n\n' % (str(self.RFunctionParamscale_radioButtons.getChecked()))
+        return text

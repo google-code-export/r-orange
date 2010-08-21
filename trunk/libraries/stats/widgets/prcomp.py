@@ -22,7 +22,7 @@ class prcomp(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs = [("x", signals.RDataFrame.RDataFrame, self.processx)]
         self.outputs = [("prcomp Output", signals.RModelFit.RModelFit), ("Scaled Data", signals.RMatrix.RMatrix)]
-        self.help.setHtml('<small>This widget performs principal component analysis on a data table containing numeric data.  The entire data fit is returned in the prcomp Output channel and the fit to the principal components is returned from the Scaled Data channel.  To view the prinicpal components graphically you may want to select the desired principal components and pass that on to a plotting widget.  More infromation on this function can be seen <a href="http://sekhon.berkeley.edu/stats/html/prcomp.html">here</a>.</small>')
+
         redRGUI.button(self.controlArea, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
@@ -38,3 +38,6 @@ class prcomp(OWRpy):
         self.rSend("prcomp Output", newPRComp)
         newPRCompMatrix = signals.RMatrix.RMatrix(data = self.Rvariables['prcomp']+'$x')
         self.rSend("Scaled Data", newPRCompMatrix)
+    def getReportText(self, fileDir):
+        text = 'This widget generates principal component fits to data and sends that fit and the resulting matrix of components to downstream widgets.  Please see the .rrs file or other output for more informaiton.\n\n'
+        return text

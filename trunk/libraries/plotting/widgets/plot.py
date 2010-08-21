@@ -90,4 +90,38 @@ class plot(OWRpy):
         for name in self.plotAttributes.keys():
             if self.plotAttributes[name] != None:
                 self.R(self.plotAttributes[name])
+    def getReportText(self, fileDir):
+        ## print the plot to the fileDir and then send a text for an image of the plot
+        if self.RFunctionParam_x != '':
+            self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            if self.RFunctionParam_x == '': return 'Nothing to plot from this widget'
+            injection = []
+            if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
+                injection.append('pch=rownames('+self.RFunctionParam_x+')')
+            if str(self.RFunctionParam_main.text()) != '':
+                injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
+            if str(self.RFunctionParam_xlab.text()) != '':
+                injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+            if str(self.RFunctionParam_ylab.text()) != '':
+                injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+            if str(self.RFunctionParam_cex.text()) != '100':
+                mag = float(str(self.RFunctionParam_cex.text()))/100
+                injection.append('cex.lab = '+str(mag))
+                injection.append('cex.axis = '+str(mag))
+            if injection != []:
+                inj = ','+','.join(injection)
+            else: inj = ''
+
+            self.R('plot('+str(self.RFunctionParam_x)+inj+')')
+            for name in self.plotAttributes.keys():
+                if self.plotAttributes[name] != None:
+                    self.R(self.plotAttributes[name])
+            self.R('dev.off()')
+            text = 'The following plot was generated:\n\n'
+            #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+            text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        else:
+            text = 'Nothing to plot from this widget'
+            
+        return text
 

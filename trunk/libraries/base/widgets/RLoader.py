@@ -65,3 +65,7 @@ class RLoader(OWRpy):
         
     def customWidgetDelete(self):
         self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { local(rm(ls()), envir = ' + self.Rvariables['sessionEnviron'] + ')}')
+        
+    def getReportText(self, fileDir):
+        text = 'Data loaded from '+str(self.infoa.text()).replace('\\', '/')+'.\n\n'
+        return text

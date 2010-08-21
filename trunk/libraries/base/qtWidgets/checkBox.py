@@ -16,7 +16,7 @@ class checkBox(widgetBox,widgetState):
             self.layout().addWidget(self.box)
         else:
             self.box = self
-            
+        self.label = label
         self.buttons = QButtonGroup(self.box)
         self.buttons.setExclusive(False)
         for i,b in zip(range(len(buttons)),buttons):
@@ -54,5 +54,7 @@ class checkBox(widgetBox,widgetState):
         
         # return
         
-        
+    def getReportText(self, fileDir):
+        t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
+        return t
 

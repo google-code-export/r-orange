@@ -323,13 +323,15 @@ class SchemaDoc(QWidget):
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            print str(forceInSignals) 
-            print str(forceOutSignals)
+            #print str(forceInSignals) 
+            #print str(forceOutSignals)
             #print 'adding widget '+caption
+            #print widgetSettings
             if widgetInfo.name == 'Dummy': print 'Loading dummy step 2'
-            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+            # print 'asdfasdfasfasdfasdfasdfasdfasd'
+            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.canvas, self.canvasView, widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings = widgetSettings, forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
-            
+            print newwidget
         except:
             type, val, traceback = sys.exc_info()
             print str(traceback)
@@ -422,6 +424,7 @@ class SchemaDoc(QWidget):
             self.removeWidget(widget, saveTempDoc = False)   # remove widgets from last to first
         RSession.Rcommand('rm(list = ls())')
         self.canvas.update()
+        self.schemaName = ""
         self.saveTempDoc()
         
 
@@ -864,7 +867,7 @@ class SchemaDoc(QWidget):
                 inputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['inputs'])
                 outputs = cPickle.loads(self.loadedSettingsDict[widget.getAttribute('widgetID')]['outputs'])
 
-                print 'Settings', settings
+                #print 'Settings', settings
                 tempWidget = self.addWidgetByFileName(name, x = int(widget.getAttribute("xPos")), y = int(
                 int(widget.getAttribute("yPos")) + addY), caption = widget.getAttribute("caption"), widgetSettings = settings, saveTempDoc = False)
                 
@@ -976,6 +979,58 @@ class SchemaDoc(QWidget):
         else:
             #e.ignore()
             QWidget.keyPressEvent(self, e)
+            
+    
+# #######################################
+# # Report Generator
+# #######################################
+    def getReportText(self, fileDir):
+        ## very simply we need to loop through the widgets and get some info about them and put that into the report.
+        
+        text = ''
+        contents = ''
+        # show the report list and allow the user to select widgets to include in the report.
+        repDlg = ReportDialog(self.canvasDlg, self.widgets)
+        if repDlg.exec_() == QDialog.Rejected:
+            return
+        ## get the report info for the included widgets.
+        for widget in self.widgets:
+            if not widget.instance.includeInReport.isChecked(): continue # don't include those that don't need to be in the report.
+            tt = ''
+            tt += '\n\n\n--------------------\n\n\n'
+            tt += '\n%s\n%s\n'%(widget.caption, '))))))))))))))))))))))))))))))))))))')
+            try:
+                tt += widget.instance.getReportText(fileDir)
+                tt += '\n\n\n--------------------\n\n\n'
+                tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
+                tt += str(widget.instance.notes.toPlainText())+'\n\n'
+                tt += '\n\n\n--------------------\n\n\n'
+                tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
+                try:
+                    if widget.instance.inputs:
+                        #tt += '<h4>Signals</h4><strong>The following signals were sent to this widget:</strong></br>'
+                        
+                        
+                        for input in widget.instance.inputs:
+                            for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
+                                tt += '-The Signal *%s* is linked to widget *%s*\n\n' % (input[0], iwidget.captionTitle)
+                except: pass
+                try:
+                    if widget.instance.outputs:
+                        #tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
+                        for output in widget.instance.outputs:
+                            for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
+                                tt += '-This widget sends the signal *%s* to widget *%s*\n\n' % (output[0], owidget.captionTitle)
+                except:
+                    pass
+            except Exception as inst:
+                print '##########################'
+                print str(inst)
+                print '##########################'
+                tt += 'Error occured in report generation for this widget'
+            text += tt+'\n\n'
+            
+        return text
 # #######################################
 # # Progress Bar
 # #######################################
@@ -993,7 +1048,52 @@ class SchemaDoc(QWidget):
         progressBar.show()
         return progressBar
 
+class ReportDialog(QDialog):
+    def __init__(self, parent, widgets = None):
+        QDialog.__init__(self, parent)
+        
+        self.setWindowTitle('Report Widget Selector')
+        
+        self.setLayout(QVBoxLayout())
+        layout = self.layout()
+        
+        mainWidgetBox = QWidget(self)
+        mainWidgetBox.setLayout(QVBoxLayout())
+        layout.addWidget(mainWidgetBox)
 
+        topWidgetBox = QWidget(mainWidgetBox)
+        topWidgetBox.setLayout(QHBoxLayout())
+        mainWidgetBox.layout().addWidget(topWidgetBox)
+        
+        topWidgetBox.layout().addWidget(QLabel('Tags:', topWidgetBox))
+        self.widgetList = QListWidget(topWidgetBox)
+        self.widgetList.setSelectionMode(QAbstractItemView.MultiSelection)
+        topWidgetBox.layout().addWidget(self.widgetList)
+        
+        self.widgetNames = {}
+        for widget in widgets:
+            self.widgetNames[widget.caption] = {'inReport': widget.instance.includeInReport.isChecked(), 'widget':widget}
+        print self.widgetNames.keys()
+        self.widgetList.addItems(self.widgetNames.keys())
+        count = int(self.widgetList.count())
+        
+        for i in range(count):
+            item = self.widgetList.item(i)
+            if self.widgetNames[str(item.text())]['inReport']:
+                self.widgetList.setItemSelected(item, True)
+        buttonWidgetBox = QWidget(mainWidgetBox)
+        buttonWidgetBox.setLayout(QHBoxLayout())
+        mainWidgetBox.layout().addWidget(buttonWidgetBox)
+        
+        acceptButton = QPushButton('Accept', buttonWidgetBox)
+        buttonWidgetBox.layout().addWidget(acceptButton)
+        QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
+        QObject.connect(self.widgetList, SIGNAL("itemClicked(QListWidgetItem *)"), self.widgetListItemClicked)
+        
+    def widgetListItemClicked(self, item):
+        itemText = str(item.text())
+        self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
+        
 
 class TemplateDialog(QDialog):
     def __init__(self, parent):

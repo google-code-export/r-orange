@@ -32,3 +32,6 @@ class SearchDialog(QDialog):
     def updateUrl(self, url):
         self.webView.load(QUrl(url))
         
+    def getReportText(self, fileDir):
+        return ''
+        

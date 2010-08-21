@@ -89,8 +89,7 @@ class rExecutor(OWRpy):
             self.rSend('R.object', newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
-                self.R(self.Rvariables['rExecutor_cm']+'<-list()')
-                newData = rvec.RVector(data = str(self.command.text()), cm = self.Rvariables['rExecutor_cm'])
+                newData = rvec.RVector(data = str(self.command.text()))
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
@@ -196,5 +195,13 @@ class rExecutor(OWRpy):
                 print 'Error with colnames, may not exist.'
     def isList(self):
         self.status.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
+        
+    def getReportText(self, fileDir):
+        ## report for this entry
+        text = ''
+        text += 'The following is entered into the R Executor:</br>'
+        text += '<pre>'+str(self.thistext.toPlainText())+'</pre>'
+        
+        return text
         
         

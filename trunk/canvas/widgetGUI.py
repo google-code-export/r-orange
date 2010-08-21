@@ -166,10 +166,13 @@ class widgetGUI(QMainWindow):
         self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
         self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
         self.printButton = redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printWidget)
+        self.includeInReport = redRGUI.button(self.bottomAreaLeft, 'Include In Report', toggleButton = True)
+        self.includeInReport.setChecked(True)
         self.statusBar.addPermanentWidget(self.showHelpButton)
         self.statusBar.addPermanentWidget(self.showNotesButton)
         self.statusBar.addPermanentWidget(self.showROutputButton)
         self.statusBar.addPermanentWidget(self.printButton)
+        self.statusBar.addPermanentWidget(self.includeInReport)
         
         
         self.GUIDialogDialog = None

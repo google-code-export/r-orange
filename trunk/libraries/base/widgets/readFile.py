@@ -12,7 +12,7 @@
 from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
-import rpy2.conversion2rpy as c2rpy
+
 import re
 import textwrap
 import cPickle
@@ -50,8 +50,9 @@ class readFile(OWRpy):
         area.layout().setAlignment(options,Qt.AlignTop)
         
         
-        box = redRGUI.groupBox(options, label="Load File", 
-        addSpace = True, orientation='horizontal')
+        self.browseBox = redRGUI.groupBox(options, label="Load File", 
+        addSpace = True, orientation='vertical')
+        box = redRGUI.widgetBox(self.browseBox,orientation='horizontal')
         self.filecombo = redRGUI.fileNamesComboBox(box, 
         orientation='horizontal',callback=self.scanNewFile)
         
@@ -110,6 +111,9 @@ class readFile(OWRpy):
         width=50,orientation='horizontal')
         
         holder = redRGUI.widgetBox(options,orientation='horizontal')
+        clipboard = redRGUI.button(holder, label = 'Load Clipboard', 
+        toolTip = 'Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.', 
+        callback = self.loadClipboard)
         rescan = redRGUI.button(holder, label = 'Rescan File',toolTip="Preview a small portion of the file",
         callback = self.scanNewFile)
         load = redRGUI.button(holder, label = 'Load File',toolTip="Load the file into Red-R",
@@ -151,15 +155,15 @@ class readFile(OWRpy):
         self.delimiter.setChecked('Other')
         
     def loadCustomSettings(self,settings):
-        # print 'loadCustomSettings readfile'
+        #print settings
+        if not self.filecombo.getCurrentFile():
+            redRGUI.widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
         for i in range(len(self.myColClasses)):
             s = redRGUI.radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
             s.setChecked(self.myColClasses[i])
-            # index = s.findText(self.myColClasses[i])
-            # if index != -1:
-                # s.setCurrentIndex(index)
-            s.setEnabled(False)
+            if not self.filecombo.getCurrentFile():
+                s.setEnabled(False)
             q = redRGUI.widgetLabel(self.columnTypes,label=self.colNames[i])
             self.columnTypes.layout().addWidget(s, i, 1)
             self.columnTypes.layout().addWidget(q, i, 0)
@@ -211,13 +215,22 @@ class readFile(OWRpy):
     def scanFile(self):
         self.loadFile(scan=True)
 
-
+    def loadClipboard(self):
+        self.loadFile(scan = 'clipboard')
     
     def loadFile(self,scan=False):
+        #print scan
         fn = self.filecombo.getCurrentFile()
         if not fn:
             return
+
         self.R(self.Rvariables['filename'] + ' = "' + fn + '"') # should protext if R can't find this file
+        
+        # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
+            # self.delimiter.setChecked('Tab')
+        # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
+            # self.delimiter.setChecked('Comma')
+
         if self.delimiter.getChecked() == 'Tab': #'tab'
             sep = '\\t'
         elif self.delimiter.getChecked() == 'Space':
@@ -236,7 +249,7 @@ class readFile(OWRpy):
             header = 'FALSE'
         
         
-        if scan:
+        if scan and scan != 'clipboard':
             nrows = str(self.numLinesScan.text())
         else:
             nrows = '-1'
@@ -268,11 +281,17 @@ class readFile(OWRpy):
                
                 self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
                 processingNotice=True)
+            elif scan == 'clipboard':
+                RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
+                self.R(RStr, processingNotice=True)
+                print 'scan was to clipboard'
             else:
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
-                # print RStr
+                print RStr
                 self.R(RStr, processingNotice=True)
         except:
+            print sys.exc_info() 
+            print RStr
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
@@ -283,93 +302,110 @@ class readFile(OWRpy):
             self.commit()
 
     def updateScan(self):
-        if self.rowNamesCombo.count() == 0:
-            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-            self.rowNamesCombo.clear()
-            self.rowNamesCombo.addItem('NULL')
-            self.rowNamesCombo.addItems(self.colNames)
-        self.scanarea.clear()
-        # fill the scan area with the R data
-        data = self.R(self.Rvariables['dataframe_org'], wantType = 'rpy2')
-        
-        txt = self.html_table(data)
-        # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
-        # try:
-            #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
-        # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
-        
-        self.scanarea.setText(txt)
-        # except:
-            # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
-            # QMessageBox.Ok + QMessageBox.Default)
+        try:
+            if self.rowNamesCombo.count() == 0:
+                self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+                self.rowNamesCombo.clear()
+                self.rowNamesCombo.addItem('NULL')
+                self.rowNamesCombo.addItems(self.colNames)
+            self.scanarea.clear()
+            # print self.R(self.Rvariables['dataframe_org'])
             # return
             
-        
-        
-        if len(self.colClasses) ==0:
-            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-            self.myColClasses = self.colClasses
-        if len(self.dataTypes) ==0:
-            types = ['factor','numeric','character','integer','logical']
-            self.dataTypes = []
+            data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
+            + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
+            rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+            #print data
+            txt = self.html_table(data,rownames)
+            # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
+            # try:
+                #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
+            # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
             
-            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                s = redRGUI.radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+            self.scanarea.setText(txt)
+            # except:
+                # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+                # QMessageBox.Ok + QMessageBox.Default)
+                # return
                 
-                # print k,i,str(v)
-                if str(v) in types:
-                    s.setChecked(str(v))
-                else:
-                    s.addButton(str(v))
-                    s.setChecked(str(v))
-                label = redRGUI.widgetLabel(self.columnTypes,label=i)
-                self.columnTypes.layout().addWidget(label,k,0)
-                self.columnTypes.layout().addWidget(s,k,1)
-                
-                self.dataTypes.append([i,s])
             
+            
+            if len(self.colClasses) ==0:
+                self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
+                self.myColClasses = self.colClasses
+            if len(self.dataTypes) ==0:
+                types = ['factor','numeric','character','integer','logical']
+                self.dataTypes = []
+                
+                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                    s = redRGUI.radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                    
+                    # print k,i,str(v)
+                    if str(v) in types:
+                        s.setChecked(str(v))
+                    else:
+                        s.addButton(str(v))
+                        s.setChecked(str(v))
+                    label = redRGUI.widgetLabel(self.columnTypes,label=i)
+                    self.columnTypes.layout().addWidget(label,k,0)
+                    self.columnTypes.layout().addWidget(s,k,1)
+                    
+                    self.dataTypes.append([i,s])
+        except:
+            # there must not have been any way to update the scan, perhaps one of the file names was wrong
+            self.scanarea.clear()
+            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
           
-    def html_table(self,data):
-        print data, data.names, data.rownames()
-        
+    def html_table(self,lol,rownames):
         s = '<table border="1" cellpadding="3">'
         s+= '  <tr><td>Rownames</td><td><b>'
-        s+= '    </b></td><td><b>'.join(c2rpy.rvec2list(data.names))
+        s+= '    </b></td><td><b>'.join(lol[0])
         s+= '  </b></td></tr>'
-        lol = []
-        lol.append(c2rpy.rvec2list(data.rownames()))
-        dataDict = c2rpy.rdf2dict(data)
-        for name in data.names:
-            lol.append(dataDict[name])
-        print lol
         
-        print lol
-        for j in range(len(lol[0])):
-            s += '  <tr>'
-            for i in range(len(lol)):
-                s+= '  <td>' +lol[i][j] + '</td>'
-            s += '  </tr>'
+        for row, sublist in zip(rownames,lol[1:]):
+            s+= '  <tr><td><b>' +row + '</b></td><td>'
+            s+= '    </td><td>'.join(sublist)
+            s+= '  </td></tr>'
         s+= '</table>'
         return s
         
     def updateGUI(self):
         dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', 'getRData')
-        self.infob.setText(self.R(self.Rvariables['filename'])[0])
+        self.infob.setText(self.R(self.Rvariables['filename']))
         self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
-        
-        # import globalData
-        # globalData.setGlobalData(self,'urls',{'dictybase':'http://www.dictybase.org/gene/{db_gene_id}'},description='url')
         sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("data.frame", sendData)
         
-    def compileReport(self):
-        self.reportSettings("File Name", [(self.Rvariables['filename'], self.R(self.Rvariables['filename']))])
+    def getReportText(self, fileDir):
+        ## custom implementation of the reporting system for read Files.
+        text = ''
+        try:
+            text += 'File Source: '+str(self.filecombo.currentText())+'\n\n'
+            text += 'Reading Data\n\nData was read into the canvas using the following settings:\n\n'
+            text += 'Column Seperator: '+str(self.delimiter.getChecked())+'\n\n'
+            text += 'Use Column Header:'
+            if 'Column Headers' in self.hasHeader.getChecked():
+                text += ' Yes\n\n'
+            else:
+                text += ' No\n\n'
+            text += 'The following column in the orriginal data was used as the Rownames for the table: %s\n\n' %(self.rownames)
+            text += 'Other options include the following:\n\n'
+            for i in self.otherOptions.getChecked():
+                text += str(i) + '=TRUE\n\n'
+                
+            text += '\n\nClasses for the columns are as follows:\n\n'
+            for i in range(len(rownames)):
+                text += '%s set to %s \n\n' % (self.colNames[i], self.colClasses[i])
+            text += '\n\n'
+        except Exception as inst:
+            print '<strong>', str(inst), '</strong>'
+            pass
         
-        self.reportRaw(self.fileInfo.toHtml())
-        #self.finishReport()
+        
+        return text
         
         
         

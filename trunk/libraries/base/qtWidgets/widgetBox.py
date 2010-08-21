@@ -5,7 +5,7 @@ from PyQt4.QtGui import *
         
 class widgetBox(QWidget,widgetState):
     def __init__(self,widget, orientation='vertical', addSpace=False, 
-    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1):
+    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop):
 
         QWidget.__init__(self,widget)
             
@@ -32,9 +32,9 @@ class widgetBox(QWidget,widgetState):
         # else:
             # self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         
-            
+        self.layout().setAlignment(alignment)            
 
-        if spacing == -1: spacing = 4
+        if spacing == -1: spacing = 8
         self.layout().setSpacing(spacing)
         if margin != -1:
             self.layout().setMargin(margin)
@@ -53,4 +53,15 @@ class widgetBox(QWidget,widgetState):
                 # except: pass
             # sip.delete(item)
         sip.delete(self)
+        
+    def getReportText(self, fileDir):
+        children = self.children()
+        text = ''
+        for i in children:
+            try:
+                text += i.getReportText(fileDir)
+            except Exception as inst:
+                print inst
+                continue
+        return text
         

@@ -182,3 +182,6 @@ class lineEditHint(lineEdit):
             self.itemsAsStrings = settings['itemsAsStrings']
         except:
             print 'Loading of lineEditHint encountered an error.'
+            
+    def getReportText(self, fileDir):
+        return '%s set to %s\n\n' % (self.label, self.text())

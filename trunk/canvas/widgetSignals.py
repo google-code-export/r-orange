@@ -144,7 +144,6 @@ class widgetSignals():
         self.linksIn[signalName] = existing + [(0, widgetFrom, handler, [])]    # (dirty, handler, signalData)
         #if not self.linksIn.has_key(signalName): self.linksIn[signalName] = [(0, widgetFrom, handler, [])]    # (dirty, handler, signalData)
 
-    # delete a link from widgetFrom and this widget with name signalName
     
     def removeOutputConnection(self, widgetTo, signalName):
         if self.linksOutWidgets.has_key(signalName):
