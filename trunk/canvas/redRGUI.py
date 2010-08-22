@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, glob 
-print 'Importing in redRGUI'
+# print 'Importing in redRGUI'
 import redREnviron
 import orngOutput
 import os.path
@@ -49,16 +49,15 @@ def registerQTWidgets():
                 qtWidgets.append(guiClass)
                 qtwidget = imp.load_source(package+guiClass,filename)
                 c = getattr(qtwidget,guiClass)
-                setattr(c,'__package__',package)
+                # setattr(c,'__package__',package)
                 
                 setattr(m, guiClass,c)
             setattr(current_module,package,m)
         except:
-            print 'Exception Ocurred'
-            try:
-                orngOutput.printException()    
-            except:
-                print 'printException failed in orngOutput.py'
+            import sys, traceback
+            print '-'*60
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60        
 
 for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir'] + '/base/qtWidgets', "*.py")):
     if os.path.isdir(filename) or os.path.islink(filename):
@@ -67,7 +66,7 @@ for filename in glob.iglob(os.path.join(redREnviron.directoryNames['libraryDir']
     qtWidgets.append(guiClass)
     qtwidget = imp.load_source('base' + guiClass,filename)
     c = getattr(qtwidget,guiClass)
-    setattr(c,'__package__','base')
+    # setattr(c,'__package__','base')
     setattr(current_module, guiClass,c)
 
 registerQTWidgets()

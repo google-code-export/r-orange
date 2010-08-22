@@ -77,6 +77,9 @@ Section "" ;this is the section that will install Red-R and all of it's files
     SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\canvas\icons"
 	File /r /x .svn /x *.pyc /x .nsi ${CANVASICONS}\*
     
+    SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\libraries\__init__.py"
+	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\__init__.py
+    
     SetOutPath "$INSTDIR\${NAME}-${REDRVERSION}\libraries\base"
 	File /r /x .svn /x *.pyc /x .nsi ${LIBRARIES}\base\*
     
