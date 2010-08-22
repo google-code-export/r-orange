@@ -22,7 +22,7 @@ class RVariable(BaseRedRVariable):
         return 'class('+self.data+')'
         
     def getClass_data(self):
-        return self.R(self.getData(), silent = True, wantType = 'rpy2').rclass[0]
+        return self.R(self.getClass_call(), silent = True)
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'
         return text
