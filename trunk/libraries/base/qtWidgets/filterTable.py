@@ -32,7 +32,8 @@ class filterTable(widgetBox,redRGUI.widgetState):
         
         self.R = Rcommand
         self.Rdata = None
-        
+        self.filteredData = None
+
         self.criteriaList = {}
         self.parent = widget
         self.tm=None
@@ -66,13 +67,12 @@ class filterTable(widgetBox,redRGUI.widgetState):
         #print Rdata
         if not filtered:
             self.Rdata = data
+            self.filteredData = data
         
         filtered = self.R('nrow(%s)' % data)
         total = self.R('nrow(%s)' % self.Rdata)
         self.label.setText('Showing %d of %d rows.' % (filtered,total))
-        # if self.tm:
-            # self.tm.initData(Rdata)
-        # else:
+
         self.tm = MyTableModel(data,parent=self,editable=self.editable)
         self.table.setModel(self.tm)
     
@@ -125,9 +125,10 @@ class filterTable(widgetBox,redRGUI.widgetState):
                 checked = []
             levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
             levels.insert(0,'Check All')
-            if len(levels) > 1:
-                scroll = redRGUI.scrollArea(self.optionsBox)
+            if len(levels) > 10:
+                scroll = redRGUI.scrollArea(self.optionsBox,spacing=1)
                 c = redRGUI.checkBox(scroll,buttons=levels,setChecked = checked)
+                scroll.setWidget(c)
             else:
                 c = redRGUI.checkBox(self.optionsBox,buttons=levels,setChecked = checked)
             
@@ -266,7 +267,9 @@ class filterTable(widgetBox,redRGUI.widgetState):
         # print 'string:', self.filteredData
         self.setRTable(self.filteredData,filtered=True)
              
-
+    def getFilteredData(self):
+        return self.filteredData
+        
     def getSettings(self):
         r = {'Rdata': self.Rdata,
         'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]}
@@ -319,19 +322,31 @@ class MyTableModel(QAbstractTableModel):
         else:
             return (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
     def rowCount(self,parent): 
-        return len(self.arraydata)
+        return len(self.rownames)
  
     def initData(self,Rdata):
         self.Rdata = Rdata
+        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'listOfLists',silent=True)
+        # print 'self.arraydata' , self.arraydata
+
         self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list',silent=True)
         self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
-        self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'listOfLists',silent=True)
+        if len(self.rownames) ==0: self.rownames = [1]
+        # print self.rownames, self.rowCount(self)
+        # print self.colnames
+
+        if self.arraydata == [[]]:
+            toAppend= ['' for i in xrange(self.columnCount(self))]
+            self.arraydata = [toAppend]
+        # print 'self.arraydata' , self.arraydata
+
+        
         
     def columnCount(self,parent): 
-        return len(self.arraydata[0])
+        return len(self.colnames)
  
     def data(self, index, role): 
-        # print 'in data'
+        # print 'in data', index.row(),index.column()
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 

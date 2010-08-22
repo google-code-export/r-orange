@@ -38,16 +38,15 @@ class rowFilter(OWRpy):
         self.tableArea = redRGUI.widgetBox(self.controlArea)
         
         #############################
-        #self.R('data <- data.frame(a=c("a","b","c","d","e"),b=1:5000,c=as.character(c("a","b","c","d","e")))')
+        # self.R('data <- data.frame(a=c("a","b","c","d","e"),b=as.factor(1:5000),c=as.character(c("a","b","c","d","e")))')
        
-        self.R('data <- iris')
-        self.R('data$c <- as.character(data$Species)')
-        self.data = 'data'
+        # self.R('data <- iris')
+        
+        # self.R('data$c <- as.character(data$Species)')
+        # self.data = 'data'
+        # self.table = redRGUI.filterTable(self.tableArea,sortable=True, Rdata='data')
         #############################
-        
-        
-        
-        self.table = redRGUI.filterTable(self.tableArea,sortable=True, Rdata='data')
+        self.table = redRGUI.filterTable(self.tableArea,sortable=True)
         
         redRGUI.button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
         self.dimsInfoArea = redRGUI.widgetLabel(self.bottomAreaCenter, '')
@@ -62,7 +61,8 @@ class rowFilter(OWRpy):
         self.table.setRTable(self.data)
         
     def commitSubset(self):
-        newData = rdf.RDataFrame(data = self.filteredData, parent = self.dataParent.getData())
+        filteredData = self.table.getFilteredData()
+        newData = rdf.RDataFrame(data = filteredData, parent = self.dataParent.getData())
 
         self.rSend('Data Subset', newData)
 
