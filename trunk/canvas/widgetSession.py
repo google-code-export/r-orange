@@ -231,7 +231,7 @@ class widgetSession():
         try: # try to reload the output class from the signals
             
             # try to get the class variabel (var) this will be done by accessing the class info of the class attribute of data
-            import libraries
+            #import libraries
             varc = libraries
             for mod in d['class'].split('.')[1:]:
                 varc = getattr(varc, mod)

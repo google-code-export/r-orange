@@ -2,7 +2,9 @@
 import os, sys, user, cPickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-print 'Importing redREnviron.py'
+if sys.platform=="win32":
+    import win32com.client
+#print 'Importing redREnviron.py'
 def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
     try:
@@ -45,12 +47,22 @@ def __getDirectoryNames():
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
     downloadsDir = os.path.join(settingsDir, "downloads")
-    
-    documentsDir = os.path.join(os.path.expanduser('~'), 'Red-R')
+
+    if sys.platform=="win32":
+        objShell = win32com.client.Dispatch("WScript.Shell")
+        documentsDir = os.path.join(objShell.SpecialFolders("MyDocuments"),'Red-R')
+        # print documentsDir
+    else:
+        documentsDir = os.path.join(os.path.expanduser('~'), 'Red-R')
+        
     if not os.path.isdir(documentsDir):
         os.makedirs(documentsDir)
     templatesDir = os.path.join(documentsDir, 'Templates')
-    if not os.path.isdir(templatesDir): os.makedirs(templatesDir)
+    if not os.path.isdir(templatesDir): 
+        os.makedirs(templatesDir)
+    schemaDir = os.path.join(documentsDir, 'Schemas')
+    if not os.path.isdir(schemaDir): 
+        os.makedirs(schemaDir)
         
 
     for dname in [settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir,downloadsDir]:
@@ -61,7 +73,7 @@ def __getDirectoryNames():
     
     tempDir = setTempDir(canvasSettingsDir, 1)
     # print tempDir
-    return dict([(name, vars()[name]) for name in ["tempDir", "templatesDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ["tempDir", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -183,7 +195,8 @@ def addOrangeDirectoriesToPath(directoryNames):
     
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
-            sys.path.insert(0, path)
+            #sys.path.insert(0, path)
+            sys.path.append(path)
 
 directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
