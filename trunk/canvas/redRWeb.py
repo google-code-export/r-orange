@@ -1,1 +1,0 @@
-## Red-R web interface.  A collection of modules and functions that interact with the web.  These may include convenience functions for accessing or parsing data and for conversion to python and R objects.

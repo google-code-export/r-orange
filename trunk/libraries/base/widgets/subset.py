@@ -10,6 +10,9 @@
 from OWRpy import *
 import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RList as rlist
+
+
 import libraries.base.signalClasses.RVector as rvec
 class subset(OWRpy): 
 
@@ -20,7 +23,7 @@ class subset(OWRpy):
         self.setRvariableNames(['subset'])
         
         
-        self.inputs = [('Subset On', rdf.RDataFrame, self.processA),('Subset By', rdf.RDataFrame, self.processB)]
+        self.inputs = [('Subset On', rdf.RDataFrame, self.processA),('Subset By', rlist.RList, self.processB)]
         
         self.outputs = [('Data Table', rdf.RDataFrame)]
         
@@ -45,6 +48,10 @@ class subset(OWRpy):
         
     def processA(self, data):
         #print 'processA'
+        if not data:
+            self.colA.update([])
+            return 
+            
         self.dataA = data.getData()
         colsA = self.R('colnames('+self.dataA+')',wantType='list') #collect the sample names to make the differential matrix
         
@@ -55,11 +62,13 @@ class subset(OWRpy):
             self.subset()
 
     def processB(self, data):
-        #print 'processB'
+        if not data:
+            self.colsB.update([])
+            return 
         self.dataB = data.getData()
-        colsB = self.R('colnames('+self.dataB+')',wantType='list') #collect the sample names to make the differential matrix
+        colsB = self.R('names('+self.dataB+')',wantType='list') #collect the sample names to make the differential matrix
         
-        colsB.insert(0, 'Rownames')
+        
         self.colB.update(colsB)
 
         if 'Subset on input' in self.mergeLikeThis.getChecked():
@@ -74,8 +83,6 @@ class subset(OWRpy):
     def setcolB(self):
         try:
             self.colBsel = '\''+str(self.colB.selectedItems()[0].text())+'\''
-            if self.colBsel == '\'Rownames\'':
-                self.colBsel = '0'
         except: return
 
     def subset(self):
@@ -85,10 +92,10 @@ class subset(OWRpy):
         
         if self.colAsel == None and self.colBsel == None and type(h) is str: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,"' + h +'"]'
-            +' %in% '+self.dataB+'[,"'+h+'"],]')
+            +' %in% '+self.dataB+'[["'+h+'"]],]')
         elif self.colAsel and self.colBsel: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
-            +' %in% '+self.dataB+'[,'+self.colBsel+'],]')
+            +' %in% '+self.dataB+'[['+self.colBsel+']],]')
             
         newData = rdf.RDataFrame(data = self.Rvariables['subset'])
         self.rSend('Data Table', newData)

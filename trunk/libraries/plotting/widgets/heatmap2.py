@@ -2,6 +2,7 @@
 <name>Heatmap2</name>
 <description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  </description>
 <tags>Plotting</tags>
+<author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
 <RFunctions>stats:heatmap</RFunctions>
 <icon>heatmap.png</icon>
 """
@@ -88,7 +89,9 @@ class heatmap2(OWRpy):
             self.startSaturation.setDisabled(True)
             self.endSaturation.setDisabled(True)
         
-    def processMatrix(self, data =None):
+    def processMatrix(self, data):
+        if not data:
+            return 
         self.plotdata = data.getData()
         
         if not self.R('is.numeric(%s)' % self.plotdata):

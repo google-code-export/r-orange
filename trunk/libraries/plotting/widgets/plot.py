@@ -28,14 +28,17 @@ class plot(OWRpy):
         self.RFunctionParam_xlab = redRGUI.lineEdit(box, label = 'X Axis Label:')
         self.RFunctionParam_ylab = redRGUI.lineEdit(box, label = 'Y Axis Label:')
         self.RFunctionParam_cex = redRGUI.lineEdit(box, '100', label = 'Text Magnification Percent:')
+        self.advancedOptions = redRGUI.lineEdit(box, label = 'Advanced Options:', toolTip = 'Advanced obtions to be added to the R command, this can be things like points, charachter labels, etc.  See R documentation for more help.')
         redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         redRGUI.button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
     def gotAttribute(self, data, id):
+        print id
+        
         if data:
-            self.plotAttributes[id] = data.getData()
+            self.plotAttributes[id[0].widgetID] = data.getData()
         else:
-            print 'Removing data %s' % str(id)
-            self.plotAttributes[id] = None
+            print 'removing signal '+str(id[0])
+            self.plotAttributes[id[0].widgetID] = None
     def processx(self, data):
         if data:
             self.data = data
@@ -73,6 +76,8 @@ class plot(OWRpy):
             injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
         if str(self.RFunctionParam_ylab.text()) != '':
             injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+        if str(self.advancedOptions.text()) != '':
+            injection.append(str(self.advancedOptions.text()))
         if str(self.RFunctionParam_cex.text()) != '100':
             mag = float(str(self.RFunctionParam_cex.text()))/100
             injection.append('cex.lab = '+str(mag))

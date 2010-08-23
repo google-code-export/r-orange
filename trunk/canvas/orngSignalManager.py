@@ -655,7 +655,7 @@ class SignalDialog(QDialog):
         return 1
 
 
-    def removeLink(self, outName, inName): #removes from the list of instances
+    def removeLink(self, outName, inName):
         if (outName, inName) in self._links:
             self._links.remove((outName, inName))
             self.canvasView.removeLink(outName, inName)

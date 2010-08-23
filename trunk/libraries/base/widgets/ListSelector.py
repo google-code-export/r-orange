@@ -52,7 +52,7 @@ class ListSelector(OWRpy):
         print self.names.selectedItems()[0]
         self.Rvariables['listelement'] = self.data+'[['+str(self.names.row(self.names.currentItem())+1)+']]'
         # use signals converter in OWWidget to convert to the signals class
-        myclass = self.R('class('+self.Rvariables['listelement']+')')
+        myclass = self.R('class('+self.Rvariables['listelement']+')')[0]
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
             newData = rdf.RDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])

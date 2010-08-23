@@ -59,12 +59,16 @@ class rowColSelect(OWRpy):
         if 'Send on select' in self.sendOnSelect.getChecked():
             self.subset()
     def setWidget(self, data):
-        if data:
-            self.data = data.getData()
-            self.dataParent = data
-            self.rowcolButtonSelected()
-            dims = data.getDims_data()
-            self.infoBox.setText('Input data size:\n# Rows: ' + str(dims[0]) +'\n# Columns: ' + str(dims[1]))
+        if not data:
+            self.infoBox.setText('')
+            self.attributes.update([])
+            return 
+
+        self.data = data.getData()
+        self.dataParent = data
+        self.rowcolButtonSelected()
+        dims = data.getDims_data()
+        self.infoBox.setText('Input data size:\n# Rows: ' + str(dims[0]) +'\n# Columns: ' + str(dims[1]))
                 
     def invertSelection(self):
         self.attributes.invertSelection()

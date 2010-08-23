@@ -25,7 +25,7 @@ class packageManager:
     def installRRP(self,packageName,filename):
 
         installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
-        print 'installDir', installDir
+        # print 'installDir', installDir
         import shutil
         import compileall
         shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying

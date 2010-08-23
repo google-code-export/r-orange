@@ -23,7 +23,7 @@ class checkBox(widgetBox,widgetState):
             w = QCheckBox(b)
             if toolTips:
                 w.setToolTip(toolTips[i])
-            self.buttons.addButton(w)
+            self.buttons.addButton(w,i)
             self.box.layout().addWidget(w)
 
         if callback:
@@ -35,6 +35,13 @@ class checkBox(widgetBox,widgetState):
         for i in self.buttons.buttons():
             if str(i.text()) in ids: i.setChecked(True)
             else: i.setChecked(False)
+    def checkAll(self):
+        for i in self.buttons.buttons():
+            i.setChecked(True)
+    def uncheckAll(self):
+        for i in self.buttons.buttons():
+            i.setChecked(False)
+        
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
