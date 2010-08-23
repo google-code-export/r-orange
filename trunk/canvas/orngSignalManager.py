@@ -270,11 +270,13 @@ class SignalManager:
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
         possibleLinks = []
-        for outS in outputs:
+        outrev = outputs.reverse()
+        for outS in outrev:
             outType = fromInstace.getOutputType(outS.name)
             if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
                 continue
-            for inS in inputs:
+            inrev = inputs.reverse()
+            for inS in inrev:
                 inType = toInstance.getInputType(inS.name)
                 #print outType, inType
                 #print issubclass(outType, inType)
@@ -689,12 +691,16 @@ class SignalDialog(QDialog):
         if type(inType) not in [list]:
             if outType == 'All' or inType == 'All': 
                 print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-                
+            elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
+                print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+            
             elif not issubclass(outType, inType): return 0
         else:
             passes = 0
             for i in inType:
-                if issubclass(outType, i): passes = 10
+                if issubclass(outType, i): passes = 1
+                elif 'convertFromList' in dir(i) and (outType in i.convertFromList):
+                    print '|###| Allowing link from '+str(outName)+' to '+str(inName)
             if not passes: return 0
             
         inSignal = None

@@ -3,16 +3,18 @@
 
 import sys, os, redREnviron, numpy
 if sys.platform=="win32":
-    from rpy_options import rpy_options
-    rpy_options['RHOME'] = redREnviron.directoryNames['RDir']
-    rpy_options['RVERSION'] = '2.9.1'
-    rpy_options['VERBOSE'] = False
+    from rpy_options import set_options
+    #set_options(RHOME=os.environ['RPATH'])
+    set_options(RHOME=redREnviron.directoryNames['RDir'])
+    set_options(VERBOSE=True)
+    set_options(USE_NUMERIC=0)
 else: # need this because linux doesn't need to use the RPATH
     personalLibDir = os.path.join(redREnviron.directoryNames['settingsDir'], 'RLibraries')
     if not os.path.isdir(personalLibDir):
         os.makedirs(personalLibDir)
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
+    
     
 import rpy
 from PyQt4.QtCore import *
@@ -121,7 +123,6 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
             print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'listOfLists' or listOfLists:
         print 'Converting to list of lists'
-        
         if type(output) in [str, int, float, bool]:
             output =  [[output]]
         elif type(output) in [dict]:
@@ -133,12 +134,8 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
                 newOutput.append(nl)
                 
             output = newOutput
-        
-        elif type(output) in [list, numpy.ndarray]:
-            if len(output) == 0:
-                output = [output]
-            elif type(output[0]) not in [list]:
-                output = [output]
+        elif type(output) in [list, numpy.ndarray] and type(output[0]) not in [list]:
+            output = [output]
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
             

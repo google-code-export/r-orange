@@ -164,7 +164,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
             if type(mfrow) == list:
                 self.R('par(mfrow = c('+str(mfrow[0])+','+str(mfrow[1])+'))')
-            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]')[0].replace(' ', '')
+            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
         try:
             self.R(query)
         except:

@@ -99,8 +99,8 @@ class SchemaDoc(QWidget):
         
         possibleConnections = self.signalManager.getConnections(outWidget, inWidget)
         if len(possibleConnections) > 1:
-            print possibleConnections
-            dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
+            #print possibleConnections
+            #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
             if dialog.exec_() == QDialog.Rejected:
                 return None
             possibleConnections = dialog.getLinks()

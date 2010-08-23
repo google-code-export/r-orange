@@ -5,14 +5,14 @@ import os, sys, re, glob, stat
 from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-# print 'Importing orngRegistry.py'
+print 'Importing orngRegistry.py'
 import orngOutput, redRGUI,redRPackageManager
 import signals
 import xml.dom.minidom
 
-# redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
-# if not redRDir in sys.path:
-    # sys.path.append(redRDir)
+redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
+if not redRDir in sys.path:
+    sys.path.append(redRDir)
 
 import redREnviron
 
