@@ -125,10 +125,29 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
-    def Rplot(self, query, dwidth=8, dheight=8, devNumber = 0, mfrow = None):
+    def Rplot(self, query, dwidth=4, dheight=4, devNumber = 0, mfrow = None):
         # check that a device is currently used by this widget
         # print 'the devNumber is'+str(devNumber)
         # print str(self.device)
+        fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.png'
+        fileName = fileName.replace('\\', '/')
+        self.R('png(file=\''+str(fileName)+'\', bg = \'white\', width = '+str(dheight*100)+', height = '+str(dheight*100)+')')
+        self.R(query)
+        self.R('dev.off()')
+        
+        
+        if str(devNumber) in self.device:
+            self.device[str(devNumber)].clear()
+            self.device[str(devNumber)].addImage(fileName)
+        else:
+            self.device[str(devNumber)] = redRGUI.graphicsView(self.controlArea, image = fileName)
+        
+        return
+        
+        
+        
+        
+        
         if str(devNumber) in self.device:
             print '#--# dev exists'
             actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
@@ -202,17 +221,6 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         return success
     def onDeleteWidget(self):
         print '|#| onDeleteWidget OWRpy'
-        try:
-            for device in self.device.keys():
-                dev = self.device[device]
-                #key = device.keys()[0]
-                self.R('dev.set('+str(dev)+')', 'setRData')
-                self.R('dev.off() # shut down device for widget '+ str(OWRpy.uniqueWidgetNumber), 'setRData') 
-        except:
-            import traceback,sys
-            print '-'*60
-            traceback.print_exc(file=sys.stdout)
-            print '-'*60        
 
         for k in self.Rvariables:
             #print self.Rvariables[k]

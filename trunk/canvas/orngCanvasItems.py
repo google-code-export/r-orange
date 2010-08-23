@@ -434,7 +434,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if outWidget == inWidget: return
        
         signalManager = orngSignalManager.SignalManager()
-        canConnect = len(signalManager.canConnect(outWidget, inWidget)) > 0
+        canConnect = signalManager.canConnect(outWidget, inWidget)
         print 'can connect in orngCanvasItems'
         if outWidget == self:
             self.shownRightEdge = canConnect and self.imageRightEdgeG or self.imageRightEdgeR

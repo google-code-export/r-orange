@@ -119,7 +119,8 @@ def addTagsSystemTag(tags,newTag):
 def readWidgets(directory, package, cachedWidgetDescriptions):
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
-    
+    import compileall
+    compileall.compile_dir(directory) # compile the directory for later importing.
     # print '################readWidgets', directory, package
     widgets = []
     for filename in glob.iglob(os.path.join(directory, "*.py")):
