@@ -160,7 +160,7 @@ class widgetSignals():
                     self.linksIn[signalName].remove(self.linksIn[signalName][i])
                     if self.linksIn[signalName] == []:  # if key is empty, delete key value
                         del self.linksIn[signalName]
-                    return
+        self.processSignals()
 
     # return widget, that is already connected to this singlelink signal. If this widget exists, the connection will be deleted (since this is only single connection link)
     def removeExistingSingleLink(self, signal):
@@ -240,12 +240,12 @@ class widgetSignals():
                                 else:
                                     value = oldValue ## send self with no conversion
                             if self.signalIsOnlySingleConnection(key):
-                                self.printEvent("ProcessSignals: Calling %s with %s" % (handler, value), eventVerbosity = 2)
+                                print "ProcessSignals: Calling %s with %s" % (handler, value)
                                 handler(value)
                                 
                             else:
-                                self.printEvent("ProcessSignals: Calling %s with %s (%s, %s)" % (handler, value, nameFrom, id), eventVerbosity = 2)
-                                handler(value, (widgetFrom, nameFrom, id))
+                                print "ProcessSignals: Calling %s with %s (ID is %s)" % (handler, value, widgetFrom.widgetID)
+                                handler(value, widgetFrom.widgetID)
                             
                     except:
                         thistype, val, traceback = sys.exc_info()

@@ -223,9 +223,23 @@ class SchemaDoc(QWidget):
     # remove line line
     def removeLine1(self, line):
         #print 'removing a line from' + str(outName) +'to' +str(inName)
+        
+        ## remove the signal by sending None through the channel
+        print '##########  REMOVE LINE #############'
+        linksIn = line.inWidget.instance.linksIn
+        print linksIn
+        for key in linksIn.keys():
+            print linksIn[key], 'linksIn[key]'
+            for i in range(len(linksIn[key])):
+                if line.outWidget.instance == linksIn[key][i][1]:
+                    try:
+                        linksIn[key][i][2](None, linksIn[key][i][1].widgetID)
+                    except:
+                        linksIn[key][i][2](None)
+        
+        # remove the image of the line
         for (outName, inName) in line.getSignals():
             self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
-
         self.lines.remove(line)
         line.inWidget.removeLine(line)
         line.outWidget.removeLine(line)
@@ -236,10 +250,12 @@ class SchemaDoc(QWidget):
 
     # remove line, connecting two widgets
     def removeLine(self, outWidget, inWidget):
-        #print "<extra> orngDoc.py - removeLine() - ", outWidget, inWidget
+
         line = self.getLine(outWidget, inWidget)
         if line:
             self.removeLine1(line)
+            
+        
             
     def addGhostWidgetsForWidget(self, newwidget):
         #return []

@@ -51,9 +51,6 @@ class merge(OWRpy):
         
     def processA(self, data):
         #print 'processA'
-        if not data:
-            self.colA.update([])
-            return 
         self.dataA = str(data.getData())
         self.dataParentA = data
         colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
@@ -68,9 +65,6 @@ class merge(OWRpy):
         
     def processB(self, data):
         #print 'processB'
-        if not data:
-            self.colB.update([])
-            return 
         self.dataB = str(data.getData())
         self.dataParentB = data
         colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix

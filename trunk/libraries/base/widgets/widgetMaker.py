@@ -83,14 +83,14 @@ class widgetMaker(OWRpy):
         self.updateInputs()
     def launch(self):
         import redREnviron, orngRegistry, os
-        widgetDirName = os.path.realpath(redREnviron.directoryNames["widgetDir"])
+        widgetDirName = redREnviron.directoryNames["widgetDir"]
         #print 'dir:' + widgetDirName
-        path = widgetDirName +  "\\blank\\widgets\\RedR" + self.functionName.text().replace('.', '_') + ".py"
+        path = os.path.join(widgetDirName, "blank", "widgets", "RedR" + str(self.functionName.text()).replace('.', '_') + ".py")
         #print 'path:' + path
-        if not os.path.exists(os.path.split(os.path.abspath(path))[0]):
-            os.makedirs(os.path.split(os.path.abspath(path))[0])
+        if not os.path.exists(os.path.split(path)[0]):
+            os.makedirs(os.path.split(path)[0])
         file = open(os.path.abspath(path), "wt")
-        tmpCode = self.completeCode
+        tmpCode = str(self.codeArea.toPlainText())
         tmpCode = tmpCode.replace('<pre>', '')
         tmpCode = tmpCode.replace('</pre>', '')
         tmpCode = tmpCode.replace('&lt;', '<')
