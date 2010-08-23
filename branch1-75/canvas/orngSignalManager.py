@@ -212,8 +212,61 @@ class SignalManager:
         inputs = [signal for signal in toInfo.inputs]
         outputs = [signal for signal in fromInfo.outputs]
         #print 'In/Out puts', inputs, outputs
-        return self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
-        
+        return self.matchConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
+    def matchConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
+        #print 'getPossibleConnections'
+        possibleLinks = []
+        for outS in outputs:
+            outType = fromInstace.getOutputType(outS.name)
+            if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
+                continue
+            for inS in inputs:
+                inType = toInstance.getInputType(inS.name)
+                #print outType, inType
+                #print issubclass(outType, inType)
+                #print '######', inS.name, outS.name
+                if inType == None:
+                    print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
+                    continue
+                if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
+                    possibleLinks.append((outS.name, inS.name))
+                    continue
+                    
+                if type(inType) not in [list, tuple]:
+                    if issubclass(outType, inType):
+                        return True
+                    elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
+                        return True
+                else:
+                    for i in inType:
+                        if issubclass(outType, i):
+                            return True
+                        elif outType in i.convertToList:
+                            return True
+        #print possibleLinks
+        return False    
+    def getConnections(self, widgetFrom, widgetTo):
+        ## goals; to indicate if two widgets are allowed to connect.  There are a few things that we need to think about.
+        """
+            1) do the widgets share input types?
+                a) if both single input (majority of connections) is the output of widgetFrom a child of the input of widgetTo?  If yes then allow connection.
+                b) if the widgetTo has multiple input types for a single socket is the widgetFrom signal type a child of this (can use the tuple feature of isinstance.
+                c) if the widgetFrom has the 'All' signal then it should send to all connections.  This rewrite will override that as we will check the class of the value that was actually sent and allow those connections (perhaps) though we should use the outputs as a guide.
+        """
+        if self.existsPath(widgetTo, widgetFrom): 
+            print 'Circular Connection'
+            return []  ## can't have circular connections so we don't worry past this if true
+        ## get some info
+        fromInstace = widgetFrom.instance
+        toInstance = widgetTo.instance
+        fromInfo = widgetFrom.widgetInfo
+        toInfo = widgetTo.widgetInfo
+        #print fromInstace, toInstance, fromInfo, toInfo
+        ## collect the input and output signal classes (the classes not the object)
+        inputs = [signal for signal in toInfo.inputs]
+        outputs = [signal for signal in fromInfo.outputs]
+        #print 'In/Out puts', inputs, outputs
+        return self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
         possibleLinks = []
@@ -235,7 +288,10 @@ class SignalManager:
                     
                 if type(inType) not in [list, tuple]:
                     if issubclass(outType, inType):
-                        possibleLinks.append((outS.name, inS.name))
+                        if str(outType).split('.')[-1] == str(inType).split('.')[-1]:
+                            possibleLinks.insert(0, (outS.name, inS.name))
+                        else:
+                            possibleLinks.append((outS.name, inS.name))
                         #print 'Signal appended', outS.name, inS.name
                         continue
                     elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
@@ -245,6 +301,7 @@ class SignalManager:
                 else:
                     for i in inType:
                         if issubclass(outType, i):
+                            
                             possibleLinks.append((outS.name, inS.name))
                             continue
                         elif outType in i.convertToList:
@@ -655,7 +712,7 @@ class SignalDialog(QDialog):
         return 1
 
 
-    def removeLink(self, outName, inName):
+    def removeLink(self, outName, inName): #removes from the list of instances
         if (outName, inName) in self._links:
             self._links.remove((outName, inName))
             self.canvasView.removeLink(outName, inName)

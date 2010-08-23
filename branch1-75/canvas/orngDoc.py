@@ -76,9 +76,9 @@ class SchemaDoc(QWidget):
         if line:
             self.resetActiveSignals(outWidget, inWidget, None, enabled)
             return None
-        possibleConnections = self.signalManager.canConnect(outWidget, inWidget)
-        print possibleConnections, inWidget, outWidget
-        if len(possibleConnections) == 0:
+        canConnect = self.signalManager.canConnect(outWidget, inWidget)
+        print canConnect, inWidget, outWidget
+        if not canConnect:
             mb = QMessageBox("Failed to Connect", "Connection Not Possible\n\nWould you like to search for templates\nwith these widgets?", 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
@@ -96,7 +96,10 @@ class SchemaDoc(QWidget):
         dialog.setOutInWidgets(outWidget, inWidget)
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
-        if len(possibleConnections) > 1 and not ghost:
+        
+        possibleConnections = self.signalManager.getConnections(outWidget, inWidget)
+        if len(possibleConnections) > 1:
+            print possibleConnections
             dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
             if dialog.exec_() == QDialog.Rejected:
                 return None
@@ -223,9 +226,23 @@ class SchemaDoc(QWidget):
     # remove line line
     def removeLine1(self, line):
         #print 'removing a line from' + str(outName) +'to' +str(inName)
+        
+        ## remove the signal by sending None through the channel
+        print '##########  REMOVE LINE #############'
+        linksIn = line.inWidget.instance.linksIn
+        print linksIn
+        for key in linksIn.keys():
+            print linksIn[key], 'linksIn[key]'
+            for i in range(len(linksIn[key])):
+                if line.outWidget.instance == linksIn[key][i][1]:
+                    try:
+                        linksIn[key][i][2](None, linksIn[key][i][1].widgetID)
+                    except:
+                        linksIn[key][i][2](None)
+        
+        # remove the image of the line
         for (outName, inName) in line.getSignals():
             self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
-
         self.lines.remove(line)
         line.inWidget.removeLine(line)
         line.outWidget.removeLine(line)
@@ -236,10 +253,12 @@ class SchemaDoc(QWidget):
 
     # remove line, connecting two widgets
     def removeLine(self, outWidget, inWidget):
-        #print "<extra> orngDoc.py - removeLine() - ", outWidget, inWidget
+
         line = self.getLine(outWidget, inWidget)
         if line:
             self.removeLine1(line)
+            
+        
             
     def addGhostWidgetsForWidget(self, newwidget):
         #return []

@@ -6,7 +6,7 @@ if sys.platform=="win32":
     from rpy_options import set_options
     #set_options(RHOME=os.environ['RPATH'])
     set_options(RHOME=redREnviron.directoryNames['RDir'])
-    set_options(VERBOSE=False)
+    set_options(VERBOSE=True)
     set_options(USE_NUMERIC=0)
 else: # need this because linux doesn't need to use the RPATH
     personalLibDir = os.path.join(redREnviron.directoryNames['settingsDir'], 'RLibraries')

@@ -24,8 +24,14 @@ class graphicsView(QGraphicsView, widgetState):
                     print self.scene()
                     print 'Error, no scene initialized'
                     raise Exception
+        self.currentScale = 1
         self.menu = QMenu(self)
         self.menu.addAction('Copy')
+        self.menu.addAction('Zoom Out')
+        self.menu.addAction('Zoom In')
+        self.menu.addAction('Un Zoom')
+        self.setMinimumWidth(100)
+        self.setMinimumHeight(100)
     def clear(self):
         self.scene().clear()
         
@@ -41,6 +47,15 @@ class graphicsView(QGraphicsView, widgetState):
             if action:
                 if str(action.text()) == 'Copy':
                     self.toClipboard()
+                elif str(action.text()) == 'Zoom Out':
+                    self.currentScale -= self.currentScale*0.10
+                    self.scale(0.90, 0.90)
+                elif str(action.text()) == 'Zoom In':
+                    self.currentScale += self.currentScale*10
+                    self.scale(1.10, 1.10)
+                elif str(action.text()) == 'Un Zoom':
+                    self.currentScale = 1
+                    self.scale(self.currentScale, self.currentScale)
     def returnImage(self):
         ## generate a rendering of the graphicsView and return the image
         
@@ -66,6 +81,8 @@ class graphicsView(QGraphicsView, widgetState):
     def addImage(self, image):
         ## add an image to the view
         self.scene().addItem(QGraphicsPixmapItem(QPixmap(image)))
+        self.setMinimumWidth(100)
+        self.setMinimumHeight(100)
     def getSettings(self):
         # print 'in widgetLabel getSettings'
         r = {'text':None}
