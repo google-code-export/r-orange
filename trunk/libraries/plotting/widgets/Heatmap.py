@@ -75,8 +75,7 @@ class Heatmap(OWRpy):
             if 'Plot on Connect'  in self.plotOnConnect.getChecked():
                 self.makePlot()
         else: 
-            self.Rplot('par(mfrow=c(1,1))')
-            self.R('dev.off()')
+            self.plotdata = ''
     def processClasses(self, data):
         if data:
             self.classesData = data.getData()

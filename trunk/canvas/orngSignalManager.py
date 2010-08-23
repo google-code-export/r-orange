@@ -270,13 +270,13 @@ class SignalManager:
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
         possibleLinks = []
-        outrev = outputs.reverse()
-        for outS in outrev:
+        
+        for outS in reversed(outputs):
             outType = fromInstace.getOutputType(outS.name)
             if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
                 continue
-            inrev = inputs.reverse()
-            for inS in inrev:
+            
+            for inS in reversed(inputs):
                 inType = toInstance.getInputType(inS.name)
                 #print outType, inType
                 #print issubclass(outType, inType)
