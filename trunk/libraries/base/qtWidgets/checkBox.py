@@ -46,8 +46,10 @@ class checkBox(widgetBox,widgetState):
         checked = []
         for i in self.buttons.buttons():
             if i.isChecked(): checked.append(str(i.text()))
-
         return checked
+    def buttonAt(self,ind):
+        return self.buttons.button(ind).text()
+        
     def hide(self):
         self.box.hide()
     def getSettings(self):

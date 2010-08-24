@@ -10,7 +10,8 @@ import numpy,sip
 
 class filterTable(widgetBox,redRGUI.widgetState):
     def __init__(self,widget,Rdata=None, editable=False, rows=None, columns=None,
-    sortable=True, selectionMode = -1, addToLayout = 1,callback=None):
+    sortable=True,filterable=False,selectionBehavior=QAbstractItemView.SelectRows,
+    selectionMode = -1, addToLayout = 1,callback=None):
         widgetBox.__init__(self,widget,orientation='vertical')
 
         if widget and addToLayout and widget.layout():
@@ -26,10 +27,11 @@ class filterTable(widgetBox,redRGUI.widgetState):
         self.layout().addWidget(self.table)
         box = redRGUI.widgetBox(self,orientation='horizontal')
         box.layout().setAlignment(Qt.AlignLeft)
-        self.clearButton = redRGUI.button(box,label='Clear All Filtering', callback=self.clearFiltering)
+        if filterable:
+            self.clearButton = redRGUI.button(box,label='Clear All Filtering', callback=self.clearFiltering)
         self.label = redRGUI.widgetLabel(box,label='') 
         
-        
+        self.table.setSelectionBehavior(selectionBehavior)
         self.R = Rcommand
         self.Rdata = None
         self.filteredData = None
@@ -37,7 +39,9 @@ class filterTable(widgetBox,redRGUI.widgetState):
         self.criteriaList = {}
         self.parent = widget
         self.tm=None
+        self.sortable=sortable
         self.editable=editable
+        self.filterable=filterable
         
         self.table.setAlternatingRowColors(True)
         
@@ -54,12 +58,13 @@ class filterTable(widgetBox,redRGUI.widgetState):
             self.table.verticalHeader().hide()
             
         if callback:
-            QObject.connect(self.table, SIGNAL('cellClicked(int, int)'), callback)
+            QObject.connect(self.table, SIGNAL('clicked (QModelIndex)'), callback)
         
         #QObject.connect(self.table.horizontalHeader(), SIGNAL('sectionClicked(int)'), self.headerClicked)
-        self.table.horizontalHeader().setClickable(True)
-        self.table.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-        self.table.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
+        if filterable:
+            self.table.horizontalHeader().setClickable(True)
+            self.table.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+            self.table.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
 
         
 
@@ -69,12 +74,16 @@ class filterTable(widgetBox,redRGUI.widgetState):
             self.Rdata = data
             self.filteredData = data
         
-        filtered = self.R('nrow(%s)' % data)
-        total = self.R('nrow(%s)' % self.Rdata)
-        self.label.setText('Showing %d of %d rows.' % (filtered,total))
-
-        self.tm = MyTableModel(data,parent=self,editable=self.editable)
+        total = self.R('nrow(%s)' % self.Rdata)        
+        if self.filterable:
+            filtered = self.R('nrow(%s)' % data)
+            self.label.setText('Showing %d of %d rows.' % (filtered,total))
+        else:
+            self.label.setText('Showing %d rows.' % (total))
+        
+        self.tm = MyTableModel(data,parent=self,editable=self.editable, filterable=self.filterable)
         self.table.setModel(self.tm)
+        self.table.resizeColumnsToContents()
     
     def columnCount(self):
         if self.tm:
@@ -99,7 +108,9 @@ class filterTable(widgetBox,redRGUI.widgetState):
         selectedCol = x+1
         self.createMenu(selectedCol,val)
     
-    
+    def getData(self,row,col):
+        if not self.tm: return False
+        return self.tm.data(self.tm.createIndex(row,col),Qt.DisplayRole).toString()
     def createMenu(self, selectedCol, pos):
         #print selectedCol, pos
         print 'in createMenu', self.criteriaList
@@ -123,8 +134,9 @@ class filterTable(widgetBox,redRGUI.widgetState):
                 checked = self.criteriaList[selectedCol]['value']
             else:
                 checked = []
-            levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
-            levels.insert(0,'Check All')
+            levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),wantType='list', silent=True)
+            if len(levels) > 1:
+                levels.insert(0,'Check All')
             if len(levels) > 10:
                 scroll = redRGUI.scrollArea(self.optionsBox,spacing=1)
                 c = redRGUI.checkBox(scroll,buttons=levels,setChecked = checked)
@@ -149,7 +161,7 @@ class filterTable(widgetBox,redRGUI.widgetState):
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
     
         elif colClass in ['character']:
-            label = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera:')
+            label = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
             self.menu.layout().insertWidget(1,label)
             self.options = ['Equals', 'Does Not Equal','Begins With','Ends With', 
             'Contains', 'Does Not Contain']
@@ -171,7 +183,8 @@ class filterTable(widgetBox,redRGUI.widgetState):
     def factorCheckBox(self,val,menu):
         if val != 0: return
         checkbox = menu.findChildren(redRGUI.checkBox)[0]
-        print checkbox.getChecked(), 'Check All' in checkbox.getChecked()
+        if checkbox.buttonAt(0) != 'Check All': return
+        #print checkbox.getChecked(), 'Check All' in checkbox.getChecked()
         if 'Check All' in checkbox.getChecked():
             checkbox.checkAll()
         else: 
@@ -304,14 +317,14 @@ class filterTable(widgetBox,redRGUI.widgetState):
 
 
 class MyTableModel(QAbstractTableModel): 
-    def __init__(self,Rdata,parent=None,editable=False): 
+    def __init__(self,Rdata,parent=None,editable=False,filterable=False): 
         """ datain: a list of lists
             headerdata: a list of strings
         """
         self.parent = parent 
         self.R = Rcommand
         self.editable = editable
-        # self.filterable = filterable
+        self.filterable = filterable
         QAbstractTableModel.__init__(self,parent) 
         
         
@@ -379,7 +392,7 @@ class MyTableModel(QAbstractTableModel):
         # print 'in headerData', col, orientation, role
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
-        elif orientation == Qt.Horizontal and role == Qt.DecorationRole:
+        elif orientation == Qt.Horizontal and role == Qt.DecorationRole and self.filterable:
             # print 'asdfasdf
             icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'arrow_down.png'))
             return QVariant(icon)
