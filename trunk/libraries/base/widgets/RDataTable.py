@@ -88,8 +88,13 @@ class RDataTable(OWRpy):
         self.tableBox = redRGUI.groupBox(self.controlArea, label = 'Data Table')
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #boxSettings = redRGUI.groupBox(self.advancedOptions, label = "Settings")
+
         
-        self.table = redRGUI.Rtable(self.tableBox,sortable=True)
+        # self.table = redRGUI.Rtable(self.tableBox,sortable=True,Rdata='data')
+        
+        self.table = redRGUI.filterTable(self.tableBox,sortable=True,
+        filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.itemClicked)
+        
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
@@ -113,15 +118,15 @@ class RDataTable(OWRpy):
         self.infoBox.setHidden(False)
 
         #if id in self.link: #start the block for assignment of link data attributes
-        self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
+        # self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         self.table.setRTable(dataset.getData())
 
         self.supressTabClick = False
             
-    def itemClicked(self, val, table):
-        print 'item clicked'
+    def itemClicked(self, val):
+        #print 'item clicked'
         
         RclickedRow = int(val.row())+1
         

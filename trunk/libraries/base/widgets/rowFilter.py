@@ -46,8 +46,9 @@ class rowFilter(OWRpy):
         # self.data = 'data'
         # self.table = redRGUI.filterTable(self.tableArea,sortable=True, Rdata='data')
         #############################
-        self.table = redRGUI.filterTable(self.tableArea,sortable=True)
-        
+        self.table = redRGUI.filterTable(self.controlArea, sortable=True,
+        filterable=True,selectionMode = QAbstractItemView.NoSelection )
+
         redRGUI.button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
         self.dimsInfoArea = redRGUI.widgetLabel(self.bottomAreaCenter, '')
         
