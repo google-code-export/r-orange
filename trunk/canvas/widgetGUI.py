@@ -106,7 +106,7 @@ class widgetGUI(QMainWindow):
         self.rightDock.setMinimumWidth(minWidth)
         
         self.rightDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        self.addDockWidget(Qt.BottomDockWidgetArea,self.rightDock)
         
         
         self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
@@ -116,27 +116,38 @@ class widgetGUI(QMainWindow):
         self.rightDockArea.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         self.rightDock.setWidget(self.rightDockArea)
 
-        
-        ### help ####
-        self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        self.helpBox.setMinimumHeight(50)
-        self.helpBox.setMinimumWidth(minWidth)
-        self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        if hasattr(self,'_widgetInfo'):
+
             
+        ### help ####
+        # self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        # self.helpBox.setMinimumHeight(50)
+        # self.helpBox.setMinimumWidth(minWidth)
+        # self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        # if hasattr(self,'_widgetInfo'):
+            
+            # (file,ext) = os.path.basename(self._widgetInfo.fullName).split('.')
+            # path = os.path.join(redREnviron.directoryNames['libraryDir'],
+            # self._widgetInfo.package['Name'],'help',file+'.html')
+            # if os.path.exists(path):
+                # f = open(path)
+                # html = f.read()
+                # f.close()
+            # else:
+                # html = 'No local help file. Please visit <a href="http://www.red-r.org/"> Red-R</a> for more help.'
+            # self.help = redRGUI.webViewBox(self.helpBox)
+            
+            # self.help.setHtml(html)
+            # self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+
+        ### help ####
+        self.helpFile = None
+        if hasattr(self,'_widgetInfo'):
             (file,ext) = os.path.basename(self._widgetInfo.fullName).split('.')
             path = os.path.join(redREnviron.directoryNames['libraryDir'],
             self._widgetInfo.package['Name'],'help',file+'.html')
             if os.path.exists(path):
-                f = open(path)
-                html = f.read()
-                f.close()
-            else:
-                html = 'No local help file. Please visit <a href="http://www.red-r.org/"> Red-R</a> for more help.'
-            self.help = redRGUI.webViewBox(self.helpBox)
-            
-            self.help.setHtml(html)
-            self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+                self.helpFile = path
+                self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Help', callback = self.showHelp)
         
         
         ### notes ####
@@ -161,14 +172,17 @@ class widgetGUI(QMainWindow):
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
-        self.windowState['documentationState'] = {'helpBox':True,'notesBox':True,'ROutputBox':True}
-        self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Help',toggleButton=True, callback = self.updateDocumentationDock)
+        
+        self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
         self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
         self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
         self.printButton = redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printWidget)
         self.includeInReport = redRGUI.button(self.bottomAreaLeft, 'Include In Report', toggleButton = True)
         self.includeInReport.setChecked(True)
-        self.statusBar.addPermanentWidget(self.showHelpButton)
+        
+        ###############################################
+        if self.helpFile:
+            self.statusBar.addPermanentWidget(self.showHelpButton)
         self.statusBar.addPermanentWidget(self.showNotesButton)
         self.statusBar.addPermanentWidget(self.showROutputButton)
         self.statusBar.addPermanentWidget(self.printButton)
@@ -203,6 +217,12 @@ class widgetGUI(QMainWindow):
         return QMainWindow.event(self, e)
     """
 
+    def showHelp(self):
+        if self.helpFile:
+            import webbrowser
+            webbrowser.open_new_tab(self.helpFile)
+
+        
     def printWidget(self, printer = None):
         ## establish a printer that will print the widget
         if not printer:
@@ -250,12 +270,12 @@ class widgetGUI(QMainWindow):
             self.windowState['documentationState'] = {}
         
         
-        if self.showHelpButton.isChecked():
-            self.helpBox.show()
-            self.windowState['documentationState']['helpBox'] = True
-        else:
-            self.helpBox.hide()
-            self.windowState['documentationState']['helpBox'] = False
+        # if self.showHelpButton.isChecked():
+            # self.helpBox.show()
+            # self.windowState['documentationState']['helpBox'] = True
+        # else:
+            # self.helpBox.hide()
+            # self.windowState['documentationState']['helpBox'] = False
         
         if self.showNotesButton.isChecked():
             self.notesBox.show()
@@ -356,7 +376,7 @@ class widgetGUI(QMainWindow):
                 self.hasAdvancedOptions = False
         
         if 'documentationState' in self.windowState.keys():
-            self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
+            #self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
             self.showNotesButton.setChecked(self.windowState['documentationState']['notesBox'])
             self.showROutputButton.setChecked(self.windowState['documentationState']['ROutputBox'])
         self.updateDocumentationDock()
