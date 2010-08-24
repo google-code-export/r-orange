@@ -33,8 +33,9 @@ class RedRdata(OWRpy):
         text = '', callback = self.commitFunction)
         redRGUI.button(box, "Commit", callback = self.commitFunction)
     def loadPackage(self):
-        #self.require_libraries([str(self.package.text())])
-        pass
+        if str(self.package.text()) != '':
+            self.require_librarys([str(self.package.text())])
+        
     
     def selectDataSet(self,ind):
         #ind.row()
@@ -54,7 +55,7 @@ class RedRdata(OWRpy):
     def commitFunction(self):
         package = self.package.text()
         dataset = str(self.RFunctionParamdataName_lineEdit.text())
-        
+        self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package))
         
         newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.

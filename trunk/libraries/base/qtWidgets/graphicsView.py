@@ -10,6 +10,7 @@ class graphicsView(QGraphicsView, widgetState):
         QGraphicsView.__init__(self, parent)
         parent.layout().addWidget(self)  # place the widget into the parent widget
         self.parent = parent
+        self.widgetSelectionRect = None
         if image:
             ## there is an image and we should set that into the graphics scene
             self.addImage(image)
@@ -27,7 +28,7 @@ class graphicsView(QGraphicsView, widgetState):
         #self.menu.addAction('Un Zoom')
         # self.setMinimumWidth(25)
         # self.setMinimumHeight(25)
-        #self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        #self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
     def clear(self):
         self.scene().clear()
         
@@ -37,6 +38,11 @@ class graphicsView(QGraphicsView, widgetState):
     def mousePressEvent(self, mouseEvent):
         
         if mouseEvent.button() == Qt.RightButton:
+            # remove the selection rect
+            if self.widgetSelectionRect:
+                self.widgetSelectionRect.hide()
+                self.widgetSelectionRect = None
+            
             # show the action menu
             newCoords = QPoint(mouseEvent.globalPos())
             action = self.menu.exec_(newCoords)
@@ -44,10 +50,8 @@ class graphicsView(QGraphicsView, widgetState):
                 if str(action.text()) == 'Copy':
                     self.toClipboard()
                 elif str(action.text()) == 'Zoom Out':
-                    self.currentScale -= self.currentScale*0.10
                     self.scale(0.80, 0.80)
                 elif str(action.text()) == 'Zoom In':
-                    self.currentScale += self.currentScale*10
                     self.scale(1.50, 1.50)
                 elif str(action.text()) == 'Undock':
                     ## want to undock from the widget and make an independent viewing dialog.
@@ -56,6 +60,27 @@ class graphicsView(QGraphicsView, widgetState):
                 elif str(action.text()) == 'Redock':
                     self.parent.layout().addWidget(self)
                     self.dialog.hide()
+        else:
+            self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
+            self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
+            self.widgetSelectionRect.setZValue(-100)
+            self.widgetSelectionRect.show()
+    def mouseMoveEvent(self, ev):
+        point = self.mapToScene(ev.pos())
+
+        if self.widgetSelectionRect:
+            self.widgetSelectionRect.setRect(QRectF(self.mouseDownPosition, point))            
+
+        self.scene().update()
+    def mouseReleaseEvent(self, ev):
+        point = self.mapToScene(ev.pos())
+        if self.widgetSelectionRect:
+            self.fitInView(self.widgetSelectionRect.rect())
+            self.widgetSelectionRect.hide()
+            self.widgetSelectionRect = None
+            
+        self.scene().update()
+
     def returnImage(self):
         ## generate a rendering of the graphicsView and return the image
         

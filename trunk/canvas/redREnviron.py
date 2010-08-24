@@ -86,6 +86,12 @@ def samepath(path1, path2):
 def setTempDir(canvasSettingsDir, dirNumber):
     # print 'setting temp dir'
     # print dirNumber
+    # if dirNumber > 5:
+        # res = QMessageBox('Red-R Canvas','You seem to have several temp directories open.  Would you like to remove them?\n\nAnswer NO if you have another Red-R session open.', QMessageBox.Question, QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
+        
+        # if res.exec_() == QMessageBox.Yes:
+            # import shutil
+            # shutil.rmtree(os.path.join(canvasSettingsDir, 'temp'), True)
     try:  # try to make the canvas temp dir.  This should work but I would be cautious given the problems with the Vista system.
         if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp')):
             os.mkdir(os.path.join(canvasSettingsDir, 'temp'))

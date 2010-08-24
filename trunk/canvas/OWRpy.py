@@ -125,16 +125,15 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
-    def Rplot(self, query, dwidth=4, dheight=4, devNumber = 0, mfrow = None):
+    def Rplot(self, query, dwidth=6, dheight=6, devNumber = 0, mfrow = None):
         self.require_librarys(['RSvgDevice'])
         # check that a device is currently used by this widget
         # print 'the devNumber is'+str(devNumber)
         # print str(self.device)
         fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.svg'
         fileName = fileName.replace('\\', '/')
-        self.R('devSVG(file=\''+str(fileName)+'\', bg = \'white\''
-            #, width = '
-            #+str(dheight*20)+', height = '+str(dheight*20)
+        self.R('devSVG(file=\''+str(fileName)+'\', bg = \'white\', width = '
+            +str(dheight)+', height = '+str(dheight)
             +')')
         self.R(query)
         self.R('dev.off()')
