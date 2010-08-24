@@ -23,7 +23,7 @@ class rank(OWRpy):
         self.inputs = [("x", rmat.RMatrix, self.processx)]
         self.outputs = [("rank Output", rmat.RMatrix)]
         
-        self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
+        #self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
         box = redRGUI.tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")

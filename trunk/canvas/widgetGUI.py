@@ -134,13 +134,14 @@ class widgetGUI(QMainWindow):
                 # f.close()
             # else:
                 # html = 'No local help file. Please visit <a href="http://www.red-r.org/"> Red-R</a> for more help.'
-            # self.help = redRGUI.webViewBox(self.helpBox)
+            #self.help = redRGUI.webViewBox(self.helpBox)
             
             # self.help.setHtml(html)
             # self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
 
         ### help ####
         self.helpFile = None
+        
         if hasattr(self,'_widgetInfo'):
             (file,ext) = os.path.basename(self._widgetInfo.fullName).split('.')
             path = os.path.join(redREnviron.directoryNames['libraryDir'],

@@ -30,7 +30,7 @@ class rExecutor(OWRpy):
         self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector), ('R.object', 'All'), ('R Matrix', rmat.RMatrix)]
         #self.breakme()
         
-        self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
+        #self.help.setHtml('The R Executor widget provides direct access to the R session that runs under RedR.  R Executor can recieve any output from an R compatible widget.  The recieved data can be shown using the Recieved button.  The R history can be shown by pressing the RHistory button and the complete parsing of any recieved data is shown in the Metadata section.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
         
         #GUI
         
