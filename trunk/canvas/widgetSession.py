@@ -227,13 +227,19 @@ class widgetSession():
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
         
+        print d
         # print 'setting ', className
         try: # try to reload the output class from the signals
             
             # try to get the class variabel (var) this will be done by accessing the class info of the class attribute of data
-            import libraries
-            varc = libraries
+            import imp
+            ## find the libraries directory
+            fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
+            print 'loading module'
+            varc = imp.load_module('libraries', fp, pathname, description)
+            print varc
             for mod in d['class'].split('.')[1:]:
+                print varc
                 varc = getattr(varc, mod)
             var = varc(data = d['data']) 
             var.loadSettings(d)
@@ -257,7 +263,9 @@ class widgetSession():
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
                     print 'Fatal exception in loading.  Can\'t assign the signal value'
                     var = None
-        
+        finally:
+            if fp:
+                fp.close()
         return var
             
     def recursiveSetSetting(self,var,d):

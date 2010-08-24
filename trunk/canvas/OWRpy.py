@@ -126,12 +126,16 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
     def Rplot(self, query, dwidth=4, dheight=4, devNumber = 0, mfrow = None):
+        self.require_librarys(['RSvgDevice'])
         # check that a device is currently used by this widget
         # print 'the devNumber is'+str(devNumber)
         # print str(self.device)
-        fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.png'
+        fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.svg'
         fileName = fileName.replace('\\', '/')
-        self.R('png(file=\''+str(fileName)+'\', bg = \'white\', width = '+str(dheight*100)+', height = '+str(dheight*100)+')')
+        self.R('devSVG(file=\''+str(fileName)+'\', bg = \'white\''
+            #, width = '
+            #+str(dheight*20)+', height = '+str(dheight*20)
+            +')')
         self.R(query)
         self.R('dev.off()')
         
@@ -140,49 +144,18 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.device[str(devNumber)].clear()
             self.device[str(devNumber)].addImage(fileName)
         else:
-            self.device[str(devNumber)] = redRGUI.graphicsView(self.controlArea, image = fileName)
+            if 'plottingArea' not in dir(self):
+                self.plottingArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+            self.device[str(devNumber)] = redRGUI.graphicsView(self.plottingArea, image = fileName)
         
         return
         
-        
-        
-        
-        
-        if str(devNumber) in self.device:
-            print '#--# dev exists'
-            actdev = self.R('capture.output(dev.set('+str(self.device[str(devNumber)])+'))[2]').replace(' ', '')
-            if actdev == 1: #there were no decives present and a new one has been created.
-                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-            if actdev != self.device[str(devNumber)]: #other devices were present but not the one you want
-                print '#--# dev not in R'
-                self.R('dev.off()')
-                self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber)) # starts a new device 
-                self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-                print '#--#', str(self.device)
-        else:
-            print '#--# make new dev for this'
-            self.R('x11('+str(dwidth)+','+str(dheight)+') # start a new device for '+str(OWRpy.uniqueWidgetNumber), 'setRData') # starts a new device 
-            if type(mfrow) == list:
-                self.R('par(mfrow = c('+str(mfrow[0])+','+str(mfrow[1])+'))')
-            self.device[str(devNumber)] = self.R('capture.output(dev.cur())[2]').replace(' ', '')
-        try:
-            self.R(query)
-        except:
-            self.R('dev.set('+str(self.device[str(devNumber)])+')')
-            self.R('dev.off()')
-            raise Exception, 'R Plotting Error'
-            ## there was an exception and we need to roll back the processor.
     def getReportText(self, fileDir):
-        ## move through all of the qtWidgets in self and show their report outputs
+        ## move through all of the qtWidgets in self and show their report outputs, should be implimented by each widget.
         children = self.controlArea.children()
         print children
         import re
         text = ''
-        # if self.reportOrder and self.reportOrder != None:
-            # ro = self.report
-        # else:
-            # ro = dir(self)
-        # print ro
         for i in children:
             try:
                 print i.__class__.__name__
@@ -204,17 +177,6 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             repository = redREnviron.settings['CRANrepos']
         
         print 'Loading required librarys'
-        # for i in librarys:
-            # if not i in RSession.getInstalledLibraries():
-                # print 'need to download'
-                # QMessageBox.information(self, 'R Packages','We need to download R packages for this widget to work.',  
-                # QMessageBox.Ok + QMessageBox.Default)
-                # break
-        # if not redREnviron.checkInternetConnection():
-            # QMessageBox.information(self, 'R Packages','No active internet connection detected.  Please reconnect and try this again.',  
-                # QMessageBox.Ok + QMessageBox.Default)
-            # qApp.restoreOverrideCursor()
-            # return False
         success = RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()

@@ -1022,13 +1022,14 @@ class SchemaDoc(QWidget):
                 tt += widget.instance.getReportText(fileDir)
                 tt += '\n\n\n--------------------\n\n\n'
                 tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
-                tt += str(widget.instance.notes.toPlainText())+'\n\n'
+                if str(widget.instance.notes.toPlainText()) != '':
+                    tt += str(widget.instance.notes.toPlainText())+'\n\n'
+                else:
+                    tt += 'No notes were entered in the widget face.\n\n'
                 tt += '\n\n\n--------------------\n\n\n'
                 tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
                 try:
                     if widget.instance.inputs:
-                        #tt += '<h4>Signals</h4><strong>The following signals were sent to this widget:</strong></br>'
-                        
                         
                         for input in widget.instance.inputs:
                             for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
