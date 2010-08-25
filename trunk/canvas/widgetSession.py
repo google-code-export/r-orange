@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 import redRGUI 
 import signals 
 from SQLiteSession import *
-
+import exceptionHandling 
 
 class widgetSession():
     def __init__(self,dontSaveList):
@@ -164,8 +164,8 @@ class widgetSession():
                         s[k] = v.saveSettings()
                     ### problem with getting the settings, print and inform the developers.                 
                     except:
-                        import orngOutput 
-                        orngOutput.printException()
+                        
+                        print exceptionHandling.formatException()
                         print '|###| problem getting data for '+str(sentDataObject)
                         
                 sentItemsList.append((sentDataName,s))
@@ -206,9 +206,8 @@ class widgetSession():
                         getattr(self, k).loadSettings(v['redRGUIObject'])
                         getattr(self, k).setDefaultState(v['redRGUIObject'])
                     except Exception as inst:
-                        import orngOutput
                         print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
-                        orngOutput.printException()
+                        print exceptionHandling.formatException()
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     print 'dict',len(var),len(v['dict'])

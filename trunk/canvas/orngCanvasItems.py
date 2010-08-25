@@ -320,8 +320,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
 
             except: 
-                import orngOutput
-                orngOutput.printException()
+                import exceptionHandling
+                print exceptionHandling.formatException()
 
     def savePosition(self):
         self.oldPos = self.pos()

@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 import sys
 import string
 from datetime import tzinfo, timedelta, datetime
-import traceback
+import traceback, exceptionHandling
 import os.path, os, redRGUI, redREnviron
 
 # print 'Importing orngOutput.py'
@@ -16,7 +16,8 @@ class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)
         self.canvasDlg = canvasDlg
-
+        sys.excepthook = self.exceptionHandler
+        sys.stdout = self
         self.textOutput = QTextEdit(self)
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
@@ -76,13 +77,13 @@ class OutputWindow(QDialog):
         else:
             self.hide()
 
-    def catchException(self, catch):
-        if catch: sys.excepthook = self.exceptionHandler
-        else:     sys.excepthook = self.defaultExceptionHandler
+    # def catchException(self, catch):
+        # if catch: sys.excepthook = self.exceptionHandler
+        # else:     sys.excepthook = self.defaultExceptionHandler
 
-    def catchOutput(self, catch):
-        if catch:    sys.stdout = self
-        else:         sys.stdout = self.defaultSysOutHandler
+    # def catchOutput(self, catch):
+        # if catch:    sys.stdout = self
+        # else:         sys.stdout = self.defaultSysOutHandler
 
     def clear(self):
         self.textOutput.clear()
@@ -125,12 +126,15 @@ class OutputWindow(QDialog):
 
 
         
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)                             # existing text
-        self.textOutput.insertPlainText(text)                                  # then append the text
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        cursor = QTextCursor(self.textOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        self.textOutput.setTextCursor(cursor)                             
+        if re.search('#'*60 + '<br>',text):
+            self.textOutput.insertHtml(text)                              
+        else:
+            self.textOutput.insertPlainText(text)                              
+        cursor = QTextCursor(self.textOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         if text[-1:] == "\n":
             if redREnviron.settings["printOutputInStatusBar"]:
                 self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
@@ -202,45 +206,17 @@ class OutputWindow(QDialog):
         # traceback.extract_tb(tracebackInfo)
         # print type, value
         #traceback.print_exception(type,value,tracebackInfo)
-        toUpload = {}
+        text = exceptionHandling.formatException(type,value,tracebackInfo)
         t = datetime.today().isoformat(' ')
-        text = "Unhandled exception of type %s occured at %s:<br>Traceback:<br>\n" % ( self.getSafeString(type.__name__), t)
-
+        toUpload = {}
         toUpload['time'] = t
         toUpload['errorType'] = self.getSafeString(type.__name__)
+        toUpload['traceback'] = text
 
         
         if redREnviron.settings["printExceptionInStatusBar"]:
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
 
-        
-
-        list = traceback.extract_tb(tracebackInfo, 10)
-        #print list
-        space = "&nbsp; "
-        totalSpace = space
-        #print range(len(list))
-        for i in range(len(list)):
-            # print list[i]
-            (file, line, funct, code) = list[i]
-            #print 'code', code
-            
-            (dir, filename) = os.path.split(file)
-            text += "" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b><br>\n" % (self.getSafeString(funct))
-            if code != None:
-                code = code.replace('<', '&lt;') #convert for html
-                code = code.replace('>', '&gt;')
-                code = code.replace("\t", "\x5ct") # convert \t to unicode \t
-                text += "" + totalSpace + "Code: " + code + "<br>\n"
-            totalSpace += space
-        #print '-'*60, text
-        lines = traceback.format_exception_only(type, value)
-        for line in lines[:-1]:
-            text += "" + totalSpace + self.getSafeString(line) + "<br>\n"
-        text += "<b>" + totalSpace + self.getSafeString(lines[-1]) + "</b><br>\n"
-
-        toUpload['traceback'] = text
-        
         
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
@@ -248,15 +224,11 @@ class OutputWindow(QDialog):
         self.textOutput.insertHtml(text)                                  # then append the text
         cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-
+        self.textOutput.setTextCursor(cursor)
+        
         if redREnviron.settings["writeLogFile"]:
             self.logFile.write(str(text) + "<br>\n")
         
         self.uploadException(toUpload)
 
         
-def printException():
-    import sys, traceback
-    print '-'*60
-    traceback.print_exc(file=sys.stdout)
-    print '-'*60        

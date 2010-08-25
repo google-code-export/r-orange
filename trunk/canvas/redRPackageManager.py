@@ -4,7 +4,7 @@ import os, sys, redREnviron, urllib, zipfile, traceback
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import xml.dom.minidom
-import redRGUI, orngOutput,re 
+import redRGUI, exceptionHandling,re 
 import pprint
 import xml.etree.ElementTree as etree
 
@@ -84,7 +84,7 @@ class packageManager:
                 print path
                 self.installRRP(package,path)
             except:
-                orngOutput.printException()
+                print exceptionHandling.formatException()
                 OK=False
         qApp.canvasDlg.reloadWidgets()
         progressBar.hide()

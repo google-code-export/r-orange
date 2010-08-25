@@ -3,7 +3,7 @@ from PyQt4.QtGui import *
 import math, glob 
 # print 'Importing in redRGUI'
 import redREnviron
-import orngOutput
+import exceptionHandling
 import os.path
 import imp
         

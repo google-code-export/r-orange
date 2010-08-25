@@ -10,9 +10,9 @@ class tabWidget(QTabWidget,widgetState):
             widget.layout().addWidget(self)
     
     def createTabPage(self, name, widgetToAdd = None, canScroll = False):
-        print 'start: ' + name
+        #print 'start: ' + name
         if widgetToAdd == None:
-            print 'make widgetBox'
+            # print 'make widgetBox'
             widgetToAdd = widgetBox(self, addToLayout = 0, margin = 4)
         if canScroll:
             scrollArea = QScrollArea() 
@@ -22,7 +22,7 @@ class tabWidget(QTabWidget,widgetState):
             scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff) 
             scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         else:
-            print 'add'
+            #print 'add'
             self.addTab(widgetToAdd, name)
         return widgetToAdd 
     def getSettings(self):

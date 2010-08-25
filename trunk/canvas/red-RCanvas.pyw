@@ -1,4 +1,4 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh
+# Author: Kyle R Covington and Anup Parikh
 # Description:
 #    main file, that creates the MDI environment
 from PyQt4.QtCore import *
@@ -7,6 +7,7 @@ from PyQt4.QtGui import *
 import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
+import exceptionHandling
 import redREnviron
 import orngOutput
 import orngRegistry, OWGUI
@@ -63,15 +64,13 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetActiveColor   = QColor(*redREnviron.settings["widgetActiveColor"])
         self.lineColor           = QColor(*redREnviron.settings["lineColor"])
 
-        if not redREnviron.settings.has_key("WidgetTabs") or redREnviron.settings["WidgetTabs"] == []:
-            redREnviron.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
+        # if not redREnviron.settings.has_key("WidgetTabs") or redREnviron.settings["WidgetTabs"] == []:
+            # redREnviron.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
         
         # output window
         splashWindow.showMessage("Setting Outputs", Qt.AlignHCenter + Qt.AlignBottom)
         self.output = orngOutput.OutputWindow(self)
-        self.output.catchException(1)
-        self.output.catchOutput(1)
-        print sys.path
+        
 
         # create error and warning icons
         splashWindow.showMessage("Setting Icons", Qt.AlignHCenter + Qt.AlignBottom)

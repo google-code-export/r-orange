@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path, sys
 from string import strip, count, replace
-import orngDoc, orngOutput, orngRegistry
+import orngDoc, exceptionHandling, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx, redRGUI
 import redREnviron
@@ -816,7 +816,7 @@ def constructCategoriesPopup(canvasDlg):
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        orngOutput.printException()
+        print exceptionHandling.formatException()
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in canvasDlg.widgetRegistry['templates']:
@@ -826,7 +826,7 @@ def constructCategoriesPopup(canvasDlg):
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            orngOutput.printException()
+            print exceptionHandling.formatException()
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -865,7 +865,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                orngOutput.printException()
+                print exceptionHandling.formatException()
                 pass
     except:
         print 'Exception in Tabs with widgetRegistry'#        

@@ -21,7 +21,6 @@ class rowFilter(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self)
-        
         self.data = None
         self.orriginalData = '' # a holder for data that we get from a connection
         self.currentDataTransformation = '' # holder for data transformations ex: ((data[1:5,])[,1:3])[1:2,]
