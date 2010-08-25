@@ -28,6 +28,7 @@ class Heatmap(OWRpy):
         self.plotOnConnect = 0
         self.plotdata = ''
         self.rowvChoice = None
+        self.colvChoice = None
         
         self.inputs = [("Expression Matrix", rdf.RDataFrame, self.processMatrix), ('Classes Data', rdf.RDataFrame, self.processClasses)]
         self.outputs = [("Cluster Subset List", rlist.RList), ('Cluster Classes', rvect.RVector)]
@@ -42,10 +43,11 @@ class Heatmap(OWRpy):
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
-        self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
-        self.plotOnConnect = checkBox(infobox, buttons=['Plot on Connect'])
-        self.showClasses = checkBox(infobox, buttons = ['Show Classes'])
+        self.colorTypeCombo = redRGUI.comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        self.classesDropdown = redRGUI.comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
+        self.rowDendrogram = redRGUI.checkBox(infobox, buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
+        self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
+        self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
@@ -106,7 +108,15 @@ class Heatmap(OWRpy):
             col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
         else:
             col = colorType+'(50)'
-        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')', 3, 4)
+        if 'Plot Row Dendrogram' in self.rowDendrogram.getChecked():
+            self.rowvChoice = 'NULL'
+        else:
+            self.rowvChoice = 'NA'
+        if 'Plot Column Dendrogram' in self.rowDendrogram.getChecked():
+            self.colvChoice = 'NULL'
+        else:
+            self.colvChoice = 'NA'
+        self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+')')
         # for making the pie plot
         if colorType == 'rainbow':
             start = float(float(self.startSaturation.value())/100)
@@ -115,7 +125,8 @@ class Heatmap(OWRpy):
             col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
         else:
             col = colorType+'(10)'
-        self.Rplot('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2)
+        self.R('dev.new()')
+        self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -129,7 +140,7 @@ class Heatmap(OWRpy):
         if self.plotdata == '': return
         
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
-        self.Rplot('plot('+self.Rvariables['hclust']+')', devNumber = 1)
+        self.R('plot('+self.Rvariables['hclust']+')', devNumber = 1)
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
         newData = rlist.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
