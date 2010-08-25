@@ -49,7 +49,7 @@ class readFile(OWRpy):
         
         #signals
         self.inputs = None
-        self.outputs = [("data.frame", rdf.RDataFrame)]
+        self.outputs = {'od1':{'name':'Output Data', 'signalClass':rdf.RDataFrame}} #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal')       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
@@ -388,7 +388,7 @@ class readFile(OWRpy):
     def commit(self):
         self.updateGUI()
         sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
-        self.rSend("data.frame", sendData)
+        self.rSend("od1", sendData)
         
     def getReportText(self, fileDir):
         ## custom implementation of the reporting system for read Files.

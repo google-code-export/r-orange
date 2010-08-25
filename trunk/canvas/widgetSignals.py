@@ -82,8 +82,8 @@ class widgetSignals():
 
     # does widget have a signal with name in outputs
     def hasOutputName(self, name):
-        for output in self.outputs:
-            if name == output[0]: return 1
+        for name in self.outputs.keys():
+            return 1
         return 0
 
     def getInputType(self, signalName):
@@ -119,9 +119,9 @@ class widgetSignals():
 
 
     def signalIsOnlySingleConnection(self, signalName):
-        for i in self.inputs:
-            input = InputSignal(*i)
-            if input.name == signalName: return input.single
+        if not 'multiple' in self.inputs[signalName].keys():
+            return True
+        else: return self.inputs[signalName]['multiple']
     
     def addOutputConnection(self, widgetTo, signalName):
         existing = []
@@ -131,9 +131,9 @@ class widgetSignals():
         else:
             self.linksOutWidgets[signalName] = [widgetTo]
     def addInputConnection(self, widgetFrom, signalName):
-        for i in range(len(self.inputs)):
-            if self.inputs[i][0] == signalName:
-                handler = self.inputs[i][2]
+        for i in self.inputs.keys():
+            if i == signalName:
+                handler = self.inputs[i]['handler']
                 break
 
         existing = []
@@ -191,11 +191,11 @@ class widgetSignals():
         self.loadSavedSession = state
 
     def processSignals(self, convert = False): ## not called inside of this class 
-        print '|#| processSignals %s' % str(self.windowTitle())
+        print 'processSignals %s' % str(self.windowTitle())
         if self.closing == True:
             return
         
-        print '|#| loadSavedSessionState %s' % str(self.loadSavedSession)
+        print 'loadSavedSessionState %s' % str(self.loadSavedSession)
         if self.loadSavedSession:
             self.needProcessing = 0
             return
@@ -207,15 +207,18 @@ class widgetSignals():
         newSignal = 0        # did we get any new signals
         self.working = 1
         # we define only a way to handle signals that have defined a handler function
-        for signal in self.inputs:        # we go from the first to the last defined input
-            key = signal[0]
+        for signalName in self.inputs.keys():        # the name of the keys
+            key = signalName
+            signal = self.inputs[signalName]
             if self.linksIn.has_key(key):
-                for i in range(len(self.linksIn[key])):
+                for i in range(len(self.linksIn[key])): # move across all of the elements of the linkIn key (the input singal named in the inputs)
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
                     #print dirty,widgetFrom,handler, signalData
                     # print 'data being passed: ' + str(signalData)
                      
-                    if not (handler and dirty): continue
+                    if not (handler and dirty): 
+                        print handler, dirty, 'widget passed over either because of no handler or not dirty'
+                        continue
                     # print 'do the work'
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
@@ -224,16 +227,19 @@ class widgetSignals():
                             if oldValue == None:
                                 value = oldValue
                             else: # the value had better be one of our signals or a child of one
-                                if not isinstance(oldValue, signals.BaseRedRVariable):  ## if not a BaseRedRVariable except
-                                    raise Exception, 'Signal not a child of a Red-R signal'
+                                # if not isinstance(oldValue, signals.BaseRedRVariable):  ## if not a BaseRedRVariable except
+                                    # raise Exception, 'Signal not a child of a Red-R signal'
                                 
-                                if signal[1] != 'All':
-                                    print '|#| CONVERSION of %s to ' % oldValue.__class__, signal[1]
-                                    if isinstance(oldValue, signal[1]):
-                                        value = oldValue.convertToClass(signal[1])
+                                if signal['signalClass'] != 'All':
+                                    print '### Converting to Signal Class ###', oldValue, signal['signalClass']
+                                    print '\n\n Old Value \n\n', oldValue, oldValue.__class__, '\n\n'
+                                    if oldValue.__class__ == signal['signalClass']:
+                                        value = oldValue
+                                    elif signal['signalClass'] in oldValue.convertToList:
+                                        value = oldValue.convertToClass(signal['signalClass'])
                                     else:
                                         #try:
-                                        value = signal[1](data = '', checkVal = False) ## make a dummy signal to handle the conversion
+                                        value = signal['signalClass'](data = '', checkVal = False) ## make a dummy signal to handle the conversion
                                         value = value.convertFromClass(oldValue)
                                         # except:
                                             # raise Exception, 'No conversion function'
@@ -267,7 +273,9 @@ class widgetSignals():
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):
         print 'updating new signal data'
-        if not self.linksIn.has_key(signalName): return
+        if not self.linksIn.has_key(signalName): 
+            print 'signal key does not exist', self.linksIn, signalName
+            return
         for i in range(len(self.linksIn[signalName])):
             (dirty, widget, handler, signalData) = self.linksIn[signalName][i]
             if widget == widgetFrom:

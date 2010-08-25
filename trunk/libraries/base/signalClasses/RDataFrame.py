@@ -6,6 +6,7 @@ import time
 
 class RDataFrame(RList, StructuredDict):
     convertFromList = [StructuredDict]
+    convertToList = [StructuredDict, RList, RVariable, BaseRedRVariable, UnstructuredDict]
     def __init__(self, data, parent = None, checkVal = True):
         StructuredDict.__init__(self, data = data, parent = parent, checkVal = False)
         RList.__init__(self, data = data, parent = parent, checkVal = False)
@@ -31,7 +32,7 @@ class RDataFrame(RList, StructuredDict):
             return self._convertToVariable()
         elif varClass == RDataFrame:
             return self
-        elif issubclass(StructuredDict, varClass):
+        elif varClass in [StructuredDict, UnstructuredDict, BaseRedRVariable]:
             return self._convertToStructuredDict()
         else:
             raise Exception

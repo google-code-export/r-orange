@@ -97,18 +97,19 @@ class SchemaDoc(QWidget):
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
         
-        possibleConnections = self.signalManager.getConnections(outWidget, inWidget)
+        possibleConnections = self.signalManager.getConnections(outWidget, inWidget) # returns a list of tuples of key indicies for connections
         if len(possibleConnections) > 1:
             #print possibleConnections
             #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
             if dialog.exec_() == QDialog.Rejected:
                 return None
-            possibleConnections = dialog.getLinks()
-        
+            dialogConnections = dialog.getLinks()
+        else:
+            dialogConnections = possibleConnections
 
         self.signalManager.setFreeze(1)
         linkCount = 0
-        for (outName, inName) in possibleConnections:
+        for (outName, inName) in dialogConnections:
             linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled)
 
         self.signalManager.setFreeze(0, outWidget.instance)
@@ -188,7 +189,7 @@ class SchemaDoc(QWidget):
             inWidget.updateTooltip()
         else:
             line = self.getLine(outWidget, inWidget)
-
+        ## add the link in the signal manager
         ok = self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)

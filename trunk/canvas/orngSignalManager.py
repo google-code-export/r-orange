@@ -212,36 +212,51 @@ class SignalManager:
         inputs = [signal for signal in toInfo.inputs]
         outputs = [signal for signal in fromInfo.outputs]
         #print 'In/Out puts', inputs, outputs
-        return self.matchConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
+        return toInstance.inputs.matchConnections(fromInstace.outputs)##  return a match between the inputs of one signal and the outputs of another ##self.matchConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
     def matchConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
+        ### outputs is a list of instance of class orngSignalManager.OutputSignal
+        ### inputs is a list of instance of class orngSignalManager.InputSignal
+        ### fromInstace is the widget instance
+        ### toInstance is the widget instance of the to widget
+        #print '######### matchConnections #########', outputs, inputs, fromInstace, toInstance, '######################'
+        if 'outputs' not in dir(fromInstace) or 'inputs' not in dir(toInstance) or toInstance.inputs == None or fromInstace.outputs == None:
+            print 'Connection not possible between %s and %s' % (fromInstace.widgetID, toInstance.widgetID)
+            return False  ## somehow a widget was asked to connect with no inputs or outputs and we returned false because no connections can be made.
+        
         possibleLinks = []
-        for outS in outputs:
-            outType = fromInstace.getOutputType(outS.name)
+        for outS in fromInstace.outputs.getSignalIDs():  # gives the names of the output keys
+            outType = fromInstace.outputs[outS]['signalClass']
             if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
                 continue
-            for inS in inputs:
-                inType = toInstance.getInputType(inS.name)
+            for inS in toInstance.inputs.keys():
+                inType = toInstance.inputs[inS]['signalClass']
                 #print outType, inType
                 #print issubclass(outType, inType)
                 #print '######', inS.name, outS.name
                 if inType == None:
                     print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
-                    continue
+                    return False
                 if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
                     possibleLinks.append((outS.name, inS.name))
-                    continue
+                    return True  
                     
                 if type(inType) not in [list, tuple]:
-                    if issubclass(outType, inType):
+                    # if issubclass(outType, inType):
+                        # return True
+                    # elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
+                        # return True
+                    if type(outType) == type(inType):
                         return True
-                    elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
+                    elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
                         return True
                 else:
                     for i in inType:
-                        if issubclass(outType, i):
-                            return True
-                        elif outType in i.convertToList:
+                        # if issubclass(outType, i):
+                            # return True
+                        # elif 
+                        
+                        if 'convertToList' in dir(outType) and i in outType.convertToList:
                             return True
         #print possibleLinks
         return False    
@@ -269,15 +284,17 @@ class SignalManager:
         return self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
-        possibleLinks = []
+        if 'outputs' not in dir(fromInstace) or 'inputs' not in dir(toInstance):
+            print 'Connection not possible between %s and %s' % (fromInstace.widgetID, toInstance.widgetID)
+            return []  ## somehow a widget was asked to connect with no inputs or outputs and we returned false because no connections can be made.
         
-        for outS in reversed(outputs):
-            outType = fromInstace.getOutputType(outS.name)
+        possibleLinks = []
+        for outS in fromInstace.outputs.keys():  # gives the names of the output keys
+            outType = fromInstace.outputs[outS]['signalClass']
             if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
                 continue
-            
-            for inS in reversed(inputs):
-                inType = toInstance.getInputType(inS.name)
+            for inS in toInstance.inputs.keys():
+                inType = toInstance.inputs[inS]['signalClass']
                 #print outType, inType
                 #print issubclass(outType, inType)
                 #print '######', inS.name, outS.name
@@ -285,29 +302,29 @@ class SignalManager:
                     print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
                     continue
                 if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
-                    possibleLinks.append((outS.name, inS.name))
+                    possibleLinks.append((outS, inS))
                     continue
                     
                 if type(inType) not in [list, tuple]:
-                    if issubclass(outType, inType):
-                        if str(outType).split('.')[-1] == str(inType).split('.')[-1]:
-                            possibleLinks.insert(0, (outS.name, inS.name))
-                        else:
-                            possibleLinks.append((outS.name, inS.name))
+                    # if issubclass(outType, inType):
+                        # possibleLinks.append((outS.name, inS.name))
                         #print 'Signal appended', outS.name, inS.name
+                        # continue
+                    if type(outType) == type(inType):
+                        possibleLinks.append((outS, inS))
                         continue
-                    elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
-                        possibleLinks.append((outS.name, inS.name))
-                        #print 'Signal appended', outS.name, inS.name
+                    elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
+                        possibleLinks.append((outS, inS))
                         continue
+                    
                 else:
                     for i in inType:
-                        if issubclass(outType, i):
+                        # if issubclass(outType, i):
                             
-                            possibleLinks.append((outS.name, inS.name))
-                            continue
-                        elif outType in i.convertToList:
-                            possibleLinks.append((outS.name, inS.name))
+                            # possibleLinks.append((outS.name, inS.name))
+                            # continue
+                        if 'convertToList' in dir(outType) and i in outType.convertToList:
+                            possibleLinks.append((outS, inS))
                             #print 'Signal appended', outS.name, inS.name
                             continue
         #print possibleLinks
@@ -324,19 +341,19 @@ class SignalManager:
             return 0
         # check if signal names still exist
         found = 0
-        for o in widgetFrom.instance.outputs:
-            output = OutputSignal(*o)
-            if output.name == signalNameFrom: found=1
+        for o in widgetFrom.instance.outputs.keys():
+            #output = OutputSignal(*o)
+            if o == signalNameFrom: found=1
         if not found: # this could be a dummy and we need to add the signal
             return 0
 
         found = 0
-        for i in widgetTo.instance.inputs:
-            input = InputSignal(*i)
-            if input.name == signalNameTo: found=1
+        for i in widgetTo.instance.inputs.keys():
+            #input = widgetTo.instance.inputs[i]
+            if i == signalNameTo: found=1
         if not found:
             return 0
-
+        
         ## now we know that the signals still exist so se can proceed with making the connection
         ## check if the link already exists
         if self.links.has_key(widgetFrom.instance):  ## if the widget already has a link in the links dict
@@ -495,13 +512,13 @@ class SignalManager:
     
     def processNewSignals(self, firstWidget):
         print 'processNewSignals'
-        if len(self.widgets) == 0: return
-        if self.signalProcessingInProgress: return
+        if len(self.widgets) == 0: 
+            print 'No widgets', self.widgets
+            return
+        if self.signalProcessingInProgress: 
+            print 'processing in progress'
+            return
 
-        if self.verbosity >= 2:
-            self.addEvent("process new signals", eventVerbosity = 2)
-
-        
         if firstWidget not in self.widgets:
             firstWidget = self.widgets[0]   # if some window that is not a widget started some processing we have to process new signals from the first widget
         
@@ -509,13 +526,14 @@ class SignalManager:
         self.signalProcessingInProgress = 1
         
         # index = self.widgets.index(firstWidget)
-        print self.getParents(firstWidget)
+        print 'self.getParents', self.getParents(firstWidget)
         children = self.getChildern(firstWidget)
         children.append(firstWidget)
 
-        # print children
+        print 'children', children
         for i in children:
             if i.needProcessing:
+                print 'needs processing', i
                 try:
                     i.processSignals()  ## call process signals in the widgetSignals function.
                 except:
@@ -691,16 +709,17 @@ class SignalDialog(QDialog):
         if type(inType) not in [list]:
             if outType == 'All' or inType == 'All': 
                 print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-            elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
+            elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
                 print '|###| Allowing link from '+str(outName)+' to '+str(inName)
             
-            elif not issubclass(outType, inType): return 0
+            else: return 0
         else:
             passes = 0
             for i in inType:
-                if issubclass(outType, i): passes = 1
-                elif 'convertFromList' in dir(i) and (outType in i.convertFromList):
+                #if issubclass(outType, i): passes = 1
+                if 'convertToList' in dir(outType) and (i in outType.convertToList):
                     print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+                    passes = 1
             if not passes: return 0
             
         inSignal = None
