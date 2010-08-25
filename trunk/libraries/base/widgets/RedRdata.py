@@ -8,7 +8,11 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RDataFrame import RDataFrame
+from base.qtWidgets.filterTable import filterTable
+from base.qtWidgets.groupBox import groupBox
+from base.qtWidgets.lineEdit import lineEdit
+from base.qtWidgets.button import button
 
 class RedRdata(OWRpy): 
     settingsList = []
@@ -16,22 +20,25 @@ class RedRdata(OWRpy):
         OWRpy.__init__(self)
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
-        self.outputs = [("data Output", signals.RDataFrame.RDataFrame)]
+        self.outputs = [("data Output", RDataFrame)]
+        
+        print 'aaaaaaaaaaaaaaaaaaaaaaa', r, RDataFrame        
         
         self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True)
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True)
         
         
-        self.table = redRGUI.filterTable(self.controlArea,Rdata = self.Rvariables['datasets'], sortable=True,
+        self.table = filterTable(self.controlArea,Rdata = self.Rvariables['datasets'], sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.selectDataSet)
 
 
-        box = redRGUI.widgetBox(self.controlArea,orientation='horizontal')
-        self.controlArea.layout().setAlignment(box,Qt.AlignLeft)
-        self.package = redRGUI.lineEdit(box, label = 'Package:', text = '', callback = self.loadPackage)
-        self.RFunctionParamdataName_lineEdit = redRGUI.lineEdit(box, label = "Data Name:", 
+        box = groupBox(self.controlArea,orientation='horizontal', margin=16)
+        self.controlArea.layout().setAlignment(box,Qt.AlignHCenter)
+        # the package does not need to be loaded to get its datasets
+        self.package = lineEdit(box, label = 'Package:', text = '')#, callback = self.loadPackage)
+        self.RFunctionParamdataName_lineEdit = lineEdit(box, label = "Data Name:", 
         text = '', callback = self.commitFunction)
-        redRGUI.button(box, "Commit", callback = self.commitFunction)
+        button(box, "Commit", callback = self.commitFunction)
     def loadPackage(self):
         if str(self.package.text()) != '':
             self.require_librarys([str(self.package.text())])
@@ -55,9 +62,10 @@ class RedRdata(OWRpy):
     def commitFunction(self):
         package = self.package.text()
         dataset = str(self.RFunctionParamdataName_lineEdit.text())
-        self.loadPackage()
+        # the package does not need to be loaded to get its datasets
+        # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package))
         
-        newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = RDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         
         self.rSend("data Output", newData)

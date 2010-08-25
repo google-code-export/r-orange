@@ -9,9 +9,11 @@ from PyQt4.QtGui import *
 import numpy,sip
 
 class filterTable(redRGUI.widgetState, QTableView):
-    def __init__(self,widget,Rdata=None, editable=False, rows=None, columns=None,
-    sortable=True,filterable=False,selectionBehavior=QAbstractItemView.SelectRows,
-    selectionMode = -1, addToLayout = 1,callback=None):
+    def __init__(self,widget,Rdata=None, editable=False, sortable=True, filterable=False,
+    selectionBehavior=QAbstractItemView.SelectRows, 
+    selectionMode = QAbstractItemView.NoSelection, 
+    showResizeButtons = True,
+    callback=None):
         #widgetBox.__init__(self,widget,orientation='vertical')
         
         mainBox = redRGUI.widgetBox(widget,orientation='vertical')
@@ -19,18 +21,25 @@ class filterTable(redRGUI.widgetState, QTableView):
         QTableView.__init__(self,widget)
         mainBox.layout().addWidget(self)
         box = redRGUI.widgetBox(mainBox,orientation='horizontal')
-        box.layout().setAlignment(Qt.AlignLeft)
+        leftBox = redRGUI.widgetBox(box,orientation='horizontal')
         if filterable:
-            self.clearButton = redRGUI.button(box,label='Clear All Filtering', callback=self.clearFiltering)
-        self.label = redRGUI.widgetLabel(box,label='') 
+            self.clearButton = redRGUI.button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
+        self.label = redRGUI.widgetLabel(leftBox,label='') 
+        box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
-        # if widget and addToLayout and widget.layout():
-            # widget.layout().addWidget(self)
-        # elif widget and addToLayout:
-            # try:
-                # widget.addWidget(self)
-            # except: # there seems to be no way to add this widget
-                # print 'filter table error'
+        if showResizeButtons:
+            resizeColsBox = redRGUI.widgetBox(box, orientation="horizontal")
+            resizeColsBox.layout().setAlignment(Qt.AlignRight)
+            box.layout().setAlignment(resizeColsBox, Qt.AlignRight)
+            redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
+            redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
+            toolTip = "Increase the width of the columns", width=30)
+            redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
+            toolTip = "Decrease the width of the columns", width=30)
+            redRGUI.rubber(resizeColsBox)
+            redRGUI.button(resizeColsBox, label = "Resize To Content", callback=self.resizeColumnsToContents, 
+            toolTip = "Set width based on content size")
+            redRGUI.rubber(resizeColsBox)
 
         
         self.R = Rcommand
@@ -50,7 +59,7 @@ class filterTable(redRGUI.widgetState, QTableView):
         
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)
-                
+    
         if Rdata:
             self.setRTable(Rdata)
 
@@ -58,16 +67,20 @@ class filterTable(redRGUI.widgetState, QTableView):
             self.horizontalHeader().hide()
             self.verticalHeader().hide()
             
+        # if sortable:
+            # self.horizontalHeader().setSortIndicatorShown(True)
+            # self.horizontalHeader().setSortIndicator(-1,0)
+        if filterable:
+            #self.horizontalHeader().setClickable(True)
+            QObject.connect(self.horizontalHeader(), SIGNAL('sectionClicked (int)'), self.headerClicked)
+            # self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+            # self.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
+
         if callback:
             QObject.connect(self, SIGNAL('clicked (QModelIndex)'), callback)
-        
-        if filterable:
-            self.horizontalHeader().setClickable(True)
-            self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-            self.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
 
-    # def sortByColumn(self,column,order):
-        # print 'sortByColumn'
+
+        
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         print 'in setRTable', data
         #self.Rdata = Rdata
@@ -87,14 +100,22 @@ class filterTable(redRGUI.widgetState, QTableView):
         self.tm = MyTableModel(data,self,editable=self.editable, 
         filteredOn = filteredCols, filterable=self.filterable)
         self.setModel(self.tm)
-        if self.sortable:
-            self.setSortingEnabled(True)
+    def resizeColumnsToContents(self):
+        QTableView.resizeColumnsToContents(self)
+        for i in range(self.tm.columnCount(self)):
+            if self.columnWidth(i) > 600:
+                self.setColumnWidth(i,600)
 
-        # self.resizeColumnsToContents()
-        # for i in range(0,self.tm.columnCount(self)):
-            # if self.columnWidth(i) > 600:
-                # self.setColumnWidth(i,600)
+    def increaseColWidth(self):        
+        for col in range(self.tm.columnCount(self)):
+            w = self.columnWidth(col)
+            self.setColumnWidth(col, w + 10)
 
+    def decreaseColWidth(self):
+        for col in range(self.tm.columnCount(self)):
+            w = self.columnWidth(col)
+            minW = self.sizeHintForColumn(col)
+            self.setColumnWidth(col, max(w - 10, minW))
 
     def columnCount(self):
         if self.tm:
@@ -108,35 +129,63 @@ class filterTable(redRGUI.widgetState, QTableView):
     def clear(self):
         self.setRTable('matrix("")')
     def headerClicked(self,val):
-        print '#############################', val.x()
-        ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
-        start =0;
-        pos = val.x()
-        for x in range(0,ncol):
-            if pos > start and pos < start + self.horizontalHeader().sectionSize(x):
-                break
-            start += self.horizontalHeader().sectionSize(x)
-        selectedCol = x+1
-        self.createMenu(selectedCol,val)
+        # print '#############################', val.x()
+        # ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
+        # start =0;
+        # pos = val.x()
+        # for x in range(0,ncol):
+            # if pos > start and pos < start + self.horizontalHeader().sectionSize(x):
+                # break
+            # start += self.horizontalHeader().sectionSize(x)
+        # selectedCol = x+1
+        selectedCol = val + 1
+        self.createMenu(selectedCol)
     
     def getData(self,row,col):
         if not self.tm: return False
         return self.tm.data(self.tm.createIndex(row,col),Qt.DisplayRole).toString()
-    def createMenu(self, selectedCol, pos):
+    def createMenu(self, selectedCol):
         #print selectedCol, pos
         # print 'in createMenu', self.criteriaList
 
-        globalPos = self.mapToGlobal(pos)
+        globalPos = QCursor.pos() #self.mapToGlobal(pos)
         self.menu = QDialog(None,Qt.Popup)
         self.menu.setLayout(QVBoxLayout())
+        if self.sortable:
+            box = redRGUI.widgetBox(self.menu,orientation='horizontal')
+            box.layout().setAlignment(Qt.AlignLeft)
+            redRGUI.button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))
+            redRGUI.widgetLabel(box,label='Ascending Sort')
+            box = redRGUI.widgetBox(self.menu,orientation='horizontal')
+            box.layout().setAlignment(Qt.AlignLeft)
+            redRGUI.button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
+            redRGUI.widgetLabel(box,label='Descending Sort')
+            # qmenu = QMenu(self.menu)
+            # self.menu.layout().addWidget(qmenu)
+            # a = QAction('A->Z',self.menu)
+            # qmenu.addAction(a)
+            # self.menu.addAction(a)
+
+            hr = QFrame(self.menu)
+            hr.setFrameStyle( QFrame.Sunken + QFrame.HLine );
+            hr.setFixedHeight( 12 );
+            self.menu.layout().addWidget(hr)
+        
+        
         clearButton = redRGUI.button(self.menu,label='Clear Filter',
         callback=lambda col=selectedCol: self.createCriteriaList(col,self.menu,action='clear'))
+        self.menu.layout().setAlignment(clearButton,Qt.AlignHCenter)
         clearButton.hide()
-        self.optionsBox = redRGUI.widgetBox(self.menu)
+        
+        self.numericLabel = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera:')
+        self.numericLabel.hide()
+        self.stringLabel = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
+        self.stringLabel.hide()
+
         if selectedCol in self.criteriaList.keys():
             clearButton.show()
-            
         
+        self.optionsBox = redRGUI.widgetBox(self.menu)
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
         #print colClass
         if colClass == 'factor':
@@ -158,8 +207,7 @@ class filterTable(redRGUI.widgetState, QTableView):
             QObject.connect(c.buttons, SIGNAL('buttonClicked (int)'), lambda val : self.factorCheckBox(val,self.optionsBox))
     
         elif colClass in ['integer','numeric']:
-            label = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera:')
-            self.menu.layout().insertWidget(1,label)
+            self.numericLabel.show()
             self.options = ['Equals', 'Does Not Equal','Greater Than','Greater Than Or Equal To', 
             'Less Than', 'Less Than or Equal To', 'Between\n(2 numbers comma\nseparated, inclusive)', 
             'Not Between\n(2 numbers comma\nseparated)']
@@ -172,8 +220,7 @@ class filterTable(redRGUI.widgetState, QTableView):
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
     
         elif colClass in ['character']:
-            label = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
-            self.menu.layout().insertWidget(1,label)
+            self.stringLabel.show()
             self.options = ['Equals', 'Does Not Equal','Begins With','Ends With', 
             'Contains', 'Does Not Contain']
             for x in self.options:
@@ -209,6 +256,7 @@ class filterTable(redRGUI.widgetState, QTableView):
 
     def clearFiltering(self):
         self.criteriaList = {}
+        self.horizontalHeader().setSortIndicator(-1,order)
         self.filter()
         
     def createCriteriaList(self,col,menu,action):
@@ -293,6 +341,11 @@ class filterTable(redRGUI.widgetState, QTableView):
              
     def getFilteredData(self):
         return self.filteredData
+    def sort(self,col,order):
+        self.tm.sort(col-1,order)
+        self.horizontalHeader().setSortIndicator(col-1,order)
+        self.menu.hide()
+        
         
     def getSettings(self):
         # print '############################# getSettings'
@@ -324,7 +377,7 @@ class filterTable(redRGUI.widgetState, QTableView):
         
         self.criteriaList = data['criteriaList']
         self.filter()
-                
+     
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):

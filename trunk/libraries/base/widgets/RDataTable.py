@@ -4,15 +4,9 @@
 <tags>View Data</tags>
 <RFunctions>base:data.frame,base:matrix</RFunctions>
 <icon>datatable.png</icon>
-<author>Peter Juvan (peter.juvan@fri.uni-lj.si) modifications by Kyle R Covington and Anup Parikh</author>
+<author>Red-R Core Development Team</author>
 """
 
-# OWDataTable.py
-#
-# wishes:
-# ignore attributes, filter examples by attribute values, do
-# all sorts of preprocessing (including discretization) on the table,
-# output a new table and export it in variety of formats.
 from OWRpy import *
 import OWGUI, redRGUI
 import math
@@ -20,14 +14,11 @@ import globalData
 import libraries.base.signalClasses.RDataFrame as rdf
 ##############################################################################
 
-OrangeValueRole = Qt.UserRole + 1
 
 class RDataTable(OWRpy):
-    #settingsList = ["mylink", "showDistributions", "showMeta", "distColorRgb", "showAttributeLabels", 'linkData']
-
+    globalSettingsList = ['linkListBox','currentLinks']
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, wantGUIDialog = 1)
-        #OWRpy.__init__(self)
         
         self.inputs = [("Rectangular Data", rdf.RDataFrame, self.dataset)]
         self.outputs = []
@@ -75,14 +66,15 @@ class RDataTable(OWRpy):
         self.customLink = redRGUI.lineEdit(linksTab, label = 'Add Link:')
         b = redRGUI.button(linksTab, label = 'Add', toolTip = 'Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.', callback=self.addCustomLink)
         linksTab.layout().setAlignment(b,Qt.AlignRight)
+        redRGUI.widgetLabel(linksTab,label ="""
+Creating new links:
+http://www.ncbi.nlm.nih.gov/gene/{gene_id}
+- Here {gene_id} is a place holder and should be 
+  the column name in your table. 
+- The value in that column and selected row will 
+  replace the place holder. 
+          """)
         
-        resizeColsBox = redRGUI.groupBox(self.advancedOptions, orientation="horizontal")
-        redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
-        redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
-        toolTip = "Increase the width of the columns", width=30)
-        redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
-        toolTip = "Decrease the width of the columns", width=30)
-        redRGUI.rubber(resizeColsBox)
 
         #The table
         self.tableBox = redRGUI.groupBox(self.controlArea, label = 'Data Table')
@@ -102,9 +94,8 @@ class RDataTable(OWRpy):
             return
         #print dataset
         self.supressTabClick = True
-        self.table.show()
-        self.data = dataset
-        tableData = dataset.getData()
+        #self.table.show()
+        self.data = dataset.getData()
         
             
         if dataset.optionalDataExists('links'):
@@ -116,18 +107,13 @@ class RDataTable(OWRpy):
         dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
         self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
         self.infoBox.setHidden(False)
-
-        #if id in self.link: #start the block for assignment of link data attributes
-        # self.connect(self.table, SIGNAL("itemClicked(QTableWidgetItem*)"), lambda val, tableData = tableData: self.itemClicked(val, tableData))
-        # self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        self.table.setRTable(dataset.getData())
+        self.table.setRTable(self.data)
 
         self.supressTabClick = False
             
     def itemClicked(self, val):
-        #print 'item clicked'
-        
+        print 'item clicked'
+        print self.data
         RclickedRow = int(val.row())+1
         
         for item in self.linkListBox.selectedItems():
@@ -135,10 +121,14 @@ class RDataTable(OWRpy):
             #print str(self.currentLinks)
             url = self.currentLinks[str(item.text())]
             col = url[url.find('{')+1:url.find('}')]
+            print 'col', col, type(col)
             if col == 0 or col == 'row': #special cases for looking into rownames
-                cellVal = self.data.getData()['row_names'][val.row()]  #self.R('rownames('+table+')['+str(RclickedRow)+']')
+                #cellVal = self.data.getData()['row_names'][val.row()]  
+                cellVal = self.R('rownames('+self.data+')['+str(RclickedRow)+']')
             else:
-                cellVal = self.data.getData()[col][val.row()]  #self.R(table+'['+str(RclickedRow)+',"'+col+'"]')
+                
+                #cellVal = self.data.getData()[col][val.row()]  
+                cellVal = self.R(self.data+'['+str(RclickedRow)+',"'+col+'"]')
             url = url.replace('{'+col+'}', str(cellVal))
             #print url
             import webbrowser
@@ -149,6 +139,7 @@ class RDataTable(OWRpy):
         self.linkListBox.addItem(url)
         self.currentLinks[url] = url
         self.customLink.clear()
+        self.saveGlobalSettings()
         
     def writeFile(self):
         
@@ -201,216 +192,13 @@ class RDataTable(OWRpy):
         painter.end()
         self.colButton.setIcon(QIcon(pixmap))
 
-    def increaseColWidth(self):
-        table = self.table
-        for col in range(table.columnCount()):
-            w = table.columnWidth(col)
-            table.setColumnWidth(col, w + 10)
-
-    def decreaseColWidth(self):
-        table = self.table
-        for col in range(table.columnCount()):
-            w = table.columnWidth(col)
-            minW = table.sizeHintForColumn(col)
-            table.setColumnWidth(col, max(w - 10, minW))
 
     def RWidgetReload(self):
         print 'on load data table'
         self.processSignals()
    
-    # Writes data into table, adjusts the column width.  DEPRICATED
-    def setTable(self, table, data):
-        if data==None:
-            return
-        qApp.setOverrideCursor(Qt.WaitCursor)
-        vars = data.domain.variables
-        m = data.domain.getmetas(False)
-        ml = [(k, m[k]) for k in m]
-        ml.sort(lambda x,y: cmp(y[0], x[0]))
-        metas = [x[1] for x in ml]
-        metaKeys = [x[0] for x in ml]
 
-        mo = data.domain.getmetas(True).items()
-        if mo:
-            mo.sort(lambda x,y: cmp(x[1].name.lower(),y[1].name.lower()))
-#            metas.append(None)
-#            metaKeys.append(None)
-
-        varsMetas = vars + metas
-
-        numVars = len(data.domain.variables)
-        numMetas = len(metas)
-        numVarsMetas = numVars + numMetas
-        numEx = len(data)
-        numSpaces = int(math.log(max(numEx,1), 10))+1
-
-        table.clear()
-        table.oldSortingIndex = -1
-        table.oldSortingOrder = 1
-        table.setColumnCount(numVarsMetas)
-        table.setRowCount(numEx)
-
-        table.dist = getCached(data, orange.DomainBasicAttrStat, (data,))
-        
-        table.setItemDelegate(TableItemDelegate(self, table))
-        table.variableNames = [var.name for var in varsMetas]
-        table.data = data
-        id = self.table2id.get(table, None)
-
-        # set the header (attribute names)
-        table.setHorizontalHeaderLabels(table.variableNames)
-        if self.currentData:
-            rowNames = self.R('rownames('+self.currentData+')')
-            if rowNames != 'NULL':
-                table.setVerticalHeaderLabels(rowNames)
-        if self.showAttributeLabels:
-            labelnames = set()
-            for a in data.domain:
-                labelnames.update(a.attributes.keys())
-            labelnames = sorted(list(labelnames))
-            if len(labelnames):
-                table.setHorizontalHeaderLabels([table.variableNames[i] + "\n" + "\n".join(["%s" % a.attributes.get(lab, "") for lab in labelnames]) for (i, a) in enumerate(table.data.domain.attributes)])
-            else:
-                table.setHorizontalHeaderLabels([table.variableNames[i] for (i, a) in enumerate(table.data.domain.attributes)])
-                
-
-        #table.hide()
-        clsColor = QColor(160,160,160)
-        metaColor = QColor(220,220,200)
-        white = QColor(Qt.white)
-        for j,(key,attr) in enumerate(zip(range(numVars) + metaKeys, varsMetas)):
-            self.progressBarSet(j*100.0/numVarsMetas)
-            if attr == data.domain.classVar:
-                bgColor = clsColor
-            elif attr in metas or attr is None:
-                bgColor = metaColor
-                self.showMetas[id][1].append(j) # store indices of meta attributes
-            else:
-                bgColor = white
-
-            for i in range(numEx):
-##                table.setItem(i, j, TableWidgetItem(data[i][key]
-##                OWGUI.tableItem(table, i,j, str(data[i][key]), backColor = bgColor)
-                if data.domain[key].varType == orange.VarTypes.Continuous and not data[i][key].isSpecial():
-                    item = OWGUI.tableItem(table, i,j, float(str(data[i][key])), backColor = bgColor)
-                else:
-                    item = OWGUI.tableItem(table, i,j, str(data[i][key]), backColor = bgColor)
-##                item.setData(OrangeValueRole, QVariant(str(data[i][key])))
-
-        table.resizeRowsToContents()
-        table.resizeColumnsToContents()
-
-        self.connect(table.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sortByColumn)
-        #table.verticalHeader().setMovable(False)
-
-        qApp.restoreOverrideCursor()
-        #table.setCurrentCell(-1,-1)
-        #table.show()
- 
-
-    def sortByColumn(self, index):
-        table = self.tabs.currentWidget()
-        table.horizontalHeader().setSortIndicatorShown(1)
-        header = table.horizontalHeader()
-        if index == table.oldSortingIndex:
-            order = table.oldSortingOrder == Qt.AscendingOrder and Qt.DescendingOrder or Qt.AscendingOrder
-        else:
-            order = Qt.AscendingOrder
-        table.sortByColumn(index, order)
-        table.oldSortingIndex = index
-        table.oldSortingOrder = order
-        #header.setSortIndicator(index, order)
-
-    def tabClicked(self, qTableInstance):
-        """Updates the info box and showMetas checkbox when a tab is clicked.
-        """
-        if not self.supressTabClick:
-            id = self.table2id.get(qTableInstance,None)
-            dataset = self.dataTableIndex[id]
-            self.currentData = dataset['data']
-            print str(id)
-            self.setInfo(self.data.get(id,None))
-            show_col = self.showMetas.get(id,None)
-            if show_col:
-                self.cbShowMeta.setChecked(show_col[0])
-                self.cbShowMeta.setEnabled(len(show_col[1])>0)
-            self.linkListBox.clear()
-            if str(id) in self.link:
-                for key in self.link[str(id)].keys():
-                    self.linkListBox.addItem(key)
-                self.currentLinks = self.link[str(id)]
-    def cbShowMetaClicked(self):
-        table = self.tabs.currentWidget()
-        id = self.table2id.get(table, None)
-        if self.showMetas.has_key(id):
-            show,col = self.showMetas[id]
-            self.showMetas[id] = (not show,col)
-        if show:
-            for c in col:
-                table.hideColumn(c)
-        else:
-            for c in col:
-                table.showColumn(c)
-                table.resizeColumnToContents(c)
-
-    def cbShowAttLabelsClicked(self):
-        for table in self.table2id.keys():
-            if self.showAttributeLabels:
-                labelnames = set()
-                for a in table.data.domain:
-                    labelnames.update(a.attributes.keys())
-                labelnames = sorted(list(labelnames))
-                if len(labelnames):
-                    table.setHorizontalHeaderLabels([table.variableNames[i] + "\n" + "\n".join(["%s" % a.attributes.get(lab, "") for lab in labelnames]) for (i, a) in enumerate(table.data.domain.attributes)])
-                else:
-                    table.setHorizontalHeaderLabels([table.variableNames[i] for (i, a) in enumerate(table.data.domain.attributes)])
-            else:
-                table.setHorizontalHeaderLabels(table.variableNames)
-            # h = table.horizontalHeader().adjustSize()
-
-    def cbShowDistributions(self):
-        table = self.table
-        # print self.tabs.currentWidget
-        # print table
-        table.reset()
-
-    # show data in the default order.  DEPRICATED
-    def btnResetSortClicked(self):
-        table = self.tabs.currentWidget()
-        id = self.table2id[table]
-        data = self.data[id]
-        self.progressBarInit()
-        self.setTable(table, data)
-        self.progressBarFinished()
-
-    def setInfo(self, data):
-        """Updates data info.
-        """
-        def sp(l, capitalize=False):
-            n = len(l)
-            if n == 0:
-                if capitalize:
-                    return "No", "s"
-                else:
-                    return "no", "s"
-            elif n == 1:
-                return str(n), ''
-            else:
-                return str(n), 's'
-
-        if data == None:
-            self.infoEx.setText('No data on input.')
-            self.infoMiss.setText('')
-            self.infoAttr.setText('')
-            self.infoMeta.setText('')
-            self.infoClass.setText('')
-        else:
-            #(row, col) = data['matrix'].shape
-            row = len(data[data.keys()[0]])
-            col = len(data.keys())
-
-            self.processingBox.setHtml('%i rows and %i columns.' % (row, col))
-            
+       
     def getReportText(self, fileDir):
         return 'See the Red-R .rrs file or an output of the table to see the data.\n\n'
 
