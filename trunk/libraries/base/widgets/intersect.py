@@ -9,6 +9,8 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
 class intersect(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -21,8 +23,8 @@ class intersect(OWRpy):
         self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
         self.outputs = [("intersect Output", rvec.RVector)]
         
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "Intersect Output")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = "Intersect Output")
         self.resize(500, 200)
     def processy(self, data):
         if data:

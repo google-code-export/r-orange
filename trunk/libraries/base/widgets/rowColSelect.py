@@ -11,6 +11,13 @@ from OWRpy import *
 import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.separator import separator
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class rowColSelect(OWRpy): 
     globalSettingsList = ['sendOnSelect']
 
@@ -26,30 +33,30 @@ class rowColSelect(OWRpy):
         self.outputs = [('Data Table', rdf.RDataFrame)]
         
         #set the gui
-        area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
-        options = redRGUI.widgetBox(area, orientation = 'vertical')
+        area = widgetBox(self.controlArea,orientation='horizontal')       
+        options = widgetBox(area, orientation = 'vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
 
 
-        self.rowcolBox = redRGUI.radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
+        self.rowcolBox = radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
         orientation='horizontal', callback=self.rowcolButtonSelected)
 
-        self.invertButton = redRGUI.button(options, "Invert Selection",toolTip='Invert the selection', 
+        self.invertButton = button(options, "Invert Selection",toolTip='Invert the selection', 
         callback=self.invertSelection)
 
-        self.subsetButton = redRGUI.button(options, "Subset on Selection",toolTip='Commit the subsetting', callback=self.subset)
+        self.subsetButton = button(options, "Subset on Selection",toolTip='Commit the subsetting', callback=self.subset)
         
-        self.sendOnSelect = redRGUI.checkBox(options,buttons=['Send on select'], 
+        self.sendOnSelect = checkBox(options,buttons=['Send on select'], 
         toolTips=['Commit subsetting on select from the list.'])
 
-        info = redRGUI.widgetBox(options)
-        redRGUI.separator(info,height=15)
-        self.infoBox = redRGUI.widgetLabel(info)
+        info = widgetBox(options)
+        separator(info,height=15)
+        self.infoBox = widgetLabel(info)
         
-        self.selectionInfoBox = redRGUI.widgetLabel(info)
-        redRGUI.separator(info,height=8)
+        self.selectionInfoBox = widgetLabel(info)
+        separator(info,height=8)
         
-        self.attributes = redRGUI.listBox(area, label='Select',callback=self.onSelect)
+        self.attributes = listBox(area, label='Select',callback=self.onSelect)
         self.attributes.setSelectionMode(QAbstractItemView.ExtendedSelection)
         
         

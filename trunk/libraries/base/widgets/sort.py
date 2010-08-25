@@ -8,6 +8,9 @@
 from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class sort(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,10 +22,10 @@ class sort(OWRpy):
         self.inputs = [("x", rdf.RDataFrame, self.processx)]
         self.outputs = [("sort Output", rdf.RDataFrame)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
-        self.RFunctionParamdecreasing_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "decreasing:", text = 'FALSE')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamdecreasing_lineEdit =  lineEdit(self.standardTab,  label = "decreasing:", text = 'FALSE')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

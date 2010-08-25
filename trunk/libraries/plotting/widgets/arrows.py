@@ -8,6 +8,8 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.plotting.signalClasses.RPlotAttribute as rpa
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 class arrows(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -16,13 +18,13 @@ class arrows(OWRpy):
         self.data = {}
         self.outputs = [("arrows Output", rpa.RPlotAttribute)]
         self.standardTab = self.controlArea
-        self.RFunctionParamx0_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x0:", text = '')
-        self.RFunctionParamy0_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "y0:", text = '')
+        self.RFunctionParamx0_lineEdit =  lineEdit(self.standardTab,  label = "x0:", text = '')
+        self.RFunctionParamy0_lineEdit =  lineEdit(self.standardTab,  label = "y0:", text = '')
         
-        self.RFunctionParamx1_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x1:", text = '')
-        self.RFunctionParamy1_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "y1:", text = '')
-        self.RFunctionParamcode_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "code:", text = '1')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamx1_lineEdit =  lineEdit(self.standardTab,  label = "x1:", text = '')
+        self.RFunctionParamy1_lineEdit =  lineEdit(self.standardTab,  label = "y1:", text = '')
+        self.RFunctionParamcode_lineEdit =  lineEdit(self.standardTab,  label = "code:", text = '1')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def commitFunction(self):
         if str(self.RFunctionParamx0_lineEdit.text()) == '':
             self.status.setText('No x0 specified')

@@ -10,6 +10,11 @@ from OWRpy import *
 import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 class mergeR(OWRpy):
     settingsList = ['dataA','dataB','colAsel', 'colBsel']
     def __init__(self, parent=None, signalManager=None):
@@ -37,8 +42,8 @@ class mergeR(OWRpy):
                 
         #GUI
         
-        infoBox = redRGUI.groupBox(self.controlArea, "Info")
-        self.infoa = redRGUI.widgetLabel(infoBox, "No Data Loaded")
+        infoBox = groupBox(self.controlArea, "Info")
+        self.infoa = widgetLabel(infoBox, "No Data Loaded")
         infoBox.hide()
         layk = QWidget(self)
         self.controlArea.layout().addWidget(layk)
@@ -46,18 +51,18 @@ class mergeR(OWRpy):
         grid.setMargin(0)
         layk.setLayout(grid)
         
-        pickA = redRGUI.groupBox(self.controlArea, "Select Columns to Merge From A")
+        pickA = groupBox(self.controlArea, "Select Columns to Merge From A")
         grid.addWidget(pickA, 0,0)
-        self.colA = redRGUI.listBox(pickA, callback = self.setcolA)
+        self.colA = listBox(pickA, callback = self.setcolA)
         
         
-        pickB = redRGUI.groupBox(self.controlArea, "Select Columns to Merge From B")
+        pickB = groupBox(self.controlArea, "Select Columns to Merge From B")
         grid.addWidget(pickB, 0,1)
-        self.colB = redRGUI.listBox(pickB, callback = self.setcolB)
+        self.colB = listBox(pickB, callback = self.setcolB)
         
 
-        self.mergeLikeThis = redRGUI.checkBox(self.bottomAreaRight, buttons = ['Always Merge Like This'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
-        redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.run)
+        self.mergeLikeThis = checkBox(self.bottomAreaRight, buttons = ['Always Merge Like This'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
+        button(self.bottomAreaRight, 'Commit', callback = self.run)
         
     def processA(self, data):
         #print 'processA'

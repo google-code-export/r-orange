@@ -13,6 +13,7 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RModelFit as rmf
 import libraries.base.signalClasses as signals
+from libraries.base.qtWidgets.button import button
 class prcomp(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -23,7 +24,7 @@ class prcomp(OWRpy):
         self.inputs = [("x", signals.RDataFrame.RDataFrame, self.processx)]
         self.outputs = [("prcomp Output", signals.RModelFit.RModelFit), ("Scaled Data", signals.RMatrix.RMatrix)]
 
-        redRGUI.button(self.controlArea, "Commit", callback = self.commitFunction)
+        button(self.controlArea, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

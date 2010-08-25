@@ -21,9 +21,7 @@ class RedRdata(OWRpy):
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
         self.outputs = [("data Output", RDataFrame)]
-        
-        print 'aaaaaaaaaaaaaaaaaaaaaaa', r, RDataFrame        
-        
+                
         self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True)
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True)
         

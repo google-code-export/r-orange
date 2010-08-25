@@ -8,6 +8,8 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
 class cor_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -17,8 +19,8 @@ class cor_test(OWRpy):
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -15,6 +15,9 @@ import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RVariable as rvar
 
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 class ListSelector(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
@@ -28,9 +31,9 @@ class ListSelector(OWRpy):
         self.outputs = [('R Data Frame', rdf.RDataFrame), ('R Vector', rvec.RVector), ('R List', rlist.RList), ('R Variable', rvar.RVariable), ('R Matrix', rmat.RMatrix)]
         
         #GUI
-        box = redRGUI.groupBox(self.controlArea, "List Data")
-        self.infoa = redRGUI.widgetLabel(self.controlArea, '')
-        self.names = redRGUI.listBox(box, callback = self.sendSelection)
+        box = groupBox(self.controlArea, "List Data")
+        self.infoa = widgetLabel(self.controlArea, '')
+        self.names = listBox(box, callback = self.sendSelection)
         
     def process(self, data):
         self.data = None

@@ -11,6 +11,11 @@ import redRGUI, redRGUI
 import libraries.plotting.signalClasses.RPlotAttribute as rpa
 import libraries.stats.signalClasses.RLMFit as rlm
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class lm(OWRpy): 
     settingsList = ['RFunctionParam_data', 'RFunctionParam_formula', 'modelFormula', 'sentItems']
     def __init__(self, parent=None, signalManager=None):
@@ -26,28 +31,28 @@ class lm(OWRpy):
         
         #GUI
         
-        box = redRGUI.widgetBox(self.GUIDialog, orientation = 'horizontal')
-        paramBox = redRGUI.groupBox(self.GUIDialog, 'Parameters')
-        formulaBox = redRGUI.widgetBox(self.controlArea)
-        self.RFunctionParam_subset = redRGUI.lineEdit(paramBox, 'NULL', label = "subset:")
-        self.RFunctionParam_qr = redRGUI.lineEdit(paramBox, 'TRUE', label = "qr:")
+        box = widgetBox(self.GUIDialog, orientation = 'horizontal')
+        paramBox = groupBox(self.GUIDialog, 'Parameters')
+        formulaBox = widgetBox(self.controlArea)
+        self.RFunctionParam_subset = lineEdit(paramBox, 'NULL', label = "subset:")
+        self.RFunctionParam_qr = lineEdit(paramBox, 'TRUE', label = "qr:")
 
-        self.RFunctionParam_singular_ok = redRGUI.lineEdit(paramBox, 'TRUE', label = "singular_ok:")
-        self.RFunctionParam_y = redRGUI.lineEdit(paramBox, 'FALSE', label = "y:")
-        self.RFunctionParam_weights = redRGUI.lineEdit(paramBox, "", label = "weights:")
-        self.RFunctionParam_offset = redRGUI.lineEdit(paramBox, "", label = "offset:")
-        self.RFunctionParam_contrasts = redRGUI.lineEdit(paramBox, "NULL", label = "contrasts:")
-        self.RFunctionParam_x = redRGUI.lineEdit(paramBox, "FALSE", label = "x:")
-        self.RFunctionParam_model = redRGUI.lineEdit(paramBox, "TRUE", label = "model:")
-        self.RFunctionParam_method = redRGUI.lineEdit(paramBox, "qr", label = "method:")
+        self.RFunctionParam_singular_ok = lineEdit(paramBox, 'TRUE', label = "singular_ok:")
+        self.RFunctionParam_y = lineEdit(paramBox, 'FALSE', label = "y:")
+        self.RFunctionParam_weights = lineEdit(paramBox, "", label = "weights:")
+        self.RFunctionParam_offset = lineEdit(paramBox, "", label = "offset:")
+        self.RFunctionParam_contrasts = lineEdit(paramBox, "NULL", label = "contrasts:")
+        self.RFunctionParam_x = lineEdit(paramBox, "FALSE", label = "x:")
+        self.RFunctionParam_model = lineEdit(paramBox, "TRUE", label = "model:")
+        self.RFunctionParam_method = lineEdit(paramBox, "qr", label = "method:")
         
         #start formula entry section
 
-        buttonsBox = redRGUI.widgetBox(formulaBox, "Commands")
-        self.formulEntry = redRGUI.RFormulaEntry(buttonsBox)
+        buttonsBox = widgetBox(formulaBox, "Commands")
+        self.formulEntry = RFormulaEntry(buttonsBox)
         
         
-        self.processButton = redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.processButton = button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
     def processdata(self, data):

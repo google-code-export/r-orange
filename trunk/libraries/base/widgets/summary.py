@@ -10,6 +10,7 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses as signals
+from libraries.base.qtWidgets.textEdit import textEdit
 class summary(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,7 +20,7 @@ class summary(OWRpy):
          
         self.RFunctionParam_object = ''
         self.inputs = [("object", signals.RVariable.RVariable, self.processobject)]
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
+        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

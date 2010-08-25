@@ -9,6 +9,9 @@
 from OWRpy import * 
 import redRGUI
 import libraries.base.signalClasses.RVariable as rvar
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
 class rViewer(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -17,11 +20,11 @@ class rViewer(OWRpy):
         self.RFunctionParam_data = None
         
         self.inputs = [("data", rvar.RVariable, self.processdata)]
-        self.showAll = redRGUI.checkBox(self.bottomAreaRight, 
+        self.showAll = checkBox(self.bottomAreaRight, 
         buttons = ['String', 'Show All'],orientation="horizontal", setChecked = 'String')
-        redRGUI.button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
-        redRGUI.button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea)
+        button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
+        button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
+        self.RoutputWindow = textEdit(self.controlArea)
     
     def printViewer(self):
         thisPrinter = QPrinter()

@@ -10,24 +10,29 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
 class RedRfisher_test(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "fisher_test", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.setRvariableNames(["fisher.test"])
 		self.data = {}
 		self.RFunctionParam_x = ''
 		self.inputs = [("x", signals.RMatrix.RMatrix, self.processx)]
 		
-		self.RFunctionParamB_lineEdit = redRGUI.lineEdit(self.controlArea, label = "Number of Replicates for Monte Carlo:", text = '2000')
-		self.RFunctionParamhybrid_checkBox = redRGUI.checkBox(self.controlArea, label = "Hybrid Probabilities:", items = ['FALSE', 'TRUE'], setChecked = 'FALSE')
-		self.RFunctionParamsimulate_p_value_lineEdit = redRGUI.checkBox(self.controlArea, label = "simulate_p_value:", items = ['FALSE,TRUE'], setChecked = 'FALSE')
-		self.RFunctionParamconf_level_lineEdit = redRGUI.lineEdit(self.controlArea, label = "Confidence Level:", text = '0.95')
-		self.RFunctionParamconf_int_lineEdit = redRGUI.checkBox(self.controlArea, label = "Calculate Confidence Interval:", items = ['TRUE','FALSE'], setChecked = 'TRUE')
-		self.RFunctionParamalternative_comboBox = redRGUI.comboBox(self.controlArea, label = "Alternative Hypothesis:", items = ["two.sided","greater","less"])
-		self.RFunctionParamor_lineEdit = redRGUI.lineEdit(self.controlArea, label = "Odds Ratio:", text = '1')
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-		self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "R Output Window")
+		self.RFunctionParamB_lineEdit = lineEdit(self.controlArea, label = "Number of Replicates for Monte Carlo:", text = '2000')
+		self.RFunctionParamhybrid_checkBox = checkBox(self.controlArea, label = "Hybrid Probabilities:", buttons = ['FALSE', 'TRUE'], setChecked = 'FALSE')
+		self.RFunctionParamsimulate_p_value_lineEdit = checkBox(self.controlArea, label = "simulate_p_value:", buttons = ['FALSE,TRUE'], setChecked = 'FALSE')
+		self.RFunctionParamconf_level_lineEdit = lineEdit(self.controlArea, label = "Confidence Level:", text = '0.95')
+		self.RFunctionParamconf_int_lineEdit = checkBox(self.controlArea, label = "Calculate Confidence Interval:", buttons = ['TRUE','FALSE'], setChecked = 'TRUE')
+		self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "Alternative Hypothesis:", items = ["two.sided","greater","less"])
+		self.RFunctionParamor_lineEdit = lineEdit(self.controlArea, label = "Odds Ratio:", text = '1')
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
 	def processx(self, data):
 		if not self.require_librarys(["stats"]):
 			self.status.setText('R Libraries Not Loaded.')

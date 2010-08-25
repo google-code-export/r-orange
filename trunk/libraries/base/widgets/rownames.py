@@ -10,6 +10,13 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.separator import separator
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class rownames(OWRpy): 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
@@ -20,24 +27,24 @@ class rownames(OWRpy):
         self.inputs = [("x", rdf.RDataFrame, self.processx)]
         self.outputs = [("Names Output", rvec.RVector)]
         
-        box = redRGUI.widgetBox(self.controlArea)
+        box = widgetBox(self.controlArea)
         self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
-        redRGUI.widgetLabel(box,'Get row or column names from input object.')
-        redRGUI.separator(box,height=10)
-        self.function =  redRGUI.radioButtons(box, 
+        widgetLabel(box,'Get row or column names from input object.')
+        separator(box,height=10)
+        self.function =  radioButtons(box, 
         buttons=['Row Names','Column Names'],setChecked='Row Names', orientation='horizontal')
-        redRGUI.separator(box,height=10)
+        separator(box,height=10)
 
-        self.RFunctionParamprefix_lineEdit =  redRGUI.lineEdit(box,  label = "prefix:", 
+        self.RFunctionParamprefix_lineEdit =  lineEdit(box,  label = "prefix:", 
         toolTip='prepend prefix to simple numbers when creating names.')
-        redRGUI.separator(box,height=10)
+        separator(box,height=10)
         
-        self.doNullButton =  redRGUI.radioButtons(box,  label = "do.NULL:",
+        self.doNullButton =  radioButtons(box,  label = "do.NULL:",
         toolTips=['logical. Should this create names if they are NULL?']*2,
         buttons=['TRUE','FALSE'],setChecked='TRUE', orientation='horizontal')
-        buttonBox = redRGUI.widgetBox(box,orientation='horizontal')
-        redRGUI.button(buttonBox, "Commit", callback = self.commitFunction)
-        self.autoCommit = redRGUI.checkBox(buttonBox,buttons=['Commit on Input'],setChecked=['Commit on Input'])
+        buttonBox = widgetBox(box,orientation='horizontal')
+        button(buttonBox, "Commit", callback = self.commitFunction)
+        self.autoCommit = checkBox(buttonBox,buttons=['Commit on Input'],setChecked=['Commit on Input'])
         
     def processx(self, data):
         if data:

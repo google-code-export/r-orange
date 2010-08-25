@@ -11,6 +11,7 @@ from OWRpy import *
 import OWGUI 
 import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.button import button
 class t(OWRpy): 
     settingsList = ['sentItems']
     def __init__(self, parent=None, signalManager=None):
@@ -23,8 +24,8 @@ class t(OWRpy):
         self.inputs = [("x", rdf.RDataFrame, self.processx)]
         self.outputs = [("t Output", rdf.RDataFrame)]
         
-        #box = redRGUI.widgetBox(self.controlArea, "Widget Box")
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        #box = widgetBox(self.controlArea, "Widget Box")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

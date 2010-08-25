@@ -12,6 +12,11 @@ import libraries.base.signalClasses.RVector as rvec
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RModelFit as rmf
 import libraries.plotting.signalClasses as plotting
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
 class spline(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -23,17 +28,17 @@ class spline(OWRpy):
         self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
         self.outputs = [("spline Output", rmf.RModelFit), ('spline plot attribute', plotting.RPlotAttribute.RPlotAttribute)]
         
-        self.standardTab = redRGUI.groupBox(self.controlArea, label = 'Parameters')
-        self.RFunctionParamxmin_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
-        self.RFunctionParamties_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "ties:", text = 'mean')
-        self.RFunctionParammethod_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "method:", text = '"fmm"')
-        self.RFunctionParamxmax_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xmax:", text = 'max(x)')
-        self.RFunctionParamn_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "n:", text = '3*length(x)')
+        self.standardTab = groupBox(self.controlArea, label = 'Parameters')
+        self.RFunctionParamxmin_lineEdit =  lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
+        self.RFunctionParamties_lineEdit =  lineEdit(self.standardTab,  label = "ties:", text = 'mean')
+        self.RFunctionParammethod_lineEdit =  lineEdit(self.standardTab,  label = "method:", text = '"fmm"')
+        self.RFunctionParamxmax_lineEdit =  lineEdit(self.standardTab,  label = "xmax:", text = 'max(x)')
+        self.RFunctionParamn_lineEdit =  lineEdit(self.standardTab,  label = "n:", text = '3*length(x)')
         
-        self.xcolumnComboBox = redRGUI.comboBox(self.standardTab, label = 'X data')
-        self.ycolumnComboBox = redRGUI.comboBox(self.standardTab, label = 'Y data')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
+        self.xcolumnComboBox = comboBox(self.standardTab, label = 'X data')
+        self.ycolumnComboBox = comboBox(self.standardTab, label = 'Y data')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -8,6 +8,8 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 class dotchart(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,17 +20,17 @@ class dotchart(OWRpy):
         self.inputs = [("x", rmat.RMatrix, self.processx)]
         
         self.standardTab = self.controlArea
-        self.RFunctionParamxlab_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')
-        self.RFunctionParambg_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "bg:", text = 'par("bg")')
-        #self.RFunctionParamxlim_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xlim:", text = 'range(x[is.finite(x)])')
-        self.RFunctionParamcolor_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "color:", text = 'par("fg")')
-        self.RFunctionParamlabels_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "labels:", text = 'NULL')
-        self.RFunctionParamlcolor_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "lcolor:", text = '"gray"')
-        self.RFunctionParampch_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "pch:", text = '21')
-        self.RFunctionParamylab_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "ylab:", text = 'NULL')
-        self.RFunctionParammain_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "main:", text = 'NULL')
-        self.RFunctionParamcex_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "cex:", text = 'par("cex")')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')
+        self.RFunctionParambg_lineEdit =  lineEdit(self.standardTab,  label = "bg:", text = 'par("bg")')
+        #self.RFunctionParamxlim_lineEdit =  lineEdit(self.standardTab,  label = "xlim:", text = 'range(x[is.finite(x)])')
+        self.RFunctionParamcolor_lineEdit =  lineEdit(self.standardTab,  label = "color:", text = 'par("fg")')
+        self.RFunctionParamlabels_lineEdit =  lineEdit(self.standardTab,  label = "labels:", text = 'NULL')
+        self.RFunctionParamlcolor_lineEdit =  lineEdit(self.standardTab,  label = "lcolor:", text = '"gray"')
+        self.RFunctionParampch_lineEdit =  lineEdit(self.standardTab,  label = "pch:", text = '21')
+        self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "ylab:", text = 'NULL')
+        self.RFunctionParammain_lineEdit =  lineEdit(self.standardTab,  label = "main:", text = 'NULL')
+        self.RFunctionParamcex_lineEdit =  lineEdit(self.standardTab,  label = "cex:", text = 'par("cex")')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

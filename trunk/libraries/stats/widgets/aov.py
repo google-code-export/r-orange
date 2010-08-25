@@ -9,6 +9,11 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
 class aov(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -20,15 +25,15 @@ class aov(OWRpy):
         self.inputs = [("data", rdf.RDataFrame, self.processdata)]
         self.outputs = [("aov Output", rmf.RModelFit)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamcontrasts_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "contrasts:", text = 'NULL')
-        self.RFunctionParamformula_formulaEntry =  redRGUI.RFormulaEntry(self.standardTab)
-        self.RFunctionParamqr_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "qr:", text = 'TRUE')
-        self.RFunctionParamprojections_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "projections:", text = 'FALSE')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
+        self.RFunctionParamcontrasts_lineEdit =  lineEdit(self.standardTab,  label = "contrasts:", text = 'NULL')
+        self.RFunctionParamformula_formulaEntry =  RFormulaEntry(self.standardTab)
+        self.RFunctionParamqr_lineEdit =  lineEdit(self.standardTab,  label = "qr:", text = 'TRUE')
+        self.RFunctionParamprojections_lineEdit =  lineEdit(self.standardTab,  label = "projections:", text = 'FALSE')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

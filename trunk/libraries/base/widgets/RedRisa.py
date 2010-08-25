@@ -9,6 +9,7 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.qtWidgets.button import button
 class RedRisa(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,7 +20,7 @@ class RedRisa(OWRpy):
         self.inputs = [("data", rmat.RMatrix, self.processdata)]
         self.outputs = [("isa Output", rmf.RModelFit)]
 
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
         if not self.require_librarys(["isa2"]):
             self.status.setText('R Libraries Not Loaded.')

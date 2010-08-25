@@ -13,6 +13,13 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
     def __init__(self, parent=None, signalManager=None):
@@ -35,38 +42,38 @@ class rExecutor(OWRpy):
         #GUI
         
         #GUIDialog
-        self.box = redRGUI.groupBox(self.GUIDialog, "R Executor")
-        self.infob = redRGUI.widgetLabel(self.box, "")
+        self.box = groupBox(self.GUIDialog, "R Executor")
+        self.infob = widgetLabel(self.box, "")
         
-        self.infoa = redRGUI.widgetLabel(self.box, "")
+        self.infoa = widgetLabel(self.box, "")
         # grid
-        area = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
+        area = widgetBox(self.controlArea, orientation = 'horizontal')
         area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        leftArea = redRGUI.widgetBox(self.box)
+        leftArea = widgetBox(self.box)
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
-        rightArea = redRGUI.widgetBox(area)
+        rightArea = widgetBox(area)
 
-        runbox = redRGUI.groupBox(rightArea, label = "Command Line", orientation='horizontal')
+        runbox = groupBox(rightArea, label = "Command Line", orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.command = redRGUI.lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
+        self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
         self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        processbutton = redRGUI.button(runbox, label = "&Run", callback = self.runR, width=100)
-        statusBox = redRGUI.groupBox(rightArea, label = "Status")
-        self.sendStatus = redRGUI.widgetLabel(statusBox, 'Nothing Sent')
-        self.dataBox = redRGUI.groupBox(leftArea, label = "Input Infromation")
-        self.status = redRGUI.widgetLabel(self.dataBox, "No Input")
+        processbutton = button(runbox, label = "&Run", callback = self.runR, width=100)
+        statusBox = groupBox(rightArea, label = "Status")
+        self.sendStatus = widgetLabel(statusBox, 'Nothing Sent')
+        self.dataBox = groupBox(leftArea, label = "Input Infromation")
+        self.status = widgetLabel(self.dataBox, "No Input")
         
-        # self.metadataBox = redRGUI.widgetBox(leftArea, "Metadata")
-        # self.infoM = redRGUI.widgetLabel(self.metadataBox, "No Meta Data")
-        # self.metadataLB = redRGUI.listBox(self.metadataBox, callback = self.insertMetaDataVar)
-        varbutton = redRGUI.button(leftArea, "Recieved", callback = self.putrecieved, width = 150)
-        history = redRGUI.button(leftArea, "RHistory", callback = self.putRHistory, width = 150)
-        redRGUI.button(leftArea, "Clear Output", callback = self.clearOutput)
+        # self.metadataBox = widgetBox(leftArea, "Metadata")
+        # self.infoM = widgetLabel(self.metadataBox, "No Meta Data")
+        # self.metadataLB = listBox(self.metadataBox, callback = self.insertMetaDataVar)
+        varbutton = button(leftArea, "Recieved", callback = self.putrecieved, width = 150)
+        history = button(leftArea, "RHistory", callback = self.putRHistory, width = 150)
+        button(leftArea, "Clear Output", callback = self.clearOutput)
 
-        self.thistext = redRGUI.textEdit(rightArea)
+        self.thistext = textEdit(rightArea)
 
-        sendbutton = redRGUI.button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
+        sendbutton = button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
 
         
     def clearOutput(self):
@@ -176,7 +183,7 @@ class rExecutor(OWRpy):
         self.status.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
-            self.dfselected = redRGUI.listBox(self.dataBox, self)
+            self.dfselected = listBox(self.dataBox, self)
             for e in colnames:
                 self.dfselected.addItem(e)
         elif colnames != 'NULL' and self.dfselected != None:
@@ -187,7 +194,7 @@ class rExecutor(OWRpy):
         self.status.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
-            self.dfselected = redRGUI.listBox(self.dataBox, self)
+            self.dfselected = listBox(self.dataBox, self)
             try:
                 for e in colnames:
                     self.dfselected.addItem(e)

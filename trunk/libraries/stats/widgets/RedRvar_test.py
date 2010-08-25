@@ -10,21 +10,25 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
 class RedRvar_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "var_test", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["var.test"])
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.inputs = [("y", signals.RVector.RVector, self.processy),("x", signals.RVector.RVector, self.processx)]
         
-        self.RFunctionParamalternative_comboBox = redRGUI.comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
-        self.RFunctionParamratio_lineEdit = redRGUI.lineEdit(self.controlArea, label = "ratio:", text = '1')
-        self.RFunctionParamconf_level_lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
+        self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
+        self.RFunctionParamratio_lineEdit = lineEdit(self.controlArea, label = "ratio:", text = '1')
+        self.RFunctionParamconf_level_lineEdit = lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

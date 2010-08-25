@@ -8,6 +8,9 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class bumpchart(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -15,18 +18,18 @@ class bumpchart(OWRpy):
         self.RFunctionParam_y = ''
         self.inputs = [("y", rdf.RDataFrame, self.processy)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParammar_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "mar:", text = 'c(2,8,5,8)')
-        self.RFunctionParamlty_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "lty:", text = '1')
-        self.RFunctionParamlabels_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "labels:", text = 'rownames(y)')
-        self.RFunctionParamrank_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "rank:", text = 'TRUE')
-        self.RFunctionParampch_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "pch:", text = '19')
-        self.RFunctionParamtop_labels_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "top_labels:", text = 'colnames(y)')
-        self.RFunctionParamcol_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
-        self.RFunctionParamlwd_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "lwd:", text = '1')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParammar_lineEdit =  lineEdit(self.standardTab,  label = "mar:", text = 'c(2,8,5,8)')
+        self.RFunctionParamlty_lineEdit =  lineEdit(self.standardTab,  label = "lty:", text = '1')
+        self.RFunctionParamlabels_lineEdit =  lineEdit(self.standardTab,  label = "labels:", text = 'rownames(y)')
+        self.RFunctionParamrank_lineEdit =  lineEdit(self.standardTab,  label = "rank:", text = 'TRUE')
+        self.RFunctionParampch_lineEdit =  lineEdit(self.standardTab,  label = "pch:", text = '19')
+        self.RFunctionParamtop_labels_lineEdit =  lineEdit(self.standardTab,  label = "top_labels:", text = 'colnames(y)')
+        self.RFunctionParamcol_lineEdit =  lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
+        self.RFunctionParamlwd_lineEdit =  lineEdit(self.standardTab,  label = "lwd:", text = '1')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["plotrix"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -72,7 +75,7 @@ class bumpchart(OWRpy):
         
         self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
             
-       injection = []
+        injection = []
         if str(self.RFunctionParammar_lineEdit.text()) != '':
             string = 'mar='+str(self.RFunctionParammar_lineEdit.text())+''
             injection.append(string)

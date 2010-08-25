@@ -10,15 +10,17 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
 class RedRcorrplot(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "corrplot", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.RFunctionParam_object = ''
 		self.inputs = [("object", signals.RModelFit.RModelFit, self.processobject)]
 		
-		self.RFunctionParamtype_comboBox = redRGUI.comboBox(self.controlArea, label = "type:", items = ["'p'; points","'l'; lines"])
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RFunctionParamtype_comboBox = comboBox(self.controlArea, label = "type:", items = ["'p'; points","'l'; lines"])
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processobject(self, data):
 		if not self.require_librarys(["pls"]):
 			self.status.setText('R Libraries Not Loaded.')

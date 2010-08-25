@@ -13,6 +13,10 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as RVector
 
 
+from libraries.base.qtWidgets.filterTable import filterTable
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class rowFilter(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager = None):
@@ -35,7 +39,7 @@ class rowFilter(OWRpy):
         
         ######## GUI ############
         
-        self.tableArea = redRGUI.widgetBox(self.controlArea)
+        self.tableArea = widgetBox(self.controlArea)
         
         #############################
         # self.R('data <- data.frame(a=c("a","b","c","d","e"),b=as.factor(1:5000),c=as.character(c("a","b","c","d","e")))')
@@ -44,13 +48,13 @@ class rowFilter(OWRpy):
         
         # self.R('data$c <- as.character(data$Species)')
         # self.data = 'data'
-        # self.table = redRGUI.filterTable(self.tableArea,sortable=True, Rdata='data')
+        # self.table = filterTable(self.tableArea,sortable=True, Rdata='data')
         #############################
-        self.table = redRGUI.filterTable(self.controlArea, sortable=True,
+        self.table = filterTable(self.controlArea, sortable=True,
         filterable=True,selectionMode = QAbstractItemView.NoSelection )
 
-        redRGUI.button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
-        self.dimsInfoArea = redRGUI.widgetLabel(self.bottomAreaCenter, '')
+        button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
+        self.dimsInfoArea = widgetLabel(self.bottomAreaCenter, '')
         
     def processData(self, data):
         if not data: 

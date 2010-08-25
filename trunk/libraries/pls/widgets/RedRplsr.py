@@ -12,6 +12,10 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.button import button
 class RedRplsr(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -22,12 +26,12 @@ class RedRplsr(OWRpy):
         self.inputs = [("data", signals.RDataFrame.RDataFrame, self.processdata)]
         self.outputs = [("plsr Output", signals.RModelFit.RModelFit)]
         
-        self.RFunctionParamformula_lineEdit = redRGUI.lineEdit(self.controlArea, label = "formula:", text = '')
-        self.RFunctionParamscale_radioButtons = redRGUI.radioButtons(self.controlArea, label = "Scale the data:", buttons = ['TRUE', 'FALSE'], setChecked = 'FALSE', orientation = 'horizontal')
-        self.RFunctionParammethod_lineEdit = redRGUI.lineEdit(self.controlArea, label = "method:", text = '')
-        self.RFunctionParamncomp_lineEdit = redRGUI.lineEdit(self.controlArea, label = "ncomp:", text = '10')
-        self.RFunctionParamvalidation_comboBox = redRGUI.comboBox(self.controlArea, label = "validation:", items = ["none","CV","LOO"])
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamformula_lineEdit = lineEdit(self.controlArea, label = "formula:", text = '')
+        self.RFunctionParamscale_radioButtons = radioButtons(self.controlArea, label = "Scale the data:", buttons = ['TRUE', 'FALSE'], setChecked = 'FALSE', orientation = 'horizontal')
+        self.RFunctionParammethod_lineEdit = lineEdit(self.controlArea, label = "method:", text = '')
+        self.RFunctionParamncomp_lineEdit = lineEdit(self.controlArea, label = "ncomp:", text = '10')
+        self.RFunctionParamvalidation_comboBox = comboBox(self.controlArea, label = "validation:", items = ["none","CV","LOO"])
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
         if not self.require_librarys(["pls"]):
             self.status.setText('R Libraries Not Loaded.')

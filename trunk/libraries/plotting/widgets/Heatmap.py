@@ -13,6 +13,12 @@ import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RModelFit as rmf
 import libraries.base.signalClasses.RVector as rvect
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.spinBox import spinBox
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
@@ -29,20 +35,20 @@ class Heatmap(OWRpy):
 
         
         #GUI
-        infobox = redRGUI.groupBox(self.controlArea, label = "Options")
-        redRGUI.button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
-        redRGUI.button(infobox, label = 'Save as PDF', callback = self.saveAsPDF)
-        redRGUI.button(infobox, label = 'Identify', callback = self.identify, width=200)
-        self.startSaturation = redRGUI.spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
-        self.endSaturation = redRGUI.spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
+        infobox = groupBox(self.controlArea, label = "Options")
+        button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
+        button(infobox, label = 'Save as PDF', callback = self.saveAsPDF)
+        button(infobox, label = 'Identify', callback = self.identify, width=200)
+        self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
+        self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        self.colorTypeCombo = redRGUI.comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
-        self.classesDropdown = redRGUI.comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
-        self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
-        self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
+        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
+        self.plotOnConnect = checkBox(infobox, buttons=['Plot on Connect'])
+        self.showClasses = checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
-        self.infoa = redRGUI.widgetLabel(infobox, label = "Nothing to report")
+        self.infoa = widgetLabel(infobox, label = "Nothing to report")
         
     def onLoadSavedSession(self):
         print 'load heatmap'

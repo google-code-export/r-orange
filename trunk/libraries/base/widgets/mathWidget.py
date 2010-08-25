@@ -10,6 +10,14 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.dialog import dialog
+from libraries.base.qtWidgets.Rtable import Rtable
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class mathWidget(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -24,29 +32,29 @@ class mathWidget(OWRpy):
         self.outputs = [('Data Frame', rdf.RDataFrame)]
         #GUI#
         
-        mainArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
-        leftArea = redRGUI.groupBox(mainArea, label = 'Table View')
-        rightArea = redRGUI.groupBox(mainArea, label = 'Math Box')
+        mainArea = widgetBox(self.controlArea, orientation = 'horizontal')
+        leftArea = groupBox(mainArea, label = 'Table View')
+        rightArea = groupBox(mainArea, label = 'Math Box')
         
-        self.table = redRGUI.Rtable(leftArea)
+        self.table = Rtable(leftArea)
         
-        self.functionLineEdit = redRGUI.lineEdit(rightArea, label = 'Function Search or Run', callback = self.functionDone)
+        self.functionLineEdit = lineEdit(rightArea, label = 'Function Search or Run', callback = self.functionDone)
         QObject.connect(self.functionLineEdit, SIGNAL('textChanged(const QString&)'), lambda s: self.textChanged(s))
         
-        self.functionListBox = redRGUI.listBox(rightArea, items = self.functionsList, callback = self.funcionPressed)
+        self.functionListBox = listBox(rightArea, items = self.functionsList, callback = self.funcionPressed)
         
-        self.helpButton = redRGUI.button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
-        self.dialog = redRGUI.dialog(self)
-        self.dialogTopArea = redRGUI.groupBox(self.dialog, label = 'Left Side')
-        self.dialogTopLineEdit = redRGUI.lineEdit(self.dialogTopArea, label = 'Constant', toolTip = 'Must be a number')
-        self.dialogTopListBox = redRGUI.listBox(self.dialogTopArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogTopLineEdit.clear)
+        self.helpButton = button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
+        self.dialog = dialog(self)
+        self.dialogTopArea = groupBox(self.dialog, label = 'Left Side')
+        self.dialogTopLineEdit = lineEdit(self.dialogTopArea, label = 'Constant', toolTip = 'Must be a number')
+        self.dialogTopListBox = listBox(self.dialogTopArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogTopLineEdit.clear)
         
-        self.dialogLabel = redRGUI.widgetLabel(self.dialog)
+        self.dialogLabel = widgetLabel(self.dialog)
         
-        self.dialogBottomArea = redRGUI.groupBox(self.dialog, label = 'Right Side')
-        self.dialogBottomLineEdit = redRGUI.lineEdit(self.dialogBottomArea, label = 'Constant', toolTip = 'Must be a number')
-        self.dialogBottomListBox = redRGUI.listBox(self.dialogBottomArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogBottomLineEdit.clear)
-        redRGUI.button(self.dialog, label = 'Done', callback = self.functionCommit)
+        self.dialogBottomArea = groupBox(self.dialog, label = 'Right Side')
+        self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = 'Constant', toolTip = 'Must be a number')
+        self.dialogBottomListBox = listBox(self.dialogBottomArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogBottomLineEdit.clear)
+        button(self.dialog, label = 'Done', callback = self.functionCommit)
         self.dialog.hide()
     def gotData(self, data):
         if data:

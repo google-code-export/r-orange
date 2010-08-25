@@ -10,20 +10,24 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
 class RedRks_test(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "ks_test", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.setRvariableNames(["ks.test"])
 		self.data = {}
 		self.RFunctionParam_y = ''
 		self.RFunctionParam_x = ''
 		self.inputs = [("y", signals.RVector.RVector, self.processy),("x", signals.RVector.RVector, self.processx)]
 		
-		self.RFunctionParamalternative_comboBox = redRGUI.comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
-		self.RFunctionParamexact_lineEdit = redRGUI.lineEdit(self.controlArea, label = "exact:", text = 'NULL')
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-		self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "RoutputWindow")
+		self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
+		self.RFunctionParamexact_lineEdit = lineEdit(self.controlArea, label = "exact:", text = 'NULL')
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
 	def processy(self, data):
 		if not self.require_librarys(["stats"]):
 			self.status.setText('R Libraries Not Loaded.')

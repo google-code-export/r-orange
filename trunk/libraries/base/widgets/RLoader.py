@@ -11,6 +11,12 @@ from OWRpy import *
 import redRGUI
 import libraries.base.signalClasses.REnvironment as renv
 
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class RLoader(OWRpy): 
     globalSettingsList = ['filecombo','path']
 
@@ -23,20 +29,20 @@ class RLoader(OWRpy):
         self.setRvariableNames(['sessionEnviron'])
         
         
-        gbox = redRGUI.groupBox(self.controlArea,orientation='vertical',label='Select R session')
+        gbox = groupBox(self.controlArea,orientation='vertical',label='Select R session')
         
-        box = redRGUI.widgetBox(gbox,orientation='horizontal')
-        self.filecombo = redRGUI.fileNamesComboBox(box, orientation='vertical')
+        box = widgetBox(gbox,orientation='horizontal')
+        self.filecombo = fileNamesComboBox(box, orientation='vertical')
         self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Maximum)
 
-        redRGUI.button(box, label='Browse', callback = self.browseFile)
-        loadButton = redRGUI.button(gbox, label='Load Session', callback = self.loadSession)
+        button(box, label='Browse', callback = self.browseFile)
+        loadButton = button(gbox, label='Load Session', callback = self.loadSession)
         gbox.layout().setAlignment(loadButton,Qt.AlignRight)
         
-        self.infoa = redRGUI.widgetLabel(self.controlArea, '')
-        self.varBox = redRGUI.listBox(self.controlArea, label = 'Variables')
+        self.infoa = widgetLabel(self.controlArea, '')
+        self.varBox = listBox(self.controlArea, label = 'Variables')
         self.varBox.hide()
-        self.infob = redRGUI.widgetLabel(self.controlArea, '')
+        self.infob = widgetLabel(self.controlArea, '')
     
     def browseFile(self): 
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path, "R save file (*.RData *.rda);; All Files (*.*)")

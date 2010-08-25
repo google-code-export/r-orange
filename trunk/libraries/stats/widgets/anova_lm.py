@@ -10,6 +10,9 @@ from OWRpy import *
 import OWGUI 
 import redRGUI
 import libraries.stats.signalClasses.RLMFit as rlm
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.groupBox import groupBox
 class anova_lm(OWRpy): 
     settingsList = ['RFunctionParam_object']
     def __init__(self, parent=None, signalManager=None):
@@ -18,9 +21,9 @@ class anova_lm(OWRpy):
         self.saveSettingsList.extend(['RFunctionParam_object'])
         self.inputs = [("object", rlm.RLMFit, self.processobject)]
         
-        box = redRGUI.groupBox(self.controlArea, "Output")
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(box)
+        box = groupBox(self.controlArea, "Output")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(box)
         #box.layout().addWidget(self.RoutputWindow)
     def onLoadSavedSession(self):
         self.commitFunction()

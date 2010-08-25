@@ -10,17 +10,19 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
 class RedRattributes(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self, parent, signalManager, "attributes", wantMainArea = 0, resizingEnabled = 1)
+		OWRpy.__init__(self)
 		self.setRvariableNames(["attributes"])
 		self.data = {}
 		self.RFunctionParam_obj = ''
 		self.inputs = [("obj", signals.RVariable.RVariable, self.processobj)]
 		
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-		self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "R Output Window")
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
 	def processobj(self, data):
 		if not self.require_librarys(["base"]):
 			self.status.setText('R Libraries Not Loaded.')

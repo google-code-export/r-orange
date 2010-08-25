@@ -10,6 +10,8 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 class RedRcbind(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -21,8 +23,8 @@ class RedRcbind(OWRpy):
 		self.inputs = [("a", signals.RDataFrame.RDataFrame, self.processa),("b", signals.RDataFrame.RDataFrame, self.processb)]
 		self.outputs = [("cbind Output", signals.RDataFrame.RDataFrame)]
 		
-		self.RFunctionParamdeparse_level_lineEdit = redRGUI.lineEdit(self.controlArea, label = "deparse_level:", text = '1')
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RFunctionParamdeparse_level_lineEdit = lineEdit(self.controlArea, label = "deparse_level:", text = '1')
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processa(self, data):
 		if not self.require_librarys(["base"]):
 			self.status.setText('R Libraries Not Loaded.')

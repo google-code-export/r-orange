@@ -9,6 +9,10 @@
 from OWRpy import * 
 import OWGUI 
 import libraries.base.signalClasses.RVariable as rvar
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.button import button
 class hist(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,12 +22,12 @@ class hist(OWRpy):
         self.needsColumns = 0
         self.inputs = [("x", rvar.RVariable, self.processx)]
         
-        box = redRGUI.groupBox(self.controlArea, "Widget Box")
-        #self.infoa = redRGUI.widgetLabel(box, "")
-        self.column = redRGUI.comboBox(box, label='Data Column:')
-        self.RFunctionParam_main = redRGUI.lineEdit(box, label = "Main Title")
-        self.RFunctionParam_xlab = redRGUI.lineEdit(box, label = "X Label")
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        box = groupBox(self.controlArea, "Widget Box")
+        #self.infoa = widgetLabel(box, "")
+        self.column = comboBox(box, label='Data Column:')
+        self.RFunctionParam_main = lineEdit(box, label = "Main Title")
+        self.RFunctionParam_xlab = lineEdit(box, label = "X Label")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

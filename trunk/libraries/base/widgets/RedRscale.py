@@ -10,6 +10,8 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses as signals
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.radioButtons import radioButtons
 class RedRscale(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -21,9 +23,9 @@ class RedRscale(OWRpy):
         self.outputs = [("scale Output", signals.RMatrix.RMatrix)]
         
         
-        self.RFunctionParamscale_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "Scale:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
-        self.RFunctionParamcenter_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "Center:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamscale_radioButtons =  radioButtons(self.controlArea,  label = "Scale:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
+        self.RFunctionParamcenter_radioButtons =  radioButtons(self.controlArea,  label = "Center:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

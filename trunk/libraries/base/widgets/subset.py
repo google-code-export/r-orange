@@ -14,6 +14,11 @@ import libraries.base.signalClasses.RList as rlist
 
 
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class subset(OWRpy): 
 
     def __init__(self, parent=None, signalManager=None):
@@ -29,17 +34,17 @@ class subset(OWRpy):
         
                 
         #GUI
-        box = redRGUI.widgetBox(self.controlArea,orientation = 'horizontal')
-        pickA = redRGUI.groupBox(box, "Subset on:")
-        self.colA = redRGUI.listBox(pickA, callback = self.setcolA)
+        box = widgetBox(self.controlArea,orientation = 'horizontal')
+        pickA = groupBox(box, "Subset on:")
+        self.colA = listBox(pickA, callback = self.setcolA)
         
         
-        pickB = redRGUI.groupBox(box, "Subset by:")
-        self.colB = redRGUI.listBox(pickB, callback = self.setcolB)
+        pickB = groupBox(box, "Subset by:")
+        self.colB = listBox(pickB, callback = self.setcolB)
         
 
-        self.mergeLikeThis = redRGUI.checkBox(self.bottomAreaRight, buttons = ['Subset on input'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
-        redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.subset)
+        self.mergeLikeThis = checkBox(self.bottomAreaRight, buttons = ['Subset on input'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
+        button(self.bottomAreaRight, 'Commit', callback = self.subset)
 
         
     def onSelect(self):

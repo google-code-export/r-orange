@@ -11,6 +11,8 @@ import redRGUI
 import libraries.base.signalClasses as signals
 import libraries.plotting.signalClasses as plotSignals
 
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 class RedRplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -21,10 +23,10 @@ class RedRplot(OWRpy):
         self.RFunctionParam_plotatt = ''
         self.inputs = [("y", signals.RVector.RVector, self.processy),("x", signals.RVector.RVector, self.processx),("plotatt", plotSignals.RPlotAttribute.RPlotAttribute, self.processplotatt, 'Multiple')]
         
-        self.RFunctionParamxlab_lineEdit = redRGUI.lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
-        self.RFunctionParamylab_lineEdit = redRGUI.lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
-        self.RFunctionParammain_lineEdit = redRGUI.lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamxlab_lineEdit = lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
+        self.RFunctionParamylab_lineEdit = lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
+        self.RFunctionParammain_lineEdit = lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

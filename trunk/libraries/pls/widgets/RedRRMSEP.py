@@ -12,6 +12,8 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
 class RedRRMSEP(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -22,8 +24,8 @@ class RedRRMSEP(OWRpy):
 		self.inputs = [("object", signals.RModelFit.RModelFit, self.processobject)]
 		self.outputs = [("RMSEP Output", signals.RModelFit.RModelFit)]
 		
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-		self.RoutputWindow = redRGUI.textEdit(self.controlArea, label = "R Output Window")
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
 	def processobject(self, data):
 		if not self.require_librarys(["pls"]):
 			self.status.setText('R Libraries Not Loaded.')

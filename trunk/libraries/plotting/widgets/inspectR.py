@@ -8,6 +8,9 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class inspectR(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -15,11 +18,11 @@ class inspectR(OWRpy):
         self.RFunctionParam_mymodel = ''
         self.inputs = [("mymodel", rmf.RModelFit, self.processmymodel)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamwhich_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "which:", text = 'all')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamwhich_lineEdit =  lineEdit(self.standardTab,  label = "which:", text = 'all')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processmymodel(self, data):
         if not self.require_librarys(["asuR"]):
             self.status.setText('R Libraries Not Loaded.')

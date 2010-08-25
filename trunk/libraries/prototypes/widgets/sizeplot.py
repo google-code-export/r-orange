@@ -7,6 +7,9 @@
 """
 from OWRpy import * 
 import redRGUI 
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class sizeplot(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -16,15 +19,15 @@ class sizeplot(OWRpy):
 		self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]
 		
 		#self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-		box = redRGUI.tabWidget(self.controlArea)
+		box = tabWidget(self.controlArea)
 		self.standardTab = box.createTabPage(name = "Standard")
 		self.advancedTab = box.createTabPage(name = "Advanced")
-		self.RFunctionParamy_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "y:", text = '')
-		self.RFunctionParamx_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x:", text = '')
-		self.RFunctionParamscale_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "scale:", text = '1')
-		self.RFunctionParamsize_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
-		self.RFunctionParampow_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "pow:", text = '0.5')
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RFunctionParamy_lineEdit =  lineEdit(self.standardTab,  label = "y:", text = '')
+		self.RFunctionParamx_lineEdit =  lineEdit(self.standardTab,  label = "x:", text = '')
+		self.RFunctionParamscale_lineEdit =  lineEdit(self.standardTab,  label = "scale:", text = '1')
+		self.RFunctionParamsize_lineEdit =  lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
+		self.RFunctionParampow_lineEdit =  lineEdit(self.standardTab,  label = "pow:", text = '0.5')
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processy(self, data):
 		if not self.require_librarys(["plotrix"]):
 			self.status.setText('R Libraries Not Loaded.')

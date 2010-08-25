@@ -9,6 +9,9 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses.RVector as rvec
 import libraries.plotting.signalClasses.RPlotAttribute as rpa
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class rug(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -20,15 +23,15 @@ class rug(OWRpy):
         self.outputs = [("rug Output", rpa.RPlotAttribute)]
         
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamside_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "side:", text = '1')
-        self.RFunctionParamticksize_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "ticksize:", text = '0.03')
-        self.RFunctionParamquiet_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "quiet:", text = 'getOption("warn")<0')
-        self.RFunctionParamlwd_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "lwd:", text = '0.5')
-        self.RFunctionParamcol_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamside_lineEdit =  lineEdit(self.standardTab,  label = "side:", text = '1')
+        self.RFunctionParamticksize_lineEdit =  lineEdit(self.standardTab,  label = "ticksize:", text = '0.03')
+        self.RFunctionParamquiet_lineEdit =  lineEdit(self.standardTab,  label = "quiet:", text = 'getOption("warn")<0')
+        self.RFunctionParamlwd_lineEdit =  lineEdit(self.standardTab,  label = "lwd:", text = '0.5')
+        self.RFunctionParamcol_lineEdit =  lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

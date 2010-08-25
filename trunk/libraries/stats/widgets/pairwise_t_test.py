@@ -10,6 +10,9 @@ from OWRpy import *
 import OWGUI 
 import libraries.base.signalClasses.RVariable as rvar
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class pairwise_t_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -23,12 +26,12 @@ class pairwise_t_test(OWRpy):
         self.inputs = [('R Data Frame', rdf.RDataFrame, self.process)]
         self.outputs = [("pairwise.t.test Output", rvar.RVariable)]
         
-        box = redRGUI.widgetBox(self.controlArea)
-        self.RFunctionParam_x = redRGUI.comboBox(box, label = "Values:")
-        self.RFunctionParam_pool_sd = redRGUI.comboBox(box, label = "Pool Standard Deviation:", items = ['True', 'False'])
-        self.RFunctionParam_g = redRGUI.comboBox(box, label = "Groups Column:")
-        self.RFunctionParam_p_adjust_method = redRGUI.comboBox(box, label = "P-value Adjust Method:", items = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"])
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        box = widgetBox(self.controlArea)
+        self.RFunctionParam_x = comboBox(box, label = "Values:")
+        self.RFunctionParam_pool_sd = comboBox(box, label = "Pool Standard Deviation:", items = ['True', 'False'])
+        self.RFunctionParam_g = comboBox(box, label = "Groups Column:")
+        self.RFunctionParam_p_adjust_method = comboBox(box, label = "P-value Adjust Method:", items = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"])
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = QTextEdit()
         box.layout().addWidget(self.RoutputWindow)
     

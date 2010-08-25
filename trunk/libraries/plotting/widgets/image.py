@@ -8,13 +8,14 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.qtWidgets.button import button
 class image(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
         self.inputs = [("x", rmat.RMatrix, self.processx)]
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -10,18 +10,20 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.radioButtons import radioButtons
 class RedRfft(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "fft", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["fft"])
         self.data = {}
         self.RFunctionParam_z = ''
         self.inputs = [("z", signals.RMatrix.RMatrix, self.processz)]
         self.outputs = [("fft Output", signals.RMatrix.RMatrix)]
         
-        self.RFunctionParaminverse_radioBox = redRGUI.radioBox(self.controlArea, label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParaminverse_radioBox = radioButtons(self.controlArea, label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processz(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

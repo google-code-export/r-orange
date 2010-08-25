@@ -9,6 +9,8 @@
 from OWRpy import * 
 import OWGUI, redRGUI
 import libraries.base.signalClasses.RList as rlist
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.lineEdit import lineEdit
 class boxplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -17,9 +19,9 @@ class boxplot(OWRpy):
         self.inputs = [("x", rlist.RList, self.processx)]
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        redRGUI.button(box, 'Save as PDF', callback = self.savePlot)
-        self.commandLine = redRGUI.lineEdit(box, label = 'Command Line')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        button(box, 'Save as PDF', callback = self.savePlot)
+        self.commandLine = lineEdit(box, label = 'Command Line')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

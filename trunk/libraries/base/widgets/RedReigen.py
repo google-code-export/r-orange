@@ -8,6 +8,8 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses as signals
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.radioButtons import radioButtons
 class RedReigen(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,10 +20,10 @@ class RedReigen(OWRpy):
         self.inputs = [("x", signals.RMatrix.RMatrix, self.processx)]
         self.outputs = [("eigen Output", signals.RList.RList)]
         
-        self.RFunctionParamsymmetric_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "symmetric:", buttons = ['Yes', 'No'], setChecked = 'Yes')
-        self.RFunctionParamonly_values_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "only_values:", buttons = ['Yes', 'No'], setChecked = 'Yes')
-        self.RFunctionParamEISPACK_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "EISPACK:", buttons = ['Yes', 'No'], setChecked = 'Yes')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamsymmetric_radioButtons =  radioButtons(self.controlArea,  label = "symmetric:", buttons = ['Yes', 'No'], setChecked = 'Yes')
+        self.RFunctionParamonly_values_radioButtons =  radioButtons(self.controlArea,  label = "only_values:", buttons = ['Yes', 'No'], setChecked = 'Yes')
+        self.RFunctionParamEISPACK_radioButtons =  radioButtons(self.controlArea,  label = "EISPACK:", buttons = ['Yes', 'No'], setChecked = 'Yes')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

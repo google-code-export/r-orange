@@ -11,6 +11,10 @@ from OWRpy import *
 import OWGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class nameProtector(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
@@ -23,19 +27,19 @@ class nameProtector(OWRpy):
         self.outputs = [("Data Frame", rdf.RDataFrame), ("Vector", rvec.RVector)]
         
         ### The data frame GUI
-        self.dfbox = redRGUI.widgetBox(self.controlArea)
-        self.newDataDFcheckBox = redRGUI.checkBox(self.dfbox, buttons = ['Make New Data Object'], toolTips = ['Makes a new data object instead of replacing the data in the old one'])
+        self.dfbox = widgetBox(self.controlArea)
+        self.newDataDFcheckBox = checkBox(self.dfbox, buttons = ['Make New Data Object'], toolTips = ['Makes a new data object instead of replacing the data in the old one'])
         self.newDataDFcheckBox.setChecked(['Make New Data Object'])
-        self.nameProtectDFcheckBox = redRGUI.checkBox(self.dfbox, label = 'Protect the names in:', buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 'Use make.names to protect the names in the columns.'])
-        self.namesProtectDFcomboBox = redRGUI.comboBox(self.dfbox, label = 'Column names to protect:')
-        self.commitDFbutton = redRGUI.button(self.dfbox, "Commit", callback = self.dfCommit)
+        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 'Use make.names to protect the names in the columns.'])
+        self.namesProtectDFcomboBox = comboBox(self.dfbox, label = 'Column names to protect:')
+        self.commitDFbutton = button(self.dfbox, "Commit", callback = self.dfCommit)
         
         
         
         ### The Vector GUI
-        self.vbox = redRGUI.widgetBox(self.controlArea)
+        self.vbox = widgetBox(self.controlArea)
         self.vbox.hide()
-        self.commitVbutton = redRGUI.button(self.vbox, "Commit", callback = self.vCommit)
+        self.commitVbutton = button(self.vbox, "Commit", callback = self.vCommit)
         
     def gotDF(self, data):
         if data:

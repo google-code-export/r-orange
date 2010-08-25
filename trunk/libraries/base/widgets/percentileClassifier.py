@@ -8,6 +8,11 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.spinBox import spinBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
 class percentileClassifier(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,13 +24,13 @@ class percentileClassifier(OWRpy):
         self.outputs = [('Data Frame', rdf.RDataFrame)]
         
         ### GUI ###
-        self.colNames_listBox = redRGUI.listBox(self.controlArea, label = 'Column Names:')
+        self.colNames_listBox = listBox(self.controlArea, label = 'Column Names:')
         self.colNames_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.percentile_spinBox = redRGUI.spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100)
-        self.percentile_lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
-        self.outputWindow = redRGUI.textEdit(self.controlArea, label = 'Output Summary')
+        self.percentile_spinBox = spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100)
+        self.percentile_lineEdit = lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
+        self.outputWindow = textEdit(self.controlArea, label = 'Output Summary')
         
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commit)
+        button(self.bottomAreaRight, "Commit", callback = self.commit)
         
     def processData(self, data):
         if data:

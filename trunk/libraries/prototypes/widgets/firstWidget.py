@@ -11,6 +11,9 @@ from OWRpy import *
 
 # our first widget. Must be a child of OWRpy class
 # The class name must be the same as the file name
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 class firstWidget(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
@@ -19,11 +22,11 @@ class firstWidget(OWRpy):
         
         ### GUI ###
         #create input line
-        self.lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Line Edit')
+        self.lineEdit = lineEdit(self.controlArea, label = 'Line Edit')
         #create submit button
-        self.button = redRGUI.button(self.controlArea,label='submit',callback=self.process)
+        self.button = button(self.controlArea,label='submit',callback=self.process)
         #create output area
-        self.output = redRGUI.textEdit(self.controlArea,label='Output')
+        self.output = textEdit(self.controlArea,label='Output')
     
     # on click submit call this function
     def process(self):

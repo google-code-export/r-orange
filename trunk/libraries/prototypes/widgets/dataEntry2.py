@@ -10,6 +10,12 @@
 import redRGUI
 from OWRpy import *
 
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.Rtable import Rtable
+from libraries.base.qtWidgets.table import table
+from libraries.base.qtWidgets.lineEdit import lineEdit
 class dataEntry2(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
@@ -28,29 +34,29 @@ class dataEntry2(OWRpy):
         #GUI.
         
         
-        box = redRGUI.groupBox(self.GUIDialog, label = "Options")
-        redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
-        self.rowHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
-        #self.colHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Column Headers'])
+        box = groupBox(self.GUIDialog, label = "Options")
+        button(self.bottomAreaRight, 'Commit', self.commitTable)
+        self.rowHeaders = checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
+        #self.colHeaders = checkBox(box, label=None, buttons=['Use Column Headers'])
         self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders.setChecked(['Use Column Headers'])
-        self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
-        redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
+        self.customClasses = button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
+        button(box, 'Clear Classes', callback = self.clearClasses)
         
         self.columnDialog = QDialog()
         self.columnDialog.setLayout(QVBoxLayout())
         self.columnDialog.hide()
-        self.columnNameLineEdit = redRGUI.lineEdit(self.columnDialog, label = 'Column Name:')
-        redRGUI.button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
-        redRGUI.button(self.bottomAreaRight, "Add Column", callback = self.addColumn)
-        redRGUI.button(self.bottomAreaRight, "Add Row", callback = self.addRow)
-        box = redRGUI.groupBox(self.controlArea, label = "Table", 
+        self.columnNameLineEdit = lineEdit(self.columnDialog, label = 'Column Name:')
+        button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
+        button(self.bottomAreaRight, "Add Column", callback = self.addColumn)
+        button(self.bottomAreaRight, "Add Row", callback = self.addRow)
+        box = groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         
 
         self.R(self.Rvariables['table'] + '<- matrix("",nrow=10,ncol=10)',wantType='list')
-        self.dataTable = redRGUI.Rtable(box, Rdata = self.Rvariables['table'], editable=True,sortable=True)
+        self.dataTable = Rtable(box, Rdata = self.Rvariables['table'], editable=True,sortable=True)
         # if self.dataTable.columnCount() < 1:
             # self.dataTable.setColumnCount(1)
             # self.dataTable.setHorizontalHeaderLabels(['Rownames'])
@@ -62,7 +68,7 @@ class dataEntry2(OWRpy):
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         self.window = QDialog(self)
         self.window.setLayout(QVBoxLayout())
-        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
+        self.classTable = table(self.window, rows = self.maxCol, columns = 2)
         self.resize(700,500)
         self.move(300, 25)
     
@@ -113,7 +119,7 @@ class dataEntry2(OWRpy):
         #self.dataTable.setCurrentCell(row+1, col)
 
     def setCustomClasses(self):
-        self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
+        self.classTable = table(self.window, rows = self.maxCol, columns = 2)
         for j in range(1, self.colCount+1):
             cb = QComboBox()
             item = self.dataTable.item(0, j)
@@ -126,8 +132,8 @@ class dataEntry2(OWRpy):
             newitem.setToolTip(str('Set the data type for column '+str(newitem.text())))
             self.classTable.setItem(j-1, 0, newitem)
             
-        redRGUI.button(self.window, 'Set Classes', callback = self.setClasses)
-        redRGUI.button(self.window, 'Clear Classes', callback = self.clearClasses)
+        button(self.window, 'Set Classes', callback = self.setClasses)
+        button(self.window, 'Clear Classes', callback = self.clearClasses)
         self.window.show()
     def clearClasses(self):
         self.classes = None

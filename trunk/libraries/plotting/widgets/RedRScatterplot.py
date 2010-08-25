@@ -14,6 +14,15 @@ import textwrap, numpy
 import libraries.base.signalClasses.RDataFrame as rdf
 from PyQt4.QtGui import *
 ### currently depricated until fixed
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.redRGraph import redRGraph
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.separator import separator
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.zoomSelectToolbar import zoomSelectToolbar
 class RedRScatterplot(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
@@ -27,29 +36,29 @@ class RedRScatterplot(OWRpy):
         self.cm = None
 
         # GUI
-        self.xColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'X data', items=[])
-        # self.forceXNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
-        self.yColumnSelector = redRGUI.comboBox(self.GUIDialog, label = 'Y data', items=[])
-        # self.forceYNumeric = redRGUI.checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
-        self.paintCMSelector = redRGUI.comboBox(self.GUIDialog, label = 'Color Points By:', items = [''])
-        self.replotCheckbox = redRGUI.checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
+        self.xColumnSelector = comboBox(self.GUIDialog, label = 'X data', items=[])
+        # self.forceXNumeric = checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
+        self.yColumnSelector = comboBox(self.GUIDialog, label = 'Y data', items=[])
+        # self.forceYNumeric = checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
+        self.paintCMSelector = comboBox(self.GUIDialog, label = 'Color Points By:', items = [''])
+        self.replotCheckbox = checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
         self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
         
         # plot area
-        plotarea = redRGUI.groupBox(self.controlArea, label = "Graph")
+        plotarea = groupBox(self.controlArea, label = "Graph")
         plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.graph = redRGUI.redRGraph(plotarea)
+        self.graph = redRGraph(plotarea)
         plotarea.layout().addWidget(self.graph)
-        #self.zoomSelectToolbarBox = redRGUI.groupBox(self.GUIDialog, label = "Plot Tool Bar")
+        #self.zoomSelectToolbarBox = groupBox(self.GUIDialog, label = "Plot Tool Bar")
         
-        redRGUI.separator(self.GUIDialog,height=8)
-        buttonBox = redRGUI.widgetBox(self.GUIDialog,orientation='horizontal')
-        redRGUI.button(buttonBox, label = "Plot", callback = self.plot, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
-        redRGUI.button(buttonBox, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
-        redRGUI.separator(self.GUIDialog,height=8)
-        self.zoomSelectToolbar = redRGUI.zoomSelectToolbar(self, self.GUIDialog, self.graph)
-        self.paintLegend = redRGUI.textEdit(self.GUIDialog)
+        separator(self.GUIDialog,height=8)
+        buttonBox = widgetBox(self.GUIDialog,orientation='horizontal')
+        button(buttonBox, label = "Plot", callback = self.plot, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        button(buttonBox, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
+        separator(self.GUIDialog,height=8)
+        self.zoomSelectToolbar = zoomSelectToolbar(self, self.GUIDialog, self.graph)
+        self.paintLegend = textEdit(self.GUIDialog)
         
         self.resize(600, 500)
 

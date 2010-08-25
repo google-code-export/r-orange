@@ -13,6 +13,15 @@ import OWGUIEx
 import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.separator import separator
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class rowcolPicker(OWRpy): 
 
     def __init__(self, parent=None, signalManager=None):
@@ -29,33 +38,33 @@ class rowcolPicker(OWRpy):
         ('Not Data Table', rdf.RDataFrame)]
         
         #set the gui
-        area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
-        options = redRGUI.widgetBox(area, orientation = 'vertical')
+        area = widgetBox(self.controlArea,orientation='horizontal')       
+        options = widgetBox(area, orientation = 'vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
         
-        self.sendSection = redRGUI.checkBox(options, label = "Send Where Selection Is:", buttons = ["True", "False"], setChecked = "True", toolTip = "Select True to send data from the Data slot where the selections that you made are True.\nSelect False to send data from the Not Data slot that are not the selections you made.")
-        self.rowcolBox = redRGUI.radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
+        self.sendSection = checkBox(options, label = "Send Where Selection Is:", buttons = ["True", "False"], setChecked = "True", toolTip = "Select True to send data from the Data slot where the selections that you made are True.\nSelect False to send data from the Not Data slot that are not the selections you made.")
+        self.rowcolBox = radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
         callback=self.rowcolButtonSelected)
         
-        self.invertButton = redRGUI.button(options, "Invert Selection", callback=self.invertSelection)
+        self.invertButton = button(options, "Invert Selection", callback=self.invertSelection)
 
-        self.subsetButton = redRGUI.button(options, "Subset on Selection", callback=self.subset)
-        redRGUI.separator(options,height=15)
+        self.subsetButton = button(options, "Subset on Selection", callback=self.subset)
+        separator(options,height=15)
 
-        self.subsetBox = redRGUI.groupBox(options,label='Subset by')
-        self.subsetColumn = redRGUI.comboBox(self.subsetBox,label="Column:", orientation='vertical',items=['Select'])
-        self.subOnAttachedButton = redRGUI.button(self.subsetBox, "Subset by column", callback=self.subOnAttached)
+        self.subsetBox = groupBox(options,label='Subset by')
+        self.subsetColumn = comboBox(self.subsetBox,label="Column:", orientation='vertical',items=['Select'])
+        self.subOnAttachedButton = button(self.subsetBox, "Subset by column", callback=self.subOnAttached)
         self.subsetBox.setDisabled(True)
         
-        redRGUI.separator(options,height=20)
+        separator(options,height=20)
 
-        info = redRGUI.widgetBox(options)
+        info = widgetBox(options)
         options.layout().setAlignment(info,Qt.AlignBottom)
-        self.infoBox = redRGUI.widgetLabel(info)
-        redRGUI.separator(info,height=15)
-        self.selectionInfoBox = redRGUI.widgetLabel(info)
+        self.infoBox = widgetLabel(info)
+        separator(info,height=15)
+        self.selectionInfoBox = widgetLabel(info)
         
-        self.attributes = redRGUI.listBox(area, label='Select',callback=self.onSelect)
+        self.attributes = listBox(area, label='Select',callback=self.onSelect)
         self.attributes.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
     def onSelect(self):

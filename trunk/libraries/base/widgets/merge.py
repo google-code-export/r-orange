@@ -11,6 +11,11 @@ from OWRpy import *
 import redRGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class merge(OWRpy):
     globalSettingsList = ['mergeLikeThis']
 
@@ -35,19 +40,19 @@ class merge(OWRpy):
         self.setRvariableNames(['merged'])
                 
         #GUI
-        mainArea = redRGUI.widgetBox(self.controlArea,orientation='horizontal')
-        self.colA = redRGUI.listBox(mainArea,label='From Dataset A Merge On Column:', callback = self.setcolA)
-        self.colB = redRGUI.listBox(mainArea,label='From Dataset B Merge On Column:', callback = self.setcolB)
+        mainArea = widgetBox(self.controlArea,orientation='horizontal')
+        self.colA = listBox(mainArea,label='From Dataset A Merge On Column:', callback = self.setcolA)
+        self.colB = listBox(mainArea,label='From Dataset B Merge On Column:', callback = self.setcolB)
 
-        self.sortOption = redRGUI.checkBox(self.bottomAreaLeft, buttons = ['Sort by Selected Column'], 
+        self.sortOption = checkBox(self.bottomAreaLeft, buttons = ['Sort by Selected Column'], 
         toolTips = ['logical. Should the results be sorted on the by columns?'])
         self.bottomAreaLeft.layout().setAlignment(self.sortOption, Qt.AlignLeft)
-        self.mergeOptions = redRGUI.radioButtons(self.bottomAreaCenter,buttons=['A+B','B+A','AB'],setChecked='A+B',
+        self.mergeOptions = radioButtons(self.bottomAreaCenter,buttons=['A+B','B+A','AB'],setChecked='A+B',
         orientation='horizontal')
         self.bottomAreaCenter.layout().setAlignment(self.mergeOptions, Qt.AlignCenter)
-        self.mergeLikeThis = redRGUI.checkBox(self.bottomAreaRight, buttons = ['Merge on Connect'], 
+        self.mergeLikeThis = checkBox(self.bottomAreaRight, buttons = ['Merge on Connect'], 
         toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
-        redRGUI.button(self.bottomAreaRight, 'Commit', callback = self.run)
+        button(self.bottomAreaRight, 'Commit', callback = self.run)
         
     def processA(self, data):
         #print 'processA'

@@ -11,6 +11,9 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses as signals
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.button import button
 class RedRstrsplit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -21,12 +24,12 @@ class RedRstrsplit(OWRpy):
         self.inputs = [("x", signals.RVector.RVector, self.processx)]
         self.outputs = [("strsplit Output", signals.RList.RList), ('strsplit Vector', signals.RVector.RVector)]
         
-        self.RFunctionParamsplit_lineEdit =  redRGUI.lineEdit(self.controlArea,  label = "Split Text Using:", text = '')
-        self.RFunctionParamfixed_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "fixed:", buttons = ['Use text exactly', 'Use text as expression (Advanced)'], setChecked = 'Use text exactly', orientation = 'horizontal')
-        self.RFunctionParamextended_radiButtons =  redRGUI.radioButtons(self.controlArea,  label = "Extend Expressions:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
-        self.RFunctionParamperl_radioButtons =  redRGUI.radioButtons(self.controlArea,  label = "'Use Perl Expressions':", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
-        self.RFunctionParamunlist_radioButtons = redRGUI.radioButtons(self.controlArea, label = 'Convert to RVector', buttons = ['Send only the list', 'Send list and vector'], setChecked = 'Send list and vector', orientation = 'horizontal')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamsplit_lineEdit =  lineEdit(self.controlArea,  label = "Split Text Using:", text = '')
+        self.RFunctionParamfixed_radioButtons =  radioButtons(self.controlArea,  label = "fixed:", buttons = ['Use text exactly', 'Use text as expression (Advanced)'], setChecked = 'Use text exactly', orientation = 'horizontal')
+        self.RFunctionParamextended_radiButtons =  radioButtons(self.controlArea,  label = "Extend Expressions:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
+        self.RFunctionParamperl_radioButtons =  radioButtons(self.controlArea,  label = "'Use Perl Expressions':", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
+        self.RFunctionParamunlist_radioButtons = radioButtons(self.controlArea, label = 'Convert to RVector', buttons = ['Send only the list', 'Send list and vector'], setChecked = 'Send list and vector', orientation = 'horizontal')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

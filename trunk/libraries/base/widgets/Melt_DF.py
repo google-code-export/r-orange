@@ -9,6 +9,11 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class Melt_DF(OWRpy): 
     settingsList = ['RFunctionParam_data']
     def __init__(self, parent=None, signalManager=None):
@@ -19,14 +24,14 @@ class Melt_DF(OWRpy):
         self.inputs = [("data", rdf.RDataFrame, self.processdata)]
         self.outputs = [("melt.data.frame Output", rdf.RDataFrame)]
         
-        box = redRGUI.widgetBox(self.controlArea, "Widget Box")
-        self.RFunctionParam_na_rm = redRGUI.comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
-        self.RFunctionParam_measure_var = redRGUI.listBox(box, label = "Result Variable:", toolTip = 'The column that contains the result or the measurement that the data should be melted around.')
+        box = widgetBox(self.controlArea, "Widget Box")
+        self.RFunctionParam_na_rm = comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
+        self.RFunctionParam_measure_var = listBox(box, label = "Result Variable:", toolTip = 'The column that contains the result or the measurement that the data should be melted around.')
         self.RFunctionParam_measure_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParam_id_var = redRGUI.listBox(box, label = "Groupings:", toolTip = 'The columns indicating the groupings of the data.')
+        self.RFunctionParam_id_var = listBox(box, label = "Groupings:", toolTip = 'The columns indicating the groupings of the data.')
         self.RFunctionParam_id_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParam_variable_name = redRGUI.lineEdit(box, label = "New Group Name:", toolTip = 'The name of the new column that the groupings will be put into.')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParam_variable_name = lineEdit(box, label = "New Group Name:", toolTip = 'The name of the new column that the groupings will be put into.')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def RWidgetReload(self):
         self.commitFunction()
     def processdata(self, data):

@@ -25,6 +25,11 @@ import libraries.base.signalClasses.RMatrix as rmat
 # The wiget class name must be the same as the file name
 import libraries.base.signalClasses.RVariable as rvar
 
+from libraries.base.qtWidgets.Rtable import Rtable
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class cor(OWRpy):
     
     # a list of all the variables that need to be saved in the widget state file.
@@ -52,27 +57,27 @@ class cor(OWRpy):
         self.outputs = [("cor Output", rmat.RMatrix)]
         
         #START THE GUI LAYOUT
-        area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
+        area = widgetBox(self.controlArea,orientation='horizontal')       
         
-        options = redRGUI.widgetBox(area,orientation='vertical')
+        options = widgetBox(area,orientation='vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
-        self.type = redRGUI.radioButtons(options,  label = "Perform", 
+        self.type = radioButtons(options,  label = "Perform", 
         buttons = ['Variance', 'Correlation', 'Covariance'],setChecked='Correlation',
         orientation='vertical',callback=self.changeType)
         
-        self.methodButtons = redRGUI.radioButtons(options,  label = "Method", 
+        self.methodButtons = radioButtons(options,  label = "Method", 
         buttons = ['pearson', 'kendall', 'spearman'],setChecked='pearson',
         orientation='vertical')
 
-        self.useButtons =  redRGUI.radioButtons(options, label='Handing Missing Values', setChecked='everything',
+        self.useButtons =  radioButtons(options, label='Handing Missing Values', setChecked='everything',
         buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
 
-        redRGUI.button(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
-        self.sendOnSelect = redRGUI.checkBox(options,buttons=['Calculate on data Input'], 
+        button(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
+        self.sendOnSelect = checkBox(options,buttons=['Calculate on data Input'], 
         toolTips=['Calculate variance on data input.'])
 
-        self.RoutputWindow = redRGUI.Rtable(area,sortable=True)
+        self.RoutputWindow = Rtable(area,sortable=True)
     
     # execute this function when data in the X channel is received
     # The function will be passed the data

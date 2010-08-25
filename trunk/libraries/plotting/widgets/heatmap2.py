@@ -14,6 +14,16 @@ import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RModelFit as rmf
 import libraries.base.signalClasses.RVector as rvect
+from libraries.base.qtWidgets.separator import separator
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.spinBox import spinBox
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.widgetBox import widgetBox
 class heatmap2(OWRpy):
     globalSettingsList = ['plotOnConnect','imageWidth','imageHeight']
     
@@ -28,50 +38,50 @@ class heatmap2(OWRpy):
         self.inputs = [("Expression Matrix", rmat.RMatrix, self.processMatrix)]
         
         #GUI
-        mainArea = redRGUI.widgetBox(self.controlArea,orientation='vertical')
+        mainArea = widgetBox(self.controlArea,orientation='vertical')
         mainArea.setMaximumWidth(300)
         
-        dendrogramsBox = redRGUI.groupBox(mainArea, label='Calculate dendrogram ', orientation='vertical')
-        self.notice = redRGUI.widgetLabel(dendrogramsBox,label='The data set has > 1000 rows.\nClustering on rows will likely fail.')
+        dendrogramsBox = groupBox(mainArea, label='Calculate dendrogram ', orientation='vertical')
+        self.notice = widgetLabel(dendrogramsBox,label='The data set has > 1000 rows.\nClustering on rows will likely fail.')
         self.notice.setHidden(True)
-        self.dendrogramOptions = redRGUI.checkBox(dendrogramsBox,
+        self.dendrogramOptions = checkBox(dendrogramsBox,
         buttons = ['Rows', 'Columns'], setChecked=['Rows', 'Columns'], orientation='horizontal',
         callback=self.dendrogramChanged)
         
-        functions = redRGUI.widgetBox(dendrogramsBox,orientation='vertical')
-        self.distOptions = redRGUI.lineEdit(functions,label='Distance Function:', text='dist')
-        self.hclustOptions = redRGUI.lineEdit(functions,label='Clustering Function:',text='hclust')
-        #self.reorderOptions = redRGUI.lineEdit(functions,label='Reorder Function:', text='reorder.dendrogram')
+        functions = widgetBox(dendrogramsBox,orientation='vertical')
+        self.distOptions = lineEdit(functions,label='Distance Function:', text='dist')
+        self.hclustOptions = lineEdit(functions,label='Clustering Function:',text='hclust')
+        #self.reorderOptions = lineEdit(functions,label='Reorder Function:', text='reorder.dendrogram')
         
         
-        self.scaleOptions = redRGUI.radioButtons(mainArea,label='Scale',  buttons=['row','column','none'],
+        self.scaleOptions = radioButtons(mainArea,label='Scale',  buttons=['row','column','none'],
         setChecked='row',orientation='horizontal')
         
-        otherOptions = redRGUI.groupBox(mainArea,label='Other Options')
-        self.narmOptions = redRGUI.checkBox(otherOptions, buttons = ['Remove NAs'], setChecked=['Remove NAs'])
-        self.showDendroOptions = redRGUI.checkBox(otherOptions,buttons=['Show dendrogram '], setChecked=['Show dendrogram '])
+        otherOptions = groupBox(mainArea,label='Other Options')
+        self.narmOptions = checkBox(otherOptions, buttons = ['Remove NAs'], setChecked=['Remove NAs'])
+        self.showDendroOptions = checkBox(otherOptions,buttons=['Show dendrogram '], setChecked=['Show dendrogram '])
         
         
         
-        self.notice2 = redRGUI.widgetLabel(mainArea,label='The input matrix is not numeric.')
+        self.notice2 = widgetLabel(mainArea,label='The input matrix is not numeric.')
         self.notice2.setHidden(True)
-        self.buttonsBox = redRGUI.widgetBox(mainArea,orientation='horizontal')
+        self.buttonsBox = widgetBox(mainArea,orientation='horizontal')
         self.buttonsBox.layout().setAlignment(Qt.AlignRight)
-        self.plotOnConnect = redRGUI.checkBox(self.buttonsBox, buttons=['Plot on Connect'])
-        redRGUI.button(self.buttonsBox, label = "Plot", callback=self.makePlot)
+        self.plotOnConnect = checkBox(self.buttonsBox, buttons=['Plot on Connect'])
+        button(self.buttonsBox, label = "Plot", callback=self.makePlot)
         
         
-        advancedOptions = redRGUI.widgetBox(self.GUIDialog)
-        self.colorTypeCombo = redRGUI.comboBox(advancedOptions, label = 'Color Type:', 
+        advancedOptions = widgetBox(self.GUIDialog)
+        self.colorTypeCombo = comboBox(advancedOptions, label = 'Color Type:', 
         items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'],callback=self.colorTypeChange)
-        self.startSaturation = redRGUI.spinBox(advancedOptions, label = 'Starting Saturation', min = 0, max = 100)
-        self.endSaturation = redRGUI.spinBox(advancedOptions, label = 'Ending Saturation', min = 0, max = 100)
+        self.startSaturation = spinBox(advancedOptions, label = 'Starting Saturation', min = 0, max = 100)
+        self.endSaturation = spinBox(advancedOptions, label = 'Ending Saturation', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        redRGUI.separator(advancedOptions,height=10)
+        separator(advancedOptions,height=10)
 
-        self.imageWidth = redRGUI.spinBox(advancedOptions, label = 'Image Widget', min = 1, max = 1000)
+        self.imageWidth = spinBox(advancedOptions, label = 'Image Widget', min = 1, max = 1000)
         self.imageWidth.setValue(4)
-        self.imageHeight = redRGUI.spinBox(advancedOptions, label = 'Image Height', min = 1, max = 1000)
+        self.imageHeight = spinBox(advancedOptions, label = 'Image Height', min = 1, max = 1000)
         self.imageHeight.setValue(4)
     def dendrogramChanged(self):
         if len(self.dendrogramOptions.getChecked()) > 0:

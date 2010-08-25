@@ -10,6 +10,8 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
 class RedRplot_mvr(OWRpy): 
 	settingsList = []
 	def __init__(self, parent=None, signalManager=None):
@@ -17,8 +19,8 @@ class RedRplot_mvr(OWRpy):
 		self.RFunctionParam_x = ''
 		self.inputs = [("x", signals.RModelFit.RModelFit, self.processx)]
 		
-		self.RFunctionParamplottype_comboBox = redRGUI.comboBox(self.controlArea, label = "plottype:", items = ["'prediction'","'validation'","'coefficients'","'scores'","'loadings'","'biplot'","'correlation'"])
-		redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		self.RFunctionParamplottype_comboBox = comboBox(self.controlArea, label = "plottype:", items = ["'prediction'","'validation'","'coefficients'","'scores'","'loadings'","'biplot'","'correlation'"])
+		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processx(self, data):
 		if not self.require_librarys(["pls"]):
 			self.status.setText('R Libraries Not Loaded.')

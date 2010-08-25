@@ -17,6 +17,19 @@ import cPickle
 import pickle
 import types
 import libraries.base.signalClasses.RDataFrame as rdf
+
+from libraries.base.qtWidgets.scrollArea import scrollArea
+from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.widgetBox import widgetBox
+
 class readFile(OWRpy):
     
     globalSettingsList = ['filecombo','path']
@@ -38,53 +51,53 @@ class readFile(OWRpy):
         self.inputs = None
         self.outputs = [("data.frame", rdf.RDataFrame)]
         #GUI
-        area = redRGUI.widgetBox(self.controlArea,orientation='horizontal')       
+        area = widgetBox(self.controlArea,orientation='horizontal')       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         #area.layout().setAlignment(Qt.AlignTop)
-        options = redRGUI.widgetBox(area,orientation='vertical')
+        options = widgetBox(area,orientation='vertical')
         options.setMaximumWidth(300)
         # options.setMinimumWidth(300)
         options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         area.layout().setAlignment(options,Qt.AlignTop)
         
         
-        self.browseBox = redRGUI.groupBox(options, label="Load File", 
+        self.browseBox = groupBox(options, label="Load File", 
         addSpace = True, orientation='vertical')
-        box = redRGUI.widgetBox(self.browseBox,orientation='horizontal')
-        self.filecombo = redRGUI.fileNamesComboBox(box, 
+        box = widgetBox(self.browseBox,orientation='horizontal')
+        self.filecombo = fileNamesComboBox(box, 
         orientation='horizontal',callback=self.scanNewFile)
         
-        button = redRGUI.button(box, label = 'Browse', callback = self.browseFile)
+        button(box, label = 'Browse', callback = self.browseFile)
         
-        self.fileType = redRGUI.radioButtons(options, label='File Type',
+        self.fileType = radioButtons(options, label='File Type',
         buttons = ['Text', 'Excel'], setChecked='Text',callback=self.scanNewFile,
         orientation='horizontal')
         self.fileType.hide()
 
         
-        self.delimiter = redRGUI.radioButtons(options, label='Column Seperator',
+        self.delimiter = radioButtons(options, label='Column Seperator',
         buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab',callback=self.scanNewFile,
         orientation='horizontal')
-        self.otherSepText = redRGUI.lineEdit(self.delimiter.box,text=';',width=20,orientation='horizontal')
+        self.otherSepText = lineEdit(self.delimiter.box,text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
         
-        self.headersBox = redRGUI.groupBox(options, label="Row and Column Names", 
+        self.headersBox = groupBox(options, label="Row and Column Names", 
         addSpace = True, orientation ='horizontal')
 
-        self.hasHeader = redRGUI.checkBox(self.headersBox, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
+        self.hasHeader = checkBox(self.headersBox, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
-        self.rowNamesCombo = redRGUI.comboBox(self.headersBox,label='Select Row Names', items=[],
+        self.rowNamesCombo = comboBox(self.headersBox,label='Select Row Names', items=[],
         orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
         
-        self.otherOptionsBox = redRGUI.groupBox(options, label="Other Options", 
+        self.otherOptionsBox = groupBox(options, label="Other Options", 
         addSpace = True, orientation ='vertical')
         # box.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        split = redRGUI.widgetBox(self.otherOptionsBox,orientation='horizontal')
+        split = widgetBox(self.otherOptionsBox,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.otherOptions = redRGUI.checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
+        self.otherOptions = checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
         'allowEscapes','stringsAsFactors'],
         setChecked = ['blank.lines.skip'],
         toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
@@ -94,48 +107,48 @@ class readFile(OWRpy):
         'logical: should character vectors be converted to factors?'],
         orientation='vertical',callback=self.scanFile)
         # box.layout().addWidget(self.otherOptions,1,1)
-        box2 = redRGUI.widgetBox(split,orientation='vertical')
+        box2 = widgetBox(split,orientation='vertical')
         #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         split.layout().setAlignment(box2,Qt.AlignTop)
-        self.quote = redRGUI.lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
-        self.decimal = redRGUI.lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
+        self.quote = lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
+        self.decimal = lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
         
-        self.numLinesScan = redRGUI.lineEdit(box2,text='10',label='# Lines to Scan:', 
+        self.numLinesScan = lineEdit(box2,text='10',label='# Lines to Scan:', 
         toolTip='The maximum number of rows to read in while previewing the file. Negative values are ignored.', 
         width=50,orientation='horizontal')
 
-        self.numLinesSkip = redRGUI.lineEdit(box2,text='0',label='# Lines to Skip:',
+        self.numLinesSkip = lineEdit(box2,text='0',label='# Lines to Skip:',
         toolTip="The number of lines of the data file to skip before beginning to read data.", 
         width=50,orientation='horizontal')
         
-        holder = redRGUI.widgetBox(options,orientation='horizontal')
-        clipboard = redRGUI.button(holder, label = 'Load Clipboard', 
+        holder = widgetBox(options,orientation='horizontal')
+        clipboard = button(holder, label = 'Load Clipboard', 
         toolTip = 'Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.', 
         callback = self.loadClipboard)
-        rescan = redRGUI.button(holder, label = 'Rescan File',toolTip="Preview a small portion of the file",
+        rescan = button(holder, label = 'Rescan File',toolTip="Preview a small portion of the file",
         callback = self.scanNewFile)
-        load = redRGUI.button(holder, label = 'Load File',toolTip="Load the file into Red-R",
+        load = button(holder, label = 'Load File',toolTip="Load the file into Red-R",
         callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
-        self.FileInfoBox = redRGUI.groupBox(options, label = "File Info", addSpace = True)       
-        self.infob = redRGUI.widgetLabel(self.FileInfoBox, label='')
+        self.FileInfoBox = groupBox(options, label = "File Info", addSpace = True)       
+        self.infob = widgetLabel(self.FileInfoBox, label='')
         self.infob.setWordWrap(True)
-        self.infoc = redRGUI.widgetLabel(self.FileInfoBox, label='')
+        self.infoc = widgetLabel(self.FileInfoBox, label='')
         self.FileInfoBox.setHidden(True)
         
         
-        self.tableArea = redRGUI.groupBox(area)
+        self.tableArea = groupBox(area)
         self.tableArea.setMinimumWidth(500)
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
-        self.scanarea = redRGUI.textEdit(self.tableArea)
+        self.scanarea = textEdit(self.tableArea)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
-        self.scroll = redRGUI.scrollArea(self.tableArea);
+        self.scroll = scrollArea(self.tableArea);
         
-        self.columnTypes = redRGUI.widgetBox(self,orientation=QGridLayout(),margin=10);
+        self.columnTypes = widgetBox(self,orientation=QGridLayout(),margin=10);
         self.scroll.setWidget(self.columnTypes)
         #self.columnTypes.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
         self.columnTypes.setMinimumWidth(460)
@@ -155,14 +168,14 @@ class readFile(OWRpy):
     def loadCustomSettings(self,settings):
         #print settings
         if not self.filecombo.getCurrentFile():
-            redRGUI.widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
+            widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
         for i in range(len(self.myColClasses)):
-            s = redRGUI.radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
+            s = radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
             s.setChecked(self.myColClasses[i])
             if not self.filecombo.getCurrentFile():
                 s.setEnabled(False)
-            q = redRGUI.widgetLabel(self.columnTypes,label=self.colNames[i])
+            q = widgetLabel(self.columnTypes,label=self.colNames[i])
             self.columnTypes.layout().addWidget(s, i, 1)
             self.columnTypes.layout().addWidget(q, i, 0)
         
@@ -336,7 +349,7 @@ class readFile(OWRpy):
                 self.dataTypes = []
                 
                 for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                    s = redRGUI.radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                    s = radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
                     
                     # print k,i,str(v)
                     if str(v) in types:
@@ -344,7 +357,7 @@ class readFile(OWRpy):
                     else:
                         s.addButton(str(v))
                         s.setChecked(str(v))
-                    label = redRGUI.widgetLabel(self.columnTypes,label=i)
+                    label = widgetLabel(self.columnTypes,label=i)
                     self.columnTypes.layout().addWidget(label,k,0)
                     self.columnTypes.layout().addWidget(s,k,1)
                     

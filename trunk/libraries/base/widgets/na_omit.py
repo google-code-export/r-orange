@@ -12,6 +12,9 @@ import libraries.base.signalClasses.RVariable as rvar
 import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RVector as rvec
 import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 class na_omit(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -23,11 +26,11 @@ class na_omit(OWRpy):
         self.inputs = [("object", rvar.RVariable, self.processobject)]
         self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector), ('R.object', rvar.RVariable)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.sendStatus = redRGUI.widgetLabel(self.standardTab, 'Nothing Sent')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.sendStatus = widgetLabel(self.standardTab, 'Nothing Sent')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processobject(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

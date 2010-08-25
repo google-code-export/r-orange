@@ -10,6 +10,8 @@ from OWRpy import *
 import redRGUI 
 import libraries.base.signalClasses as signals
 
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
 class RedRhclust(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -20,9 +22,9 @@ class RedRhclust(OWRpy):
         self.inputs = [("d", signals.RDataFrame.RDataFrame, self.processd)]
         self.outputs = [("hclust Output", signals.RList.RList)]
         
-        self.RFunctionParammethod_comboBox = redRGUI.comboBox(self.controlArea, label = "Cluster Method:", items = ["complete","ward","single","average","mcquitty","centroid"])
-        self.RFunctionParamdistmethod_comboBox = redRGUI.comboBox(self.controlArea, label = 'Dist Method:', items = ["euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"])
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParammethod_comboBox = comboBox(self.controlArea, label = "Cluster Method:", items = ["complete","ward","single","average","mcquitty","centroid"])
+        self.RFunctionParamdistmethod_comboBox = comboBox(self.controlArea, label = 'Dist Method:', items = ["euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"])
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processd(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

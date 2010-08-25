@@ -12,6 +12,8 @@ import redRGUI
 import libraries.base.signalClasses.RVariable as rvar
 import libraries.base.signalClasses.RVector as rvec
 
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.button import button
 class wilcox_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -23,8 +25,8 @@ class wilcox_test(OWRpy):
         self.inputs = [("x", rvec.RVector, self.processx), ('y', rvec.RVector, self.processy)]
         self.outputs = [("wilcox.test Output", rvar.RVariable)]
         
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRGUI.textEdit(self.controlArea)
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea)
         
     def processx(self, data):
         if data:

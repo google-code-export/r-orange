@@ -10,6 +10,10 @@
 import redRGUI
 from OWRpy import *
 import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.qtWidgets.table import table
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
 class dataEntry(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
@@ -28,29 +32,29 @@ class dataEntry(OWRpy):
         #GUI.
         
         
-        # box = redRGUI.groupBox(self.GUIDialog, label = "Options")
-        redRGUI.button(self.bottomAreaRight, 'Commit', self.commitTable)
-        # self.rowHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
-        #self.colHeaders = redRGUI.checkBox(box, label=None, buttons=['Use Column Headers'])
+        # box = groupBox(self.GUIDialog, label = "Options")
+        button(self.bottomAreaRight, 'Commit', self.commitTable)
+        # self.rowHeaders = checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
+        #self.colHeaders = checkBox(box, label=None, buttons=['Use Column Headers'])
         #self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders.setChecked(['Use Column Headers'])
-        # self.customClasses = redRGUI.button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
-        # redRGUI.button(box, 'Clear Classes', callback = self.clearClasses)
+        # self.customClasses = button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
+        # button(box, 'Clear Classes', callback = self.clearClasses)
         
         self.columnDialog = QDialog(self)
         self.columnDialog.setLayout(QVBoxLayout())
         self.columnDialog.hide()
-        self.columnNameLineEdit = redRGUI.lineEdit(self.columnDialog, label = 'Column Name:')
-        redRGUI.button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
-        redRGUI.button(self.bottomAreaRight, "Add Column", callback = self.columnDialog.show)
+        self.columnNameLineEdit = lineEdit(self.columnDialog, label = 'Column Name:')
+        button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
+        button(self.bottomAreaRight, "Add Column", callback = self.columnDialog.show)
         
         
-        box = redRGUI.groupBox(self.controlArea, label = "Table", 
+        box = groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         
 
-        self.dataTable = redRGUI.table(box, data = None, rows = self.rowCount+1, columns = self.colCount)
+        self.dataTable = table(box, data = None, rows = self.rowCount+1, columns = self.colCount)
         if self.dataTable.columnCount() < 1:
             self.dataTable.setColumnCount(1)
             self.dataTable.setHorizontalHeaderLabels(['Rownames'])
@@ -62,7 +66,7 @@ class dataEntry(OWRpy):
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         # self.window = QDialog(self)
         # self.window.setLayout(QVBoxLayout())
-        # self.classTable = redRGUI.table(self.window, rows = self.maxCol, columns = 2)
+        # self.classTable = table(self.window, rows = self.maxCol, columns = 2)
         self.resize(700,500)
         self.move(300, 25)
     def commitNewColumn(self):

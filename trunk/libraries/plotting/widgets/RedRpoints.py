@@ -11,10 +11,12 @@ import redRGUI
 import libraries.base.signalClasses as signals
 import libraries.plotting.signalClasses as plotsigs
 
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 class RedRpoints(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, parent, signalManager, "points", wantMainArea = 0, resizingEnabled = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(["points"])
         self.data = {}
         self.RFunctionParam_y = ''
@@ -23,9 +25,9 @@ class RedRpoints(OWRpy):
         self.inputs = [("y", signals.RVector.RVector, self.processy),("x", signals.RVector.RVector, self.processx),("col", signals.RVector.RVector, self.processcol)]
         self.outputs = [("points Output", plotsigs.RPlotAttribute.RPlotAttribute)]
         
-        self.RFunctionParampch_lineEdit = redRGUI.lineEdit(self.controlArea, label = "pch:", text = '16')
-        self.RFunctionParamcex_lineEdit = redRGUI.lineEdit(self.controlArea, label = "cex:", text = '2')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')
+        self.RFunctionParamcex_lineEdit = lineEdit(self.controlArea, label = "cex:", text = '2')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -19,12 +19,13 @@ class checkBox(widgetBox,widgetState):
         self.label = label
         self.buttons = QButtonGroup(self.box)
         self.buttons.setExclusive(False)
-        for i,b in zip(range(len(buttons)),buttons):
-            w = QCheckBox(b)
-            if toolTips:
-                w.setToolTip(toolTips[i])
-            self.buttons.addButton(w,i)
-            self.box.layout().addWidget(w)
+        if buttons:
+            for i,b in zip(range(len(buttons)),buttons):
+                w = QCheckBox(b)
+                if toolTips:
+                    w.setToolTip(toolTips[i])
+                self.buttons.addButton(w,i)
+                self.box.layout().addWidget(w)
 
         if callback:
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)

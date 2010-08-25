@@ -11,6 +11,9 @@ from OWRpy import *
 import OWGUI 
 import redRGUI 
 import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.tabWidget import tabWidget
 class rank(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -24,12 +27,12 @@ class rank(OWRpy):
         self.outputs = [("rank Output", rmat.RMatrix)]
         
         #self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamties_method_comboBox = redRGUI.comboBox(self.standardTab, label = "ties_method:", items = ['average', 'first', 'random', 'max', 'min'])
-        #self.RFunctionParamna_last_lineEdit =  redRGUI.lineEdit(self.advancedTab, label = "na_last:")
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamties_method_comboBox = comboBox(self.standardTab, label = "ties_method:", items = ['average', 'first', 'random', 'max', 'min'])
+        #self.RFunctionParamna_last_lineEdit =  lineEdit(self.advancedTab, label = "na_last:")
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

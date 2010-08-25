@@ -8,6 +8,10 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class scatter_smooth(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -16,17 +20,17 @@ class scatter_smooth(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamxlab_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')
-        self.RFunctionParamspan_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "span:", text = '2/3')
-        self.RFunctionParamdegree_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "degree:", text = '1')
-        self.RFunctionParamfamily_comboBox =  redRGUI.comboBox(self.standardTab,  label = "family:", items = ['symmetric', 'gaussian'])
-        self.RFunctionParamylab_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "ylab:", text = 'NULL')
-        self.RFunctionParamevaluation_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "evaluation:", text = '50')
-        self.RFunctionParamylim_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "ylim:", text = '')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')
+        self.RFunctionParamspan_lineEdit =  lineEdit(self.standardTab,  label = "span:", text = '2/3')
+        self.RFunctionParamdegree_lineEdit =  lineEdit(self.standardTab,  label = "degree:", text = '1')
+        self.RFunctionParamfamily_comboBox =  comboBox(self.standardTab,  label = "family:", items = ['symmetric', 'gaussian'])
+        self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "ylab:", text = 'NULL')
+        self.RFunctionParamevaluation_lineEdit =  lineEdit(self.standardTab,  label = "evaluation:", text = '50')
+        self.RFunctionParamylim_lineEdit =  lineEdit(self.standardTab,  label = "ylim:", text = '')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -8,6 +8,9 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses.RVector as rvec
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button
 class sizeplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -16,14 +19,14 @@ class sizeplot(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
         
-        box = redRGUI.tabWidget(self.controlArea)
+        box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
-        self.RFunctionParamy_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "y:", text = '')
-        self.RFunctionParamx_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "x:", text = '')
-        self.RFunctionParamscale_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "scale:", text = '1')
-        self.RFunctionParamsize_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
-        self.RFunctionParampow_lineEdit =  redRGUI.lineEdit(self.standardTab,  label = "pow:", text = '0.5')
-        redRGUI.button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamy_lineEdit =  lineEdit(self.standardTab,  label = "y:", text = '')
+        self.RFunctionParamx_lineEdit =  lineEdit(self.standardTab,  label = "x:", text = '')
+        self.RFunctionParamscale_lineEdit =  lineEdit(self.standardTab,  label = "scale:", text = '1')
+        self.RFunctionParamsize_lineEdit =  lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
+        self.RFunctionParampow_lineEdit =  lineEdit(self.standardTab,  label = "pow:", text = '0.5')
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["plotrix"]):
             self.status.setText('R Libraries Not Loaded.')
