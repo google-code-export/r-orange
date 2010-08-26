@@ -70,8 +70,8 @@ class OrangeCanvasDlg(QMainWindow):
         # output window
         splashWindow.showMessage("Setting Outputs", Qt.AlignHCenter + Qt.AlignBottom)
         self.output = redROutput.OutputWindow(self)
-        # self.output.catchException(1)
-        # self.output.catchOutput(1)
+        self.output.catchException(1)
+        self.output.catchOutput(1)
  
 
         # create error and warning icons
