@@ -28,7 +28,7 @@ class RDataTable(OWRpy):
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, wantGUIDialog = 1)
         
-        self.inputs = {'id1':{'name':'Input Data Table', 'signalClass':rdf.RDataFrame, 'handler':self.dataset}}#[("Rectangular Data", rdf.RDataFrame, self.dataset)]
+        self.inputs.addInput('id1', 'Input Data Table', rdf.RDataFrame, self.dataset) #[("Rectangular Data", rdf.RDataFrame, self.dataset)]
         self.outputs = []
 
         self.data = {}          # dict containing the table infromation

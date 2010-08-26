@@ -9,6 +9,7 @@ import signals
 from string import *
 from orngSignalManager import *
 import canvas.signals as signals
+from redRSignalManager import *
 
 
 class widgetSignals():
@@ -25,8 +26,8 @@ class widgetSignals():
 
         self.working = 0     #used to monitor when the widget is working.  Other widgets can check this to supress functions or to check on up/down stream widgets.
         self.linksOutWidgets = {}
-        self.inputs = []     # signalName:(dataType, handler, onlySingleConnection)
-        self.outputs = []    # signalName: dataType
+        self.inputs = InputHandler(self)     # signalName:(dataType, handler, onlySingleConnection)
+        self.outputs = OutputHandler(self)    # signalName: dataType
         self.wrappers =[]    # stored wrappers for widget events
         self.linksIn = {}      # signalName : (dirty, widgetFrom, handler, signalData)
         self.linksOut = {}       # signalName: (signalData, id)

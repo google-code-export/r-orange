@@ -119,8 +119,11 @@ class SchemaView(QGraphicsView):
     # popMenuAction - enable/disable link between two widgets
     def toggleEnabledLink(self):
         if self.selectedLine != None:
-            oldEnabled = self.doc.signalManager.getLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance)
-            self.doc.signalManager.setLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance, not oldEnabled)
+            #oldEnabled = self.doc.signalManager.getLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance)
+            
+            # we enable or disable all of the links simultaneously (only way to do it with this interface.
+            self.selectedLine.outWidget.instance.outputs.setSignalEnabled(self.selectedLine.inWidget.instance, not self.selectedLine.outWidget.instance.outputs.isSignalEnabled(self.selectedLine.inWidget.instance))
+            #self.doc.signalManager.setLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance, not oldEnabled)
             self.selectedLine.updateTooltip()
             self.selectedLine.inWidget.updateTooltip()
             self.selectedLine.outWidget.updateTooltip()

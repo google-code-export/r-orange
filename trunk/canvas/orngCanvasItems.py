@@ -106,9 +106,8 @@ class CanvasLine(QGraphicsLineItem):
         #self.view.repaint(QRect(min(self.startPoint().x(), self.endPoint().x())-55, min(self.startPoint().y(), self.endPoint().y())-55, abs(self.startPoint().x()-self.endPoint().x())+100,abs(self.startPoint().y()-self.endPoint().y())+100))
 
     def getEnabled(self):
-        signals = self.signalManager.findSignals(self.outWidget.instance, self.inWidget.instance)
-        if not signals: return 0
-        return int(self.signalManager.isSignalEnabled(self.outWidget.instance, self.inWidget.instance, signals[0][0], signals[0][1]))
+        
+        return self.outWidget.instance.outputs.isSignalEnabled(self.inWidget.instance)##    int(self.signalManager.isSignalEnabled(self.outWidget.instance, self.inWidget.instance, signals[0][0], signals[0][1]))
 
     def getSignals(self):
         signals = []
@@ -535,32 +534,32 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if self.ghost: return
         string = "<nobr><b>" + self.caption + "</b></nobr><hr>Inputs:<br>"
 
-        if self.instance.inputs == [] or self.instance.inputs == None: string += "&nbsp; &nbsp; None<br>"
-        else:
-            for signal in self.instance.inputs:
+        # if self.instance.inputs == [] or self.instance.inputs == None: string += "&nbsp; &nbsp; None<br>"
+        # else:
+            # for signal in self.instance.inputs:
                 
-                widgets = self.signalManager.getLinkWidgetsIn(self.instance, signal[0])
-                if len(widgets) > 0:
-                    string += "<nobr> &nbsp; &nbsp; - <b>" + signal[0] + "</b> (from "
-                    for i in range(len(widgets)-1):
-                        string += self.view.doc.getWidgetCaption(widgets[i]) + ", "
-                    string += self.view.doc.getWidgetCaption(widgets[-1]) + ")</nobr><br>"
-                else:
-                    string += "<nobr> &nbsp; &nbsp; - " + signal[0] + "</nobr><br>"
+                # widgets = self.signalManager.getLinkWidgetsIn(self.instance, signal[0])
+                # if len(widgets) > 0:
+                    # string += "<nobr> &nbsp; &nbsp; - <b>" + signal[0] + "</b> (from "
+                    # for i in range(len(widgets)-1):
+                        # string += self.view.doc.getWidgetCaption(widgets[i]) + ", "
+                    # string += self.view.doc.getWidgetCaption(widgets[-1]) + ")</nobr><br>"
+                # else:
+                    # string += "<nobr> &nbsp; &nbsp; - " + signal[0] + "</nobr><br>"
 
         string = string[:-4]
         string += "<hr>Outputs:<br>"
-        if self.instance.outputs == [] or self.instance.outputs == None: string += "&nbsp; &nbsp; None<br>"
-        else:
-            for signal in self.instance.outputs:
-                widgets = self.signalManager.getLinkWidgetsOut(self.instance, signal[0])
-                if len(widgets) > 0:
-                    string += "<nobr> &nbsp; &nbsp; - <b>" + signal[0] + "</b> (to "
-                    for i in range(len(widgets)-1):
-                        string += self.view.doc.getWidgetCaption(widgets[i]) + ", "
-                    string += self.view.doc.getWidgetCaption(widgets[-1]) + ")</nobr><br>"
-                else:
-                    string += "<nobr> &nbsp; &nbsp; - " + signal[0] + "</nobr><br>"
+        # if self.instance.outputs == [] or self.instance.outputs == None: string += "&nbsp; &nbsp; None<br>"
+        # else:
+            # for signal in self.instance.outputs:
+                # widgets = self.signalManager.getLinkWidgetsOut(self.instance, signal[0])
+                # if len(widgets) > 0:
+                    # string += "<nobr> &nbsp; &nbsp; - <b>" + signal[0] + "</b> (to "
+                    # for i in range(len(widgets)-1):
+                        # string += self.view.doc.getWidgetCaption(widgets[i]) + ", "
+                    # string += self.view.doc.getWidgetCaption(widgets[-1]) + ")</nobr><br>"
+                # else:
+                    # string += "<nobr> &nbsp; &nbsp; - " + signal[0] + "</nobr><br>"
         string = string[:-4]
         self.setToolTip(string)
 

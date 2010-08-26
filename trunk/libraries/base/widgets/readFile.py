@@ -49,7 +49,7 @@ class readFile(OWRpy):
         
         #signals
         self.inputs = None
-        self.outputs = {'od1':{'name':'Output Data', 'signalClass':rdf.RDataFrame}} #[("data.frame", rdf.RDataFrame)]
+        self.outputs.addOutput('od1', 'Output Data', rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal')       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))

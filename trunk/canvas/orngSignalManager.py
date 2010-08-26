@@ -214,17 +214,6 @@ class SignalManager:
         #print 'In/Out puts', inputs, outputs
         return toInstance.inputs.matchConnections(fromInstace.outputs)##  return a match between the inputs of one signal and the outputs of another ##self.matchConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
     def matchConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
-        #print 'getPossibleConnections'
-        ### outputs is a list of instance of class orngSignalManager.OutputSignal
-        ### inputs is a list of instance of class orngSignalManager.InputSignal
-        ### fromInstace is the widget instance
-        ### toInstance is the widget instance of the to widget
-        #print '######### matchConnections #########', outputs, inputs, fromInstace, toInstance, '######################'
-        if 'outputs' not in dir(fromInstace) or 'inputs' not in dir(toInstance) or toInstance.inputs == None or fromInstace.outputs == None:
-            print 'Connection not possible between %s and %s' % (fromInstace.widgetID, toInstance.widgetID)
-            return False  ## somehow a widget was asked to connect with no inputs or outputs and we returned false because no connections can be made.
-        
-        possibleLinks = []
         for outS in fromInstace.outputs.getSignalIDs():  # gives the names of the output keys
             outType = fromInstace.outputs[outS]['signalClass']
             if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
@@ -281,7 +270,7 @@ class SignalManager:
         inputs = [signal for signal in toInfo.inputs]
         outputs = [signal for signal in fromInfo.outputs]
         #print 'In/Out puts', inputs, outputs
-        return inInstance.inputs.getPossibleConnections(outInstance.outputs)#  returns a list of possible connections from the outInstance's outputs class.  ###self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
+        return toInstance.inputs.getPossibleConnections(fromInstace.outputs)#  returns a list of possible connections from the outInstance's outputs class.  ###self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
         if 'outputs' not in dir(fromInstace) or 'inputs' not in dir(toInstance):

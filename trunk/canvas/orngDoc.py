@@ -167,7 +167,7 @@ class SchemaDoc(QWidget):
         # in case there already exists link to inSignalName in inWidget that is single, we first delete it
         
         ## add the input signal to the outputs object in the outWidget
-        outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)
+        #outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)
         
         # widgetInstance = inWidget.instance.removeExistingSingleLink(inSignalName)
         # if widgetInstance:
@@ -181,8 +181,9 @@ class SchemaDoc(QWidget):
                         # line.updateTooltip()
 
         # if line does not exist yet, we must create it
-        existingSignals = self.signalManager.findSignals(outWidget.instance, inWidget.instance)
-        if not existingSignals:
+        # existingSignals = self.signalManager.findSignals(outWidget.instance, inWidget.instance)
+        line = self.getLine(outWidget, inWidget)
+        if not line:
             line = orngCanvasItems.CanvasLine(self.signalManager, self.canvasDlg, self.canvasView, outWidget, inWidget, self.canvas)
             self.lines.append(line)
             line.setEnabled(enabled)
@@ -191,19 +192,20 @@ class SchemaDoc(QWidget):
             outWidget.updateTooltip()
             inWidget.addInLine(line)
             inWidget.updateTooltip()
-        else:
-            line = self.getLine(outWidget, inWidget)
+            
+            
+            
         ## add the link in the signal manager
-        ok = self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
+        ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)
+            ## we should change this to a dialog so that the user can connect the signals manually if need be.
             QMessageBox.information( self, "Red-R Canvas", "Unable to add link. Something is really wrong; try restarting Red-R Canvas.", QMessageBox.Ok + QMessageBox.Default )
             
 
             return 0
-        else:
-            orngHistory.logAddLink(self.schemaID, outWidget, inWidget, outSignalName)
-
+        # else:
+            # orngHistory.logAddLink(self.schemaID, outWidget, inWidget, outSignalName)
         line.updateTooltip()
         
         import redRHistory
@@ -215,14 +217,9 @@ class SchemaDoc(QWidget):
     # remove only one signal from connected two widgets. If no signals are left, delete the line
     def removeLink(self, outWidget, inWidget, outSignalName, inSignalName):
         #print "<extra> orngDoc.py - removeLink() - ", outWidget, inWidget, outSignalName, inSignalName
-        self.signalManager.removeLink(outWidget.instance, inWidget.instance, outSignalName, inSignalName)
+        outWidget.instance.outputs.removeSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)
 
-        otherSignals = 0
-        if self.signalManager.links.has_key(outWidget.instance):
-            for (widget, signalFrom, signalTo, enabled) in self.signalManager.links[outWidget.instance]:
-                    if widget == inWidget.instance:
-                        otherSignals = 1
-        if not otherSignals:
+        if not outWidget.instance.outputs.signalLinkExists(inWidget.instance):
             self.removeLine(outWidget, inWidget)
 
         self.saveTempDoc()
