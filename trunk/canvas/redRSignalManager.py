@@ -6,16 +6,19 @@ class OutputHandler:
         self.outputSignals = {}
         self.connections = {}
         self.parent = parent # the parent that owns the OutputHandler
+    def getAllOutputs(self):
+        return self.outputSignals
     def addOutput(self, id, name, signalClass):
         self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent}   # set up an 'empty' signal
         
-    def connectSignal(self, signal, id, enabled = 1):
+    def connectSignal(self, signal, id, enabled = 1, process = True):
         if id not in self.outputSignals.keys():
             raise Exception, 'ID %s does not exist in the outputs of this widget' % (id)
             
         self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
         # now send data through
-        self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
+        if process:
+            self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
         return True
     def removeSignal(self, signal, id):
         ## send None through the signal to the handler before we disconnect it.
@@ -87,21 +90,7 @@ class OutputHandler:
         ## handle conversions and send data.
         for cKey in connections.keys():
             self._processSingle(signal, connections[cKey])
-            # if not connections[cKey]['signal']['enabled']: continue
-            # handler = connections[cKey]['signal']['handler']
-            # multiple = connections[cKey]['signal']['multiple']
-            # if signal['signalClass'] in connections[cKey]['signal']['signalClass']:
-                # self._handleSignal(signal['value'], handler, multiple)
-            # else:
-                # for sig in connections[cKey]['signal']['signalClass']:
-                    # if sig in signal['signalClass'].convertToList:
-                        # newVal = signal['signalClass'].convertToClass(sig)
-                        # self._handleSignal(newVal, handler, multiple)
-                        # break
-                    # elif signal['signalClass'] in sig.convertFromList:
-                        # newVal = sig.convertFromClass(signal['value'])
-                        # self._handleSignal(newVal, handler, multiple)
-                        # break
+
                     
     def _handleSignal(self, value, handler, multiple):
         if multiple:
@@ -110,15 +99,46 @@ class OutputHandler:
             handler(value)
     def hasOutputName(self, name):
         return name in self.outputSignals.keys()
+    
+    ########  Loading and Saving ##############
+    
+    def returnOutputs(self):
+        ## move through the outputs and return a list of outputs and connections.  these connections should be reconnected on reloading of the widget, ideally we will only put atomics into this outputHandler
+        data = {}
+        for (key, value) in self.outputSignals.items():
+            data[key] = {'name':value['name'], 'signalClass':str(value['signalClass']), 'value':value['value'].saveSettings(), 'connections':{}}
+            for (vKey, vValue) in value['connections'].items():
+                data[key]['connections'][vKey] = {'id':vValue['signal']['sid'], 'parentID':vValue['signal']['parent'].widgetID, 'enabled':vValue['enabled']} ## now we know the widgetId and the signalID (sid) used for connecting widgets in the future.
+                
             
+        return data
+    def setOutputs(self, data):
+        for (key, value) in data.items():
+            if key not in self.outputSignals.keys():
+                print 'Signal does not exist'
+                continue
+            ## find the signal from the widget and connect it
+            for (vKey, vValue) in value['connections'].items():
+                ### find the widget
+                for widget in self.parent.signalManager.widgets():
+                    if widget.widgetID == vValue['parentID']:
+                        widget = widget
+                        break
+                        
+                inputSignal = widget.inputs.getSignal(vValue['id'])
+                self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
+            
+    
 class InputHandler:
     def __init__(self, parent):
         self.inputs = {}
         self.parent = parent # the parent widget that owns the InputHandler
+    def getAllInputs(self):
+        return self.inputs
     def addInput(self, id, name, signalClass, handler, multiple = False):
         if type(signalClass) not in [list]:
             signalClass = [signalClass]
-        self.inputs[id] = {'name':name, 'signalClass':signalClass, 'handler':handler, 'multiple':multiple, 'id':str(id)+'_'+self.parent.widgetID, 'parent':self.parent}
+        self.inputs[id] = {'name':name, 'signalClass':signalClass, 'handler':handler, 'multiple':multiple, 'sid':id, 'id':str(id)+'_'+self.parent.widgetID, 'parent':self.parent}
     def getSignal(self, id):
         return self.inputs[id]
     def matchConnections(self, outputHandler):
@@ -149,4 +169,8 @@ class InputHandler:
                     elif OSignalClass in ISignalClass.convertFromList:
                         connections.append((outputKey, inputKey))
         return connections
+        
+    ######### Loading and Saving ##############
+    def returnInputs(self):
+        return None  ## no real reason to return any of this becasue the outputHandler does all the signal work
         

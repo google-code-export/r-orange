@@ -410,7 +410,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     # is mouse position inside the left signal channel
     def mouseInsideLeftChannel(self, pos):
         if self.ghost: return
-        if self.instance.inputs == [] or self.instance.inputs == None: return False
+        if len(self.instance.inputs.getAllInputs()) == 0: return False
 
         boxRect = QRectF(self.x()-self.edgeSize.width(), self.y() + (self.widgetSize.height()-self.edgeSize.height())/2, self.edgeSize.width(), self.edgeSize.height())
         boxRect.adjust(-10,-10,5,10)       # enlarge the rectangle
@@ -421,7 +421,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     # is mouse position inside the right signal channel
     def mouseInsideRightChannel(self, pos):
         if self.ghost: return
-        if self.instance.outputs == [] or self.instance.outputs == None: return False
+        if len(self.instance.outputs.getAllOutputs()) == 0: return False
 
         boxRect = QRectF(self.x()+self.widgetSize.width(), self.y() + (self.widgetSize.height()-self.edgeSize.height())/2, self.edgeSize.width(), self.edgeSize.height())
         boxRect.adjust(-5,-10,10,10)       # enlarge the rectangle
@@ -438,7 +438,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if outWidget == self:
             self.shownRightEdge = canConnect and self.imageRightEdgeG or self.imageRightEdgeR
         else:
-            self.shownLeftEdge = canConnect and self.imageLeftEdgeG or self.imageLeftEdgeR        
+            self.shownLeftEdge = canConnect and self.imageLeftEdgeG or self.imageLeftEdgeR
 
     def resetLeftRightEdges(self):
         self.shownLeftEdge = self.imageLeftEdge
@@ -489,8 +489,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
         if not self.ghost:
-            if self.instance.inputs != [] and self.instance.inputs != None:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-            if self.instance.outputs != [] and self.instance.outputs != None:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+            if len(self.instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+            if len(self.instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
 
         # draw the label
         painter.setPen(QPen(QColor(0,0,0)))

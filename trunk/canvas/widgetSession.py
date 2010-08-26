@@ -58,25 +58,11 @@ class widgetSession():
         pass
         
     def getInputs(self):
-        if self.inputs and len(self.inputs) != 0:
-            ainputs = []
-            print self.inputs
-            for input in self.inputs:
-                ainputs.append((input[0], input[1]))
-            return ainputs
-        else: 
-            return None
+        
+        return self.inputs.returnInputs()
         
     def getOutputs(self):
-        if self.outputs and len(self.outputs) != 0:
-            aoutputs = []
-            ## move across the outputs and get their type
-            print self.outputs
-            for output in self.outputs:
-                aoutputs.append((output[0], output[1]))
-            return aoutputs
-        else: 
-            return None
+        return self.outputs.returnOutputs()
 
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
@@ -152,25 +138,15 @@ class widgetSession():
             settings = None
         return settings
     def processSentItems(self):
-        print '|##| in processSentItems %s' % str(self.linksOut)
-        sentItemsList = []
-        for sentDataName, sentDataObject in self.linksOut.items():
-            s = {}
-            for k,v in sentDataObject.items():
-                if v == None: 
-                    sentItemsList.append((sentDataName, None))
-                else:
-                    try:
-                        s[k] = v.saveSettings()
-                    ### problem with getting the settings, print and inform the developers.                 
-                    except:
-                        
-                        print exceptionHandling.formatException()
-                        print '|###| problem getting data for '+str(sentDataObject)
-                        
-                sentItemsList.append((sentDataName,s))
-                
-        return sentItemsList
+        ## make a list of the signal keys and the values of all of the sent items, shouldn't be hard
+        items = []
+        for (key, item) in self.outputs.getAllOutputs().items():
+            items.append((key, item['value'].saveSettings()))
+            print '##########################'
+            print 'sent items', items
+            print '##########################'
+        return items
+        
         
     def setSettings(self,settings, globalSettings = False):
         print 'on set settings'
@@ -187,16 +163,18 @@ class widgetSession():
                     #print '|#| Setting pythonObject %s to %s' % (k,str(v['pythonObject']))
                     self.__setattr__(k, v['pythonObject'])
                 elif 'signalsObject' in v.keys():
-                    #print '|#| Setting signalsObject'
+                    print '|#| Setting signalsObject'
                     varClass = self.setSignalClass(v['signalsObject'])
                     self.__setattr__(k, varClass)
                 elif 'sentItemsList' in v.keys():
+                    print '|#| settingItemsList'
+                    print v['sentItemsList']
                     #self.setSentItemsList(v['sentItemsList'])        
                     for (sentItemName, sentItemDict) in v['sentItemsList']:
                         #print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
-                        for kk,vv in sentItemDict.items():
-                            var = self.setSignalClass(vv)
-                            self.send(sentItemName, var,id=kk)
+                        #for kk,vv in sentItemDict.items():
+                        var = self.setSignalClass(sentItemDict)
+                        self.send(sentItemName, var)
     #############################################
                 elif not hasattr(self,k):
                     continue

@@ -48,7 +48,6 @@ class readFile(OWRpy):
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
         #signals
-        self.inputs = None
         self.outputs.addOutput('od1', 'Output Data', rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal')       

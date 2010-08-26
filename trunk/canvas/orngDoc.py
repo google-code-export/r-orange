@@ -159,30 +159,14 @@ class SchemaDoc(QWidget):
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1):
-        #print "<extra>orngDoc - addLink() - ", outWidget, inWidget, outSignalName, inSignalName
-        # in case there already exists link to inSignalName in inWidget that is single, we first delete it
-        
-        ## add the input signal to the outputs object in the outWidget
-        #outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)
-        
-        # widgetInstance = inWidget.instance.removeExistingSingleLink(inSignalName)
-        # if widgetInstance:
-            # widget = self.findWidgetFromInstance(widgetInstance)
-            # existingSignals = self.signalManager.findSignals(widgetInstance, inWidget.instance)
-            # for (outN, inN) in existingSignals:
-                # if inN == inSignalName:
-                    # self.removeLink(widget, inWidget, outN, inN)
-                    # line = self.getLine(widget, inWidget)
-                    # if line:
-                        # line.updateTooltip()
-
-        # if line does not exist yet, we must create it
-        # existingSignals = self.signalManager.findSignals(outWidget.instance, inWidget.instance)
         line = self.getLine(outWidget, inWidget)
         if not line:
             line = orngCanvasItems.CanvasLine(self.signalManager, self.canvasDlg, self.canvasView, outWidget, inWidget, self.canvas)
             self.lines.append(line)
-            line.setEnabled(enabled)
+            if enabled:
+                line.setEnabled(1)
+            else:
+                line.setEnabled(0)
             line.show()
             outWidget.addOutLine(line)
             outWidget.updateTooltip()
@@ -497,7 +481,12 @@ class SchemaDoc(QWidget):
             if line.outWidget == outWidget and line.inWidget == inWidget:
                 return line
         return None
-
+    # find canvasItems from widget ID
+    def findWidgetFromID(self, widgetID):
+        for widget in self.widgets:
+            if widget.instance.widgetID == widgetID:
+                return widget.instance
+        return None
 
     # find orngCanvasItems.CanvasWidget from widget instance
     def findWidgetFromInstance(self, widgetInstance):
@@ -676,7 +665,7 @@ class SchemaDoc(QWidget):
             temp.setAttribute("enabled", str(line.getEnabled()))
             temp.setAttribute("signals", str(line.getSignals()))
             lines.appendChild(temp)
-
+        print '\n\n', lines, 'lines\n\n'
         if template:
             taglist = str(tempDialog.tagsList.text())
             tempDescription = str(tempDialog.descriptionEdit.toHtml())
@@ -834,15 +823,15 @@ class SchemaDoc(QWidget):
         for line in lineList:
             inIndex = line.getAttribute("inWidgetIndex")
             outIndex = line.getAttribute("outWidgetIndex")
-            #print inIndex, outIndex, '###################HFJSDADSHFAK#############'
+            print inIndex, outIndex, '###################HFJSDADSHFAK#############'
             
             if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
                 print inIndex, outIndex 
                 
                 raise Exception
             if freeze: enabled = 0
-            else:      enabled = int(line.getAttribute("enabled"))
-            signals = line.getAttribute("signals")
+            else:      enabled = line.getAttribute("enabled")
+            #signals = line.getAttribute("signals")
             if tmp: ## index up the index to match sessionID
                 inIndex += '_'+str(self.sessionID)
                 outIndex += '_'+str(self.sessionID)
@@ -859,13 +848,12 @@ class SchemaDoc(QWidget):
                 failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
                 loadedOk = 0
                 continue
-            signalList = eval(signals)
-            for (outName, inName) in signalList:
-                self.addLink(outWidget, inWidget, outName, inName, enabled)
-            
-            #required to process all the signals of the saved widgets.
-            #without this all the signals are set to unprocessed 
-            #and will re-process on any update of an upstream widget
+            # signalList = eval(signals)
+            # print 'signal list', signalList
+            # for (outName, inName) in signalList:
+                # self.addLink(outWidget, inWidget, outName, inName, enabled)
+            print '######## enabled ########\n\n', enabled, '\n\n'
+            self.addLine(outWidget, inWidget, enabled)
             self.signalManager.setFreeze(0)
             qApp.processEvents()
             
