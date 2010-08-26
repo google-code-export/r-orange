@@ -30,7 +30,7 @@ class filterTable(widgetState, QTableView):
         leftBox = widgetBox(box,orientation='horizontal')
         if filterable:
             self.clearButton = button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
-        self.label = widgetLabel(leftBox,label='') 
+        self.label = widgetLabel(leftBox,label='',wordWrap=False) 
         box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
         if showResizeButtons:
@@ -291,14 +291,14 @@ class filterTable(widgetState, QTableView):
                     self.criteriaList[col] = {'column':col, "method": 'factor', "value": checks}
                 else:
                     del self.criteriaList[col]
-        # print 'criteriaList', self.criteriaList
+        print 'criteriaList', self.criteriaList
         self.menu.hide()
         self.filter()
     
     def filter(self):
         filters  = []
         for col,criteria in self.criteriaList.items():
-            #print 'in loop', col,criteria
+            print 'in loop', col,criteria['method']
             if 'Numeric Equals' == criteria['method']:
                 filters.append('%s[,%s] == %s' % (self.Rdata,col,criteria['value']))
             elif 'Numeric Does Not Equal' == criteria['method']:
@@ -309,7 +309,7 @@ class filterTable(widgetState, QTableView):
                 filters.append('%s[,%s] >= %s' % (self.Rdata,col,criteria['value']))
             elif 'Numeric Less Than' == criteria['method']:
                 filters.append('%s[,%s] < %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Less Than Or Equal To' == criteria['method']:
+            elif 'Numeric Less Than or Equal To' == criteria['method']:
                 filters.append('%s[,%s] <= %s' % (self.Rdata,col,criteria['value']))
             elif 'Numeric Between\n(2 numbers comma\nseparated, inclusive)' == criteria['method']:
                 (start,comma,stop) = criteria['value'].partition(',')
@@ -338,9 +338,9 @@ class filterTable(widgetState, QTableView):
                 f= '","'.join([str(x) for x in criteria['value']])
                 filters.append(self.Rdata+'[,'+str(col)+'] %in% as.factor(c("'+f+'"))')
         
-        # print filters
+        print 'filters:', filters
         self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
-        # print 'string:', self.filteredData
+        print 'string:', self.filteredData
         self.setRTable(self.filteredData,filtered=True)
              
     def getFilteredData(self):
