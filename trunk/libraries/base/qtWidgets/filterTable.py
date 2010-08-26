@@ -260,7 +260,7 @@ class filterTable(widgetState, QTableView):
 
     def clearFiltering(self):
         self.criteriaList = {}
-        self.horizontalHeader().setSortIndicator(-1,order)
+        # self.horizontalHeader().setSortIndicator(-1,order)
         self.filter()
         
     def createCriteriaList(self,col,menu,action):
