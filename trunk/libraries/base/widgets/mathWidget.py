@@ -9,7 +9,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
@@ -28,8 +28,10 @@ class mathWidget(OWRpy):
         self.counter = 1
         self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp']
         
-        self.inputs = [('Data Frame', rdf.RDataFrame, self.gotData)]
-        self.outputs = [('Data Frame', rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotData)
+
+        self.outputs.addOutput('id0', 'Data Frame', redRRDataFrame)
+
         #GUI#
         
         mainArea = widgetBox(self.controlArea, orientation = 'horizontal')
@@ -155,7 +157,7 @@ class mathWidget(OWRpy):
                         
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
-            newData = rdf.RDataFrame(data = self.data, parent = self.data)
+            newData = redRRDataFrame(data = self.data, parent = self.data)
             self.rSend('Data Frame', newData)
             self.dialog.hide()
         except:

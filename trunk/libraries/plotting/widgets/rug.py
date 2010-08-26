@@ -7,8 +7,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RVector as rvec
-import libraries.plotting.signalClasses.RPlotAttribute as rpa
+from libraries.base.signalClasses.RVector import RVector as redRRVector
+from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
@@ -19,8 +19,10 @@ class rug(OWRpy):
         self.setRvariableNames(["rug"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rvec.RVector, self.processx)]
-        self.outputs = [("rug Output", rpa.RPlotAttribute)]
+        self.inputs.addInput('id0', 'x', redRRVector, self.processx)
+
+        self.outputs.addOutput('id0', 'rug Output', redRRPlotAttribute)
+
         
         
         box = tabWidget(self.controlArea)
@@ -62,7 +64,7 @@ class rug(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         
-        newData = rpa.RPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("rug Output", newData)
     def getReportText(self, fileDir):

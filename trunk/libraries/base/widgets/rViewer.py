@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI
-import libraries.base.signalClasses.RVariable as rvar
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
@@ -19,7 +19,8 @@ class rViewer(OWRpy):
         
         self.RFunctionParam_data = None
         
-        self.inputs = [("data", rvar.RVariable, self.processdata)]
+        self.inputs.addInput('id0', 'data', redRRVariable, self.processdata)
+
         self.showAll = checkBox(self.bottomAreaRight, 
         buttons = ['String', 'Show All'],orientation="horizontal", setChecked = 'String')
         button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)

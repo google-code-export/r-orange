@@ -19,8 +19,10 @@ class RedRhclust(OWRpy):
         self.setRvariableNames(["hclust"])
         self.data = {}
         self.RFunctionParam_d = ''
-        self.inputs = [("d", signals.RDataFrame.RDataFrame, self.processd)]
-        self.outputs = [("hclust Output", signals.RList.RList)]
+        self.inputs.addInput('id0', 'd', redRRDataFrame, self.processd)
+
+        self.outputs.addOutput('id0', 'hclust Output', redRRList)
+
         
         self.RFunctionParammethod_comboBox = comboBox(self.controlArea, label = "Cluster Method:", items = ["complete","ward","single","average","mcquitty","centroid"])
         self.RFunctionParamdistmethod_comboBox = comboBox(self.controlArea, label = 'Dist Method:', items = ["euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"])
@@ -44,6 +46,6 @@ class RedRhclust(OWRpy):
         injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['hclust']+'<-hclust(d=dist(x='+str(self.RFunctionParam_d)+', method = \''+str(self.RFunctionParamdistmethod_comboBox.currentText())+'\'),'+inj+')')
-        newData = signals.RList.RList(data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.redRRList(data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("hclust Output", newData)

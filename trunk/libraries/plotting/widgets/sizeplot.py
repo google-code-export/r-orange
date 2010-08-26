@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
@@ -17,7 +17,9 @@ class sizeplot(OWRpy):
         OWRpy.__init__(self)
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
+        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
+        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+
         
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")

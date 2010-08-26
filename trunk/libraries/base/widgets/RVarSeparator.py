@@ -10,12 +10,12 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.REnvironment as renv
-import libraries.base.signalClasses.RVariable as rvar
-import libraries.base.signalClasses.RVector as rvec
-import libraries.base.signalClasses.RList as rlist
+from libraries.base.signalClasses.REnvironment import REnvironment as redRREnvironment
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RVector import RVector as redRRVector
+from libraries.base.signalClasses.RList import RList as redRRList
 import libraries.base.signalClasses.RMatrix as rmat
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.listBox import listBox
@@ -25,9 +25,14 @@ class RVarSeparator(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
        
-        self.inputs = [('R Session', renv.REnvironment, self.process)]
-        self.outputs = [('R Session', renv.REnvironment), ('R.object', rvar.RVariable), 
-        ('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector)]
+        self.inputs.addInput('id0', 'R Session', redRREnvironment, self.process)
+
+        self.outputs.addOutput('id0', 'R Session', redRREnvironment)
+        self.outputs.addOutput('id1', 'R.object', redRRVariable)
+        self.outputs.addOutput('id2', 'R Data Frame', redRRDataFrame)
+        self.outputs.addOutput('id3', 'R List', redRRList)
+        self.outputs.addOutput('id4', 'R Vector', redRRVector)
+
        
         # self.help.setHtml('The R Variable Separator is used to separate variables from a loaded R session.  Connecting the R Loader widget to this widget will display a list of available variables in the local environment to which the session was loaded.  Clicking on an element in the list will send that element on to downstream widgets.  One should take note of the class of the element that is sent as this will specify the output connection of the data.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
 
@@ -69,15 +74,15 @@ class RVarSeparator(OWRpy):
             
         if type(dataClass) is str:
             if dataClass == 'numeric': # we have a numeric vector as the object
-                newData = rvec.RVector(data = self.sendThis)
+                newData = redRRVector(data = self.sendThis)
                 self.rSend('R Vector', newData)
                 self.status.setText('Data sent through the R Vector channel')
             elif dataClass == 'character': #we have a character vector as the object
-                newData = rvec.RVector(data = self.sendThis)
+                newData = redRRVector(data = self.sendThis)
                 self.rSend('R Vector', newData)
                 self.status.setText('Data sent through the R Vector channel')
             elif dataClass == 'data.frame': # the object is a data.frame
-                newData = rdf.RDataFrame(data = self.sendThis)
+                newData = redRRDataFrame(data = self.sendThis)
                 self.rSend('R Data Frame', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'matrix': # the object is a matrix
@@ -87,15 +92,15 @@ class RVarSeparator(OWRpy):
                 self.rSend('R Data Frame', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'list': # the object is a list
-                newData = rlist.RList(data = self.sendThis)
+                newData = redRRList(data = self.sendThis)
                 self.rSend('R List', newData)
                 self.status.setText('Data sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic  
-                newData = rvar.RVariable(data = self.sendThis)
+                newData = redRRVariable(data = self.sendThis)
                 self.rSend('R.object', newData)
                 self.status.setText('Data sent through the R Object channel')
         else:
-            newData = rvar.RVariable(data = self.sendThis)
+            newData = redRRVariable(data = self.sendThis)
             self.rSend('R.object', newData)
             self.status.setText('Data sent through the R Object channel')
             

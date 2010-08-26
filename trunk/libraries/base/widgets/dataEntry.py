@@ -9,7 +9,7 @@
 
 import redRGUI
 from OWRpy import *
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.table import table
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -27,8 +27,10 @@ class dataEntry(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs = [('Data Table', rdf.RDataFrame, self.processDF)]
-        self.outputs = [('Data Table', rdf.RDataFrame)] # trace problem with outputs
+        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processDF)
+
+        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+ # trace problem with outputs
         #GUI.
         
         
@@ -204,7 +206,7 @@ class dataEntry(OWRpy):
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
         
-        self.newData = rdf.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
+        self.newData = redRRDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
         
         self.rSend('Data Table', self.newData)
         self.processDF(self.newData)  ## a good way to ensure loading and saving.

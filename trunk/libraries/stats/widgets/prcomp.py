@@ -9,9 +9,9 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RMatrix as rmat
-import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets.button import button
 class prcomp(OWRpy): 
@@ -21,8 +21,11 @@ class prcomp(OWRpy):
         self.setRvariableNames(["prcomp"])
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RDataFrame.RDataFrame, self.processx)]
-        self.outputs = [("prcomp Output", signals.RModelFit.RModelFit), ("Scaled Data", signals.RMatrix.RMatrix)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+
+        self.outputs.addOutput('id0', 'prcomp Output', redRRModelFit)
+        self.outputs.addOutput('id1', 'Scaled Data', redRRMatrix)
+
 
         button(self.controlArea, "Commit", callback = self.commitFunction)
     def processx(self, data):
@@ -35,9 +38,9 @@ class prcomp(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), scale = TRUE, retx=TRUE, '+inj+')')
         
-        newPRComp = signals.RModelFit.RModelFit(data = self.Rvariables['prcomp'])
+        newPRComp = signals.redRRModelFit(data = self.Rvariables['prcomp'])
         self.rSend("prcomp Output", newPRComp)
-        newPRCompMatrix = signals.RMatrix.RMatrix(data = self.Rvariables['prcomp']+'$x')
+        newPRCompMatrix = signals.redRRMatrix(data = self.Rvariables['prcomp']+'$x')
         self.rSend("Scaled Data", newPRCompMatrix)
     def getReportText(self, fileDir):
         text = 'This widget generates principal component fits to data and sends that fit and the resulting matrix of components to downstream widgets.  Please see the .rrs file or other output for more informaiton.\n\n'

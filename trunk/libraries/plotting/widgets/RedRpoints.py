@@ -22,8 +22,12 @@ class RedRpoints(OWRpy):
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.RFunctionParam_col = ''
-        self.inputs = [("y", signals.RVector.RVector, self.processy),("x", signals.RVector.RVector, self.processx),("col", signals.RVector.RVector, self.processcol)]
-        self.outputs = [("points Output", plotsigs.RPlotAttribute.RPlotAttribute)]
+        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
+        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id2', 'col', redRRVector, self.processcol)
+
+        self.outputs.addOutput('id0', 'points Output', redRRPlotAttribute)
+
         
         self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')
         self.RFunctionParamcex_lineEdit = lineEdit(self.controlArea, label = "cex:", text = '2')
@@ -70,7 +74,7 @@ class RedRpoints(OWRpy):
             string = 'cex='+str(self.RFunctionParamcex_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        newData = plotsigs.RPlotAttribute.RPlotAttribute(data = 'points(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+',col='+str(self.RFunctionParam_col)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = plotsigs.redRRPlotAttribute(data = 'points(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+',col='+str(self.RFunctionParam_col)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("points Output", newData)
     def getReportText(self, fileDir):

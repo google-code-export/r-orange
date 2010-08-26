@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
@@ -16,7 +16,8 @@ class inspectR(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_mymodel = ''
-        self.inputs = [("mymodel", rmf.RModelFit, self.processmymodel)]
+        self.inputs.addInput('id0', 'mymodel', redRRModelFit, self.processmymodel)
+
         
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")

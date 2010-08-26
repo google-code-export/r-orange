@@ -7,10 +7,10 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVariable as rvar
-import libraries.base.signalClasses.RList as rlist
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RList import RList as redRRList
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 import libraries.base.signalClasses.RMatrix as rmat
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.tabWidget import tabWidget
@@ -23,8 +23,13 @@ class na_omit(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs = [("object", rvar.RVariable, self.processobject)]
-        self.outputs = [('R Data Frame', rdf.RDataFrame), ('R List', rlist.RList), ('R Vector', rvec.RVector), ('R.object', rvar.RVariable)]
+        self.inputs.addInput('id0', 'object', redRRVariable, self.processobject)
+
+        self.outputs.addOutput('id0', 'R Data Frame', redRRDataFrame)
+        self.outputs.addOutput('id1', 'R List', redRRList)
+        self.outputs.addOutput('id2', 'R Vector', redRRVector)
+        self.outputs.addOutput('id3', 'R.object', redRRVariable)
+
         
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
@@ -51,17 +56,17 @@ class na_omit(OWRpy):
             self.rSend('R.object', self.data)
         elif type(thisdataclass) == str:
             if thisdataclass == 'numeric': # we have a numeric vector as the object
-                newData = rvec.RVector(data = self.Rvariables['na.omit'])
+                newData = redRRVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText('Data  sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
-                newData = rvec.RVector(data = self.Rvariables['na.omit'])
+                newData = redRRVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Vector', newData)
                 self.sendStatus.setText('Data  sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                newData = rdf.RDataFrame(data = self.Rvariables['na.omit'])
+                newData = redRRDataFrame(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText('Data  sent through the R Data Frame channel')
@@ -71,17 +76,17 @@ class na_omit(OWRpy):
                 self.rSend('R Data Frame', newData)
                 self.sendStatus.setText('Data  sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
-                newData = rlist.RList(data = self.Rvariables['na.omit'])
+                newData = redRRList(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R List', newData)
                 self.sendStatus.setText('Data  sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                newData = rvar.RVariable(data = self.Rvariables['na.omit'])
+                newData = redRRVariable(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend('R.object', newData)
                 self.sendStatus.setText('Data  sent through the R Object channel')
         else:
-            newData = rvar.RVariable(data = self.Rvariables['na.omit'])
+            newData = redRRVariable(data = self.Rvariables['na.omit'])
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend('R.object', newData)
             self.sendStatus.setText('Data  sent through the R Object channel')

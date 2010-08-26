@@ -9,7 +9,7 @@
 
 from OWRpy import *
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 import libraries.base.signalClasses.RVector as rvec
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.button import button
@@ -28,9 +28,11 @@ class rowColSelect(OWRpy):
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
         
         
-        self.inputs = [('Data Table', rdf.RDataFrame, self.setWidget)]
+        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.setWidget)
+
         
-        self.outputs = [('Data Table', rdf.RDataFrame)]
+        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+
         
         #set the gui
         area = widgetBox(self.controlArea,orientation='horizontal')       
@@ -114,7 +116,7 @@ class rowColSelect(OWRpy):
             self.rSend('Reduced Vector', newVector)
             
         
-        newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
 

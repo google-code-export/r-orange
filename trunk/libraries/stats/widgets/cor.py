@@ -17,8 +17,8 @@ import redRGUI
 
 # signalClasses classes contain the data that is passed between widgets. 
 # In this case we are using the RDataFrame and RMatrix signals
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 
 # our first widget. Must be a child of OWRpy class
@@ -52,9 +52,12 @@ class cor(OWRpy):
         
         # Define the inputs that this widget will accept
         # When data is received the three element in the tuple which is a function will be executed
-        self.inputs = [("x", rdf.RDataFrame, self.processx),("y", rdf.RDataFrame, self.processy)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+        self.inputs.addInput('id1', 'y', redRRDataFrame, self.processy)
+
         # Define the outputs of this widget
-        self.outputs = [("cor Output", rmat.RMatrix)]
+        self.outputs.addOutput('id0', 'cor Output', redRRMatrix)
+
         
         #START THE GUI LAYOUT
         area = widgetBox(self.controlArea,orientation='horizontal')       
@@ -142,7 +145,7 @@ class cor(OWRpy):
         self.RoutputWindow.setRTable(self.Rvariables['cor'])
         
         # create a new signal of type RMatrix and load the results 
-        newData = rmat.RMatrix(data = self.Rvariables["cor"]) 
+        newData = redRRMatrix(data = self.Rvariables["cor"]) 
         # send the signal forward
         self.rSend("cor Output", newData)
   

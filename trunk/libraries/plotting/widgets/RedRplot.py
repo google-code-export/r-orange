@@ -21,7 +21,10 @@ class RedRplot(OWRpy):
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
         self.RFunctionParam_plotatt = ''
-        self.inputs = [("y", signals.RVector.RVector, self.processy),("x", signals.RVector.RVector, self.processx),("plotatt", plotSignals.RPlotAttribute.RPlotAttribute, self.processplotatt, 'Multiple')]
+        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
+        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id2', 'plotatt', redRRPlotAttribute, self.processplotatt)
+
         
         self.RFunctionParamxlab_lineEdit = lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
         self.RFunctionParamylab_lineEdit = lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')

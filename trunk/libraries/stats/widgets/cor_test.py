@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 class cor_test(OWRpy): 
@@ -18,7 +18,9 @@ class cor_test(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
+        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
+        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):

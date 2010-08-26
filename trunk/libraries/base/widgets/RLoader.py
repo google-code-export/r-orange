@@ -9,7 +9,7 @@
 """
 from OWRpy import * 
 import redRGUI
-import libraries.base.signalClasses.REnvironment as renv
+from libraries.base.signalClasses.REnvironment import REnvironment as redRREnvironment
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -23,7 +23,8 @@ class RLoader(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.inputs = None
-        self.outputs = [('R Session', renv.REnvironment)]
+        self.outputs.addOutput('id0', 'R Session', redRREnvironment)
+
         print os.path.abspath('/')
         self.path = os.path.abspath('/')
         self.setRvariableNames(['sessionEnviron'])
@@ -65,7 +66,7 @@ class RLoader(OWRpy):
         dataList = self.R('local(ls(), '+self.Rvariables['sessionEnviron']+')', wantType = 'list')
         self.varBox.update(dataList)
         self.infob.setText('Please use the R Variable Separator widget to extract your data.')
-        newData = renv.REnvironment(data = self.Rvariables['sessionEnviron'])
+        newData = redRREnvironment(data = self.Rvariables['sessionEnviron'])
         self.rSend('R Session', newData)
         #self.status.setText('Data sent.')
         

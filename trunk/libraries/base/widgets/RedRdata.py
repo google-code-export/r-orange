@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from base.qtWidgets.filterTable import filterTable
 from base.qtWidgets.groupBox import groupBox
 from base.qtWidgets.lineEdit import lineEdit
@@ -20,7 +20,8 @@ class RedRdata(OWRpy):
         OWRpy.__init__(self)
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
-        self.outputs = [("data Output", RDataFrame)]
+        self.outputs.addOutput('id0', 'data Output', redRRDataFrame)
+
                 
         self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True)
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True)
@@ -64,6 +65,6 @@ class RedRdata(OWRpy):
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package))
         
-        newData = RDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         
         self.rSend("data Output", newData)

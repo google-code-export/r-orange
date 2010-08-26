@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import OWGUI 
-import libraries.base.signalClasses.RVariable as rvar
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -20,7 +20,8 @@ class hist(OWRpy):
         self.RFunctionParam_x = ''
         self.column = ''
         self.needsColumns = 0
-        self.inputs = [("x", rvar.RVariable, self.processx)]
+        self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
+
         
         box = groupBox(self.controlArea, "Widget Box")
         #self.infoa = widgetLabel(box, "")

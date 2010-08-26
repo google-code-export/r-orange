@@ -9,8 +9,8 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-import libraries.base.signalClasses.RVariable as rvar
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
@@ -22,8 +22,11 @@ class wilcox_test(OWRpy):
          
         self.RFunctionParam_x = ''
         self.RFunctionParam_y = ''
-        self.inputs = [("x", rvec.RVector, self.processx), ('y', rvec.RVector, self.processy)]
-        self.outputs = [("wilcox.test Output", rvar.RVariable)]
+        self.inputs.addInput('id0', 'x', redRRVector, self.processx)
+        self.inputs.addInput('id1', 'y', redRRVector, self.processy)
+
+        self.outputs.addOutput('id0', 'wilcox.test Output', redRRVariable)
+
         
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea)

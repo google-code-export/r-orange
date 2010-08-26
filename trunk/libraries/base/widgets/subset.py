@@ -9,8 +9,8 @@
 
 from OWRpy import *
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RList as rlist
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RList import RList as redRRList
 
 
 import libraries.base.signalClasses.RVector as rvec
@@ -28,9 +28,12 @@ class subset(OWRpy):
         self.setRvariableNames(['subset'])
         
         
-        self.inputs = [('Subset On', rdf.RDataFrame, self.processA),('Subset By', rlist.RList, self.processB)]
+        self.inputs.addInput('id0', 'Subset On', redRRDataFrame, self.processA)
+        self.inputs.addInput('id1', 'Subset By', redRRList, self.processB)
+
         
-        self.outputs = [('Data Table', rdf.RDataFrame)]
+        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+
         
                 
         #GUI
@@ -102,7 +105,7 @@ class subset(OWRpy):
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
             +' %in% '+self.dataB+'[['+self.colBsel+']],]')
             
-        newData = rdf.RDataFrame(data = self.Rvariables['subset'])
+        newData = redRRDataFrame(data = self.Rvariables['subset'])
         self.rSend('Data Table', newData)
         
 
@@ -131,10 +134,10 @@ class subset(OWRpy):
             self.rSend('Not Reduced Vector', newVector)
             
         
-        newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('Not Data Table', newDataNot)
                 
         

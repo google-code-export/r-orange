@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
@@ -20,8 +20,10 @@ class percentileClassifier(OWRpy):
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
         self.data = ''
         self.dataParent = None
-        self.inputs = [('Data Frame', rdf.RDataFrame, self.processData)]
-        self.outputs = [('Data Frame', rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.processData)
+
+        self.outputs.addOutput('id0', 'Data Frame', redRRDataFrame)
+
         
         ### GUI ###
         self.colNames_listBox = listBox(self.controlArea, label = 'Column Names:')

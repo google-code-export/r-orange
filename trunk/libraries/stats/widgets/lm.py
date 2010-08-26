@@ -8,9 +8,9 @@
 """
 from OWRpy import * 
 import redRGUI, redRGUI
-import libraries.plotting.signalClasses.RPlotAttribute as rpa
-import libraries.stats.signalClasses.RLMFit as rlm
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
+from libraries.base.signalClasses.RLMFit import RLMFit as redRRLMFit
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -26,8 +26,11 @@ class lm(OWRpy):
         self.modelFormula = ''
         self.processingComplete = 0
         
-        self.inputs = [("data", rdf.RDataFrame, self.processdata)]
-        self.outputs = [("lm Output", rlm.RLMFit), ('lm plot attribute', rpa.RPlotAttribute)]
+        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+
+        self.outputs.addOutput('id0', 'lm Output', redRRLMFit)
+        self.outputs.addOutput('id1', 'lm plot attribute', redRRPlotAttribute)
+
         
         #GUI
         
@@ -73,10 +76,10 @@ class lm(OWRpy):
 
         
         self.R(self.Rvariables['lm']+'<-lm(data='+str(self.RFunctionParam_data)+',subset='+str(self.RFunctionParam_subset.text())+',qr='+str(self.RFunctionParam_qr.text())+',formula='+str(self.RFunctionParam_formula)+',singular_ok='+str(self.RFunctionParam_singular_ok.text())+',y='+str(self.RFunctionParam_y.text())+',weights='+str(self.RFunctionParam_weights.text())+',offset='+str(self.RFunctionParam_offset.text())+',contrasts='+str(self.RFunctionParam_contrasts.text())+',x='+str(self.RFunctionParam_x.text())+',model='+str(self.RFunctionParam_model.text())+',method="'+str(self.RFunctionParam_method.text())+'")')
-        newData = rlm.RLMFit(data = self.Rvariables['lm'])
+        newData = redRRLMFit(data = self.Rvariables['lm'])
         self.rSend("lm Output", newData)
         
-        newPlotAtt = rpa.RPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
+        newPlotAtt = redRRPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
         self.rSend('lm plot attribute', newPlotAtt)
         
     def getReportText(self, fileDir):

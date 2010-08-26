@@ -19,7 +19,8 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs = [("object", signals.RVariable.RVariable, self.processobject)]
+        self.inputs.addInput('id0', 'object', redRRVariable, self.processobject)
+
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         if not self.require_librarys(["base"]):

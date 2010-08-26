@@ -19,8 +19,10 @@ class RedRscale(OWRpy):
         self.setRvariableNames(["scale"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RMatrix.RMatrix, self.processx)]
-        self.outputs = [("scale Output", signals.RMatrix.RMatrix)]
+        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+
+        self.outputs.addOutput('id0', 'scale Output', redRRMatrix)
+
         
         
         self.RFunctionParamscale_radioButtons =  radioButtons(self.controlArea,  label = "Scale:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
@@ -53,7 +55,7 @@ class RedRscale(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['scale']+'<-scale(x='+str(self.RFunctionParam_x)+','+inj+')')
-        newData = signals.RMatrix.RMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.redRRMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("scale Output", newData)
     def getReportText(self, fileDir):

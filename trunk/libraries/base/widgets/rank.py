@@ -10,7 +10,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
-import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.tabWidget import tabWidget
@@ -23,8 +23,10 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rmat.RMatrix, self.processx)]
-        self.outputs = [("rank Output", rmat.RMatrix)]
+        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+
+        self.outputs.addOutput('id0', 'rank Output', redRRMatrix)
+
         
         #self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
         box = tabWidget(self.controlArea)
@@ -52,7 +54,7 @@ class rank(OWRpy):
             # injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
-        newData = rmat.RMatrix(data = self.Rvariables['rank'])
+        newData = redRRMatrix(data = self.Rvariables['rank'])
         self.rSend("rank Output", newData)
         
     def getReportText(self, fileDir):

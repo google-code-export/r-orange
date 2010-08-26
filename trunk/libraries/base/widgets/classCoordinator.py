@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.textEdit import textEdit
 class classCoordinator(OWRpy): 
     settingsList = []
@@ -15,8 +15,10 @@ class classCoordinator(OWRpy):
         OWRpy.__init__(self)
         
         self.setRvariableNames(["cm"])
-        self.inputs = [('In Data', rdf.RDataFrame, self.gotData)]
-        self.outputs = [('Out Data', rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'In Data', redRRDataFrame, self.gotData)
+
+        self.outputs.addOutput('id0', 'Out Data', redRRDataFrame)
+
         self.outputWindow = textEdit(self.controlArea, label = 'Class Manager Output')
     def gotData(self, data):
         if data:

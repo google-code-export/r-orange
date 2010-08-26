@@ -9,7 +9,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-import libraries.stats.signalClasses.RLMFit as rlm
+from libraries.base.signalClasses.RLMFit import RLMFit as redRRLMFit
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -19,7 +19,8 @@ class anova_lm(OWRpy):
         OWRpy.__init__(self)
         self.RFunctionParam_object = ''
         self.saveSettingsList.extend(['RFunctionParam_object'])
-        self.inputs = [("object", rlm.RLMFit, self.processobject)]
+        self.inputs.addInput('id0', 'object', redRRLMFit, self.processobject)
+
         
         box = groupBox(self.controlArea, "Output")
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)

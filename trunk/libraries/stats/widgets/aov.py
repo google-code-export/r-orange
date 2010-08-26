@@ -7,8 +7,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
@@ -22,8 +22,10 @@ class aov(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.saveSettingsList.extend(['data', 'RFunctionParam_data'])
-        self.inputs = [("data", rdf.RDataFrame, self.processdata)]
-        self.outputs = [("aov Output", rmf.RModelFit)]
+        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+
+        self.outputs.addOutput('id0', 'aov Output', redRRModelFit)
+
         
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
@@ -72,7 +74,7 @@ class aov(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = rmf.RModelFit(data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRModelFit(data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("aov Output", newData)
     def getReportText(self, fileD):

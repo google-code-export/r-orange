@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
@@ -21,8 +21,10 @@ class Melt_DF(OWRpy):
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
-        self.inputs = [("data", rdf.RDataFrame, self.processdata)]
-        self.outputs = [("melt.data.frame Output", rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+
+        self.outputs.addOutput('id0', 'melt.data.frame Output', redRRDataFrame)
+
         
         box = widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_na_rm = comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
@@ -76,7 +78,7 @@ class Melt_DF(OWRpy):
         self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', OldRownames),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')')
         self.R('rm(OldRownames)')
         # copy the signals class and send the newData
-        newData = rdf.RDataFrame(data = self.Rvariables['melt.data.frame'])
+        newData = redRRDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("melt.data.frame Output", newData)
         

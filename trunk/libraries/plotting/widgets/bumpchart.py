@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
@@ -16,7 +16,8 @@ class bumpchart(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_y = ''
-        self.inputs = [("y", rdf.RDataFrame, self.processy)]
+        self.inputs.addInput('id0', 'y', redRRDataFrame, self.processy)
+
         
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")

@@ -15,8 +15,10 @@ class normalize_quantiles(OWRpy):
         self.RFunctionParam_copy = "TRUE"
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RDataFrame.RDataFrame, self.processx)]
-        self.outputs = [("normalize.quantiles Output", signals.RDataFrame.RDataFrame)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+
+        self.outputs.addOutput('id0', 'normalize.quantiles Output', redRRDataFrame)
+
         
         #self.help.setHtml('<small>Performs <a href="http://en.wikipedia.org/wiki/Normalization_(statistics)">quantile normailzation</a> on a data table containing numeric data.  This is generally used for expression array data but will work to standardize any numeric data.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
         OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
@@ -32,5 +34,5 @@ class normalize_quantiles(OWRpy):
         self.R(self.Rvariables['normalize.quantiles']+'<-normalize.quantiles(x=as.matrix('+str(self.RFunctionParam_x)+'), copy=T)')
         self.R('rownames('+self.Rvariables['normalize.quantiles']+') <- rownames('+ self.RFunctionParam_x +')')
         self.R('colnames('+self.Rvariables['normalize.quantiles']+') <- colnames('+ self.RFunctionParam_x +')')
-        newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables["normalize.quantiles"]+')')
+        newData = signals.redRRDataFrame(data = 'as.data.frame('+self.Rvariables["normalize.quantiles"]+')')
         self.rSend("normalize.quantiles Output", newData)

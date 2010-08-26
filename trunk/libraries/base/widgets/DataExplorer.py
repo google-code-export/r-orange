@@ -11,8 +11,8 @@ from OWRpy import *
 import OWGUI, redRGUI
 import OWGUIEx
 import math, sip
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVector as RVector
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 
 from libraries.base.qtWidgets.button import button
@@ -39,8 +39,11 @@ class DataExplorer(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', rdf.RDataFrame, self.processData), ('Row Subset Vector', RVector.RVector, self.setRowSelectVector)]
-        self.outputs = [('Data Subset', rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processData)
+        self.inputs.addInput('id1', 'Row Subset Vector', redRRVector, self.setRowSelectVector)
+
+        self.outputs.addOutput('id0', 'Data Subset', redRRDataFrame)
+
         
         # a special section that sets when the shift key is heald or not 
         #self.shiftPressed = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.NoModifier)
@@ -381,7 +384,7 @@ class DataExplorer(OWRpy):
         print self.criteriaList
         newDataString = self.orriginalData+'['+'&'.join(self.criteriaList)+',, drop = F]'
         print newDataString, 'New Data String'
-        newData = rdf.RDataFrame(data = newDataString, parent = self.orriginalData) # reprocess the table
+        newData = redRRDataFrame(data = newDataString, parent = self.orriginalData) # reprocess the table
         self.processData(newData, False)
     
     def commitSubset(self):
@@ -397,7 +400,7 @@ class DataExplorer(OWRpy):
         print self.criteriaList
         if len(self.criteriaList) > 0:
             self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.getDataParent()+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.getDataParent()+'[!('+'&'.join(self.criteriaList)+'),]))')
-            newData = rdf.RDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
+            newData = redRRDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
             self.rSend('Data Subset', newData)
         else:
             self.rSend('Data Subset', self.dataParent)

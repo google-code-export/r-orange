@@ -9,10 +9,10 @@
 
 from OWRpy import *
 import OWGUI
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RList as rlist
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RList import RList as redRRList
 import libraries.base.signalClasses.RModelFit as rmf
-import libraries.base.signalClasses.RVector as rvect
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
@@ -30,8 +30,12 @@ class Heatmap(OWRpy):
         self.rowvChoice = None
         self.colvChoice = None
         
-        self.inputs = [("Expression Matrix", rdf.RDataFrame, self.processMatrix), ('Classes Data', rdf.RDataFrame, self.processClasses)]
-        self.outputs = [("Cluster Subset List", rlist.RList), ('Cluster Classes', rvect.RVector)]
+        self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
+        self.inputs.addInput('id1', 'Classes Data', redRRDataFrame, self.processClasses)
+
+        self.outputs.addOutput('id0', 'Cluster Subset List', redRRList)
+        self.outputs.addOutput('id1', 'Cluster Classes', redRRVector)
+
         
 
         
@@ -143,13 +147,13 @@ class Heatmap(OWRpy):
         self.R('plot('+self.Rvariables['hclust']+')', devNumber = 1)
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
-        newData = rlist.RList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
+        newData = redRRList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
         self.rSend("Cluster Subset List", newData)
         
         self.R(self.Rvariables['heatvect']+'<-NULL; k<-1')
         self.R('for(i in colnames('+self.plotdata+')){for(j in 1:length('+self.Rvariables['heatsubset']+')){if(i %in%  '+self.Rvariables['heatsubset']+'[[j]]){'+self.Rvariables['heatvect']+'[k]<-j; k <- k+1}}}')
         
-        newDataVect = rvect.RVector(data = self.Rvariables['heatvect'])
+        newDataVect = redRRVector(data = self.Rvariables['heatvect'])
         self.rSend('Cluster Classes', newDataVect)
         
     def getReportText(self, fileDir):

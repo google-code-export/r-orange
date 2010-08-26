@@ -21,8 +21,10 @@ class RedRplsr(OWRpy):
         self.setRvariableNames(["plsr"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.inputs = [("data", signals.RDataFrame.RDataFrame, self.processdata)]
-        self.outputs = [("plsr Output", signals.RModelFit.RModelFit)]
+        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+
+        self.outputs.addOutput('id0', 'plsr Output', redRRModelFit)
+
         
         self.RFunctionParamformula_lineEdit = lineEdit(self.controlArea, label = "formula:", text = '')
         self.RFunctionParamscale_radioButtons = radioButtons(self.controlArea, label = "Scale the data:", buttons = ['TRUE', 'FALSE'], setChecked = 'FALSE', orientation = 'horizontal')
@@ -64,6 +66,6 @@ class RedRplsr(OWRpy):
         injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['plsr']+'<-plsr(data='+str(self.RFunctionParam_data)+',model = TRUE, x = TRUE, y = TRUE,'+inj+')')
-        newData = signals.RModelFit.RModelFit(data = self.Rvariables["plsr"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.redRRModelFit(data = self.Rvariables["plsr"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("plsr Output", newData)

@@ -13,32 +13,33 @@ import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 class RedRattributes(OWRpy): 
-	settingsList = []
-	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self)
-		self.setRvariableNames(["attributes"])
-		self.data = {}
-		self.RFunctionParam_obj = ''
-		self.inputs = [("obj", signals.RVariable.RVariable, self.processobj)]
-		
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-		self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
-	def processobj(self, data):
-		if not self.require_librarys(["base"]):
-			self.status.setText('R Libraries Not Loaded.')
-			return
-		if data:
-			self.RFunctionParam_obj=data.getData()
-			#self.data = data
-			self.commitFunction()
-		else:
-			self.RFunctionParam_obj=''
-	def commitFunction(self):
-		if str(self.RFunctionParam_obj) == '': return
-		injection = []
-		inj = ','.join(injection)
-		self.R(self.Rvariables['attributes']+'<-attributes(obj='+str(self.RFunctionParam_obj)+','+inj+')')
-		self.R('txt<-capture.output('+self.Rvariables['attributes']+')')
-		self.RoutputWindow.clear()
-		tmp = self.R('paste(txt, collapse ="\n")')
-		self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+    settingsList = []
+    def __init__(self, parent=None, signalManager=None):
+        OWRpy.__init__(self)
+        self.setRvariableNames(["attributes"])
+        self.data = {}
+        self.RFunctionParam_obj = ''
+        self.inputs.addInput('id0', 'obj', redRRVariable, self.processobj)
+
+        
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
+    def processobj(self, data):
+        if not self.require_librarys(["base"]):
+            self.status.setText('R Libraries Not Loaded.')
+            return
+        if data:
+            self.RFunctionParam_obj=data.getData()
+            #self.data = data
+            self.commitFunction()
+        else:
+            self.RFunctionParam_obj=''
+    def commitFunction(self):
+        if str(self.RFunctionParam_obj) == '': return
+        injection = []
+        inj = ','.join(injection)
+        self.R(self.Rvariables['attributes']+'<-attributes(obj='+str(self.RFunctionParam_obj)+','+inj+')')
+        self.R('txt<-capture.output('+self.Rvariables['attributes']+')')
+        self.RoutputWindow.clear()
+        tmp = self.R('paste(txt, collapse ="\n")')
+        self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

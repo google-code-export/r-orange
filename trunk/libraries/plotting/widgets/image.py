@@ -7,14 +7,15 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.button import button
 class image(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rmat.RMatrix, self.processx)]
+        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["graphics"]):

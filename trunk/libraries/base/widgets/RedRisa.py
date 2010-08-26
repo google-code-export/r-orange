@@ -7,8 +7,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RMatrix as rmat
-import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 from libraries.base.qtWidgets.button import button
 class RedRisa(OWRpy): 
     settingsList = []
@@ -17,8 +17,10 @@ class RedRisa(OWRpy):
         self.setRvariableNames(["isa"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.inputs = [("data", rmat.RMatrix, self.processdata)]
-        self.outputs = [("isa Output", rmf.RModelFit)]
+        self.inputs.addInput('id0', 'data', redRRMatrix, self.processdata)
+
+        self.outputs.addOutput('id0', 'isa Output', redRRModelFit)
+
 
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
@@ -35,7 +37,7 @@ class RedRisa(OWRpy):
         if str(self.RFunctionParam_data) == '': return
         
         self.R(self.Rvariables['isa']+'<-isa(data='+str(self.RFunctionParam_data)+')')
-        newData = rmf.RModelFit(data = self.Rvariables["isa"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRModelFit(data = self.Rvariables["isa"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("isa Output", newData)
     def getReportText(self, fileDir):

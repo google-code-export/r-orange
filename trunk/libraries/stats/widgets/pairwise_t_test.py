@@ -8,8 +8,8 @@
 """
 from OWRpy import * 
 import OWGUI 
-import libraries.base.signalClasses.RVariable as rvar
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetBox import widgetBox
@@ -23,8 +23,10 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_g = ""
         self.RFunctionParam_p_adjust_method = "p.adjust.methods"
         self.indata = ''
-        self.inputs = [('R Data Frame', rdf.RDataFrame, self.process)]
-        self.outputs = [("pairwise.t.test Output", rvar.RVariable)]
+        self.inputs.addInput('id0', 'R Data Frame', redRRDataFrame, self.process)
+
+        self.outputs.addOutput('id0', 'pairwise.t.test Output', redRRVariable)
+
         
         box = widgetBox(self.controlArea)
         self.RFunctionParam_x = comboBox(box, label = "Values:")
@@ -61,7 +63,7 @@ class pairwise_t_test(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         #print tmp
         self.RoutputWindow.insertPlainText(tmp)
-        out = rvar.RVariable(data=self.Rvariables["pairwise.t.test"])
+        out = redRRVariable(data=self.Rvariables["pairwise.t.test"])
         self.rSend("pairwise.t.test Output", out)
     def getReportText(self, fileDir):
         text = 'Pairwise T-Test of the attached data.  Result below:\n\n'

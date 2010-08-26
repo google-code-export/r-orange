@@ -10,8 +10,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.separator import separator
@@ -27,8 +27,10 @@ class apply(OWRpy):
         self.data = {}
          
         self.RFunctionParam_X = ''
-        self.inputs = [("X", rdf.RDataFrame, self.processX)]
-        self.outputs = [("apply Output", rvec.RVector)]
+        self.inputs.addInput('id0', 'X', redRRDataFrame, self.processX)
+
+        self.outputs.addOutput('id0', 'apply Output', redRRVector)
+
         
         area = widgetBox(self.controlArea,orientation='horizontal')       
         
@@ -94,7 +96,7 @@ class apply(OWRpy):
         
         self.outputTable.setRTable(self.Rvariables['apply'])
         
-        newData = rvec.RVector(data = self.Rvariables['apply'])
+        newData = redRRVector(data = self.Rvariables['apply'])
 
         self.rSend("apply Output", newData)
         

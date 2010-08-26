@@ -9,7 +9,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RVariable as rvar
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
@@ -19,7 +19,8 @@ class kruskal_test(OWRpy):
         OWRpy.__init__(self)
          
         self.RFunctionParam_data = ''
-        self.inputs = [("data", rvar.RVariable, self.processdata)]
+        self.inputs.addInput('id0', 'data', redRRVariable, self.processdata)
+
 
         self.RFunctionParamformula =  RFormulaEntry(self.controlArea)
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)

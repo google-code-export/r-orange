@@ -17,8 +17,10 @@ class RedReigen(OWRpy):
         self.setRvariableNames(["eigen"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs = [("x", signals.RMatrix.RMatrix, self.processx)]
-        self.outputs = [("eigen Output", signals.RList.RList)]
+        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+
+        self.outputs.addOutput('id0', 'eigen Output', redRRList)
+
         
         self.RFunctionParamsymmetric_radioButtons =  radioButtons(self.controlArea,  label = "symmetric:", buttons = ['Yes', 'No'], setChecked = 'Yes')
         self.RFunctionParamonly_values_radioButtons =  radioButtons(self.controlArea,  label = "only_values:", buttons = ['Yes', 'No'], setChecked = 'Yes')
@@ -57,7 +59,7 @@ class RedReigen(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['eigen']+'<-eigen(x='+str(self.RFunctionParam_x)+','+inj+')')
-        newData = signals.RList.RList(data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.redRRList(data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("eigen Output", newData)
         

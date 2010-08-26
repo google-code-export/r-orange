@@ -11,7 +11,7 @@ from OWRpy import *
 import OWGUI
 import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RList as rlist
-import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 import libraries.base.signalClasses.RModelFit as rmf
 import libraries.base.signalClasses.RVector as rvect
 from libraries.base.qtWidgets.separator import separator
@@ -35,7 +35,8 @@ class heatmap2(OWRpy):
         self.plotdata = ''
         self.rowvChoice = None
         
-        self.inputs = [("Expression Matrix", rmat.RMatrix, self.processMatrix)]
+        self.inputs.addInput('id0', 'Expression Matrix', redRRMatrix, self.processMatrix)
+
         
         #GUI
         mainArea = widgetBox(self.controlArea,orientation='vertical')

@@ -9,7 +9,7 @@
 
 from OWRpy import *
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 import libraries.base.signalClasses.RVector as RVector
 
 
@@ -33,8 +33,10 @@ class rowFilter(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs = [('Data Table', rdf.RDataFrame, self.processData)] 
-        self.outputs = [('Data Subset', rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processData)
+ 
+        self.outputs.addOutput('id0', 'Data Subset', redRRDataFrame)
+
         
         ######## GUI ############
         
@@ -66,7 +68,7 @@ class rowFilter(OWRpy):
         
     def commitSubset(self):
         filteredData = self.table.getFilteredData()
-        newData = rdf.RDataFrame(data = filteredData, parent = self.dataParent.getData())
+        newData = redRRDataFrame(data = filteredData, parent = self.dataParent.getData())
 
         self.rSend('Data Subset', newData)
 

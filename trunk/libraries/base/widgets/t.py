@@ -10,7 +10,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.button import button
 class t(OWRpy): 
     settingsList = ['sentItems']
@@ -21,8 +21,10 @@ class t(OWRpy):
         self.data={}
         
         
-        self.inputs = [("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("t Output", rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+
+        self.outputs.addOutput('id0', 't Output', redRRDataFrame)
+
         
         #box = widgetBox(self.controlArea, "Widget Box")
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -36,7 +38,7 @@ class t(OWRpy):
         
         self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+str(self.RFunctionParam_x)+'))')
         
-        newData = rdf.RDataFrame(data = self.Rvariables['t'])
+        newData = redRRDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("t Output", newData)
     def getReportText(self, fileDir):

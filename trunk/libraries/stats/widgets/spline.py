@@ -8,9 +8,9 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RModelFit as rmf
+from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 import libraries.plotting.signalClasses as plotting
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
@@ -25,8 +25,12 @@ class spline(OWRpy):
         self.data = {}
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.inputs = [("y", rvec.RVector, self.processy),("x", rvec.RVector, self.processx)]
-        self.outputs = [("spline Output", rmf.RModelFit), ('spline plot attribute', plotting.RPlotAttribute.RPlotAttribute)]
+        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
+        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+
+        self.outputs.addOutput('id0', 'spline Output', redRRModelFit)
+        self.outputs.addOutput('id1', 'spline plot attribute', redRRPlotAttribute)
+
         
         self.standardTab = groupBox(self.controlArea, label = 'Parameters')
         self.RFunctionParamxmin_lineEdit =  lineEdit(self.standardTab,  label = "xmin:", text = 'min(x)')
@@ -98,11 +102,11 @@ class spline(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = rmf.RModelFit(data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRModelFit(data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("spline Output", newData)
         
-        newLine = plotting.RPlotAttribute.RPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
+        newLine = plotting.redRRPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
         self.rSend('spline plot attribute', newLine)
         
     def getReportText(self, fileDir):

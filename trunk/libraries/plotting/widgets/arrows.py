@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.plotting.signalClasses.RPlotAttribute as rpa
+from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 class arrows(OWRpy): 
@@ -16,7 +16,8 @@ class arrows(OWRpy):
         OWRpy.__init__(self)
         self.setRvariableNames(["arrows"])
         self.data = {}
-        self.outputs = [("arrows Output", rpa.RPlotAttribute)]
+        self.outputs.addOutput('id0', 'arrows Output', redRRPlotAttribute)
+
         self.standardTab = self.controlArea
         self.RFunctionParamx0_lineEdit =  lineEdit(self.standardTab,  label = "x0:", text = '')
         self.RFunctionParamy0_lineEdit =  lineEdit(self.standardTab,  label = "y0:", text = '')
@@ -56,7 +57,7 @@ class arrows(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         
-        newData = rpa.RPlotAttribute(data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRPlotAttribute(data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("arrows Output", newData)
     def getReportText(self, fileDir):

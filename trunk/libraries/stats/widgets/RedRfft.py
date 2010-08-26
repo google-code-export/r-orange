@@ -19,8 +19,10 @@ class RedRfft(OWRpy):
         self.setRvariableNames(["fft"])
         self.data = {}
         self.RFunctionParam_z = ''
-        self.inputs = [("z", signals.RMatrix.RMatrix, self.processz)]
-        self.outputs = [("fft Output", signals.RMatrix.RMatrix)]
+        self.inputs.addInput('id0', 'z', redRRMatrix, self.processz)
+
+        self.outputs.addOutput('id0', 'fft Output', redRRMatrix)
+
         
         self.RFunctionParaminverse_radioBox = radioButtons(self.controlArea, label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -43,6 +45,6 @@ class RedRfft(OWRpy):
             injection.append('inverse = FALSE')
         inj = ','.join(injection)
         self.R(self.Rvariables['fft']+'<-fft(z='+str(self.RFunctionParam_z)+','+inj+')')
-        newData = signals.RMatrix(data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRMatrix(data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("fft Output", newData)

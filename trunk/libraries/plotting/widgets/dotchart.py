@@ -7,7 +7,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RMatrix as rmat
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 class dotchart(OWRpy): 
@@ -17,7 +17,8 @@ class dotchart(OWRpy):
         self.setRvariableNames(["dotchart"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rmat.RMatrix, self.processx)]
+        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+
         
         self.standardTab = self.controlArea
         self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')

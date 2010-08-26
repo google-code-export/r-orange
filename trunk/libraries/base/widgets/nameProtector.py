@@ -9,8 +9,8 @@
 """
 from OWRpy import * 
 import OWGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
@@ -23,8 +23,12 @@ class nameProtector(OWRpy):
         self.parentData = {}
         self.data = ''
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector', 'newDataFromNameProtector_cm'])
-        self.inputs = [("Data Frame", rdf.RDataFrame, self.gotDF), ("Vector", rvec.RVector, self.gotV)]
-        self.outputs = [("Data Frame", rdf.RDataFrame), ("Vector", rvec.RVector)]
+        self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotDF)
+        self.inputs.addInput('id1', 'Vector', redRRVector, self.gotV)
+
+        self.outputs.addOutput('id0', 'Data Frame', redRRDataFrame)
+        self.outputs.addOutput('id1', 'Vector', redRRVector)
+
         
         ### The data frame GUI
         self.dfbox = widgetBox(self.controlArea)
@@ -73,7 +77,7 @@ class nameProtector(OWRpy):
             
             
             self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData.getData())
-            newData = rdf.RDataFrame(data = self.Rvariables['newDataFromNameProtector'])
+            newData = redRRDataFrame(data = self.Rvariables['newDataFromNameProtector'])
             self.data = self.Rvariables['newDataFromNameProtector']
 
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():

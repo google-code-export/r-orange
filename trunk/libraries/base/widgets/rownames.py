@@ -8,8 +8,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
@@ -24,8 +24,10 @@ class rownames(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("Names Output", rvec.RVector)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+
+        self.outputs.addOutput('id0', 'Names Output', redRRVector)
+
         
         box = widgetBox(self.controlArea)
         self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
@@ -75,7 +77,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')')
         
-        newData = rvec.RVector(data = self.Rvariables["rownames"])
+        newData = redRRVector(data = self.Rvariables["rownames"])
 
         self.rSend("Names Output", newData)
     def getReportText(self, fileDir):

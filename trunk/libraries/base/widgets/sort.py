@@ -7,7 +7,7 @@
 """
 from OWRpy import *
 import redRGUI 
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
@@ -19,8 +19,10 @@ class sort(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rdf.RDataFrame, self.processx)]
-        self.outputs = [("sort Output", rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+
+        self.outputs.addOutput('id0', 'sort Output', redRRDataFrame)
+
         
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
@@ -45,7 +47,7 @@ class sort(OWRpy):
         inj = ','.join(injection)
         self.R('s<-sort(x='+str(self.RFunctionParam_x)+','+inj+')')
         self.R(self.Rvariables['sort']+'<-'+self.RFunctionParam_x+'[s,]')
-        newData = rdf.RDataFrame(data = self.Rvariables["sort"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRDataFrame(data = self.Rvariables["sort"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.dictAttrs = self.data.dictAttrs.copy()  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("sort Output", newData)
     def getReportText(self, fileDir):

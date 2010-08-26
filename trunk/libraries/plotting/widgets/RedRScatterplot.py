@@ -11,7 +11,7 @@ import OWGUI
 import redRGUI 
 import re
 import textwrap, numpy
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from PyQt4.QtGui import *
 ### currently depricated until fixed
 from libraries.base.qtWidgets.checkBox import checkBox
@@ -29,8 +29,10 @@ class RedRScatterplot(OWRpy):
 
         OWRpy.__init__(self,wantGUIDialog = 1)
         self.setRvariableNames(['Plot','paint','selected'])
-        self.inputs = [('x', rdf.RDataFrame, self.gotX)]
-        self.outputs = [('Scatterplot Output', rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'x', redRRDataFrame, self.gotX)
+
+        self.outputs.addOutput('id0', 'Scatterplot Output', redRRDataFrame)
+
         self.data = None
         self.parent = None
         self.cm = None
@@ -211,7 +213,7 @@ class RedRScatterplot(OWRpy):
         index = 'c('+','.join(index) + ')'
         self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
         
-        data = rdf.RDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
+        data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
         data.copyAllOptionalData(self.dataParent)
         self.rSend('Scatterplot Output', data)
         #self.sendRefresh()

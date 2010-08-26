@@ -9,7 +9,7 @@
 
 from OWRpy import *
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
@@ -28,8 +28,11 @@ class mergeR(OWRpy):
         self.dataB = ''
         
         
-        self.inputs = [("Dataset A", rdf.RDataFrame, self.processA), ("Dataset B", rdf.RDataFrame, self.processB)]
-        self.outputs = [("Merged", rdf.RDataFrame)]
+        self.inputs.addInput('id0', 'Dataset A', redRRDataFrame, self.processA)
+        self.inputs.addInput('id1', 'Dataset B', redRRDataFrame, self.processB)
+
+        self.outputs.addOutput('id0', 'Merged', redRRDataFrame)
+
 
         #default values        
         self.colAsel = None
@@ -134,7 +137,7 @@ class mergeR(OWRpy):
             self.sendMe()
 
     def sendMe(self,kill=False):
-            newDataAll = rdf.RDataFrame(data = self.Rvariables['merged'])
+            newDataAll = redRRDataFrame(data = self.Rvariables['merged'])
             newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
             newDataAll.dictAttrs.update(self.dataParentA.dictAttrs)
             self.rSend("Merged", newDataAll)

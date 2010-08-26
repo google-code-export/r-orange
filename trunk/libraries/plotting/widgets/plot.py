@@ -11,8 +11,8 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-import libraries.base.signalClasses.RVariable as rvar
-import libraries.plotting.signalClasses.RPlotAttribute as rplt
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 class plot(OWRpy): 
@@ -23,7 +23,9 @@ class plot(OWRpy):
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
         self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
-        self.inputs = [("x", rvar.RVariable, self.processx), ('Plot Attributes', rplt.RPlotAttribute, self.gotAttribute, 'Multiple')]
+        self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
+        self.inputs.addInput('id1', 'Plot Attributes', redRRPlotAttribute, self.gotAttribute)
+
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')

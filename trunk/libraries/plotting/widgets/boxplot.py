@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import OWGUI, redRGUI
-import libraries.base.signalClasses.RList as rlist
+from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.lineEdit import lineEdit
 class boxplot(OWRpy): 
@@ -16,7 +16,8 @@ class boxplot(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
-        self.inputs = [("x", rlist.RList, self.processx)]
+        self.inputs.addInput('id0', 'x', redRRList, self.processx)
+
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         button(box, 'Save as PDF', callback = self.savePlot)

@@ -2,6 +2,7 @@ from libraries.base.signalClasses.RDataFrame import *
 import time
 class RMatrix(RDataFrame):
     convertFromList = [RDataFrame, StructuredDict]
+    convertToList = []
     def __init__(self, data, parent = None, checkVal = True):
         RDataFrame.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'matrix':
