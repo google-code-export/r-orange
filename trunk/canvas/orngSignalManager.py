@@ -281,7 +281,7 @@ class SignalManager:
         inputs = [signal for signal in toInfo.inputs]
         outputs = [signal for signal in fromInfo.outputs]
         #print 'In/Out puts', inputs, outputs
-        return self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
+        return inInstance.inputs.getPossibleConnections(outInstance.outputs)#  returns a list of possible connections from the outInstance's outputs class.  ###self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
     def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
         #print 'getPossibleConnections'
         if 'outputs' not in dir(fromInstace) or 'inputs' not in dir(toInstance):
@@ -331,31 +331,9 @@ class SignalManager:
         return possibleLinks
     def addLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo, enabled):
         ## adds a link between two widgets.  This will also make the connection between the signalNameFrom and signalNameTo
-        if self.verbosity >= 2:
-            self.addEvent("add link", eventVerbosity = 2)
-
-        if not self.canConnect(widgetFrom, widgetTo): 
-            try:
-                print 'Sorry, you can\'t make this connection.', widgetFrom.instance.widgetID, widgetTo.instance.widgetID
-            except: pass
-            return 0
-        # check if signal names still exist
-        found = 0
-        for o in widgetFrom.instance.outputs.keys():
-            #output = OutputSignal(*o)
-            if o == signalNameFrom: found=1
-        if not found: # this could be a dummy and we need to add the signal
-            return 0
-
-        found = 0
-        for i in widgetTo.instance.inputs.keys():
-            #input = widgetTo.instance.inputs[i]
-            if i == signalNameTo: found=1
-        if not found:
-            return 0
         
-        ## now we know that the signals still exist so se can proceed with making the connection
-        ## check if the link already exists
+        if not widgetTo.inputs.connectSignal(widgetFrom.outputs.getSignal(signalNameFrom), signalNameTo, enabled = enabled):
+            return 0
         if self.links.has_key(widgetFrom.instance):  ## if the widget already has a link in the links dict
             for (widget, signalFrom, signalTo, Enabled) in self.links[widgetFrom.instance]:
                 if widget == widgetTo.instance and signalNameFrom == signalFrom and signalNameTo == signalTo:

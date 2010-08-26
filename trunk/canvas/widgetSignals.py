@@ -38,16 +38,18 @@ class widgetSignals():
         self.eventHandler = None
 
 
-    def send(self, signalName, value, id = None):
-        if not self.hasOutputName(signalName):
+    def send(self, signalName, value):
+        ## make sure that the name is actually in the outputs, if not throw an error.
+        if not self.outputs.hasOutputName(signalName):
             print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
-
-        if self.linksOut.has_key(signalName):
-            self.linksOut[signalName][id] = value
-        else:
-            self.linksOut[signalName] = {id:value}
+        self.outputs.setOutputData(signalName, value)
+        self.outputs.processData(signalName)
+        # if self.linksOut.has_key(signalName):
+            # self.linksOut[signalName][id] = value
+        # else:
+            # self.linksOut[signalName] = {id:value}
         
-        self.signalManager.send(self, signalName, value, id)
+        # self.signalManager.send(self, signalName, value, id)
     def callSignalDelete(self, name):
         if self.linksOut.has_key(name):
         

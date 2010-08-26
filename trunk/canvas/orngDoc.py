@@ -165,16 +165,20 @@ class SchemaDoc(QWidget):
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1):
         #print "<extra>orngDoc - addLink() - ", outWidget, inWidget, outSignalName, inSignalName
         # in case there already exists link to inSignalName in inWidget that is single, we first delete it
-        widgetInstance = inWidget.instance.removeExistingSingleLink(inSignalName)
-        if widgetInstance:
-            widget = self.findWidgetFromInstance(widgetInstance)
-            existingSignals = self.signalManager.findSignals(widgetInstance, inWidget.instance)
-            for (outN, inN) in existingSignals:
-                if inN == inSignalName:
-                    self.removeLink(widget, inWidget, outN, inN)
-                    line = self.getLine(widget, inWidget)
-                    if line:
-                        line.updateTooltip()
+        
+        ## add the input signal to the outputs object in the outWidget
+        outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)
+        
+        # widgetInstance = inWidget.instance.removeExistingSingleLink(inSignalName)
+        # if widgetInstance:
+            # widget = self.findWidgetFromInstance(widgetInstance)
+            # existingSignals = self.signalManager.findSignals(widgetInstance, inWidget.instance)
+            # for (outN, inN) in existingSignals:
+                # if inN == inSignalName:
+                    # self.removeLink(widget, inWidget, outN, inN)
+                    # line = self.getLine(widget, inWidget)
+                    # if line:
+                        # line.updateTooltip()
 
         # if line does not exist yet, we must create it
         existingSignals = self.signalManager.findSignals(outWidget.instance, inWidget.instance)
