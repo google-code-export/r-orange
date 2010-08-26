@@ -1,5 +1,5 @@
 from redRGUI import widgetState
-import redRGUI
+from libraries.base.qtWidgets.separator import separator
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -35,9 +35,9 @@ class groupBox(QGroupBox,widgetState):
         else:
             self.layout().setMargin(4)
         if addSpace and isinstance(addSpace, int):
-            redRGUI.separator(widget, 0, addSpace)
+            separator(widget, 0, addSpace)
         elif addSpace:
-            redRGUI.separator(widget)
+            separator(widget)
         
         if sizePolicy:
             self.setSizePolicy(sizePolicy)

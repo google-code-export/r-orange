@@ -9,7 +9,7 @@ mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import exceptionHandling
 import redREnviron
-import orngOutput
+import redROutput
 import orngRegistry, OWGUI
 import orngTabs, orngDoc, orngDlgs, orngHelp, OWReport
 import redRPackageManager, redRGUI,signals, redRInitWizard
@@ -69,8 +69,10 @@ class OrangeCanvasDlg(QMainWindow):
         
         # output window
         splashWindow.showMessage("Setting Outputs", Qt.AlignHCenter + Qt.AlignBottom)
-        self.output = orngOutput.OutputWindow(self)
-        
+        self.output = redROutput.OutputWindow(self)
+        # self.output.catchException(1)
+        # self.output.catchOutput(1)
+ 
 
         # create error and warning icons
         splashWindow.showMessage("Setting Icons", Qt.AlignHCenter + Qt.AlignBottom)
@@ -93,6 +95,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
 
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
+        redRGUI.registerQTWidgets()
         
         # print self.widgetRegistry
         self.updateStyle()
@@ -218,7 +221,7 @@ class OrangeCanvasDlg(QMainWindow):
         print 'Step 3c'
         redREnviron.settings["WidgetTabs"] = self.tabs.createWidgetTabs(redREnviron.settings["WidgetTabs"], self.widgetRegistry, redREnviron.directoryNames['widgetDir'], redREnviron.directoryNames['picsDir'], self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
-        
+        print 'Step 3d'
 
     def readShortcuts(self):
         self.widgetShortcuts = {}

@@ -4,7 +4,12 @@
 # A General Orange Widget, from which all the Orange Widgets are derived
 #
 
-import redRGUI 
+# import redRGUI 
+from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit
+from libraries.base.qtWidgets.button import button as redRbutton
+from libraries.base.qtWidgets.groupBox import groupBox as redRgroupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from PyQt4 import QtWebKit
 import urllib, os, redREnviron
 from PyQt4.QtCore import *
@@ -67,19 +72,19 @@ class widgetGUI(QMainWindow):
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
-        topWidgetPart = redRGUI.widgetBox(self, orientation="vertical", margin=0)
+        topWidgetPart = redRwidgetBox(self, orientation="vertical", margin=0)
         topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.setCentralWidget(topWidgetPart)
-        self.controlArea = redRGUI.widgetBox(topWidgetPart, orientation="vertical", margin=4)
+        self.controlArea = redRwidgetBox(topWidgetPart, orientation="vertical", margin=4)
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.controlArea.setMinimumWidth(300)
         # topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
 
-        bottomArea = redRGUI.widgetBox(topWidgetPart, orientation="horizontal", margin=4)
-        self.bottomAreaLeft = redRGUI.widgetBox(bottomArea, orientation = 'horizontal')
-        self.bottomAreaCenter = redRGUI.widgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        bottomArea = redRwidgetBox(topWidgetPart, orientation="horizontal", margin=4)
+        self.bottomAreaLeft = redRwidgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaCenter = redRwidgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        self.bottomAreaRight = redRGUI.widgetBox(bottomArea, orientation = 'horizontal')
+        self.bottomAreaRight = redRwidgetBox(bottomArea, orientation = 'horizontal')
         #start widget GUI
         
         
@@ -90,7 +95,7 @@ class widgetGUI(QMainWindow):
         
         self.setStatusBar(self.statusBar)
         
-        self.status = redRGUI.widgetLabel(self.statusBar, '')
+        self.status = redRwidgetLabel(self.statusBar, '')
         self.status.setText('Processing not yet performed.')
         self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.statusBar.addWidget(self.status,4)
@@ -109,7 +114,7 @@ class widgetGUI(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea,self.rightDock)
         
         
-        self.rightDockArea = redRGUI.groupBox(self.rightDock,orientation=QVBoxLayout())
+        self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
         self.rightDockArea.setMinimumWidth(minWidth)
         self.rightDockArea.setMinimumHeight(150)
         self.rightDockArea.layout().setMargin(4)
@@ -119,7 +124,7 @@ class widgetGUI(QMainWindow):
 
             
         ### help ####
-        # self.helpBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        # self.helpBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
         # self.helpBox.setMinimumHeight(50)
         # self.helpBox.setMinimumWidth(minWidth)
         # self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
@@ -134,7 +139,7 @@ class widgetGUI(QMainWindow):
                 # f.close()
             # else:
                 # html = 'No local help file. Please visit <a href="http://www.red-r.org/"> Red-R</a> for more help.'
-            #self.help = redRGUI.webViewBox(self.helpBox)
+            #self.help = redRwebViewBox(self.helpBox)
             
             # self.help.setHtml(html)
             # self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
@@ -148,37 +153,37 @@ class widgetGUI(QMainWindow):
             self._widgetInfo.package['Name'],'help',file+'.html')
             if os.path.exists(path):
                 self.helpFile = path
-                self.showHelpButton = redRGUI.button(self.bottomAreaLeft, 'Help', callback = self.showHelp)
+                self.showHelpButton = redRbutton(self.bottomAreaLeft, 'Help', callback = self.showHelp)
         
         
         ### notes ####
-        self.notesBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.notesBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
         self.notesBox.setMinimumWidth(minWidth)
         self.notesBox.setMinimumHeight(50)
         self.notesBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        redRGUI.widgetLabel(self.notesBox, label="Notes:")
+        redRwidgetLabel(self.notesBox, label="Notes:")
 
-        self.notes = redRGUI.textEdit(self.notesBox)
+        self.notes = redRtextEdit(self.notesBox)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
 
         ### R output ####        
-        self.ROutputBox = redRGUI.widgetBox(self.rightDockArea,orientation=QVBoxLayout())
+        self.ROutputBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
         self.ROutputBox.setMinimumHeight(50)
-        redRGUI.widgetLabel(self.ROutputBox, label="R code executed in this widget:")
+        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:")
 
-        self.ROutput = redRGUI.textEdit(self.ROutputBox)
+        self.ROutput = redRtextEdit(self.ROutputBox)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
         
         self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
-        self.showNotesButton = redRGUI.button(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
-        self.showROutputButton = redRGUI.button(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
-        self.printButton = redRGUI.button(self.bottomAreaLeft, "Print", callback = self.printWidget)
-        self.includeInReport = redRGUI.button(self.bottomAreaLeft, 'Include In Report', toggleButton = True)
+        self.showNotesButton = redRbutton(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
+        self.showROutputButton = redRbutton(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
+        self.printButton = redRbutton(self.bottomAreaLeft, "Print", callback = self.printWidget)
+        self.includeInReport = redRbutton(self.bottomAreaLeft, 'Include In Report', toggleButton = True)
         self.includeInReport.setChecked(True)
         
         ###############################################
@@ -199,10 +204,10 @@ class widgetGUI(QMainWindow):
             self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
             self.leftDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.addDockWidget(Qt.LeftDockWidgetArea,self.leftDock)
-            self.GUIDialog = redRGUI.widgetBox(self.leftDock,orientation='vertical')
+            self.GUIDialog = redRwidgetBox(self.leftDock,orientation='vertical')
             self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.leftDock.setWidget(self.GUIDialog)
-            self.leftDockButton = redRGUI.button(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
+            self.leftDockButton = redRbutton(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
@@ -523,9 +528,9 @@ class widgetGUI(QMainWindow):
 
 
 
-if __name__ == "__main__":
-    a = QApplication(sys.argv)
-    ow = OWWidget()
-    ow.show()
-    a.exec_()
-    ow.saveGlobalSettings()
+# if __name__ == "__main__":
+    # a = QApplication(sys.argv)
+    # ow = OWWidget()
+    # ow.show()
+    # a.exec_()
+    # ow.saveGlobalSettings()

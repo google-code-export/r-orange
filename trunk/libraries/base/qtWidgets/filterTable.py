@@ -1,14 +1,20 @@
 from redRGUI import widgetState
-import redRGUI, os.path
-from widgetBox import widgetBox
+import os.path
 import redREnviron
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.scrollArea import scrollArea
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.checkBox import checkBox
+
+
 from RSession import Rcommand
-from RSession import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import numpy,sip
+import sip
 
-class filterTable(redRGUI.widgetState, QTableView):
+class filterTable(widgetState, QTableView):
     def __init__(self,widget,Rdata=None, editable=False, sortable=True, filterable=False,
     selectionBehavior=QAbstractItemView.SelectRows, 
     selectionMode = QAbstractItemView.NoSelection, 
@@ -16,30 +22,28 @@ class filterTable(redRGUI.widgetState, QTableView):
     callback=None):
         #widgetBox.__init__(self,widget,orientation='vertical')
         
-        mainBox = redRGUI.widgetBox(widget,orientation='vertical')
+        mainBox = widgetBox(widget,orientation='vertical')
         
         QTableView.__init__(self,widget)
         mainBox.layout().addWidget(self)
-        box = redRGUI.widgetBox(mainBox,orientation='horizontal')
-        leftBox = redRGUI.widgetBox(box,orientation='horizontal')
+        box = widgetBox(mainBox,orientation='horizontal')
+        leftBox = widgetBox(box,orientation='horizontal')
         if filterable:
-            self.clearButton = redRGUI.button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
-        self.label = redRGUI.widgetLabel(leftBox,label='') 
+            self.clearButton = button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
+        self.label = widgetLabel(leftBox,label='') 
         box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
         if showResizeButtons:
-            resizeColsBox = redRGUI.widgetBox(box, orientation="horizontal")
+            resizeColsBox = widgetBox(box, orientation="horizontal")
             resizeColsBox.layout().setAlignment(Qt.AlignRight)
             box.layout().setAlignment(resizeColsBox, Qt.AlignRight)
-            redRGUI.widgetLabel(resizeColsBox, label = "Resize columns: ")
-            redRGUI.button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
+            widgetLabel(resizeColsBox, label = "Resize columns: ")
+            button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
             toolTip = "Increase the width of the columns", width=30)
-            redRGUI.button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
+            button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
             toolTip = "Decrease the width of the columns", width=30)
-            redRGUI.rubber(resizeColsBox)
-            redRGUI.button(resizeColsBox, label = "Resize To Content", callback=self.resizeColumnsToContents, 
+            button(resizeColsBox, label = "Resize To Content", callback=self.resizeColumnsToContents, 
             toolTip = "Set width based on content size")
-            redRGUI.rubber(resizeColsBox)
 
         
         self.R = Rcommand
@@ -152,14 +156,14 @@ class filterTable(redRGUI.widgetState, QTableView):
         self.menu = QDialog(None,Qt.Popup)
         self.menu.setLayout(QVBoxLayout())
         if self.sortable:
-            box = redRGUI.widgetBox(self.menu,orientation='horizontal')
+            box = widgetBox(self.menu,orientation='horizontal')
             box.layout().setAlignment(Qt.AlignLeft)
-            redRGUI.button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))
-            redRGUI.widgetLabel(box,label='Ascending Sort')
-            box = redRGUI.widgetBox(self.menu,orientation='horizontal')
+            button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))
+            widgetLabel(box,label='Ascending Sort')
+            box = widgetBox(self.menu,orientation='horizontal')
             box.layout().setAlignment(Qt.AlignLeft)
-            redRGUI.button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
-            redRGUI.widgetLabel(box,label='Descending Sort')
+            button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
+            widgetLabel(box,label='Descending Sort')
             # qmenu = QMenu(self.menu)
             # self.menu.layout().addWidget(qmenu)
             # a = QAction('A->Z',self.menu)
@@ -172,24 +176,24 @@ class filterTable(redRGUI.widgetState, QTableView):
             self.menu.layout().addWidget(hr)
         
         
-        clearButton = redRGUI.button(self.menu,label='Clear Filter',
+        clearButton = button(self.menu,label='Clear Filter',
         callback=lambda col=selectedCol: self.createCriteriaList(col,self.menu,action='clear'))
         self.menu.layout().setAlignment(clearButton,Qt.AlignHCenter)
         clearButton.hide()
         
-        self.numericLabel = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera:')
+        self.numericLabel = widgetLabel(self.menu,label='Enter a value for one of these critera:')
         self.numericLabel.hide()
-        self.stringLabel = redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
+        self.stringLabel = widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
         self.stringLabel.hide()
 
         if selectedCol in self.criteriaList.keys():
             clearButton.show()
         
-        self.optionsBox = redRGUI.widgetBox(self.menu)
+        self.optionsBox = widgetBox(self.menu)
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
         #print colClass
         if colClass == 'factor':
-            #redRGUI.widgetLabel(self.menu,label='Enter a value for one of these critera:')
+            #widgetLabel(self.menu,label='Enter a value for one of these critera:')
             if selectedCol in self.criteriaList.keys():
                 checked = self.criteriaList[selectedCol]['value']
             else:
@@ -198,11 +202,11 @@ class filterTable(redRGUI.widgetState, QTableView):
             if len(levels) > 1:
                 levels.insert(0,'Check All')
             if len(levels) > 10:
-                scroll = redRGUI.scrollArea(self.optionsBox,spacing=1)
-                c = redRGUI.checkBox(scroll,buttons=levels,setChecked = checked)
+                scroll = scrollArea(self.optionsBox,spacing=1)
+                c = checkBox(scroll,buttons=levels,setChecked = checked)
                 scroll.setWidget(c)
             else:
-                c = redRGUI.checkBox(self.optionsBox,buttons=levels,setChecked = checked)
+                c = checkBox(self.optionsBox,buttons=levels,setChecked = checked)
             
             QObject.connect(c.buttons, SIGNAL('buttonClicked (int)'), lambda val : self.factorCheckBox(val,self.optionsBox))
     
@@ -213,9 +217,9 @@ class filterTable(redRGUI.widgetState, QTableView):
             'Not Between\n(2 numbers comma\nseparated)']
             for x in self.options:
                 if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == 'Numeric ' + x:
-                    e = redRGUI.lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
+                    e = lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
                 else:
-                    e = redRGUI.lineEdit(self.optionsBox,label=x)
+                    e = lineEdit(self.optionsBox,label=x)
                 self.connect(e, SIGNAL("textEdited(QString)"),
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
     
@@ -225,22 +229,22 @@ class filterTable(redRGUI.widgetState, QTableView):
             'Contains', 'Does Not Contain']
             for x in self.options:
                 if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == 'String ' + x:
-                    e = redRGUI.lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
+                    e = lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
                 else:
-                    e = redRGUI.lineEdit(self.optionsBox,label=x)
+                    e = lineEdit(self.optionsBox,label=x)
                 self.connect(e, SIGNAL("textEdited(QString)"),
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.menu,field))
     
-        buttonBox = redRGUI.widgetBox(self.optionsBox,orientation='horizontal')
+        buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)
-        okButton = redRGUI.button(buttonBox,label='OK',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='OK'))
+        okButton = button(buttonBox,label='OK',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='OK'))
         okButton.setDefault (True)
-        redRGUI.button(buttonBox,label='Cancel',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='cancel'))
+        button(buttonBox,label='Cancel',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='cancel'))
         self.menu.move(globalPos)
         self.menu.show()
     def factorCheckBox(self,val,menu):
         if val != 0: return
-        checkbox = menu.findChildren(redRGUI.checkBox)[0]
+        checkbox = menu.findChildren(checkBox)[0]
         if checkbox.buttonAt(0) != 'Check All': return
         #print checkbox.getChecked(), 'Check All' in checkbox.getChecked()
         if 'Check All' in checkbox.getChecked():
@@ -280,7 +284,7 @@ class filterTable(redRGUI.widgetState, QTableView):
                         # print label.text(),value.text()
                         self.criteriaList[col] = {'column':col, "method": 'String ' + str(label.text()), "value": str(value.text())}
             elif colClass == 'factor':
-                checks = menu.findChildren(redRGUI.checkBox)[0].getChecked()
+                checks = menu.findChildren(checkBox)[0].getChecked()
                 if 'Check All' in checks:
                     checks.remove('Check All')
                 if len(checks) != 0:

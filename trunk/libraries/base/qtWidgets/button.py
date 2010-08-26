@@ -7,11 +7,6 @@ class button(QPushButton,widgetState):
     toolTip=None, width = None, height = None,align='left', toggleButton = False, addToLayout = 1):
         QPushButton.__init__(self,label,widget)
 
-# def button(widget,  label, callback = None, disabled=0, toolTip=None, width = None, height = None, toggleButton = False, addToLayout = 1):
-    # btn = QPushButton(label, widget)
-    # w = widgetBox(widget)
-    # w.layout().setAlignment(Qt.AlignRight)
-    # w.layout().addWidget(btn)
         if addToLayout and widget.layout():
             widget.layout().addWidget(self)
             if align=='left':

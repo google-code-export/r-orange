@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, re, string, numpy
-from lineEdit import lineEdit
+from libraries.base.qtWidgets.lineEdit import lineEdit
 
 
 class lineEditHint(lineEdit):        

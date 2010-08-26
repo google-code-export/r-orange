@@ -8,9 +8,11 @@ import os.path, sys
 from string import strip, count, replace
 import orngDoc, exceptionHandling, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
-import OWGUIEx, redRGUI
+import OWGUIEx
 import redREnviron
 import xml.dom.minidom
+from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
+from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
 
 WB_TOOLBOX = 0
 WB_TREEVIEW = 1
@@ -869,10 +871,10 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                 pass
     except:
         print 'Exception in Tabs with widgetRegistry'#        
-class SearchBox(redRGUI.lineEditHint):
+class SearchBox(redRlineEditHint):
     def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
-        redRGUI.lineEditHint.__init__(self, widget = widget, label = label, orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
-        self.searchBox = redRGUI.SearchDialog()
+        redRlineEditHint.__init__(self, widget = widget, label = label, orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
+        self.searchBox = redRSearchDialog()
         QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
             
     def eventFilter(self, object, ev):

@@ -6,7 +6,7 @@ from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 # print 'Importing orngRegistry.py'
-import exceptionHandling, redRGUI,redRPackageManager
+import exceptionHandling, redRPackageManager
 import signals
 import xml.dom.minidom
 # redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -119,7 +119,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     import compileall
-    compileall.compile_dir(directory) # compile the directory for later importing.
+    compileall.compile_dir(directory,quiet=True) # compile the directory for later importing.
     # print '################readWidgets', directory, package
     widgets = []
     for filename in glob.iglob(os.path.join(directory, "*.py")):
@@ -265,12 +265,12 @@ def loadPackage(package):
     deps = redRPackageManager.packageManager.getDependencies(downloadList)
     downloadList.update(deps)
     # print downloadList
-    for name,version in downloadList.items():
-        if package =='base': continue
-        if not hasattr(redRGUI,name):
-            redRGUI.registerQTWidgets(name)
-        if not hasattr(signals,name):
-            signals.registerRedRSignals(name)
+    # for name,version in downloadList.items():
+        # if package =='base': continue
+        # if not hasattr(redRGUI,name):
+            # redRGUI.registerQTWidgets(name)
+        # if not hasattr(signals,name):
+            # signals.registerRedRSignals(name)
     
     
     

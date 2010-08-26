@@ -3,7 +3,8 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import redRGUI
+from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem
+
 
 class treeWidget(QTreeWidget, widgetState):
     def __init__(self, widget, label = None, toolTip = None, callback = None):
@@ -52,7 +53,7 @@ class treeWidget(QTreeWidget, widgetState):
             self.setHeaderLabels(data['headerLabels'])
             for item in data['itemSettings']:
                 try:
-                    newItem = redRGUI.treeWidgetItem()
+                    newItem = treeWidgetItem()
                     newItem.loadSettings(item)
                     self.addTopLevelItem(newItem)
                 except:

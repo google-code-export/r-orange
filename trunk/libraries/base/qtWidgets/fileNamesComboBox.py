@@ -1,6 +1,6 @@
-from comboBox import comboBox
-from widgetBox import widgetBox
-from widgetLabel import widgetLabel
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.comboBox import comboBox
 import os.path
 
 from PyQt4.QtCore import *

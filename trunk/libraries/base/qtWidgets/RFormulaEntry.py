@@ -1,8 +1,13 @@
-## redRGUI.RFormula; provides a toolkit for editing R formulas where an R funciton may need a formulas
+## RFormula; provides a toolkit for editing R formulas where an R funciton may need a formulas
 
 from redRGUI import widgetState
-from groupBox import groupBox
-import redRGUI
+
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -11,28 +16,28 @@ class RFormulaEntry(groupBox, widgetState):
         # make a widgetBox to hold everything
         groupBox.__init__(self,parent,label=label)
         
-        #box = redRGUI.groupBox(self, label = label)
+        #box = groupBox(self, label = label)
         box = self
         ## add the elements to the box
         
         #place the command keys
-        self.buttonsBox = redRGUI.groupBox(box, label = "Formula Commands")
-        self.plusButton = redRGUI.button(self.buttonsBox, "And (+)", callback = self.plusButtonClicked)
+        self.buttonsBox = groupBox(box, label = "Formula Commands")
+        self.plusButton = button(self.buttonsBox, "And (+)", callback = self.plusButtonClicked)
         self.plusButton.setEnabled(False)
-        self.colonButton = redRGUI.button(self.buttonsBox, "Interacting With (:)", callback = self.colonButtonClicked)
+        self.colonButton = button(self.buttonsBox, "Interacting With (:)", callback = self.colonButtonClicked)
         self.colonButton.setEnabled(False)
-        self.starButton = redRGUI.button(self.buttonsBox, "Together and Interacting (*)", callback = self.starButtonClicked)
+        self.starButton = button(self.buttonsBox, "Together and Interacting (*)", callback = self.starButtonClicked)
         self.starButton.setEnabled(False)
-        redRGUI.button(self.buttonsBox, 'Clear', self.clearFormula)
-        self.elementsListBox = redRGUI.listBox(self.buttonsBox, label = 'Elements', callback = self.FormulaEntryElementSelected)
+        button(self.buttonsBox, 'Clear', self.clearFormula)
+        self.elementsListBox = listBox(self.buttonsBox, label = 'Elements', callback = self.FormulaEntryElementSelected)
         self.elementsListBox.setEnabled(True)
         
         # place the formula line edit
-        self.modelBox = redRGUI.groupBox(box, label = "Model Formula", orientation = 'horizontal')
-        self.extrasBox = redRGUI.widgetBox(self.modelBox)
-        self.outcomeVariable = redRGUI.comboBox(self.modelBox, label = 'Outcome (f(x)):')
-        redRGUI.widgetLabel(self.modelBox, ' = ')
-        self.modelLineEdit = redRGUI.lineEdit(self.modelBox, label = None)
+        self.modelBox = groupBox(box, label = "Model Formula", orientation = 'horizontal')
+        self.extrasBox = widgetBox(self.modelBox)
+        self.outcomeVariable = comboBox(self.modelBox, label = 'Outcome (f(x)):')
+        widgetLabel(self.modelBox, ' = ')
+        self.modelLineEdit = lineEdit(self.modelBox, label = None)
     def clear(self):
         self.elementsListBox.clear()
         self.outcomeVariable.clear()

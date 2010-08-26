@@ -7,8 +7,11 @@ from PyQt4.QtGui import *
 from orngCanvasItems import MyCanvasText
 import OWGUI, sys, os 
 import RSession
-import redRGUI
 import redREnviron, re
+from libraries.base.qtWidgets.button import button as redRbutton
+from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
+from libraries.base.qtWidgets.listBox import listBox as redRlistBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 
 
 class ColorIcon(QToolButton):
@@ -185,7 +188,7 @@ class CanvasOptionsDlg(QDialog):
         #####################################
         # R Settings Tab
         self.rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
-        self.libInfo = redRGUI.widgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
+        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
         
         
         ################################ Global buttons  ######################
@@ -211,7 +214,7 @@ class CanvasOptionsDlg(QDialog):
             self.libs = RSession.Rcommand('getCRANmirrors()')
             # place a listBox in the widget and fill it with a list of mirrors
             
-            self.libListBox = redRGUI.listBox(self.rlibrariesBox, label = 'Mirrors', 
+            self.libListBox = redRlistBox(self.rlibrariesBox, label = 'Mirrors', 
             items = self.libs['Name'], callback = self.setMirror)
         
     def setMirror(self):
@@ -392,17 +395,17 @@ class AboutDlg(QDialog):
         self.setWindowFlags(Qt.Popup)
         
         logoImage = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
-        logo = redRGUI.widgetLabel(self, "")
+        logo = redRwidgetLabel(self, "")
         logo.setPixmap(logoImage)
         info = redREnviron.version
-        self.about = redRGUI.webViewBox(self)
+        self.about = redRwebViewBox(self)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.about.setMinimumHeight(150)
         self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
         '; Build Time: ' + info['DATE'] + '' + 
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
-        self.licenceButton = redRGUI.button(self, 'Licence', callback = self.showLicence)
+        self.licenceButton = redRbutton(self, 'Licence', callback = self.showLicence)
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)
         self.layout().addWidget(b)

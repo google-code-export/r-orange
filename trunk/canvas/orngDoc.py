@@ -9,14 +9,11 @@ from xml.dom.minidom import Document, parse
 import xml.dom.minidom
 import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
-import RSession
-import globalData
-import redRPackageManager
-import redRHistory
+import RSession, globalData, redRPackageManager, redRHistory
 from orngSignalManager import SignalManager, SignalDialog
-import cPickle, math, orngHistory, zipfile
-import pprint, urllib
-pp = pprint.PrettyPrinter(indent=4)
+import cPickle, math, orngHistory, zipfile, urllib
+#import pprint, 
+# pp = pprint.PrettyPrinter(indent=4)
 
 class SchemaDoc(QWidget):
     def __init__(self, canvasDlg, *args):
@@ -97,19 +94,18 @@ class SchemaDoc(QWidget):
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
         
-        possibleConnections = self.signalManager.getConnections(outWidget, inWidget) # returns a list of tuples of key indicies for connections
+        possibleConnections = self.signalManager.getConnections(outWidget, inWidget)
         if len(possibleConnections) > 1:
             #print possibleConnections
             #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
             if dialog.exec_() == QDialog.Rejected:
                 return None
-            dialogConnections = dialog.getLinks()
-        else:
-            dialogConnections = possibleConnections
+            possibleConnections = dialog.getLinks()
+        
 
         self.signalManager.setFreeze(1)
         linkCount = 0
-        for (outName, inName) in dialogConnections:
+        for (outName, inName) in possibleConnections:
             linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled)
 
         self.signalManager.setFreeze(0, outWidget.instance)
@@ -195,7 +191,7 @@ class SchemaDoc(QWidget):
             
             
             
-        ## add the link in the signal manager
+
         ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)

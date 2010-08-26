@@ -3,7 +3,7 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import redRGUI
+
 
 class treeWidgetItem(QTreeWidgetItem, widgetState):
     def __init__(self, widget = None, stringList = None, toolTip = None):

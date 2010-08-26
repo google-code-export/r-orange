@@ -1,7 +1,7 @@
 from redRGUI import widgetState
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 
-from widgetBox import widgetBox
-from widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 

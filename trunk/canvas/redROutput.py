@@ -8,16 +8,18 @@ import sys
 import string
 from datetime import tzinfo, timedelta, datetime
 import traceback, exceptionHandling
-import os.path, os, redRGUI, redREnviron
+import os.path, os, redREnviron
+from libraries.base.qtWidgets.button import button as redRbutton
+from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
+from libraries.base.qtWidgets.dialog import dialog as redRdialog
+from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 
-# print 'Importing orngOutput.py'
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)
         self.canvasDlg = canvasDlg
-        sys.excepthook = self.exceptionHandler
-        sys.stdout = self
         self.textOutput = QTextEdit(self)
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
@@ -77,13 +79,13 @@ class OutputWindow(QDialog):
         else:
             self.hide()
 
-    # def catchException(self, catch):
-        # if catch: sys.excepthook = self.exceptionHandler
-        # else:     sys.excepthook = self.defaultExceptionHandler
+    def catchException(self, catch):
+        if catch: sys.excepthook = self.exceptionHandler
+        else:     sys.excepthook = self.defaultExceptionHandler
 
-    # def catchOutput(self, catch):
-        # if catch:    sys.stdout = self
-        # else:         sys.stdout = self.defaultSysOutHandler
+    def catchOutput(self, catch):
+        if catch:    sys.stdout = self
+        else:         sys.stdout = self.defaultSysOutHandler
 
     def clear(self):
         self.textOutput.clear()
@@ -169,16 +171,16 @@ class OutputWindow(QDialog):
         if not redREnviron.settings['askToUploadError']:
             res = redREnviron.settings['uploadError']
         else:
-            self.msg = redRGUI.dialog(parent=self,title='Red-R Error')
+            self.msg = redRdialog(parent=self,title='Red-R Error')
             
-            error = redRGUI.widgetBox(self.msg,orientation='vertical')
-            redRGUI.widgetLabel(error, label='Do you wish to report the Error Log?')
-            buttons = redRGUI.widgetBox(error,orientation='horizontal')
+            error = redRwidgetBox(self.msg,orientation='vertical')
+            redRwidgetLabel(error, label='Do you wish to report the Error Log?')
+            buttons = redRwidgetBox(error,orientation='horizontal')
 
-            redRGUI.button(buttons, label = 'Yes', callback = self.uploadYes)
-            redRGUI.button(buttons, label = 'No', callback = self.uploadNo)
+            redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
+            redRbutton(buttons, label = 'No', callback = self.uploadNo)
             self.checked = False
-            self.remember = redRGUI.checkBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
+            self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
             res = self.msg.exec_()
             redREnviron.settings['uploadError'] = res
             
@@ -202,11 +204,9 @@ class OutputWindow(QDialog):
     def exceptionHandler(self, type, value, tracebackInfo):
         if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
-        # print 'exceptionHandler'
-        # traceback.extract_tb(tracebackInfo)
-        # print type, value
-        #traceback.print_exception(type,value,tracebackInfo)
+
         text = exceptionHandling.formatException(type,value,tracebackInfo)
+        
         t = datetime.today().isoformat(' ')
         toUpload = {}
         toUpload['time'] = t

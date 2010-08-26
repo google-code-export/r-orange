@@ -10,6 +10,8 @@ from widgetSession import *
 from PyQt4.QtGui import *
 import RSession, redREnviron
 import rpy
+from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 
 class OWRpy(widgetSignals,widgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
@@ -144,8 +146,8 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.device[str(devNumber)].addImage(fileName)
         else:
             if 'plottingArea' not in dir(self):
-                self.plottingArea = redRGUI.widgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[str(devNumber)] = redRGUI.graphicsView(self.plottingArea, image = fileName)
+                self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
+            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, image = fileName)
         
         return
         

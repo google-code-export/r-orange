@@ -1,3 +1,10 @@
+from libraries.base.qtWidgets.dialog import dialog as redRdialog
+from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWidgetItem
+from libraries.base.qtWidgets.button import button as redRbutton
+from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit
+from libraries.base.qtWidgets.tabWidget import tabWidget as redRtabWidget
+from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 ## package manager class redRPackageManager.  Contains a dlg for the package manager which reads xml from the red-r.org website and compares it with a local package system on the computer
 
 import os, sys, redREnviron, urllib, zipfile, traceback
@@ -242,9 +249,9 @@ class packageManager:
 
         return (self.updatePackages, self.localPackages, self.sitePackages)
         
-class packageManagerDialog(redRGUI.dialog):
+class packageManagerDialog(redRdialog):
     def __init__(self,widget):
-        redRGUI.dialog.__init__(self,widget, title = 'Package Manager')
+        redRdialog.__init__(self,widget, title = 'Package Manager')
         
         self.setMinimumWidth(650)
         self.packageManager = packageManager
@@ -252,43 +259,43 @@ class packageManagerDialog(redRGUI.dialog):
         ## GUI ##
         #### set up a screen that will show a listbox of packages that are on the system that should be updated, 
         
-        self.tabsArea = redRGUI.tabWidget(self)
+        self.tabsArea = redRtabWidget(self)
         self.updatesTab = self.tabsArea.createTabPage(name = 'Updates')
         self.installedTab = self.tabsArea.createTabPage(name = 'Installed Packages')
         self.availableTab = self.tabsArea.createTabPage(name = 'Available Packages')
         
         #### layout of the tabsArea
-        self.treeViewUpdates = redRGUI.treeWidget(self.updatesTab, callback = self.updateItemClicked)  ## holds the tree view of all of the packages that need updating
+        self.treeViewUpdates = redRtreeWidget(self.updatesTab, callback = self.updateItemClicked)  ## holds the tree view of all of the packages that need updating
         self.treeViewUpdates.setHeaderLabels(['Package', 'Author', 'Summary', 
         'Current Version', 'Current Version Stability', 'New Version', 'New Version Stability'])
 
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewUpdates.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewUpdates = redRGUI.textEdit(self.updatesTab)  ## holds the info for a package
-        redRGUI.button(self.updatesTab, 'Install Updates', callback = self.installUpdates)
+        self.infoViewUpdates = redRtextEdit(self.updatesTab)  ## holds the info for a package
+        redRbutton(self.updatesTab, 'Install Updates', callback = self.installUpdates)
         
-        self.treeViewInstalled = redRGUI.treeWidget(self.installedTab, callback = self.installItemClicked)
+        self.treeViewInstalled = redRtreeWidget(self.installedTab, callback = self.installItemClicked)
         self.treeViewInstalled.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
 
         #self.treeViewInstalled.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewInstalled.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewInstalled = redRGUI.textEdit(self.installedTab)
-        redRGUI.button(self.installedTab, 'Remove Packages', callback = self.uninstallPackages)
+        self.infoViewInstalled = redRtextEdit(self.installedTab)
+        redRbutton(self.installedTab, 'Remove Packages', callback = self.uninstallPackages)
         
-        self.treeViewAvailable = redRGUI.treeWidget(self.availableTab, callback = self.availableItemClicked)
+        self.treeViewAvailable = redRtreeWidget(self.availableTab, callback = self.availableItemClicked)
         self.treeViewAvailable.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
 
         #self.treeViewAvailable.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewAvailable.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewAvailable = redRGUI.textEdit(self.availableTab)
-        redRGUI.button(self.availableTab, 'Install Packages', callback = self.installNewPackage)
+        self.infoViewAvailable = redRtextEdit(self.availableTab)
+        redRbutton(self.availableTab, 'Install Packages', callback = self.installNewPackage)
         
         #### buttons and the like
-        buttonArea2 = redRGUI.widgetBox(self,orientation = 'horizontal')
-        redRGUI.button(buttonArea2, label = 'Update from Repository', callback = self.loadPackagesLists)
-        redRGUI.widgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
+        buttonArea2 = redRwidgetBox(self,orientation = 'horizontal')
+        redRbutton(buttonArea2, label = 'Update from Repository', callback = self.loadPackagesLists)
+        redRwidgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        redRGUI.button(buttonArea2, label = 'Done', callback = self.accept)
+        redRbutton(buttonArea2, label = 'Done', callback = self.accept)
     def installItemClicked(self, item1, item2):
         if item1:
             self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])
@@ -335,11 +342,11 @@ class packageManagerDialog(redRGUI.dialog):
         self.setPackageList(self.treeViewAvailable, self.availablePackages)
         
     def show(self):
-        redRGUI.dialog.show(self)
+        redRdialog.show(self)
         self.loadPackagesLists(force=False)
     def exec_(self):
         self.loadPackagesLists(force=False)
-        redRGUI.dialog.exec_(self)
+        redRdialog.exec_(self)
         
     def setUpdates(self, packages):
         self.treeViewUpdates.clear()
@@ -354,7 +361,7 @@ class packageManagerDialog(redRGUI.dialog):
             current['Version']['Number'], current['Version']['Stability'],
             new['Version']['Number'], new['Version']['Stability']]
 
-            newChild = redRGUI.treeWidgetItem(self.treeViewUpdates, line)
+            newChild = redRtreeWidgetItem(self.treeViewUpdates, line)
             
                 
     def setPackageList(self, view, packages):
@@ -365,7 +372,7 @@ class packageManagerDialog(redRGUI.dialog):
         for name,package in packages.items(): ## move across the package names
             line = [name, package['Author'], package['Summary'], 
             package['Version']['Number'], package['Version']['Stability']]
-            newChild = redRGUI.treeWidgetItem(view, line)
+            newChild = redRtreeWidgetItem(view, line)
             
                     
     def installUpdates(self):

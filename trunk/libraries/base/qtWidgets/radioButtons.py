@@ -1,6 +1,6 @@
 from redRGUI import widgetState
-from widgetBox import widgetBox
-from groupBox import groupBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.groupBox import groupBox
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

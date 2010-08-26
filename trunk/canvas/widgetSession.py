@@ -226,7 +226,7 @@ class widgetSession():
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
         
-        print d
+        #print d
         # print 'setting ', className
         try: # try to reload the output class from the signals
             
@@ -234,18 +234,16 @@ class widgetSession():
             import imp
             ## find the libraries directory
             fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
-            print 'loading module'
+            #print 'loading module'
             varc = imp.load_module('libraries', fp, pathname, description)
-            print varc
+            #print varc
             for mod in d['class'].split('.')[1:]:
-                print varc
+                #print varc
                 varc = getattr(varc, mod)
             var = varc(data = d['data']) 
             var.loadSettings(d)
         except Exception as inst: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            print '############################################'
-            print inst
-            print '############################################'
+            print exceptionHandling.formatException()
             try:
                 var = None
                 for (name, att) in self.outputs:
@@ -255,8 +253,9 @@ class widgetSession():
                 if var == None: raise Exception
                 var.loadSettings(d['data'])
             except Exception as inst: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-                print inst
                 print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+                print exceptionHandling.formatException()
+                
                 try:
                     var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
@@ -316,7 +315,7 @@ class widgetSession():
             self.globalSettingsList.extend(self.defaultGlobalSettingsList)
         else:
             self.globalSettingsList =  self.defaultGlobalSettingsList
-            
+        #print redRGUI.qtWidgets
         for name in self.globalSettingsList:
             try:
                 settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
