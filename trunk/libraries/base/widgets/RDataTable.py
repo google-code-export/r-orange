@@ -98,6 +98,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         if not dataset:
+            self.table.clear()
             return
         #print dataset
         self.supressTabClick = True

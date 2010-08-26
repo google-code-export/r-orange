@@ -8,12 +8,8 @@
 """
 
 from OWRpy import *
-import OWGUI
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RList as rlist
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
-import libraries.base.signalClasses.RModelFit as rmf
-import libraries.base.signalClasses.RVector as rvect
+
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.comboBox import comboBox
@@ -24,6 +20,7 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
+
 class heatmap2(OWRpy):
     globalSettingsList = ['plotOnConnect','imageWidth','imageHeight']
     
