@@ -94,7 +94,7 @@ class SchemaDoc(QWidget):
 
         # if there are multiple choices, how to connect this two widget, then show the dialog
         
-        possibleConnections = self.signalManager.getConnections(outWidget, inWidget)
+        possibleConnections = inWidget.instance.inputs.getPossibleConnections(outWidget.instance.outputs)  #  .getConnections(outWidget, inWidget)
         if len(possibleConnections) > 1:
             #print possibleConnections
             #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
@@ -210,21 +210,26 @@ class SchemaDoc(QWidget):
         #print 'removing a line from' + str(outName) +'to' +str(inName)
         
         ## remove the signal by sending None through the channel
+        print '##########  SEND NONE ###############'
+        obsoleteSignals = line.outWidget.instance.outputs.getSignalLinks(line.inWidget.instance)
+        for (s, id) in obsoleteSignals:
+            signal = line.inWidget.instance.inputs.getSignal(id)
+            line.outWidget.instance.outputs.removeSignal(signal, s)
         print '##########  REMOVE LINE #############'
-        linksIn = line.inWidget.instance.linksIn
-        print linksIn
-        for key in linksIn.keys():
-            print linksIn[key], 'linksIn[key]'
-            for i in range(len(linksIn[key])):
-                if line.outWidget.instance == linksIn[key][i][1]:
-                    try:
-                        linksIn[key][i][2](None, linksIn[key][i][1].widgetID)
-                    except:
-                        linksIn[key][i][2](None)
+        
+        # print linksIn
+        # for key in linksIn.keys():
+            # print linksIn[key], 'linksIn[key]'
+            # for i in range(len(linksIn[key])):
+                # if line.outWidget.instance == linksIn[key][i][1]:
+                    # try:
+                        # linksIn[key][i][2](None, linksIn[key][i][1].widgetID)
+                    # except:
+                        # linksIn[key][i][2](None)
         
         # remove the image of the line
-        for (outName, inName) in line.getSignals():
-            self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
+        # for (outName, inName) in line.getSignals():
+            # self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
         self.lines.remove(line)
         line.inWidget.removeLine(line)
         line.outWidget.removeLine(line)

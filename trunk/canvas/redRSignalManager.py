@@ -42,12 +42,21 @@ class OutputHandler:
         
     def signalLinkExists(self, widget):
         ## move across the signals and determine if there is a link to the specified widget
-        for id in self.outputs.keys():
-            for con in self.outputs[id]['connections'].keys():
-                if self.outputs[id]['connections'][con]['parent'] == widget:
+        for id in self.outputSignals.keys():
+            for con in self.outputSignals[id]['connections'].keys():
+                if self.outputSignals[id]['connections'][con]['signal']['parent'] == widget:
                     return True
                     
         return False
+    def getSignalLinks(self, widget):
+        ## move across the signals and determine if there is a link to the specified widget
+        links = []
+        for id in self.outputSignals.keys():
+            for con in self.outputSignals[id]['connections'].keys():
+                if self.outputSignals[id]['connections'][con]['signal']['parent'] == widget:
+                    links.append((id, self.outputSignals[id]['connections'][con]['signal']['sid']))
+                    
+        return links
     def getSignal(self, id):
         if id in self.outputSignals.keys():
             return self.outputSignals[id]
@@ -169,7 +178,18 @@ class InputHandler:
                     elif OSignalClass in ISignalClass.convertFromList:
                         connections.append((outputKey, inputKey))
         return connections
-        
+    def doesSignalMatch(self, id, signalClass):
+        if signalClass == 'All': return True
+        elif 'All' in self.getSignal(id)['signalClass']: return True
+        elif signalClass in self.getSignal(id)['signalClass']: return True
+        for s in self.getSignal(id)['signalClass']:
+            if s in signalClass.convertToList:
+                return True
+            else:
+                if signalClass in s.convertFromList:
+                    return True
+                    
+        return False
     ######### Loading and Saving ##############
     def returnInputs(self):
         return None  ## no real reason to return any of this becasue the outputHandler does all the signal work

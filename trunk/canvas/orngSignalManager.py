@@ -574,6 +574,12 @@ class SignalDialog(QDialog):
         (width, height) = self.canvasView.addSignalList(outWidget, inWidget)
         self.canvas.setSceneRect(0, 0, width, height)
         self.resize(width+50, height+80)
+        
+        ## process the signals so that active connections are show.
+        links = outWidget.instance.outputs.getSignalLinks(inWidget.instance)
+        for (outName, inName) in links:
+            self.addLink(outName, inName)
+        print 'Output Handler Returned the following links', links
 
     def countCompatibleConnections(self, outputs, inputs, outInstance, inInstance, outType, inType):
         count = 0
@@ -595,104 +601,43 @@ class SignalDialog(QDialog):
                         if issubclass(outInstance.getOutputType(outS.name), i): count+= 1
         return count
 
-    def existsABetterLink(self, outSignal, inSignal, outSignals, inSignals):
-        existsBetter = 0
-
-        betterOutSignal = None; betterInSignal = None
-        for outS in outSignals:
-            for inS in inSignals:
-                if (outS.name != outSignal.name and outS.name == inSignal.name and outS.type == inSignal.type) or (inS.name != inSignal.name and inS.name == outSignal.name and inS.type == outSignal.type):
-                    existsBetter = 1
-                    betterOutSignal = outS
-                    betterInSignal = inS
-        return existsBetter, betterOutSignal, betterInSignal
-
-    """
-    DEPRICATED
-    def addDefaultLinks(self):  ## get the links and add them,  to be transfered to signalManager canConnect
-        canConnect = 0
-        addedInLinks = []
-        addedOutLinks = []
-        self.multiplePossibleConnections = 0    # can we connect some signal with more than one widget
-
-        minorInputs = [signal for signal in self.inWidget.widgetInfo.inputs if not signal.default]
-        majorInputs = [signal for signal in self.inWidget.widgetInfo.inputs if signal.default]
-        minorOutputs = [signal for signal in self.outWidget.widgetInfo.outputs if not signal.default]
-        majorOutputs = [signal for signal in self.outWidget.widgetInfo.outputs if signal.default]
-
-        inConnected = self.inWidget.getInConnectedSignalNames()
-        outConnected = self.outWidget.getOutConnectedSignalNames()
-
-        # input connections that can be simultaneously connected to multiple outputs are not to be considered as already connected
-        for i in inConnected[::-1]:
-            if not self.inWidget.instance.signalIsOnlySingleConnection(i):
-                inConnected.remove(i)
-
-        for s in majorInputs + minorInputs:
-            if not self.inWidget.instance.hasInputName(s.name):
-                return -1
-        for s in majorOutputs + minorOutputs:
-            if not self.outWidget.instance.hasOutputName(s.name):
-                return -1
-
-        print majorInputs, majorOutputs, minorInputs, minorOutputs
-        pl1 = self.getPossibleConnections(majorOutputs, majorInputs)
-        pl2 = self.getPossibleConnections(majorOutputs, minorInputs)
-        pl3 = self.getPossibleConnections(minorOutputs, majorInputs)
-        pl4 = self.getPossibleConnections(minorOutputs, minorInputs)
-
-        all = pl1 + pl2 + pl3 + pl4  # all is the list of connections in some order of what is best as a list of tuples.
-
-        if not all: 
-            print all, 'All'
-            return 0
-
-        # try to find a link to any inputs that hasn't been previously connected
-        self.allSignalsTaken = 1
-        for (o,i) in all:
-            if i not in inConnected:
-                all.remove((o,i))
-                all.insert(0, (o,i))
-                self.allSignalsTaken = 0       # we found an unconnected link. no need to show the signal dialog
-                break
-        self.addLink(all[0][0], all[0][1])  # add only the best link
-
-        # there are multiple possible connections if we have in the same priority class more than one possible unconnected link
-        for pl in [pl1, pl2, pl3, pl4]:
-            #if len(pl) > 1 and sum([i not in inConnected for (o,i) in pl]) > 1: # if we have more than one valid
-            if len(pl) > 1:     # if we have more than one valid
-                self.multiplePossibleConnections = 1
-            if len(pl) > 0:     # when we find a first non-empty list we stop searching
-                break
-        print all, 'all'
-        return len(all) > 0
-    """
     def addLink(self, outName, inName):
         if (outName, inName) in self._links: return 1
-
+        print outName, inName, 'Names'
         # check if correct types
-        outType = self.outWidget.instance.getOutputType(outName)
-        inType = self.inWidget.instance.getInputType(inName)
-        if type(inType) not in [list]:
-            if outType == 'All' or inType == 'All': 
-                print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-            elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
-                print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+        outType = self.outWidget.instance.outputs.getSignal(outName)['signalClass']
+        inType = self.inWidget.instance.inputs.getSignal(inName)['signalClass']
+        if not outType or not inType:
+            raise Exception, 'None sent as signal type'
             
-            else: return 0
-        else:
-            passes = 0
-            for i in inType:
+            
+        if not self.inWidget.instance.inputs.doesSignalMatch(inName, outType): return 0
+        # if type(inType) not in [list]:
+            # if outType == 'All' or inType == 'All': 
+                # print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+            # elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
+                # print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+            
+            # else: return 0
+        # else:
+            # passes = 0
+            # for i in inType:
                 #if issubclass(outType, i): passes = 1
-                if 'convertToList' in dir(outType) and (i in outType.convertToList):
-                    print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-                    passes = 1
-            if not passes: return 0
+                # print i
+                # if i == outType:
+                    # passes = 1
+                # elif 'convertToList' in dir(outType) and (i in outType.convertToList):
+                    # print '|###| Allowing link from '+str(outName)+' to '+str(inName)
+                    # passes = 1
+            # if not passes: 
+                # print 'Signal did not pass'
+                # print outType, outType.convertToList
+                # return 0
             
         inSignal = None
-        inputs = self.inWidget.widgetInfo.inputs
-        for i in range(len(inputs)):
-            if inputs[i].name == inName: inSignal = inputs[i]
+        inputs = self.inWidget.instance.inputs.getAllInputs()
+        for id, signal in inputs.items():
+            if id == inName: inSignal = id
 
         # if inName is a single signal and connection already exists -> delete it
         for (outN, inN) in self._links:
@@ -735,7 +680,7 @@ class SignalCanvasView(QGraphicsView):
 
     def addSignalList(self, outWidget, inWidget):
         self.scene().clear()
-        outputs, inputs = outWidget.widgetInfo.outputs, inWidget.widgetInfo.inputs
+        outputs, inputs = outWidget.instance.outputs.getAllOutputs(), inWidget.instance.inputs.getAllInputs()
         outIcon, inIcon = self.canvasDlg.getWidgetIcon(outWidget.widgetInfo), self.canvasDlg.getWidgetIcon(inWidget.widgetInfo)
         self.lines = []
         self.outBoxes = []
@@ -757,14 +702,14 @@ class SignalCanvasView(QGraphicsView):
 
         # calculate needed sizes of boxes to show text
         maxLeft = 0
-        for i in range(len(inputs)):
-            maxLeft = max(maxLeft, self.getTextWidth("("+inputs[i].name+")", 1))
-            maxLeft = max(maxLeft, self.getTextWidth(inputs[i].type))
+        for i in inputs.keys():
+            maxLeft = max(maxLeft, self.getTextWidth("("+inputs[i]['name']+")", 1))
+            maxLeft = max(maxLeft, self.getTextWidth(str([a for str(a).split('.')[-1] in inputs[i]['signalClass']])))
 
         maxRight = 0
-        for i in range(len(outputs)):
-            maxRight = max(maxRight, self.getTextWidth("("+outputs[i].name+")", 1))
-            maxRight = max(maxRight, self.getTextWidth(outputs[i].type))
+        for i in outputs.keys():
+            maxRight = max(maxRight, self.getTextWidth("("+outputs[i]['name']+")", 1))
+            maxRight = max(maxRight, self.getTextWidth(str(outputs[i]['signalClass']).split('.')[-1]))
 
         width = max(maxLeft, maxRight) + 70 # we add 70 to show icons beside signal names
 
@@ -800,26 +745,28 @@ class SignalCanvasView(QGraphicsView):
         # show signal boxes and text labels
         #signalSpace = (count)*ySignalSpace
         signalSpace = height
-        for i in range(len(outputs)):
-            y = yWidgetOffTop + ((i+1)*signalSpace)/float(len(outputs)+1)
+        j = 0
+        for i in outputs.keys():
+            y = yWidgetOffTop + ((j+1)*signalSpace)/float(len(outputs)+1)
             box = QGraphicsRectItem(xWidgetOff + width, y - ySignalSize/2.0, xSignalSize, ySignalSize, None, self.dlg.canvas)
             box.setBrush(QBrush(QColor(0,0,255)))
             box.setZValue(200)
-            self.outBoxes.append((outputs[i].name, box))
+            self.outBoxes.append((outputs[i]['name'], box, i))
 
-            self.texts.append(MyCanvasText(self.dlg.canvas, outputs[i].name, xWidgetOff + width - 5, y - 7, Qt.AlignRight | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, outputs[i].type, xWidgetOff + width - 5, y + 7, Qt.AlignRight | Qt.AlignVCenter, bold =0, show=1))
-
-        for i in range(len(inputs)):
-            y = yWidgetOffTop + ((i+1)*signalSpace)/float(len(inputs)+1)
+            self.texts.append(MyCanvasText(self.dlg.canvas, outputs[i]['name'], xWidgetOff + width - 5, y - 7, Qt.AlignRight | Qt.AlignVCenter, bold =1, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, str(outputs[i]['signalClass']).split('.')[-1], xWidgetOff + width - 5, y + 7, Qt.AlignRight | Qt.AlignVCenter, bold =0, show=1))
+            j += 1
+        j = 0
+        for i in inputs.keys():
+            y = yWidgetOffTop + ((j+1)*signalSpace)/float(len(inputs)+1)
             box = QGraphicsRectItem(xWidgetOff + width + xSpaceBetweenWidgets - xSignalSize, y - ySignalSize/2.0, xSignalSize, ySignalSize, None, self.dlg.canvas)
             box.setBrush(QBrush(QColor(0,0,255)))
             box.setZValue(200)
-            self.inBoxes.append((inputs[i].name, box))
+            self.inBoxes.append((inputs[i]['name'], box, i))
 
-            self.texts.append(MyCanvasText(self.dlg.canvas, inputs[i].name, xWidgetOff + width + xSpaceBetweenWidgets + 5, y - 7, Qt.AlignLeft | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, inputs[i].type, xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
-
+            self.texts.append(MyCanvasText(self.dlg.canvas, inputs[i]['name'], xWidgetOff + width + xSpaceBetweenWidgets + 5, y - 7, Qt.AlignLeft | Qt.AlignVCenter, bold =1, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, str(inputs[i]['signalClass']).split('.')[-1], xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
+            j += 1
         self.texts.append(MyCanvasText(self.dlg.canvas, outWidget.caption, xWidgetOff + width/2.0, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
         self.texts.append(MyCanvasText(self.dlg.canvas, inWidget.caption, xWidgetOff + width* 1.5 + xSpaceBetweenWidgets, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
 
@@ -872,10 +819,10 @@ class SignalCanvasView(QGraphicsView):
                 if activeItem.x() < activeItem2.x(): outBox = activeItem; inBox = activeItem2
                 else:                                outBox = activeItem2; inBox = activeItem
                 outName = None; inName = None
-                for (name, box) in self.outBoxes:
-                    if box == outBox: outName = name
-                for (name, box) in self.inBoxes:
-                    if box == inBox: inName = name
+                for (name, box, id) in self.outBoxes:
+                    if box == outBox: outName = id
+                for (name, box, id) in self.inBoxes:
+                    if box == inBox: inName = id
                 if outName != None and inName != None:
                     self.dlg.addLink(outName, inName)
 
@@ -884,12 +831,13 @@ class SignalCanvasView(QGraphicsView):
             self.scene().update()
 
 
-    def addLink(self, outName, inName):  ## makes the line that goes from one widget to the other on the canvas
+    def addLink(self, outName, inName):  ## makes the line that goes from one widget to the other on the canvas, outName and inName are the id's for the links
+        print 'Adding link in the canvas', outName, inName
         outBox = None; inBox = None
-        for (name, box) in self.outBoxes:
-            if name == outName: outBox = box
-        for (name, box) in self.inBoxes:
-            if name == inName : inBox  = box
+        for (name, box, id) in self.outBoxes:
+            if id == outName: outBox = box
+        for (name, box, id) in self.inBoxes:
+            if id == inName : inBox  = box
         if outBox == None or inBox == None:
             print "error adding link. Data = ", outName, inName
             return
@@ -904,12 +852,16 @@ class SignalCanvasView(QGraphicsView):
 
 
     def removeLink(self, outName, inName):  # removes the line on the canvas
-        for (line, outN, inN, outBox, inBox) in self.lines:
-            if outN == outName and inN == inName:
-                line.hide()
-                self.lines.remove((line, outN, inN, outBox, inBox))
-                self.scene().update()
-                return
+        res = QMessageBox.question(None, 'Red-R Connections', 'Are you sure you want to remove that link?\nThe downmtream widget will recieve No data.', QMessageBox.Yes, QMessageBox.No)
+        
+        if res == QMessageBox.Yes:
+            self.
+            for (line, outN, inN, outBox, inBox) in self.lines:
+                if outN == outName and inN == inName:
+                    line.hide()
+                    self.lines.remove((line, outN, inN, outBox, inBox))
+                    self.scene().update()
+                    return
 
 
 

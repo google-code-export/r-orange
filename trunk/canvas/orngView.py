@@ -132,7 +132,7 @@ class SchemaView(QGraphicsView):
     def deleteSelectedLine(self):
         if not self.selectedLine: return
         if self.doc.signalManager.signalProcessingInProgress:
-             QMessageBox.information( self, "Orange Canvas", "Unable to remove connection while signal processing is in progress. Please wait.")
+             QMessageBox.information( self, "Red-R Canvas", "Unable to remove connection while signal processing is in progress. Please wait.")
              return
         self.deleteLine(self.selectedLine)
         self.selectedLine = None
@@ -360,7 +360,7 @@ class SchemaView(QGraphicsView):
             if self.doc.signalManager.signalProcessingInProgress:
                 QMessageBox.information( self, "Orange Canvas", "Please wait until Orange finishes processing signals.")
                 return
-            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = self.doc.signalManager.getLinkEnabled(activeItem.outWidget.instance, activeItem.inWidget.instance))
+            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance.outputs.isSignalEnabled(activeItem.inWidget.instance))
             activeItem.inWidget.updateTooltip()
             activeItem.outWidget.updateTooltip()
             activeItem.updateTooltip()
