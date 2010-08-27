@@ -12,7 +12,7 @@ from OWRpy import *
 import OWGUI 
 import redRGUI
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
+from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 class plot(OWRpy): 
@@ -46,6 +46,8 @@ class plot(OWRpy):
             self.data = data
             self.RFunctionParam_x=data.getData()
             self.commitFunction()
+        else:
+            self.clearPlots()
     def saveAsPDF(self):
         if self.RFunctionParam_x == '': return
         injection = []
@@ -126,4 +128,7 @@ class plot(OWRpy):
             text = 'Nothing to plot from this widget'
             
         return text
-
+    def clearPlots(self):
+        if len(self.device) > 0:
+            for key, dev in self.device.items():
+                dev.clear()

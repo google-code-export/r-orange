@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI, redRGUI
-from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
+from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.signalClasses.RLMFit import RLMFit as redRRLMFit
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.RFormulaEntry import RFormulaEntry

@@ -127,18 +127,37 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
-    def Rplot(self, query, dwidth=6, dheight=6, devNumber = 0, mfrow = None):
-        self.require_librarys(['RSvgDevice'])
+    def Rplot(self, query, dwidth=6, dheight=6, devNumber = 0, imageType = 'svg'):
+        
         # check that a device is currently used by this widget
         # print 'the devNumber is'+str(devNumber)
         # print str(self.device)
-        fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.svg'
+        if imageType not in ['svg', 'png', 'jpeg']:
+            imageType = 'svg'
+        
+        fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.'+imageType
         fileName = fileName.replace('\\', '/')
-        self.R('devSVG(file=\''+str(fileName)+'\', bg = \'white\', width = '
-            +str(dheight)+', height = '+str(dheight)
-            +')')
-        self.R(query)
-        self.R('dev.off()')
+        if imageType == 'svg':
+            self.require_librarys(['RSvgDevice'])
+            self.R('devSVG(file=\''+str(fileName)+'\', bg = \'white\', width = '
+                +str(dheight)+', height = '+str(dheight)
+                +')')
+            self.R(query)
+            self.R('dev.off()')
+        elif imageType == 'png':
+            self.require_librarys(['RSvgDevice'])
+            self.R('png(file=\''+str(fileName)+'\', bg = \'white\', width = '
+                +str(dheight*100)+', height = '+str(dheight*100)
+                +')')
+            self.R(query)
+            self.R('dev.off()')
+        elif imageType == 'jpeg':
+            self.require_librarys(['RSvgDevice'])
+            self.R('jpeg(file=\''+str(fileName)+'\', bg = \'white\', width = '
+                +str(dheight*100)+', height = '+str(dheight*100)
+                +')')
+            self.R(query)
+            self.R('dev.off()')
         
         
         if str(devNumber) in self.device:
@@ -147,7 +166,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         else:
             if 'plottingArea' not in dir(self):
                 self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, image = fileName)
+            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, image = fileName, imageType = imageType)
         
         return
         
@@ -190,9 +209,9 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
 
         self.customWidgetDelete()
-        if self.outputs:
-            for output in self.outputs:
-                self.callSignalDelete(output[0])
+        # if self.outputs:
+            # for output in self.outputs:
+                # self.callSignalDelete(output[0])
 
     def customWidgetDelete(self):
         pass #holder function for other widgets

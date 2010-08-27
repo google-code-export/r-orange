@@ -65,6 +65,6 @@ class RedRdata(OWRpy):
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package))
         
-        newData = RDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         
         self.rSend("id0", newData)

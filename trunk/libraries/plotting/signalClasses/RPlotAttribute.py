@@ -3,5 +3,6 @@
 from canvas.signals import *
 
 class RPlotAttribute(BaseRedRVariable):
-    pass
+    convertFromList = []
+    convertToList = []
     

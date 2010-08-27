@@ -29,7 +29,7 @@ class spline(OWRpy):
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
 
         self.outputs.addOutput('id0', 'spline Output', redRRModelFit)
-        self.outputs.addOutput('id1', 'spline plot attribute', redRRPlotAttribute)
+        self.outputs.addOutput('id1', 'spline plot attribute', plotting.RPlotAttribute)
 
         
         self.standardTab = groupBox(self.controlArea, label = 'Parameters')
@@ -106,7 +106,7 @@ class spline(OWRpy):
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
-        newLine = plotting.redRRPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
+        newLine = plotting.RPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
         self.rSend("id1", newLine)
         
     def getReportText(self, fileDir):

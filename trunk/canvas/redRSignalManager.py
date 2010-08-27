@@ -74,19 +74,23 @@ class OutputHandler:
                     return True
         return False
     def _processSingle(self, signal, connection):
+        print signal
         if not connection['enabled']: return 0
         handler = connection['signal']['handler']
         multiple = connection['signal']['multiple']
-        if signal['signalClass'] in connection['signal']['signalClass']:
+        if signal['value'] == None: # if there is no data then it doesn't matter what the signal class is, becase none will be sent anyway
+            self._handleSignal(signal['value'], handler, multiple) 
+        elif signal['signalClass'] in connection['signal']['signalClass']:
             self._handleSignal(signal['value'], handler, multiple)
         else:
             for sig in connection['signal']['signalClass']:
                 if sig in signal['signalClass'].convertToList:
-                    newVal = signal['signalClass'].convertToClass(sig)
+                    newVal = signal['value'].convertToClass(sig)
                     self._handleSignal(newVal, handler, multiple)
                     break
                 elif signal['signalClass'] in sig.convertFromList:
-                    newVal = sig.convertFromClass(signal['value'])
+                    tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
+                    newVal = tempSignal.convertFromClass(signal['value'])
                     self._handleSignal(newVal, handler, multiple)
                     break
     def processData(self, id):

@@ -120,7 +120,7 @@ class Heatmap(OWRpy):
             self.colvChoice = 'NULL'
         else:
             self.colvChoice = 'NA'
-        self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+')')
+        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+')', devNumber = 1, imageType = 'png')
         # for making the pie plot
         if colorType == 'rainbow':
             start = float(float(self.startSaturation.value())/100)
@@ -129,8 +129,8 @@ class Heatmap(OWRpy):
             col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
         else:
             col = colorType+'(10)'
-        self.R('dev.new()')
-        self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
+        #self.R('dev.new()')
+        self.Rplot('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2, imageType = 'png')
         
     def rowvChoiceprocess(self):
         if self.plotdata:

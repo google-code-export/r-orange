@@ -8,7 +8,7 @@
 from OWRpy import * 
 import redRGUI 
 from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
+from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button

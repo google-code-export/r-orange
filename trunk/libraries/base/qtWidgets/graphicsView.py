@@ -5,18 +5,20 @@ from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 from redRGUI import widgetState
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent, image = None):
+    def __init__(self, parent, image = None, imageType = 'svg'):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         QGraphicsView.__init__(self, parent)
         parent.layout().addWidget(self)  # place the widget into the parent widget
         self.parent = parent
         self.widgetSelectionRect = None
+        self.mainItem = None
         if image:
             ## there is an image and we should set that into the graphics scene
-            self.addImage(image)
+            self.addImage(image, imageType)
         self.currentScale = 1
         self.menu = QMenu(self)
         self.menu.addAction('Copy')
+        self.menu.addAction('Fit View')
         self.menu.addAction('Zoom Out')
         self.menu.addAction('Zoom In')
         self.menu.addAction('Undock')
@@ -60,6 +62,9 @@ class graphicsView(QGraphicsView, widgetState):
                 elif str(action.text()) == 'Redock':
                     self.parent.layout().addWidget(self)
                     self.dialog.hide()
+                elif str(action.text()) == 'Fit View':
+                    print self.mainItem.boundingRect()
+                    self.fitInView(self.mainItem.boundingRect())
         else:
             self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
             self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
@@ -93,13 +98,21 @@ class graphicsView(QGraphicsView, widgetState):
         
         
             
-    def addImage(self, image):
+    def addImage(self, image, imageType = None):
         ## add an image to the view
         if not self.scene():
             scene = QGraphicsScene()
             self.setScene(scene)
-        mainItem = QGraphicsSvgItem(image)
+        if not imageType:
+            imageType = image.split('.')[-1]
+        if imageType not in ['svg', 'png', 'jpeg']:
+            raise Exception, 'Image type specified is not a valid type for this widget.'
+        if imageType == 'svg':
+            mainItem = QGraphicsSvgItem(image)
+        elif imageType in ['png', 'jpeg']:
+            mainItem = QGraphicsPixmapItem(QPixmap(image))
         self.scene().addItem(mainItem)
+        self.mainItem = mainItem
         
         
     def getSettings(self):

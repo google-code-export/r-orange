@@ -26,7 +26,7 @@ class RedRpoints(OWRpy):
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
         self.inputs.addInput('id2', 'col', redRRVector, self.processcol)
 
-        self.outputs.addOutput('id0', 'points Output', redRRPlotAttribute)
+        self.outputs.addOutput('id0', 'points Output', plotsigs.redRRPlotAttribute)
 
         
         self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')
