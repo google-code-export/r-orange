@@ -401,9 +401,9 @@ class DataExplorer(OWRpy):
         if len(self.criteriaList) > 0:
             self.R(self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'<-list(True = rownames('+self.dataParent.getDataParent()+'['+'&'.join(self.criteriaList)+',]), False = rownames('+self.dataParent.getDataParent()+'[!('+'&'.join(self.criteriaList)+'),]))')
             newData = redRRDataFrame(data = self.orriginalData+'['+self.dataParent.getOptionalData('cm')['data']+'$'+self.Rvariables['dataExplorer']+'$True,,drop = F]', parent = self.dataParent.getData())
-            self.rSend('Data Subset', newData)
+            self.rSend("id0", newData)
         else:
-            self.rSend('Data Subset', self.dataParent)
+            self.rSend("id0", self.dataParent)
         self.status.setText('Data Sent')
         
         self.sendRefresh()

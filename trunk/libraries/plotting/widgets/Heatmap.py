@@ -47,11 +47,11 @@ class Heatmap(OWRpy):
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        self.colorTypeCombo = redRGUI.comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
-        self.classesDropdown = redRGUI.comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
-        self.rowDendrogram = redRGUI.checkBox(infobox, buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
-        self.plotOnConnect = redRGUI.checkBox(infobox, buttons=['Plot on Connect'])
-        self.showClasses = redRGUI.checkBox(infobox, buttons = ['Show Classes'])
+        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
+        self.rowDendrogram = checkBox(infobox, buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
+        self.plotOnConnect = checkBox(infobox, buttons=['Plot on Connect'])
+        self.showClasses = checkBox(infobox, buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
@@ -148,13 +148,13 @@ class Heatmap(OWRpy):
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
         newData = redRRList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
-        self.rSend("Cluster Subset List", newData)
+        self.rSend("id0", newData)
         
         self.R(self.Rvariables['heatvect']+'<-NULL; k<-1')
         self.R('for(i in colnames('+self.plotdata+')){for(j in 1:length('+self.Rvariables['heatsubset']+')){if(i %in%  '+self.Rvariables['heatsubset']+'[[j]]){'+self.Rvariables['heatvect']+'[k]<-j; k <- k+1}}}')
         
         newDataVect = redRRVector(data = self.Rvariables['heatvect'])
-        self.rSend('Cluster Classes', newDataVect)
+        self.rSend("id1", newDataVect)
         
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot

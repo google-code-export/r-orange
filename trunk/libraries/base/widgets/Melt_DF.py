@@ -80,7 +80,7 @@ class Melt_DF(OWRpy):
         # copy the signals class and send the newData
         newData = redRRDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
-        self.rSend("melt.data.frame Output", newData)
+        self.rSend("id0", newData)
         
     def getReportText(self, fileDir):
         text = 'Reshaped (melted) the data using the following parameters:\n\n'

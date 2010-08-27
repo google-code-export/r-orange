@@ -55,7 +55,7 @@ class rank(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
         newData = redRRMatrix(data = self.Rvariables['rank'])
-        self.rSend("rank Output", newData)
+        self.rSend("id0", newData)
         
     def getReportText(self, fileDir):
         return 'Data was ranked.\n\n'

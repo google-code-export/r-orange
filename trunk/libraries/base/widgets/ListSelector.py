@@ -65,23 +65,23 @@ class ListSelector(OWRpy):
         if myclass == 'data.frame':
             self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
             newData = redRRDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
-            self.rSend('R Data Frame', newData)
+            self.rSend("id0", newData)
             self.infoa.setText('Sent Data Frame')
         elif myclass == 'list':
             newData = redRRList(data = self.Rvariables['listelement'])
-            self.rSend('R List', newData)
+            self.rSend("id2", newData)
             self.infoa.setText('Sent List')
         elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer']:
             newData = redRRVector(data = self.Rvariables['listelement'])
-            self.rSend('R Vector', newData)
+            self.rSend("id1", newData)
             self.infoa.setText('Sent Vector')
         elif myclass in ['matrix']:
             newData = redRRMatrix(data = self.Rvariables['listelement'])
-            self.rSend('R Matrix', newData)
+            self.rSend("id4", newData)
             self.infoa.setText('Sent Matrix')
         else:
             newData = redRRVariable(data = self.Rvariables['listelement'])
-            self.rSend('R Variable', newData)
+            self.rSend("id3", newData)
             self.infoa.setText('Send Variable', myclass)
     def getReportText(self, fileDir):
         return 'The %s element of the incomming data was sent.\n\n' % (self.Rvariables['listelement'])

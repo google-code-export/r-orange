@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
@@ -47,4 +47,4 @@ class RedRfft(OWRpy):
         self.R(self.Rvariables['fft']+'<-fft(z='+str(self.RFunctionParam_z)+','+inj+')')
         newData = redRRMatrix(data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
-        self.rSend("fft Output", newData)
+        self.rSend("id0", newData)

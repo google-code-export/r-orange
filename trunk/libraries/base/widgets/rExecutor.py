@@ -99,31 +99,31 @@ class rExecutor(OWRpy):
         # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
             newData = redRRVariable(data = str(self.command.text()))
-            self.rSend('R.object', newData)
+            self.rSend("id3", newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
                 newData = redRRVector(data = str(self.command.text()))
-                self.rSend('R Vector', newData)
+                self.rSend("id2", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
                 newData = redRRDataFrame(data = str(self.command.text()))
-                self.rSend('R Data Frame', newData)
+                self.rSend("id0", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:
                 newData = redRRMatrix(data = str(self.command.text()))
-                self.rSend('R Matrix', newData)
+                self.rSend("id4", newData)
                 self.sendStatus.setText(thisdata+' sent through the Matrix channel')
             elif thisdataclass == 'list': # the object is a list
                 newData = redRRList(data = str(self.command.text()))
-                self.rSend('R List', newData)
+                self.rSend("id1", newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
                 newData = redRRVariable(data = str(self.command.text()))
-                self.rSend('R.object', newData)
+                self.rSend("id3", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
             newData = redRRVariable(data = str(self.command.text()))
-            self.rSend('R.object', newData)
+            self.rSend("id3", newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):
         self.R('txt<-"R error occured" #Benign error in case a real error occurs')

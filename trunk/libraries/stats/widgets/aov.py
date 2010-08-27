@@ -76,7 +76,7 @@ class aov(OWRpy):
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
         newData = redRRModelFit(data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
-        self.rSend("aov Output", newData)
+        self.rSend("id0", newData)
     def getReportText(self, fileD):
         text = 'Performed ANOVA analysis on the attached data.  The following parameters were used:\n\n'
         formula = self.RFunctionParamformula_formulaEntry.Formula()

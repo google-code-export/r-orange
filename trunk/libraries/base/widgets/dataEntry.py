@@ -208,7 +208,7 @@ class dataEntry(OWRpy):
         
         self.newData = redRRDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
         
-        self.rSend('Data Table', self.newData)
+        self.rSend("id0", self.newData)
         self.processDF(self.newData)  ## a good way to ensure loading and saving.
         
     def getReportText(self, fileDir):

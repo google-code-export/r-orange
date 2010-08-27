@@ -98,7 +98,7 @@ class apply(OWRpy):
         
         newData = redRRVector(data = self.Rvariables['apply'])
 
-        self.rSend("apply Output", newData)
+        self.rSend("id0", newData)
         
     def getReportText(self, fileDir):
         return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (str(self.functionText.toPlainText()), self.RFunctionParamMARGIN_radioButtons.getChecked())

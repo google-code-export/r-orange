@@ -58,7 +58,7 @@ class intersect(OWRpy):
         self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+str(tmp)+'</pre>')        
         newData = redRRVector(data = self.Rvariables["intersect"])
         
-        self.rSend("intersect Output", newData)
+        self.rSend("id0", newData)
     def getReportText(self, fileDir):
         return 'Sends the intersecting element, those that are the same, in the two incomming data vectors.\n\n'
 

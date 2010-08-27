@@ -66,6 +66,6 @@ class rug(OWRpy):
         
         newData = redRRPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
-        self.rSend("rug Output", newData)
+        self.rSend("id0", newData)
     def getReportText(self, fileDir):
         return 'A rug plot attribute was generated for use in plotting a rug plot on any connected widget.  Please see those widgets plots for the rug plot output.\n\n'

@@ -83,7 +83,7 @@ class RedRScatterplot(OWRpy):
                     newData[key].append(self.data.getData()[key][i])
                     
         sendData = signals.StructuredDict(data = newData, parent = self.data.getData(), keys = self.data.getItem('keys'))
-        self.rSend('Scatterplot Output', newData)
+        self.rSend("id0", newData)
         self.sendRefresh()
         
     def gotX(self, data):
@@ -215,7 +215,7 @@ class RedRScatterplot(OWRpy):
         
         data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
         data.copyAllOptionalData(self.dataParent)
-        self.rSend('Scatterplot Output', data)
+        self.rSend("id0", data)
         #self.sendRefresh()
         
     def loadCustomSettings(self, settings = None):

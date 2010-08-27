@@ -49,7 +49,7 @@ class wilcox_test(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.rSend("wilcox.test Output", {"data":self.Rvariables["wilcox.test"]})
+        self.rSend("id0", {"data":self.Rvariables["wilcox.test"]})
     def getReportText(self, fileDir):
         text = 'The wilkox test was performed on the incoming data X and Y.  A summary of the results is listed below:\n\n'
         text += str(self.RoutputWindow.toPlainText())+'\n\n'

@@ -29,10 +29,8 @@ class dataEntry2(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processDF)
-
-        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
- # trace problem with outputs
+        self.inputs = [('Data Table', rdf.RDataFrame, self.processDF)]
+        self.outputs = [('Data Table', rdf.RDataFrame)] # trace problem with outputs
         #GUI.
         
         
@@ -258,7 +256,7 @@ class dataEntry2(OWRpy):
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
         
-        self.newData = redRRDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
+        self.newData = rdf.RDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
         
         self.rSend('Data Table', self.newData)
     def loadCustomSettings(self,settings=None):

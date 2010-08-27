@@ -76,11 +76,11 @@ class RedRstrsplit(OWRpy):
         self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+str(self.RFunctionParam_x)+') ,'+inj+')')
         newData = signals.redRRList(data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
-        self.rSend("strsplit Output", newData)
+        self.rSend("id0", newData)
         
         if str(self.RFunctionParamunlist_radioButtons.getChecked()) == 'Send list and vector':
             newData = signals.redRRVector(data = 'unlist('+self.Rvariables['strsplit']+')')
-            self.rSend('strsplit Vector', newData)
+            self.rSend("id1", newData)
             
     def getReportText(self, fileDir):
         text = 'Split the incomming strings (words) into fragments based on the following criteria:\n\n'

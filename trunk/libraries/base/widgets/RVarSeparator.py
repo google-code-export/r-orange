@@ -10,12 +10,12 @@
 """
 from OWRpy import * 
 import redRGUI 
-from libraries.base.signalClasses.REnvironment import REnvironment as redRREnvironment
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-from libraries.base.signalClasses.RVector import RVector as redRRVector
-from libraries.base.signalClasses.RList import RList as redRRList
+import libraries.base.signalClasses.REnvironment as renv
+import libraries.base.signalClasses.RVariable as rvar
+import libraries.base.signalClasses.RVector as rvec
+import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RMatrix as rmat
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+import libraries.base.signalClasses.RDataFrame as rdf
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.listBox import listBox
@@ -74,15 +74,15 @@ class RVarSeparator(OWRpy):
             
         if type(dataClass) is str:
             if dataClass == 'numeric': # we have a numeric vector as the object
-                newData = redRRVector(data = self.sendThis)
+                newData = rvec.RVector(data = self.sendThis)
                 self.rSend('id4', newData)
                 self.status.setText('Data sent through the R Vector channel')
             elif dataClass == 'character': #we have a character vector as the object
-                newData = redRRVector(data = self.sendThis)
+                newData = rvec.RVector(data = self.sendThis)
                 self.rSend('id4', newData)
                 self.status.setText('Data sent through the R Vector channel')
             elif dataClass == 'data.frame': # the object is a data.frame
-                newData = redRRDataFrame(data = self.sendThis)
+                newData = rdf.RDataFrame(data = self.sendThis)
                 self.rSend('id2', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'matrix': # the object is a matrix
@@ -92,15 +92,15 @@ class RVarSeparator(OWRpy):
                 self.rSend('id2', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'list': # the object is a list
-                newData = redRRList(data = self.sendThis)
+                newData = rlist.RList(data = self.sendThis)
                 self.rSend('id3', newData)
                 self.status.setText('Data sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic  
-                newData = redRRVariable(data = self.sendThis)
+                newData = rvar.RVariable(data = self.sendThis)
                 self.rSend('id1', newData)
                 self.status.setText('Data sent through the R Object channel')
         else:
-            newData = redRRVariable(data = self.sendThis)
+            newData = rvar.RVariable(data = self.sendThis)
             self.rSend('id1', newData)
             self.status.setText('Data sent through the R Object channel')
             

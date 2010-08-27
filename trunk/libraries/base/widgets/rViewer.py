@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI
-from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+import libraries.base.signalClasses.RVariable as rvar
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox

@@ -8,8 +8,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from libraries.base.signalClasses.RVector import RVector as redRRVector
+import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RVector as rvec
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
@@ -77,7 +77,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')')
         
-        newData = redRRVector(data = self.Rvariables["rownames"])
+        newData = rvec.RVector(data = self.Rvariables["rownames"])
 
         self.rSend("id0", newData)
     def getReportText(self, fileDir):

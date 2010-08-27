@@ -147,7 +147,7 @@ class cor(OWRpy):
         # create a new signal of type RMatrix and load the results 
         newData = redRRMatrix(data = self.Rvariables["cor"]) 
         # send the signal forward
-        self.rSend("cor Output", newData)
+        self.rSend("id0", newData)
   
     
     # Based on the user selections some parameters is not valid. This is all documented in the R help for cor/var/cov

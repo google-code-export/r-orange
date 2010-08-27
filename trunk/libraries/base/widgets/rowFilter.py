@@ -9,7 +9,7 @@
 
 from OWRpy import *
 import redRGUI
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+import libraries.base.signalClasses.RDataFrame as rdf
 import libraries.base.signalClasses.RVector as RVector
 
 
@@ -58,7 +58,7 @@ class rowFilter(OWRpy):
         
     def commitSubset(self):
         filteredData = self.table.getFilteredData()
-        newData = redRRDataFrame(data = filteredData, parent = self.dataParent.getData())
+        newData = rdf.RDataFrame(data = filteredData, parent = self.dataParent.getData())
 
         self.rSend('id0', newData)
 

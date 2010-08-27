@@ -88,13 +88,13 @@ class nameProtector(OWRpy):
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))')
         
-        self.rSend("Data Frame", newData)
+        self.rSend("id0", newData)
         
     def vCommit(self): # make protected names for a vector
         if self.data == '': return
         
         self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')')
         self.parentData['data'] = self.Rvariables['nameProtector']
-        self.rSend("Vector", self.parentData)
+        self.rSend("id1", self.parentData)
     def getReportText(self, fileDir):
         return 'Names of the incomming data were changed to fit valid names in R.\n\n'

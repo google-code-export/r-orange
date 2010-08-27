@@ -78,7 +78,7 @@ class percentileClassifier(OWRpy):
         self.outputWindow.insertHtml('</table>')
         newData = self.dataParent.copy()
         newData.data = self.Rvariables['percentileClassifier_df']
-        self.rSend('Data Frame', newData)
+        self.rSend("id0", newData)
         
     def getReportText(self, fileDir):
         text = 'Data classified as being greater than a specified percentile of the data.  To see the data please open the Red-R .rrs file or an output of the data.  A summary of the operations are here:\n\n'

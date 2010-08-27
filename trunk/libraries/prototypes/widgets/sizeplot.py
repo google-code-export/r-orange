@@ -16,9 +16,7 @@ class sizeplot(OWRpy):
 		OWRpy.__init__(self)
 		self.RFunctionParam_y = ''
 		self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-        self.inputs.addInput('id1', 'x', redRRVector, self.processx)
-
+		self.inputs = [("y", signals.RVector, self.processy),("x", signals.RVector, self.processx)]
 		
 		#self.help.setHtml('<small>Default Help HTML, one should update this as soon as possible.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
 		box = tabWidget(self.controlArea)

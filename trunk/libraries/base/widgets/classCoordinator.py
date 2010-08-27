@@ -25,9 +25,9 @@ class classCoordinator(OWRpy):
             newData = data.copy()
             self.R(self.Rvariables['cm']+'<-list()')
             newData.setOptionalData('cm', self, self.Rvariables['cm'], 'Data added by the Class Coordinator so that class data can be shared across multiple widgets.')
-            self.rSend('Out Data', newData)
+            self.rSend("id0", newData)
         else:
-            self.rSend('Out Data', None)
+            self.rSend("id0", None)
             
     def refresh(self):
         text = self.R('paste(capture.output('+self.Rvariables['cm']+'), collapse = "\n")')
