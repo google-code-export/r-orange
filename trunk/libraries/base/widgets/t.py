@@ -11,6 +11,7 @@ from OWRpy import *
 import OWGUI 
 import redRGUI
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.button import button
 class t(OWRpy): 
     settingsList = ['sentItems']
@@ -21,9 +22,9 @@ class t(OWRpy):
         self.data={}
         
         
-        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', 'Input Data Table or Matrix', [redRRDataFrame, redRRMatrix], self.processx)
 
-        self.outputs.addOutput('id0', 't Output', redRRDataFrame)
+        self.outputs.addOutput('id0', 'Transposed Data Table', redRRDataFrame)
 
         
         #box = widgetBox(self.controlArea, "Widget Box")
@@ -40,7 +41,7 @@ class t(OWRpy):
         
         newData = redRRDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
-        self.rSend("t Output", newData)
+        self.rSend("id0", newData)
     def getReportText(self, fileDir):
         text = 'Data transposed and sent to downstream widgets.\n\n'
         return text

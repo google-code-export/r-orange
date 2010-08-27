@@ -117,7 +117,7 @@ class rowColSelect(OWRpy):
             
         
         newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
-        self.rSend('Data Table', newData)
+        self.rSend('id0', newData)
 
 
         

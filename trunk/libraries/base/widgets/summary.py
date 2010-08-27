@@ -19,7 +19,7 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', 'object', redRRVariable, self.processobject)
+        self.inputs.addInput('id0', 'R Variable Object', redRRVariable, self.processobject)
 
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):

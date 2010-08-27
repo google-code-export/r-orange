@@ -19,7 +19,7 @@ class rViewer(OWRpy):
         
         self.RFunctionParam_data = None
         
-        self.inputs.addInput('id0', 'data', redRRVariable, self.processdata)
+        self.inputs.addInput('id0', 'R Variable Data', redRRVariable, self.processdata)
 
         self.showAll = checkBox(self.bottomAreaRight, 
         buttons = ['String', 'Show All'],orientation="horizontal", setChecked = 'String')

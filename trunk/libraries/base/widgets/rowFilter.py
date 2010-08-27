@@ -35,22 +35,12 @@ class rowFilter(OWRpy):
         self.criteriaDialogList = []
         self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processData)
  
-        self.outputs.addOutput('id0', 'Data Subset', redRRDataFrame)
+        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
 
         
         ######## GUI ############
         
         self.tableArea = widgetBox(self.controlArea)
-        
-        #############################
-        # self.R('data <- data.frame(a=c("a","b","c","d","e"),b=as.factor(1:5000),c=as.character(c("a","b","c","d","e")))')
-       
-        # self.R('data <- iris')
-        
-        # self.R('data$c <- as.character(data$Species)')
-        # self.data = 'data'
-        # self.table = filterTable(self.tableArea,sortable=True, Rdata='data')
-        #############################
         self.table = filterTable(self.controlArea, sortable=True,
         filterable=True,selectionMode = QAbstractItemView.NoSelection )
 
@@ -70,7 +60,7 @@ class rowFilter(OWRpy):
         filteredData = self.table.getFilteredData()
         newData = redRRDataFrame(data = filteredData, parent = self.dataParent.getData())
 
-        self.rSend('Data Subset', newData)
+        self.rSend('id0', newData)
 
     def saveCustomSettings(self):
         ## make a dict of settings for each of the dialogs.  These will be reloaded on reload.

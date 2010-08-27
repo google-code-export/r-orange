@@ -67,7 +67,7 @@ class RLoader(OWRpy):
         self.varBox.update(dataList)
         self.infob.setText('Please use the R Variable Separator widget to extract your data.')
         newData = redRREnvironment(data = self.Rvariables['sessionEnviron'])
-        self.rSend('R Session', newData)
+        self.rSend('id0', newData)
         #self.status.setText('Data sent.')
         
     def customWidgetDelete(self):

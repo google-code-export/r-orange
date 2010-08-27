@@ -32,7 +32,7 @@ class rowcolPicker(OWRpy):
         self.SubsetByAttached = 0
         
         self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.setWidget)
-        self.inputs.addInput('id1', 'Subsetting Vector', redRRDataFrame, self.setSubsettingVector)
+        self.inputs.addInput('id1', 'Subsetting Vector', redRRList, self.setSubsettingVector)
 
         
         self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
@@ -107,7 +107,7 @@ class rowcolPicker(OWRpy):
         self.ssv = data.getData()
         print self.ssv
         self.subsetColumn.clear()
-        self.subsetColumn.addItems(data.getColumnnames_data())
+        self.subsetColumn.addItems(self.R('names('+data.getData()+')', silent = True))
         self.ssvdata = data
         
     def subOnAttached(self):
@@ -117,24 +117,24 @@ class rowcolPicker(OWRpy):
         
         if self.rowcolBox.getChecked() == 'Row':
             if "True" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[,"'+col+'"],]')
+                self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],]')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
-                self.rSend('Data Table', newData)
+                self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[,"'+col+'"],]')
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],]')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
-                self.rSend('Not Data Table', newDataNot)
+                self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[,\''+col+'\']]')
+            ' %in% '+self.ssv+'[[\''+col+'\']]]')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
-                self.rSend('Data Table', newData)
+                self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[,\''+col+'\']]')
+            ' %in% '+self.ssv+'[[\''+col+'\']]]')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
-                self.rSend('Not Data Table', newDataNot)
+                self.rSend('id1', newDataNot)
         self.SubsetByAttached = 1
     def subset(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None or self.data == '': 
@@ -149,20 +149,20 @@ class rowcolPicker(OWRpy):
             if "True" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
-                self.rSend('Data Table', newData)
+                self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
-                self.rSend('Not Data Table', newDataNot)
+                self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
-                self.rSend('Data Table', newData)
+                self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
-                self.rSend('Not Data Table', newDataNot)
+                self.rSend('id1', newDataNot)
         self.SubsetByAttached = 0
     def getReportText(self, fileDir):
         if self.SubsetByAttached:

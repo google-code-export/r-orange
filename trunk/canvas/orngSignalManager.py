@@ -612,28 +612,6 @@ class SignalDialog(QDialog):
             
             
         if not self.inWidget.instance.inputs.doesSignalMatch(inName, outType): return 0
-        # if type(inType) not in [list]:
-            # if outType == 'All' or inType == 'All': 
-                # print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-            # elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
-                # print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-            
-            # else: return 0
-        # else:
-            # passes = 0
-            # for i in inType:
-                #if issubclass(outType, i): passes = 1
-                # print i
-                # if i == outType:
-                    # passes = 1
-                # elif 'convertToList' in dir(outType) and (i in outType.convertToList):
-                    # print '|###| Allowing link from '+str(outName)+' to '+str(inName)
-                    # passes = 1
-            # if not passes: 
-                # print 'Signal did not pass'
-                # print outType, outType.convertToList
-                # return 0
-            
         inSignal = None
         inputs = self.inWidget.instance.inputs.getAllInputs()
         for id, signal in inputs.items():
@@ -650,8 +628,9 @@ class SignalDialog(QDialog):
 
 
     def removeLink(self, outName, inName): #removes from the list of instances
-        if (outName, inName) in self._links:
-            self._links.remove((outName, inName))
+        res = QMessageBox.question(self.canvasView, 'Red-R Connections', 'Are you sure you want to remove that signal?\n\nThe downstream widget will recieve empty data.', QMessageBox.Yes | QMessageBox.No)
+        if res == QMessageBox.Yes:
+            self.outWidget.instance.outputs.removeSignal(self.inWidget.instance.inputs.getSignal(inName), outName)
             self.canvasView.removeLink(outName, inName)
 
     def getLinks(self):
@@ -704,7 +683,7 @@ class SignalCanvasView(QGraphicsView):
         maxLeft = 0
         for i in inputs.keys():
             maxLeft = max(maxLeft, self.getTextWidth("("+inputs[i]['name']+")", 1))
-            maxLeft = max(maxLeft, self.getTextWidth(str([a for str(a).split('.')[-1] in inputs[i]['signalClass']])))
+            maxLeft = max(maxLeft, self.getTextWidth(str([str(a).split('.')[-1] for a in inputs[i]['signalClass']])))
 
         maxRight = 0
         for i in outputs.keys():
@@ -765,7 +744,7 @@ class SignalCanvasView(QGraphicsView):
             self.inBoxes.append((inputs[i]['name'], box, i))
 
             self.texts.append(MyCanvasText(self.dlg.canvas, inputs[i]['name'], xWidgetOff + width + xSpaceBetweenWidgets + 5, y - 7, Qt.AlignLeft | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, str(inputs[i]['signalClass']).split('.')[-1], xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, str([str(a).split('.')[-1] for a in inputs[i]['signalClass']]), xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
             j += 1
         self.texts.append(MyCanvasText(self.dlg.canvas, outWidget.caption, xWidgetOff + width/2.0, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
         self.texts.append(MyCanvasText(self.dlg.canvas, inWidget.caption, xWidgetOff + width* 1.5 + xSpaceBetweenWidgets, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
@@ -852,16 +831,16 @@ class SignalCanvasView(QGraphicsView):
 
 
     def removeLink(self, outName, inName):  # removes the line on the canvas
-        res = QMessageBox.question(None, 'Red-R Connections', 'Are you sure you want to remove that link?\nThe downmtream widget will recieve No data.', QMessageBox.Yes, QMessageBox.No)
+        # res = QMessageBox.question(None, 'Red-R Connections', 'Are you sure you want to remove that link?\nThe downmtream widget will recieve No data.', QMessageBox.Yes, QMessageBox.No)
         
-        if res == QMessageBox.Yes:
-            self.
-            for (line, outN, inN, outBox, inBox) in self.lines:
-                if outN == outName and inN == inName:
-                    line.hide()
-                    self.lines.remove((line, outN, inN, outBox, inBox))
-                    self.scene().update()
-                    return
+        # if res == QMessageBox.Yes:
+            # self.dlg.
+        for (line, outN, inN, outBox, inBox) in self.lines:
+            if outN == outName and inN == inName:
+                line.hide()
+                self.lines.remove((line, outN, inN, outBox, inBox))
+                self.scene().update()
+                return
 
 
 

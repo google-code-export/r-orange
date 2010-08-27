@@ -28,11 +28,11 @@ class subset(OWRpy):
         self.setRvariableNames(['subset'])
         
         
-        self.inputs.addInput('id0', 'Subset On', redRRDataFrame, self.processA)
-        self.inputs.addInput('id1', 'Subset By', redRRList, self.processB)
+        self.inputs.addInput('id0', 'Data Table to Subset On', redRRDataFrame, self.processA)
+        self.inputs.addInput('id1', 'Optional List of Subsetting Attributes', redRRList, self.processB)
 
         
-        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+        self.outputs.addOutput('id0', 'Subsetted Data Table', redRRDataFrame)
 
         
                 
@@ -138,7 +138,7 @@ class subset(OWRpy):
         self.rSend('Data Table', newData)
 
         newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
-        self.rSend('Not Data Table', newDataNot)
+        self.rSend('id0', newDataNot)
                 
         
         # self.R('txt<-capture.output('+self.Rvariables['rowcolSelector']+'[1:5,])')

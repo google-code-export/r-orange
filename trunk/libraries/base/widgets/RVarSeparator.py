@@ -25,11 +25,11 @@ class RVarSeparator(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
        
-        self.inputs.addInput('id0', 'R Session', redRREnvironment, self.process)
+        self.inputs.addInput('id0', 'R Environment', redRREnvironment, self.process)
 
         self.outputs.addOutput('id0', 'R Session', redRREnvironment)
-        self.outputs.addOutput('id1', 'R.object', redRRVariable)
-        self.outputs.addOutput('id2', 'R Data Frame', redRRDataFrame)
+        self.outputs.addOutput('id1', 'Non-Standard R Variable', redRRVariable)
+        self.outputs.addOutput('id2', 'R Data Frame (Data Table)', redRRDataFrame)
         self.outputs.addOutput('id3', 'R List', redRRList)
         self.outputs.addOutput('id4', 'R Vector', redRRVector)
 
@@ -75,33 +75,33 @@ class RVarSeparator(OWRpy):
         if type(dataClass) is str:
             if dataClass == 'numeric': # we have a numeric vector as the object
                 newData = redRRVector(data = self.sendThis)
-                self.rSend('R Vector', newData)
+                self.rSend('id4', newData)
                 self.status.setText('Data sent through the R Vector channel')
             elif dataClass == 'character': #we have a character vector as the object
                 newData = redRRVector(data = self.sendThis)
-                self.rSend('R Vector', newData)
+                self.rSend('id4', newData)
                 self.status.setText('Data sent through the R Vector channel')
             elif dataClass == 'data.frame': # the object is a data.frame
                 newData = redRRDataFrame(data = self.sendThis)
-                self.rSend('R Data Frame', newData)
+                self.rSend('id2', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'matrix': # the object is a matrix
                 
                 newData = rmat.RMatrix(data = self.sendThis)
                 
-                self.rSend('R Data Frame', newData)
+                self.rSend('id2', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'list': # the object is a list
                 newData = redRRList(data = self.sendThis)
-                self.rSend('R List', newData)
+                self.rSend('id3', newData)
                 self.status.setText('Data sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic  
                 newData = redRRVariable(data = self.sendThis)
-                self.rSend('R.object', newData)
+                self.rSend('id1', newData)
                 self.status.setText('Data sent through the R Object channel')
         else:
             newData = redRRVariable(data = self.sendThis)
-            self.rSend('R.object', newData)
+            self.rSend('id1', newData)
             self.status.setText('Data sent through the R Object channel')
             
     def getReportText(self, fileDir):

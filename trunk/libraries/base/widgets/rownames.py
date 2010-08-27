@@ -24,9 +24,9 @@ class rownames(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', 'Names Output', redRRVector)
+        self.outputs.addOutput('id0', 'Set of Names', redRRVector)
 
         
         box = widgetBox(self.controlArea)
@@ -79,7 +79,7 @@ class rownames(OWRpy):
         
         newData = redRRVector(data = self.Rvariables["rownames"])
 
-        self.rSend("Names Output", newData)
+        self.rSend("id0", newData)
     def getReportText(self, fileDir):
         text = str(self.function.getChecked())+' were sent from this widget.\n\n'
         return text
