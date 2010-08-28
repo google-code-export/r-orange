@@ -163,11 +163,12 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         if str(devNumber) in self.device:
             self.device[str(devNumber)].clear()
             self.device[str(devNumber)].addImage(fileName)
+            self.device[str(devNumber)].query = query
         else:
             if 'plottingArea' not in dir(self):
                 self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
             self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, image = fileName, imageType = imageType)
-        
+            self.device[str(devNumber)].query = query
         return
         
     def getReportText(self, fileDir):

@@ -4,6 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 from redRGUI import widgetState
+import RSession, redREnviron, datetime
 class graphicsView(QGraphicsView, widgetState):
     def __init__(self, parent, image = None, imageType = 'svg'):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
@@ -12,13 +13,19 @@ class graphicsView(QGraphicsView, widgetState):
         self.parent = parent
         self.widgetSelectionRect = None
         self.mainItem = None
+        self.query = ''
         if image:
             ## there is an image and we should set that into the graphics scene
             self.addImage(image, imageType)
         self.currentScale = 1
         self.menu = QMenu(self)
+        save = self.menu.addMenu('Save As')
+        save.addAction('Bitmap')
+        save.addAction('PDF')
+        save.addAction('Post Script')
+        save.addAction('JPEG')
         self.menu.addAction('Copy')
-        self.menu.addAction('Fit View')
+        self.menu.addAction('Fit In Window')
         self.menu.addAction('Zoom Out')
         self.menu.addAction('Zoom In')
         self.menu.addAction('Undock')
@@ -31,6 +38,8 @@ class graphicsView(QGraphicsView, widgetState):
         # self.setMinimumWidth(25)
         # self.setMinimumHeight(25)
         #self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+    def R(self, query):
+        RSession.Rcommand(query = query)
     def clear(self):
         self.scene().clear()
         
@@ -62,9 +71,29 @@ class graphicsView(QGraphicsView, widgetState):
                 elif str(action.text()) == 'Redock':
                     self.parent.layout().addWidget(self)
                     self.dialog.hide()
-                elif str(action.text()) == 'Fit View':
+                elif str(action.text()) == 'Fit In Window':
                     print self.mainItem.boundingRect()
                     self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
+                elif str(action.text()) == 'Bitmap':
+                    print 'save as bitmap'
+                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".bmp", "Bitmap (.bmp)")
+                    if qname.isEmpty(): return
+                    self.saveAs(str(qname), 'bmp')
+                elif str(action.text()) == 'PDF':
+                    print 'save as pdf'
+                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".pdf", "PDF Document (.pdf)")
+                    if qname.isEmpty(): return
+                    self.saveAs(str(qname), 'pdf')
+                elif str(action.text()) == 'Post Script':
+                    print 'save as post script'
+                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".eps", "Post Script (.eps)")
+                    if qname.isEmpty(): return
+                    self.saveAs(str(qname), 'ps')
+                elif str(action.text()) == 'JPEG':
+                    print 'save as jpeg'
+                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
+                    if qname.isEmpty(): return
+                    self.saveAs(str(qname), 'jpeg')
         else:
             self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
             self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
@@ -128,6 +157,19 @@ class graphicsView(QGraphicsView, widgetState):
     def getReportText(self, fileDir):
         #return ''
         pass
+        
+    def saveAs(self, fileName, imageType):
+        if self.query == '': return
+        if imageType == 'pdf':
+            self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'))
+        elif imageType == 'ps':
+            self.R('postscript(file = \'%s\')' % fileName.replace('\\', '/'))
+        elif imageType == 'bit':
+            self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'))
+        elif imageType == 'jpeg':
+            self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
+        self.R(self.query)
+        self.R('dev.off()')
         
 class dialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical',title=None):
