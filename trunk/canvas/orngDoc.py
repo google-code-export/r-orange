@@ -64,7 +64,7 @@ class SchemaDoc(QWidget):
             
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
-    def addLine(self, outWidget, inWidget, enabled = True, ghost = False):
+    def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):
         print '############ ADDING LINE ##################'
         if outWidget == inWidget: 
             return None
@@ -106,7 +106,7 @@ class SchemaDoc(QWidget):
         self.signalManager.setFreeze(1)
         linkCount = 0
         for (outName, inName) in possibleConnections:
-            linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled)
+            linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
 
         self.signalManager.setFreeze(0, outWidget.instance)
 
@@ -158,7 +158,7 @@ class SchemaDoc(QWidget):
 
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
-    def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1):
+    def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True):
         line = self.getLine(outWidget, inWidget)
         if not line:
             line = orngCanvasItems.CanvasLine(self.signalManager, self.canvasDlg, self.canvasView, outWidget, inWidget, self.canvas)
@@ -176,7 +176,7 @@ class SchemaDoc(QWidget):
             
             
 
-        ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
+        ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)
             ## we should change this to a dialog so that the user can connect the signals manually if need be.
@@ -790,6 +790,8 @@ class SchemaDoc(QWidget):
         if not tmp:
             ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
             if not self.checkWidgetDuplication(widgets = widgets):
+                QMessageBox.information(self, 'Schema Loading Failed', 'Duplicated widgets were detected between this schema and the active one.  Loading is not possible.',  QMessageBox.Ok + QMessageBox.Default)
+        
                 return
             RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
         
@@ -858,7 +860,7 @@ class SchemaDoc(QWidget):
             # for (outName, inName) in signalList:
                 # self.addLink(outWidget, inWidget, outName, inName, enabled)
             print '######## enabled ########\n\n', enabled, '\n\n'
-            self.addLine(outWidget, inWidget, enabled)
+            self.addLine(outWidget, inWidget, enabled, process = False)
             self.signalManager.setFreeze(0)
             qApp.processEvents()
             

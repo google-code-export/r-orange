@@ -45,12 +45,7 @@ class widgetSignals():
             print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
-        # if self.linksOut.has_key(signalName):
-            # self.linksOut[signalName][id] = value
-        # else:
-            # self.linksOut[signalName] = {id:value}
-        
-        # self.signalManager.send(self, signalName, value, id)
+
     def callSignalDelete(self, name):
         if self.linksOut.has_key(name):
         

@@ -64,7 +64,7 @@ class graphicsView(QGraphicsView, widgetState):
                     self.dialog.hide()
                 elif str(action.text()) == 'Fit View':
                     print self.mainItem.boundingRect()
-                    self.fitInView(self.mainItem.boundingRect())
+                    self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
         else:
             self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
             self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
@@ -80,7 +80,7 @@ class graphicsView(QGraphicsView, widgetState):
     def mouseReleaseEvent(self, ev):
         point = self.mapToScene(ev.pos())
         if self.widgetSelectionRect:
-            self.fitInView(self.widgetSelectionRect.rect())
+            self.fitInView(self.widgetSelectionRect.rect(), Qt.KeepAspectRatio)
             self.widgetSelectionRect.hide()
             self.widgetSelectionRect = None
             

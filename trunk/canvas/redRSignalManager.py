@@ -17,7 +17,9 @@ class OutputHandler:
             
         self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
         # now send data through
+        
         if process:
+            print 'processing signal'
             self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
         return True
     def removeSignal(self, signal, id):
