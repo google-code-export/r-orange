@@ -9,7 +9,6 @@ from OWRpy import *
 import OWGUI,glob,imp
 import redRGUI
 import signals
-from libraries.conversion.signalClasses import *
 
 
 

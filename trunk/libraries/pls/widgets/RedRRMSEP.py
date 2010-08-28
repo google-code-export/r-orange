@@ -15,15 +15,15 @@ import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 class RedRRMSEP(OWRpy): 
-	settingsList = []
-	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self)
-		self.setRvariableNames(["RMSEP"])
-		self.data = {}
-		self.RFunctionParam_object = ''
-		self.inputs.addInput('id0', 'object', redRRModelFit, self.processobject)
+    settingsList = []
+    def __init__(self, parent=None, signalManager=None):
+        OWRpy.__init__(self)
+        self.setRvariableNames(["RMSEP"])
+        self.data = {}
+        self.RFunctionParam_object = ''
+        self.inputs.addInput('id0', 'object', redRRModelFit, self.processobject)
 
-		self.outputs.addOutput('id0', 'RMSEP Output', redRRModelFit)
+        self.outputs.addOutput('id0', 'RMSEP Output', redRRModelFit)
 
         
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)

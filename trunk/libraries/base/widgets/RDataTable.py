@@ -8,10 +8,7 @@
 """
 
 from OWRpy import *
-import OWGUI, redRGUI
-import math
-import globalData
-import libraries.base.signalClasses.RDataFrame as rdf
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 ##############################################################################
 
 
@@ -28,7 +25,7 @@ class RDataTable(OWRpy):
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, wantGUIDialog = 1)
         
-        self.inputs.addInput('id1', 'Input Data Table', rdf.RDataFrame, self.dataset) #[("Rectangular Data", rdf.RDataFrame, self.dataset)]
+        self.inputs.addInput('id1', 'Input Data Table', redRRDataFrame, self.dataset) #[("Rectangular Data", rdf.RDataFrame, self.dataset)]
 
         self.data = {}          # dict containing the table infromation
         self.showMetas = {}     # key: id, value: (True/False, columnList)
@@ -97,6 +94,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
+        print '################################dataset', dataset
         if not dataset:
             self.table.clear()
             return
@@ -200,24 +198,9 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         painter.end()
         self.colButton.setIcon(QIcon(pixmap))
 
-
-    def RWidgetReload(self):
-        print 'on load data table'
-        self.processSignals()
-   
-
-       
     def getReportText(self, fileDir):
         return 'See the Red-R .rrs file or an output of the table to see the data.\n\n'
 
-from libraries.base.qtWidgets.comboBox import comboBox
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.groupBox import groupBox
-from libraries.base.qtWidgets.widgetLabel import widgetLabel
-from libraries.base.qtWidgets.filterTable import filterTable
-from libraries.base.qtWidgets.lineEdit import lineEdit
-from libraries.base.qtWidgets.listBox import listBox
-from libraries.base.qtWidgets.widgetBox import widgetBox
 class TableItemDelegate(QItemDelegate):
     def __init__(self, widget = None, table = None):
         QItemDelegate.__init__(self, widget)

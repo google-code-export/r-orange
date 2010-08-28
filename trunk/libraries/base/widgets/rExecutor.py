@@ -38,7 +38,7 @@ class rExecutor(OWRpy):
         self.outputs.addOutput('id0', 'R Data Frame', redRRDataFrame)
         self.outputs.addOutput('id1', 'R List', redRRList)
         self.outputs.addOutput('id2', 'R Vector', redRRVector)
-        self.outputs.addOutput('id3', 'R.object', redRAll)
+        self.outputs.addOutput('id3', 'R.object', 'All')
         self.outputs.addOutput('id4', 'R Matrix', redRRMatrix)
 
         #self.breakme()

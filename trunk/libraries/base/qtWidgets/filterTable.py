@@ -368,9 +368,11 @@ class filterTable(widgetState, QTableView):
         # print '############################# loadSettings'
         # print data
         if not data['Rdata']: return 
-        
-        self.setRTable(data['Rdata'])
-        
+
+        self.Rdata = data['Rdata']
+        self.criteriaList = data['criteriaList']
+        self.filter()
+
         if 'sortIndex' in data.keys():
             self.sortByColumn(data['sortIndex'],data['sortOrder'])
         selModel = self.selectionModel()
@@ -379,8 +381,6 @@ class filterTable(widgetState, QTableView):
             for i in data['selection']:
                 selModel.select(self.tm.createIndex(i[0],i[1]),QItemSelectionModel.Select)
         
-        self.criteriaList = data['criteriaList']
-        self.filter()
      
     def delete(self):
         sip.delete(self)
