@@ -9,10 +9,10 @@
 from OWRpy import * 
 import redRGUI 
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-from base.qtWidgets.filterTable import filterTable
-from base.qtWidgets.groupBox import groupBox
-from base.qtWidgets.lineEdit import lineEdit
-from base.qtWidgets.button import button
+from libraries.base.qtWidgets.filterTable import filterTable
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.button import button
 
 class RedRdata(OWRpy): 
     settingsList = []

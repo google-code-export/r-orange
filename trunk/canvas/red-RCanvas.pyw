@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 import sys, os, cPickle
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
-import exceptionHandling
+import redRExceptionHandling
 import redREnviron
 import redROutput
 import orngRegistry, OWGUI
@@ -191,10 +191,10 @@ class OrangeCanvasDlg(QMainWindow):
                 redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
             except:
                 pass
-            redREnviron.settings['focusOnCatchException'] = 'Show output window on exception' in setupWizard.exceptionHandling.getChecked()
-            redREnviron.settings['printExceptionInStatusBar'] = 'Print last exception in status bar' in setupWizard.exceptionHandling.getChecked()
-            redREnviron.settings['uploadError'] = 'Submit Error Report' in setupWizard.exceptionHandling.getChecked()
-            redREnviron.settings['askToUploadError'] = 'Always ask before submitting error report' in setupWizard.exceptionHandling.getChecked()
+            redREnviron.settings['focusOnCatchException'] = 'Show output window on exception' in setupWizard.redRExceptionHandling.getChecked()
+            redREnviron.settings['printExceptionInStatusBar'] = 'Print last exception in status bar' in setupWizard.redRExceptionHandling.getChecked()
+            redREnviron.settings['uploadError'] = 'Submit Error Report' in setupWizard.redRExceptionHandling.getChecked()
+            redREnviron.settings['askToUploadError'] = 'Always ask before submitting error report' in setupWizard.redRExceptionHandling.getChecked()
             
         if 'Start Example' in setupWizard.showExample.getChecked():
             self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))

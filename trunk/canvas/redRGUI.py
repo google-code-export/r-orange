@@ -2,7 +2,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, glob 
 import redREnviron
-import exceptionHandling
+import redRExceptionHandling
 import os.path
 import imp
         
@@ -42,7 +42,7 @@ def registerQTWidgets():
                 guiClass = os.path.basename(filename).split('.')[0]
                 qtWidgets.append(guiClass)
         except:
-           print exceptionHandling.formatException()
+           print redRExceptionHandling.formatException()
 
 
 # def separator(widget, width=8, height=8):

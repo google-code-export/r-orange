@@ -319,8 +319,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
 
             except: 
-                import exceptionHandling
-                print exceptionHandling.formatException()
+                import redRExceptionHandling
+                print redRExceptionHandling.formatException()
 
     def savePosition(self):
         self.oldPos = self.pos()

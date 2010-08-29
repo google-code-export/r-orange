@@ -6,7 +6,7 @@ from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 # print 'Importing orngRegistry.py'
-import exceptionHandling, redRPackageManager
+import redRExceptionHandling, redRPackageManager
 import signals
 import xml.dom.minidom
 # redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -29,6 +29,7 @@ class WidgetCategory(dict):
 
 AllPackages = {}
 def readCategories():
+    # print '##########################in readCategories'
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
@@ -50,14 +51,13 @@ def readCategories():
     categories = {'widgets':[], 'templates':[], 'tags': None}     
     allWidgets = []
     theTags = xml.dom.minidom.parseString('<tree></tree>')
-
     for dirName, directory, plugin in directories:
         if not os.path.isfile(os.path.join(directory,'package.xml')): continue
         f = open(os.path.join(directory,'package.xml'), 'r')
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
-        
+        #print '##################################', package['Name']
         # we read in all the widgets in dirName, directory in the directories
         widgets = readWidgets(os.path.join(directory,'widgets'), package, cachedWidgetDescriptions)  ## calls an internal function
         AllPackages[package['Name']] = package
@@ -120,7 +120,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     global hasErrors, splashWindow, widgetsWithError
     import compileall
     compileall.compile_dir(directory,quiet=True) # compile the directory for later importing.
-    # print '################readWidgets', directory, package
+    #print '################readWidgets', directory, package
     widgets = []
     for filename in glob.iglob(os.path.join(directory, "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
@@ -219,7 +219,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s<hr>%s<hr>%s" % (name, widgetInfo.description, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))
         except Exception, msg:
-            print exceptionHandling.formatException()
+            print redRExceptionHandling.formatException(errorMsg='Error in widget %s in package %s' % (package['Name'], widgetName))
             # if not hasErrors:
                 # print "There were problems importing the following widgets:"
                 # hasErrors = True
@@ -255,7 +255,7 @@ def readTemplates(directory):
             templateInfo = TemplateDescription(name = templateName, file = filename) 
             templates.append(templateInfo)
         except Exception, msg:
-            print exceptionHandling.formatException()
+            print redRExceptionHandling.formatException()
         
     return templates
 def loadPackage(package):

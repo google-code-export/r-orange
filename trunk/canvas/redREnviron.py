@@ -184,23 +184,21 @@ def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
     pathsToAdd.append(directoryNames['canvasDir'])
-    pathsToAdd.append(directoryNames['libraryDir'])
+    # pathsToAdd.append(directoryNames['libraryDir'])
 
-    if directoryNames['libraryDir'] <> None and os.path.isdir(directoryNames['libraryDir']):
-        pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x) for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
-        pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'widgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
-        pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'qtWidgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
-        pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'signalClasses') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
+    # if directoryNames['libraryDir'] <> None and os.path.isdir(directoryNames['libraryDir']):
+        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x) for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
+        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'widgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
+        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'qtWidgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
+        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'signalClasses') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
         
     
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
-            #sys.path.insert(0, path)
             sys.path.append(path)
 
 directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
-
 version = {}
 version = getVersion()
 settings = loadSettings()

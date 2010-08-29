@@ -10,7 +10,9 @@
 from OWRpy import *
 import redRGUI
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
-import libraries.base.signalClasses.RVector as rvec
+from libraries.base.signalClasses.RVector import RVector as redRRVector
+
+
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.separator import separator
@@ -32,6 +34,7 @@ class rowColSelect(OWRpy):
 
         
         self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+        self.outputs.addOutput('id1', 'Data Vector', redRRVector)
 
         
         #set the gui
@@ -112,8 +115,8 @@ class rowColSelect(OWRpy):
             
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
-            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
-            self.rSend('Reduced Vector', newVector)
+            newVector = redRRVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+            self.rSend('id1', newVector)
             
         
         newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])

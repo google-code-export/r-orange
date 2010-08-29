@@ -4,7 +4,7 @@
 # Should include all the functionally need to connect Orange to R 
 #
 
-from widgetGUI import *
+from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
@@ -13,7 +13,7 @@ import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 
-class OWRpy(widgetSignals,widgetGUI,widgetSession):   
+class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
     globalRHistory = []
     def __init__(self,wantGUIDialog = 0):
@@ -22,7 +22,7 @@ class OWRpy(widgetSignals,widgetGUI,widgetSession):
         self.dontSaveList = self.__dict__.keys()
         #print self.dontSaveList
 
-        widgetGUI.__init__(self, parent=None, signalManager=None, title=None, wantGUIDialog=wantGUIDialog)
+        redRWidgetGUI.__init__(self, parent=None, signalManager=None, title=None, wantGUIDialog=wantGUIDialog)
         self.dontSaveList = self.__dict__.keys()
         for x in ['status','notes','ROutput','widgetState']: self.dontSaveList.remove(x)
         

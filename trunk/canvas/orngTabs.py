@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path, sys
 from string import strip, count, replace
-import orngDoc, exceptionHandling, orngRegistry
+import orngDoc, redRExceptionHandling, orngRegistry
 from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx
 import redREnviron
@@ -695,7 +695,7 @@ class CanvasPopup(QMenu):
         self.quickActions = []
         self.candidates = []
         self.canvasDlg = canvasDlg
-        cats = orngRegistry.readCategories()
+        cats = self.canvasDlg.widgetRegistry
         self.suggestDict = {} #dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])]) ## gives an error in linux
         self.suggestItems = [QListWidgetItem(self.canvasDlg.getWidgetIcon(widget), widget.name) for widget in self.suggestDict.values()]
         self.categoriesYOffset = 0
@@ -818,7 +818,7 @@ def constructCategoriesPopup(canvasDlg):
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        print exceptionHandling.formatException()
+        print redRExceptionHandling.formatException()
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in canvasDlg.widgetRegistry['templates']:
@@ -828,7 +828,7 @@ def constructCategoriesPopup(canvasDlg):
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            print exceptionHandling.formatException()
+            print redRExceptionHandling.formatException()
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -867,7 +867,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                print exceptionHandling.formatException()
+                print redRExceptionHandling.formatException()
                 pass
     except:
         print 'Exception in Tabs with widgetRegistry'#        

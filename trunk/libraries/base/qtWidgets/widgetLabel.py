@@ -3,7 +3,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class widgetLabel(QLabel,widgetState):
-    def __init__(self,widget,label = '',wordWrap=True):
+    def __init__(self,widget,label = '', wordWrap=False):
         QLabel.__init__(self,widget)
         widget.layout().addWidget(self)
         self.setText(label)

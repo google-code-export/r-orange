@@ -49,7 +49,7 @@ class filterTable(widgetState, QTableView):
         self.R = Rcommand
         self.Rdata = None
         self.filteredData = None
-
+        self.sortIndex = None
         self.criteriaList = {}
         self.parent = widget
         self.tm=None
@@ -233,7 +233,7 @@ class filterTable(widgetState, QTableView):
                 else:
                     e = lineEdit(self.optionsBox,label=x)
                 self.connect(e, SIGNAL("textEdited(QString)"),
-                lambda val, col=selectedCol,field=x : self.clearOthers(val,self.menu,field))
+                lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
     
         buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)
@@ -346,9 +346,11 @@ class filterTable(widgetState, QTableView):
     def getFilteredData(self):
         return self.filteredData
     def sort(self,col,order):
-        self.tm.sort(col-1,order)
+        #self.tm.sort(col-1,order)
+        self.sortByColumn(col-1, order)
         self.horizontalHeader().setSortIndicator(col-1,order)
         self.menu.hide()
+        self.sortIndex = [col-1,order]
         
         
     def getSettings(self):
@@ -360,8 +362,9 @@ class filterTable(widgetState, QTableView):
         'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]
         }
         
-        r['sortOrder'] = self.horizontalHeader().sortIndicatorOrder()
-        r['sortIndex'] = self.horizontalHeader().sortIndicatorSection()
+        if self.sortIndex:
+            r['sortIndex'] = self.sortIndex
+        
         # print r
         return r
     def loadSettings(self,data):
@@ -374,7 +377,7 @@ class filterTable(widgetState, QTableView):
         self.filter()
 
         if 'sortIndex' in data.keys():
-            self.sortByColumn(data['sortIndex'],data['sortOrder'])
+            self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
         selModel = self.selectionModel()
         # print selModel
         if 'selection' in data.keys() and len(data['selection']):

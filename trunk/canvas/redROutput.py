@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 import sys
 import string
 from datetime import tzinfo, timedelta, datetime
-import traceback, exceptionHandling
+import traceback, redRExceptionHandling
 import os.path, os, redREnviron
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
@@ -205,7 +205,7 @@ class OutputWindow(QDialog):
         if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
-        text = exceptionHandling.formatException(type,value,tracebackInfo)
+        text = redRExceptionHandling.formatException(type,value,tracebackInfo)
         
         t = datetime.today().isoformat(' ')
         toUpload = {}

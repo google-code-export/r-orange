@@ -9,11 +9,11 @@
 
 from OWRpy import *
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RList as rlist
 
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RList import RList as redRRList
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 
-import libraries.base.signalClasses.RVector as rvec
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox

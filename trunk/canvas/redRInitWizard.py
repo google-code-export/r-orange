@@ -31,8 +31,8 @@ class RedRInitWizard(QWizard):
         self.errorReportingPage.setLayout(QVBoxLayout())
         self.errorReportingPage.setTitle('Error Reporting')
         self.errorReportingPage.setSubTitle('How would you like errors to be reported to Red-R.')
-        self.exceptionHandling = redRcheckBox(self.errorReportingPage, buttons = ['Show output window on exception', 'Print last exception in status bar', 'Submit Error Report', 'Always ask before submitting error report'], toolTips = ['Check this if you want to see the output when an error happens.', 'Check this if you want the last exception printed in the status bar.', 'Check this if you want to send errors to Red-R.\nWe will only show the errors to Red-R or package maintainers.', 'Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.'])
-        self.exceptionHandling.setChecked(['Submit Error Report'])
+        self.redRExceptionHandling = redRcheckBox(self.errorReportingPage, buttons = ['Show output window on exception', 'Print last exception in status bar', 'Submit Error Report', 'Always ask before submitting error report'], toolTips = ['Check this if you want to see the output when an error happens.', 'Check this if you want the last exception printed in the status bar.', 'Check this if you want to send errors to Red-R.\nWe will only show the errors to Red-R or package maintainers.', 'Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.'])
+        self.redRExceptionHandling.setChecked(['Submit Error Report'])
         
         
         self.RSetupPage = QWizardPage()

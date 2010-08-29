@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 import redRGUI 
 import signals 
 from SQLiteSession import *
-import exceptionHandling 
+import redRExceptionHandling 
 
 class widgetSession():
     def __init__(self,dontSaveList):
@@ -185,7 +185,7 @@ class widgetSession():
                         getattr(self, k).setDefaultState(v['redRGUIObject'])
                     except Exception as inst:
                         print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
-                        print exceptionHandling.formatException()
+                        print redRExceptionHandling.formatException()
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     print 'dict',len(var),len(v['dict'])
@@ -221,7 +221,7 @@ class widgetSession():
             var = varc(data = d['data']) 
             var.loadSettings(d)
         except Exception as inst: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            print exceptionHandling.formatException()
+            print redRExceptionHandling.formatException()
             try:
                 var = None
                 for (name, att) in self.outputs:
@@ -232,7 +232,7 @@ class widgetSession():
                 var.loadSettings(d['data'])
             except Exception as inst: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
                 print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                print exceptionHandling.formatException()
+                print redRExceptionHandling.formatException()
                 
                 try:
                     var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)

@@ -421,8 +421,8 @@ class SchemaDoc(QWidget):
             if widget in self.widgets:
                 self.widgets.remove(widget)
         except:
-            import exceptionHandling
-            print exceptionHandling.formatException()
+            import redRExceptionHandling
+            print redRExceptionHandling.formatException()
     def clear(self):
         print '|#| orngDoc clear'
         self.canvasDlg.setCaption()

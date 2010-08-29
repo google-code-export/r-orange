@@ -17,7 +17,7 @@ from PyQt4.QtGui import *
 
 from datetime import date
 
-class widgetGUI(QMainWindow):
+class redRWidgetGUI(QMainWindow):
     def __new__(cls, *arg, **args):
         self = QMainWindow.__new__(cls)
         
@@ -211,7 +211,7 @@ class widgetGUI(QMainWindow):
             self.statusBar.insertPermanentWidget(1,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
-        # print '|#| end init of widgetGUI %s' % str(self.windowState)
+        # print '|#| end init of redRWidgetGUI %s' % str(self.windowState)
         
     # uncomment this when you need to see which events occured
     """
@@ -313,7 +313,7 @@ class widgetGUI(QMainWindow):
         self.windowState["state"] = self.saveState()
         self.windowState['pos'] = self.pos()
         self.windowState['size'] = self.size()
-        #self.saveGlobalSettings()
+        
     def closeEvent(self, event):
         print 'in owrpy closeEvent'
         if self.rightDock.isFloating():
@@ -336,21 +336,15 @@ class widgetGUI(QMainWindow):
     # variables into settings and last widget shape is restored after restart
     def resizeEvent(self, ev):
         QMainWindow.resizeEvent(self, ev)
-        if self.savePosition:
-            # print 'resizeevent'
-            # self.widgetWidth = self.width()
-            # self.widgetHeight = self.height()
-            self.saveWidgetWindowState()
+        self.saveWidgetWindowState()
+        # print ev
 
     # when widget is moved, save new x and y position into widgetXPosition and widgetYPosition. some widgets can put this two
     # variables into settings and last widget position is restored after restart
     def moveEvent(self, ev):
         QMainWindow.moveEvent(self, ev)
-        #if self.savePosition:
-            #print 'moveevent'
-            # self.widgetXPosition = self.frameGeometry().x()
-            # self.widgetYPosition = self.frameGeometry().y()
-            #self.saveWidgetWindowState()
+        # print ev.type()
+        self.saveWidgetWindowState()
 
 
 
@@ -393,7 +387,7 @@ class widgetGUI(QMainWindow):
 
 
     def setWidgetWindowIcon(self, iconName):
-        print '|#| setWidgetIcon widgetGUI'
+        print '|#| setWidgetIcon redRWidgetGUI'
         icon = QIcon(iconName)
         self.setWindowIcon(icon)
         
