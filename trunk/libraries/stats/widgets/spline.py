@@ -9,9 +9,10 @@
 from OWRpy import * 
 import redRGUI 
 from libraries.base.signalClasses.RVector import RVector as redRRVector
-import libraries.base.signalClasses.RDataFrame as rdf
 from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
-import libraries.plotting.signalClasses as plotting
+from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
+
+
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -29,7 +30,7 @@ class spline(OWRpy):
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
 
         self.outputs.addOutput('id0', 'spline Output', redRRModelFit)
-        self.outputs.addOutput('id1', 'spline plot attribute', plotting.RPlotAttribute)
+        self.outputs.addOutput('id1', 'spline plot attribute', redRRPlotAttribute)
 
         
         self.standardTab = groupBox(self.controlArea, label = 'Parameters')
@@ -106,7 +107,7 @@ class spline(OWRpy):
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
-        newLine = plotting.RPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
+        newLine = redRRPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
         self.rSend("id1", newLine)
         
     def getReportText(self, fileDir):

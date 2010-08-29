@@ -8,10 +8,10 @@
 <priority>2040</priority>
 """
 from OWRpy import * 
-import OWGUI 
-import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
+
+from  libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+
 from libraries.base.qtWidgets.button import button
 class t(OWRpy): 
     settingsList = ['sentItems']
@@ -39,7 +39,7 @@ class t(OWRpy):
         
         self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+str(self.RFunctionParam_x)+'))')
         
-        newData = rdf.RDataFrame(data = self.Rvariables['t'])
+        newData = redRRDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)
     def getReportText(self, fileDir):

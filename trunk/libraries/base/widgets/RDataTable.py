@@ -25,7 +25,7 @@ class RDataTable(OWRpy):
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, wantGUIDialog = 1)
         
-        self.inputs.addInput('id1', 'Input Data Table', redRRDataFrame, self.dataset) #[("Rectangular Data", rdf.RDataFrame, self.dataset)]
+        self.inputs.addInput('id1', 'Input Data Table', redRRDataFrame, self.dataset) 
 
         self.data = {}          # dict containing the table infromation
         self.showMetas = {}     # key: id, value: (True/False, columnList)
@@ -163,9 +163,9 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         elif self.separator.currentText() == 'Comma':
             sep = ','
         #use the R function if the parent of the dict is an R object.
-        if isinstance(self.data.getDataParent(), rdf.RDataFrame):  
+        if isinstance(self.data.getDataParent(), redRRDataFrame):  
             self.R('write.table('+self.data.getDataParent().getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
-        elif isinstance(self.data, rdf.RDataFrame):
+        elif isinstance(self.data, redRRDataFrame):
             self.R('write.table('+self.data.getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
             string = ''

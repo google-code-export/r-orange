@@ -1,5 +1,5 @@
 """
-<name>Merge2</name>
+<name>Merge</name>
 <description>Merges or subsets two datasets depending on options.</description>
 <tags>Data Manipulation</tags>
 <author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>

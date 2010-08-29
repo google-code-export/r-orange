@@ -191,7 +191,6 @@ class filterTable(widgetState, QTableView):
         
         self.optionsBox = widgetBox(self.menu)
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
-        #print colClass
         if colClass == 'factor':
             #widgetLabel(self.menu,label='Enter a value for one of these critera:')
             if selectedCol in self.criteriaList.keys():

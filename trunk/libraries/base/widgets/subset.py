@@ -105,7 +105,7 @@ class subset(OWRpy):
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
             +' %in% '+self.dataB+'[['+self.colBsel+']],]')
             
-        newData = rdf.RDataFrame(data = self.Rvariables['subset'])
+        newData = redRRDataFrame(data = self.Rvariables['subset'])
         self.rSend('Data Table', newData)
         
 
@@ -134,10 +134,10 @@ class subset(OWRpy):
             self.rSend('Not Reduced Vector', newVector)
             
         
-        newData = rdf.RDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = rdf.RDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('id0', newDataNot)
                 
         
