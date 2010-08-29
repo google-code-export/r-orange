@@ -106,6 +106,7 @@ class SchemaDoc(QWidget):
         #self.signalManager.setFreeze(1)
         linkCount = 0
         for (outName, inName) in possibleConnections:
+            print 'Adding link', outName, inName
             linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
 
         #self.signalManager.setFreeze(0, outWidget.instance)
@@ -159,6 +160,17 @@ class SchemaDoc(QWidget):
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True):
+        if outWidget.instance.outputs.getSignal(outSignalName) in inWidget.instance.inputs.getLinks(inSignalName): return ## the link already exists
+            
+        
+        if not inWidget.instance.inputs.getSignal(inSignalName)['multiple']:
+            ## check existing link to the input signal
+            
+            existing = inWidget.instance.inputs.getLinks(inSignalName)
+            for l in existing:
+                l['parent'].outputs.removeSignal(inWidget.instance.inputs.getSignal(inSignalName), l['sid'])
+                self.removeLink(self.getWidgetByInstance(l['parent']), inWidget, l['sid'], inSignalName)
+            
         line = self.getLine(outWidget, inWidget)
         if not line:
             line = orngCanvasItems.CanvasLine(self.signalManager, self.canvasDlg, self.canvasView, outWidget, inWidget, self.canvas)
@@ -172,17 +184,7 @@ class SchemaDoc(QWidget):
             outWidget.updateTooltip()
             inWidget.addInLine(line)
             inWidget.updateTooltip()
-            
         
-        if not inWidget.instance.inputs.getSignal(inSignalName)['multiple']:
-            ## check existing link to the input signal
-            
-            existing = inWidget.instance.inputs.getLinks(inSignalName)
-            for l in existing:
-                l['parent'].outputs.removeSignal(inWidget.instance.inputs.getSignal(inSignalName), l['sid'])
-                self.removeLink(self.getWidgetByInstance(l['parent']), inWidget, l['sid'], inSignalName)
-            
-
         ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)

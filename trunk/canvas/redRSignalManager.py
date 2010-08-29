@@ -186,11 +186,13 @@ class InputHandler:
             for inputKey in self.inputs.keys():
                 OSignalClass = outputHandler.outputSignals[outputKey]['signalClass']
                 for ISignalClass in self.inputs[inputKey]['signalClass']:
-                    if OSignalClass == ISignalClass:
+                    if OSignalClass == 'All' or ISignalClass == 'All':
                         return True
-                    elif ISignalClass in OSignalClass.convertToList:
+                    elif OSignalClass == ISignalClass:
                         return True
-                    elif OSignalClass in ISignalClass.convertFromList:
+                    elif 'convertToList' in dir(OSignalClass) and ISignalClass in OSignalClass.convertToList:
+                        return True
+                    elif 'convertFromList' in dir(ISignalClass) and OSignalClass in ISignalClass.convertFromList:
                         return True
         return False
         
@@ -205,9 +207,9 @@ class InputHandler:
                         connections.append((outputKey, inputKey))
                     elif OSignalClass == ISignalClass:
                         connections.append((outputKey, inputKey))
-                    elif ISignalClass in OSignalClass.convertToList:
+                    elif 'convertToList' in dir(OSignalClass) and ISignalClass in OSignalClass.convertToList:
                         connections.append((outputKey, inputKey))
-                    elif OSignalClass in ISignalClass.convertFromList:
+                    elif 'convertFromList' in dir(ISignalClass) and OSignalClass in ISignalClass.convertFromList:
                         connections.append((outputKey, inputKey))
         return connections
     def doesSignalMatch(self, id, signalClass):

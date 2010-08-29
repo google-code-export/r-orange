@@ -262,7 +262,9 @@ class SignalDialog(QDialog):
         return count
 
     def addLink(self, outName, inName):
-        if (outName, inName) in self._links: return 1
+        if (outName, inName) in self._links: 
+            print 'signal already in the links'
+            return 1
         print outName, inName, 'Names'
         # check if correct types
         outType = self.outWidget.instance.outputs.getSignal(outName)['signalClass']
@@ -279,7 +281,8 @@ class SignalDialog(QDialog):
 
         # if inName is a single signal and connection already exists -> delete it
         for (outN, inN) in self._links:
-            if inN == inName and inSignal.single:
+            print inSignal, inN, inName, self.inWidget.instance.inputs.getSignal(inSignal)['multiple']
+            if inSignal and inN == inName and not self.inWidget.instance.inputs.getSignal(inSignal)['multiple']:
                 self.removeLink(outN, inN)
 
         self._links.append((outName, inName))
@@ -292,6 +295,7 @@ class SignalDialog(QDialog):
         if res == QMessageBox.Yes:
             self.outWidget.instance.outputs.removeSignal(self.inWidget.instance.inputs.getSignal(inName), outName)
             self.canvasView.removeLink(outName, inName)
+            self._links.remove((outName, inName))
 
     def getLinks(self):
         return self._links
@@ -462,7 +466,9 @@ class SignalCanvasView(QGraphicsView):
                     if box == outBox: outName = id
                 for (name, box, id) in self.inBoxes:
                     if box == inBox: inName = id
+                print outName, inName
                 if outName != None and inName != None:
+                    print 'adding link'
                     self.dlg.addLink(outName, inName)
 
             self.tempLine.hide()
