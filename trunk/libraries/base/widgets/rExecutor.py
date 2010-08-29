@@ -140,8 +140,8 @@ class rExecutor(OWRpy):
         self.thistext.clear()
         self.thistext.insertPlainText('\n'.join(OWRpy.globalRHistory))
     def process(self, data):
-        # for output in self.outputs:
-            # self.rSend(output[0], None, 0)
+        for output in self.outputs.outputIDs():
+            self.rSend(output, None, 0)
         self.data = ''
         if data:
             self.data = str(data.getData())

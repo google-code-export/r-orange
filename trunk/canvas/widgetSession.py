@@ -141,10 +141,9 @@ class widgetSession():
         ## make a list of the signal keys and the values of all of the sent items, shouldn't be hard
         items = []
         for (key, item) in self.outputs.getAllOutputs().items():
-            items.append((key, item['value'].saveSettings()))
-            print '##########################'
-            print 'sent items', items
-            print '##########################'
+            if item['value']:
+                items.append((key, item['value'].saveSettings()))
+
         return items
         
         

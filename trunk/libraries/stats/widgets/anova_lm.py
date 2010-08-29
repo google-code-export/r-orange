@@ -9,7 +9,7 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI
-from libraries.base.signalClasses.RLMFit import RLMFit as redRRLMFit
+from libraries.stats.signalClasses.RLMFit import RLMFit as redRRLMFit
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox

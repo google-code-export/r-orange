@@ -22,6 +22,18 @@ class OutputHandler:
             print 'processing signal'
             self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
         return True
+    def outputIDs(self):
+        return self.outputSignals.keys()
+    def outputNames(self):
+        out = {}
+        for key, value in self.outputSignals.items():
+            out[key] = value['name']
+        return out
+    def outputValues(self):
+        out = {}
+        for key, value in self.outputSignals.items():
+            out[key] = value['value']
+        return out
     def removeSignal(self, signal, id):
         ## send None through the signal to the handler before we disconnect it.
         if signal['id'] in self.outputSignals[id]['connections'].keys():                                 # check if the signal is there to begin with otherwise we don't do anything
@@ -89,12 +101,15 @@ class OutputHandler:
                 if sig in signal['signalClass'].convertToList:
                     newVal = signal['value'].convertToClass(sig)
                     self._handleSignal(newVal, handler, multiple)
+                    connection['signal']['value'] = newVal
                     break
                 elif signal['signalClass'] in sig.convertFromList:
                     tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
                     newVal = tempSignal.convertFromClass(signal['value'])
                     self._handleSignal(newVal, handler, multiple)
+                    connection['signal']['value'] = newVal
                     break
+                
     def processData(self, id):
         # collect the signal ID
         signal = self.getSignal(id)
@@ -154,7 +169,15 @@ class InputHandler:
     def addInput(self, id, name, signalClass, handler, multiple = False):
         if type(signalClass) not in [list]:
             signalClass = [signalClass]
-        self.inputs[id] = {'name':name, 'signalClass':signalClass, 'handler':handler, 'multiple':multiple, 'sid':id, 'id':str(id)+'_'+self.parent.widgetID, 'parent':self.parent}
+        self.inputs[id] = {
+            'value': None,                                      ## should only be set by an outputHandler 
+            'name':name,
+            'signalClass':signalClass,
+            'handler':handler,
+            'multiple':multiple,
+            'sid':id, 
+            'id':str(id)+'_'+self.parent.widgetID, 
+            'parent':self.parent}
     def getSignal(self, id):
         return self.inputs[id]
     def matchConnections(self, outputHandler):
@@ -178,7 +201,9 @@ class InputHandler:
             for inputKey in self.inputs.keys():
                 OSignalClass = outputHandler.outputSignals[outputKey]['signalClass']
                 for ISignalClass in self.inputs[inputKey]['signalClass']:
-                    if OSignalClass == ISignalClass:
+                    if OSignalClass == 'All' or ISignalClass == 'All':
+                        connections.append((outputKey, inputKey))
+                    elif OSignalClass == ISignalClass:
                         connections.append((outputKey, inputKey))
                     elif ISignalClass in OSignalClass.convertToList:
                         connections.append((outputKey, inputKey))
