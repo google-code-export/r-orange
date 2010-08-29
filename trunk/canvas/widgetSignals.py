@@ -93,7 +93,7 @@ class widgetSignals():
         for output in self.outputs:
             if output[0] == signalName: return output[1]
         return None
-    
+    """
     # ########################################################################
     def connect(self, control, signal, method):
         wrapper = SignalWrapper(self, method)
@@ -106,8 +106,8 @@ class widgetSignals():
     def disconnect(self, control, signal, method=None):
         wrapper = self.connections[(control, signal)]
         QMainWindow.disconnect(control, signal, wrapper)
-
-
+    """
+    """
     def getConnectionMethod(self, control, signal):
         if (control, signal) in self.connections:
             wrapper = self.connections[(control, signal)]
@@ -177,7 +177,7 @@ class widgetSignals():
 
         return None
 
-
+    """
     def handleNewSignals(self):
         # this is called after all new signals have been handled
         # implement this in your widget if you want to process something only after you received multiple signals

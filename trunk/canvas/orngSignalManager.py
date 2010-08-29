@@ -4,7 +4,7 @@
 #
 
 import sys, time, OWGUI, os, redREnviron
-from orngCanvasItems import MyCanvasText
+#from orngCanvasItems import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 Single = 2
@@ -12,62 +12,33 @@ Multiple = 4
 
 Default = 8
 NonDefault = 16
+class MyCanvasText(QGraphicsSimpleTextItem):
+    def __init__(self, canvas, text, x, y, flags=Qt.AlignLeft, bold=0, show=1):
+        QGraphicsSimpleTextItem.__init__(self, text, None, canvas)
+        self.setPos(x,y)
+        self.setPen(QPen(Qt.black))
+        self.flags = flags
+        if bold:
+            font = self.font();
+            font.setBold(1);
+            self.setFont(font)
+        if show:
+            self.show()
 
-class InputSignal:
-    def __init__(self, name, signalType, handler, parameters = Single + NonDefault, oldParam = 0, forceAllow = 0):
-        self.name = name
-        self.type = signalType
-        self.handler = handler
-        self.forceAllow = forceAllow
+    def paint(self, painter, option, widget = None):
+        #painter.resetMatrix()
+        painter.setPen(self.pen())
+        painter.setFont(self.font())
 
-        if type(parameters) == str: parameters = eval(parameters)   # parameters are stored as strings
-        # if we have the old definition of parameters then transform them
-        if parameters in [0,1]:
-            self.single = parameters
-            self.default = not oldParam
-            return
-
-        if not (parameters & Single or parameters & Multiple): parameters += Single
-        if not (parameters & Default or parameters & NonDefault): parameters += NonDefault
-        self.single = parameters & Single
-        self.default = parameters & Default
-
-class OutputSignal:
-    def __init__(self, name, signalType, parameters = NonDefault, forceAllow = 0):
-        self.name = name
-        self.type = signalType
-        self.forceAllow = forceAllow
-
-        if type(parameters) == str: parameters = eval(parameters)
-        if parameters in [0,1]: # old definition of parameters
-            self.default = not parameters
-            return
-
-        if not (parameters & Default or parameters & NonDefault): parameters += NonDefault
-        self.default = parameters & Default
-
-
-# class that allows to process only one signal at a time
-class SignalWrapper:
-    def __init__(self, widget, method):
-        self.widget = widget
-        self.method = method
-
-    def __call__(self, *k):
-        manager = self.widget.signalManager
-        if not manager:
-            manager = signalManager
-
-        manager.signalProcessingInProgress += 1
-        try:
-            self.method(*k)
-        finally:
-            manager.signalProcessingInProgress -= 1
-            if not manager.signalProcessingInProgress:
-                manager.processNewSignals(self.widget)
-
-
-
+        xOff = 0; yOff = 0
+        rect = painter.boundingRect(QRectF(0,0,2000,2000), self.flags, self.text())
+        if self.flags & Qt.AlignHCenter: xOff = rect.width()/2.
+        elif self.flags & Qt.AlignRight: xOff = rect.width()
+        if self.flags & Qt.AlignVCenter: yOff = rect.height()/2.
+        elif self.flags & Qt.AlignBottom:yOff = rect.height()
+        #painter.drawText(self.pos().x()-xOff, self.pos().y()-yOff, rect.width(), rect.height(), self.flags, self.text())
+        painter.drawText(-xOff, -yOff, rect.width(), rect.height(), self.flags, self.text())
+        
 class SignalManager:
     widgets = []    # topologically sorted list of widgets
     links = {}      # dicionary. keys: widgetFrom, values: (widgetTo1, signalNameFrom1, signalNameTo1, enabled1), (widgetTo2, signalNameFrom2, signalNameTo2, enabled2)
@@ -80,81 +51,6 @@ class SignalManager:
         self.stderr = sys.stderr
         
         self._seenExceptions = {}
-
-    def setDebugMode(self, debugMode = 0, debugFileName = "signalManagerOutput.txt", verbosity = 1):
-        self.verbosity = verbosity
-        if self.debugFile:
-            sys.stderr = self.stderr
-            #sys.stdout = self.stdout
-            self.debugFile.close()
-            self.debugFile = None
-        if debugMode:
-            self.debugFile = open(debugFileName, "wt", 0)
-            sys.excepthook = self.exceptionHandler
-            sys.stderr = self.debugFile
-            #sys.stdout = self.debugFile
-    # ----------------------------------------------------------
-    # ----------------------------------------------------------
-    # DEBUGGING FUNCTION
-    def closeDebugFile(self):
-        if self.debugFile:
-            self.debugFile.close()
-            self.debugFile = None
-        sys.stderr = self.stderr
-        #sys.stdout = self.stdout
-
-    def addEvent(self, strValue, object = None, eventVerbosity = 1):
-        if not self.debugFile: return
-        if self.verbosity < eventVerbosity: return
-
-        self.debugFile.write(str(strValue))
-        # if isinstance(object, orange.ExampleTable):
-            # name = " " + getattr(object, "name", "")
-            # self.debugFile.write(". Token type = ExampleTable" + name + ". len = " + str(len(object)))
-        if type(object) == list:
-            self.debugFile.write(". Token type = %s. Value = %s" % (str(type(object)), str(object[:10])))
-        elif object != None:
-            self.debugFile.write(". Token type = %s. Value = %s" % (str(type(object)), str(object)[:100]))
-        self.debugFile.write("\n")
-        self.debugFile.flush()
-    def exceptionSeen(self, type, value, tracebackInfo):
-        import traceback, os
-        shortEStr = "".join(traceback.format_exception(type, value, tracebackInfo))[-2:]
-        return self._seenExceptions.has_key(shortEStr)
-    def exceptionHandler(self, type, value, tracebackInfo):
-        import traceback, os
-        if not self.debugFile: return
-
-        # every exception show only once
-        shortEStr = "".join(traceback.format_exception(type, value, tracebackInfo))[-2:]
-        if self._seenExceptions.has_key(shortEStr): return
-        self._seenExceptions[shortEStr] = 1
-        
-        list = traceback.extract_tb(tracebackInfo, 10)
-        space = "\t"
-        totalSpace = space
-        self.debugFile.write("Unhandled exception of type %s\n" % ( str(type)))
-        self.debugFile.write("Traceback:\n")
-
-        for i, (file, line, funct, code) in enumerate(list):
-            if not code: continue
-            self.debugFile.write(totalSpace + "File: " + os.path.split(file)[1] + " in line %4d\n" %(line))
-            self.debugFile.write(totalSpace + "Function name: %s\n" % (funct))
-            self.debugFile.write(totalSpace + "Code: " + code + "\n")
-            totalSpace += space
-
-        self.debugFile.write(totalSpace[:-1] + "Exception type: " + str(type) + "\n")
-        self.debugFile.write(totalSpace[:-1] + "Exception value: " + str(value)+ "\n")
-        self.debugFile.flush()
-    # ----------------------------------------------------------
-    # ----------------------------------------------------------
-    # freeze/unfreeze signal processing. If freeze=1 no signal will be processed until freeze is set back to 0
-    def setFreeze(self, freeze, startWidget = None):
-        self.freezing = freeze
-        if not freeze and self.widgets != []:
-            if startWidget: self.processNewSignals(startWidget)
-            else: self.processNewSignals(self.widgets[0])
-
     # add widget to list, ## should be removed and use the universal widget list
     def addWidget(self, widget):
         if self.verbosity >= 2:
@@ -172,181 +68,6 @@ class SignalManager:
             self.widgets.remove(widget)
 
 
-    # send list of widgets, that send their signal to widget's signalName
-    def getLinkWidgetsIn(self, widget, signalName):
-        widgets = []
-        for key in self.links.keys():
-            links = self.links[key]
-            for (widgetTo, signalFrom, signalTo, enabled) in links:
-                if widget == widgetTo and signalName == signalTo: widgets.append(key)
-        return widgets
-
-    # send list of widgets, that widget "widget" sends his signal "signalName"
-    def getLinkWidgetsOut(self, widget, signalName):
-        widgets = []
-        if not self.links.has_key(widget): return widgets
-        links = self.links[widget]
-        for (widgetTo, signalFrom, signalTo, enabled) in links:
-            if signalName == signalFrom: widgets.append(widgetTo)
-        return widgets
-
-    # can there be a connection between the widgets (modifications by Kyle R Covington)
-    def canConnect(self, widgetFrom, widgetTo):
-        ## goals; to indicate if two widgets are allowed to connect.  There are a few things that we need to think about.
-        """
-            1) do the widgets share input types?
-                a) if both single input (majority of connections) is the output of widgetFrom a child of the input of widgetTo?  If yes then allow connection.
-                b) if the widgetTo has multiple input types for a single socket is the widgetFrom signal type a child of this (can use the tuple feature of isinstance.
-                c) if the widgetFrom has the 'All' signal then it should send to all connections.  This rewrite will override that as we will check the class of the value that was actually sent and allow those connections (perhaps) though we should use the outputs as a guide.
-        """
-        if self.existsPath(widgetTo, widgetFrom): 
-            print 'Circular Connection'
-            return []  ## can't have circular connections so we don't worry past this if true
-        ## get some info
-        fromInstace = widgetFrom.instance
-        toInstance = widgetTo.instance
-        fromInfo = widgetFrom.widgetInfo
-        toInfo = widgetTo.widgetInfo
-        #print fromInstace, toInstance, fromInfo, toInfo
-        ## collect the input and output signal classes (the classes not the object)
-        inputs = [signal for signal in toInfo.inputs]
-        outputs = [signal for signal in fromInfo.outputs]
-        #print 'In/Out puts', inputs, outputs
-        return toInstance.inputs.matchConnections(fromInstace.outputs)##  return a match between the inputs of one signal and the outputs of another ##self.matchConnections(outputs, inputs, fromInstace, toInstance)  ## returns a list of possible links, may be empty if no links can be found.
-    def matchConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
-        for outS in fromInstace.outputs.getSignalIDs():  # gives the names of the output keys
-            outType = fromInstace.outputs[outS]['signalClass']
-            if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
-                continue
-            for inS in toInstance.inputs.keys():
-                inType = toInstance.inputs[inS]['signalClass']
-                #print outType, inType
-                #print issubclass(outType, inType)
-                #print '######', inS.name, outS.name
-                if inType == None:
-                    print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
-                    return False
-                if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
-                    possibleLinks.append((outS.name, inS.name))
-                    return True  
-                    
-                if type(inType) not in [list, tuple]:
-                    # if issubclass(outType, inType):
-                        # return True
-                    # elif 'convertFromList' in dir(inType) and (outType in inType.convertFromList):
-                        # return True
-                    if type(outType) == type(inType):
-                        return True
-                    elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
-                        return True
-                else:
-                    for i in inType:
-                        # if issubclass(outType, i):
-                            # return True
-                        # elif 
-                        
-                        if 'convertToList' in dir(outType) and i in outType.convertToList:
-                            return True
-        #print possibleLinks
-        return False    
-    def getConnections(self, widgetFrom, widgetTo):
-        ## goals; to indicate if two widgets are allowed to connect.  There are a few things that we need to think about.
-        """
-            1) do the widgets share input types?
-                a) if both single input (majority of connections) is the output of widgetFrom a child of the input of widgetTo?  If yes then allow connection.
-                b) if the widgetTo has multiple input types for a single socket is the widgetFrom signal type a child of this (can use the tuple feature of isinstance.
-                c) if the widgetFrom has the 'All' signal then it should send to all connections.  This rewrite will override that as we will check the class of the value that was actually sent and allow those connections (perhaps) though we should use the outputs as a guide.
-        """
-        if self.existsPath(widgetTo, widgetFrom): 
-            print 'Circular Connection'
-            return []  ## can't have circular connections so we don't worry past this if true
-        ## get some info
-        fromInstace = widgetFrom.instance
-        toInstance = widgetTo.instance
-        fromInfo = widgetFrom.widgetInfo
-        toInfo = widgetTo.widgetInfo
-        #print fromInstace, toInstance, fromInfo, toInfo
-        ## collect the input and output signal classes (the classes not the object)
-        inputs = [signal for signal in toInfo.inputs]
-        outputs = [signal for signal in fromInfo.outputs]
-        #print 'In/Out puts', inputs, outputs
-        return toInstance.inputs.getPossibleConnections(fromInstace.outputs)#  returns a list of possible connections from the outInstance's outputs class.  ###self.getPossibleConnections(outputs, inputs, fromInstace, toInstance)
-    def getPossibleConnections(self, outputs, inputs, fromInstace, toInstance):  ## get the connections based on a list of outputs and inputs.
-        #print 'getPossibleConnections'
-        if 'outputs' not in dir(fromInstace) or 'inputs' not in dir(toInstance):
-            print 'Connection not possible between %s and %s' % (fromInstace.widgetID, toInstance.widgetID)
-            return []  ## somehow a widget was asked to connect with no inputs or outputs and we returned false because no connections can be made.
-        
-        possibleLinks = []
-        for outS in fromInstace.outputs.keys():  # gives the names of the output keys
-            outType = fromInstace.outputs[outS]['signalClass']
-            if outType == None:     #print "Unable to find signal type for signal %s. Check the definition of the widget." % (outS.name)
-                continue
-            for inS in toInstance.inputs.keys():
-                inType = toInstance.inputs[inS]['signalClass']
-                #print outType, inType
-                #print issubclass(outType, inType)
-                #print '######', inS.name, outS.name
-                if inType == None:
-                    print "Unable to find signal type for signal %s. Check the definition of the widget." % (inS.name)
-                    continue
-                if outType == 'All' or inType == 'All':  # if this is the special 'All' signal we need to let this pass
-                    possibleLinks.append((outS, inS))
-                    continue
-                    
-                if type(inType) not in [list, tuple]:
-                    # if issubclass(outType, inType):
-                        # possibleLinks.append((outS.name, inS.name))
-                        #print 'Signal appended', outS.name, inS.name
-                        # continue
-                    if type(outType) == type(inType):
-                        possibleLinks.append((outS, inS))
-                        continue
-                    elif 'convertToList' in dir(outType) and (inType in outType.convertToList):
-                        possibleLinks.append((outS, inS))
-                        continue
-                    
-                else:
-                    for i in inType:
-                        # if issubclass(outType, i):
-                            
-                            # possibleLinks.append((outS.name, inS.name))
-                            # continue
-                        if 'convertToList' in dir(outType) and i in outType.convertToList:
-                            possibleLinks.append((outS, inS))
-                            #print 'Signal appended', outS.name, inS.name
-                            continue
-        #print possibleLinks
-        return possibleLinks
-    def addLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo, enabled):
-        ## adds a link between two widgets.  This will also make the connection between the signalNameFrom and signalNameTo
-        
-        if not widgetTo.inputs.connectSignal(widgetFrom.outputs.getSignal(signalNameFrom), signalNameTo, enabled = enabled):
-            return 0
-        if self.links.has_key(widgetFrom.instance):  ## if the widget already has a link in the links dict
-            for (widget, signalFrom, signalTo, Enabled) in self.links[widgetFrom.instance]:
-                if widget == widgetTo.instance and signalNameFrom == signalFrom and signalNameTo == signalTo:
-                    print "connection ", widgetFrom.instance, " to ", widgetTo.instance, " alread exists. Error!!"
-                    return 0
-        
-        ## append to the links dict
-        self.links[widgetFrom.instance] = self.links.get(widgetFrom.instance, []) + [(widgetTo.instance, signalNameFrom, signalNameTo, enabled)]
-
-        ## let the widgets know a connection was made
-        widgetTo.instance.addInputConnection(widgetFrom.instance, signalNameTo)
-        widgetFrom.instance.addOutputConnection(widgetTo.instance, signalNameFrom)
-        
-        # if there is no key for the signalNameFrom, create it and set its id=None and data = None
-        if not widgetFrom.instance.linksOut.has_key(signalNameFrom):
-            widgetFrom.instance.linksOut[signalNameFrom] = {None:None}
-
-        # if channel is enabled, send data through it
-        if enabled:
-            for key in widgetFrom.instance.linksOut[signalNameFrom].keys():
-                widgetTo.instance.updateNewSignalData(widgetFrom.instance, signalNameTo, widgetFrom.instance.linksOut[signalNameFrom][key], key, signalNameFrom)
-        return 1
-
-    # fix position of descendants of widget so that the order of widgets in self.widgets is consistent with the schema
     def fixPositionOfDescendants(self, widget):
 
         for link in self.links.get(widget, []):
@@ -377,22 +98,7 @@ class SignalManager:
                     parents.extend(self.getParents(k))
         return parents
          
-         
-    # return list of signals that are connected from widgetFrom to widgetTo
-    def findSignals(self, widgetFrom, widgetTo):
-        signals = []
-        for (widget, signalNameFrom, signalNameTo, enabled) in self.links.get(widgetFrom, []):
-            if widget == widgetTo:
-                signals.append((signalNameFrom, signalNameTo))
-        return signals
-
-    # is signal from widgetFrom to widgetTo with name signalName enabled?
-    def isSignalEnabled(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo):
-        for (widget, signalFrom, signalTo, enabled) in self.links[widgetFrom]:
-            if widget == widgetTo and signalFrom == signalNameFrom and signalTo == signalNameTo:
-                return enabled
-        return 0
-
+    """
     def removeLink(self, widgetFrom, widgetTo, signalNameFrom, signalNameTo):
         if self.verbosity >= 2:
             self.addEvent("remove link", eventVerbosity = 2)
@@ -410,58 +116,10 @@ class SignalManager:
                         #print 'processing signals'
         
         widgetTo.removeInputConnection(widgetFrom, signalNameTo)
-
+    """
 
     # ############################################
     # ENABLE OR DISABLE LINK CONNECTION
-
-    def setLinkEnabled(self, widgetFrom, widgetTo, enabled, justSend = False):
-        links = self.links[widgetFrom]
-        for i in range(len(links)):
-            (widget, nameFrom, nameTo, e) = links[i]
-            if widget == widgetTo:
-                if not justSend:
-                    links[i] = (widget, nameFrom, nameTo, enabled)
-                if enabled:
-                    for key in widgetFrom.linksOut[nameFrom].keys():
-                        widgetTo.updateNewSignalData(widgetFrom, nameTo, widgetFrom.linksOut[nameFrom][key], key, nameFrom)
-
-        if enabled: self.processNewSignals(widgetTo)
-
-
-    def getLinkEnabled(self, widgetFrom, widgetTo):
-        for (widget, nameFrom, nameTo, enabled) in self.links[widgetFrom]:      # it is enough that we find one signal connected from widgetFrom to widgetTo
-            if widget == widgetTo:                                  # that we know wheather the whole link (all signals) is enabled or not
-                return enabled
-
-
-    # widget widgetFrom sends signal with name signalName and value value
-    def send(self, widgetFrom, signalNameFrom, value, id):
-        # add all target widgets new value and mark them as dirty
-        # if not freezed -> process dirty widgets
-        if self.verbosity >= 2:
-            self.addEvent("send data", value, eventVerbosity = 2)
-        #print 'Load saved session is set to '+str(self.loadSavedSession)
-
-        if not self.links.has_key(widgetFrom): return
-        for (widgetTo, signalFrom, signalTo, enabled) in self.links[widgetFrom]:
-            if signalFrom == signalNameFrom and enabled == 1:
-                #print "signal from ", widgetFrom, " to ", widgetTo, " signal: ", signalNameFrom, " value: ", value, " id: ", id
-                widgetTo.updateNewSignalData(widgetFrom, signalTo, value, id, signalNameFrom)
-                print 'freezing: %s, signal processing in progress:%s' % (self.freezing, self.signalProcessingInProgress)
-                
-
-
-        if not self.freezing and not self.signalProcessingInProgress:
-            #print "processing new signals"
-            self.processNewSignals(widgetFrom)
-
-    # when a new link is created, we have to
-    def sendOnNewLink(self, widgetFrom, widgetTo, signals):
-        for (outName, inName) in signals:
-            for key in widgetFrom.linksOut[outName].keys():
-                widgetTo.updateNewSignalData(widgetFrom, inName, widgetFrom.linksOut[outName][key], key, outName)
-
 
     def setNeedAttention(self,firstWidget) :
         #index = self.widgets.index(firstWidget)
@@ -476,7 +134,7 @@ class SignalManager:
             if i.outputs != None and len(i.outputs) !=0 and not i.loadSavedSession:
                 i.setInformation(id = 'attention', text = 'Widget needs attention.')
     
-    
+    """
     def processNewSignals(self, firstWidget):
         print 'processNewSignals'
         if len(self.widgets) == 0: 
@@ -510,7 +168,8 @@ class SignalManager:
         # we finished propagating
         self.signalProcessingInProgress = 0
 
-
+    """
+    """
     def existsPath(self, widgetFrom, widgetTo):
         # is there a direct link
         if not self.links.has_key(widgetFrom): return 0
@@ -524,6 +183,7 @@ class SignalManager:
 
         # there is no link...
         return 0
+    """
     def refresh(self):
         for widget in self.widgets:
             widget.refresh()

@@ -3,7 +3,7 @@
 
 import os, sys, time, smtplib
 import redREnviron
-from orngSignalManager import OutputSignal
+#from orngSignalManager import OutputSignal
 
 logHistory = 1
 logFile = os.path.join(redREnviron.directoryNames["canvasSettingsDir"], "history_v002.log")
@@ -77,6 +77,7 @@ def logChangeWidgetPosition(schemaID, widgetID, widgetName, x, y):
     
 def logAddLink(schemaID, outWidget, inWidget, outSignalName):
     """Logs new link to history log file."""
+    return 
     signalType = ''
     for o in outWidget.instance.outputs:
         output = OutputSignal(*o)

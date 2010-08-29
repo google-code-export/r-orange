@@ -73,7 +73,7 @@ class SchemaDoc(QWidget):
         if line:
             self.resetActiveSignals(outWidget, inWidget, None, enabled)
             return None
-        canConnect = self.signalManager.canConnect(outWidget, inWidget)
+        canConnect = inWidget.instance.inputs.matchConnections(outWidget.instance.outputs)
         print canConnect, inWidget, outWidget
         if not canConnect:
             mb = QMessageBox("Failed to Connect", "Connection Not Possible\n\nWould you like to search for templates\nwith these widgets?", 
@@ -103,12 +103,12 @@ class SchemaDoc(QWidget):
             possibleConnections = dialog.getLinks()
         
 
-        self.signalManager.setFreeze(1)
+        #self.signalManager.setFreeze(1)
         linkCount = 0
         for (outName, inName) in possibleConnections:
             linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
 
-        self.signalManager.setFreeze(0, outWidget.instance)
+        #self.signalManager.setFreeze(0, outWidget.instance)
 
         # if signals were set correctly create the line, update widget tooltips and show the line
         line = self.getLine(outWidget, inWidget)
@@ -146,11 +146,11 @@ class SchemaDoc(QWidget):
                 self.removeLink(outWidget, inWidget, outName, inName)
                 signals.remove((outName, inName))
 
-        self.signalManager.setFreeze(1)
+        #self.signalManager.setFreeze(1)
         for (outName, inName) in newSignals:
             if (outName, inName) not in signals:
                 self.addLink(outWidget, inWidget, outName, inName, enabled)
-        self.signalManager.setFreeze(0, outWidget.instance)
+        #self.signalManager.setFreeze(0, outWidget.instance)
 
         outWidget.updateTooltip()
         inWidget.updateTooltip()
@@ -173,7 +173,14 @@ class SchemaDoc(QWidget):
             inWidget.addInLine(line)
             inWidget.updateTooltip()
             
+        
+        if not inWidget.instance.inputs.getSignal(inSignalName)['multiple']:
+            ## check existing link to the input signal
             
+            existing = inWidget.instance.inputs.getLinks(inSignalName)
+            for l in existing:
+                l['parent'].outputs.removeSignal(inWidget.instance.inputs.getSignal(inSignalName), l['sid'])
+                self.removeLink(self.getWidgetByInstance(l['parent']), inWidget, l['sid'], inSignalName)
             
 
         ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
@@ -465,7 +472,11 @@ class SchemaDoc(QWidget):
             if (widget.caption == widgetName):
                 return widget
         return None
-
+    def getWidgetByInstance(self, instance):
+        for widget in self.widgets:
+            if widget.instance == instance:
+                return widget
+        return None
     def getWidgetByID(self, widgetID):
         for widget in self.widgets:
             if (widget.instance.widgetID == widgetID):
@@ -861,7 +872,7 @@ class SchemaDoc(QWidget):
                 # self.addLink(outWidget, inWidget, outName, inName, enabled)
             print '######## enabled ########\n\n', enabled, '\n\n'
             self.addLine(outWidget, inWidget, enabled, process = False)
-            self.signalManager.setFreeze(0)
+            #self.signalManager.setFreeze(0)
             qApp.processEvents()
             
         return (loadedOk, failureText)

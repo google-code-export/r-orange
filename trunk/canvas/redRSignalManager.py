@@ -9,7 +9,7 @@ class OutputHandler:
     def getAllOutputs(self):
         return self.outputSignals
     def addOutput(self, id, name, signalClass):
-        self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent}   # set up an 'empty' signal
+        self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent, 'sid':id}   # set up an 'empty' signal
         
     def connectSignal(self, signal, id, enabled = 1, process = True):
         if id not in self.outputSignals.keys():
@@ -17,7 +17,7 @@ class OutputHandler:
             
         self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
         # now send data through
-        
+        signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
         if process:
             print 'processing signal'
             self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
@@ -38,7 +38,7 @@ class OutputHandler:
                     )
             ## remove the signal from the outputSignals
             del self.outputSignals[id]['connections'][signal['id']]
-        
+            signal['parent'].inputs.removeLink(signal['sid'], self.getSignal(id))
     def setOutputData(self, signalName, value):
         self.outputSignals[signalName]['value'] = value
         
@@ -147,6 +147,7 @@ class OutputHandler:
 class InputHandler:
     def __init__(self, parent):
         self.inputs = {}
+        self.links = {}
         self.parent = parent # the parent widget that owns the InputHandler
     def getAllInputs(self):
         return self.inputs
@@ -196,6 +197,22 @@ class InputHandler:
                     return True
                     
         return False
+    def addLink(self, sid, signal):
+        if sid not in self.links.keys():
+            self.links[sid] = []
+        if self.getSignal(sid)['multiple']:
+            self.links[sid].append(signal)
+        else:
+            for link in self.links[sid]:
+                link['parent'].removeSignal(self.getSignal(sid), link['sid'])
+            self.links[sid].append(signal)
+    def removeLink(self, sid, signal):
+        if sid not in self.links.keys(): return
+        self.links[sid].remove(signal)
+    def getLinks(self, sid):
+        if sid not in self.links.keys():
+            self.links[sid] = []
+        return self.links[sid]
     ######### Loading and Saving ##############
     def returnInputs(self):
         return None  ## no real reason to return any of this becasue the outputHandler does all the signal work

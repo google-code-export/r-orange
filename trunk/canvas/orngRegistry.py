@@ -2,7 +2,7 @@
 #
 
 import os, sys, re, glob, stat
-from orngSignalManager import OutputSignal, InputSignal
+#from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 # print 'Importing orngRegistry.py'
@@ -200,21 +200,21 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                 
             # build the tooltip
             ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.
-            widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
-            if len(widgetInfo.inputs) == 0:
-                formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; None<br>"
-            else:
-                formatedInList = "<b>Inputs:</b><br>"
-                for signal in widgetInfo.inputs:
-                    formatedInList += " &nbsp;&nbsp; - " + signal.name + " (" + signal.type + ")<br>"
+            #widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
+            #if len(widgetInfo.inputs) == 0:
+            formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; None<br>"
+            # else:
+                # formatedInList = "<b>Inputs:</b><br>"
+                # for signal in widgetInfo.inputs:
+                    # formatedInList += " &nbsp;&nbsp; - " + signal.name + " (" + signal.type + ")<br>"
     
-            widgetInfo.outputs = [OutputSignal(*signal) for signal in eval(widgetInfo.outputList)]
-            if len(widgetInfo.outputs) == 0:
-                formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; None<br>"
-            else:
-                formatedOutList = "<b>Outputs:</b><br>"
-                for signal in widgetInfo.outputs:
-                    formatedOutList += " &nbsp; &nbsp; - " + signal.name + " (" + signal.type + ")<br>"
+            #widgetInfo.outputs = [OutputSignal(*signal) for signal in eval(widgetInfo.outputList)]
+            #if len(widgetInfo.outputs) == 0:
+            formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; None<br>"
+            # else:
+                # formatedOutList = "<b>Outputs:</b><br>"
+                # for signal in widgetInfo.outputs:
+                    # formatedOutList += " &nbsp; &nbsp; - " + signal.name + " (" + signal.type + ")<br>"
     
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s<hr>%s<hr>%s" % (name, widgetInfo.description, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))

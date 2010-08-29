@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 import os.path, sys
 from string import strip, count, replace
 import orngDoc, redRExceptionHandling, orngRegistry
-from orngSignalManager import InputSignal, OutputSignal
+#from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx
 import redREnviron
 import xml.dom.minidom

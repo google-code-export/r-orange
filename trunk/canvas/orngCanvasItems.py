@@ -433,7 +433,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if outWidget == inWidget: return
        
         signalManager = orngSignalManager.SignalManager()
-        canConnect = signalManager.canConnect(outWidget, inWidget)
+        canConnect = inWidget.instance.inputs.matchConnections(outWidget.instance.outputs) #signalManager.canConnect(outWidget, inWidget)
         print 'can connect in orngCanvasItems'
         if outWidget == self:
             self.shownRightEdge = canConnect and self.imageRightEdgeG or self.imageRightEdgeR
@@ -612,6 +612,7 @@ class GhostWidget(CanvasWidget):  # graphical representation of a ghost widget. 
         self.canvasDlg.schema.signalManager.addWidget(self.instance)
         self.canvasDlg.schema.addLine(self.creatingWidget, self)
         self.instance.setCaption(self.caption)
+            
 class MyCanvasText(QGraphicsSimpleTextItem):
     def __init__(self, canvas, text, x, y, flags=Qt.AlignLeft, bold=0, show=1):
         QGraphicsSimpleTextItem.__init__(self, text, None, canvas)
