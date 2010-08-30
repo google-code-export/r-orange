@@ -12,6 +12,7 @@ import OWGUI
 import OWGUIEx
 import redRGUI
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RList import RList as redRRList
 import libraries.base.signalClasses.RVector as rvec
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.checkBox import checkBox

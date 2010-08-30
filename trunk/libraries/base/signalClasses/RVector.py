@@ -2,12 +2,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from RSession import Rcommand
 from libraries.base.signalClasses.RMatrix import *
-from RDataFrame import *
-from StructuredDict import *
-from UnstructuredDict import *
-from RVector import *
+from libraries.base.signalClasses.RDataFrame import *
+from libraries.base.signalClasses.StructuredDict import *
+from libraries.base.signalClasses.UnstructuredDict import *
+from libraries.base.signalClasses.RVector import *
 
 class RVector(RMatrix):
+    convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RMatrix]
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
 

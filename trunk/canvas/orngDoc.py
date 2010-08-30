@@ -65,8 +65,9 @@ class SchemaDoc(QWidget):
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
     def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):
-        print '############ ADDING LINE ##################'
+        print '############ ADDING LINE ##################\n\n', outWidget, inWidget, process, '\n\n\n'
         if outWidget == inWidget: 
+            print 'Same widget'
             return None
         # check if line already exists
         line = self.getLine(outWidget, inWidget)
@@ -89,25 +90,27 @@ class SchemaDoc(QWidget):
             
             return None
 
-        dialog = SignalDialog(self.canvasDlg, None)
-        dialog.setOutInWidgets(outWidget, inWidget)
+        if process != False:
+            print 'showing process dialog process is =:', process
+            dialog = SignalDialog(self.canvasDlg, None)
+            dialog.setOutInWidgets(outWidget, inWidget)
 
-        # if there are multiple choices, how to connect this two widget, then show the dialog
+            # if there are multiple choices, how to connect this two widget, then show the dialog
         
-        possibleConnections = inWidget.instance.inputs.getPossibleConnections(outWidget.instance.outputs)  #  .getConnections(outWidget, inWidget)
-        if len(possibleConnections) > 1:
-            #print possibleConnections
-            #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
-            if dialog.exec_() == QDialog.Rejected:
-                return None
-            possibleConnections = dialog.getLinks()
-        
+            possibleConnections = inWidget.instance.inputs.getPossibleConnections(outWidget.instance.outputs)  #  .getConnections(outWidget, inWidget)
+            if len(possibleConnections) > 1:
+                #print possibleConnections
+                #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
+                if dialog.exec_() == QDialog.Rejected:
+                    return None
+                possibleConnections = dialog.getLinks()
+            
 
-        #self.signalManager.setFreeze(1)
-        linkCount = 0
-        for (outName, inName) in possibleConnections:
-            print 'Adding link', outName, inName
-            linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
+            #self.signalManager.setFreeze(1)
+            linkCount = 0
+            for (outName, inName) in possibleConnections:
+                print 'Adding link adsfasdfasdf', outName, inName
+                linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
 
         #self.signalManager.setFreeze(0, outWidget.instance)
 
@@ -681,7 +684,7 @@ class SchemaDoc(QWidget):
             temp.setAttribute("inWidgetCaption", line.inWidget.caption)
             temp.setAttribute('inWidgetIndex', line.inWidget.instance.widgetID)
             temp.setAttribute("enabled", str(line.getEnabled()))
-            temp.setAttribute("signals", str(line.getSignals()))
+            temp.setAttribute("signals", str(line.outWidget.instance.outputs.getLinkPairs(line.inWidget.instance)))
             lines.appendChild(temp)
         print '\n\n', lines, 'lines\n\n'
         if template:
@@ -851,7 +854,9 @@ class SchemaDoc(QWidget):
                 raise Exception
             if freeze: enabled = 0
             else:      enabled = line.getAttribute("enabled")
-            #signals = line.getAttribute("signals")
+            print str(line.getAttribute('signals'))
+            signals = eval(str(line.getAttribute("signals")))
+            print '((((((((((((((((\n\nSignals\n\n', signals, '\n\n'
             if tmp: ## index up the index to match sessionID
                 inIndex += '_'+str(self.sessionID)
                 outIndex += '_'+str(self.sessionID)
@@ -870,10 +875,10 @@ class SchemaDoc(QWidget):
                 continue
             # signalList = eval(signals)
             # print 'signal list', signalList
-            # for (outName, inName) in signalList:
-                # self.addLink(outWidget, inWidget, outName, inName, enabled)
+            for (outName, inName) in signals:
+                self.addLink(outWidget, inWidget, outName, inName, enabled)
             print '######## enabled ########\n\n', enabled, '\n\n'
-            self.addLine(outWidget, inWidget, enabled, process = False)
+            #self.addLine(outWidget, inWidget, enabled, process = False)
             #self.signalManager.setFreeze(0)
             qApp.processEvents()
             

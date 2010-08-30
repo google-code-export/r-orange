@@ -6,7 +6,7 @@ from PyQt4.QtSvg import *
 from redRGUI import widgetState
 import RSession, redREnviron, datetime
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent, image = None, imageType = 'svg'):
+    def __init__(self, parent, image = None, imageType = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         QGraphicsView.__init__(self, parent)
         parent.layout().addWidget(self)  # place the widget into the parent widget
@@ -129,6 +129,7 @@ class graphicsView(QGraphicsView, widgetState):
             
     def addImage(self, image, imageType = None):
         ## add an image to the view
+        self.image = image
         if not self.scene():
             scene = QGraphicsScene()
             self.setScene(scene)
@@ -140,20 +141,31 @@ class graphicsView(QGraphicsView, widgetState):
             mainItem = QGraphicsSvgItem(image)
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(image))
+        else:
+            mainItem = QGraphicsPixmapItem(QPixmap(image))
         self.scene().addItem(mainItem)
         self.mainItem = mainItem
         
         
     def getSettings(self):
         # print 'in widgetLabel getSettings'
-        r = {'text':None}
+        import os
+        if os.path.split(self.image)[0] == redREnviron.directoryNames['tempDir']:
+            ## the image is in the tempDir so we should go there in the future
+            directory = 'temp'
+        else:
+            directory = os.path.split(self.image)[0]
+            
+        r = {'image':os.path.split(self.image)[1], 'directory':directory}
         # print r
         return r
     def loadSettings(self,data):
-        # print 'in widgetLabel loadSettings'
-        # print data
-        #self.setText(data['text'])
-        pass
+        import os
+        if data['directory'] == 'temp':
+            directory = redREnviron.directoryNames['tempDir']
+        else:
+            directory = data['directory']
+        self.addImage(os.path.join(directory, data['image']))
     def getReportText(self, fileDir):
         #return ''
         pass

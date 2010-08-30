@@ -62,6 +62,14 @@ class OutputHandler:
                     return True
                     
         return False
+        
+    def getLinkPairs(self, widget):
+        pairs = []
+        for id in self.outputSignals.keys():
+            for con in self.outputSignals[id]['connections'].keys():
+                if self.outputSignals[id]['connections'][con]['signal']['parent'] == widget:
+                    pairs.append((id, self.outputSignals[id]['connections'][con]['signal']['sid']))
+        return pairs
     def getSignalLinks(self, widget):
         ## move across the signals and determine if there is a link to the specified widget
         links = []
@@ -136,7 +144,12 @@ class OutputHandler:
         ## move through the outputs and return a list of outputs and connections.  these connections should be reconnected on reloading of the widget, ideally we will only put atomics into this outputHandler
         data = {}
         for (key, value) in self.outputSignals.items():
-            data[key] = {'name':value['name'], 'signalClass':str(value['signalClass']), 'value':value['value'].saveSettings(), 'connections':{}}
+            
+            data[key] = {'name':value['name'], 'signalClass':str(value['signalClass']), 'connections':{}}
+            if value['value']:
+                data[key]['value'] = value['value'].saveSettings()
+            else:
+                data[key]['value'] = None
             for (vKey, vValue) in value['connections'].items():
                 data[key]['connections'][vKey] = {'id':vValue['signal']['sid'], 'parentID':vValue['signal']['parent'].widgetID, 'enabled':vValue['enabled']} ## now we know the widgetId and the signalID (sid) used for connecting widgets in the future.
                 
@@ -178,6 +191,9 @@ class InputHandler:
             'sid':id, 
             'id':str(id)+'_'+self.parent.widgetID, 
             'parent':self.parent}
+    def signalIDs(self):
+        return self.inputs.keys()
+
     def getSignal(self, id):
         return self.inputs[id]
     def matchConnections(self, outputHandler):

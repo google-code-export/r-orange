@@ -15,7 +15,8 @@ import RSession, redREnviron
 class RedRInitWizard(QWizard):
     def __init__(self, parent = None):
         QWizard.__init__(self, parent)
-        
+        #layout = [QWizard.BackButton, QWizard.NextButton, QWizard.FinishButton]
+        #self.setButtonLayout(layout)
         self.setWindowTitle('Red-R Setup')
         self.settings = dict(redREnviron.settings)
         self.registerPage = QWizardPage()

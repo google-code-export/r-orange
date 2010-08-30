@@ -176,8 +176,8 @@ class OrangeCanvasDlg(QMainWindow):
         if splashWindow:
             splashWindow.hide()
 
-        if redREnviron.settings['firstLoad']:
-            self.startSetupWizard()
+        #if redREnviron.settings['firstLoad']:
+        #self.startSetupWizard()
         qApp.processEvents()
 
 
