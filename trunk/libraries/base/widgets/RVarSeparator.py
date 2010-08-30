@@ -25,13 +25,13 @@ class RVarSeparator(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
        
-        self.inputs.addInput('id0', 'R Environment', redRREnvironment, self.process)
+        self.inputs.addInput('id0', 'R Environment', renv.REnvironment, self.process)
 
-        self.outputs.addOutput('id0', 'R Session', redRREnvironment)
-        self.outputs.addOutput('id1', 'Non-Standard R Variable', redRRVariable)
-        self.outputs.addOutput('id2', 'R Data Frame (Data Table)', redRRDataFrame)
-        self.outputs.addOutput('id3', 'R List', redRRList)
-        self.outputs.addOutput('id4', 'R Vector', redRRVector)
+        self.outputs.addOutput('id0', 'R Session', renv.REnvironment)
+        self.outputs.addOutput('id1', 'Non-Standard R Variable', rvar.RVariable)
+        self.outputs.addOutput('id2', 'R Data Frame (Data Table)', rdf.RDataFrame)
+        self.outputs.addOutput('id3', 'R List', rlist.RList)
+        self.outputs.addOutput('id4', 'R Vector', rvec.RVector)
 
        
         # self.help.setHtml('The R Variable Separator is used to separate variables from a loaded R session.  Connecting the R Loader widget to this widget will display a list of available variables in the local environment to which the session was loaded.  Clicking on an element in the list will send that element on to downstream widgets.  One should take note of the class of the element that is sent as this will specify the output connection of the data.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')

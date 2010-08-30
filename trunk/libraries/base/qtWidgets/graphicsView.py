@@ -4,7 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 from redRGUI import widgetState
-import RSession, redREnviron, datetime
+import RSession, redREnviron, datetime, os
 class graphicsView(QGraphicsView, widgetState):
     def __init__(self, parent, image = None, imageType = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
@@ -129,20 +129,25 @@ class graphicsView(QGraphicsView, widgetState):
             
     def addImage(self, image, imageType = None):
         ## add an image to the view
-        self.image = image
+        self.image = os.path.abspath(image)
+        #print self.image
         if not self.scene():
+            print 'loading scene'
             scene = QGraphicsScene()
             self.setScene(scene)
-        if not imageType:
-            imageType = image.split('.')[-1]
+            print self.image
+        if imageType == None:
+            imageType = os.path.split(image)[1].split('.')[-1]
         if imageType not in ['svg', 'png', 'jpeg']:
+            self.clear()
             raise Exception, 'Image type specified is not a valid type for this widget.'
         if imageType == 'svg':
             mainItem = QGraphicsSvgItem(image)
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(image))
         else:
-            mainItem = QGraphicsPixmapItem(QPixmap(image))
+            raise Exception, 'Image type %s not specified in a plotting method' % imageType
+            #mainItem = QGraphicsPixmapItem(QPixmap(image))
         self.scene().addItem(mainItem)
         self.mainItem = mainItem
         

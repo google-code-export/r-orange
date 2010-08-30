@@ -22,7 +22,6 @@ class RLoader(OWRpy):
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
-        self.inputs = None
         self.outputs.addOutput('id0', 'R Session', redRREnvironment)
 
         print os.path.abspath('/')

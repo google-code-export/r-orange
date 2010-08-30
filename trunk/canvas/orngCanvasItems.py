@@ -489,9 +489,11 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
         if not self.ghost:
-            if len(self.instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-            if len(self.instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
-
+            try:
+                if len(self.instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+                if len(self.instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+            except:
+                pass
         # draw the label
         painter.setPen(QPen(QColor(0,0,0)))
         midX, midY = self.widgetSize.width()/2., self.widgetSize.height() + 5

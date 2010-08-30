@@ -9,7 +9,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
 class RedRscale(OWRpy): 
@@ -55,7 +55,7 @@ class RedRscale(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['scale']+'<-scale(x='+str(self.RFunctionParam_x)+','+inj+')')
-        newData = signals.redRRMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
     def getReportText(self, fileDir):

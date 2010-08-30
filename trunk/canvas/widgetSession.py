@@ -220,24 +220,24 @@ class widgetSession():
             var = varc(data = d['data']) 
             var.loadSettings(d)
         except Exception as inst: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            print redRExceptionHandling.formatException()
-            try:
-                var = None
-                for (name, att) in self.outputs:
-                    if name == sentItemName:
-                        var = att(data = None, checkVal = False)
+            # print redRExceptionHandling.formatException()
+            # try:
+                # var = None
+                # for (name, att) in self.outputs:
+                    # if name == sentItemName:
+                        # var = att(data = None, checkVal = False)
                         
-                if var == None: raise Exception
-                var.loadSettings(d['data'])
-            except Exception as inst: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-                print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                print redRExceptionHandling.formatException()
-                
-                try:
-                    var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
-                except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                    print 'Fatal exception in loading.  Can\'t assign the signal value'
-                    var = None
+                # if var == None: raise Exception
+                # var.loadSettings(d['data'])
+            # except Exception as inst: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
+            print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+            print redRExceptionHandling.formatException()
+            
+            try:
+                var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+            except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
+                print 'Fatal exception in loading.  Can\'t assign the signal value'
+                var = None
         finally:
             if fp:
                 fp.close()

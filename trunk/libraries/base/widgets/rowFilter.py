@@ -9,8 +9,8 @@
 
 from OWRpy import *
 import redRGUI
-import libraries.base.signalClasses.RDataFrame as rdf
-import libraries.base.signalClasses.RVector as RVector
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 
 from libraries.base.qtWidgets.filterTable import filterTable

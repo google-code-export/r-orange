@@ -166,14 +166,15 @@ class SchemaDoc(QWidget):
         if outWidget.instance.outputs.getSignal(outSignalName) in inWidget.instance.inputs.getLinks(inSignalName): return ## the link already exists
             
         
-        if not inWidget.instance.inputs.getSignal(inSignalName)['multiple']:
-            ## check existing link to the input signal
-            
-            existing = inWidget.instance.inputs.getLinks(inSignalName)
-            for l in existing:
-                l['parent'].outputs.removeSignal(inWidget.instance.inputs.getSignal(inSignalName), l['sid'])
-                self.removeLink(self.getWidgetByInstance(l['parent']), inWidget, l['sid'], inSignalName)
-            
+        if inWidget.instance.inputs.getSignal(inSignalName):
+            if not inWidget.instance.inputs.getSignal(inSignalName)['multiple']:
+                ## check existing link to the input signal
+                
+                existing = inWidget.instance.inputs.getLinks(inSignalName)
+                for l in existing:
+                    l['parent'].outputs.removeSignal(inWidget.instance.inputs.getSignal(inSignalName), l['sid'])
+                    self.removeLink(self.getWidgetByInstance(l['parent']), inWidget, l['sid'], inSignalName)
+                
         line = self.getLine(outWidget, inWidget)
         if not line:
             line = orngCanvasItems.CanvasLine(self.signalManager, self.canvasDlg, self.canvasView, outWidget, inWidget, self.canvas)

@@ -8,7 +8,7 @@ from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
-import RSession, redREnviron
+import RSession, redREnviron, os
 import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
@@ -159,7 +159,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.R(query)
             self.R('dev.off()')
         
-        
+        print fileName
         if str(devNumber) in self.device:
             self.device[str(devNumber)].clear()
             self.device[str(devNumber)].addImage(fileName)

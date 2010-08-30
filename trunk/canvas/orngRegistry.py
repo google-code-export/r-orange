@@ -138,8 +138,8 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         if istart < 0 or iend < 0:
             continue
         name = data[istart+6:iend]
-        inputList = getSignalList(re_inputs, data)
-        outputList = getSignalList(re_outputs, data)
+        #inputList = getSignalList(re_inputs, data)
+        #outputList = getSignalList(re_outputs, data)
         
         dirname, fname = os.path.split(filename)
         widgetName = os.path.splitext(fname)[0]
@@ -175,11 +175,11 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          time = datetime,
                          fileName = package['Name'] + '_' + widgetName,
                          widgetName = widgetName,
-                         fullName = filename,
-                         inputList = inputList, outputList = outputList
+                         fullName = filename
+                         #inputList = inputList, outputList = outputList
                          )
     
-            for attr, deflt in (("contact>", "") , ("icon>", "Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes"), ("outputWidgets>", ""), ("inputWidgets>", "")):
+            for attr, deflt in (('inputs>', 'None'), ('outputs>', 'None'), ("contact>", "") , ("icon>", "Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes"), ("outputWidgets>", ""), ("inputWidgets>", "")):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 
@@ -202,7 +202,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.
             #widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
             #if len(widgetInfo.inputs) == 0:
-            formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; None<br>"
+            formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; %s<br>" % widgetInfo.inputs
             # else:
                 # formatedInList = "<b>Inputs:</b><br>"
                 # for signal in widgetInfo.inputs:
@@ -210,7 +210,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     
             #widgetInfo.outputs = [OutputSignal(*signal) for signal in eval(widgetInfo.outputList)]
             #if len(widgetInfo.outputs) == 0:
-            formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; None<br>"
+            formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; %s<br>" % widgetInfo.outputs
             # else:
                 # formatedOutList = "<b>Outputs:</b><br>"
                 # for signal in widgetInfo.outputs:
@@ -220,12 +220,6 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             widgets.append((widgetID, widgetInfo))
         except Exception, msg:
             print redRExceptionHandling.formatException(errorMsg='Error in widget %s in package %s' % (package['Name'], widgetName))
-            # if not hasErrors:
-                # print "There were problems importing the following widgets:"
-                # hasErrors = True
-            # print "   %s: %s" % (widgetName, msg)
-            # widgetsWithError.append(widgetName)
-        
     return widgets
 
 def readTemplates(directory):

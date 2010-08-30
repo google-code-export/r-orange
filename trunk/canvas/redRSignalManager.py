@@ -195,7 +195,10 @@ class InputHandler:
         return self.inputs.keys()
 
     def getSignal(self, id):
-        return self.inputs[id]
+        if id in self.inputs.keys():
+            return self.inputs[id]
+        else:
+            return None
     def matchConnections(self, outputHandler):
         ## determine if there are any valid matches between the signal handlers
         for outputKey in outputHandler.outputSignals.keys():
