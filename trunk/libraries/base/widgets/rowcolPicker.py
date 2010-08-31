@@ -44,7 +44,7 @@ class rowcolPicker(OWRpy):
         area = widgetBox(self.controlArea,orientation='horizontal')       
         options = widgetBox(area, orientation = 'vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
-        
+        self.alwaysSend = checkBox(options, buttons = ['Always send these selections'])
         self.sendSection = checkBox(options, label = "Send Where Selection Is:", buttons = ["True", "False"], setChecked = "True", toolTip = "Select True to send data from the Data slot where the selections that you made are True.\nSelect False to send data from the Not Data slot that are not the selections you made.")
         self.rowcolBox = radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
         callback=self.rowcolButtonSelected)
@@ -81,7 +81,12 @@ class rowcolPicker(OWRpy):
             self.rowcolButtonSelected()
             dims = data.getDims_data()
             self.infoBox.setText('# Rows: ' + str(dims[0]) +'\n# Columns: ' + str(dims[1]))
-
+            if 'Always send these selections' in self.alwaysSend.getChecked():
+                self.subset()
+        else:
+            self.data = ''
+            self.dataParent = None
+            self.attributes.clear()
     def invertSelection(self):
         self.attributes.invertSelection()
         self.onSelect()
@@ -102,11 +107,15 @@ class rowcolPicker(OWRpy):
         else: #by exclusion we haven't picked anything yet
             self.status.setText('You must select either Row or Column to procede')
     def setSubsettingVector(self, data):
-        if data == None: return       
+        if data == None: 
+            self.subsetBox.setEnabled(False)
+            self.ssv = ''
+            self.subsetColumn.clear()
+            return       
+            
         self.subsetBox.setEnabled(True)
 
         self.ssv = data.getData()
-        print self.ssv
         self.subsetColumn.clear()
         self.subsetColumn.addItems(self.R('names('+data.getData()+')', silent = True))
         self.ssvdata = data
