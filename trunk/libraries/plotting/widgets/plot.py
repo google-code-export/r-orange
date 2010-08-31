@@ -15,6 +15,7 @@ from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
 class plot(OWRpy): 
     settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
@@ -32,6 +33,7 @@ class plot(OWRpy):
         self.RFunctionParam_xlab = lineEdit(box, label = 'X Axis Label:')
         self.RFunctionParam_ylab = lineEdit(box, label = 'Y Axis Label:')
         self.RFunctionParam_cex = lineEdit(box, '100', label = 'Text Magnification Percent:')
+        self.plotArea = redRGraphicsView(self.controlArea)
         self.advancedOptions = lineEdit(box, label = 'Advanced Options:', toolTip = 'Advanced obtions to be added to the R command, this can be things like points, charachter labels, etc.  See R documentation for more help.')
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
@@ -90,7 +92,7 @@ class plot(OWRpy):
             inj = ','+','.join(injection)
         else: inj = ''
 
-        self.Rplot('plot('+str(self.RFunctionParam_x)+inj+')')
+        self.plotArea.plot(str(self.RFunctionParam_x)+inj)
         for name in self.plotAttributes.keys():
             if self.plotAttributes[name] != None:
                 self.R(self.plotAttributes[name])

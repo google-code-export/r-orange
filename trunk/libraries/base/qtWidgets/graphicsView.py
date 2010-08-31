@@ -4,20 +4,84 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 from redRGUI import widgetState
-import RSession, redREnviron, datetime, os
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.lineEdit import lineEdit 
+import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent, image = None, imageType = None):
+    def __init__(self, parent):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         QGraphicsView.__init__(self, parent)
-        parent.layout().addWidget(self)  # place the widget into the parent widget
+        self.controlArea = widgetBox(parent)
+        self.topArea = widgetBox(self.controlArea)
+        self.middleArea = widgetBox(self.controlArea)
+        self.bottomArea = widgetBox(self.controlArea)
+        self.middleArea.layout().addWidget(self)  # place the widget into the parent widget
+        scene = QGraphicsScene()
+        self.setScene(scene)
         self.parent = parent
         self.widgetSelectionRect = None
         self.mainItem = None
         self.query = ''
-        if image:
-            ## there is an image and we should set that into the graphics scene
-            self.addImage(image, imageType)
+        self.function = 'plot'
+        self.layers = []
+        self._bg = '#000000'
+        self._cex = 1
+        self._cexAxis = 1
+        self._cexLab = 1
+        self._cexMain = 1
+        self._cexSub = 1
+        self._col = '#FFFFFF'
+        self._colAxis = '#FFFFFF'
+        self._colMain = '#FFFFFF'
+        self._colSub = '#FFFFFF'
+        self._family = 'serif'
+        self._fg = '#000000'
+        self._lty = 1
+        self._lwd = 1
+        self._replotAfterChange = True
+        # self._axisColors = '#FFFFFF'
+        # self._backgroundColor = '#000000'
+        # self._forgroundColor = '#000000'
+        # self._labelColors = '#FFFFFF'
+        # self._subtitleColors = '#FFFFFF'
+        # self._titleColors = '#FFFFFF'
+        self.image = os.path.join(redREnviron.directoryNames['tempDir'], 'plot'+str(time.time())) # the base file name without an extension
+        self.imageFileName = ''
         self.currentScale = 1
+        
+        ## bottom menu bar
+        self.menuBar = QMenuBar(self.bottomArea)
+        self.bottomArea.layout().addWidget(self.menuBar)
+        
+        self.menuParameters = QMenu('Parameters', self)
+        colors = self.menuParameters.addMenu('Colors')
+        colors.addAction('Set Plotting Colors', self.setPlotColors)
+        colors.addAction('Set Axis Colors', self.setAxisColors)
+        colors.addAction('Set Label Colors', self.setLabelColors)
+        colors.addAction('Set Main Title Color', self.setTitleColors)
+        colors.addAction('Set Subtitle Color', self.setSubtitleColors)
+        colors.addAction('Set Forground Color', self.setForgroundColors)
+        colors.addAction('Set Background Color', self.setBackgroundColors)
+        font = self.menuParameters.addMenu('Font')
+        font.addAction('Set Font Family', self.setFontFamily)
+        font.addAction('Set Font Magnification', self.setFontMagnification)
+        
+        fa = font.addMenu('Font Attributes')
+        lines = self.menuParameters.addMenu('Lines')
+        lines.addAction('Set Line Type', self.setLineType)
+        lines.addAction('Set Line Width', self.setLineWidth)
+        points = self.menuParameters.addMenu('Points')
+        points.addAction('Set Point Characters', self.setPointCharacters)
+        
+        
+        
+        self.menuBar.addMenu(self.menuParameters)
+        
+        ### lower Line Edit
+        self.extrasLineEdit = lineEdit(self.bottomArea, label = 'Advanced plotting parameters', 
+            toolTip = 'Add extra parameters to the main plot.\nPlease see documentation for more details about parameters.', callback = self.replot)
+        
+        ### right click menu
         self.menu = QMenu(self)
         save = self.menu.addMenu('Save As')
         save.addAction('Bitmap')
@@ -38,8 +102,79 @@ class graphicsView(QGraphicsView, widgetState):
         # self.setMinimumWidth(25)
         # self.setMinimumHeight(25)
         #self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+    ################################
+    ####  Menu Actions         #####
+    ################################
+    def setPlotColors(self):
+        colorDialog = QColorDialog(self)
+        self._col = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setAxisColors(self):
+        colorDialog = QColorDialog(self)
+        self._colAxis = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setBackgroundColors(self):
+        colorDialog = QColorDialog(self)
+        self._bg = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setExtrasLineEditEnabled(self):
+        pass
+        if self._replotAfterChange:
+            self.replot()
+    def setFontFamily(self):
+        pass
+        if self._replotAfterChange:
+            self.replot()
+    def setFontMagnification(self):
+        pass
+        if self._replotAfterChange:
+            self.replot()
+    def setForgroundColors(self):
+        colorDialog = QColorDialog(self)
+        self._forgroundColor = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setLabelColors(self):
+        colorDialog = QColorDialog(self)
+        self._labelColors = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setTitleColors(self):
+        colorDialog = QColorDialog(self)
+        self._titleColors = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setSubtitleColors(self):
+        colorDialog = QColorDialog(self)
+        self._subtitleColors = str(colorDialog.getColor().name())
+        colorDialog.hide()
+        if self._replotAfterChange:
+            self.replot()
+    def setLineType(self):
+        pass
+        if self._replotAfterChange:
+            self.replot()
+    def setLineWidth(self):
+        pass
+        if self._replotAfterChange:
+            self.replot()
+    def setPointCharacters(self):
+        pass
+        if self._replotAfterChange:
+            self.replot()
     def R(self, query):
         RSession.Rcommand(query = query)
+    def require_librarys(self, libraries):
+        return RSession.require_librarys(libraries)
     def clear(self):
         self.scene().clear()
         
@@ -66,10 +201,10 @@ class graphicsView(QGraphicsView, widgetState):
                     self.scale(1.50, 1.50)
                 elif str(action.text()) == 'Undock':
                     ## want to undock from the widget and make an independent viewing dialog.
-                    self.dialog.layout().addWidget(self)
+                    self.dialog.layout().addWidget(self.controlArea)
                     self.dialog.show()
                 elif str(action.text()) == 'Redock':
-                    self.parent.layout().addWidget(self)
+                    self.parent.layout().addWidget(self.controlArea)
                     self.dialog.hide()
                 elif str(action.text()) == 'Fit In Window':
                     print self.mainItem.boundingRect()
@@ -129,7 +264,7 @@ class graphicsView(QGraphicsView, widgetState):
             
     def addImage(self, image, imageType = None):
         ## add an image to the view
-        self.image = os.path.abspath(image)
+        #self.image = os.path.abspath(image)
         #print self.image
         if not self.scene():
             print 'loading scene'
@@ -187,7 +322,100 @@ class graphicsView(QGraphicsView, widgetState):
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
         self.R(self.query)
         self.R('dev.off()')
+    def _setParameters(self):
+        inj = 'bg = %s, cex = %s, cex.axis = %s, cex.lab = %s, cex.main = %s, cex.sub = %s, col = %s, col.axis = %s, col.main = %s, col.sub = %s, family = %s, fg = %s, lty = %s, lwd = %s' % (
+            '\''+self._bg+'\'',
+            self._cex, 
+            self._cexAxis,
+            self._cexLab,
+            self._cexMain,
+            self._cexSub,
+            '\''+self._col+'\'',
+            '\''+self._colAxis+'\'',
+            '\''+self._colMain+'\'',
+            '\''+self._colSub+'\'',
+            '\''+self._family+'\'',
+            '\''+self._fg+'\'',
+            self._lty,
+            self._lwd
+            )
+        self.R('par('+inj+')')
+        return inj
+    def _startRDevice(self, dwidth, dheight, imageType):
+        if imageType not in ['svg', 'png', 'jpeg']:
+            imageType = 'svg'
         
+        # fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.'+imageType
+        # fileName = fileName.replace('\\', '/')
+        self.imageFileName = str(self.image).replace('\\', '/')+'.'+str(imageType)
+        if imageType == 'svg':
+            self.require_librarys(['RSvgDevice'])
+            self.R('devSVG(file=\''+str(self.imageFileName)+'\', bg = \'white\', width = '
+                +str(dheight)+', height = '+str(dheight)
+                +')')
+        elif imageType == 'png':
+            self.require_librarys(['RSvgDevice'])
+            self.R('png(file=\''+str(self.imageFileName)+'\', bg = \'white\', width = '
+                +str(dheight*100)+', height = '+str(dheight*100)
+                +')')
+        elif imageType == 'jpeg':
+            self.require_librarys(['RSvgDevice'])
+            self.R('jpeg(file=\''+str(self.imageFileName)+'\', bg = \'white\', width = '
+                +str(dheight*100)+', height = '+str(dheight*100)
+                +')')
+                
+    def plot(self, query, function = 'plot', dwidth=6, dheight=6, imageType = 'svg'):
+        ## performs a quick plot given a query and an imageType
+        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], imageType = imageType)
+            
+
+    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = [], imageType = 'svg'):
+        ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
+        self.function = function
+        self.query = query
+        self._startRDevice(dwidth, dheight, imageType)
+        self.extras = self._setParameters()
+        if str(self.extrasLineEdit.text()) != '':
+            self.extras += ', '+str(self.extrasLineEdit.text())
+        
+        fullquery = '%s(%s, %s)' % (function, query, self.extras)
+        self.R(fullquery)
+        
+        if len(layers) > 0:
+            for l in layers:
+                self.R(l)
+                
+        self.R('dev.off()')
+        self.clear()
+        fileName = str(self.imageFileName)
+        self.addImage(fileName)
+        self.layers = layers
+        self._dwidth = dwidth
+        self._dheight = dheight
+        self._imageType = imageType
+    def setExtrasLineEditEnabled(self, enabled = True):
+        
+        self.extrasLineEdit.enabled(enabled)
+        if enabled:
+            self.extrasLineEdit.show()
+        else:
+            self.extrasLineEdit.hide()
+    def setReplotAfterChange(self, replot = True):
+        if replot:
+            self._replotAfterChange = True
+        else:
+            self._replotAfterChange = False
+    def replot(self):
+        self._startRDevice(self._dwidth, self._dheight, self._imageType)
+        self._setParameters()
+        self.R('%s(%s, %s)' % (self.function, self.query, self.extras))
+        if len(self.layers) > 0:
+            for l in self.layers:
+                self.R(l)
+        self.R('dev.off()')
+        self.clear()
+        fileName = str(self.imageFileName)
+        self.addImage(fileName)
 class dialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical',title=None):
         QDialog.__init__(self,parent)
