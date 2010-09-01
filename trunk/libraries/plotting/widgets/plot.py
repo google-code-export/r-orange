@@ -74,8 +74,8 @@ class plot(OWRpy):
         #if self.RFunctionParam_y == '': return
         if self.RFunctionParam_x == '': return
         injection = []
-        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
-            injection.append('pch=rownames('+self.RFunctionParam_x+')')
+        # if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
+            # injection.append('pch=rownames('+self.RFunctionParam_x+')')
         if str(self.RFunctionParam_main.text()) != '':
             injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
         # if str(self.RFunctionParam_xlab.text()) != '':
@@ -102,8 +102,8 @@ class plot(OWRpy):
             self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
             if self.RFunctionParam_x == '': return 'Nothing to plot from this widget'
             injection = []
-            if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
-                injection.append('pch=rownames('+self.RFunctionParam_x+')')
+            # if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
+                # injection.append('pch=rownames('+self.RFunctionParam_x+')')
             if str(self.RFunctionParam_main.text()) != '':
                 injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
             # if str(self.RFunctionParam_xlab.text()) != '':

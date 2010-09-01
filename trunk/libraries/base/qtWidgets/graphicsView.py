@@ -9,6 +9,7 @@ from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.listBox import listBox
+from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
     def __init__(self, parent):
@@ -67,14 +68,21 @@ class graphicsView(QGraphicsView, widgetState):
         colors.addAction('Set Background Color', self.setBackgroundColors)
         font = self.menuParameters.addMenu('Font')
         ffa = font.addMenu('Set Font Family')
-        font.addAction('Set Font Magnification', self.setFontMagnification)
         
         fontComboAction = QWidgetAction(font)
-        self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono', 'HersheySerif', 'HersheySans', 'HersheyScript',
-            'HersheyGothicEnglish', 'HersheyGothicGerman', 'HersheyGothicItalian', 'HersheySymbol', 'HersheySansSymbol'], callback = self.setFontFamily)
+        self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono'], 
+            #'HersheySerif', 'HersheySans', 'HersheyScript',
+            #'HersheyGothicEnglish', 'HersheyGothicGerman', 'HersheyGothicItalian', 'HersheySymbol', 'HersheySansSymbol'], 
+            callback = self.setFontFamily)
         fontComboAction.setDefaultWidget(self.fontCombo)
         ffa.addAction(fontComboAction)
-        
+        #font.addAction('Set Font Magnification', self.setFontMagnification)
+        wb = widgetBox(None)
+        self.fontMag = spinBox(wb, label = 'Font Magnification:', min = 0, max = 500, value = 100) #, callback = self.setFontMagnification)
+        QObject.connect(self.fontMag, SIGNAL('editingFinished ()'), self.setFontMagnification) ## must define ourselves because the function calls the attribute and this causes an error in Qt
+        magAction = QWidgetAction(font)
+        magAction.setDefaultWidget(wb)
+        font.addAction(magAction)
         
         self.menuParameters.setToolTip('Set the parameters of the rendered image.\nThese parameters are standard graphics parameters which may or may not be applicable or rendered\ndepending on the image type and the settings of the plotting widget.')
         fa = font.addMenu('Font Attributes')
@@ -86,11 +94,19 @@ class graphicsView(QGraphicsView, widgetState):
         
         self.imageParameters = QMenu('Image', self)
         type = self.imageParameters.addMenu('Type')
-        type.addAction('Set Image SVG', self.setImageSVG)
-        type.addAction('Set Image PNG', self.setImagePNG)
-        type.addAction('Set Image JPEG', self.setImageJPEG)
+        type.addAction('Set Image Vector Graphics', self.setImageSVG).setToolTip('Renders the image using vector graphics which are scaleable and zoomable,\nbut may not show all graphical options such as forground color changes.')
+        type.addAction('Set Image Bitmap Graphics', self.setImagePNG).setToolTip('Redners the image using bitmap graphics which will become distorted on zooming,\nbut will show all graphical options.')
+        #type.addAction('Set Image JPEG', self.setImageJPEG)
         type.setToolTip('Changes the plotting type of the rendered image.\nDifferent image types may enable or disable certain graphics parameters.')
         
+        self.fileParameters = QMenu('File', self)
+        save = self.fileParameters.addMenu('Save')
+        save.addAction('Bitmap', self.saveAsBitmap)
+        save.addAction('PDF', self.saveAsPDF)
+        save.addAction('Post Script', self.saveAsPostScript)
+        save.addAction('JPEG', self.saveAsJPEG)
+        
+        self.menuBar.addMenu(self.fileParameters)
         self.menuBar.addMenu(self.menuParameters)
         self.menuBar.addMenu(self.imageParameters)
         
@@ -115,7 +131,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.dialog.setWindowTitle('Red-R Graphics View')
         self.dialog.setLayout(QHBoxLayout())
         
-        self.standardImageType = 'png'
+        self.standardImageType = 'svg'
         
     ################################
     ####  Menu Actions         #####
@@ -131,7 +147,10 @@ class graphicsView(QGraphicsView, widgetState):
     def setPlotColors(self):
         colorDialog = colorListDialog()
         colorDialog.exec_()
+        colorDialog.processColors() ## we process one last time to get all of the colors in case we missed some.
         self._col = 'c("'+'","'.join(colorDialog.listOfColors)+'")'
+        if self._col == 'c("")':
+            self._col = 'c("#FFFFFF")'
         colorDialog.hide()
         if self._replotAfterChange:
             self.replot()
@@ -147,16 +166,22 @@ class graphicsView(QGraphicsView, widgetState):
         colorDialog.hide()
         if self._replotAfterChange:
             self.replot()
-    def setExtrasLineEditEnabled(self):
-        pass
-        if self._replotAfterChange:
-            self.replot()
+    def setExtrasLineEditEnabled(self, enabled):
+        if enabled:
+            self.extrasLineEdit.show()
+        else:
+            self.extrasLineEdit.hide()
     def setFontFamily(self):
         self._family = str(self.fontCombo.currentText())
         if self._replotAfterChange:
             self.replot()
     def setFontMagnification(self):
-        pass
+        print self.fontMag.value()
+        print float(self.fontMag.value())/100
+        if float(self.fontMag.value())/100 > 0:
+            self._cex = float(self.fontMag.value())/100
+        else:
+            self._cex = 1
         if self._replotAfterChange:
             self.replot()
     def setForgroundColors(self):
@@ -192,19 +217,47 @@ class graphicsView(QGraphicsView, widgetState):
         if self._replotAfterChange:
             self.replot()
     def setPointCharacters(self):
-        pass
+        ### set a list of point characters to be plotted.  these should be of the form of either a character or an integer for plotting
+        
         if self._replotAfterChange:
             self.replot()
+            
+    #########################
+    ## R session functions ##
+    #########################
     def R(self, query):
         RSession.Rcommand(query = query)
     def require_librarys(self, libraries):
         return RSession.require_librarys(libraries)
+        
+    ##########################
+    ## Interaction Functions #
+    ##########################
     def clear(self):
         self.scene().clear()
         
     def toClipboard(self):
         QApplication.clipboard().setImage(self.returnImage())
-        
+    def saveAsPDF(self):
+        print 'save as pdf'
+        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".pdf", "PDF Document (.pdf)")
+        if qname.isEmpty(): return
+        self.saveAs(str(qname), 'pdf')
+    def saveAsPostScript(self):
+        print 'save as post script'
+        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".eps", "Post Script (.eps)")
+        if qname.isEmpty(): return
+        self.saveAs(str(qname), 'ps')
+    def saveAsBitmap(self):
+        print 'save as bitmap'
+        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".bmp", "Bitmap (.bmp)")
+        if qname.isEmpty(): return
+        self.saveAs(str(qname), 'bmp')
+    def saveAsJPEG(self):
+        print 'save as jpeg'
+        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
+        if qname.isEmpty(): return
+        self.saveAs(str(qname), 'jpeg')
     def mousePressEvent(self, mouseEvent):
         
         if mouseEvent.button() == Qt.RightButton:
@@ -234,25 +287,13 @@ class graphicsView(QGraphicsView, widgetState):
                     print self.mainItem.boundingRect()
                     self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
                 elif str(action.text()) == 'Bitmap':
-                    print 'save as bitmap'
-                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".bmp", "Bitmap (.bmp)")
-                    if qname.isEmpty(): return
-                    self.saveAs(str(qname), 'bmp')
+                    self.saveAsBitmap()
                 elif str(action.text()) == 'PDF':
-                    print 'save as pdf'
-                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".pdf", "PDF Document (.pdf)")
-                    if qname.isEmpty(): return
-                    self.saveAs(str(qname), 'pdf')
+                    self.saveAsPDF()
                 elif str(action.text()) == 'Post Script':
-                    print 'save as post script'
-                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".eps", "Post Script (.eps)")
-                    if qname.isEmpty(): return
-                    self.saveAs(str(qname), 'ps')
+                    self.saveAsPostScript()
                 elif str(action.text()) == 'JPEG':
-                    print 'save as jpeg'
-                    qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
-                    if qname.isEmpty(): return
-                    self.saveAs(str(qname), 'jpeg')
+                    self.saveAsJPEG()
         else:
             self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
             self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
@@ -354,7 +395,7 @@ class graphicsView(QGraphicsView, widgetState):
     def _setParameters(self):
         inj = 'bg = %s, cex = %s, cex.axis = %s, cex.lab = %s, cex.main = %s, cex.sub = %s, col = %s, col.axis = %s, col.main = %s, col.sub = %s, family = %s, fg = %s, lty = %s, lwd = %s' % (
             '\''+self._bg+'\'',
-            self._cex, 
+            str(float(self._cex)), 
             self._cexAxis,
             self._cexLab,
             self._cexMain,
@@ -368,7 +409,8 @@ class graphicsView(QGraphicsView, widgetState):
             self._lty,
             self._lwd
             )
-        self.R('par('+inj+')')
+        print inj
+        #self.R('par('+inj+')')
         return inj
     def _startRDevice(self, dwidth, dheight, imageType):
         if imageType not in ['svg', 'png', 'jpeg']:
@@ -435,7 +477,9 @@ class graphicsView(QGraphicsView, widgetState):
             self._replotAfterChange = False
     def replot(self):
         self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
-        self._setParameters()
+        self.extras = self._setParameters()
+        if str(self.extrasLineEdit.text()) != '':
+            self.extras += ', '+str(self.extrasLineEdit.text())
         self.R('%s(%s, %s)' % (self.function, self.query, self.extras))
         if len(self.layers) > 0:
             for l in self.layers:
@@ -465,6 +509,7 @@ class colorListDialog(QDialog):
         
     def addColor(self):
         colorDialog = QColorDialog(self)
+        colorDialog.exec_()
         color = colorDialog.getColor()
         colorDialog.hide()
         newItem = QListWidgetItem()

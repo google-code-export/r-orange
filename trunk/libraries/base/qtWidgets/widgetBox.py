@@ -38,11 +38,11 @@ class widgetBox(QWidget,widgetState):
         self.layout().setSpacing(spacing)
         if margin != -1:
             self.layout().setMargin(margin)
-
-        if addSpace and isinstance(addSpace, int):
-            separator(widget, 0, addSpace)
-        elif addSpace:
-            separator(widget)
+        if widget:
+            if addSpace and isinstance(addSpace, int):
+                separator(widget, 0, addSpace)
+            elif addSpace:
+                separator(widget)
     def delete(self):
         # itemRange = self.layout().count()
         # for i in range(0, itemRange):
