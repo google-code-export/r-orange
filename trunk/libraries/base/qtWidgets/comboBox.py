@@ -8,14 +8,15 @@ class comboBox(QComboBox,widgetState):
     def __init__(self,widget,label=None, items=None, orientation='horizontal',callback = None, callback2 = None, **args):
         
         QComboBox.__init__(self,widget)
-        if label:
-            self.hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(self.hb, label)
-            self.hb.layout().addWidget(self)
-            self.hasLabel = True
-        else:
-            widget.layout().addWidget(self)
-            self.hasLabel = False
+        if widget:
+            if label:
+                self.hb = widgetBox(widget,orientation=orientation)
+                widgetLabel(self.hb, label)
+                self.hb.layout().addWidget(self)
+                self.hasLabel = True
+            else:
+                widget.layout().addWidget(self)
+                self.hasLabel = False
         self.label = label
         if items:
             self.addItems([unicode(i) for i in items])

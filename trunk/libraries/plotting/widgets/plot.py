@@ -30,13 +30,13 @@ class plot(OWRpy):
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
-        self.RFunctionParam_xlab = lineEdit(box, label = 'X Axis Label:')
-        self.RFunctionParam_ylab = lineEdit(box, label = 'Y Axis Label:')
-        self.RFunctionParam_cex = lineEdit(box, '100', label = 'Text Magnification Percent:')
+        # self.RFunctionParam_xlab = lineEdit(box, label = 'X Axis Label:')
+        # self.RFunctionParam_ylab = lineEdit(box, label = 'Y Axis Label:')
+        # self.RFunctionParam_cex = lineEdit(box, '100', label = 'Text Magnification Percent:')
         self.plotArea = redRGraphicsView(self.controlArea)
-        self.advancedOptions = lineEdit(box, label = 'Advanced Options:', toolTip = 'Advanced obtions to be added to the R command, this can be things like points, charachter labels, etc.  See R documentation for more help.')
+        #self.advancedOptions = lineEdit(box, label = 'Advanced Options:', toolTip = 'Advanced obtions to be added to the R command, this can be things like points, charachter labels, etc.  See R documentation for more help.')
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
+        #button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
     def gotAttribute(self, data, id):
         if data:
             self.plotAttributes[id] = data.getData()
@@ -50,26 +50,26 @@ class plot(OWRpy):
             self.commitFunction()
         else:
             self.clearPlots()
-    def saveAsPDF(self):
-        if self.RFunctionParam_x == '': return
-        injection = []
-        if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
-            injection.append('pch=rownames('+self.RFunctionParam_x+')')
-        if self.RFunctionParam_main.text() != '':
-            injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
-        if self.RFunctionParam_xlab.text() != '':
-            injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
-        if self.RFunctionParam_ylab.text() != '':
-            injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
-        if self.RFunctionParam_cex.text() != '100':
-            mag = float(self.RFunctionParam_cex.text())/100
-            injection.append('cex.lab = '+str(mag))
-            injection.append('cex.axis = '+str(mag))
-        if injection != []:
-            inj = ','+','.join(injection)
-        else: inj = ''
-        #try:
-        self.savePDF('plot('+str(self.RFunctionParam_x)+inj+')')
+    # def saveAsPDF(self):
+        # if self.RFunctionParam_x == '': return
+        # injection = []
+        # if self.R('class('+str(self.RFunctionParam_x)+')') == 'data.frame' and not 'colors' in self.data.dictAttrs:
+            # injection.append('pch=rownames('+self.RFunctionParam_x+')')
+        # if self.RFunctionParam_main.text() != '':
+            # injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
+        # if self.RFunctionParam_xlab.text() != '':
+            # injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+        # if self.RFunctionParam_ylab.text() != '':
+            # injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+        # if self.RFunctionParam_cex.text() != '100':
+            # mag = float(self.RFunctionParam_cex.text())/100
+            # injection.append('cex.lab = '+str(mag))
+            # injection.append('cex.axis = '+str(mag))
+        # if injection != []:
+            # inj = ','+','.join(injection)
+        # else: inj = ''
+        ###try:
+        # self.savePDF('plot('+str(self.RFunctionParam_x)+inj+')')
     def commitFunction(self):
         #if self.RFunctionParam_y == '': return
         if self.RFunctionParam_x == '': return
@@ -78,20 +78,20 @@ class plot(OWRpy):
             injection.append('pch=rownames('+self.RFunctionParam_x+')')
         if str(self.RFunctionParam_main.text()) != '':
             injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
-        if str(self.RFunctionParam_xlab.text()) != '':
-            injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
-        if str(self.RFunctionParam_ylab.text()) != '':
-            injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
-        if str(self.advancedOptions.text()) != '':
-            injection.append(str(self.advancedOptions.text()))
-        if str(self.RFunctionParam_cex.text()) != '100':
-            mag = float(str(self.RFunctionParam_cex.text()))/100
-            injection.append('cex.lab = '+str(mag))
-            injection.append('cex.axis = '+str(mag))
+        # if str(self.RFunctionParam_xlab.text()) != '':
+            # injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+        # if str(self.RFunctionParam_ylab.text()) != '':
+            # injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+        # if str(self.advancedOptions.text()) != '':
+            # injection.append(str(self.advancedOptions.text()))
+        # if str(self.RFunctionParam_cex.text()) != '100':
+            # mag = float(str(self.RFunctionParam_cex.text()))/100
+            # injection.append('cex.lab = '+str(mag))
+            # injection.append('cex.axis = '+str(mag))
         if injection != []:
             inj = ','+','.join(injection)
         else: inj = ''
-
+        
         self.plotArea.plot(str(self.RFunctionParam_x)+inj)
         for name in self.plotAttributes.keys():
             if self.plotAttributes[name] != None:
@@ -106,14 +106,14 @@ class plot(OWRpy):
                 injection.append('pch=rownames('+self.RFunctionParam_x+')')
             if str(self.RFunctionParam_main.text()) != '':
                 injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
-            if str(self.RFunctionParam_xlab.text()) != '':
-                injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
-            if str(self.RFunctionParam_ylab.text()) != '':
-                injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
-            if str(self.RFunctionParam_cex.text()) != '100':
-                mag = float(str(self.RFunctionParam_cex.text()))/100
-                injection.append('cex.lab = '+str(mag))
-                injection.append('cex.axis = '+str(mag))
+            # if str(self.RFunctionParam_xlab.text()) != '':
+                # injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
+            # if str(self.RFunctionParam_ylab.text()) != '':
+                # injection.append('ylab = "'+str(self.RFunctionParam_ylab.text())+'"')
+            # if str(self.RFunctionParam_cex.text()) != '100':
+                # mag = float(str(self.RFunctionParam_cex.text()))/100
+                # injection.append('cex.lab = '+str(mag))
+                # injection.append('cex.axis = '+str(mag))
             if injection != []:
                 inj = ','+','.join(injection)
             else: inj = ''

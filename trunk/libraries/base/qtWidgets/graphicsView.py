@@ -5,7 +5,10 @@ from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit 
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.listBox import listBox
 import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
     def __init__(self, parent):
@@ -24,16 +27,16 @@ class graphicsView(QGraphicsView, widgetState):
         self.query = ''
         self.function = 'plot'
         self.layers = []
-        self._bg = '#000000'
+        self._bg = '#FFFFFF'
         self._cex = 1
         self._cexAxis = 1
         self._cexLab = 1
         self._cexMain = 1
         self._cexSub = 1
-        self._col = '#FFFFFF'
-        self._colAxis = '#FFFFFF'
-        self._colMain = '#FFFFFF'
-        self._colSub = '#FFFFFF'
+        self._col = 'c("#000000")'
+        self._colAxis = '#000000'
+        self._colMain = '#000000'
+        self._colSub = '#000000'
         self._family = 'serif'
         self._fg = '#000000'
         self._lty = 1
@@ -63,9 +66,17 @@ class graphicsView(QGraphicsView, widgetState):
         colors.addAction('Set Forground Color', self.setForgroundColors)
         colors.addAction('Set Background Color', self.setBackgroundColors)
         font = self.menuParameters.addMenu('Font')
-        font.addAction('Set Font Family', self.setFontFamily)
+        ffa = font.addMenu('Set Font Family')
         font.addAction('Set Font Magnification', self.setFontMagnification)
         
+        fontComboAction = QWidgetAction(font)
+        self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono', 'HersheySerif', 'HersheySans', 'HersheyScript',
+            'HersheyGothicEnglish', 'HersheyGothicGerman', 'HersheyGothicItalian', 'HersheySymbol', 'HersheySansSymbol'], callback = self.setFontFamily)
+        fontComboAction.setDefaultWidget(self.fontCombo)
+        ffa.addAction(fontComboAction)
+        
+        
+        self.menuParameters.setToolTip('Set the parameters of the rendered image.\nThese parameters are standard graphics parameters which may or may not be applicable or rendered\ndepending on the image type and the settings of the plotting widget.')
         fa = font.addMenu('Font Attributes')
         lines = self.menuParameters.addMenu('Lines')
         lines.addAction('Set Line Type', self.setLineType)
@@ -73,9 +84,15 @@ class graphicsView(QGraphicsView, widgetState):
         points = self.menuParameters.addMenu('Points')
         points.addAction('Set Point Characters', self.setPointCharacters)
         
-        
+        self.imageParameters = QMenu('Image', self)
+        type = self.imageParameters.addMenu('Type')
+        type.addAction('Set Image SVG', self.setImageSVG)
+        type.addAction('Set Image PNG', self.setImagePNG)
+        type.addAction('Set Image JPEG', self.setImageJPEG)
+        type.setToolTip('Changes the plotting type of the rendered image.\nDifferent image types may enable or disable certain graphics parameters.')
         
         self.menuBar.addMenu(self.menuParameters)
+        self.menuBar.addMenu(self.imageParameters)
         
         ### lower Line Edit
         self.extrasLineEdit = lineEdit(self.bottomArea, label = 'Advanced plotting parameters', 
@@ -98,16 +115,23 @@ class graphicsView(QGraphicsView, widgetState):
         self.dialog.setWindowTitle('Red-R Graphics View')
         self.dialog.setLayout(QHBoxLayout())
         
-        #self.menu.addAction('Un Zoom')
-        # self.setMinimumWidth(25)
-        # self.setMinimumHeight(25)
-        #self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.standardImageType = 'png'
+        
     ################################
     ####  Menu Actions         #####
     ################################
+    def setImageSVG(self):
+        self.setStandardImageType('svg')
+    def setImagePNG(self):
+        self.setStandardImageType('png')
+    def setImageJPEG(self):
+        self.setStandardImageType('jpeg')
+    def setStandardImageType(self, it):
+        self.standardImageType = it
     def setPlotColors(self):
-        colorDialog = QColorDialog(self)
-        self._col = str(colorDialog.getColor().name())
+        colorDialog = colorListDialog()
+        colorDialog.exec_()
+        self._col = 'c("'+'","'.join(colorDialog.listOfColors)+'")'
         colorDialog.hide()
         if self._replotAfterChange:
             self.replot()
@@ -128,7 +152,7 @@ class graphicsView(QGraphicsView, widgetState):
         if self._replotAfterChange:
             self.replot()
     def setFontFamily(self):
-        pass
+        self._family = str(self.fontCombo.currentText())
         if self._replotAfterChange:
             self.replot()
     def setFontMagnification(self):
@@ -320,7 +344,12 @@ class graphicsView(QGraphicsView, widgetState):
             self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'))
         elif imageType == 'jpeg':
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
-        self.R(self.query)
+        
+        query = '%s(%s, %s)' % (self.function, self.query, self.extras)
+        self.R(query)
+        for l in self.layers:
+            self.R(l)
+        
         self.R('dev.off()')
     def _setParameters(self):
         inj = 'bg = %s, cex = %s, cex.axis = %s, cex.lab = %s, cex.main = %s, cex.sub = %s, col = %s, col.axis = %s, col.main = %s, col.sub = %s, family = %s, fg = %s, lty = %s, lwd = %s' % (
@@ -330,7 +359,7 @@ class graphicsView(QGraphicsView, widgetState):
             self._cexLab,
             self._cexMain,
             self._cexSub,
-            '\''+self._col+'\'',
+            self._col,
             '\''+self._colAxis+'\'',
             '\''+self._colMain+'\'',
             '\''+self._colSub+'\'',
@@ -350,30 +379,30 @@ class graphicsView(QGraphicsView, widgetState):
         self.imageFileName = str(self.image).replace('\\', '/')+'.'+str(imageType)
         if imageType == 'svg':
             self.require_librarys(['RSvgDevice'])
-            self.R('devSVG(file=\''+str(self.imageFileName)+'\', bg = \'white\', width = '
+            self.R('devSVG(file=\''+str(self.imageFileName)+'\', width = '
                 +str(dheight)+', height = '+str(dheight)
                 +')')
         elif imageType == 'png':
             self.require_librarys(['RSvgDevice'])
-            self.R('png(file=\''+str(self.imageFileName)+'\', bg = \'white\', width = '
+            self.R('png(file=\''+str(self.imageFileName)+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
         elif imageType == 'jpeg':
             self.require_librarys(['RSvgDevice'])
-            self.R('jpeg(file=\''+str(self.imageFileName)+'\', bg = \'white\', width = '
+            self.R('jpeg(file=\''+str(self.imageFileName)+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
                 
-    def plot(self, query, function = 'plot', dwidth=6, dheight=6, imageType = 'svg'):
+    def plot(self, query, function = 'plot', dwidth=6, dheight=6):
         ## performs a quick plot given a query and an imageType
-        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], imageType = imageType)
+        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [])
             
 
-    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = [], imageType = 'svg'):
+    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = []):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.function = function
         self.query = query
-        self._startRDevice(dwidth, dheight, imageType)
+        self._startRDevice(dwidth, dheight, self.standardImageType)
         self.extras = self._setParameters()
         if str(self.extrasLineEdit.text()) != '':
             self.extras += ', '+str(self.extrasLineEdit.text())
@@ -392,7 +421,6 @@ class graphicsView(QGraphicsView, widgetState):
         self.layers = layers
         self._dwidth = dwidth
         self._dheight = dheight
-        self._imageType = imageType
     def setExtrasLineEditEnabled(self, enabled = True):
         
         self.extrasLineEdit.enabled(enabled)
@@ -406,7 +434,7 @@ class graphicsView(QGraphicsView, widgetState):
         else:
             self._replotAfterChange = False
     def replot(self):
-        self._startRDevice(self._dwidth, self._dheight, self._imageType)
+        self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
         self._setParameters()
         self.R('%s(%s, %s)' % (self.function, self.query, self.extras))
         if len(self.layers) > 0:
@@ -416,6 +444,45 @@ class graphicsView(QGraphicsView, widgetState):
         self.clear()
         fileName = str(self.imageFileName)
         self.addImage(fileName)
+class colorListDialog(QDialog):
+    def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog'):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(title)
+        if layout == 'horizontal':
+            self.setLayout(QHBoxLayout())
+        else:
+            self.setLayout(QVBoxLayout())
+        
+        self.listOfColors = []
+        self.controlArea = widgetBox(self)
+        
+        ## GUI
+        
+        # color list
+        self.colorList = listBox(self.controlArea, label = 'Color List')
+        button(self.controlArea, label = 'Add Color', callback = self.addColor)
+        button(self.controlArea, label = 'Remove Color', callback = self.removeColor)
+        
+    def addColor(self):
+        colorDialog = QColorDialog(self)
+        color = colorDialog.getColor()
+        colorDialog.hide()
+        newItem = QListWidgetItem()
+        newItem.setBackgroundColor(color)
+        self.colorList.addItem(newItem)
+        
+        self.processColors()
+    def removeColor(self):
+        for item in self.colorList.selectedItems():
+            self.colorList.removeItemWidget(item)
+            
+        self.processColors()
+        
+    def processColors(self):
+        self.listOfColors = []
+        for item in self.colorList.items():
+            self.listOfColors.append(str(item.backgroundColor().name()))
+        
 class dialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical',title=None):
         QDialog.__init__(self,parent)
