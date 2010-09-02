@@ -1,7 +1,7 @@
 """
-<name>Rename Rows or Columns</name>
+<name>Create Valid Rows\Columns</name>
 <discription>R does not handle attachment of column names that begin with integers.  This is usually handled by R functions that read in data however some precompiled data escapes this protection.</discription>
-<author>Kyle R. Covington</author>
+<author>Red-R Development Team</author>
 <tags>R</tags>
 <RFunctions>base:make.names</RFunctions>
 <icon>RExecutor.PNG</icon>
@@ -22,7 +22,7 @@ class nameProtector(OWRpy):
         # the variables
         self.parentData = {}
         self.data = ''
-        self.setRvariableNames(['nameProtector', 'newDataFromNameProtector', 'newDataFromNameProtector_cm'])
+        self.setRvariableNames(['nameProtector', 'newDataFromNameProtector'])
         self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotDF)
         self.inputs.addInput('id1', 'Vector', redRRVector, self.gotV)
 
@@ -32,8 +32,6 @@ class nameProtector(OWRpy):
         
         ### The data frame GUI
         self.dfbox = widgetBox(self.controlArea)
-        self.newDataDFcheckBox = checkBox(self.dfbox, buttons = ['Make New Data Object'], toolTips = ['Makes a new data object instead of replacing the data in the old one'])
-        self.newDataDFcheckBox.setChecked(['Make New Data Object'])
         self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 'Use make.names to protect the names in the columns.'])
         self.namesProtectDFcomboBox = comboBox(self.dfbox, label = 'Column names to protect:')
         self.commitDFbutton = button(self.dfbox, "Commit", callback = self.dfCommit)
@@ -48,7 +46,10 @@ class nameProtector(OWRpy):
     def gotDF(self, data):
         if data:
             self.parentData = data
-            self.data = data.getData()
+            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+data.getData())
+            #newData = redRRDataFrame(data = self.Rvariables['newDataFromNameProtector'])
+            self.data = self.Rvariables['newDataFromNameProtector']
+            #self.data = data.getData()
             self.dfbox.show()
             self.vbox.hide()
             cols = self.R('colnames('+self.data+')', wantType = 'list')
@@ -71,14 +72,9 @@ class nameProtector(OWRpy):
             
     def dfCommit(self):
         if self.data == '': return
+
         if len(self.nameProtectDFcheckBox.getChecked()) == 0 and str(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
         newData = self.parentData.copy()
-        if 'Make New Data Object' in self.newDataDFcheckBox.getChecked():
-            
-            
-            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+newData.getData())
-            newData = redRRDataFrame(data = self.Rvariables['newDataFromNameProtector'])
-            self.data = self.Rvariables['newDataFromNameProtector']
 
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
             self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))')

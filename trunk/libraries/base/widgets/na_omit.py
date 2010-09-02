@@ -12,11 +12,12 @@ from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 import libraries.base.signalClasses.RMatrix as rmat
-from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.button import button as RedRButton
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 class na_omit(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commitOnInput']
+
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["na.omit"])
@@ -30,20 +31,20 @@ class na_omit(OWRpy):
         self.outputs.addOutput('id2', 'R Vector', redRRVector)
         self.outputs.addOutput('id3', 'R.object', redRRVariable)
 
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
+        toolTips = ['Whenever this widget gets data it should try to commit'])
         
-        box = tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.sendStatus = widgetLabel(self.standardTab, 'Nothing Sent')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        RedRButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
     def processobject(self, data):
-        if not self.require_librarys(["base"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
+        # if not self.require_librarys(["base"]):
+            # self.status.setText('R Libraries Not Loaded.')
+            # return
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
-            self.commitFunction()
+            if 'Commit on Input' in self.commitOnInput.getChecked():
+                self.commitFunction()
         else:
             self.RFunctionParam_object=''
     def commitFunction(self):
@@ -59,38 +60,39 @@ class na_omit(OWRpy):
                 newData = redRRVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
-                self.sendStatus.setText('Data  sent through the R Vector channel')
+                self.status.setText('Data  sent through the R Vector channel')
             elif thisdataclass == 'character': #we have a character vector as the object
                 newData = redRRVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
-                self.sendStatus.setText('Data  sent through the R Vector channel')
+                self.status.setText('Data  sent through the R Vector channel')
             elif thisdataclass == 'data.frame': # the object is a data.frame
                 newData = redRRDataFrame(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
-                self.sendStatus.setText('Data  sent through the R Data Frame channel')
+                self.status.setText('Data  sent through the R Data Frame channel')
             elif thisdataclass == 'matrix': # the object is a matrix
                 newData = rmat.RMatrix(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
-                self.sendStatus.setText('Data  sent through the R Data Frame channel')
+                self.status.setText('Data  sent through the R Data Frame channel')
             elif thisdataclass == 'list': # the object is a list
                 newData = redRRList(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id1", newData)
-                self.sendStatus.setText('Data  sent through the R List channel')
+                self.status.setText('Data  sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
                 newData = redRRVariable(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id3", newData)
-                self.sendStatus.setText('Data  sent through the R Object channel')
+                self.status.setText('Data  sent through the R Object channel')
         else:
             newData = redRRVariable(data = self.Rvariables['na.omit'])
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend("id3", newData)
-            self.sendStatus.setText('Data  sent through the R Object channel')
-            
+            self.status.setText('Data  sent through the R Object channel')
+        
+        
     def getReportText(self, fileDir):
         return "NA's were removed from the data and the modified data structure was sent to downstream widgets.\n\n"
 

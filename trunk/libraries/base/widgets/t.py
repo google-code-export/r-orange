@@ -9,7 +9,7 @@
 """
 from OWRpy import * 
 
-from  libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button

@@ -191,13 +191,17 @@ class filterTable(widgetState, QTableView):
         
         self.optionsBox = widgetBox(self.menu)
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
-        if colClass == 'factor':
-            #widgetLabel(self.menu,label='Enter a value for one of these critera:')
+        if colClass in ['factor','logical']:
+            
             if selectedCol in self.criteriaList.keys():
                 checked = self.criteriaList[selectedCol]['value']
             else:
                 checked = []
-            levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),wantType='list', silent=True)
+            if colClass =='logical':
+                levels = ['TRUE','FALSE']
+            else:
+                levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),wantType='list', silent=True)
+                
             if len(levels) > 1:
                 levels.insert(0,'Check All')
             if len(levels) > 10:
@@ -233,7 +237,7 @@ class filterTable(widgetState, QTableView):
                     e = lineEdit(self.optionsBox,label=x)
                 self.connect(e, SIGNAL("textEdited(QString)"),
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
-    
+            
         buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)
         okButton = button(buttonBox,label='OK',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='OK'))
@@ -282,14 +286,15 @@ class filterTable(widgetState, QTableView):
                     if value.text() != '':
                         # print label.text(),value.text()
                         self.criteriaList[col] = {'column':col, "method": 'String ' + str(label.text()), "value": str(value.text())}
-            elif colClass == 'factor':
+            elif colClass in ['factor','logical']:
                 checks = menu.findChildren(checkBox)[0].getChecked()
                 if 'Check All' in checks:
                     checks.remove('Check All')
                 if len(checks) != 0:
-                    self.criteriaList[col] = {'column':col, "method": 'factor', "value": checks}
+                    self.criteriaList[col] = {'column':col, "method": colClass, "value": checks}
                 else:
                     del self.criteriaList[col]
+            
         print 'criteriaList', self.criteriaList
         self.menu.hide()
         self.filter()
@@ -333,10 +338,11 @@ class filterTable(widgetState, QTableView):
                 filters.append('!grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
             
             
-            elif 'factor' == criteria['method']:
+            elif criteria['method'] in ['logical','factor']:
                 f= '","'.join([str(x) for x in criteria['value']])
                 filters.append(self.Rdata+'[,'+str(col)+'] %in% as.factor(c("'+f+'"))')
-        
+            #elif 'logical' == critera['method']:
+            
         print 'filters:', filters
         self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
         print 'string:', self.filteredData

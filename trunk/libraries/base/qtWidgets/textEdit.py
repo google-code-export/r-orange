@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class textEdit(QTextEdit,widgetState):
-    def __init__(self,widget,html='',label=None,orientation='vertical'):
+    def __init__(self,widget,html='',label=None, orientation='vertical', editable=True):
         QTextEdit.__init__(self,widget)
         self.label = label
         if label:
@@ -15,6 +15,9 @@ class textEdit(QTextEdit,widgetState):
             self.hb.layout().addWidget(self)
         else:
             widget.layout().addWidget(self)
+            
+        if not editable:
+            self.setReadOnly(True)
         self.insertHtml(html)
 
     def hide(self):
