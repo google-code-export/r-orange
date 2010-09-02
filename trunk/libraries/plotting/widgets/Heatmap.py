@@ -147,7 +147,7 @@ class Heatmap(OWRpy):
         if self.plotdata == '': return
         
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
-        self.R('plot('+self.Rvariables['hclust']+')', devNumber = 1)
+        self.R('plot('+self.Rvariables['hclust']+')')
         self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
         newData = redRRList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
