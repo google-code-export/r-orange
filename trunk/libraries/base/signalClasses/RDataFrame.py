@@ -2,11 +2,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
 from libraries.base.signalClasses.StructuredDict import *
+from libraries.base.signalClasses.UnstructuredDict import *
 import time
 
 class RDataFrame(RList, StructuredDict):
     convertFromList = [StructuredDict]
-    convertToList = [RList, RVariable, StructuredDict]
+    convertToList = [RList, RVariable, StructuredDict, UnstructuredDict]
     def __init__(self, data, parent = None, checkVal = True):
         StructuredDict.__init__(self, data = data, parent = parent, checkVal = False)
         RList.__init__(self, data = data, parent = parent, checkVal = False)
@@ -32,7 +33,7 @@ class RDataFrame(RList, StructuredDict):
             return self._convertToVariable()
         elif varClass == RDataFrame:
             return self
-        elif issubclass(StructuredDict, varClass):
+        elif varClass == StructuredDict or varClass == UnstructuredDict:
             return self._convertToStructuredDict()
         else:
             raise Exception

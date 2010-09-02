@@ -91,8 +91,17 @@ class packageManager:
                 print path
                 self.installRRP(package,path)
             except:
-                print redRExceptionHandling.formatException()
-                OK=False
+                try:
+                    packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.rrp')
+                    url = str(self.repository+'/'+package+'/'+packageName)
+                    path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
+                    print url
+                    self.urlOpener.retrieve(url, path)
+                    print path
+                    self.installRRP(package,path)
+                except:
+                    print redRExceptionHandling.formatException()
+                    OK=False
         qApp.canvasDlg.reloadWidgets()
         progressBar.hide()
         return OK

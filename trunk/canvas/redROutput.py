@@ -189,6 +189,11 @@ class OutputWindow(QDialog):
             err['type'] = redREnviron.version['TYPE']
             err['output'] = self.allOutput
             err['os'] = os.name
+            if redREnviron.settings['canContact']:
+                err['email'] = redREnviron.settings['email']
+            else:
+                err['email'] = 'None; no contact'
+            err['id'] = redREnviron.settings['id']
             params = urllib.urlencode(err)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
             conn = httplib.HTTPConnection("www.red-r.org",80)

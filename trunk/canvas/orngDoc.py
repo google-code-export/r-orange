@@ -162,7 +162,7 @@ class SchemaDoc(QWidget):
 
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
-    def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True):
+    def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
         if outWidget.instance.outputs.getSignal(outSignalName) in inWidget.instance.inputs.getLinks(inSignalName): return ## the link already exists
             
         
@@ -190,12 +190,14 @@ class SchemaDoc(QWidget):
             inWidget.updateTooltip()
         
         ok = outWidget.instance.outputs.connectSignal(inWidget.instance.inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
-        if not ok:
+        if not ok and not loading:
             self.removeLink(outWidget, inWidget, outSignalName, inSignalName)
             ## we should change this to a dialog so that the user can connect the signals manually if need be.
             QMessageBox.information( self, "Red-R Canvas", "Unable to add link. Something is really wrong; try restarting Red-R Canvas.", QMessageBox.Ok + QMessageBox.Default )
             
 
+            return 0
+        elif not ok:
             return 0
         # else:
             # orngHistory.logAddLink(self.schemaID, outWidget, inWidget, outSignalName)
@@ -206,7 +208,33 @@ class SchemaDoc(QWidget):
         redRHistory.saveConnectionHistory()
         return 1
 
+    def addLink175(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = False, loading = False):
+        ## compatibility layer for older schemas on changing signal classes.  this is actually a good way to allow for full compatibility between versions.
 
+        ## this is where we have a diversion from the normal loading.  obviously if we made it to here there aren't the signal names in the in or out widgets that match.
+        ##      we will open a dialog and show the names of the signals and ask the user to connect them
+        dialog = SignalDialog(self.canvasDlg, None)
+        from libraries.base.qtWidgets.widgetLabel import widgetLabel
+        widgetLabel(dialog, 'Please connect the signals that best match these: %s to %s' % (outSignalName, inSignalName)) 
+        dialog.setOutInWidgets(outWidget, inWidget)
+
+        # if there are multiple choices, how to connect this two widget, then show the dialog
+    
+        possibleConnections = inWidget.instance.inputs.getPossibleConnections(outWidget.instance.outputs)  #  .getConnections(outWidget, inWidget)
+        if len(possibleConnections) > 1:
+            #print possibleConnections
+            #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
+            if dialog.exec_() == QDialog.Rejected:
+                return None
+            possibleConnections = dialog.getLinks()
+        
+
+        #self.signalManager.setFreeze(1)
+        for (outName, inName) in possibleConnections:
+            print 'Adding link adsfasdfasdf', outName, inName
+            self.addLink(outWidget, inWidget, outName, inName, enabled, process = False)  # under no circumstance will we process an old signal again.
+        
+        
     # remove only one signal from connected two widgets. If no signals are left, delete the line
     def removeLink(self, outWidget, inWidget, outSignalName, inSignalName):
         #print "<extra> orngDoc.py - removeLink() - ", outWidget, inWidget, outSignalName, inSignalName
@@ -845,6 +873,7 @@ class SchemaDoc(QWidget):
         failureText = ""
         loadedOk = 1
         for line in lineList:
+            ## collect the indicies of the widgets to connect.
             inIndex = line.getAttribute("inWidgetIndex")
             outIndex = line.getAttribute("outWidgetIndex")
             print inIndex, outIndex, '###################HFJSDADSHFAK#############'
@@ -855,7 +884,8 @@ class SchemaDoc(QWidget):
                 raise Exception
             if freeze: enabled = 0
             else:      enabled = line.getAttribute("enabled")
-            print str(line.getAttribute('signals'))
+            #print str(line.getAttribute('signals'))
+            ## collect the signals to be connected between these widgets.
             signals = eval(str(line.getAttribute("signals")))
             print '((((((((((((((((\n\nSignals\n\n', signals, '\n\n'
             if tmp: ## index up the index to match sessionID
@@ -874,10 +904,13 @@ class SchemaDoc(QWidget):
                 failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
                 loadedOk = 0
                 continue
-            # signalList = eval(signals)
-            # print 'signal list', signalList
+                
+            ## add a link for each of the signals.
             for (outName, inName) in signals:
-                self.addLink(outWidget, inWidget, outName, inName, enabled)
+                ## try to add using the new settings
+                if not self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True):
+                    ## try to add using the old settings
+                    self.addLink175(outWidget, inWidget, outName, inName, enabled)
             print '######## enabled ########\n\n', enabled, '\n\n'
             #self.addLine(outWidget, inWidget, enabled, process = False)
             #self.signalManager.setFreeze(0)

@@ -3,6 +3,8 @@
 from canvas.signals import BaseRedRVariable
 
 class UnstructuredDict(BaseRedRVariable):
+    convertToList = [BaseRedRVariable]
+    convertFromList = []
     def __init__(self, data, parent = None, keys = None, checkVal = True):
         BaseRedRVariable.__init__(self, data = data, parent = parent, checkVal = False)
         

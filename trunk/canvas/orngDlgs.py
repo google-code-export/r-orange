@@ -76,6 +76,7 @@ class CanvasOptionsDlg(QDialog):
         # #################################################################
         # GENERAL TAB
         generalBox = OWGUI.widgetBox(GeneralTab, "General Options")
+        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", debuggingEnabled = 0)
         self.snapToGridCB = OWGUI.checkBox(generalBox, self.settings, "snapToGrid", "Snap widgets to grid", debuggingEnabled = 0)
         self.writeLogFileCB  = OWGUI.checkBox(generalBox, self.settings, "writeLogFile", "Save content of the Output window to a log file", debuggingEnabled = 0)
         self.showSignalNamesCB = OWGUI.checkBox(generalBox, self.settings, "showSignalNames", "Show signal names between widgets", debuggingEnabled = 0)
@@ -403,7 +404,7 @@ class AboutDlg(QDialog):
         self.about.setMinimumHeight(150)
         self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
-        '; Build Time: ' + info['DATE'] + '' + 
+        '; Build Time: ' + info['DATE'] + '; Copy Number:' + str(redREnviron.settings['id']) + '' +
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
         self.licenceButton = redRbutton(self, 'Licence', callback = self.showLicence)
         b = QDialogButtonBox(self)

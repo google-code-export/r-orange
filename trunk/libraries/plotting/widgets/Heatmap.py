@@ -19,6 +19,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.graphicsView import graphicsView
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
@@ -55,6 +56,8 @@ class Heatmap(OWRpy):
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
+        self.gview1 = graphicsView(self.controlArea)
+        self.gview2 = graphicsView(self.controlArea)
         
     def onLoadSavedSession(self):
         print 'load heatmap'
@@ -120,7 +123,7 @@ class Heatmap(OWRpy):
             self.colvChoice = 'NULL'
         else:
             self.colvChoice = 'NA'
-        self.Rplot('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+')', devNumber = 1, imageType = 'png')
+        self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+'')
         # for making the pie plot
         if colorType == 'rainbow':
             start = float(float(self.startSaturation.value())/100)
@@ -130,7 +133,7 @@ class Heatmap(OWRpy):
         else:
             col = colorType+'(10)'
         #self.R('dev.new()')
-        self.Rplot('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')', devNumber = 2, imageType = 'png')
+        self.gview2.plot(query = 'rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+'', function = 'pie')
         
     def rowvChoiceprocess(self):
         if self.plotdata:

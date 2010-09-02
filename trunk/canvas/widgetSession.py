@@ -173,7 +173,32 @@ class widgetSession():
                         #print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
                         #for kk,vv in sentItemDict.items():
                         var = self.setSignalClass(sentItemDict)
-                        self.send(sentItemName, var)
+                        ## add compatibility layer for the case that the sent item name is not longer in existance or has changed
+                        if sentItemName in self.outputs.outputIDs():
+                            self.send(sentItemName, var)
+                        else:
+                            signalItemNames = [name for (key, name) in self.outputs.outputNames().items()]
+                            if sentItemName in signalItemNames:
+                                signalID = self.outputs.getSignalByName(sentItemName)
+                                self.send(signalID, var)
+                            else:
+                                print 'Error in matching item name'
+                                from libraries.base.qtWidgets.dialog import dialog
+                                tempDialog = dialog(None)
+                                from libraries.base.qtWidgets.widgetLabel import widgetLabel
+                                from libraries.base.qtWidgets.listBox import listBox
+                                from libraries.base.qtWidgets.button import button
+                                widgetLabel(tempDialog, 'Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.' % (sentItemName, str(var)))
+                                
+                                print self.outputs.outputSignals
+                                itemListBox = listBox(tempDialog, items = signalItemNames)
+                                button(tempDialog, label = 'Done', callback = tempDialog.accept)
+                                button(tempDialog, label = 'Cancel', callback = tempDialog.reject)
+                                res = tempDialog.exec_()
+                                if res != QDialog.rejected:
+                                    signalName = str(itemListBox.selectedItems()[0].text())
+                                    signalID = self.outputs.getSignalByName(signalName)
+                                    self.send(signalID, var)
     #############################################
                 elif not hasattr(self,k):
                     continue
@@ -203,7 +228,7 @@ class widgetSession():
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
         
-        #print d
+        print d
         # print 'setting ', className
         try: # try to reload the output class from the signals
             
@@ -219,25 +244,33 @@ class widgetSession():
                 varc = getattr(varc, mod)
             var = varc(data = d['data']) 
             var.loadSettings(d)
-        except Exception as inst: # if it doesn't exist we need to set the class something so we look to the outputs. 
-            # print redRExceptionHandling.formatException()
-            # try:
-                # var = None
-                # for (name, att) in self.outputs:
-                    # if name == sentItemName:
-                        # var = att(data = None, checkVal = False)
-                        
-                # if var == None: raise Exception
-                # var.loadSettings(d['data'])
-            # except Exception as inst: # something is really wrong we need to set some kind of data so let's set it to the signals.RVariable
-            print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-            print redRExceptionHandling.formatException()
             
+        except: # if it doesn't exist we need to set the class something so we look to the outputs. 
+            ## kick over to compatibility layer to add the settings. for 175 attributes
             try:
-                var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
-            except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                print 'Fatal exception in loading.  Can\'t assign the signal value'
-                var = None
+                for (key, val) in d.items():
+                    ## find the libraries directory
+                    fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
+                    #print 'loading module'
+                    varc = imp.load_module('libraries', fp, pathname, description)
+                    #print varc
+                    for mod in val['class'].split('.')[1:]:
+                        #print varc
+                        varc = getattr(varc, mod)
+                    var = varc(data = val['data']) 
+                    var.loadSettings(val)
+                    if fp:
+                        fp.close()
+            except:
+                print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
+                print redRExceptionHandling.formatException()
+                
+                try:
+                    var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+                except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
+                    print redRExceptionHandling.formatException()
+                    print 'Fatal exception in loading.  Can\'t assign the signal value'
+                    var = None
         finally:
             if fp:
                 fp.close()

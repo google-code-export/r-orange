@@ -4,7 +4,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import sys, os, cPickle
+import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redRExceptionHandling
@@ -175,7 +175,8 @@ class OrangeCanvasDlg(QMainWindow):
 
         if splashWindow:
             splashWindow.hide()
-
+        if not 'id' in redREnviron.settings.keys():
+            redREnviron.settings['id'] = str(time.time())
         if redREnviron.settings['firstLoad']:
             self.startSetupWizard()
         qApp.processEvents()

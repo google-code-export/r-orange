@@ -12,7 +12,7 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent):
+    def __init__(self, parent, name = ''):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         QGraphicsView.__init__(self, parent)
         self.controlArea = widgetBox(parent)
@@ -28,27 +28,21 @@ class graphicsView(QGraphicsView, widgetState):
         self.query = ''
         self.function = 'plot'
         self.layers = []
-        self._bg = '#FFFFFF'
-        self._cex = 1
-        self._cexAxis = 1
-        self._cexLab = 1
-        self._cexMain = 1
+        self._bg = None
+        self._cex = None
+        self._cexAxis = None
+        self._cexLab = None
+        self._cexMain = None
         self._cexSub = 1
-        self._col = 'c("#000000")'
-        self._colAxis = '#000000'
-        self._colMain = '#000000'
-        self._colSub = '#000000'
-        self._family = 'serif'
-        self._fg = '#000000'
-        self._lty = 1
-        self._lwd = 1
+        self._col = None
+        self._colAxis = None
+        self._colMain = None
+        self._colSub = None
+        self._family = None
+        self._fg = None
+        self._lty = None
+        self._lwd = None
         self._replotAfterChange = True
-        # self._axisColors = '#FFFFFF'
-        # self._backgroundColor = '#000000'
-        # self._forgroundColor = '#000000'
-        # self._labelColors = '#FFFFFF'
-        # self._subtitleColors = '#FFFFFF'
-        # self._titleColors = '#FFFFFF'
         self.image = os.path.join(redREnviron.directoryNames['tempDir'], 'plot'+str(time.time())) # the base file name without an extension
         self.imageFileName = ''
         self.currentScale = 1
@@ -128,7 +122,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.menu.addAction('Undock')
         self.menu.addAction('Redock')
         self.dialog = QDialog()
-        self.dialog.setWindowTitle('Red-R Graphics View')
+        self.dialog.setWindowTitle('Red-R Graphics View' + name)
         self.dialog.setLayout(QHBoxLayout())
         
         self.standardImageType = 'svg'
@@ -393,22 +387,37 @@ class graphicsView(QGraphicsView, widgetState):
         
         self.R('dev.off()')
     def _setParameters(self):
-        inj = 'bg = %s, cex = %s, cex.axis = %s, cex.lab = %s, cex.main = %s, cex.sub = %s, col = %s, col.axis = %s, col.main = %s, col.sub = %s, family = %s, fg = %s, lty = %s, lwd = %s' % (
-            '\''+self._bg+'\'',
-            str(float(self._cex)), 
-            self._cexAxis,
-            self._cexLab,
-            self._cexMain,
-            self._cexSub,
-            self._col,
-            '\''+self._colAxis+'\'',
-            '\''+self._colMain+'\'',
-            '\''+self._colSub+'\'',
-            '\''+self._family+'\'',
-            '\''+self._fg+'\'',
-            self._lty,
-            self._lwd
-            )
+        inj = ''
+        injection = []
+        if self._bg:
+            injection.append('bg = \'%s\'' % self._bg)
+        if self._cex:
+            injection.append('cex = %s' % self._cex)
+        if self._cexAxis:
+            injection.append('cex.axis = %s' % self._cexAxis)
+        if self._cexLab:
+            injection.append('cex.lab = %s' % self._cexLab)
+        if self._cexMain:
+            injection.append('cex.main = %s' % self._cexMain)
+        if self._cexSub:
+            injection.append('cex.sub = %s' % self._cexSub)
+        if self._col:
+            injection.append('col = %s' % self._col)
+        if self._colAxis:
+            injection.append('col.axis = \'%s\'' % self._colAxis)
+        if self._colMain:
+            injection.append('col.main = \'%s\'' % self._colMain)
+        if self._colSub:
+            injection.append('col.sub = \'%s\'' % self._colSub)
+        if self._family:
+            injection.append('family = \'%s\'' % self._family)
+        if self._fg:
+            injection.append('fg = \'%s\'' % self._fg)
+        if self._lty:
+            injection.append('lty = %s' % self._lty)
+        if self._lwd:
+            injection.append('lwd = %s' % self._lwd)
+        inj = ','.join(injection)
         print inj
         #self.R('par('+inj+')')
         return inj

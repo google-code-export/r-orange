@@ -54,7 +54,7 @@ class ListSelector(OWRpy):
             self.names.update(names)
         else:
             self.names.clear()
-            for signal in self.outputs:
+            for signal in self.outputs.outputIDs():
                 self.rSend(signal[0], None)
                 
     def sendSelection(self):

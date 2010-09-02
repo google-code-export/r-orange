@@ -12,16 +12,20 @@ class OutputHandler:
         self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent, 'sid':id}   # set up an 'empty' signal
         
     def connectSignal(self, signal, id, enabled = 1, process = True):
-        if id not in self.outputSignals.keys():
-            raise Exception, 'ID %s does not exist in the outputs of this widget' % (id)
-            
-        self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
-        # now send data through
-        signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
-        if process:
-            print 'processing signal'
-            self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
-        return True
+        try:
+            if id not in self.outputSignals.keys():
+                return False
+            if not signal or signal == None:
+                return False
+            self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
+            # now send data through
+            signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
+            if process:
+                print 'processing signal'
+                self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
+            return True
+        except:
+            return False
     def outputIDs(self):
         return self.outputSignals.keys()
     def outputNames(self):
@@ -137,7 +141,12 @@ class OutputHandler:
             handler(value)
     def hasOutputName(self, name):
         return name in self.outputSignals.keys()
-    
+    def getSignalByName(self, name):
+        for signal in self.outputSignals.keys():
+            fullSignal = self.outputSignals[signal]
+            if fullSignal['name'] == name:
+                return signal
+            
     ########  Loading and Saving ##############
     
     def returnOutputs(self):
