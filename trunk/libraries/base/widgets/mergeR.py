@@ -23,8 +23,8 @@ class mergeR(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         
-        self.dataParentA = {}
-        self.dataParentB = {}
+        # self.dataParentA = {}
+        # self.dataParentB = {}
         self.dataA = ''
         self.dataB = ''
         

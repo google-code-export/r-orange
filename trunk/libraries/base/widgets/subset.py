@@ -75,7 +75,7 @@ class subset(OWRpy):
             self.colB.update([])
             return 
         self.dataB = data.getData()
-        colsB = self.R('names('+self.dataB+')',wantType='list') #collect the sample names to make the differential matrix
+        colsB = self.R('names('+self.dataB+')',wantType='list') 
         
         
         self.colB.update(colsB)
