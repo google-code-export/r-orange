@@ -45,6 +45,8 @@ class widgetSignals():
             print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
+        self.ROutput.setCursorToEnd()
+        self.ROutput.append('\n## '+ 'Data sent through the '+str(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.
 
     def callSignalDelete(self, name):
         if self.linksOut.has_key(name):
