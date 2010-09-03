@@ -1,11 +1,10 @@
 """
 <name>Transpose</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
+<author>Red-R Development Team</author>
 <description>Transposes a data table and sends.</description>
 <tags>Data Manipulation</tags>
 <RFunctions>utils:t</RFunctions>
 <icon>rexecutor.png</icon>
-<priority>2040</priority>
 """
 from OWRpy import * 
 
@@ -13,8 +12,11 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+
 class t(OWRpy): 
-    settingsList = ['sentItems']
+    globalSettingsList = ['commitOnInput']
+
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["t"])
@@ -27,13 +29,16 @@ class t(OWRpy):
         self.outputs.addOutput('id0', 'Transposed Data Table', redRRDataFrame)
 
         
-        #box = widgetBox(self.controlArea, "Widget Box")
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
+        toolTips = ['Whenever this selection changes, send data forward.'], setChecked='Commit on Selection')
+
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
             self.data = data
-            self.commitFunction()
+            if 'Commit on Selection' in self.commitOnInput.getChecked():
+                self.commitFunction()
     def commitFunction(self):
         if self.x == '': return
         

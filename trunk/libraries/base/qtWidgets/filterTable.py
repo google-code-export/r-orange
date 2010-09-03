@@ -350,7 +350,7 @@ class filterTable(widgetState, QTableView):
         self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
         #print 'string:', self.filteredData
         self.setRTable(self.filteredData,filtered=True)
-        if onFilterCallback:
+        if self.onFilterCallback:
             self.onFilterCallback()
              
     def getFilteredData(self):

@@ -1,7 +1,7 @@
 """
 <name>Intersect</name>
-<description>Shows data in a spreadsheet.</description>
-<tags>Data Manipulation</tags>
+<description>Use the Set Operations widget.</description>
+<tags>Deprecated</tags>
 <RFunctions>base:intersect</RFunctions>
 <icon>datatable.png</icon>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
