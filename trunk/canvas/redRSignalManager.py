@@ -58,10 +58,10 @@ class OutputHandler:
             ## remove the signal from the outputSignals
             del self.outputSignals[id]['connections'][signal['id']]
             signal['parent'].inputs.removeLink(signal['sid'], self.getSignal(id))
-            res = QMessageBox.question(None, 'Signal Propogation', 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
-            if res != QMessageBox.Yes: 
-                print 'Deletion rejected'
-                return
+            # res = QMessageBox.question(None, 'Signal Propogation', 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
+            # if res != QMessageBox.Yes: 
+                # print 'Deletion rejected'
+                # return
             print 'propogating None in widgets'
             signal['parent'].outputs.propogateNone()
     def setOutputData(self, signalName, value):

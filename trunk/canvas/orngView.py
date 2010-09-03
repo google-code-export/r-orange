@@ -87,7 +87,7 @@ class SchemaView(QGraphicsView):
         if ok and newName != exName:
             for w in self.doc.widgets:
                 if w != widget and w.caption == newName:
-                    QMessageBox.information(self, 'Orange Canvas', 'Unable to rename widget. An instance with that name already exists.')
+                    QMessageBox.information(self, 'Red-R Canvas', 'Unable to rename widget. An instance with that name already exists.')
                     return
             widget.updateText(newName)
             widget.instance.setCaption(newName)
@@ -95,8 +95,10 @@ class SchemaView(QGraphicsView):
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
         print "Trying to remove the widget"
+        res = QMessageBox.question(self.doc.canvasDlg, 'Red-R Canvas Remove Widget', 'Are you sure you want to remove selected widget(s)?  This will remove the downstream data.', QMessageBox.Yes | QMessageBox.No)
+        if res != QMessageBox.Yes: return
         if self.doc.signalManager.signalProcessingInProgress:
-            QMessageBox.information( self, "Orange Canvas", "Unable to remove widgets while signal processing is in progress. Please wait.")
+            QMessageBox.information( self, "Red-R Canvas", "Unable to remove widgets while signal processing is in progress. Please wait.")
             return
 
         selectedWidgets = self.getSelectedWidgets()
