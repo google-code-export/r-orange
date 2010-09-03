@@ -153,7 +153,14 @@ class redRWidgetGUI(QMainWindow):
             self._widgetInfo.package['Name'],'help',file+'.html')
             if os.path.exists(path):
                 self.helpFile = path
-                self.showHelpButton = redRbutton(self.bottomAreaLeft, 'Help', callback = self.showHelp)
+        if not self.helpFile:
+            self.helpFile = 'http://www.red-r.org/documentation'
+
+        self.showHelpButton = redRbutton(self.bottomAreaLeft, '',
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
+        toolTip='Help',
+        callback = self.showHelp)
+                
         
         
         ### notes ####
@@ -161,7 +168,8 @@ class redRWidgetGUI(QMainWindow):
         self.notesBox.setMinimumWidth(minWidth)
         self.notesBox.setMinimumHeight(50)
         self.notesBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        redRwidgetLabel(self.notesBox, label="Notes:")
+        redRwidgetLabel(self.notesBox, label="Notes:", 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'))
 
         self.notes = redRtextEdit(self.notesBox)
         self.notes.setMinimumWidth(minWidth)
@@ -171,7 +179,8 @@ class redRWidgetGUI(QMainWindow):
         ### R output ####        
         self.ROutputBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
         self.ROutputBox.setMinimumHeight(50)
-        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:")
+        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'))
 
         self.ROutput = redRtextEdit(self.ROutputBox)
         self.ROutput.setMinimumWidth(minWidth)
@@ -180,17 +189,31 @@ class redRWidgetGUI(QMainWindow):
         
         
         self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
-        self.showNotesButton = redRbutton(self.bottomAreaLeft, 'Notes',toggleButton=True, callback = self.updateDocumentationDock)
-        self.showROutputButton = redRbutton(self.bottomAreaLeft, 'R Output',toggleButton=True, callback = self.updateDocumentationDock)
-        self.printButton = redRbutton(self.bottomAreaLeft, "Print", callback = self.printWidget)
-        self.includeInReport = redRbutton(self.bottomAreaLeft, 'Include In Report', toggleButton = True)
+        
+        docBox = redRwidgetBox(self.controlArea,orientation='horizontal')
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
+        toolTip='Notes',
+        callback = self.updateDocumentationDock)
+        self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
+        toolTip='R Code',
+        callback = self.updateDocumentationDock)
+        
+        self.printButton = redRbutton(self.bottomAreaLeft, "",
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
+        toolTip='Print',
+        callback = self.printWidget)
+        self.includeInReport = redRbutton(self.bottomAreaLeft, '', 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
+        toolTip='Include In Report', toggleButton = True)
         self.includeInReport.setChecked(True)
         
         ###############################################
-        if self.helpFile:
-            self.statusBar.addPermanentWidget(self.showHelpButton)
-        self.statusBar.addPermanentWidget(self.showNotesButton)
-        self.statusBar.addPermanentWidget(self.showROutputButton)
+        self.statusBar.addPermanentWidget(docBox)
+        # self.statusBar.addPermanentWidget(self.showNotesButton)
+        # self.statusBar.addPermanentWidget(self.showROutputButton)
+        self.statusBar.addPermanentWidget(self.showHelpButton)        
         self.statusBar.addPermanentWidget(self.printButton)
         self.statusBar.addPermanentWidget(self.includeInReport)
         
@@ -297,7 +320,7 @@ class redRWidgetGUI(QMainWindow):
             self.ROutputBox.hide()
             self.windowState['documentationState']['ROutputBox'] = False
         
-        # print self.windowState['documentationState'].values()
+        print self.windowState['documentationState'].values()
         if True in self.windowState['documentationState'].values():
             self.rightDock.show()
             # print 'resize t'

@@ -120,8 +120,8 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.supressTabClick = False
             
     def itemClicked(self, val):
-        print 'item clicked'
-        print self.data
+        # print 'item clicked'
+        # print self.data
         RclickedRow = int(val.row())+1
         
         for item in self.linkListBox.selectedItems():

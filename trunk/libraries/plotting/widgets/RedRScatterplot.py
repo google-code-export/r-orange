@@ -24,10 +24,10 @@ from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.zoomSelectToolbar import zoomSelectToolbar
 class RedRScatterplot(OWRpy):
-    
+    globalSettingsList = ['commitOnInput', 'plotOnInput']
     def __init__(self, parent=None, signalManager=None):
 
-        OWRpy.__init__(self,wantGUIDialog = 1)
+        OWRpy.__init__(self)
         self.setRvariableNames(['Plot','paint','selected'])
         self.inputs.addInput('id0', 'x', redRRDataFrame, self.gotX)
 
@@ -35,34 +35,48 @@ class RedRScatterplot(OWRpy):
 
         self.data = None
         self.parent = None
-        self.cm = None
-
+        
         # GUI
-        self.xColumnSelector = comboBox(self.GUIDialog, label = 'X data', items=[])
-        # self.forceXNumeric = checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
-        self.yColumnSelector = comboBox(self.GUIDialog, label = 'Y data', items=[])
-        # self.forceYNumeric = checkBox(self.GUIDialog, buttons = ['Force Numeric'], toolTips = ['Force the values to be treated as numeric, may fail!!!'])
-        self.paintCMSelector = comboBox(self.GUIDialog, label = 'Color Points By:', items = [''])
-        self.replotCheckbox = checkBox(self.GUIDialog, buttons = ['Reset Zoom On Selection'], toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
-        self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
+        area = widgetBox(self.controlArea,orientation='horizontal')
+        options= groupBox(area,orientation='vertical')
+        options.setMaximumWidth(250)
+        options.setMinimumWidth(250)
+        self.xColumnSelector = comboBox(options, label = 'X data', items=[],callback=self.onSourceChange)
+        self.yColumnSelector = comboBox(options, label = 'Y data', items=[],callback=self.onSourceChange)
+        self.paintCMSelector = comboBox(options, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
+        # self.replotCheckbox = checkBox(options, buttons = ['Reset Zoom On Selection'], 
+        # toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
+        # self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
         
         # plot area
-        plotarea = groupBox(self.controlArea, label = "Graph")
+        plotarea = groupBox(area, label = "Graph")
         plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.graph = redRGraph(plotarea)
+        self.graph = redRGraph(plotarea,onSelectionCallback=self.onSelectionCallback)
+
         plotarea.layout().addWidget(self.graph)
         #self.zoomSelectToolbarBox = groupBox(self.GUIDialog, label = "Plot Tool Bar")
         
-        separator(self.GUIDialog,height=8)
-        buttonBox = widgetBox(self.GUIDialog,orientation='horizontal')
-        button(buttonBox, label = "Plot", callback = self.plot, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
-        button(buttonBox, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.  This applied the selection to the CM also.')
-        separator(self.GUIDialog,height=8)
-        self.zoomSelectToolbar = zoomSelectToolbar(self, self.GUIDialog, self.graph)
-        self.paintLegend = textEdit(self.GUIDialog)
+        separator(options,height=8)
+        buttonBox = widgetBox(options,orientation='vertical')
+        box1 = widgetBox(options,orientation='horizontal')
+        box1.layout().setAlignment(Qt.AlignRight)
+        self.plotOnInput = checkBox(box1, buttons = ['Plot on Change'],
+        toolTips = ['Whenever X, Y or color data source changes plot the results.'])
+        button(box1, label = "Plot", callback = self.plot, toolTip = 'Plot the data.')
         
-        self.resize(600, 500)
+        box2 = widgetBox(options,orientation='horizontal')  
+        box2.layout().setAlignment(Qt.AlignRight)
+        
+        self.commitOnInput = checkBox(box2, buttons = ['Commit on Selection'],
+        toolTips = ['Whenever this selection changes, send data forward.'])
+        button(box2, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.')
+
+        separator(options,height=8)
+        self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
+        self.paintLegend = textEdit(options)
+        
+        # self.graph.resize(350, 350)
 
         
     def showSelected(self):
@@ -104,6 +118,11 @@ class RedRScatterplot(OWRpy):
             self.xData = []
             self.yData = []
             self.graph.clear()
+    
+    def onSourceChange(self):
+        if 'Plot on Change' in self.plotOnInput.getChecked():
+            self.plot()
+        
     def plot(self, newZoom = True):
         xCol = str(self.xColumnSelector.currentText())
         yCol = str(self.yColumnSelector.currentText())
@@ -180,8 +199,8 @@ class RedRScatterplot(OWRpy):
         self.paintLegend.insertHtml('</table>')
         
         ## make a fake call to the zoom to repaint the points and to add some interest to the graph
-        if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
-            self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
+        # if newZoom and 'Reset Zoom On Selection' in self.replotCheckbox.getChecked():
+        self.graph.setNewZoom(float(min(self.xData)), float(max(self.xData)), float(min(self.yData)), float(max(self.yData)))
             
         self.graph.replot()
         
@@ -195,6 +214,10 @@ class RedRScatterplot(OWRpy):
                 newList.append(None)
                 
         return newList
+    def onSelectionCallback(self):
+        if 'Commit on Selection' in self.commitOnInput.getChecked():
+            self.sendMe()
+   
     def sendMe(self):
         xCol = str(self.xColumnSelector.currentText())
         yCol = str(self.yColumnSelector.currentText())
@@ -203,8 +226,8 @@ class RedRScatterplot(OWRpy):
         yData = self.R('as.numeric('+self.data+'[,"'+str(yCol)+'"])', wantType = 'list')
         
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
-        print selected
-        print unselected
+        # print selected
+        # print unselected
         index = []
         for x in selected:
             if x ==1: index.append('T')
@@ -221,10 +244,6 @@ class RedRScatterplot(OWRpy):
     def loadCustomSettings(self, settings = None):
         # custom function to replot the data that is in the scatterplot
         self.plot()
-    def widgetDelete(self):
-        if self.cm and self.Rvariables['Plot'] in self.R('colnames('+self.cm+')', wantType = 'list'):
-            self.R(self.cm+'$'+self.Rvariables['Plot']+'<-NULL') #removes the column for this widget from the CM
-            self.sendRefresh()
     def setColor(self, colorint):
         # import colorsys
         # N = 50

@@ -3,9 +3,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class button(QPushButton,widgetState):
-    def __init__(self,widget,label, callback = None, disabled=0, 
+    def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
     toolTip=None, width = None, height = None,align='left', toggleButton = False, addToLayout = 1):
-        QPushButton.__init__(self,label,widget)
+        if icon:
+            QPushButton.__init__(self,QIcon(icon), label,widget)
+        else:
+            QPushButton.__init__(self,label,widget)
 
         if addToLayout and widget.layout():
             widget.layout().addWidget(self)
@@ -14,7 +17,7 @@ class button(QPushButton,widgetState):
             elif align=='right':
                 widget.layout().setAlignment(self, Qt.AlignRight)
         
-        if width == -1:
+        if icon or width == -1:
             pass
         elif width: 
             self.setFixedWidth(width)

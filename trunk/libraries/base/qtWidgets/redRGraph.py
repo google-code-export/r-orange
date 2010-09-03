@@ -24,7 +24,7 @@ SELECT = 5
 #       a set of panning or moving bars at the side and bottom so that one can move to other regions of the data
 
 class redRGraph(QwtPlot,widgetState):
-    def __init__(self, parent = None, name = "None", showLegend=1):
+    def __init__(self, parent = None, name = "None", showLegend=1, onSelectionCallback=None):
         "Constructs the graph"
         QwtPlot.__init__(self, parent)
         self.parentName = name
@@ -71,7 +71,7 @@ class redRGraph(QwtPlot,widgetState):
         self.state = ZOOMING
         self.tempSelectionCurve = None
         self.selectionCurveList = []
-        self.autoSendSelectionCallback = None   # callback function to call when we add new selection polygon or rectangle
+        self.autoSendSelectionCallback = onSelectionCallback   # callback function to call when we add new selection polygon or rectangle
         self.sendSelectionOnUpdate = 0
         self.showLegend = showLegend
         if self.showLegend:

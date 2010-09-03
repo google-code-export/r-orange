@@ -17,8 +17,10 @@ from libraries.base.qtWidgets.filterTable import filterTable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+
 class rowFilter(OWRpy):
-    settingsList = []
+    globalSettingsList = ['commitOnInput']
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self)
         self.data = None
@@ -42,10 +44,11 @@ class rowFilter(OWRpy):
         
         self.tableArea = widgetBox(self.controlArea)
         self.table = filterTable(self.controlArea, sortable=True,
-        filterable=True,selectionMode = QAbstractItemView.NoSelection )
-
-        button(self.bottomAreaRight, "Commit Subsetting", callback = self.commitSubset)
-        self.dimsInfoArea = widgetLabel(self.bottomAreaCenter, '')
+        filterable=True,selectionMode = QAbstractItemView.NoSelection,onFilterCallback=self.onFilter)
+        
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Filter'],
+        toolTips = ['On filter send data forward.'])
+        button(self.bottomAreaRight, "Commit", callback = self.commitSubset)
         
     def processData(self, data):
         if not data: 
@@ -56,12 +59,17 @@ class rowFilter(OWRpy):
         self.data  = data.getData()
         self.table.setRTable(self.data)
         
+    def onFilter(self):
+        # print '############################ onFilter'
+        if 'Commit on Filter' in self.commitOnInput.getChecked():
+            self.commitSubset()
+
     def commitSubset(self):
         filteredData = self.table.getFilteredData()
-        newData = rdf.RDataFrame(data = filteredData, parent = self.dataParent.getData())
+        newData = redRRDataFrame(data = filteredData, parent = self.dataParent.getData())
 
         self.rSend('id0', newData)
-
+   
     def saveCustomSettings(self):
         ## make a dict of settings for each of the dialogs.  These will be reloaded on reload.
         

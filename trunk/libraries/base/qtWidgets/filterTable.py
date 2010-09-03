@@ -19,6 +19,7 @@ class filterTable(widgetState, QTableView):
     selectionBehavior=QAbstractItemView.SelectRows, 
     selectionMode = QAbstractItemView.NoSelection, 
     showResizeButtons = True,
+    onFilterCallback = None,
     callback=None):
         #widgetBox.__init__(self,widget,orientation='vertical')
         
@@ -56,7 +57,7 @@ class filterTable(widgetState, QTableView):
         self.sortable=sortable
         self.editable=editable
         self.filterable=filterable
-        
+        self.onFilterCallback = onFilterCallback
         self.setSelectionBehavior(selectionBehavior)
 
         self.setAlternatingRowColors(True)
@@ -80,6 +81,7 @@ class filterTable(widgetState, QTableView):
             # self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
             # self.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
 
+        
         if callback:
             QObject.connect(self, SIGNAL('clicked (QModelIndex)'), callback)
 
@@ -132,6 +134,7 @@ class filterTable(widgetState, QTableView):
         self.tm.insertColumns(self.tm.columnCount(self),count,headers)
     def clear(self):
         self.setRTable('matrix("")')
+        self.criteriaList = {}
     def headerClicked(self,val):
         # print '#############################', val.x()
         # ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
@@ -343,10 +346,11 @@ class filterTable(widgetState, QTableView):
                 filters.append(self.Rdata+'[,'+str(col)+'] %in% as.factor(c("'+f+'"))')
             #elif 'logical' == critera['method']:
             
-        print 'filters:', filters
+       # print 'filters:', filters
         self.filteredData = '%s[%s,,drop = F]' % (self.Rdata,' & '.join(filters))
-        print 'string:', self.filteredData
+        #print 'string:', self.filteredData
         self.setRTable(self.filteredData,filtered=True)
+        self.onFilterCallback()
              
     def getFilteredData(self):
         return self.filteredData

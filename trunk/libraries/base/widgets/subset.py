@@ -33,6 +33,7 @@ class subset(OWRpy):
 
         
         self.outputs.addOutput('id0', 'Subsetted Data Table', redRRDataFrame)
+        self.outputs.addOutput('id1', 'Subsetted Data Vector', redRRVector)
 
         
                 
@@ -71,7 +72,7 @@ class subset(OWRpy):
 
     def processB(self, data):
         if not data:
-            self.colsB.update([])
+            self.colB.update([])
             return 
         self.dataB = data.getData()
         colsB = self.R('names('+self.dataB+')',wantType='list') #collect the sample names to make the differential matrix
@@ -96,18 +97,25 @@ class subset(OWRpy):
     def subset(self):
         if self.dataA != '' and self.dataB != '':
             h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
-        else: h = None
+        else: 
+            return
+        print self.colA.getItems(), self.colAsel
+        print self.colB.getItems(), self.colBsel
         
         if self.colAsel == None and self.colBsel == None and type(h) is str: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,"' + h +'"]'
             +' %in% '+self.dataB+'[["'+h+'"]],]')
-        elif self.colAsel and self.colBsel: 
+        elif self.colAsel in ["'%s'" % x for x in self.colA.getItems()]  and self.colBsel in ["'%s'" % x for x in self.colB.getItems()]: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
             +' %in% '+self.dataB+'[['+self.colBsel+']],]')
             
         newData = redRRDataFrame(data = self.Rvariables['subset'])
-        self.rSend('Data Table', newData)
+        self.rSend('id0', newData)
         
+        if self.R('ncol('+self.Rvariables['subset']+')') == 1:
+            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['subset']+')')
+            self.rSend('id1', newVector)
+
 
     def subset2(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None or self.data == '': return

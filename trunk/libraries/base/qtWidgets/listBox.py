@@ -186,6 +186,12 @@ class listBox(QListWidget,widgetState):
         for i in range(0, self.count()-1):
             items.append(self.item(i))
         return items
+    def getItems(self):
+        items = []
+        for i in range(0, self.count()-1):
+            items.append(str(self.item(i).text()))
+        return items
+        
     def addRItems(self, items):
         if type(items) == type([]):
             self.addItems(items)

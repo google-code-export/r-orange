@@ -2,7 +2,7 @@
 <name>Merge</name>
 <description>Merges or subsets two datasets depending on options.</description>
 <tags>Data Manipulation</tags>
-<author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
+<author>Red-R Development Team</author>
 <RFunctions>base:match,base:merge</RFunctions>
 <icon>merge2.png</icon>
 """
