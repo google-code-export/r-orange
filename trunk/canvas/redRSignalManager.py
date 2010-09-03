@@ -1,4 +1,5 @@
-
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 
 class OutputHandler:
@@ -55,6 +56,12 @@ class OutputHandler:
             ## remove the signal from the outputSignals
             del self.outputSignals[id]['connections'][signal['id']]
             signal['parent'].inputs.removeLink(signal['sid'], self.getSignal(id))
+            res = QMessageBox.question(None, 'Signal Propogation', 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
+            if res != QMessageBox.Yes: 
+                print 'Deletion rejected'
+                return
+            print 'propogating None in widgets'
+            signal['parent'].outputs.propogateNone()
     def setOutputData(self, signalName, value):
         self.outputSignals[signalName]['value'] = value
         
@@ -104,7 +111,11 @@ class OutputHandler:
         if not connection['enabled']: return 0
         handler = connection['signal']['handler']
         multiple = connection['signal']['multiple']
+        print '\n\n\n', connection['signal']['signalClass'], '\n\n\n'
         if signal['value'] == None: # if there is no data then it doesn't matter what the signal class is, becase none will be sent anyway
+            self._handleSignal(signal['value'], handler, multiple) 
+        elif signal['signalClass'] == 'All' or 'All' in connection['signal']['signalClass']:
+            print '\n\n\nprocessing signal %s using handler: %s with multiple: %s\n\n\n\n' % (signal['value'], handler, multiple)
             self._handleSignal(signal['value'], handler, multiple) 
         elif signal['signalClass'] in connection['signal']['signalClass']:
             self._handleSignal(signal['value'], handler, multiple)
@@ -179,6 +190,27 @@ class OutputHandler:
                         
                 inputSignal = widget.inputs.getSignal(vValue['id'])
                 self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
+    def linkingWidgets(self):
+        widgets = []
+        for (i, s) in self.outputSignals.items():
+            for (id, ls) in s['connections'].items():
+                if ls['signal']['parent'] not in widgets:
+                    widgets.append(ls['signal']['parent'])
+        return widgets
+    def propogateNone(self, ask = True):    
+        ## send None through all of my output channels
+        
+        for id in self.outputIDs():
+            print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
+            self.parent.send(id, None)
+        
+        ## identify all of the downstream widgets and send none through them, then propogateNone in their inputs
+        
+        dWidgets = self.linkingWidgets()
+        print dWidgets
+        ## send None through all of the channels
+        for w in dWidgets:
+            w.outputs.propogateNone(ask = False)
             
     
 class InputHandler:
@@ -268,6 +300,8 @@ class InputHandler:
     def removeLink(self, sid, signal):
         if sid not in self.links.keys(): return
         self.links[sid].remove(signal)
+        
+    
     def getLinks(self, sid):
         if sid not in self.links.keys():
             self.links[sid] = []
