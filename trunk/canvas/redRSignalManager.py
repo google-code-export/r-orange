@@ -24,6 +24,8 @@ class OutputHandler:
             if process:
                 print 'processing signal'
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
+            else:
+                print '\n\n#######################\n\nprocessing supressed\n\n###########################\n\n'
             return True
         except:
             return False

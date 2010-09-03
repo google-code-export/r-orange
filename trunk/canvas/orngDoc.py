@@ -908,7 +908,7 @@ class SchemaDoc(QWidget):
             ## add a link for each of the signals.
             for (outName, inName) in signals:
                 ## try to add using the new settings
-                if not self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True):
+                if not self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
                     ## try to add using the old settings
                     self.addLink175(outWidget, inWidget, outName, inName, enabled)
             print '######## enabled ########\n\n', enabled, '\n\n'
