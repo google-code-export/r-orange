@@ -75,7 +75,7 @@ class filterTable(widgetState, QTableView):
         # if sortable:
             # self.horizontalHeader().setSortIndicatorShown(True)
             # self.horizontalHeader().setSortIndicator(-1,0)
-        if filterable:
+        if filterable or sortable:
             #self.horizontalHeader().setClickable(True)
             QObject.connect(self.horizontalHeader(), SIGNAL('sectionClicked (int)'), self.headerClicked)
             # self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
@@ -89,6 +89,8 @@ class filterTable(widgetState, QTableView):
         
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         print 'in setRTable', data
+        if self.R('class(%s)' %data, silent=True) != 'data.frame':
+            data = 'as.data.frame(%s)' %data
         #self.Rdata = Rdata
         if not filtered:
             self.Rdata = data
@@ -104,7 +106,7 @@ class filterTable(widgetState, QTableView):
             self.label.setText('Showing %d rows.' % (total))
 
         self.tm = MyTableModel(data,self,editable=self.editable, 
-        filteredOn = filteredCols, filterable=self.filterable)
+        filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
         self.setModel(self.tm)
     def resizeColumnsToContents(self):
         QTableView.resizeColumnsToContents(self)
@@ -173,11 +175,17 @@ class filterTable(widgetState, QTableView):
             # qmenu.addAction(a)
             # self.menu.addAction(a)
 
+        if not self.filterable:
+            self.menu.move(globalPos)
+            self.menu.show()
+            return
+        
+        if self.sortable:
             hr = QFrame(self.menu)
             hr.setFrameStyle( QFrame.Sunken + QFrame.HLine );
             hr.setFixedHeight( 12 );
             self.menu.layout().addWidget(hr)
-        
+    
         
         clearButton = button(self.menu,label='Clear Filter',
         callback=lambda col=selectedCol: self.createCriteriaList(col,self.menu,action='clear'))
@@ -243,9 +251,12 @@ class filterTable(widgetState, QTableView):
             
         buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)
-        okButton = button(buttonBox,label='OK',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='OK'))
+        okButton = button(buttonBox,label='OK',
+        callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='OK'))
         okButton.setDefault (True)
-        button(buttonBox,label='Cancel',callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='cancel'))
+        button(buttonBox,label='Cancel',
+        callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='cancel'))
+        
         self.menu.move(globalPos)
         self.menu.show()
     def factorCheckBox(self,val,menu):
@@ -410,10 +421,12 @@ class filterTable(widgetState, QTableView):
 
 
 class MyTableModel(QAbstractTableModel): 
-    def __init__(self,Rdata,parent, filteredOn = [], editable=False,filterable=False): 
+    def __init__(self,Rdata,parent, filteredOn = [], editable=False,
+    filterable=False,sortable=False): 
 
         self.parent =  parent
         self.R = Rcommand
+        self.sortable = sortable
         self.editable = editable
         self.filterable = filterable
         self.filteredOn = filteredOn
@@ -483,7 +496,7 @@ class MyTableModel(QAbstractTableModel):
         # print 'in headerData', col, orientation, role
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
-        elif orientation == Qt.Horizontal and role == Qt.DecorationRole and self.filterable:
+        elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
             # print 'DecorationRole'
             if col+1 in self.filteredOn:
                 icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_delete.gif'))

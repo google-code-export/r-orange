@@ -11,7 +11,7 @@ class lineEdit(QLineEdit,widgetState):
         QLineEdit.__init__(self,widget)
         if widget:
             if label:
-                self.hb = widgetBox(widget,orientation=orientation)
+                self.hb = widgetBox(widget,orientation=orientation, spacing=2)
                 if sp == 'shrinking':
                     self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
                 widgetLabel(self.hb, label)

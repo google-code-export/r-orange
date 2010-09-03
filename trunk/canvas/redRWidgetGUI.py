@@ -462,7 +462,7 @@ class redRWidgetGUI(QMainWindow):
             for val in id:
                 if self.widgetState[stateType].has_key(val):
                     self.widgetState[stateType].pop(val)
-                    print '|#| pop %' % str(val)
+                    print '|#| pop %s' % str(val)
                     changed = 1
         else:
             #if type(id) == str:
