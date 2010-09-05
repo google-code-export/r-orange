@@ -30,13 +30,8 @@ class plot(OWRpy):
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
-        # self.RFunctionParam_xlab = lineEdit(box, label = 'X Axis Label:')
-        # self.RFunctionParam_ylab = lineEdit(box, label = 'Y Axis Label:')
-        # self.RFunctionParam_cex = lineEdit(box, '100', label = 'Text Magnification Percent:')
         self.plotArea = redRGraphicsView(self.controlArea)
-        #self.advancedOptions = lineEdit(box, label = 'Advanced Options:', toolTip = 'Advanced obtions to be added to the R command, this can be things like points, charachter labels, etc.  See R documentation for more help.')
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        #button(self.bottomAreaRight, "Save As PDF", callback = self.saveAsPDF)
     def gotAttribute(self, data, id):
         if data:
             self.plotAttributes[id] = data.getData()

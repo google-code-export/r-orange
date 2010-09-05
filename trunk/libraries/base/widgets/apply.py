@@ -14,6 +14,7 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.spinBox import spinBox as RedRSpinBox
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 from libraries.base.qtWidgets.separator import separator
@@ -51,8 +52,9 @@ class apply(OWRpy):
         self.parameters = redRLineEdit(box,label='Additional Parameters:', orientation='vertical')
         
         self.RFunctionParamMARGIN_radioButtons =  radioButtons(box,  
-        label = "to:", buttons = ['Rows', 'Columns'],setChecked='Rows',
+        label = "To:", buttons = ['Rows', 'Columns'],setChecked='Rows',
         orientation='horizontal')
+        self.indexSpinBox = RedRSpinBox(box, label = 'Array Index:', min = 1, value = 1)
         buttonBox = widgetBox(box,orientation='horizontal')
         self.commitOnInput = redRCheckBox(buttonBox, buttons = ['Commit on Input'],
         toolTips = ['Whenever this selection changes, send data forward.'])
@@ -91,11 +93,13 @@ class apply(OWRpy):
             self.saveGlobalSettings()
 
         injection = []
-        
-        if self.RFunctionParamMARGIN_radioButtons.getChecked() == 'Rows':
-            string = 'MARGIN='+str(1)
+        if int(self.indexSpinBox.value()) > 2:
+            string = 'MARGIN = %s' % str(self.indexSpinBox.value())
         else:
-            string = 'MARGIN = '+str(2)
+            if self.RFunctionParamMARGIN_radioButtons.getChecked() == 'Rows':
+                string = 'MARGIN='+str(1)
+            else:
+                string = 'MARGIN = '+str(2)
         injection.append(string)
             
         string = 'FUN='+str(self.functionText.toPlainText())
