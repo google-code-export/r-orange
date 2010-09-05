@@ -154,7 +154,7 @@ class mathWidget(OWRpy):
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
-                        
+                self.counter += 1
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             newData = redRRDataFrame(data = self.data, parent = self.data)

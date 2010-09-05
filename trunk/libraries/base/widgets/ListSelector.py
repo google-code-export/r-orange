@@ -64,7 +64,7 @@ class ListSelector(OWRpy):
         else:
             self.names.clear()
             for signal in self.outputs.outputIDs():
-                self.rSend(signal[0], None)
+                self.rSend(signal, None)
           
     def selectionChanged(self):
         if 'Commit on Selection' in self.commitOnInput.getChecked():

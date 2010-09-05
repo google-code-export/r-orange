@@ -109,32 +109,39 @@ class OutputHandler:
                     return True
         return False
     def _processSingle(self, signal, connection):
-        print signal
-        if not connection['enabled']: return 0
-        handler = connection['signal']['handler']
-        multiple = connection['signal']['multiple']
-        print '\n\n\n', connection['signal']['signalClass'], '\n\n\n'
-        if signal['value'] == None: # if there is no data then it doesn't matter what the signal class is, becase none will be sent anyway
-            self._handleSignal(signal['value'], handler, multiple) 
-        elif signal['signalClass'] == 'All' or 'All' in connection['signal']['signalClass']:
-            print '\n\n\nprocessing signal %s using handler: %s with multiple: %s\n\n\n\n' % (signal['value'], handler, multiple)
-            self._handleSignal(signal['value'], handler, multiple) 
-        elif signal['signalClass'] in connection['signal']['signalClass']:
-            self._handleSignal(signal['value'], handler, multiple)
-        else:
-            for sig in connection['signal']['signalClass']:
-                if sig in signal['signalClass'].convertToList:
-                    newVal = signal['value'].convertToClass(sig)
-                    self._handleSignal(newVal, handler, multiple)
-                    connection['signal']['value'] = newVal
-                    break
-                elif signal['signalClass'] in sig.convertFromList:
-                    tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
-                    newVal = tempSignal.convertFromClass(signal['value'])
-                    self._handleSignal(newVal, handler, multiple)
-                    connection['signal']['value'] = newVal
-                    break
-                
+        try:
+            print signal
+            if not connection['enabled']: return 0
+            handler = connection['signal']['handler']
+            multiple = connection['signal']['multiple']
+            print '\n\n\n', connection['signal']['signalClass'], '\n\n\n'
+            if signal['value'] == None: # if there is no data then it doesn't matter what the signal class is, becase none will be sent anyway
+                self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent']) 
+            elif signal['signalClass'] == 'All' or 'All' in connection['signal']['signalClass']:
+                print '\n\n\nprocessing signal %s using handler: %s with multiple: %s\n\n\n\n' % (signal['value'], handler, multiple)
+                self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent']) 
+            elif signal['signalClass'] in connection['signal']['signalClass']:
+                self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent'])
+            else:
+                for sig in connection['signal']['signalClass']:
+                    try:
+                        if sig in signal['signalClass'].convertToList:
+                            newVal = signal['value'].convertToClass(sig)
+                            self._handleSignal(newVal, handler, multiple, connection['signal']['parent'])
+                            connection['signal']['value'] = newVal
+                            break
+                        elif signal['signalClass'] in sig.convertFromList:
+                            tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
+                            newVal = tempSignal.convertFromClass(signal['value'])
+                            self._handleSignal(newVal, handler, multiple, connection['signal']['parent'])
+                            connection['signal']['value'] = newVal
+                            break
+                    except:
+                        import redRExceptionHandling
+                        print redRExceptionHandling.formatException()
+        except:
+            import redRExceptionHandling
+            print redRExceptionHandling.formatException()
     def processData(self, id):
         # collect the signal ID
         signal = self.getSignal(id)
@@ -147,11 +154,18 @@ class OutputHandler:
             self._processSingle(signal, connections[cKey])
 
                     
-    def _handleSignal(self, value, handler, multiple):
-        if multiple:
-            handler(value, self.parent.widgetID)
-        else:   
-            handler(value)
+    def _handleSignal(self, value, handler, multiple, parentWidget):
+        try:
+            if multiple:
+                handler(value, self.parent.widgetID)
+            else:   
+                handler(value)
+        except:
+            import redRExceptionHandling
+            error = redRExceptionHandling.formatException()
+            parentWidget.setWarning(id = 'signalHandlerWarning', text = 'Error occured in processing signal in this widget.\nPlease check the widgets.\n\n'+str(error))
+            print error
+            
     def hasOutputName(self, name):
         return name in self.outputSignals.keys()
     def getSignalByName(self, name):
