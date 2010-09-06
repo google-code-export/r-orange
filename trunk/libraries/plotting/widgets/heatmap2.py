@@ -20,12 +20,13 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.graphicsView import graphicsView
 
 class heatmap2(OWRpy):
     globalSettingsList = ['plotOnConnect','imageWidth','imageHeight']
     
     def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self, wantGUIDialog = 1)
+        OWRpy.__init__(self)
         
         self.setRvariableNames(['heatsubset'])
         self.plotOnConnect = 0
@@ -36,10 +37,12 @@ class heatmap2(OWRpy):
 
         
         #GUI
-        mainArea = widgetBox(self.controlArea,orientation='vertical')
-        mainArea.setMaximumWidth(300)
-        
-        dendrogramsBox = groupBox(mainArea, label='Calculate dendrogram ', orientation='vertical')
+        mainArea = widgetBox(self.controlArea,orientation='horizontal')
+        #mainArea.setMaximumWidth(300)
+        options = widgetBox(mainArea,orientation='vertical')
+        options.setMaximumWidth(175)
+        options.setMinimumWidth(175)
+        dendrogramsBox = groupBox(options, label='Calculate dendrogram ', orientation='vertical')
         self.notice = widgetLabel(dendrogramsBox,label='The data set has > 1000 rows.\nClustering on rows will likely fail.')
         self.notice.setHidden(True)
         self.dendrogramOptions = checkBox(dendrogramsBox,
@@ -47,40 +50,42 @@ class heatmap2(OWRpy):
         callback=self.dendrogramChanged)
         
         functions = widgetBox(dendrogramsBox,orientation='vertical')
-        self.distOptions = lineEdit(functions,label='Distance Function:', text='dist')
-        self.hclustOptions = lineEdit(functions,label='Clustering Function:',text='hclust')
+        self.distOptions = lineEdit(functions,label='Distance Function:', text='dist', orientation='vertical')
+        self.hclustOptions = lineEdit(functions,label='Clustering Function:',text='hclust', 
+        orientation='vertical')
         #self.reorderOptions = lineEdit(functions,label='Reorder Function:', text='reorder.dendrogram')
         
         
-        self.scaleOptions = radioButtons(mainArea,label='Scale',  buttons=['row','column','none'],
+        self.scaleOptions = radioButtons(options,label='Scale',  buttons=['row','column','none'],
         setChecked='row',orientation='horizontal')
         
-        otherOptions = groupBox(mainArea,label='Other Options')
+        otherOptions = groupBox(options,label='Other Options')
         self.narmOptions = checkBox(otherOptions, buttons = ['Remove NAs'], setChecked=['Remove NAs'])
-        self.showDendroOptions = checkBox(otherOptions,buttons=['Show dendrogram '], setChecked=['Show dendrogram '])
+        # self.showDendroOptions = checkBox(otherOptions,buttons=['Show dendrogram '], setChecked=['Show dendrogram '])
+        
+        self.colorTypeCombo = comboBox(otherOptions, label = 'Color Type:', 
+        items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'],callback=self.colorTypeChange)
+        self.startSaturation = spinBox(otherOptions, label = 'Starting Saturation', min = 0, max = 100)
+        self.endSaturation = spinBox(otherOptions, label = 'Ending Saturation', min = 0, max = 100)
+        self.endSaturation.setValue(30)
+        separator(otherOptions,height=10)
+
+        self.imageWidth = spinBox(otherOptions, label = 'Image Width', min = 1, max = 1000)
+        self.imageWidth.setValue(4)
+        self.imageHeight = spinBox(otherOptions, label = 'Image Height', min = 1, max = 1000)
+        self.imageHeight.setValue(4)
         
         
-        
-        self.notice2 = widgetLabel(mainArea,label='The input matrix is not numeric.')
+        self.notice2 = widgetLabel(options,label='The input matrix is not numeric.')
         self.notice2.setHidden(True)
-        self.buttonsBox = widgetBox(mainArea,orientation='horizontal')
+        self.buttonsBox = widgetBox(options,orientation='horizontal')
         self.buttonsBox.layout().setAlignment(Qt.AlignRight)
         self.plotOnConnect = checkBox(self.buttonsBox, buttons=['Plot on Connect'])
         button(self.buttonsBox, label = "Plot", callback=self.makePlot)
         
         
-        advancedOptions = widgetBox(self.GUIDialog)
-        self.colorTypeCombo = comboBox(advancedOptions, label = 'Color Type:', 
-        items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'],callback=self.colorTypeChange)
-        self.startSaturation = spinBox(advancedOptions, label = 'Starting Saturation', min = 0, max = 100)
-        self.endSaturation = spinBox(advancedOptions, label = 'Ending Saturation', min = 0, max = 100)
-        self.endSaturation.setValue(30)
-        separator(advancedOptions,height=10)
-
-        self.imageWidth = spinBox(advancedOptions, label = 'Image Widget', min = 1, max = 1000)
-        self.imageWidth.setValue(4)
-        self.imageHeight = spinBox(advancedOptions, label = 'Image Height', min = 1, max = 1000)
-        self.imageHeight.setValue(4)
+        self.gview1 = graphicsView(mainArea)
+        
     def dendrogramChanged(self):
         if len(self.dendrogramOptions.getChecked()) > 0:
             self.hclustOptions.setEnabled(True)
@@ -117,6 +122,7 @@ class heatmap2(OWRpy):
             self.notice.setHidden(True)
         if 'Plot on Connect'  in self.plotOnConnect.getChecked():
             self.makePlot()
+
     def makePlot(self):
         if self.plotdata == '': return
         options = {}
@@ -151,16 +157,17 @@ class heatmap2(OWRpy):
             options['na.rm'] = 'TRUE'
         else:
             options['na.rm'] = 'FALSE'
-        if 'Show dendrogram' in self.showDendroOptions.getChecked():
-            options['keep.dendro'] = 'TRUE'
-        else:
-            options['keep.dendro'] = 'FALSE'
+        # if 'Show dendrogram' in self.showDendroOptions.getChecked():
+            # options['keep.dendro'] = 'TRUE'
+        # else:
+            # options['keep.dendro'] = 'FALSE'
             
         text = ''
         for k,v in options.items():
             text += '%s=%s,' % (k,v)
-            
-        self.Rplot('heatmap(%s, %s)' % (self.plotdata,text), self.imageHeight.value(), self.imageWidth.value())
+        self.gview1.plot(function = 'heatmap', query = self.plotdata + ',' + text, dwidth=self.imageHeight.value(), dheight=self.imageWidth.value())
+
+        #self.Rplot('heatmap(%s, %s)' % (self.plotdata,text), self.imageHeight.value(), self.imageWidth.value())
         
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot

@@ -7,7 +7,11 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+from libraries.base.signalClasses.RList import RList as redRRList
+
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
 class RedReigen(OWRpy): 

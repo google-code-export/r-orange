@@ -72,7 +72,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.status.setText('Processing Started...')
         try:
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
-        except rpy.RPyRException as inst:
+        except RuntimeError as inst:
             #print 'asdfasdfasdf', inst
             qApp.restoreOverrideCursor()
             if showException:

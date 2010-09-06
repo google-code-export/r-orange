@@ -8,7 +8,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RVector import RVector as redRRVector
+
 import libraries.plotting.signalClasses as plotsigs
 
 from libraries.base.qtWidgets.lineEdit import lineEdit
@@ -26,7 +27,7 @@ class RedRpoints(OWRpy):
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
         self.inputs.addInput('id2', 'col', redRRVector, self.processcol)
 
-        self.outputs.addOutput('id0', 'points Output', plotsigs.redRRPlotAttribute)
+        self.outputs.addOutput('id0', 'points Output', plotsigs.RPlotAttribute)
 
         
         self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')

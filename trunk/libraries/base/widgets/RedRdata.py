@@ -64,7 +64,12 @@ class RedRdata(OWRpy):
         # the package does not need to be loaded to get its datasets
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package))
+        try:
+            newData = redRRDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')'))
+            self.rSend("id0", newData)            
+        except RuntimeError as inst:
+            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
+            QMessageBox.Ok + QMessageBox.Default)
+
         
-        newData = redRRDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')')) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         
-        self.rSend("id0", newData)

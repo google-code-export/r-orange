@@ -9,7 +9,8 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+
 from libraries.base.qtWidgets.textEdit import textEdit
 class summary(OWRpy): 
     settingsList = []

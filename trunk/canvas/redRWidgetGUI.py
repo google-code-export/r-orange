@@ -410,7 +410,7 @@ class redRWidgetGUI(QMainWindow):
 
 
     def setWidgetWindowIcon(self, iconName):
-        print '|#| setWidgetIcon redRWidgetGUI'
+        #print '|#| setWidgetIcon redRWidgetGUI'
         icon = QIcon(iconName)
         self.setWindowIcon(icon)
         
