@@ -73,6 +73,7 @@ class comboBox(QComboBox,widgetState):
             print str(items)
             print 'Items failed to add'
     def update(self, items):
+        print 'Updating comboBox with the following items', items
         current = self.currentText()
         self.clear()
         self.addRItems(items)

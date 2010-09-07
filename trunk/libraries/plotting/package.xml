@@ -15,6 +15,9 @@
     <menuTags>
         <group name="Plotting">
             <Description>Visualizing Data</Description>
+                <group name = 'Plot Attributes'>
+                    <Description>Section for adding attributes to plots</Description>
+                </group>
         </group>
     </menuTags>
 </package>

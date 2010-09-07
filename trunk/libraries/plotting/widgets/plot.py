@@ -25,19 +25,12 @@ class plot(OWRpy):
         self.plotAttributes = {}
         self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
         self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
-        self.inputs.addInput('id1', 'Plot Attributes', redRRPlotAttribute, self.gotAttribute)
 
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
         self.plotArea = redRGraphicsView(self.controlArea)
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-    def gotAttribute(self, data, id):
-        if data:
-            self.plotAttributes[id] = data.getData()
-        else:
-            print 'Removing data %s' % str(id)
-            self.plotAttributes[id] = None
     def processx(self, data):
         if data:
             self.data = data
@@ -56,9 +49,6 @@ class plot(OWRpy):
         else: inj = ''
         
         self.plotArea.plot(str(self.RFunctionParam_x)+inj)
-        for name in self.plotAttributes.keys():
-            if self.plotAttributes[name] != None:
-                self.R(self.plotAttributes[name])
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot
         if self.RFunctionParam_x != '':

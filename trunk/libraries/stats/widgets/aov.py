@@ -30,10 +30,10 @@ class aov(OWRpy):
         box = tabWidget(self.controlArea)
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamcontrasts_lineEdit =  lineEdit(self.standardTab,  label = "contrasts:", text = 'NULL')
+        self.RFunctionParamcontrasts_lineEdit =  lineEdit(self.advancedTab,  label = "contrasts:", text = 'NULL')
         self.RFunctionParamformula_formulaEntry =  RFormulaEntry(self.standardTab)
-        self.RFunctionParamqr_lineEdit =  lineEdit(self.standardTab,  label = "qr:", text = 'TRUE')
-        self.RFunctionParamprojections_lineEdit =  lineEdit(self.standardTab,  label = "projections:", text = 'FALSE')
+        self.RFunctionParamqr_lineEdit =  lineEdit(self.advancedTab,  label = "qr:", text = 'TRUE')
+        self.RFunctionParamprojections_lineEdit =  lineEdit(self.advancedTab,  label = "projections:", text = 'FALSE')
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
@@ -55,7 +55,8 @@ class aov(OWRpy):
             return
         formula = self.RFunctionParamformula_formulaEntry.Formula()
         if formula[0] == '' or formula[1] == '': 
-            self.setWarning(id = 'BadFormula', text = 'Formula not entered correctly')
+            self.status.setText('Formula Not Entered Correctly')
+            return
         injection = []
         string = 'formula='+formula[0]+ ' ~ '+formula[1]
         injection.append(string)

@@ -5,7 +5,8 @@ from RSession import assign
 
 class RVariable(BaseRedRVariable): 
     def __init__(self, data, parent = None, checkVal = False):
-        
+        convertToList = []
+        convertFromList = []
         BaseRedRVariable.__init__(self,data)
         if not parent:
             parent = data

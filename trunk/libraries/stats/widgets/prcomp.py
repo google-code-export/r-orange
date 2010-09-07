@@ -14,6 +14,7 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
 class prcomp(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -25,22 +26,34 @@ class prcomp(OWRpy):
 
         self.outputs.addOutput('id0', 'prcomp Output', redRRModelFit)
         self.outputs.addOutput('id1', 'Scaled Data', redRRMatrix)
-
-
+        self.options = checkBox(self.controlArea, label = 'Options:', buttons = ['Center', 'Scale'])
+        self.options.setChecked(['Center', 'Scale'])
+        self.commitOnConnect = checkBox(self.controlArea, buttons = ['Commit On Connection'], setChecked = 'Commit On Connection')
         button(self.controlArea, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            self.commitFunction()
+            if 'Commit On Connection' in self.commitOnConnect.getChecked():
+                self.commitFunction()
+        else:
+            self.RFunctionParam_x = ''
     def commitFunction(self):
         if str(self.RFunctionParam_x) == '': return
         injection = []
+        if 'Center' in self.options.getChecked():
+            injection.append('center = TRUE')
+        else:
+            injection.append('center = FALSE')
+        if 'Scale' in self.options.getChecked():
+            injection.append('scale = TRUE')
+        else:
+            injection.append('scale = FALSE')
         inj = ','.join(injection)
-        self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), scale = TRUE, retx=TRUE, '+inj+')')
+        self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), '+inj+')')
         
-        newPRComp = signals.redRRModelFit(data = self.Rvariables['prcomp'])
+        newPRComp = redRRModelFit(data = self.Rvariables['prcomp'])
         self.rSend("id0", newPRComp)
-        newPRCompMatrix = signals.redRRMatrix(data = self.Rvariables['prcomp']+'$x')
+        newPRCompMatrix = redRRMatrix(data = self.Rvariables['prcomp']+'$x')
         self.rSend("id1", newPRCompMatrix)
     def getReportText(self, fileDir):
         text = 'This widget generates principal component fits to data and sends that fit and the resulting matrix of components to downstream widgets.  Please see the .rrs file or other output for more informaiton.\n\n'

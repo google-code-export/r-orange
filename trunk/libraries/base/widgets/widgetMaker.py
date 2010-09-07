@@ -214,7 +214,7 @@ class widgetMaker(OWRpy):
         
     def makeHeader(self):
         self.headerCode = '"""\n'
-        self.headerCode += '&lt;name&gt;RedR'+self.functionName.text()+'&lt;/name&gt;\n'
+        self.headerCode += '&lt;name&gt;'+self.functionName.text()+'&lt;/name&gt;\n'
         self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
         self.headerCode += '&lt;description&gt;&lt;/description&gt;\n'
         self.headerCode += '&lt;RFunctions&gt;'+self.packageName.text()+':'+self.functionName.text()+'&lt;/RFunctions&gt;\n'

@@ -47,9 +47,9 @@ class RedRfisher_test(OWRpy):
 	def commitFunction(self):
 		if str(self.RFunctionParam_x) == '': return
 		injection = []
-		if str(self.RFunctionParamcontrol_lineEdit.text()) != '':
-			string = 'control='+str(self.RFunctionParamcontrol_lineEdit.text())+''
-			injection.append(string)
+		# if str(self.RFunctionParamcontrol_lineEdit.text()) != '':
+			# string = 'control='+str(self.RFunctionParamcontrol_lineEdit.text())+''
+			# injection.append(string)
 		if str(self.RFunctionParamB_lineEdit.text()) != '':
 			string = 'B='+str(self.RFunctionParamB_lineEdit.text())+''
 			injection.append(string)

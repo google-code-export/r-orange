@@ -2,7 +2,7 @@
 <name>Rug Plot Attribute</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>graphics:rug</RFunctions>
-<tags>Plotting</tags>
+<tags>Plot Attributes</tags>
 <icon>plot.png</icon>
 """
 from OWRpy import * 

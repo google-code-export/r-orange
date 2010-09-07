@@ -2,7 +2,7 @@
 <name>Arrow</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>graphics:arrows</RFunctions>
-<tags>Plotting</tags>
+<tags>Plot Attributes</tags>
 <icon>plot.png</icon>
 """
 from OWRpy import * 

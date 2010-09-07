@@ -72,6 +72,9 @@ class lm(OWRpy):
         if self.RFunctionParam_data == '': 
             self.status.setText('No data')
             return
+        if self.formulEntry.Formula()[0] == '' or self.formulEntry.Formula()[1] == '':
+            self.status.setText('Please select valid formula parameters')
+            return
         self.RFunctionParam_formula = self.formulEntry.Formula()[0] + ' ~ ' + self.formulEntry.Formula()[1]
 
         

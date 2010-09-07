@@ -101,21 +101,9 @@ class RFormulaEntry(groupBox, widgetState):
             print "Loading of RFormulaEntry encountered an error."
         
     def update(self, items):
-        ebis = []
-        for r in range(0, int(self.elementsListBox.count())-1):
-            ebi = self.elementsListBox.item(r)
-            ebis.append(str(self.elementsListBox.item(r).text()))
-        print ebis
-        print items
-        update = 1
-        for name in ebis:
-            if name not in items:
-                update = 0
-        if not update:
-            self.addItems(items) # we can't be sure that the elements in the formul entry lineEdit are in the new colnames.
-        else: # all of the same items are in the elementsListBox so we don't need to change it 
-            self.outcomeVariable.update(items)
-            self.elementsListBox.update(items)
+        
+        self.outcomeVariable.update(items)
+        self.elementsListBox.update(items)
             
     def getReportText(self, fileDir):
         return 'The following formula was used: %s ~ %s' % self.formula()

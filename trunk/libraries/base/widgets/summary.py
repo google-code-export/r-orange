@@ -10,7 +10,8 @@
 from OWRpy import * 
 import redRGUI 
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
-
+from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.textEdit import textEdit
 class summary(OWRpy): 
     settingsList = []
@@ -21,7 +22,8 @@ class summary(OWRpy):
          
         self.RFunctionParam_object = ''
         self.inputs.addInput('id0', 'R Variable Object', redRRVariable, self.processobject)
-
+        self.processOnConnect = checkBox(self.controlArea, buttons = ['Process On Connect'], setChecked = 'Process On Connect')
+        button(self.bottomAreaRight, 'Commit', callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         if not self.require_librarys(["base"]):
@@ -30,7 +32,9 @@ class summary(OWRpy):
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
-            self.commitFunction()
+            if 'Process On Connect' in self.processOnConnect.getChecked():
+                
+                self.commitFunction()
         else:
             self.RFunctionParam_object=''
     def commitFunction(self):

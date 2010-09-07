@@ -44,26 +44,30 @@ class OutputHandler:
     def removeSignal(self, signal, id):
         ## send None through the signal to the handler before we disconnect it.
         if signal['id'] in self.outputSignals[id]['connections'].keys():                                 # check if the signal is there to begin with otherwise we don't do anything
-            if self.outputSignals[id]['connections'][signal['id']]['signal']['multiple']:
-                self.outputSignals[id]['connections'][signal['id']]['signal']['handler'](
-                    #self.outputSignals[signalName]['value'],
-                    None,
-                    self.parent.widgetID
-                    )
-            else:
-                self.outputSignals[id]['connections'][signal['id']]['signal']['handler'](
-                    #self.outputSignals[signalName]['value']
-                    None
-                    )
-            ## remove the signal from the outputSignals
-            del self.outputSignals[id]['connections'][signal['id']]
-            signal['parent'].inputs.removeLink(signal['sid'], self.getSignal(id))
-            # res = QMessageBox.question(None, 'Signal Propogation', 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
-            # if res != QMessageBox.Yes: 
-                # print 'Deletion rejected'
-                # return
-            print 'propogating None in widgets'
-            signal['parent'].outputs.propogateNone()
+            try:
+                if self.outputSignals[id]['connections'][signal['id']]['signal']['multiple']:
+                    self.outputSignals[id]['connections'][signal['id']]['signal']['handler'](
+                        #self.outputSignals[signalName]['value'],
+                        None,
+                        self.parent.widgetID
+                        )
+                else:
+                    self.outputSignals[id]['connections'][signal['id']]['signal']['handler'](
+                        #self.outputSignals[signalName]['value']
+                        None
+                        )
+            except:
+                pass
+            finally:
+                ## remove the signal from the outputSignals
+                del self.outputSignals[id]['connections'][signal['id']]
+                signal['parent'].inputs.removeLink(signal['sid'], self.getSignal(id))
+                # res = QMessageBox.question(None, 'Signal Propogation', 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
+                # if res != QMessageBox.Yes: 
+                    # print 'Deletion rejected'
+                    # return
+                print 'propogating None in widgets'
+                signal['parent'].outputs.propogateNone()
     def setOutputData(self, signalName, value):
         self.outputSignals[signalName]['value'] = value
         
@@ -270,6 +274,12 @@ class InputHandler:
                         return True
                     elif 'convertFromList' in dir(ISignalClass) and OSignalClass in ISignalClass.convertFromList:
                         return True
+                    else:
+                        print OSignalClass
+                        print ISignalClass
+                        
+                        print str(OSignalClass.convertToList)
+                        print str(ISignalClass.convertFromList)
         return False
         
     def getPossibleConnections(self, outputHandler):
