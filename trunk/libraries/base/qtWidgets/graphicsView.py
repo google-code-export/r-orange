@@ -352,12 +352,13 @@ class graphicsView(QGraphicsView, widgetState):
         
         
     def getSettings(self):
-        
+        print '#################in getSettings'
         r = {'image':self.imageFileName, 'query':self.query, 'function':self.function, 'addSettings':self.extrasLineEdit.getSettings()}
         
-        # print r
+        print r
         return r
     def loadSettings(self,data):
+        print '@@@@@@@@@@@@@@@@@in loadSettings'
         print data
         
         self.query = data['query']
@@ -430,6 +431,7 @@ class graphicsView(QGraphicsView, widgetState):
         # fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.'+imageType
         # fileName = fileName.replace('\\', '/')
         self.imageFileName = str(self.image).replace('\\', '/')+'.'+str(imageType)
+        # print '###################### filename' , self.imageFileName
         if imageType == 'svg':
             self.require_librarys(['RSvgDevice'])
             self.R('devSVG(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '

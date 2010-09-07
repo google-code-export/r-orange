@@ -1,7 +1,7 @@
 """
 <name>Heatmap2</name>
 <description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  </description>
-<tags>Plotting</tags>
+<tags>Prototypes</tags>
 <author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
 <RFunctions>stats:heatmap</RFunctions>
 <icon>heatmap.png</icon>
@@ -84,7 +84,7 @@ class heatmap2(OWRpy):
         button(self.buttonsBox, label = "Plot", callback=self.makePlot)
         
         
-        self.gview1 = graphicsView(mainArea)
+        #self.gview1 = graphicsView(mainArea)
         
     def dendrogramChanged(self):
         if len(self.dendrogramOptions.getChecked()) > 0:
@@ -165,9 +165,9 @@ class heatmap2(OWRpy):
         text = ''
         for k,v in options.items():
             text += '%s=%s,' % (k,v)
-        self.gview1.plot(function = 'heatmap', query = self.plotdata + ',' + text, dwidth=self.imageHeight.value(), dheight=self.imageWidth.value())
+        # self.gview1.plot(function = 'heatmap', query = self.plotdata + ',' + text, dwidth=self.imageHeight.value(), dheight=self.imageWidth.value())
 
-        #self.Rplot('heatmap(%s, %s)' % (self.plotdata,text), self.imageHeight.value(), self.imageWidth.value())
+        self.R('heatmap(%s, %s)' % (self.plotdata,text))
         
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot

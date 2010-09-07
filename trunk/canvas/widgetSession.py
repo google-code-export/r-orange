@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI 
 import signals 
-from SQLiteSession import *
+# from SQLiteSession import *
 import redRExceptionHandling 
 
 class widgetSession():
@@ -19,7 +19,7 @@ class widgetSession():
         self.defaultGlobalSettingsList = ['windowState']
         self.dontSaveList.extend(self.defaultGlobalSettingsList)
         self.dontSaveList.extend(['outputs','inputs', 'dontSaveList','redRGUIObjects','defaultGlobalSettingsList','globalSettingsList', 'loaded'])
-        self.sqlite = SQLiteHandler()
+        # self.sqlite = SQLiteHandler()
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
@@ -39,12 +39,12 @@ class widgetSession():
                     continue
                 i += 1
                 self.progressBarAdvance(i)
-                #print 'frist att: ' + att
+                print 'frist att: ' + att
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
             except Exception as inst:
-                print str(inst)
-                print 'Exception occured in saving', att,
+                print redRExceptionHandling.formatException()
+                #print 'Exception occured in saving', att
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
@@ -98,9 +98,9 @@ class widgetSession():
             
     def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
-        # print 'var class', var.__class__.__name__
+        print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
-            #print 'getting gui settings for:' + att + '\n\n'
+            print 'getting gui settings\n\n'
             try:
                 v = {}
                 v = var.getSettings()

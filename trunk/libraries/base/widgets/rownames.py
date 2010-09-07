@@ -77,7 +77,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')')
         
-        newData = rvec.RVector(data = self.Rvariables["rownames"])
+        newData = redRRVector(data = self.Rvariables["rownames"])
 
         self.rSend("id0", newData)
     def getReportText(self, fileDir):

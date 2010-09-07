@@ -63,7 +63,7 @@ class subset(OWRpy):
             
         self.dataA = data.getData()
         colsA = self.R('colnames('+self.dataA+')',wantType='list') #collect the sample names to make the differential matrix
-        
+        print colsA
         colsA.insert(0, 'Rownames')
         self.colA.update(colsA)
 
@@ -108,12 +108,13 @@ class subset(OWRpy):
         elif self.colAsel in ["'%s'" % x for x in self.colA.getItems()]  and self.colBsel in ["'%s'" % x for x in self.colB.getItems()]: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
             +' %in% '+self.dataB+'[['+self.colBsel+']],]')
-            
+        else:
+            return
         newData = redRRDataFrame(data = self.Rvariables['subset'])
         self.rSend('id0', newData)
         
         if self.R('ncol('+self.Rvariables['subset']+')') == 1:
-            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['subset']+')')
+            newVector = redRRVector(data = 'as.vector('+self.Rvariables['subset']+')')
             self.rSend('id1', newVector)
 
 
