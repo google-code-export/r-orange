@@ -127,48 +127,18 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
     
-    def Rplot(self, query, dwidth=6, dheight=6, devNumber = 0, imageType = 'svg'):
-        
-        # check that a device is currently used by this widget
-        # print 'the devNumber is'+str(devNumber)
-        # print str(self.device)
-        if imageType not in ['svg', 'png', 'jpeg']:
-            imageType = 'svg'
-        
-        fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.'+imageType
-        fileName = fileName.replace('\\', '/')
-        if imageType == 'svg':
-            self.require_librarys(['RSvgDevice'])
-            self.R('devSVG(file=\''+str(fileName)+'\', bg = \'white\', width = '
-                +str(dheight)+', height = '+str(dheight)
-                +')')
-            self.R(query)
-            self.R('dev.off()')
-        elif imageType == 'png':
-            self.require_librarys(['RSvgDevice'])
-            self.R('png(file=\''+str(fileName)+'\', bg = \'white\', width = '
-                +str(dheight*100)+', height = '+str(dheight*100)
-                +')')
-            self.R(query)
-            self.R('dev.off()')
-        elif imageType == 'jpeg':
-            self.require_librarys(['RSvgDevice'])
-            self.R('jpeg(file=\''+str(fileName)+'\', bg = \'white\', width = '
-                +str(dheight*100)+', height = '+str(dheight*100)
-                +')')
-            self.R(query)
-            self.R('dev.off()')
-        
-        print fileName
+    def Rplot(self, command, dwidth=6, dheight=6, devNumber = 0, imageType = 'svg'):
+        ## reformat the query for plotting, separate the function from the parameters.
+        function = command[:command.find('(')]
+        query = command[command.find('(')+1:command.rfind(')')]
         if str(devNumber) in self.device:
-            self.device[str(devNumber)].clear()
-            self.device[str(devNumber)].addImage(fileName)
-            self.device[str(devNumber)].query = query
+            self.device[str(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
         else:
             if 'plottingArea' not in dir(self):
                 self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, image = fileName, imageType = imageType)
-            self.device[str(devNumber)].query = query
+            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, name = self.captionTitle)
+            self.device[str(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
+            
         return
         
     def getReportText(self, fileDir):

@@ -43,7 +43,9 @@ class graphicsView(QGraphicsView, widgetState):
         self._lty = None
         self._lwd = None
         self._replotAfterChange = True
-        self.image = os.path.join(redREnviron.directoryNames['tempDir'], 'plot'+str(time.time())) # the base file name without an extension
+        self._dheight = 6
+        self._dwidth = 6
+        self.image = 'plot'+str(time.time()) # the base file name without an extension
         self.imageFileName = ''
         self.currentScale = 1
         
@@ -325,46 +327,43 @@ class graphicsView(QGraphicsView, widgetState):
         ## add an image to the view
         #self.image = os.path.abspath(image)
         #print self.image
+        print 'Addign Image'
         if not self.scene():
             print 'loading scene'
             scene = QGraphicsScene()
             self.setScene(scene)
             print self.image
         if imageType == None:
-            imageType = os.path.split(image)[1].split('.')[-1]
+            imageType = image.split('.')[-1]
         if imageType not in ['svg', 'png', 'jpeg']:
             self.clear()
+            print imageType, 'Error occured'
             raise Exception, 'Image type specified is not a valid type for this widget.'
         if imageType == 'svg':
-            mainItem = QGraphicsSvgItem(image)
+            mainItem = QGraphicsSvgItem(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/')))
         elif imageType in ['png', 'jpeg']:
-            mainItem = QGraphicsPixmapItem(QPixmap(image))
+            mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
         else:
             raise Exception, 'Image type %s not specified in a plotting method' % imageType
             #mainItem = QGraphicsPixmapItem(QPixmap(image))
+        print mainItem
         self.scene().addItem(mainItem)
         self.mainItem = mainItem
         
         
     def getSettings(self):
-        # print 'in widgetLabel getSettings'
-        import os
-        if os.path.split(self.image)[0] == redREnviron.directoryNames['tempDir']:
-            ## the image is in the tempDir so we should go there in the future
-            directory = 'temp'
-        else:
-            directory = os.path.split(self.image)[0]
-            
-        r = {'image':os.path.split(self.image)[1], 'directory':directory}
+        
+        r = {'image':self.imageFileName, 'query':self.query, 'function':self.function, 'addSettings':self.extrasLineEdit.getSettings()}
+        
         # print r
         return r
     def loadSettings(self,data):
-        import os
-        if data['directory'] == 'temp':
-            directory = redREnviron.directoryNames['tempDir']
-        else:
-            directory = data['directory']
-        self.addImage(os.path.join(directory, data['image']))
+        print data
+        
+        self.query = data['query']
+        self.function = data['function']
+        self.extrasLineEdit.loadSettings(data['addSettings'])
+        self.addImage(data['image'])
     def getReportText(self, fileDir):
         #return ''
         pass
@@ -386,6 +385,9 @@ class graphicsView(QGraphicsView, widgetState):
             self.R(l)
         
         self.R('dev.off()')
+    ##############################
+    ### Plotting #################\
+    ##############################
     def _setParameters(self):
         inj = ''
         injection = []
@@ -430,17 +432,17 @@ class graphicsView(QGraphicsView, widgetState):
         self.imageFileName = str(self.image).replace('\\', '/')+'.'+str(imageType)
         if imageType == 'svg':
             self.require_librarys(['RSvgDevice'])
-            self.R('devSVG(file=\''+str(self.imageFileName)+'\', width = '
+            self.R('devSVG(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight)+', height = '+str(dheight)
                 +')')
         elif imageType == 'png':
             self.require_librarys(['RSvgDevice'])
-            self.R('png(file=\''+str(self.imageFileName)+'\', width = '
+            self.R('png(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
         elif imageType == 'jpeg':
             self.require_librarys(['RSvgDevice'])
-            self.R('jpeg(file=\''+str(self.imageFileName)+'\', width = '
+            self.R('jpeg(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
                 

@@ -11,6 +11,7 @@ import OWGUI, redRGUI
 from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.checkBox import checkBox
 class boxplot(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -18,19 +19,13 @@ class boxplot(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRList, self.processx)
 
-        
-        box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        button(box, 'Save as PDF', callback = self.savePlot)
-        self.commandLine = lineEdit(box, label = 'Command Line')
+        self.plotOnInput = checkBox(self.controlArea, buttons = ['Plot On Input'], setChecked = 'Plot On Input')
         button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            self.commitFunction()
-    def savePlot(self):
-        if self.x == '': return
-        self.savePDF('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE'+str(self.commandLine.text())+')')
-        self.status.setText('Plot Saved')
+            if 'Plot On Input' in self.plotOnInput.getChecked():
+                self.commitFunction()
     def commitFunction(self):
         if self.x == '': 
             self.status.setText('Do data. Can not plot')
