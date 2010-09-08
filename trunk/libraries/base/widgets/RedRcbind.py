@@ -27,7 +27,7 @@ class RedRcbind(OWRpy):
 
 		
 		self.RFunctionParamdeparse_level_lineEdit = lineEdit(self.controlArea, label = "deparse_level:", text = '1')
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processa(self, data):
 		if not self.require_librarys(["base"]):
 			self.status.setText('R Libraries Not Loaded.')

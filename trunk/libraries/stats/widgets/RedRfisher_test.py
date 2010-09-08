@@ -32,7 +32,7 @@ class RedRfisher_test(OWRpy):
 		self.RFunctionParamconf_int_lineEdit = checkBox(self.controlArea, label = "Calculate Confidence Interval:", buttons = ['TRUE','FALSE'], setChecked = 'TRUE')
 		self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "Alternative Hypothesis:", items = ["two.sided","greater","less"])
 		self.RFunctionParamor_lineEdit = lineEdit(self.controlArea, label = "Odds Ratio:", text = '1')
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 		self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
 	def processx(self, data):
 		if not self.require_librarys(["stats"]):

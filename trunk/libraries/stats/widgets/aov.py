@@ -34,7 +34,7 @@ class aov(OWRpy):
         self.RFunctionParamformula_formulaEntry =  RFormulaEntry(self.standardTab)
         self.RFunctionParamqr_lineEdit =  lineEdit(self.advancedTab,  label = "qr:", text = 'TRUE')
         self.RFunctionParamprojections_lineEdit =  lineEdit(self.advancedTab,  label = "projections:", text = 'FALSE')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         if not self.require_librarys(["stats"]):

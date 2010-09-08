@@ -269,7 +269,7 @@ class widgetMaker(OWRpy):
                 elif self.fieldList[element]['ipt'] == 'checkBox':
                     self.guiCode += ')\n'
                 
-        self.guiCode += '\t\tredRbutton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '\t\tredRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
         if 'Show Output' in self.captureROutput.getChecked():
             self.guiCode += '\t\tself.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")\n'
             #self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'

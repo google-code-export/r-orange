@@ -76,7 +76,7 @@ class cor(OWRpy):
         buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
 
-        button(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
+        redRCommitButton(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
         self.sendOnSelect = checkBox(options,buttons=['Calculate on data Input'], 
         toolTips=['Calculate variance on data input.'])
 

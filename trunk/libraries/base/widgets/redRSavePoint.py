@@ -26,7 +26,7 @@ class redRSavePoint(OWRpy):
         self.outputs = SavepointOutputHandler(self)
         self.outputs.addOutput('id0', 'Output Object', 'All')
         widgetLabel(self.controlArea, 'This widget acts as a save point for analyses so that data is not lost when upstream widgets are removed.  You can use this to help manage memory in your schemas by deleting upstream data (making the schema smaller) yet retaining the analyses.', wordWrap = True)
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = 'Input Object')
         self.RoutputWindow2 = textEdit(self.controlArea, label = 'Output Object')
         #box.layout().addWidget(self.RoutputWindow)

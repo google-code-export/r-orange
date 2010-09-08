@@ -59,7 +59,7 @@ class setOperations(OWRpy):
         self.bottomAreaRight.layout().setAlignment(commitBox, Qt.AlignBottom)
         self.commitOnInput = redRCheckBox(commitBox, buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'])
-        button(commitBox, "Commit", callback = self.commitFunction)
+        redRCommitButton(commitBox, "Commit", callback = self.commitFunction)
     
     def onSelect(self):
         if 'Commit on Selection' in self.commitOnInput.getChecked():

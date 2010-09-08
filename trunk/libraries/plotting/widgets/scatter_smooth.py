@@ -32,7 +32,7 @@ class scatter_smooth(OWRpy):
         self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "ylab:", text = 'NULL')
         self.RFunctionParamevaluation_lineEdit =  lineEdit(self.standardTab,  label = "evaluation:", text = '50')
         self.RFunctionParamylim_lineEdit =  lineEdit(self.standardTab,  label = "ylim:", text = '')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')

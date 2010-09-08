@@ -32,7 +32,7 @@ class RedRpoints(OWRpy):
         
         self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')
         self.RFunctionParamcex_lineEdit = lineEdit(self.controlArea, label = "cex:", text = '2')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

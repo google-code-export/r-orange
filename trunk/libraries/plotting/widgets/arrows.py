@@ -25,7 +25,7 @@ class arrows(OWRpy):
         self.RFunctionParamx1_lineEdit =  lineEdit(self.standardTab,  label = "x1:", text = '')
         self.RFunctionParamy1_lineEdit =  lineEdit(self.standardTab,  label = "y1:", text = '')
         self.RFunctionParamcode_lineEdit =  lineEdit(self.standardTab,  label = "code:", text = '1')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def commitFunction(self):
         if str(self.RFunctionParamx0_lineEdit.text()) == '':
             self.status.setText('No x0 specified')

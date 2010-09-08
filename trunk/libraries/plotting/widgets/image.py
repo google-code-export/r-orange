@@ -19,7 +19,7 @@ class image(OWRpy):
         self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'])
-        self.commitButton = button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

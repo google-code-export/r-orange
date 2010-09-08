@@ -31,7 +31,7 @@ class RedRplsr(OWRpy):
         self.RFunctionParammethod_lineEdit = lineEdit(self.controlArea, label = "method:", text = '')
         self.RFunctionParamncomp_lineEdit = lineEdit(self.controlArea, label = "ncomp:", text = '10')
         self.RFunctionParamvalidation_comboBox = comboBox(self.controlArea, label = "validation:", items = ["none","CV","LOO"])
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
         if not self.require_librarys(["pls"]):
             self.status.setText('R Libraries Not Loaded.')

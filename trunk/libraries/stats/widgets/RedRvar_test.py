@@ -29,7 +29,7 @@ class RedRvar_test(OWRpy):
         self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
         self.RFunctionParamratio_lineEdit = lineEdit(self.controlArea, label = "ratio:", text = '1')
         self.RFunctionParamconf_level_lineEdit = lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):

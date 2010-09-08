@@ -37,7 +37,7 @@ class sort(OWRpy):
         self.sortingColumn2 = comboBox(self.standardTab, label = 'Second Column to Sort:')
         self.sortingColumn3 = comboBox(self.standardTab, label = 'Third Column to Sort:')
         
-        commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

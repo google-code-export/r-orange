@@ -46,7 +46,7 @@ class RVarSeparator(OWRpy):
         
         self.sendOnSelect = checkBox(box,buttons=['Send on select'], setChecked = ['Send on select'], 
         toolTips=['Commit variable on select from the list'])
-        button(box,label='Commit',callback=self.commit)
+        redRCommitButton(box,label='Commit',callback=self.commit)
 
         
         

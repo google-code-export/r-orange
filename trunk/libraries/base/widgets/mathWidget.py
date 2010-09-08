@@ -56,7 +56,7 @@ class mathWidget(OWRpy):
         self.dialogBottomArea = groupBox(self.dialog, label = 'Right Side')
         self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = 'Constant', toolTip = 'Must be a number')
         self.dialogBottomListBox = listBox(self.dialogBottomArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogBottomLineEdit.clear)
-        button(self.dialog, label = 'Done', callback = self.functionCommit)
+        redRCommitButton(self.dialog, label = 'Done', callback = self.functionCommit)
         self.dialog.hide()
     def gotData(self, data):
         if data:

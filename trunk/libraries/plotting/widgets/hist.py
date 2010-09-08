@@ -28,7 +28,7 @@ class hist(OWRpy):
         self.column = comboBox(box, label='Data Column:')
         self.RFunctionParam_main = lineEdit(box, label = "Main Title")
         self.RFunctionParam_xlab = lineEdit(box, label = "X Label")
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

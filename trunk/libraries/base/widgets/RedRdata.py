@@ -37,7 +37,7 @@ class RedRdata(OWRpy):
         self.package = lineEdit(box, label = 'Package:', text = '')#, callback = self.loadPackage)
         self.RFunctionParamdataName_lineEdit = lineEdit(box, label = "Data Name:", 
         text = '', callback = self.commitFunction)
-        button(box, "Commit", callback = self.commitFunction)
+        redRCommitButton(box, "Commit", callback = self.commitFunction)
     def loadPackage(self):
         if str(self.package.text()) != '':
             self.require_librarys([str(self.package.text())])

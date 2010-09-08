@@ -47,7 +47,7 @@ class ListSelector(OWRpy):
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'])
         
-        RedRButton(self.bottomAreaRight, "Commit", callback = self.sendSelection)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.sendSelection)
 
         
     def process(self, data):

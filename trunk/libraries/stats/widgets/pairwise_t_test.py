@@ -34,7 +34,7 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_g = comboBox(box, label = "Groups Column:")
         self.RFunctionParam_p_adjust_method = comboBox(box, label = "P-value Adjust Method:", items = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"])
         self.alternative = comboBox(box, label = 'Alternative Hypothesis:', items = ['two.sided', 'greater', 'less'])
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = QTextEdit()
         box.layout().addWidget(self.RoutputWindow)
     

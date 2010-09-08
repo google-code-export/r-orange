@@ -12,6 +12,17 @@ import RSession, redREnviron, os
 import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
+from libraries.base.qtWidgets.button import button as redRButton
+from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
+from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
+from libraries.base.qtWidgets.separator import separator as redRSeparator
+from libraries.base.qtWidgets.filterTable import filterTable as redRFilterTable
+from libraries.base.qtWidgets.radioButtons import radioButtons as redRRadioButtons
+from libraries.base.qtWidgets.listBox import listBox as redRListBox
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
     uniqueWidgetNumber = 0

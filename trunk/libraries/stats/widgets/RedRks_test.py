@@ -28,7 +28,7 @@ class RedRks_test(OWRpy):
 		
 		self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
 		self.RFunctionParamexact_lineEdit = lineEdit(self.controlArea, label = "exact:", text = 'NULL')
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 		self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
 	def processy(self, data):
 		if not self.require_librarys(["stats"]):

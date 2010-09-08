@@ -20,7 +20,7 @@ class boxplot(OWRpy):
         self.inputs.addInput('id0', 'x', redRRList, self.processx)
 
         self.plotOnInput = checkBox(self.controlArea, buttons = ['Plot On Input'], setChecked = 'Plot On Input')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

@@ -72,7 +72,7 @@ class mergeR(OWRpy):
         self.bottomAreaCenter.layout().setAlignment(self.mergeOptions, Qt.AlignCenter)
         self.mergeLikeThis = checkBox(self.bottomAreaRight, buttons = ['Merge on Connect'], 
         toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
-        button(self.bottomAreaRight, 'Commit', callback = self.run)
+        redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.run)
         
     def processA(self, data):
         #print 'processA'

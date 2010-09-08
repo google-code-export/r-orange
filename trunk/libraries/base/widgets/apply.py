@@ -10,7 +10,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 from libraries.base.qtWidgets.button import button
@@ -31,7 +31,7 @@ class apply(OWRpy):
         self.setRvariableNames(["apply"])
         self.numDims = 2
 
-        self.inputs.addInput('id0', 'X', redRRDataFrame, self.processX)
+        self.inputs.addInput('id0', 'X', redRRMatrix, self.processX)
 
         self.outputs.addOutput('id0', 'apply Output', redRRVector)
 
@@ -50,38 +50,22 @@ class apply(OWRpy):
         self.functionText = redRTextEdit(box,label='Function:', orientation='vertical')
         self.parameters = redRLineEdit(box,label='Additional Parameters:', orientation='vertical')
         
-        self.demension =  radioButtons(box,  
-        label = "To:", buttons = ['Rows', 'Columns',''],setChecked='Rows',
-        orientation='horizontal',callback= lambda: self.dimensionChange(1))
-        self.indexSpinBox = RedRSpinBox(self.demension.box,  min = 1, value = 1,
-        callback= lambda: self.dimensionChange(2))
+        self.RFunctionParamMARGIN_radioButtons =  radioButtons(box,  
+        label = "To:", buttons = ['Rows', 'Columns'],setChecked='Rows',
+        orientation='horizontal')
+        self.indexSpinBox = RedRSpinBox(box, label = 'Array Index:', min = 1, max =2, value = 1)
         buttonBox = widgetBox(box,orientation='horizontal')
         self.commitOnInput = redRCheckBox(buttonBox, buttons = ['Commit on Input'],
         toolTips = ['Whenever this selection changes, send data forward.'])
         
-        button(buttonBox, "Commit", align='right', callback = self.commitFunction)
+        redRCommitButton(buttonBox, "Commit", align='right', callback = self.commitFunction)
         
         self.outputTable = redRFilterTable(area,sortable=True)
-
-    def dimensionChange(self,type):
-        if type == 1:
-            if self.demension.getChecked() =='Rows':
-                self.indexSpinBox.setValue(1)
-            else:
-                self.indexSpinBox.setValue(2)
-        else:
-            if self.indexSpinBox.value() == 1:
-                self.demension.setChecked('Rows')
-            elif self.indexSpinBox.value() == 2:
-                self.demension.setChecked('Columns')
-            else:
-                self.demension.setChecked('')
             
     def processX(self, data):
         if data:
             self.data=data.getData()
-            self.numDims = self.R('length(dim(%s))' % self.data, silent=True)
-            self.indexSpinBox.setMaximum(self.numDims)
+            self.indexSpinBox.setMaximum(int(self.R('length(dim('+self.RFunctionParam_X+'))')))
             self.commitFunction()
         else:
             self.data=''

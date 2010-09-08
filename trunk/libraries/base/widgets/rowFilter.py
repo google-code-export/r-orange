@@ -48,7 +48,7 @@ class rowFilter(OWRpy):
         
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Filter'],
         toolTips = ['On filter send data forward.'])
-        button(self.bottomAreaRight, "Commit", callback = self.commitSubset)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitSubset)
         
     def processData(self, data):
         if not data: 

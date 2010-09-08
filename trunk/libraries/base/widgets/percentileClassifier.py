@@ -32,7 +32,7 @@ class percentileClassifier(OWRpy):
         self.percentile_lineEdit = lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
         self.outputWindow = textEdit(self.controlArea, label = 'Output Summary')
         
-        button(self.bottomAreaRight, "Commit", callback = self.commit)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commit)
         
     def processData(self, data):
         if data:

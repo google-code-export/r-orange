@@ -45,7 +45,7 @@ class rownames(OWRpy):
         toolTips=['logical. Should this create names if they are NULL?']*2,
         buttons=['TRUE','FALSE'],setChecked='TRUE', orientation='horizontal')
         buttonBox = widgetBox(box,orientation='horizontal')
-        button(buttonBox, "Commit", callback = self.commitFunction)
+        redRCommitButton(buttonBox, "Commit", callback = self.commitFunction)
         self.autoCommit = checkBox(buttonBox,buttons=['Commit on Input'],setChecked=['Commit on Input'])
         
     def processx(self, data):

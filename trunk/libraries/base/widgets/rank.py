@@ -34,7 +34,7 @@ class rank(OWRpy):
         self.advancedTab = box.createTabPage(name = "Advanced")
         self.RFunctionParamties_method_comboBox = comboBox(self.standardTab, label = "ties_method:", items = ['average', 'first', 'random', 'max', 'min'])
         #self.RFunctionParamna_last_lineEdit =  lineEdit(self.advancedTab, label = "na_last:")
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

@@ -28,7 +28,7 @@ class wilcox_test(OWRpy):
         self.outputs.addOutput('id0', 'wilcox.test Output', redRRVariable)
 
         
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea)
         
     def processx(self, data):

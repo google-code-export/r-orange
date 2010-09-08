@@ -42,7 +42,7 @@ class spline(OWRpy):
         
         self.xcolumnComboBox = comboBox(self.standardTab, label = 'X data')
         self.ycolumnComboBox = comboBox(self.standardTab, label = 'Y data')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):

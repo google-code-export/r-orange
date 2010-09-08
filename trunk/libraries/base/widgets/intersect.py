@@ -26,7 +26,7 @@ class intersect(OWRpy):
         self.outputs.addOutput('id0', 'intersect Output', redRRVector)
 
         
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "Intersect Output")
         self.resize(500, 200)
     def processy(self, data):

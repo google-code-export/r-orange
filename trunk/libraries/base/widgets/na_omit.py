@@ -34,7 +34,7 @@ class na_omit(OWRpy):
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
         toolTips = ['Whenever this widget gets data it should try to commit'])
         
-        RedRButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         
     def processobject(self, data):
         # if not self.require_librarys(["base"]):

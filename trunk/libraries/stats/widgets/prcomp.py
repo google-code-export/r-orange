@@ -29,7 +29,7 @@ class prcomp(OWRpy):
         self.options = checkBox(self.controlArea, label = 'Options:', buttons = ['Center', 'Scale'])
         self.options.setChecked(['Center', 'Scale'])
         self.commitOnConnect = checkBox(self.controlArea, buttons = ['Commit On Connection'], setChecked = 'Commit On Connection')
-        button(self.controlArea, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.controlArea, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

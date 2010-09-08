@@ -21,7 +21,7 @@ class RedRcorrplot(OWRpy):
 
 		
 		self.RFunctionParamtype_comboBox = comboBox(self.controlArea, label = "type:", items = ["'p'; points","'l'; lines"])
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processobject(self, data):
 		if not self.require_librarys(["pls"]):
 			self.status.setText('R Libraries Not Loaded.')

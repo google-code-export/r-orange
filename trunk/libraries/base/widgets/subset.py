@@ -48,7 +48,7 @@ class subset(OWRpy):
         
 
         self.mergeLikeThis = checkBox(self.bottomAreaRight, buttons = ['Subset on input'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
-        button(self.bottomAreaRight, 'Commit', callback = self.subset)
+        redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.subset)
 
         
     def onSelect(self):

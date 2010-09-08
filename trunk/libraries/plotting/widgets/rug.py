@@ -33,7 +33,7 @@ class rug(OWRpy):
         self.RFunctionParamquiet_lineEdit =  lineEdit(self.standardTab,  label = "quiet:", text = 'getOption("warn")<0')
         self.RFunctionParamlwd_lineEdit =  lineEdit(self.standardTab,  label = "lwd:", text = '0.5')
         self.RFunctionParamcol_lineEdit =  lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

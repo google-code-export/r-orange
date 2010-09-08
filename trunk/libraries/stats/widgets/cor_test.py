@@ -21,7 +21,7 @@ class cor_test(OWRpy):
         self.inputs.addInput('id0', 'y', redRRVector, self.processy)
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
 
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):

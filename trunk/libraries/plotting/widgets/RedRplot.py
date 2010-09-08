@@ -40,7 +40,7 @@ class RedRplot(OWRpy):
         self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
         self.namesListY.setEnabled(False)
         self.graphicsView = graphicsView(self.controlArea, name = self.captionTitle)
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         
         if not self.require_librarys(["graphics"]):

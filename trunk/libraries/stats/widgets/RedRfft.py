@@ -31,9 +31,8 @@ class RedRfft(OWRpy):
         label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
         toolTips = ['On data input, process and send data forward.'])
-
-        self.commitButton = button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processz(self, data):
         if data:
             self.RFunctionParam_z=data.getData()

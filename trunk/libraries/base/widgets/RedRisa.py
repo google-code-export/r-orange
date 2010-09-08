@@ -22,7 +22,7 @@ class RedRisa(OWRpy):
         self.outputs.addOutput('id0', 'isa Output', redRRModelFit)
 
 
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processdata(self, data):
         if not self.require_librarys(["isa2"]):
             self.status.setText('R Libraries Not Loaded.')

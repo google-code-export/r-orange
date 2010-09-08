@@ -32,7 +32,7 @@ class RedRstrsplit(OWRpy):
         self.RFunctionParamextended_radiButtons =  radioButtons(self.controlArea,  label = "Extend Expressions:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
         self.RFunctionParamperl_radioButtons =  radioButtons(self.controlArea,  label = "'Use Perl Expressions':", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
         self.RFunctionParamunlist_radioButtons = radioButtons(self.controlArea, label = 'Convert to RVector', buttons = ['Send only the list', 'Send list and vector'], setChecked = 'Send list and vector', orientation = 'horizontal')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -23,7 +23,7 @@ class inspectR(OWRpy):
         self.standardTab = box.createTabPage(name = "Standard")
         self.advancedTab = box.createTabPage(name = "Advanced")
         self.RFunctionParamwhich_lineEdit =  lineEdit(self.standardTab,  label = "which:", text = 'all')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processmymodel(self, data):
         if not self.require_librarys(["asuR"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -55,7 +55,7 @@ class lm(OWRpy):
         self.formulEntry = RFormulaEntry(buttonsBox)
         
         
-        self.processButton = button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.processButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
     def processdata(self, data):

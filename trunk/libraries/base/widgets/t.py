@@ -32,7 +32,7 @@ class t(OWRpy):
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'], setChecked='Commit on Selection')
 
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()

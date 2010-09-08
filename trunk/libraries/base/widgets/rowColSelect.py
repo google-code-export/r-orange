@@ -49,7 +49,7 @@ class rowColSelect(OWRpy):
         self.invertButton = button(options, "Invert Selection",toolTip='Invert the selection', 
         callback=self.invertSelection)
 
-        self.subsetButton = button(options, "Subset on Selection",toolTip='Commit the subsetting', callback=self.subset)
+        self.subsetButton = redRCommitButton(options, "Subset on Selection",toolTip='Commit the subsetting', callback=self.subset)
         
         self.sendOnSelect = checkBox(options,buttons=['Send on select'], 
         toolTips=['Commit subsetting on select from the list.'])

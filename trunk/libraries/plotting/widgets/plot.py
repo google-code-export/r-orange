@@ -30,7 +30,7 @@ class plot(OWRpy):
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
         self.plotArea = redRGraphicsView(self.controlArea)
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.data = data

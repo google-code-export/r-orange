@@ -27,7 +27,7 @@ class RedRscale(OWRpy):
         
         self.RFunctionParamscale_radioButtons =  radioButtons(self.controlArea,  label = "Scale:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
         self.RFunctionParamcenter_radioButtons =  radioButtons(self.controlArea,  label = "Center:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

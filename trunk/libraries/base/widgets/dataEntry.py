@@ -35,7 +35,7 @@ class dataEntry(OWRpy):
         
         
         # box = groupBox(self.GUIDialog, label = "Options")
-        button(self.bottomAreaRight, 'Commit', self.commitTable)
+        redRCommitButton(self.bottomAreaRight, 'Commit', self.commitTable)
         # self.rowHeaders = checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders = checkBox(box, label=None, buttons=['Use Column Headers'])
         #self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])

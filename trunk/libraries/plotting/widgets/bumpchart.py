@@ -30,7 +30,7 @@ class bumpchart(OWRpy):
         self.RFunctionParamtop_labels_lineEdit =  lineEdit(self.standardTab,  label = "top_labels:", text = 'colnames(y)')
         self.RFunctionParamcol_lineEdit =  lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
         self.RFunctionParamlwd_lineEdit =  lineEdit(self.standardTab,  label = "lwd:", text = '1')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processy(self, data):
         if not self.require_librarys(["plotrix"]):
             self.status.setText('R Libraries Not Loaded.')

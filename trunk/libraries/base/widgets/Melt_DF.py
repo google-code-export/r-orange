@@ -33,7 +33,7 @@ class Melt_DF(OWRpy):
         self.RFunctionParam_id_var = listBox(box, label = "Groupings:", toolTip = 'The columns indicating the groupings of the data.')
         self.RFunctionParam_id_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.RFunctionParam_variable_name = lineEdit(box, label = "New Group Name:", toolTip = 'The name of the new column that the groupings will be put into.')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def RWidgetReload(self):
         self.commitFunction()
     def processdata(self, data):

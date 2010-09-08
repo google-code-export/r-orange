@@ -22,7 +22,7 @@ class RedRattributes(OWRpy):
 		self.inputs.addInput('id0', 'obj', redRRVariable, self.processobj)
 
 		
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 		self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
 	def processobj(self, data):
 		if not self.require_librarys(["base"]):

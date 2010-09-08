@@ -23,7 +23,7 @@ class kruskal_test(OWRpy):
 
 
         self.RFunctionParamformula =  RFormulaEntry(self.controlArea)
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processdata(self, data):
         if not self.require_librarys(["stats"]):

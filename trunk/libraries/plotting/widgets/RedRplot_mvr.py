@@ -21,7 +21,7 @@ class RedRplot_mvr(OWRpy):
 
 		
 		self.RFunctionParamplottype_comboBox = comboBox(self.controlArea, label = "plottype:", items = ["'prediction'","'validation'","'coefficients'","'scores'","'loadings'","'biplot'","'correlation'"])
-		button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+		redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 	def processx(self, data):
 		if not self.require_librarys(["pls"]):
 			self.status.setText('R Libraries Not Loaded.')

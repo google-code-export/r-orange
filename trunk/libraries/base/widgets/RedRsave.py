@@ -22,7 +22,7 @@ class RedRsave(OWRpy):
         self.inputs.addInput("list", "list", signals.RVariable.RVariable, self.processlist, multiple = True)
         
         self.RFunctionParamfile_lineEdit = redRlineEdit(self.controlArea, label = "file:", text = '')
-        redRbutton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processlist(self, data, id):
         if data:
             self.RFunctionParam_list[id]=data.getData()

@@ -23,7 +23,7 @@ class anova_lm(OWRpy):
 
         
         box = groupBox(self.controlArea, "Output")
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(box)
         #box.layout().addWidget(self.RoutputWindow)
     def onLoadSavedSession(self):

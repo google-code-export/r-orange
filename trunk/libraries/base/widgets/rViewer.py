@@ -32,7 +32,7 @@ class rViewer(OWRpy):
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
         toolTips = ['Whenever this widget gets data it should try to commit'])
 
-        button(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
         
         #button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
         

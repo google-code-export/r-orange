@@ -23,7 +23,7 @@ class summary(OWRpy):
         self.RFunctionParam_object = ''
         self.inputs.addInput('id0', 'R Variable Object', redRRVariable, self.processobject)
         self.processOnConnect = checkBox(self.controlArea, buttons = ['Process On Connect'], setChecked = 'Process On Connect')
-        button(self.bottomAreaRight, 'Commit', callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         if not self.require_librarys(["base"]):

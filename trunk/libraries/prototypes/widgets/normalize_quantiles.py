@@ -19,7 +19,7 @@ class normalize_quantiles(OWRpy):
         self.outputs = [("normalize.quantiles Output", signals.RDataFrame.RDataFrame)]
         
         #self.help.setHtml('<small>Performs <a href="http://en.wikipedia.org/wiki/Normalization_(statistics)">quantile normailzation</a> on a data table containing numeric data.  This is generally used for expression array data but will work to standardize any numeric data.  For more infromation on widget functions and RedR please see either the <a href="http://www.code.google.com/p/r-orange">google code repository</a> or the <a href="http://www.red-r.org">RedR website</a>.</small>')
-        OWGUI.button(self.controlArea, self, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.controlArea, self, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["preprocessCore"]):
             self.status.setText('R Libraries Not Loaded.')
