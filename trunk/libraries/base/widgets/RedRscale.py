@@ -1,5 +1,5 @@
 """
-<name>RedRscale</name>
+<name>scale</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>base:scale</RFunctions>
 <tags>Prototypes</tags>

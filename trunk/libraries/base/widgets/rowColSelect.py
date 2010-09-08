@@ -27,7 +27,7 @@ class rowColSelect(OWRpy):
         OWRpy.__init__(self) #initialize the widget
         self.dataClass = None
         self.dataParent = None
-        self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
+        self.setRvariableNames(['selectedDataFrame','selectedVector', 'NotSelectedDataFrame'])
         
         
         self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.setWidget)
@@ -46,10 +46,11 @@ class rowColSelect(OWRpy):
         self.rowcolBox = radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
         orientation='horizontal', callback=self.rowcolButtonSelected)
 
-        self.invertButton = button(options, "Invert Selection",toolTip='Invert the selection', 
+        buttonBox = widgetBox(options, orientation='horizontal')
+        self.invertButton = button(buttonBox, "Invert",toolTip='Invert the selection', 
         callback=self.invertSelection)
 
-        self.subsetButton = redRCommitButton(options, "Subset on Selection",toolTip='Commit the subsetting', callback=self.subset)
+        self.subsetButton = redRCommitButton(buttonBox, "Subset",toolTip='Commit the subsetting', callback=self.subset)
         
         self.sendOnSelect = checkBox(options,buttons=['Send on select'], 
         toolTips=['Commit subsetting on select from the list.'])
@@ -107,19 +108,19 @@ class rowColSelect(OWRpy):
             selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'
+            self.R(self.Rvariables['selectedDataFrame']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'
             +' %in% c('+','.join(selectedDFItems)+')'+',])')
         elif self.rowcolBox.getChecked() == 'Column':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'
+            self.R(self.Rvariables['selectedDataFrame']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'
             +' %in% c('+','.join(selectedDFItems)+')'+'])')
             
-        if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
-            self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
-            newVector = redRRVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+        if self.R('dim('+self.Rvariables['selectedDataFrame']+')')[1] == 1:
+            # replace the colname if we are left with a 1 column data frame
+            self.R(self.Rvariables['selectedVector']+'<-c(as.matrix('+self.Rvariables['selectedDataFrame']+'))') 
+            newVector = redRRVector(data = ''+self.Rvariables['selectedVector']+'')
             self.rSend('id1', newVector)
-            
         
-        newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = redRRDataFrame(data = self.Rvariables['selectedDataFrame'])
         self.rSend('id0', newData)
 
 

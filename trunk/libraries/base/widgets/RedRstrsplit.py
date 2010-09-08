@@ -1,5 +1,5 @@
 """
-<name>RedRstrsplit</name>
+<name>strsplit</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Split a vector of data by some text.  Returns a list of data containing the split results for each element in the vector and an optional vector of data of all of the splits pasted together.</description>
 <RFunctions>base:strsplit</RFunctions>

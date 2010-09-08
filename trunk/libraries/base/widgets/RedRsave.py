@@ -1,5 +1,5 @@
 """
-<name>RedRsave</name>
+<name>save</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>base:save</RFunctions>
@@ -22,7 +22,7 @@ class RedRsave(OWRpy):
         self.inputs.addInput("list", "list", signals.RVariable.RVariable, self.processlist, multiple = True)
         
         self.RFunctionParamfile_lineEdit = redRlineEdit(self.controlArea, label = "file:", text = '')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRbutton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processlist(self, data, id):
         if data:
             self.RFunctionParam_list[id]=data.getData()

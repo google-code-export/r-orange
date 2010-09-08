@@ -1,5 +1,5 @@
 """
-<name>RedRpoints</name>
+<name>points</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Adds points to an existing plot.  Data should be in the form of two RVector signals representing the X and Y coordinates of the points.</description>
 <RFunctions>graphics:points</RFunctions>

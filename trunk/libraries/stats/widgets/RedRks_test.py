@@ -1,5 +1,5 @@
 """
-<name>RedRks.test</name>
+<name>ks.test</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>stats:ks.test</RFunctions>

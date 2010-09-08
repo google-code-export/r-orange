@@ -1,5 +1,5 @@
 """
-<name>RedRplsr</name>
+<name>plsr</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description>Beginning module for the pls package to generate a model fit.</description>
 <RFunctions>pls:plsr</RFunctions>

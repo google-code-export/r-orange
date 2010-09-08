@@ -1,5 +1,5 @@
 """
-<name>RedRisa</name>
+<name>isa</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>isa2:isa</RFunctions>
 <tags>Prototypes</tags>

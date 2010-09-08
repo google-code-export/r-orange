@@ -1,5 +1,5 @@
 """
-<name>RedRcbind</name>
+<name>cbind</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>base:cbind</RFunctions>

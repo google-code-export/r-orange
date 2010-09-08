@@ -1,5 +1,5 @@
 """
-<name>RedRattributes</name>
+<name>attributes</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>base:attributes</RFunctions>

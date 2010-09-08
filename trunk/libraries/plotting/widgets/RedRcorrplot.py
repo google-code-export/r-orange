@@ -1,5 +1,5 @@
 """
-<name>RedRcorrplot</name>
+<name>corrplot</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>pls:corrplot</RFunctions>

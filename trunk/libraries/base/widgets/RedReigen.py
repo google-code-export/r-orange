@@ -1,5 +1,5 @@
 """
-<name>RedReigen</name>
+<name>eigen</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <RFunctions>base:eigen</RFunctions>
 <tags>Prototypes</tags>
@@ -29,7 +29,7 @@ class RedReigen(OWRpy):
         self.RFunctionParamsymmetric_radioButtons =  radioButtons(self.controlArea,  label = "symmetric:", buttons = ['Yes', 'No'], setChecked = 'Yes')
         self.RFunctionParamonly_values_radioButtons =  radioButtons(self.controlArea,  label = "only_values:", buttons = ['Yes', 'No'], setChecked = 'Yes')
         self.RFunctionParamEISPACK_radioButtons =  radioButtons(self.controlArea,  label = "EISPACK:", buttons = ['Yes', 'No'], setChecked = 'Yes')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')
