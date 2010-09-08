@@ -65,7 +65,7 @@ class apply(OWRpy):
     def processX(self, data):
         if data:
             self.data=data.getData()
-            self.indexSpinBox.setMaximum(int(self.R('length(dim('+self.RFunctionParam_X+'))')))
+            self.indexSpinBox.setMaximum(int(self.R('length(dim('+self.data+'))')))
             self.commitFunction()
         else:
             self.data=''
@@ -92,7 +92,12 @@ class apply(OWRpy):
             self.saveGlobalSettings()
 
         injection = []
-        string = 'MARGIN = %s' % str(self.indexSpinBox.value())
+        if self.indexSpinBox.value() > 2:
+            string = 'MARGIN = %s' % str(self.indexSpinBox.value())
+        elif 'Rows' in self.RFunctionParamMARGIN_radioButtons.getChecked():
+            string = 'MARGIN = 1'
+        elif 'Columns' in self.RFunctionParamMARGIN_radioButtons.getChecked():
+            string = 'MARGIN = 2'
         injection.append(string)
             
         string = 'FUN='+str(self.functionText.toPlainText())
