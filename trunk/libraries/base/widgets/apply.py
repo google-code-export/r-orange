@@ -80,7 +80,7 @@ class apply(OWRpy):
     def processX(self, data):
         if data:
             self.data=data.getData()
-            self.numDims = self.R('length(dim(%s))' % self.data)
+            self.numDims = self.R('length(dim(%s))' % self.data, silent=True)
             self.indexSpinBox.setMaximum(self.numDims)
             self.commitFunction()
         else:

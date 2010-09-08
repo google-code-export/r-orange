@@ -9,26 +9,30 @@ from OWRpy import *
 import redRGUI 
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+
 class image(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commitOnInput']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
-
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
+        toolTips = ['Whenever this selection changes, send data forward.'])
+        self.commitButton = button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
-        if not self.require_librarys(["graphics"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_x=data.getData()
-            #self.data = data
-            if not self.R('is.numeric('+self.RFunctionParam_x+')'):
+            if not self.R('is.numeric('+self.RFunctionParam_x+')', silent=True):
                 self.status.setText('Data not numeric')
-                self.RFunctionParam_x = ''
+                self.commitButton.setDisabled(True)
                 return
-            self.commitFunction()
+            else:
+                self.status.setText('')
+                self.commitButton.setEnabled(True)
+                
+            if 'Commit on Selection' in self.commitOnInput.getChecked():
+                self.commitFunction()
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):

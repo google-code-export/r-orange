@@ -37,14 +37,14 @@ class RedRfft(OWRpy):
     def processz(self, data):
         if data:
             self.RFunctionParam_z=data.getData()
-            self.isNumeric = self.R('is.numeric(%s)' % self.RFunctionParam_z)
-            if not self.isNumeric:
+            if not self.R('is.numeric(%s)' % self.RFunctionParam_z, silent=True):
                 self.status.setText('Data Must be Numeric')
                 self.commitButton.setDisabled(True)
+                return
             else:
                 self.commitButton.setEnabled(True)
                 self.status.setText('')
-            if 'Commit on Selection' in self.commitOnInput.getChecked() and self.isNumeric:
+            if 'Commit on Selection' in self.commitOnInput.getChecked():
                 self.commitFunction()
         else:
             self.RFunctionParam_z=''

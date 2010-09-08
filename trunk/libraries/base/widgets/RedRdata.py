@@ -61,6 +61,8 @@ class RedRdata(OWRpy):
     def commitFunction(self):
         package = self.package.text()
         dataset = str(self.RFunctionParamdataName_lineEdit.text())
+        if package == '' or dataset == '':
+            return
         # the package does not need to be loaded to get its datasets
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package))
