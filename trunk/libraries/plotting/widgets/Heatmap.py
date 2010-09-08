@@ -87,6 +87,9 @@ class Heatmap(OWRpy):
             if self.R('class('+self.plotdata+')') == "data.frame":
                 self.plotdata = 'data.matrix('+self.plotdata+')'
             self.rowvChoiceprocess()
+            if not self.R('is.numeric('+self.plotdata+')'):
+                self.status.setText('Data connected was not numeric')
+                self.plotdata = ''
             if 'Plot on Connect'  in self.plotOnConnect.getChecked():
                 self.makePlot()
         else: 

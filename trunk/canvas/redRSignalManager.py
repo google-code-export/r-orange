@@ -164,11 +164,13 @@ class OutputHandler:
                 handler(value, self.parent.widgetID)
             else:   
                 handler(value)
+            parentWidget.status.setText('New Data Received')
         except:
             import redRExceptionHandling
             error = redRExceptionHandling.formatException()
             parentWidget.setWarning(id = 'signalHandlerWarning', text = 'Error occured in processing signal in this widget.\nPlease check the widgets.\n\n'+str(error))
             print error
+            parentWidget.status.setText('Error in processing signal')
             
     def hasOutputName(self, name):
         return name in self.outputSignals.keys()

@@ -15,6 +15,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.commitButton import commitButton
 class sort(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -31,7 +32,7 @@ class sort(OWRpy):
         self.RFunctionParamdecreasing_lineEdit =  checkBox(self.standardTab,  buttons = ["Decreasing", 'NA Last'])
         
         self.sortingColumn = comboBox(self.standardTab, label = 'Column to Sort:')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        commitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["base"]):
             self.status.setText('R Libraries Not Loaded.')

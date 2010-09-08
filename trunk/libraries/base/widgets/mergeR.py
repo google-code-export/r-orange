@@ -77,7 +77,7 @@ class mergeR(OWRpy):
     def processA(self, data):
         #print 'processA'
         if not data:
-            self.colA.update([])
+            self.colA.clear()
             return 
         self.dataA = str(data.getData())
         self.dataParentA = data
@@ -94,7 +94,7 @@ class mergeR(OWRpy):
     def processB(self, data):
         #print 'processB'
         if not data:
-            self.colB.update([])
+            self.colB.clear()
             return 
         self.dataB = str(data.getData())
         self.dataParentB = data
@@ -108,6 +108,12 @@ class mergeR(OWRpy):
             self.run()
     
     def run(self):
+        if self.dataA == '': return
+        if self.dataB == '': return
+        
+        if len(self.colA.selectedItems()) == 0 or len(self.colB.selectedItems()) == 0:
+            self.status.setText('Please make valid column selections')
+            return
         if self.dataA != '' and self.dataB != '':
             h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
         else: h = None

@@ -24,6 +24,10 @@ class image(OWRpy):
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
+            if not self.R('is.numeric('+self.RFunctionParam_x+')'):
+                self.status.setText('Data not numeric')
+                self.RFunctionParam_x = ''
+                return
             self.commitFunction()
         else:
             self.RFunctionParam_x=''

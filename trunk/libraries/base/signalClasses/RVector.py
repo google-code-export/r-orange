@@ -12,7 +12,9 @@ class RVector(RMatrix):
     convertFromList = []
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
-
+        if checkVal:
+            if self.R('class('+self.data+')') not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical']:
+                raise Exception, 'Not vector data'
         self.StructuredDictSignal = None
         self.RDataFrameSignal = None
         self.RMatrixSignal = None

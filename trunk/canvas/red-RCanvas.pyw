@@ -19,7 +19,7 @@ class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags =  0):
         QMainWindow.__init__(self, parent)
         
-        self.setWindowTitle("Red-R Canvas")
+        self.setWindowTitle("Red-R Canvas Version %s" % redREnviron.version['REDRVERSION'])
         self.windows = []    # list of id for windows in Window menu
         self.recentDocs = []
         self.toolbarIconSizeList = [16, 32, 40]
