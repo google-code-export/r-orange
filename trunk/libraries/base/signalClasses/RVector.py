@@ -8,7 +8,7 @@ from libraries.base.signalClasses.UnstructuredDict import *
 from libraries.base.signalClasses.RVector import *
 
 class RVector(RMatrix):
-    convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RMatrix, RVariable]
+    convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RMatrix, RVariable, RList]
     convertFromList = []
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
