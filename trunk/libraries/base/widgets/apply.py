@@ -10,7 +10,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 from libraries.base.qtWidgets.button import button
@@ -30,10 +30,10 @@ class apply(OWRpy):
         OWRpy.__init__(self)
         self.setRvariableNames(["apply"])
         self.numDims = 2
+        self.data=None
+        self.inputs.addInput('id0', 'X', redRRDataFrame, self.processX)
 
-        self.inputs.addInput('id0', 'X', redRRMatrix, self.processX)
-
-        self.outputs.addOutput('id0', 'apply Output', redRRVector)
+        self.outputs.addOutput('id0', 'apply Output', redRRDataFrame)
 
         
         area = widgetBox(self.controlArea,orientation='horizontal')       
@@ -50,10 +50,11 @@ class apply(OWRpy):
         self.functionText = redRTextEdit(box,label='Function:', orientation='vertical')
         self.parameters = redRLineEdit(box,label='Additional Parameters:', orientation='vertical')
         
-        self.RFunctionParamMARGIN_radioButtons =  radioButtons(box,  
-        label = "To:", buttons = ['Rows', 'Columns'],setChecked='Rows',
-        orientation='horizontal')
-        self.indexSpinBox = RedRSpinBox(box, label = 'Array Index:', min = 1, max =2, value = 1)
+        self.demension =  radioButtons(box,  
+        label = "To:", buttons = ['Rows', 'Columns',''],setChecked='Rows',
+        orientation='horizontal',callback= lambda: self.dimensionChange(1))
+        self.indexSpinBox = RedRSpinBox(self.demension.box,  min = 1, value = 1,
+        callback= lambda: self.dimensionChange(2))
         buttonBox = widgetBox(box,orientation='horizontal')
         self.commitOnInput = redRCheckBox(buttonBox, buttons = ['Commit on Input'],
         toolTips = ['Whenever this selection changes, send data forward.'])
@@ -61,14 +62,30 @@ class apply(OWRpy):
         redRCommitButton(buttonBox, "Commit", align='right', callback = self.commitFunction)
         
         self.outputTable = redRFilterTable(area,sortable=True)
+
+    def dimensionChange(self,type):
+        if type == 1:
+            if self.demension.getChecked() =='Rows':
+                self.indexSpinBox.setValue(1)
+            else:
+                self.indexSpinBox.setValue(2)
+        else:
+            if self.indexSpinBox.value() == 1:
+                self.demension.setChecked('Rows')
+            elif self.indexSpinBox.value() == 2:
+                self.demension.setChecked('Columns')
+            else:
+                self.demension.setChecked('')
             
     def processX(self, data):
         if data:
             self.data=data.getData()
-            self.indexSpinBox.setMaximum(int(self.R('length(dim('+self.data+'))')))
-            self.commitFunction()
+            self.numDims = self.R('length(dim(%s))' % self.data, silent=True)
+            self.indexSpinBox.setMaximum(self.numDims)
+            if 'Commit on Input' in self.commitOnInput.getChecked():
+                self.commitFunction()
         else:
-            self.data=''
+            self.data=None
     def functionSelect(self):
         selection = self.functions.getCurrentSelection()
         f = selection[0].split('\n--')
@@ -78,26 +95,23 @@ class apply(OWRpy):
     def commitFunction(self):
         func = str(self.functionText.toPlainText())
         paramText = str(self.parameters.text())
-        if str(self.data) == '' or func =='': return
+        if str(self.data) == None or func =='': return
         
         params = []
         for x in paramText.split(','):
             if x.strip() !='':
                 params.append(x.strip())
             
-        saveAs = func + '\n--' + '\n--'.join(params)
+        saveAs = func 
+        if len(params):
+            saveAs += '\n--' + '\n--'.join(params)
         
         if not self.functions.findItems(saveAs,Qt.MatchExactly):
             self.functions.addItem(saveAs)
             self.saveGlobalSettings()
 
         injection = []
-        if self.indexSpinBox.value() > 2:
-            string = 'MARGIN = %s' % str(self.indexSpinBox.value())
-        elif 'Rows' in self.RFunctionParamMARGIN_radioButtons.getChecked():
-            string = 'MARGIN = 1'
-        elif 'Columns' in self.RFunctionParamMARGIN_radioButtons.getChecked():
-            string = 'MARGIN = 2'
+        string = 'MARGIN = %s' % str(self.indexSpinBox.value())
         injection.append(string)
             
         string = 'FUN='+str(self.functionText.toPlainText())
@@ -107,15 +121,15 @@ class apply(OWRpy):
         
         inj = ','.join(injection)
         
-        try:
-            self.R(self.Rvariables['apply']+'<-apply(X='+str(self.data)+','+inj+')')
-            self.outputTable.setRTable(self.Rvariables['apply'])
-            newData = redRRVector(data = self.Rvariables['apply'])
-            self.rSend("id0", newData)
-        except: 
-            self.R('%s <- NULL'%self.Rvariables['apply'],silent=True)
-            self.outputTable.clear()
-            self.rSend("id0", None)
+        # try:
+        self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+str(self.data)+','+inj+'))')
+        self.outputTable.setRTable(self.Rvariables['apply'])
+        newData = redRRDataFrame(data = self.Rvariables['apply'])
+        self.rSend("id0", newData)
+        # except: 
+            # self.R('%s <- NULL'%self.Rvariables['apply'],silent=True)
+            # self.outputTable.clear()
+            # self.rSend("id0", None)
         
         
     def getReportText(self, fileDir):
