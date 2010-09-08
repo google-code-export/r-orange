@@ -1,5 +1,5 @@
 """ Modified by Kyle R. Covington and Anup Parikh """
-import os, sys, user, cPickle
+import os, sys, user, cPickle, time
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 if sys.platform=="win32":
@@ -45,6 +45,7 @@ def __getDirectoryNames():
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
+    tempDirHolder = os.path.join(canvasSettingsDir, 'temp')
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
     downloadsDir = os.path.join(settingsDir, "downloads")
 
@@ -55,24 +56,19 @@ def __getDirectoryNames():
     else:
         documentsDir = os.path.join(os.path.expanduser('~'), 'Red-R')
         
-    if not os.path.isdir(documentsDir):
-        os.makedirs(documentsDir)
-    templatesDir = os.path.join(documentsDir, 'Templates')
-    if not os.path.isdir(templatesDir): 
-        os.makedirs(templatesDir)
+    templatesDir = os.path.join(documentsDir, 'Templates')    
     schemaDir = os.path.join(documentsDir, 'Schemas')
-    if not os.path.isdir(schemaDir): 
-        os.makedirs(schemaDir)
-        
+    
 
-    for dname in [settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir,downloadsDir]:
+    for dname in [documentsDir,templatesDir,schemaDir, settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir, downloadsDir , tempDirHolder]:
         if dname <> None and not os.path.isdir(dname):
             try: os.makedirs(dname)        
             # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
-    
-    tempDir = setTempDir(canvasSettingsDir, 1)
+    # print 'create temp'
+    tempDir = setTempDir(tempDirHolder)
     # print tempDir
+        
     return dict([(name, vars()[name]) for name in ["tempDir", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
@@ -83,22 +79,22 @@ def checkInternetConnection():
         return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
-def setTempDir(canvasSettingsDir, dirNumber):
-    # print 'setting temp dir'
-    # print dirNumber
-    try:  # try to make the canvas temp dir.  This should work but I would be cautious given the problems with the Vista system.
-        if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp')):
-            os.mkdir(os.path.join(canvasSettingsDir, 'temp'))
-    except: pass
-    if not os.path.isdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))):
-        os.mkdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
-        return os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
-    else:
-        return setTempDir(canvasSettingsDir, int(dirNumber + 1))
+def setTempDir(tempDirHolder):
+    # print 'setting temp dir' + str(time.time())
+    
+    tempDir = os.path.join(tempDirHolder, 'temp_' + str(time.time())) 
+    os.mkdir(tempDir)
+    return tempDir
+    # if not os.path.isdir():
+        # os.mkdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
+        # return os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
+    # else:
+        # return setTempDir(canvasSettingsDir, int(dirNumber + 1))
 
         
 # Loads settings from the canvas's .ini file
 def loadSettings():
+    # print '#################loadSettings'
     settings = {}
     filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
     if os.path.exists(filename):
@@ -170,16 +166,16 @@ def saveSettings():
     cPickle.dump(settings, file,2)
     file.close()
 def getVersion():
-    if len(version.keys()) ==0:
-        f = open(os.path.join(directoryNames["redRDir"],'version.txt'), 'r')
-        file = f.readlines()
-        f.close()
-        import re
-        for i in file:
-            m = re.search('!define\s(\S+)\s"(.*)"',i)
-            version[m.group(1)] = m.group(2)
+    version = {}
+    f = open(os.path.join(directoryNames["redRDir"],'version.txt'), 'r')
+    file = f.readlines()
+    f.close()
+    import re
+    for i in file:
+        m = re.search('!define\s(\S+)\s"(.*)"',i)
+        version[m.group(1)] = m.group(2)
     return version
-        
+            
 def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
@@ -197,9 +193,14 @@ def addOrangeDirectoriesToPath(directoryNames):
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.append(path)
 
+# try:        
+    # if version:
+        # pass
+# except:
+    # print 'do the import'
+    
 directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
-version = {}
 version = getVersion()
 settings = loadSettings()
 

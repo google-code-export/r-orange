@@ -7,16 +7,23 @@ from PyQt4.QtGui import *
 import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
+
+# redREnviron.__getDirectoryNames()
+# redREnviron.addOrangeDirectoriesToPath(directoryNames)
+# redREnviron.getVersion()
+# redREnviron.loadSettings()
+
 import redRExceptionHandling
-import redREnviron
 import redROutput
 import orngRegistry, OWGUI
-import orngTabs, orngDoc, orngDlgs, orngHelp, OWReport
+import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
+import redREnviron
 
 class OrangeCanvasDlg(QMainWindow):
     
     def __init__(self, app, parent = None, flags =  0):
+        
         QMainWindow.__init__(self, parent)
         
         self.setWindowTitle("Red-R Canvas Version %s" % redREnviron.version['REDRVERSION'])
@@ -633,7 +640,6 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuItemCanvasOptions(self):
         dlg = orngDlgs.CanvasOptionsDlg(self, None)
-        import redREnviron
         if dlg.exec_() == QDialog.Accepted:
             if redREnviron.settings["snapToGrid"] != dlg.settings["snapToGrid"]:
                 self.updateSnapToGrid()
@@ -661,9 +667,6 @@ class OrangeCanvasDlg(QMainWindow):
                 line.updateTooltip()
             
             self.schema.canvasView.repaint()
-        
-            import redREnviron, orngRegistry
-            
             if dlg.toAdd != [] or dlg.toRemove != []:
                 self.widgetRegistry = orngRegistry.readCategories()
 
@@ -816,7 +819,6 @@ def main(argv = None):
     QCoreApplication.setOrganizationName("Red-r");
     QCoreApplication.setOrganizationDomain("red-r.com");
     QCoreApplication.setApplicationName("Red-r");
-
     dlg = OrangeCanvasDlg(app)
     qApp.canvasDlg = dlg
     dlg.show()

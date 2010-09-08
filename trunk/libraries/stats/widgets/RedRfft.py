@@ -12,28 +12,40 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+
 class RedRfft(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commitOnInput']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["fft"])
         self.data = {}
         self.RFunctionParam_z = ''
+        self.isNumeric = False
         self.inputs.addInput('id0', 'z', redRRMatrix, self.processz)
 
         self.outputs.addOutput('id0', 'fft Output', redRRMatrix)
 
         
-        self.RFunctionParaminverse_radioBox = radioButtons(self.controlArea, label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParaminverse_radioBox = radioButtons(self.controlArea, 
+        label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
+        toolTips = ['On data input, process and send data forward.'])
+
+        self.commitButton = button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
     def processz(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
         if data:
             self.RFunctionParam_z=data.getData()
-            #self.data = data
-            self.commitFunction()
+            self.isNumeric = self.R('is.numeric(%s)' % self.RFunctionParam_z)
+            if not self.isNumeric:
+                self.status.setText('Data Must be Numeric')
+                self.commitButton.setDisabled(True)
+            else:
+                self.commitButton.setEnabled(True)
+                self.status.setText('')
+            if 'Commit on Selection' in self.commitOnInput.getChecked() and self.isNumeric:
+                self.commitFunction()
         else:
             self.RFunctionParam_z=''
     def commitFunction(self):

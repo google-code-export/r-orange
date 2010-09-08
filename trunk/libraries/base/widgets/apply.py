@@ -29,9 +29,8 @@ class apply(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["apply"])
-        self.data = {}
-         
-        self.RFunctionParam_X = ''
+        self.numDims = 2
+
         self.inputs.addInput('id0', 'X', redRRDataFrame, self.processX)
 
         self.outputs.addOutput('id0', 'apply Output', redRRVector)
@@ -51,10 +50,11 @@ class apply(OWRpy):
         self.functionText = redRTextEdit(box,label='Function:', orientation='vertical')
         self.parameters = redRLineEdit(box,label='Additional Parameters:', orientation='vertical')
         
-        self.RFunctionParamMARGIN_radioButtons =  radioButtons(box,  
-        label = "To:", buttons = ['Rows', 'Columns'],setChecked='Rows',
-        orientation='horizontal')
-        self.indexSpinBox = RedRSpinBox(box, label = 'Array Index:', min = 1, value = 1)
+        self.demension =  radioButtons(box,  
+        label = "To:", buttons = ['Rows', 'Columns',''],setChecked='Rows',
+        orientation='horizontal',callback= lambda: self.dimensionChange(1))
+        self.indexSpinBox = RedRSpinBox(self.demension.box,  min = 1, value = 1,
+        callback= lambda: self.dimensionChange(2))
         buttonBox = widgetBox(box,orientation='horizontal')
         self.commitOnInput = redRCheckBox(buttonBox, buttons = ['Commit on Input'],
         toolTips = ['Whenever this selection changes, send data forward.'])
@@ -63,13 +63,28 @@ class apply(OWRpy):
         
         self.outputTable = redRFilterTable(area,sortable=True)
 
+    def dimensionChange(self,type):
+        if type == 1:
+            if self.demension.getChecked() =='Rows':
+                self.indexSpinBox.setValue(1)
+            else:
+                self.indexSpinBox.setValue(2)
+        else:
+            if self.indexSpinBox.value() == 1:
+                self.demension.setChecked('Rows')
+            elif self.indexSpinBox.value() == 2:
+                self.demension.setChecked('Columns')
+            else:
+                self.demension.setChecked('')
+            
     def processX(self, data):
         if data:
-            self.RFunctionParam_X=data.getData()
-            self.data = data
+            self.data=data.getData()
+            self.numDims = self.R('length(dim(%s))' % self.data)
+            self.indexSpinBox.setMaximum(self.numDims)
             self.commitFunction()
         else:
-            self.RFunctionParam_X=''
+            self.data=''
     def functionSelect(self):
         selection = self.functions.getCurrentSelection()
         f = selection[0].split('\n--')
@@ -79,7 +94,7 @@ class apply(OWRpy):
     def commitFunction(self):
         func = str(self.functionText.toPlainText())
         paramText = str(self.parameters.text())
-        if str(self.RFunctionParam_X) == '' or func =='': return
+        if str(self.data) == '' or func =='': return
         
         params = []
         for x in paramText.split(','):
@@ -93,13 +108,7 @@ class apply(OWRpy):
             self.saveGlobalSettings()
 
         injection = []
-        if int(self.indexSpinBox.value()) > 2:
-            string = 'MARGIN = %s' % str(self.indexSpinBox.value())
-        else:
-            if self.RFunctionParamMARGIN_radioButtons.getChecked() == 'Rows':
-                string = 'MARGIN='+str(1)
-            else:
-                string = 'MARGIN = '+str(2)
+        string = 'MARGIN = %s' % str(self.indexSpinBox.value())
         injection.append(string)
             
         string = 'FUN='+str(self.functionText.toPlainText())
@@ -110,7 +119,7 @@ class apply(OWRpy):
         inj = ','.join(injection)
         
         try:
-            self.R(self.Rvariables['apply']+'<-apply(X='+str(self.RFunctionParam_X)+','+inj+')')
+            self.R(self.Rvariables['apply']+'<-apply(X='+str(self.data)+','+inj+')')
             self.outputTable.setRTable(self.Rvariables['apply'])
             newData = redRRVector(data = self.Rvariables['apply'])
             self.rSend("id0", newData)
@@ -121,4 +130,4 @@ class apply(OWRpy):
         
         
     def getReportText(self, fileDir):
-        return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (str(self.functionText.toPlainText()), self.RFunctionParamMARGIN_radioButtons.getChecked())
+        return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (str(self.functionText.toPlainText()), self.demension.getChecked())
