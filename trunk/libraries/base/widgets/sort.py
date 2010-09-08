@@ -41,9 +41,11 @@ class sort(OWRpy):
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            self.sortingColumn1.update(self.R('names('+self.RFunctionParam_x+')'))
-            self.sortingColumn2.update(self.R('names('+self.RFunctionParam_x+')'))
-            self.sortingColumn3.update(self.R('names('+self.RFunctionParam_x+')'))
+            colNames = self.R('colnames('+self.RFunctionParam_x+')',wantType='list')
+            colNames.insert(0,'')
+            self.sortingColumn1.update(colNames)
+            self.sortingColumn2.update(colNames)
+            self.sortingColumn3.update(colNames)
             self.commitFunction()
         else:
             self.RFunctionParam_x=''
@@ -56,7 +58,7 @@ class sort(OWRpy):
         injection.append('%s$%s' % (self.RFunctionParam_x, self.sortingColumn1.currentText()))
         if self.sortingColumn2.currentText() !='':
             injection.append('%s$%s' % (self.RFunctionParam_x, self.sortingColumn2.currentText()))
-        if self.sortingColumn2.currentText() !='':
+        if self.sortingColumn3.currentText() !='':
             injection.append('%s$%s' % (self.RFunctionParam_x, self.sortingColumn3.currentText()))
             
             
