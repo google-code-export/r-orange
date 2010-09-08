@@ -17,13 +17,12 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
 class plot(OWRpy): 
-    settingsList = ['RFunctionParam_cex', 'RFunctionParam_main', 'RFunctionParam_xlab', 'RFunctionParam_ylab']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.data = None
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
-        self.saveSettingsList = ['data', 'RFunctionParam_x', 'plotAttributes']
+        self.saveSettingsList = ['plotArea', 'data', 'RFunctionParam_x', 'plotAttributes']
         self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
 
         
@@ -31,6 +30,13 @@ class plot(OWRpy):
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
         self.plotArea = redRGraphicsView(self.controlArea)
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        button(self.bottomAreaRight, 'Inspect Plot', callback = self.InspectPlot)
+    def InspectPlot(self):
+        print self.plotArea.scene()
+        print self.plotArea.query
+        print self.plotArea.function
+        print self.plotArea.imageFileName
+        print self.plotArea.image
     def processx(self, data):
         if data:
             self.data = data
@@ -48,7 +54,7 @@ class plot(OWRpy):
             inj = ','+','.join(injection)
         else: inj = ''
         
-        self.plotArea.plot(str(self.RFunctionParam_x)+inj)
+        self.plotArea.plot(query = str(self.RFunctionParam_x)+inj)
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot
         if self.RFunctionParam_x != '':
@@ -74,6 +80,4 @@ class plot(OWRpy):
             
         return text
     def clearPlots(self):
-        if len(self.device) > 0:
-            for key, dev in self.device.items():
-                dev.clear()
+        self.plotArea.clear()

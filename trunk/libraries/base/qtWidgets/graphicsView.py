@@ -33,7 +33,7 @@ class graphicsView(QGraphicsView, widgetState):
         self._cexAxis = None
         self._cexLab = None
         self._cexMain = None
-        self._cexSub = 1
+        self._cexSub = None
         self._col = None
         self._colAxis = None
         self._colMain = None
@@ -43,8 +43,8 @@ class graphicsView(QGraphicsView, widgetState):
         self._lty = None
         self._lwd = None
         self._replotAfterChange = True
-        self._dheight = 6
-        self._dwidth = 6
+        self._dheight = 4
+        self._dwidth = 4
         self.image = 'plot'+str(time.time()) # the base file name without an extension
         self.imageFileName = ''
         self.currentScale = 1
@@ -104,7 +104,7 @@ class graphicsView(QGraphicsView, widgetState):
         
         self.menuBar.addMenu(self.fileParameters)
         self.menuBar.addMenu(self.menuParameters)
-        self.menuBar.addMenu(self.imageParameters)
+        #self.menuBar.addMenu(self.imageParameters)
         
         ### lower Line Edit
         self.extrasLineEdit = lineEdit(self.bottomArea, label = 'Advanced plotting parameters', 
@@ -127,7 +127,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.dialog.setWindowTitle('Red-R Graphics View' + name)
         self.dialog.setLayout(QHBoxLayout())
         
-        self.standardImageType = 'svg'
+        self.standardImageType = 'png'
         
     ################################
     ####  Menu Actions         #####
@@ -230,7 +230,12 @@ class graphicsView(QGraphicsView, widgetState):
     ## Interaction Functions #
     ##########################
     def clear(self):
-        self.scene().clear()
+        if self.scene():
+            self.scene().clear()
+        else:
+            print 'loading scene'
+            scene = QGraphicsScene()
+            self.setScene(scene)
         
     def toClipboard(self):
         QApplication.clipboard().setImage(self.returnImage())
@@ -426,24 +431,22 @@ class graphicsView(QGraphicsView, widgetState):
         return inj
     def _startRDevice(self, dwidth, dheight, imageType):
         if imageType not in ['svg', 'png', 'jpeg']:
-            imageType = 'svg'
+            imageType = 'png'
         
         # fileName = redREnviron.directoryNames['tempDir']+'/plot'+str(self.widgetID).replace('.', '_')+'.'+imageType
         # fileName = fileName.replace('\\', '/')
         self.imageFileName = str(self.image).replace('\\', '/')+'.'+str(imageType)
         # print '###################### filename' , self.imageFileName
-        if imageType == 'svg':
-            self.require_librarys(['RSvgDevice'])
-            self.R('devSVG(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +str(dheight)+', height = '+str(dheight)
-                +')')
-        elif imageType == 'png':
-            self.require_librarys(['RSvgDevice'])
+        # if imageType == 'svg':
+            # self.require_librarys(['RSVGTipsDevice'])
+            # self.R('devSVGTips(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
+                # +str(dheight)+', height = '+str(dheight)
+                # +')')
+        if imageType == 'png':
             self.R('png(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
         elif imageType == 'jpeg':
-            self.require_librarys(['RSvgDevice'])
             self.R('jpeg(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
@@ -464,14 +467,16 @@ class graphicsView(QGraphicsView, widgetState):
         
         fullquery = '%s(%s, %s)' % (function, query, self.extras)
         self.R(fullquery)
-        
+        print fullquery
         if len(layers) > 0:
             for l in layers:
                 self.R(l)
-                
+        fileName = str(self.imageFileName)
+        print fileName
         self.R('dev.off()')
         self.clear()
         fileName = str(self.imageFileName)
+        print fileName
         self.addImage(fileName)
         self.layers = layers
         self._dwidth = dwidth

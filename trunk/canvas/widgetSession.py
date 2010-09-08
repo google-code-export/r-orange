@@ -98,7 +98,8 @@ class widgetSession():
     def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
         # print 'var class', var.__class__.__name__
-        if var.__class__.__name__ in redRGUI.qtWidgets:
+        from redRGUI import widgetState
+        if isinstance(var, widgetState):
             # print 'getting gui settings\n\n'
             try:
                 v = {}
@@ -132,6 +133,7 @@ class widgetSession():
            for k,v in var.iteritems():
                settings['dict'][k] = self.returnSettings(v)
         else:
+            print '#####################\n\nNo settings saved for %s\n\n############' % var
             settings = None
         return settings
     def processSentItems(self):

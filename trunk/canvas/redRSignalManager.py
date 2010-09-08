@@ -165,6 +165,7 @@ class OutputHandler:
             else:   
                 handler(value)
             parentWidget.status.setText('New Data Received')
+            parentWidget.removeWarning(id = 'signalHandlerWarning')
         except:
             import redRExceptionHandling
             error = redRExceptionHandling.formatException(errorMsg="Error occured in processing signal in this widget.\nPlease check the widgets.\n\n",plainText=True)
