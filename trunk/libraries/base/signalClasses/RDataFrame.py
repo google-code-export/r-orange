@@ -3,9 +3,11 @@ from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
 from libraries.base.signalClasses.StructuredDict import *
 from libraries.base.signalClasses.UnstructuredDict import *
+
 import time
 
 class RDataFrame(RList, StructuredDict):
+    
     convertFromList = [StructuredDict]
     convertToList = [RList, RVariable, StructuredDict, UnstructuredDict]
     def __init__(self, data, parent = None, checkVal = True):
@@ -16,6 +18,7 @@ class RDataFrame(RList, StructuredDict):
         self.newDataID = str(time.time()).replace('.', '_')
         self.RListSignal = None
         self.structuredDict = None
+        self.matrix = None
     def convertFromClass(self, signal):
         if isinstance(signal, StructuredDict):
             return self._convertFromStructuredDict(signal)
@@ -37,6 +40,7 @@ class RDataFrame(RList, StructuredDict):
             return self._convertToStructuredDict()
         else:
             raise Exception
+
     def _convertToStructuredDict(self):
         if not self.structuredDict:
             dictData = self.R(self.data, wantType = 'dict', silent = False)

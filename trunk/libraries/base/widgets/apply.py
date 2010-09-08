@@ -12,6 +12,7 @@ from OWRpy import *
 import redRGUI 
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RVector import RVector as redRRVector
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.spinBox import spinBox as RedRSpinBox
@@ -31,7 +32,7 @@ class apply(OWRpy):
         self.setRvariableNames(["apply"])
         self.numDims = 2
         self.data=None
-        self.inputs.addInput('id0', 'X', redRRDataFrame, self.processX)
+        self.inputs.addInput('id0', 'X', redRRMatrix, self.processX)
 
         self.outputs.addOutput('id0', 'apply Output', redRRDataFrame)
 
@@ -82,8 +83,7 @@ class apply(OWRpy):
             self.data=data.getData()
             self.numDims = self.R('length(dim(%s))' % self.data, silent=True)
             self.indexSpinBox.setMaximum(self.numDims)
-            if 'Commit on Input' in self.commitOnInput.getChecked():
-                self.commitFunction()
+            self.commitFunction()
         else:
             self.data=None
     def functionSelect(self):

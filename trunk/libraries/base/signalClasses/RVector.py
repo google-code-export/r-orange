@@ -5,7 +5,6 @@ from libraries.base.signalClasses.RMatrix import *
 from libraries.base.signalClasses.RDataFrame import *
 from libraries.base.signalClasses.StructuredDict import *
 from libraries.base.signalClasses.UnstructuredDict import *
-from libraries.base.signalClasses.RVector import *
 
 class RVector(RMatrix):
     convertToList = [RDataFrame, StructuredDict, UnstructuredDict, RMatrix, RVariable, RList]

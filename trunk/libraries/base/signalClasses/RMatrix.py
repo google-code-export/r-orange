@@ -24,7 +24,9 @@ class RMatrix(RDataFrame):
         self.assignR('matrixConversion'+self.newDataID, signal.getData())
         return RMatrix(data = 'as.matrix('+'matrixConversion'+self.newDataID+')')
     def _convertFromRDataFrame(self, signal):
-        return RMatrix(data = 'as.matrix('+signal.getData()+')')
+        self.R('matrix_'+self.newDataID+'<-apply(as.matrix('+signal.getData()+'),2, as.numeric)')
+        return RMatrix(data = 'matrix_'+self.newDataID, parent = self)
+        
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
@@ -40,6 +42,7 @@ class RMatrix(RDataFrame):
             return self._convertToStructuredDict()
         else:
             raise Exception
+        
     def _convertToStructuredDict(self):
         if not self.StructuredDictSignal:
             data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
