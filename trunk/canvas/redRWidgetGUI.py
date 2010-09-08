@@ -109,9 +109,9 @@ class redRWidgetGUI(QMainWindow):
         QObject.connect(self.rightDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
         self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.rightDock.setMinimumWidth(minWidth)
-        
+        self.rightDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
         self.rightDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.addDockWidget(Qt.BottomDockWidgetArea,self.rightDock)
+        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
         
         
         self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
