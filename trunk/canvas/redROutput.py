@@ -8,7 +8,8 @@ import sys
 import string
 from datetime import tzinfo, timedelta, datetime
 import traceback, redRExceptionHandling
-import os.path, os, redREnviron
+import os.path, os
+import redREnviron
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox

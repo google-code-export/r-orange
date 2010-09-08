@@ -4,9 +4,9 @@ from RSession import require_librarys
 from RSession import assign
 
 class RVariable(BaseRedRVariable): 
+    convertToList = []
+    convertFromList = []
     def __init__(self, data, parent = None, checkVal = False):
-        convertToList = []
-        convertFromList = []
         BaseRedRVariable.__init__(self,data)
         if not parent:
             parent = data

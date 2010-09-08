@@ -39,12 +39,11 @@ class widgetSession():
                     continue
                 i += 1
                 self.progressBarAdvance(i)
-                print 'frist att: ' + att
+                #print 'frist att: ' + att
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
-            except Exception as inst:
+            except:
                 print redRExceptionHandling.formatException()
-                #print 'Exception occured in saving', att
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
@@ -98,9 +97,9 @@ class widgetSession():
             
     def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
-        print 'var class', var.__class__.__name__
+        # print 'var class', var.__class__.__name__
         if var.__class__.__name__ in redRGUI.qtWidgets:
-            print 'getting gui settings\n\n'
+            # print 'getting gui settings\n\n'
             try:
                 v = {}
                 v = var.getSettings()
@@ -110,10 +109,8 @@ class widgetSession():
                     v.update(var.getDefaultState())
             except: 
                 v = var.getDefaultState()
-                import traceback,sys
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60        
+                print redRExceptionHandling.formatException(
+                errorMsg='Could not save qtWidgets class ' + var.__class__.__name__ + '.')
 
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
@@ -167,7 +164,7 @@ class widgetSession():
                     self.__setattr__(k, varClass)
                 elif 'sentItemsList' in v.keys():
                     print '|#| settingItemsList'
-                    print v['sentItemsList']
+                    # print v['sentItemsList']
                     #self.setSentItemsList(v['sentItemsList'])        
                     for (sentItemName, sentItemDict) in v['sentItemsList']:
                         #print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
@@ -220,15 +217,14 @@ class widgetSession():
                     # print 'list',len(var),len(v['list'])
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
-            except Exception as inst:
-                print inst
-                print 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'
+            except:
+                print redRExceptionHandling.formatException(errorMsg='Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.')
         
         
     def setSignalClass(self, d):
         print '|##| setSentRvarClass' #% str(d)
         
-        print d
+        # print d
         # print 'setting ', className
         try: # try to reload the output class from the signals
             
