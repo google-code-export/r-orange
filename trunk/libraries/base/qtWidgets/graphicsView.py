@@ -551,7 +551,7 @@ class graphicsView(QGraphicsView, widgetState):
     def _matchUseGlyphs(self, use, glyph):
         matches = []
         for i in use:
-            print i.getAttribute('xlink:href')
+            #print i.getAttribute('xlink:href')
             if i.getAttribute('xlink:href') == '#'+glyph:
                 matches.append(i)
         #print matches

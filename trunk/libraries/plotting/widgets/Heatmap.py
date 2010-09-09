@@ -57,7 +57,9 @@ class Heatmap(OWRpy):
         #OWGUI.checkBox(infobox, self, )
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
         self.gview1 = graphicsView(self.controlArea)
+        self.gview1.image = 'heatmap1_'+self.widgetID
         self.gview2 = graphicsView(self.controlArea)
+        self.gview2.image = 'heatmap2_'+self.widgetID
         
     def onLoadSavedSession(self):
         print 'load heatmap'
