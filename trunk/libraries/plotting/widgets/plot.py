@@ -54,7 +54,7 @@ class plot(OWRpy):
             inj = ','+','.join(injection)
         else: inj = ''
         
-        self.plotArea.plot(query = str(self.RFunctionParam_x)+inj)
+        self.plotArea.plot(query = str(self.RFunctionParam_x)+inj, data = self.RFunctionParam_x)
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot
         if self.RFunctionParam_x != '':

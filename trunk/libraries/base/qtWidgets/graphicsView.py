@@ -12,7 +12,7 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent, name = ''):
+    def __init__(self, parent, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         QGraphicsView.__init__(self, parent)
         self.controlArea = widgetBox(parent)
@@ -27,6 +27,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.mainItem = None
         self.query = ''
         self.function = 'plot'
+        self.data = data
         self.layers = []
         self._bg = None
         self._cex = None
@@ -42,6 +43,7 @@ class graphicsView(QGraphicsView, widgetState):
         self._fg = None
         self._lty = None
         self._lwd = None
+        self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']
         self._replotAfterChange = True
         self._dheight = 4
         self._dwidth = 4
@@ -141,11 +143,12 @@ class graphicsView(QGraphicsView, widgetState):
     def setStandardImageType(self, it):
         self.standardImageType = it
     def setPlotColors(self):
-        colorDialog = colorListDialog()
+        colorDialog = colorListDialog(data = self.data)
+        colorDialog.setColors(self.colorList)
         colorDialog.exec_()
-        colorDialog.processColors() ## we process one last time to get all of the colors in case we missed some.
-        self._col = 'c("'+'","'.join(colorDialog.listOfColors)+'")'
-        if self._col == 'c("")':
+        self._col = 'c('+','.join([str(a) for a in colorDialog.listOfColors])+')'
+        self.colorList = colorDialog.listOfColors
+        if self._col == 'c()':
             self._col = 'c("#FFFFFF")'
         colorDialog.hide()
         if self._replotAfterChange:
@@ -222,7 +225,7 @@ class graphicsView(QGraphicsView, widgetState):
     ## R session functions ##
     #########################
     def R(self, query):
-        RSession.Rcommand(query = query)
+        return RSession.Rcommand(query = query)
     def require_librarys(self, libraries):
         return RSession.require_librarys(libraries)
         
@@ -453,13 +456,14 @@ class graphicsView(QGraphicsView, widgetState):
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
                 
-    def plot(self, query, function = 'plot', dwidth=6, dheight=6):
+    def plot(self, query, function = 'plot', dwidth=6, dheight=6, data = None):
         ## performs a quick plot given a query and an imageType
-        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [])
+        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data)
             
 
-    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = []):
+    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = [], data = None):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
+        self.data = data
         self.function = function
         self.query = query
         self._startRDevice(dwidth, dheight, self.standardImageType)
@@ -606,7 +610,7 @@ class graphicsView(QGraphicsView, widgetState):
             col.append(templ)
         return ' '.join(col)
 class colorListDialog(QDialog):
-    def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog'):
+    def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):
         QDialog.__init__(self, parent)
         self.setWindowTitle(title)
         if layout == 'horizontal':
@@ -616,17 +620,30 @@ class colorListDialog(QDialog):
         
         self.listOfColors = []
         self.controlArea = widgetBox(self)
-        
+        mainArea = widgetBox(self.controlArea, 'horizontal')
+        leftBox = widgetBox(mainArea)
+        rightBox = widgetBox(mainArea)
         ## GUI
         
         # color list
-        self.colorList = listBox(self.controlArea, label = 'Color List')
-        button(self.controlArea, label = 'Add Color', callback = self.addColor)
-        button(self.controlArea, label = 'Remove Color', callback = self.removeColor)
+        self.colorList = listBox(leftBox, label = 'Color List')
+        button(leftBox, label = 'Add Color', callback = self.addColor)
+        button(leftBox, label = 'Remove Color', callback = self.removeColor)
+        button(leftBox, label = 'Clear Colors', callback = self.colorList.clear)
+        button(mainArea, label = 'Finished', callback = self.accept)
+        # attribute list
+        self.attsList = listBox(rightBox, label = 'Data Parameters', callback = self.attsListSelected)
+        if data:
+            names = self.R('names('+data+')')
+            print names
+            self.attsList.update(names)
+        self.data = data
+    def attsListSelected(self):
+        ## return a list of numbers coresponding to the levels of the data selected.
+        self.listOfColors = self.R('as.numeric(as.factor('+self.data+'$'+str(self.attsList.selectedItems()[0].text())+'))')
         
     def addColor(self):
         colorDialog = QColorDialog(self)
-        colorDialog.exec_()
         color = colorDialog.getColor()
         colorDialog.hide()
         newItem = QListWidgetItem()
@@ -639,12 +656,23 @@ class colorListDialog(QDialog):
             self.colorList.removeItemWidget(item)
             
         self.processColors()
-        
+    def setColors(self, colorList):
+        self.colorList.clear()
+        try:
+            for c in colorList:
+                col = QColor()
+                col.setNamedColor(str(c))
+                newItem = QListWidgetItem()
+                newItem.setBackgroundColor(col)
+                self.colorList.addItem(newItem)
+        except:
+            pass # it might happen that we can't show the colors that's not good but also not disasterous either.
     def processColors(self):
         self.listOfColors = []
         for item in self.colorList.items():
-            self.listOfColors.append(str(item.backgroundColor().name()))
-        
+            self.listOfColors.append('"'+str(item.backgroundColor().name())+'"')
+    def R(self, query):
+        return RSession.Rcommand(query = query)
 class dialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical',title=None):
         QDialog.__init__(self,parent)
