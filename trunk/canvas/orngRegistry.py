@@ -2,6 +2,7 @@
 #
 
 import os, sys, re, glob, stat
+
 #from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -57,7 +58,6 @@ def readCategories():
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
         package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
-        #print '##################################', package['Name']
         # we read in all the widgets in dirName, directory in the directories
         widgets = readWidgets(os.path.join(directory,'widgets'), package, cachedWidgetDescriptions)  ## calls an internal function
         AllPackages[package['Name']] = package
@@ -144,7 +144,6 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         dirname, fname = os.path.split(filename)
         widgetName = os.path.splitext(fname)[0]
         try:
-            import redREnviron
             if not splashWindow:
                 
                 logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
@@ -161,9 +160,11 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             dirnameInPath = dirname in sys.path
             if not dirnameInPath:
                 sys.path.append(dirname)
-        
-            wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
+            # print widgetName, 'redREnviron' in sys.modules.keys()
 
+            wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
+            
+            # __import__('libraries.' + package['Name'] + '.widgets.' + widgetName)
             #wmod.__dict__['widgetFilename'] = filename
             # if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
                 # sys.path.remove(dirname)

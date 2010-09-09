@@ -198,7 +198,7 @@ def addOrangeDirectoriesToPath(directoryNames):
         # pass
 # except:
     # print 'do the import'
-    
+# print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', str(time.time())
 directoryNames = __getDirectoryNames()
 addOrangeDirectoriesToPath(directoryNames)
 version = getVersion()

@@ -156,6 +156,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.widgetSettings = widgetSettings
         if not ghost:
             m = __import__(widgetInfo.fileName)
+            #m = __import__('libraries.' + widgetInfo.packageName + '.widgets.' + widgetInfo.widgetName)
+            
             self.instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
             _owInfo = redREnviron.settings["owInfo"],
             _owWarning = redREnviron.settings["owWarning"],

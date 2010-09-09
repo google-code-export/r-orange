@@ -7,18 +7,17 @@ from PyQt4.QtGui import *
 import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
-
 # redREnviron.__getDirectoryNames()
 # redREnviron.addOrangeDirectoriesToPath(directoryNames)
 # redREnviron.getVersion()
 # redREnviron.loadSettings()
-
+import redREnviron
 import redRExceptionHandling
-import redROutput
 import orngRegistry, OWGUI
+import redROutput
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
-import redREnviron
+
 
 class OrangeCanvasDlg(QMainWindow):
     
