@@ -127,7 +127,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.dialog.setWindowTitle('Red-R Graphics View' + name)
         self.dialog.setLayout(QHBoxLayout())
         
-        self.standardImageType = 'png'
+        self.standardImageType = 'svg'
         
     ################################
     ####  Menu Actions         #####
@@ -345,7 +345,8 @@ class graphicsView(QGraphicsView, widgetState):
             print imageType, 'Error occured'
             raise Exception, 'Image type specified is not a valid type for this widget.'
         if imageType == 'svg':
-            mainItem = QGraphicsSvgItem(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/')))
+            self.convertSVG(str(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
+            mainItem = QGraphicsSvgItem(str(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
         else:
@@ -437,11 +438,12 @@ class graphicsView(QGraphicsView, widgetState):
         # fileName = fileName.replace('\\', '/')
         self.imageFileName = str(self.image).replace('\\', '/')+'.'+str(imageType)
         # print '###################### filename' , self.imageFileName
-        # if imageType == 'svg':
-            # self.require_librarys(['RSVGTipsDevice'])
-            # self.R('devSVGTips(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                # +str(dheight)+', height = '+str(dheight)
-                # +')')
+        if imageType == 'svg':
+            self.require_librarys(['Cairo'])
+            self.R('CairoSVG(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
+                +str(dheight)+', height = '+str(dheight)
+                +')')
+            
         if imageType == 'png':
             self.R('png(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
@@ -506,6 +508,103 @@ class graphicsView(QGraphicsView, widgetState):
         self.clear()
         fileName = str(self.imageFileName)
         self.addImage(fileName)
+    def convertSVG(self, file):
+        print file
+        dom = self._getsvgdom(file)
+        #print dom
+        self._switchGlyphsForPaths(dom)
+        self._commitSVG(file, dom)
+    def _commitSVG(self, file, dom):
+        f = open(file, 'w')
+        dom.writexml(f)
+        f.close()
+    def _getsvgdom(self, file):
+        print 'getting DOM model'
+        import xml.dom
+        import xml.dom.minidom as mini
+        f = open(file, 'r')
+        svg = f.read()
+        f.close()
+        dom = mini.parseString(svg)
+        return dom
+    def _getGlyphPaths(self, dom):
+        symbols = dom.getElementsByTagName('symbol')
+        glyphPaths = {}
+        for s in symbols:
+            pathNode = [p for p in s.childNodes if 'tagName' in dir(p) and p.tagName == 'path']
+            glyphPaths[s.getAttribute('id')] = pathNode[0].getAttribute('d')
+        return glyphPaths
+    def _switchGlyphsForPaths(self, dom):
+        glyphs = self._getGlyphPaths(dom)
+        use = self._getUseTags(dom)
+        for glyph in glyphs.keys():
+            #print glyph
+            nl = self.makeNewList(glyphs[glyph].split(' '))
+            u = self._matchUseGlyphs(use, glyph)
+            for u2 in u:
+                #print u2, 'brefore'
+                self._convertUseToPath(u2, nl)
+                #print u2, 'after'
+            
+    def _getUseTags(self, dom):
+        return dom.getElementsByTagName('use')
+    def _matchUseGlyphs(self, use, glyph):
+        matches = []
+        for i in use:
+            print i.getAttribute('xlink:href')
+            if i.getAttribute('xlink:href') == '#'+glyph:
+                matches.append(i)
+        #print matches
+        return matches
+    def _convertUseToPath(self, use, strokeD):
+        ## strokeD is a list of lists of strokes to make the glyph
+        newD = self.nltostring(self.resetStrokeD(strokeD, use.getAttribute('x'), use.getAttribute('y')))
+        use.tagName = 'path'
+        use.removeAttribute('xlink:href')
+        use.removeAttribute('x')
+        use.removeAttribute('y')
+        use.setAttribute('style', 'fill: rgb(0%,0%,0%); stroke-width: 0.5; stroke-linecap: round; stroke-linejoin: round; stroke: rgb(0%,0%,0%); stroke-opacity: 1;stroke-miterlimit: 10; ')
+        use.setAttribute('d', newD)
+    def makeNewList(self, inList):
+        i = 0
+        nt = []
+        while i < len(inList):
+            start = i + self.listFind(inList[i:], ['M', 'L', 'C', 'Z'])
+            end = start + self.listFind(inList[start+1:], ['M', 'L', 'C', 'Z', '', ' '])
+            nt.append(inList[start:end+1])
+            i = end + 1
+        return nt
+    def listFind(self, x, query):
+        for i in range(len(x)):
+            if x[i] in query:
+                return i
+        return len(x)
+    def resetStrokeD(self, strokeD, x, y):
+        nsd = []
+        for i in strokeD:
+            nsd.append(self.resetXY(i, x, y))
+        return nsd
+    def resetXY(self, nl, x, y): # convert a list of strokes to xy coords
+        nl2 = []
+        for i in range(len(nl)):
+            if i == 0:
+                nl2.append(nl[i])
+            elif i%2: # it's odd
+                nl2.append(float(nl[i]) + float(x))
+            elif not i%2: # it's even
+                nl2.append(float(nl[i]) + float(y))
+            else:
+                print i, nl[i], 'error'
+        return nl2
+    def nltostring(self, nl): # convert a colection of nl's to a string
+        col = []
+        for l in nl:
+            templ = []
+            for c in l:
+                templ.append(str(c))
+            templ = ' '.join(templ)
+            col.append(templ)
+        return ' '.join(col)
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog'):
         QDialog.__init__(self, parent)

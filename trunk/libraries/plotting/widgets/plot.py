@@ -30,13 +30,13 @@ class plot(OWRpy):
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
         self.plotArea = redRGraphicsView(self.controlArea)
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        button(self.bottomAreaRight, 'Inspect Plot', callback = self.InspectPlot)
-    def InspectPlot(self):
-        print self.plotArea.scene()
-        print self.plotArea.query
-        print self.plotArea.function
-        print self.plotArea.imageFileName
-        print self.plotArea.image
+        # button(self.bottomAreaRight, 'Inspect Plot', callback = self.InspectPlot)
+    # def InspectPlot(self):
+        # fn = QFileDialog.getOpenFileName(self, "Open File", '~',
+        # "Text file (*.png);; All Files (*.*)")
+        # print str(fn)
+        # if fn.isEmpty(): return
+        # self.plotArea.addImage(str(fn))
     def processx(self, data):
         if data:
             self.data = data
