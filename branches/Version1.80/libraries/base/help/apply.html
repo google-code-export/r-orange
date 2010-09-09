@@ -1,0 +1,124 @@
+<h2>Breif</h2><! A brief discription of the widget and what it does>
+    <p>
+Apply a function across an array.
+    </p>
+<h2>Details</h2><! A detailed discription of the widget and what it does>
+    <p>
+The apply function takes an array (an n-dimentional rectangular datasets) as an input object and applies the function specified either by the 'Select Function' box or any arbitrary function in the 'Function' box.  Any additional parameters to the function can be input in the 'Additional Parameters' line.  
+
+    </p>
+    <p>
+Users can use either the 'To' box or the 'Array Index' box to specify the index on which the function will be applied.
+    </p>
+    <p>
+The result is an (n-1)-dimentional array containing the results of the function applied across the array.
+
+For example:</br>
+Apply the function max across the following array, with index 1 (Rows).</br></br>
+    [[1, 2, 3]
+     [4, 5, 6]
+     [7, 8, 9]]</br></br>
+Results in this vector.</br></br>
+    [3, 6, 9]</br></br>
+While applied across the columns would result in: [7, 8, 9].
+    </p>
+<h2>Parameters</h2><! A list of the parameters and how to use them.  There may be refereces to other help files for some specific qt widgets>
+    <p>
+        <li>Select Function (list box): Select the function to apply across the data.</li>
+        <li>Function (text edit): Input a custon function to apply.  This will override the function indicated in the Select Function area.</li>
+        <li>Additional Parameters (line edit): Parameters to apply to the function beyond just the data.  Please see the specified function for help on what these options might be.</li>
+        <li>To (radio buttons): Select what margin to apply the function to, rows applies across the rows, columns applies across the columns.</li>
+        <li>Array Index (spin box): Select the margin to apply the function over if the array is larger than two dimentional.  This overrides the selections in the To area.</li>
+    
+    </p>
+<h2>Citation</h2>
+    <h4>Authon</h4>
+        <p>
+            Kyle R Covington (kyle@red-r.org)
+        </p>
+    <h4>Contact</h4>
+        <p>
+            Kyle R Covington (kyle@red-r.org)
+        </p>
+    <h4>Refferences</h4>
+        <p>
+        </p>
+<h2>R Help</h2><! the R help file so the user can see what the R code looks like>
+    <pre>
+    apply(base) R Documentation 
+
+Apply Functions Over Array Margins
+Description
+Returns a vector or array or list of values obtained by applying a function to margins of an array. 
+
+Usage
+apply(X, MARGIN, FUN, ...)
+
+Arguments
+X the array to be used. 
+MARGIN a vector giving the subscripts which the function will be applied over. 1 indicates rows, 2 indicates columns, c(1,2) indicates rows and columns. 
+FUN the function to be applied: see ‘Details’. In the case of functions like +, %*%, etc., the function name must be backquoted or quoted. 
+... optional arguments to FUN. 
+
+Details
+If X is not an array but has a dimension attribute, apply attempts to coerce it to an array via as.matrix if it is two-dimensional (e.g., data frames) or via as.array. 
+
+FUN is found by a call to match.fun and typically is either a function or a symbol (e.g. a backquoted name) or a character string specifying a function to be searched for from the environment of the call to apply. 
+
+Value
+If each call to FUN returns a vector of length n, then apply returns an array of dimension c(n, dim(X)[MARGIN]) if n > 1. If n equals 1, apply returns a vector if MARGIN has length 1 and an array of dimension dim(X)[MARGIN] otherwise. If n is 0, the result has length 0 but not necessarily the ‘correct’ dimension. 
+If the calls to FUN return vectors of different lengths, apply returns a list of length prod(dim(X)[MARGIN]) with dim set to MARGIN if this has length greater than one. 
+In all cases the result is coerced by as.vector to one of the basic vector types before the dimensions are set, so that (for example) factor results will be coerced to a character array.
+
+References
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) The New S Language. Wadsworth & Brooks/Cole. 
+
+See Also
+lapply, tapply, and convenience functions sweep and aggregate. 
+
+Examples
+## Compute row and column sums for a matrix:
+x <- cbind(x1 = 3, x2 = c(4:1, 2:5))
+dimnames(x)[[1]] <- letters[1:8]
+apply(x, 2, mean, trim = .2)
+col.sums <- apply(x, 2, sum)
+row.sums <- apply(x, 1, sum)
+rbind(cbind(x, Rtot = row.sums), Ctot = c(col.sums, sum(col.sums)))
+
+stopifnot( apply(x, 2, is.vector))
+
+## Sort the columns of a matrix
+apply(x, 2, sort)
+
+##- function with extra args:
+cave <- function(x, c1, c2) c(mean(x[c1]), mean(x[c2]))
+apply(x,1, cave,  c1="x1", c2=c("x1","x2"))
+
+ma <- matrix(c(1:4, 1, 6:8), nrow = 2)
+ma
+apply(ma, 1, table)  #--> a list of length 2
+apply(ma, 1, stats::quantile)# 5 x n matrix with rownames
+
+stopifnot(dim(ma) == dim(apply(ma, 1:2, sum)))
+
+## Example with different lengths for each call
+z <- array(1:24, dim=2:4)
+zseq <- apply(z, 1:2, function(x) seq_len(max(x)))
+zseq         ## a 2 x 3 matrix
+typeof(zseq) ## list
+dim(zseq) ## 2 3
+zseq[1,]
+apply(z, 3, function(x) seq_len(max(x)))
+# a list without a dim attribute
+
+
+--------------------------------------------------------------------------------
+
+[Package base version 2.9.1 Index]
+
+    </pre>
+<h2>Connectivity</h2>
+    <h4>Works Well With</h4><! a list of widgets with refereces to their help files of widgets that might be useful when used with this widget>
+    <h4>See Also</h4><! a list of other widgets which either do similar things as this widget or where more help might be found>
+    
+<h2>Templates</h2><! a list of templates which include this widget, might not be all inclusive but should be at least those included in the package>
