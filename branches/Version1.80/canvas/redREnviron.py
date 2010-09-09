@@ -116,7 +116,10 @@ def loadSettings():
     settings.setdefault("widgetSelectedColor", (0, 255, 0))
     settings.setdefault("widgetActiveColor", (0,0,255))
     settings.setdefault("lineColor", (0,255,0))
+    
+    settings.setdefault("WidgetTabs", None)
 
+    
 
     settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
