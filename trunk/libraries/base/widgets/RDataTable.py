@@ -30,6 +30,7 @@ class RDataTable(OWRpy):
         self.inputs.addInput('id1', 'Input Data Table', redRRDataFrame, self.dataset) 
 
         self.data = {}          # dict containing the table infromation
+        self.dataParent = None
         self.showMetas = {}     # key: id, value: (True/False, columnList)
         self.showMeta = 1
         self.showAttributeLabels = 1
@@ -60,7 +61,7 @@ class RDataTable(OWRpy):
         #button(saveTab, label="Set File", callback = self.chooseDirectory)
         #self.fileName = widgetLabel(saveTab, label="")
         self.separator = comboBox(saveTab, label = 'Seperator:', 
-        items = ['Tab', 'Space', 'Comma'], orientation = 'horizontal')
+        items = ['Comma', 'Tab', 'Space'], orientation = 'horizontal')
         save = button(saveTab, label="Save As File", callback=self.writeFile,
         toolTip = "Write the table to a text file.")
         saveTab.layout().setAlignment(save,Qt.AlignRight)
@@ -71,6 +72,7 @@ class RDataTable(OWRpy):
         self.linkListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.customLink = lineEdit(linksTab, label = 'Add Link:')
         b = button(linksTab, label = 'Add', toolTip = 'Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.', callback=self.addCustomLink)
+        button(linksTab, label = 'Clear Links', toolTip = 'Clears the links from the links section', callback = self.clearLinks)
         linksTab.layout().setAlignment(b,Qt.AlignRight)
         widgetLabel(linksTab,label ="""
 Creating new links:
@@ -104,7 +106,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.supressTabClick = True
         #self.table.show()
         self.data = dataset.getData()
-        
+        self.dataParent = dataset
             
         if dataset.optionalDataExists('links'):
             linksData = dataset.getOptionalData('links')['data']
@@ -141,7 +143,9 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             #print url
             import webbrowser
             webbrowser.open_new_tab(url)
-
+    def clearLinks(self):
+        self.linkListBox.clear()
+        self.currentLinks = {}
     def addCustomLink(self):
         url = str(self.customLink.text())
         self.linkListBox.addItem(url)
@@ -155,7 +159,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             self.status.setText('Data does not exist.')
             return
         name = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'),
-        "Text file (*.txt *.csv *.tab);; All Files (*.*)")
+        "Text file (*.csv *.tab *.txt );; All Files (*.*)")
         if name.isEmpty(): return
 
         if self.separator.currentText() == 'Tab': #'tab'
@@ -165,23 +169,24 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         elif self.separator.currentText() == 'Comma':
             sep = ','
         #use the R function if the parent of the dict is an R object.
-        if isinstance(self.data.getDataParent(), redRRDataFrame):  
-            self.R('write.table('+self.data.getDataParent().getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
-        elif isinstance(self.data, redRRDataFrame):
-            self.R('write.table('+self.data.getData()+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
+        if type(self.data) == str:
+            self.R('write.table('+self.data+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
-            string = ''
-            for key in self.data.getData().keys():
-                string += str(key)+sep
-            string += '\n'
-            for i in range(self.data.getItem('length')):
-                for key in self.data.getData().keys():
-                    string += self.data.getData()[key][i]+sep
+            if self.dataParent:
+                string = ''
+                for key in self.dataParent.getData().keys():
+                    string += str(key)+sep
                 string += '\n'
-            
-            f = open(str(name), 'w')
-            f.write(string)
-            f.close()
+                for i in range(self.dataParent.getItem('length')):
+                    for key in self.dataParent.getData().keys():
+                        string += self.dataParent.getData()[key][i]+sep
+                    string += '\n'
+                
+                f = open(str(name), 'w')
+                f.write(string)
+                f.close()
+            else:
+                self.status.setText('Can\'t write to a file')
             
     def changeColor(self):
         color = QColorDialog.getColor(self.distColor, self)

@@ -4,6 +4,7 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButtons
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
 from libraries.base.qtWidgets.listBox import listBox as redRlistBox
+from libraries.base.qtWidgets.button import button as redRButton
 ## redR-IntroWizard.  a wizard that is shown on first load that guides the user through the setup of Red-R.  The user will be encouraged to register Red-R (e-mail address), set canvas options (error reporting, output level, showing the output on error), R options (R mirror)
 
 import os, sys
@@ -15,6 +16,7 @@ import RSession, redREnviron
 class RedRInitWizard(QWizard):
     def __init__(self, parent = None):
         QWizard.__init__(self, parent)
+        self.libs = {}
         #layout = [QWizard.BackButton, QWizard.NextButton, QWizard.FinishButton]
         #self.setButtonLayout(layout)
         self.setWindowTitle('Red-R Setup')
@@ -43,12 +45,11 @@ class RedRInitWizard(QWizard):
         self.rlibrariesBox = redRgroupBox(self.RSetupPage, 'R Libraries')
         self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
         
-        
-        self.libs = RSession.Rcommand('getCRANmirrors()')
+
         # place a listBox in the widget and fill it with a list of mirrors
-        
-        self.libListBox = redRlistBox(self.rlibrariesBox, label = 'Mirrors', 
-        items = self.libs['Name'], callback = self.setMirror)
+        redRButton(self.rlibrariesBox, 'Get Libraries', callback = self.loadMirrors)
+        self.libListBox = redRlistBox(self.rlibrariesBox, label = 'Mirrors', callback = self.setMirror)
+        self.libMessageBox = redRwidgetLabel(self.rlibrariesBox)
         
         self.runExamplePage = QWizardPage()
         self.runExamplePage.setLayout(QVBoxLayout())
@@ -63,8 +64,15 @@ class RedRInitWizard(QWizard):
         self.addPage(self.errorReportingPage)
         self.addPage(self.RSetupPage)
         self.addPage(self.runExamplePage)
-        
+    def loadMirrors(self):
+        self.libMessageBox.clear()
+        if not redREnviron.checkInternetConnection():
+            self.libMessageBox.setText('No Internet Connection, please try again')
+            return
+        self.libs = RSession.Rcommand('getCRANmirrors()')
+        self.libListBox.update(self.libs['Name'])
     def setMirror(self):
+        if len(self.libs) == 0: return
         item = self.libListBox.currentRow()
         self.settings['CRANrepos'] = str(self.libs['URL'][item])
         RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')

@@ -181,8 +181,8 @@ class OrangeCanvasDlg(QMainWindow):
 
         if splashWindow:
             splashWindow.hide()
-        if not 'id' in redREnviron.settings.keys():
-            redREnviron.settings['id'] = str(time.time())
+        redREnviron.settings['id'] = str(time.time())
+        redREnviron.setTempDir('temp_'+redREnviron.settings['id'])
         if redREnviron.settings['firstLoad']:
             self.startSetupWizard()
         qApp.processEvents()

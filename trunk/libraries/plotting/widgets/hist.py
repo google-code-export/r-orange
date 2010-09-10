@@ -9,6 +9,7 @@
 from OWRpy import * 
 import OWGUI 
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -20,22 +21,24 @@ class hist(OWRpy):
         self.RFunctionParam_x = ''
         self.column = ''
         self.needsColumns = 0
-        self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
+        self.inputs.addInput('id0', 'x', redRRList, self.processx)
 
         
         box = groupBox(self.controlArea, "Widget Box")
         #self.infoa = widgetLabel(box, "")
-        self.column = comboBox(box, label='Data Column:')
+        self.column = comboBox(box, label='Data Element:')
         self.RFunctionParam_main = lineEdit(box, label = "Main Title")
         self.RFunctionParam_xlab = lineEdit(box, label = "X Label")
+        self.bins = lineEdit(box, label = 'Bins:')
+        self.plotArea = redRgraphicsView(self.controlArea)
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
             #self.commitFunction()
             myclass = self.R('class('+self.RFunctionParam_x+')')
-            if myclass == 'matrix' or myclass == 'data.frame':
-                colnames = self.R('colnames('+self.RFunctionParam_x+')')
+            if myclass in ['matrix', 'data.frame', 'list']:
+                colnames = self.R('names('+self.RFunctionParam_x+')')
                 if type(colnames) == type(''):
                     colnames = [colnames]
                     
@@ -53,17 +56,18 @@ class hist(OWRpy):
                 injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
             if self.RFunctionParam_xlab.text() != '':
                 injection.append('xlab = "'+str(self.RFunctionParam_xlab.text())+'"')
-                
+            if str(self.bins.text()) != '':
+                injection.append('breaks = '+str(self.bins.text()))
             if injection != []:
                 inj = ','.join(injection)
             else: inj = ''
         
         
-            self.Rplot('hist(x='+str(self.RFunctionParam_x)+'[,"'+str(self.column.currentText())+'"]'+','+inj+')', 3,3)
+            self.plotArea.plot('x=as.numeric('+str(self.RFunctionParam_x)+'$'+str(self.column.currentText())+')'+','+inj, function = 'hist')
             return
         else:
             try:
-                self.Rplot('hist(x='+str(self.RFunctionParam_x)+')', 3, 3)
+                self.plotArea.plot('x=as.numeric('+str(self.RFunctionParam_x)+','+inj, function = 'hist')
             except:
                 self.status.setText('Please make sure that you used the right kind of data.')
     def getReportText(self, fileDir):

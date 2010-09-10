@@ -67,10 +67,10 @@ def __getDirectoryNames():
             # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
     # print 'create temp'
-    tempDir = setTempDir(tempDirHolder)
+    #tempDir = setTempDir(tempDirHolder)
     # print tempDir
         
-    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDir", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -80,11 +80,12 @@ def checkInternetConnection():
         return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
-def setTempDir(tempDirHolder):
+def setTempDir(temp):
     # print 'setting temp dir' + str(time.time())
     
-    tempDir = os.path.join(tempDirHolder, 'temp_' + str(time.time())) 
+    tempDir = os.path.join(directoryNames['tempDirHolder'], temp) 
     os.mkdir(tempDir)
+    directoryNames['tempDir'] = tempDir
     return tempDir
     # if not os.path.isdir():
         # os.mkdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
