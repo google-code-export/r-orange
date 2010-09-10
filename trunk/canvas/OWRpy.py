@@ -23,6 +23,8 @@ from libraries.base.qtWidgets.listBox import listBox as redRListBox
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
+
 
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
