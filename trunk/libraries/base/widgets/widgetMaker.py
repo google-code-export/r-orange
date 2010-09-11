@@ -305,12 +305,12 @@ class widgetMaker(OWRpy):
                 self.commitFunction += "\t\t\tstring = '"+relement+"='+str(self.RFunctionParam"+ element +"_lineEdit.text())+''\n"
                 self.commitFunction += "\t\t\tinjection.append(string)\n"
             elif self.fieldList[element]['ipt'] == 'comboBox':
-                self.commitFunction += "\t\tstring = '"+relement+"='+str(self.RFunctionParam"+element+"_comboBox.currentText())+''\n"
+                self.commitFunction += "\t\tstring = ',"+relement+"='+str(self.RFunctionParam"+element+"_comboBox.currentText())+''\n"
                 self.commitFunction += "\t\tinjection.append(string)\n"
             else:
                 self.commitFunction += "\t\t## make commit function for self.RFunctionParam"+element+"_"+self.fieldList[element]['ipt']+"\n\n"
                 
-        self.commitFunction += "\t\tinj = ','.join(injection)\n"
+        self.commitFunction += "\t\tinj = ''.join(injection)\n"
         self.commitFunction += "\t\tself.R("
         if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
             self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("

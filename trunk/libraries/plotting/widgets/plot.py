@@ -16,6 +16,7 @@ from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as re
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
+from libraries.base.qtWidgets.SearchDialog import SearchDialog
 class plot(OWRpy): 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)

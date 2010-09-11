@@ -29,7 +29,7 @@ class dotchart(OWRpy):
         self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "X Label:", text = 'NULL')
         self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "Y Label:", text = 'NULL')
         self.labelNames = comboBox(self.standardTab, label = 'Label Data')
-        button(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')

@@ -130,6 +130,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.dialog.setLayout(QHBoxLayout())
         
         self.standardImageType = 'svg'
+        self.plotExactlySwitch = False ## a switch that can be activated to allow plotting exactly as the plot is sent, no function generation will be performed and all attribute alteration will be disabled
         
     ################################
     ####  Menu Actions         #####
@@ -220,7 +221,12 @@ class graphicsView(QGraphicsView, widgetState):
         
         if self._replotAfterChange:
             self.replot()
-            
+    def plotExactly(self, logic = True):
+        self.plotExactlySwitch = logic
+        if logic:
+            self.menuParameters.setEnabled(False)
+        else:
+            self.menuParameters.setEnabled(True)
     #########################
     ## R session functions ##
     #########################
@@ -389,7 +395,10 @@ class graphicsView(QGraphicsView, widgetState):
         elif imageType == 'jpeg':
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
         
-        query = '%s(%s, %s)' % (self.function, self.query, self.extras)
+        if not self.plotExactlySwitch:
+            query = '%s(%s, %s)' % (self.function, self.query, self.extras)
+        else:
+            query = self.query
         self.R(query)
         for l in self.layers:
             self.R(l)
@@ -467,11 +476,19 @@ class graphicsView(QGraphicsView, widgetState):
         self.function = function
         self.query = query
         self._startRDevice(dwidth, dheight, self.standardImageType)
-        self.extras = self._setParameters()
-        if str(self.extrasLineEdit.text()) != '':
-            self.extras += ', '+str(self.extrasLineEdit.text())
         
-        fullquery = '%s(%s, %s)' % (function, query, self.extras)
+        if not self.plotExactlySwitch:
+            self.extras = self._setParameters()
+            if str(self.extrasLineEdit.text()) != '':
+                self.extras += ', '+str(self.extrasLineEdit.text())
+            if self.extras != '':
+                fullquery = '%s(%s, %s)' % (function, query, self.extras)
+            else:
+                fullquery = '%s(%s)' % (function, query)
+        else:
+            fullquery = self.query
+        
+        
         self.R(fullquery)
         print fullquery
         if len(layers) > 0:
@@ -487,6 +504,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.layers = layers
         self._dwidth = dwidth
         self._dheight = dheight
+        self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
     def setExtrasLineEditEnabled(self, enabled = True):
         
         self.extrasLineEdit.enabled(enabled)
@@ -501,10 +519,19 @@ class graphicsView(QGraphicsView, widgetState):
             self._replotAfterChange = False
     def replot(self):
         self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
-        self.extras = self._setParameters()
-        if str(self.extrasLineEdit.text()) != '':
-            self.extras += ', '+str(self.extrasLineEdit.text())
-        self.R('%s(%s, %s)' % (self.function, self.query, self.extras))
+        if not self.plotExactlySwitch:
+            self.extras = self._setParameters()
+            if str(self.extrasLineEdit.text()) != '':
+                self.extras += ', '+str(self.extrasLineEdit.text())
+            if self.extras != '':
+                fullquery = '%s(%s, %s)' % (function, query, self.extras)
+            else:
+                fullquery = '%s(%s)' % (function, query)
+        else:
+            fullquery = self.query
+        
+        
+        self.R(fullquery)
         if len(self.layers) > 0:
             for l in self.layers:
                 self.R(l)
