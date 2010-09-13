@@ -26,7 +26,7 @@ class mathWidget(OWRpy):
         self.setRvariableNames(['math'])
         
         self.counter = 1
-        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp']
+        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR']
         
         self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotData)
 
@@ -152,6 +152,16 @@ class mathWidget(OWRpy):
                     try:
                         self.R(self.data+'$'+'divide_'+str(self.counter)+'<-as.numeric('+topText+') / as.numeric('+bottomText+')')
                         self.table.setRTable(self.data)
+                    except:
+                        self.status.setText('An error occured in your function')
+                elif function == 'logicAND':
+                    try:
+                        self.R(self.data+'$'+'logic_AND'+str(self.counter)+'<-'+topText+'&'+bottomText)
+                    except:
+                        self.status.setText('An error occured in your function')
+                elif function == 'logicOR':
+                    try:
+                        self.R(self.data+'$'+'logic_OR'+str(self.counter)+'<-'+topText+'|'+bottomText)
                     except:
                         self.status.setText('An error occured in your function')
                 self.counter += 1

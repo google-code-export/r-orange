@@ -20,6 +20,7 @@ class rViewer(OWRpy):
         OWRpy.__init__(self)
         
         self.RFunctionParam_data = None
+        self.data = None
         
         self.inputs.addInput('id0', 'R Variable Data', redRRVariable, self.processdata)
 

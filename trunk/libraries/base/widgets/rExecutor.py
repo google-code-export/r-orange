@@ -48,7 +48,7 @@ class rExecutor(OWRpy):
         #GUI
         
         #GUIDialog
-        self.box = groupBox(self.GUIDialog, "R Executor")
+        self.box = groupBox(self.GUIDialog, "R Executor Advanced")
         self.infob = widgetLabel(self.box, "")
         
         self.infoa = widgetLabel(self.box, "")
@@ -76,22 +76,21 @@ class rExecutor(OWRpy):
         varbutton = button(leftArea, "Recieved", callback = self.putrecieved, width = 150)
         history = button(leftArea, "RHistory", callback = self.putRHistory, width = 150)
         button(leftArea, "Clear Output", callback = self.clearOutput)
+        
+        self.lsList = listBox(self.box, label = 'Available R Items', items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
+        button(self.box, 'Refresh List', callback = self.refreshLsList)
 
         self.thistext = textEdit(rightArea)
 
         sendbutton = button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
-
-        
+    def addlsList(self):
+        self.command.insert(str(self.lsList.selectedItems()[0].text()))
+    def refreshLsList(self):
+        self.lsList.update(self.R('ls()', wantType = 'list'))
     def clearOutput(self):
         self.thistext.clear()
     def putrecieved(self):
-        self.command.setText(str(self.data))
-        
-    # def insertMetaDataVar(self):
-        # tmp = str(self.olddata[str(self.metadataLB.selectedItems()[0].text())])
-        # self.thistext.insertHtml(tmp)
-        # self.infoM.setText(tmp)
-        # self.command.setText(tmp)
+        self.command.insert(str(self.data))
     def sendThis(self):
         
         thisdataclass = self.R('class('+str(self.command.text())+')')

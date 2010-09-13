@@ -43,6 +43,9 @@ class graphicsView(QGraphicsView, widgetState):
         self._fg = None
         self._lty = None
         self._lwd = None
+        self._legendNames = None
+        self._legendLocation = 'bottomleft'
+        self._pch = None
         self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']
         self._replotAfterChange = True
         self._dheight = 4
@@ -64,9 +67,16 @@ class graphicsView(QGraphicsView, widgetState):
         colors.addAction('Set Subtitle Color', self.setSubtitleColors)
         colors.addAction('Set Forground Color', self.setForgroundColors)
         colors.addAction('Set Background Color', self.setBackgroundColors)
+        
         font = self.menuParameters.addMenu('Font')
         ffa = font.addMenu('Set Font Family')
         
+        legend = self.menuParameters.addMenu('Legend')
+        ll = legend.addMenu('Legend Location')
+        ll.addAction('Set to bottom right', lambda x = 'bottomright': self._setLegendLocation(x))
+        ll.addAction('Set to bottom left', lambda x = 'bottomleft': self._setLegendLocation(x))
+        ll.addAction('Set to top right', lambda x = 'topleft': self._setLegendLocation(x))
+        ll.addAction('Set to top left', lambda x = 'topright': self._setLegendLocation(x))
         fontComboAction = QWidgetAction(font)
         self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono'], 
             #'HersheySerif', 'HersheySans', 'HersheyScript',
@@ -103,6 +113,8 @@ class graphicsView(QGraphicsView, widgetState):
         save.addAction('PDF', self.saveAsPDF)
         save.addAction('Post Script', self.saveAsPostScript)
         save.addAction('JPEG', self.saveAsJPEG)
+        
+        printScene = self.fileParameters.addAction('Print', self.printMe)
         
         self.menuBar.addMenu(self.fileParameters)
         self.menuBar.addMenu(self.menuParameters)
@@ -209,7 +221,12 @@ class graphicsView(QGraphicsView, widgetState):
         if self._replotAfterChange:
             self.replot()
     def setLineType(self):
-        pass
+        ltd = lineTypeDialog(self)
+        if ltd.exec_() != QDialog.Accepted: 
+            print 'Not accepted'
+            return
+        self._lty = 'c('+','.join(ltd.ltys)+')'
+        print self._lty
         if self._replotAfterChange:
             self.replot()
     def setLineWidth(self):
@@ -407,6 +424,35 @@ class graphicsView(QGraphicsView, widgetState):
     ##############################
     ### Plotting #################\
     ##############################
+    def _setLegend(self):
+        ## we want to make a legend that will appear on the plot.  legend(x, y = NULL, legend, fill = NULL, col = par("col"),
+                   # border="black", lty, lwd, pch,
+                   # angle = 45, density = NULL, bty = "o", bg = par("bg"),
+                   # box.lwd = par("lwd"), box.lty = par("lty"), box.col = par("fg"),
+                   # pt.bg = NA, cex = 1, pt.cex = cex, pt.lwd = lwd,
+                   # xjust = 0, yjust = 1, x.intersp = 1, y.intersp = 1,
+                   # adj = c(0, 0.5), text.width = NULL, text.col = par("col"),
+                   # merge = do.lines && has.pch, trace = FALSE,
+                   # plot = TRUE, ncol = 1, horiz = FALSE, title = NULL,
+                   # inset = 0, xpd, title.col = text.col)
+        if not self._legendNames:
+            self.parent.status.setText('No legend names specified. Can\'t make the legend')
+        function = 'legend(x=\''+self._legendLocation+'\', legend = '+self._legendNames
+        if self._col:
+            function += ', col = '+self._col
+        if self._lty:
+            function += ', lty = '+self._lty
+        if self._lwd:
+            function += ', lwd = '+self._lwd
+        if self._pch:
+            function += ', pch = '+self._pch
+        function += ')'
+        self.R(function)
+    def setLegendNames(self, parameter):
+        ## sets the legend to plot the names as the set parameter.  This can come from either a call to the widget through it's own interface or through the widget.
+        self._legendNames = parameter
+    def _setLegendLocation(self, location):
+        self._legendLocation = location
     def _setParameters(self):
         inj = ''
         injection = []
@@ -465,12 +511,12 @@ class graphicsView(QGraphicsView, widgetState):
                 +str(dheight*100)+', height = '+str(dheight*100)
                 +')')
                 
-    def plot(self, query, function = 'plot', dwidth=6, dheight=6, data = None):
+    def plot(self, query, function = 'plot', dwidth=6, dheight=6, data = None, legend = False):
         ## performs a quick plot given a query and an imageType
-        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data)
+        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
             
 
-    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = [], data = None):
+    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = [], data = None, legend = False):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.data = data
         self.function = function
@@ -494,6 +540,8 @@ class graphicsView(QGraphicsView, widgetState):
         if len(layers) > 0:
             for l in layers:
                 self.R(l)
+        if legend:
+            self._setLegend()
         fileName = str(self.imageFileName)
         print fileName
         self.R('dev.off()')
@@ -518,6 +566,7 @@ class graphicsView(QGraphicsView, widgetState):
         else:
             self._replotAfterChange = False
     def replot(self):
+        if self.query == '': return ## no plot can be generated.
         self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
@@ -539,6 +588,18 @@ class graphicsView(QGraphicsView, widgetState):
         self.clear()
         fileName = str(self.imageFileName)
         self.addImage(fileName)
+    def printMe(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer)
+        if printDialog.exec_() == QDialog.Rejected: 
+            print 'Printing Rejected'
+            return
+        painter = QPainter(printer)
+        self.scene().render(painter)
+        painter.end()
+    ###########
+    ## Convert an SVG for pyqt
+    ###########
     def convertSVG(self, file):
         print file
         dom = self._getsvgdom(file)
@@ -636,6 +697,8 @@ class graphicsView(QGraphicsView, widgetState):
             templ = ' '.join(templ)
             col.append(templ)
         return ' '.join(col)
+        
+    
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):
         QDialog.__init__(self, parent)
@@ -700,12 +763,41 @@ class colorListDialog(QDialog):
             self.listOfColors.append('"'+str(item.backgroundColor().name())+'"')
     def R(self, query):
         return RSession.Rcommand(query = query)
+
 class dialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical',title=None):
         QDialog.__init__(self,parent)
+        self.ltys = []
         if title:
             self.setWindowTitle(title)
         if layout == 'horizontal':
             self.setLayout(QHBoxLayout())
         else:
             self.setLayout(QVBoxLayout())
+            
+class lineTypeDialog(dialog):
+    def __init__(self, parent = None, layout = 'vertical', title = 'Line Type Dialog'):
+        dialog.__init__(self, parent = parent, layout = layout, title = title)
+        
+        ## add a set of line types that can be shown in R and allow the user to pick them
+        self.linesListBox = listBox(self, label = 'Line types:', items = ['________', '- - - -', '........', '_._._._.', '__ __ __', '__.__.__.'], callback = self.setLineTypes)
+        self.linesListBox.setSelectionMode(QAbstractItemView.MultiSelection)
+        button(self, "Done", callback = self.accept)
+    def setLineTypes(self):
+        numbers = []
+        for item in self.linesListBox.selectedItems():
+            if str(item.text()) == '________':
+                numbers.append('1')
+            elif str(item.text()) == '- - - -':
+                numbers.append('2')
+            elif str(item.text()) == '........':
+                numbers.append('3')
+            elif str(item.text()) == '_._._._.':
+                numbers.append('4')
+            elif str(item.text()) == '__ __ __':
+                numbers.append('5')
+            elif str(item.text()) == '__.__.__.':
+                numbers.append('6')
+        print numbers
+        self.ltys = numbers
+            

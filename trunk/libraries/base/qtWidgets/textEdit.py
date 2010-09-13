@@ -1,6 +1,7 @@
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
+from libraries.base.qtWidgets.button import button
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -13,12 +14,15 @@ class textEdit(QTextEdit,widgetState):
             self.hb = widgetBox(widget,orientation=orientation)
             widgetLabel(self.hb, label)
             self.hb.layout().addWidget(self)
+            button(self.hb, "Print", self.printMe)
         else:
             widget.layout().addWidget(self)
+            button(widget, "Print", self.printMe)
             
         if not editable:
             self.setReadOnly(True)
         self.insertHtml(html)
+        
 
     def hide(self):
         if self.hb:
@@ -52,4 +56,12 @@ class textEdit(QTextEdit,widgetState):
             QTextEdit.show(self)
     def getReportText(self, fileDir):
         return self.toPlainText()+'\n\n'
+        
+    def printMe(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer)
+        if printDialog.exec_() == QDialog.Rejected: 
+            print 'Printing Rejected'
+            return
+        self.print_(printer)
         

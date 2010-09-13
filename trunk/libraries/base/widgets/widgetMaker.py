@@ -242,11 +242,9 @@ class widgetMaker(OWRpy):
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
             #self.initCode += '\t\tself.inputs = ['
             for element in self.functionInputs.keys():
-                self.initCode += '\t\tself.inputs.addInput("'+element+'", "'+element+'", signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+'),'
-            self.initCode = self.initCode[:len(self.initCode)-1]
-            self.initCode += ']\n'
+                self.initCode += '\t\tself.inputs.addInput("'+element+'", "'+element+'", signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+')\n'
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output","'+self.functionName.text()+' Output", signals.'+str(self.outputsCombobox.currentText())+'.'+str(self.outputsCombobox.currentText())+')]\n'
+            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output","'+self.functionName.text()+' Output", signals.'+str(self.outputsCombobox.currentText())+'.'+str(self.outputsCombobox.currentText())+')\n'
         self.initCode += '\t\t\n'
         
     def makeGUI(self):

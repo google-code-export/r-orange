@@ -90,7 +90,7 @@ class SchemaView(QGraphicsView):
                     QMessageBox.information(self, 'Red-R Canvas', 'Unable to rename widget. An instance with that name already exists.')
                     return
             widget.updateText(newName)
-            widget.instance.setCaption(newName)
+            widget.instance.setWindowTitle(newName)
 
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
