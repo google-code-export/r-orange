@@ -95,12 +95,12 @@ class rowcolPicker(OWRpy):
         # if self.dataParent:
         if not self.dataParent: return
         if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
-            r =  self.R(self.dataParent.getRownames_call())
+            r =  self.R('rownames('+self.data+')', wantType = 'list')
             if type(r) == list:
                 self.attributes.update(r)
 
         elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
-            c =  self.R(self.dataParent.getColumnnames_call())
+            c =  self.R('colnames('+self.data+')', wantType = 'list')
             if type(c) == list:
                 self.attributes.update(c)
 
@@ -117,7 +117,8 @@ class rowcolPicker(OWRpy):
 
         self.ssv = data.getData()
         self.subsetColumn.clear()
-        self.subsetColumn.addItems(self.R('names('+data.getData()+')', silent = True))
+        
+        self.subsetColumn.addItems(self.R('names(as.list('+data.getData()+'))', wantType = 'list'))
         self.ssvdata = data
         
     def subOnAttached(self):
@@ -127,22 +128,22 @@ class rowcolPicker(OWRpy):
         
         if self.rowcolBox.getChecked() == 'Row':
             if "True" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],]')
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],])')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],]')
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],])')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelector']+'<-'+self.data+'[,colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[[\''+col+'\']]]')
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+
+            ' %in% '+self.ssv+'[[\''+col+'\']]])')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelectorNot']+'<-'+self.data+'[,!colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[[\''+col+'\']]]')
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+
+            ' %in% '+self.ssv+'[[\''+col+'\']]])')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         self.SubsetByAttached = 1
