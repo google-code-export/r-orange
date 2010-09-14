@@ -920,118 +920,118 @@ class redRGraph(QwtPlot,widgetState):
         return selected.tolist(), unselected.tolist()
 
     # save graph in matplotlib python file
-    def saveToMatplotlib(self, fileName, size = QSize(400,400)):
-        f = open(fileName, "wt")
-        try:
-            x1 = self.axisScaleDiv(QwtPlot.xBottom).lBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).hBound()
-            y1 = self.axisScaleDiv(QwtPlot.yLeft).lBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).hBound()
-        except:
-            x1 = self.axisScaleDiv(QwtPlot.xBottom).lowerBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).upperBound()
-            y1 = self.axisScaleDiv(QwtPlot.yLeft).lowerBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).upperBound()
-        if self.showAxisScale == 0: edgeOffset = 0.01
-        else: edgeOffset = 0.08
+    # def saveToMatplotlib(self, fileName, size = QSize(400,400)):
+        # f = open(fileName, "wt")
+        # try:
+            # x1 = self.axisScaleDiv(QwtPlot.xBottom).lBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).hBound()
+            # y1 = self.axisScaleDiv(QwtPlot.yLeft).lBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).hBound()
+        # except:
+            # x1 = self.axisScaleDiv(QwtPlot.xBottom).lowerBound(); x2 = self.axisScaleDiv(QwtPlot.xBottom).upperBound()
+            # y1 = self.axisScaleDiv(QwtPlot.yLeft).lowerBound();   y2 = self.axisScaleDiv(QwtPlot.yLeft).upperBound()
+        # if self.showAxisScale == 0: edgeOffset = 0.01
+        # else: edgeOffset = 0.08
 
-        f.write("from pylab import *\nfrom matplotlib import font_manager\n\n#possible changes in how the plot looks\n#rcParams['xtick.major.size'] = 0\n#rcParams['ytick.major.size'] = 0\n\n#constants\nx1 = %f; x2 = %f\ny1 = %f; y2 = %f\ndpi = 80\nxsize = %d\nysize = %d\nedgeOffset = %f\n\nfigure(facecolor = 'w', figsize = (xsize/float(dpi), ysize/float(dpi)), dpi = dpi)\nhold(True)\n" % (x1,x2,y1,y2,size.width(), size.height(), edgeOffset))
+        # f.write("from pylab import *\nfrom matplotlib import font_manager\n\n#possible changes in how the plot looks\n#rcParams['xtick.major.size'] = 0\n#rcParams['ytick.major.size'] = 0\n\n#constants\nx1 = %f; x2 = %f\ny1 = %f; y2 = %f\ndpi = 80\nxsize = %d\nysize = %d\nedgeOffset = %f\n\nfigure(facecolor = 'w', figsize = (xsize/float(dpi), ysize/float(dpi)), dpi = dpi)\nhold(True)\n" % (x1,x2,y1,y2,size.width(), size.height(), edgeOffset))
 
-        linestyles = ["None", "-", "-.", "--", ":", "-", "-"]      # qwt line styles: NoCurve, Lines, Sticks, Steps, Dots, Spline, UserCurve
-        markers = ["None", "o", "s", "^", "d", "v", "^", "<", ">", "x", "+"]    # curveSymbols = [None, Ellipse, Rect, Triangle, Diamond, DTriangle, UTriangle, LTriangle, RTriangle, XCross, Cross]
+        # linestyles = ["None", "-", "-.", "--", ":", "-", "-"]      # qwt line styles: NoCurve, Lines, Sticks, Steps, Dots, Spline, UserCurve
+        # markers = ["None", "o", "s", "^", "d", "v", "^", "<", ">", "x", "+"]    # curveSymbols = [None, Ellipse, Rect, Triangle, Diamond, DTriangle, UTriangle, LTriangle, RTriangle, XCross, Cross]
 
-        f.write("#add curves\n")
-        for c in self.itemList():
-            if not isinstance(c, QwtPlotCurve): continue
-            xData = [c.x(i) for i in range(c.dataSize())]
-            yData = [c.y(i) for i in range(c.dataSize())]
-            marker = markers[c.symbol().style()+1]
+        # f.write("#add curves\n")
+        # for c in self.itemList():
+            # if not isinstance(c, QwtPlotCurve): continue
+            # xData = [c.x(i) for i in range(c.dataSize())]
+            # yData = [c.y(i) for i in range(c.dataSize())]
+            # marker = markers[c.symbol().style()+1]
 
-            markersize = c.symbol().size().width()
-            markeredgecolor, foo = self._getColorFromObject(c.symbol().pen())
-            markerfacecolor, alphaS = self._getColorFromObject(c.symbol().brush())
-            colorP, alphaP = self._getColorFromObject(c.pen())
-            colorB, alphaB = self._getColorFromObject(c.brush())
-            alpha = min(alphaS, alphaP, alphaB)
-            linewidth = c.pen().width()
-            if c.__class__ == PolygonCurve and len(xData) == 4:
-                x0 = min(xData); x1 = max(xData); diffX = x1-x0
-                y0 = min(yData); y1 = max(yData); diffY = y1-y0
-                f.write("gca().add_patch(Rectangle((%f, %f), %f, %f, edgecolor=%s, facecolor = %s, linewidth = %d, fill = 1, alpha = %.3f))\n" % (x0,y0,diffX, diffY, colorP, colorB, linewidth, alpha))
-            elif c.style() < len(linestyles):
-                linestyle = linestyles[c.style()]
-                f.write("plot(%s, %s, marker = '%s', linestyle = '%s', markersize = %d, markeredgecolor = %s, markerfacecolor = %s, color = %s, linewidth = %d, alpha = %.3f)\n" % (xData, yData, marker, linestyle, markersize, markeredgecolor, markerfacecolor, colorP, linewidth, alpha))
+            # markersize = c.symbol().size().width()
+            # markeredgecolor, foo = self._getColorFromObject(c.symbol().pen())
+            # markerfacecolor, alphaS = self._getColorFromObject(c.symbol().brush())
+            # colorP, alphaP = self._getColorFromObject(c.pen())
+            # colorB, alphaB = self._getColorFromObject(c.brush())
+            # alpha = min(alphaS, alphaP, alphaB)
+            # linewidth = c.pen().width()
+            # if c.__class__ == PolygonCurve and len(xData) == 4:
+                # x0 = min(xData); x1 = max(xData); diffX = x1-x0
+                # y0 = min(yData); y1 = max(yData); diffY = y1-y0
+                # f.write("gca().add_patch(Rectangle((%f, %f), %f, %f, edgecolor=%s, facecolor = %s, linewidth = %d, fill = 1, alpha = %.3f))\n" % (x0,y0,diffX, diffY, colorP, colorB, linewidth, alpha))
+            # elif c.style() < len(linestyles):
+                # linestyle = linestyles[c.style()]
+                # f.write("plot(%s, %s, marker = '%s', linestyle = '%s', markersize = %d, markeredgecolor = %s, markerfacecolor = %s, color = %s, linewidth = %d, alpha = %.3f)\n" % (xData, yData, marker, linestyle, markersize, markeredgecolor, markerfacecolor, colorP, linewidth, alpha))
 
-        f.write("\n# add markers\n")
-        for marker in self.itemList():
-            if not isinstance(marker, QwtPlotMarker): continue
-            x = marker.xValue()
-            y = marker.yValue()
-            text = str(marker.label().text())
-            align = marker.labelAlignment()
-            xalign = (align & Qt.AlignLeft and "right") or (align & Qt.AlignHCenter and "center") or (align & Qt.AlignRight and "left")
-            yalign = (align & Qt.AlignBottom and "top") or (align & Qt.AlignTop and "bottom") or (align & Qt.AlignVCenter and "center")
-            vertAlign = (yalign and ", verticalalignment = '%s'" % yalign) or ""
-            horAlign = (xalign and ", horizontalalignment = '%s'" % xalign) or ""
-            labelColor = marker.label().color()
-            color = (labelColor.red()/255., labelColor.green()/255., labelColor.blue()/255.)
-            alpha = labelColor.alpha()/255.
-            name = str(marker.label().font().family())
-            weight = marker.label().font().bold() and "bold" or "normal"
-            if marker.__class__ == RotatedMarker: extra = ", rotation = %f" % (marker.rotation)
-            else: extra = ""
-            f.write("text(%f, %f, '%s'%s%s, color = %s, name = '%s', weight = '%s'%s, alpha = %.3f)\n" % (x, y, text, vertAlign, horAlign, color, name, weight, extra, alpha))
+        # f.write("\n# add markers\n")
+        # for marker in self.itemList():
+            # if not isinstance(marker, QwtPlotMarker): continue
+            # x = marker.xValue()
+            # y = marker.yValue()
+            # text = str(marker.label().text())
+            # align = marker.labelAlignment()
+            # xalign = (align & Qt.AlignLeft and "right") or (align & Qt.AlignHCenter and "center") or (align & Qt.AlignRight and "left")
+            # yalign = (align & Qt.AlignBottom and "top") or (align & Qt.AlignTop and "bottom") or (align & Qt.AlignVCenter and "center")
+            # vertAlign = (yalign and ", verticalalignment = '%s'" % yalign) or ""
+            # horAlign = (xalign and ", horizontalalignment = '%s'" % xalign) or ""
+            # labelColor = marker.label().color()
+            # color = (labelColor.red()/255., labelColor.green()/255., labelColor.blue()/255.)
+            # alpha = labelColor.alpha()/255.
+            # name = str(marker.label().font().family())
+            # weight = marker.label().font().bold() and "bold" or "normal"
+            # if marker.__class__ == RotatedMarker: extra = ", rotation = %f" % (marker.rotation)
+            # else: extra = ""
+            # f.write("text(%f, %f, '%s'%s%s, color = %s, name = '%s', weight = '%s'%s, alpha = %.3f)\n" % (x, y, text, vertAlign, horAlign, color, name, weight, extra, alpha))
 
-        # grid
-        f.write("# enable grid\ngrid(%s)\n\n" % (self.gridCurve.xEnabled() and self.gridCurve.yEnabled() and "True" or "False"))
+        ##grid
+        # f.write("# enable grid\ngrid(%s)\n\n" % (self.gridCurve.xEnabled() and self.gridCurve.yEnabled() and "True" or "False"))
 
-        # axis
-        if self.showAxisScale == 0:
-            f.write("#hide axis\naxis('off')\naxis([x1, x2, y1, y2])\ngca().set_position([edgeOffset, edgeOffset, 1 - 2*edgeOffset, 1 - 2*edgeOffset])\n")
-        else:
-            if self.axisScaleDraw(QwtPlot.yLeft).__class__ == DiscreteAxisScaleDraw:
-                labels = self.axisScaleDraw(QwtPlot.yLeft).labels
-                f.write("yticks(%s, %s)\nlabels = gca().get_yticklabels()\nsetp(labels, rotation=-%.3f) #, weight = 'bold', fontsize=10)\n\n" % (range(len(labels)), labels, self.axisScaleDraw(QwtPlot.yLeft).labelRotation()))
-            if self.axisScaleDraw(QwtPlot.xBottom).__class__ == DiscreteAxisScaleDraw:
-                labels = self.axisScaleDraw(QwtPlot.xBottom).labels
-                f.write("xticks(%s, %s)\nlabels = gca().get_xticklabels()\nsetp(labels, rotation=-%.3f) #, weight = 'bold', fontsize=10)\n\n" % (range(len(labels)), labels, self.axisScaleDraw(QwtPlot.xBottom).labelRotation()))
+        ##axis
+        # if self.showAxisScale == 0:
+            # f.write("#hide axis\naxis('off')\naxis([x1, x2, y1, y2])\ngca().set_position([edgeOffset, edgeOffset, 1 - 2*edgeOffset, 1 - 2*edgeOffset])\n")
+        # else:
+            # if self.axisScaleDraw(QwtPlot.yLeft).__class__ == DiscreteAxisScaleDraw:
+                # labels = self.axisScaleDraw(QwtPlot.yLeft).labels
+                # f.write("yticks(%s, %s)\nlabels = gca().get_yticklabels()\nsetp(labels, rotation=-%.3f) #, weight = 'bold', fontsize=10)\n\n" % (range(len(labels)), labels, self.axisScaleDraw(QwtPlot.yLeft).labelRotation()))
+            # if self.axisScaleDraw(QwtPlot.xBottom).__class__ == DiscreteAxisScaleDraw:
+                # labels = self.axisScaleDraw(QwtPlot.xBottom).labels
+                # f.write("xticks(%s, %s)\nlabels = gca().get_xticklabels()\nsetp(labels, rotation=-%.3f) #, weight = 'bold', fontsize=10)\n\n" % (range(len(labels)), labels, self.axisScaleDraw(QwtPlot.xBottom).labelRotation()))
 
-            f.write("#set axis labels\nxlabel('%s', weight = 'bold')\nylabel('%s', weight = 'bold')\n\n" % (str(self.axisTitle(QwtPlot.xBottom).text()), str(self.axisTitle(QwtPlot.yLeft).text())))
-            f.write("\naxis([x1, x2, y1, y2])\ngca().set_position([edgeOffset, edgeOffset, 1 - 2*edgeOffset, 1 - 2*edgeOffset])\n#subplots_adjust(left = 0.08, bottom = 0.11, right = 0.98, top = 0.98)\n")
+            # f.write("#set axis labels\nxlabel('%s', weight = 'bold')\nylabel('%s', weight = 'bold')\n\n" % (str(self.axisTitle(QwtPlot.xBottom).text()), str(self.axisTitle(QwtPlot.yLeft).text())))
+            # f.write("\naxis([x1, x2, y1, y2])\ngca().set_position([edgeOffset, edgeOffset, 1 - 2*edgeOffset, 1 - 2*edgeOffset])\n#subplots_adjust(left = 0.08, bottom = 0.11, right = 0.98, top = 0.98)\n")
 
-        f.write("\n# possible settings to change\n#axes().set_frame_on(0) #hide the frame\n#axis('off') #hide the axes and labels on them\n\n")
+        # f.write("\n# possible settings to change\n#axes().set_frame_on(0) #hide the frame\n#axis('off') #hide the axes and labels on them\n\n")
 
 
-        if self.legend().itemCount() > 0:
-            legendItems = []
-            for widget in self.legend().legendItems():
-                item = self.legend().find(widget)
-                text = str(item.title().text()).replace("<b>", "").replace("</b>", "")
-                if not item.symbol():
-                    legendItems.append((text, None, None, None, None))
-                else:
-                    penC, penA = self._getColorFromObject(item.symbol().pen())
-                    brushC, brushA = self._getColorFromObject(item.symbol().brush())
-                    legendItems.append((text, markers[item.symbol().style()+1], penC, brushC, min(brushA, penA)))
-            f.write("""
-#functions to show legend below the figure
-def drawSomeLegendItems(x, items, itemsPerAxis = 1, yDiff = 0.0):
-    axes([x-0.1, .018*itemsPerAxis - yDiff, .2, .018], frameon = 0); axis('off')
-    lines = [plot([],[], label = text, marker = marker, markeredgecolor = edgeC, markerfacecolor = faceC, alpha = alpha) for (text, marker, edgeC, faceC, alpha) in items]
-    legend(lines, [item[0] for item in items], 'upper center', handlelen = 0.1, numpoints = 1, prop = font_manager.FontProperties(size=11))
-    gca().get_legend().draw_frame(False)
+        # if self.legend().itemCount() > 0:
+            # legendItems = []
+            # for widget in self.legend().legendItems():
+                # item = self.legend().find(widget)
+                # text = str(item.title().text()).replace("<b>", "").replace("</b>", "")
+                # if not item.symbol():
+                    # legendItems.append((text, None, None, None, None))
+                # else:
+                    # penC, penA = self._getColorFromObject(item.symbol().pen())
+                    # brushC, brushA = self._getColorFromObject(item.symbol().brush())
+                    # legendItems.append((text, markers[item.symbol().style()+1], penC, brushC, min(brushA, penA)))
+            # f.write("""
+##functions to show legend below the figure
+# def drawSomeLegendItems(x, items, itemsPerAxis = 1, yDiff = 0.0):
+    # axes([x-0.1, .018*itemsPerAxis - yDiff, .2, .018], frameon = 0); axis('off')
+    # lines = [plot([],[], label = text, marker = marker, markeredgecolor = edgeC, markerfacecolor = faceC, alpha = alpha) for (text, marker, edgeC, faceC, alpha) in items]
+    # legend(lines, [item[0] for item in items], 'upper center', handlelen = 0.1, numpoints = 1, prop = font_manager.FontProperties(size=11))
+    # gca().get_legend().draw_frame(False)
 
-def drawLegend(items):
-    if not items: return
-    maxAttrInLine = 5
-    xs = [i/float(min(maxAttrInLine+1, len(items)+1)) for i in range(1, min(maxAttrInLine+1, len(items)+1))]
-    if items[0][1] == None: extraLabelForClass = [xs.pop(0), [items.pop(0)]]
-    itemsPerAxis = len(items) / len(xs) + (len(items) %% len(xs) != 0)
-    if "extraLabelForClass" in dir(): drawSomeLegendItems(extraLabelForClass[0], extraLabelForClass[1], itemsPerAxis, yDiff = 0.004)
+# def drawLegend(items):
+    # if not items: return
+    # maxAttrInLine = 5
+    # xs = [i/float(min(maxAttrInLine+1, len(items)+1)) for i in range(1, min(maxAttrInLine+1, len(items)+1))]
+    # if items[0][1] == None: extraLabelForClass = [xs.pop(0), [items.pop(0)]]
+    # itemsPerAxis = len(items) / len(xs) + (len(items) %% len(xs) != 0)
+    # if "extraLabelForClass" in dir(): drawSomeLegendItems(extraLabelForClass[0], extraLabelForClass[1], itemsPerAxis, yDiff = 0.004)
 
-    for i, x in enumerate(xs):
-        drawSomeLegendItems(x, items[i*itemsPerAxis: min(len(items), (i+1)*itemsPerAxis)], itemsPerAxis)
+    # for i, x in enumerate(xs):
+        # drawSomeLegendItems(x, items[i*itemsPerAxis: min(len(items), (i+1)*itemsPerAxis)], itemsPerAxis)
 
-items = %s
-drawLegend(items)\n""" % (str(legendItems)))
+# items = %s
+# drawLegend(items)\n""" % (str(legendItems)))
 
-        f.write("\nshow()")
+        # f.write("\nshow()")
 
 
 

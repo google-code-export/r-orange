@@ -24,6 +24,7 @@ from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
+from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
 
 
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
