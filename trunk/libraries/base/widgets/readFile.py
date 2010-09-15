@@ -295,6 +295,7 @@ class readFile(OWRpy):
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
                 self.R(RStr, processingNotice=True)
                 print 'scan was to clipboard'
+                self.commit()
             else:
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
                 print RStr
