@@ -1,4 +1,4 @@
-# Author: Kyle R Covington and Anup Parikh
+# Author: Kyle R Covington and Anup Parikh, adapted from orangeCanvas
 # Description:
 #    main file, that creates the MDI environment
 from PyQt4.QtCore import *

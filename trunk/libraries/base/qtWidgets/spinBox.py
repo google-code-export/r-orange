@@ -61,7 +61,8 @@ class spinBox(QSpinBox,widgetState):
         value = self.value()
         self.setMaximum(max)
         self.setMinimum(min)
-        self.setValue(value)
+        if value >= min and value <= max:
+            self.setValue(value)
     def hide(self):
         if self.label:
             self.hb.hide()

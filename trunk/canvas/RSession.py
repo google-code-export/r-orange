@@ -153,12 +153,21 @@ def getInstalledLibraries():
     else:
         Rcommand('.libPaths(new = "'+personalLibDir+'")')
         return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
+loadedLibraries = []
+def setLibPaths(libLoc):
+    Rcommand('.libPaths(\''+str(libLoc)+'\')') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
+    
+if sys.platform=="win32":
+    libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
+else:
+    libPath = personalLibDir
+setLibPaths(libPath)
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
-        if sys.platform=="win32":
-            libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
-        else:
-            libPath = '\"'+personalLibDir+'\"'
+        # if sys.platform=="win32":
+            # libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
+        # else:
+            # libPath = '\"'+personalLibDir+'\"'
         #Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
         loadedOK = True
         # print 'libPath', libPath
@@ -171,19 +180,24 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         # print 'installedRPackages', installedRPackages
         
         for library in librarys:
+            if library in loadedLibraries: 
+                print 'library already loaded'
+                continue
             # print 'in loop', library, library in installedRPackages
             # print installedRPackages
             if installedRPackages and library and (library in installedRPackages):
-                Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
+                Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
+                loadedLibraries.append(library)
             elif library:
                 if redREnviron.checkInternetConnection():
                     mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
                             Rcommand('setRepositories(ind=1:7)')
-                            Rcommand('install.packages("' + library + '", lib=' + libPath + ')')
-                            loadedOK = Rcommand('require(' + library + ', lib.loc=' + libPath + ')')
+                            Rcommand('install.packages("' + library + '")')#, lib=' + libPath + ')')
+                            loadedOK = Rcommand('require(' + library + ',)')# lib.loc=' + libPath + ')')
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
+                            loadedLibraries.append(library)
                         except:
                             print 'Library load failed'
                             loadedOK = False

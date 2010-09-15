@@ -534,16 +534,22 @@ class graphicsView(QGraphicsView, widgetState):
         else:
             fullquery = self.query
         
+        try:
+            self.R(fullquery)
         
-        self.R(fullquery)
-        print fullquery
-        if len(layers) > 0:
-            for l in layers:
-                self.R(l)
-        if legend:
-            self._setLegend()
-        fileName = str(self.imageFileName)
-        print fileName
+            
+            print fullquery
+            if len(layers) > 0:
+                for l in layers:
+                    self.R(l)
+            if legend:
+                self._setLegend()
+            fileName = str(self.imageFileName)
+            print fileName
+        except:
+            self.R('dev.off()') ## we still need to turn off the graphics device
+            print 'Plotting exception occured'
+            raise Exception, 'plotting exception occured'
         self.R('dev.off()')
         self.clear()
         fileName = str(self.imageFileName)
@@ -573,9 +579,9 @@ class graphicsView(QGraphicsView, widgetState):
             if str(self.extrasLineEdit.text()) != '':
                 self.extras += ', '+str(self.extrasLineEdit.text())
             if self.extras != '':
-                fullquery = '%s(%s, %s)' % (function, query, self.extras)
+                fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
             else:
-                fullquery = '%s(%s)' % (function, query)
+                fullquery = '%s(%s)' % (self.function, self.query)
         else:
             fullquery = self.query
         
