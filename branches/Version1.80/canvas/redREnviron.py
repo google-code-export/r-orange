@@ -196,7 +196,7 @@ def addOrangeDirectoriesToPath(directoryNames):
     
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
-            sys.path.append(path)
+            sys.path.insert(0,path)
 
 # try:        
     # if version:

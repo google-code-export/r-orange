@@ -13,6 +13,7 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.textEdit import textEdit
 class pairwise_t_test(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -35,8 +36,8 @@ class pairwise_t_test(OWRpy):
         self.RFunctionParam_p_adjust_method = comboBox(box, label = "P-value Adjust Method:", items = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"])
         self.alternative = comboBox(box, label = 'Alternative Hypothesis:', items = ['two.sided', 'greater', 'less'])
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = QTextEdit()
-        box.layout().addWidget(self.RoutputWindow)
+        self.RoutputWindow = textEdit(box,label='R Output')
+        #box.layout().addWidget(self.RoutputWindow)
     
     def process(self, data):
         if data:
