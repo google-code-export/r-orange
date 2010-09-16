@@ -117,7 +117,7 @@ def loadSettings():
     settings.setdefault("widgetActiveColor", (0,0,255))
     settings.setdefault("lineColor", (0,255,0))
     
-    settings.setdefault("WidgetTabs", None)
+    settings.setdefault("WidgetTabs", [])
 
     
 
