@@ -5,7 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class statusLabel(QLabel,widgetState):
-    def __init__(self,widget,label = '', icon=None, wordWrap=False):
+    def __init__(self,widget,label = '', wordWrap=True):
         QLabel.__init__(self,widget)
         # if icon:
             # icon = QIcon(icon)
@@ -13,28 +13,31 @@ class statusLabel(QLabel,widgetState):
             # box.layout().addWidget(icon)
             # box.layout().addWidget(self)
         # else:
+        
         widget.layout().addWidget(self)
-        if icon:
-            label = "<img style='margin-left:5px' src=\"%s\" /> %s" % (icon, label)
+        self.status = 0
         self.setText(label)
         self.setWordWrap(wordWrap)
+        
     def getSettings(self):
         # print 'in widgetLabel getSettings'
-        r = {'text':self.text()}
-        # print r
+        r = {'text':self.text(),'status':self.status}
+        print r
         return r
     def loadSettings(self,data):
         # print 'in widgetLabel loadSettings'
-        # print data
+        print data
         self.setText(data['text'])
+        self.setStatus(data['status'])
     def getReportText(self, fileDir):
         return ''
         
     def setText(self, string):
-        self.setStyleSheet("QLabel { background-color: #ffff00 }")
+        # self.setStyleSheet("QLabel { background-color: #ffff00 }")
         QLabel.setText(self, string)
-        
+        qApp.processEvents()    
     def setStatus(self, statusInt):
+        self.status = statusInt
         if statusInt == 0: ## No valid data
             self.setStyleSheet("QLabel { background-color: #ff0000 }")
             QLabel.setText(self, 'No Data To Process')
@@ -47,4 +50,12 @@ class statusLabel(QLabel,widgetState):
         elif statusInt == 3: ## Error
             self.setStyleSheet("QLabel { background-color: #ff0000 }")
             QLabel.setText(self, 'Error')
+        elif statusInt == 4: ## Data Processing    
+            self.setStyleSheet("QLabel { background-color: #ffff00 }")
+            QLabel.setText(self, 'Data Processing...')
+        elif statusInt == 5: ## Data Processing Complete
+            self.setStyleSheet("QLabel { background-color: #ffff00 }")
+            QLabel.setText(self, 'Data Processing Complete')
+        
 
+        qApp.processEvents()    

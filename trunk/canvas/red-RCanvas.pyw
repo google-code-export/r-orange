@@ -210,7 +210,8 @@ class OrangeCanvasDlg(QMainWindow):
             
         if 'Start Example' in setupWizard.showExample.getChecked():
             self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
-        print redREnviron.settings
+        #print redREnviron.settings
+        redREnviron.saveSettings()
                 
         
     def createWidgetsToolbar(self):

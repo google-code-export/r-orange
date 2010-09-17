@@ -82,27 +82,32 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
 
     def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
         
-        qApp.setOverrideCursor(Qt.WaitCursor)
+        self.setRIndicator(True)
         #try:
         if processingNotice:
-            self.status.setText('Processing Started...')
+            self.status.setStatus(4)
+            
+        qApp.setOverrideCursor(Qt.WaitCursor)
         try:
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
             #print 'asdfasdfasdf', inst
             qApp.restoreOverrideCursor()
+            self.setRIndicator(False)
             if showException:
                 QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
                 QMessageBox.Ok + QMessageBox.Default)
             
             raise RuntimeError(str(inst))
             return None # now processes can catch potential errors
-
+        
         #except: 
         #    print 'R exception occurred'
         self.processing = False
         if processingNotice:
-            self.status.setText('Processing complete.')
+            self.status.setStatus(5)
+            
+
             #self.progressBarFinished()
         if not silent:
             OWRpy.globalRHistory.append(query)
@@ -110,8 +115,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             
             self.ROutput.setCursorToEnd()
             self.ROutput.append('> '+ query) #Keep track automatically of what R functions were performed.
-
+    
         qApp.restoreOverrideCursor()
+        self.setRIndicator(False)
         return commandOutput
    
     def assignR(self, name, object):

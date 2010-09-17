@@ -261,8 +261,10 @@ class readFile(OWRpy):
         
         if scan and scan != 'clipboard':
             nrows = str(self.numLinesScan.text())
+            processing=False
         else:
             nrows = '-1'
+            processing=True
         
         
         if self.rowNamesCombo.currentIndex() not in [0,-1]:
@@ -288,18 +290,17 @@ class readFile(OWRpy):
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
                 if not scan:
                     nrows = '0'
-               
                 self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
-                processingNotice=True)
+                processingNotice=processing)
             elif scan == 'clipboard':
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
-                self.R(RStr, processingNotice=True)
+                self.R(RStr, processingNotice=processing)
                 print 'scan was to clipboard'
                 self.commit()
             else:
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
-                print RStr
-                self.R(RStr, processingNotice=True)
+                print '####################', processing
+                self.R(RStr, processingNotice=processing)
         except:
             print sys.exc_info() 
             print RStr

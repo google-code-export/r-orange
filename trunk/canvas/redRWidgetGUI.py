@@ -96,6 +96,12 @@ class redRWidgetGUI(QMainWindow):
         
         self.setStatusBar(self.statusBar)
         
+        self.RIndicator = redRwidgetLabel(self.statusBar)
+        self.statusBar.addWidget(self.RIndicator)
+        self.setRIndicator(False)
+        
+        
+        
         self.status = redRStatusLabel(self.statusBar, '')
         self.status.setStatus(0)
         self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -246,6 +252,18 @@ class redRWidgetGUI(QMainWindow):
             print str(self.windowTitle()), eventDict[e.type()]
         return QMainWindow.event(self, e)
     """
+
+    def setRIndicator(self,isActive):
+        
+        if isActive:
+            self.RIndicator.setPixmap(QPixmap(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'redLight.png')))
+            self.RIndicator.setToolTip('R is currently running. Please wait...')
+        else:
+            self.RIndicator.setPixmap(QPixmap(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'greenLight.png')))
+            self.RIndicator.setToolTip('R is idle.')
+        qApp.processEvents()
+        # self.RStateIdle = QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'Green_Light.gif'))
+        # self.RStateRunning = QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'Red_Light.gif'))
 
     def showHelp(self):
         if self.helpFile:

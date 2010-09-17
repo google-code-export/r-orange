@@ -44,19 +44,19 @@ class fileNamesComboBox(comboBox):
             print '-'*60        
 
     def setFileList(self):
-        import copy
+        #import copy
         if self.files == None: self.files = ['Select File']
         self.clear()
-        newFiles = []
+        #newFiles = []
         for file in self.files:
             #print file
             if os.path.exists(file) or file =='Select File':
                 self.addItem(os.path.basename(file))
-                newFiles.append(file)
-           # else:
-                #self.addItem('Not Found - ' + os.path.basename(file))
+                # newFiles.append(file)
+            else:
+                self.addItem('Not Found - ' + os.path.basename(file))
                 #newFiles.append(file)
-        self.files = newFiles
+        #self.files = newFiles
         # print self.files
         # print len(self.files)
         if len(self.files) > 1:

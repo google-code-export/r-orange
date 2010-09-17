@@ -13,6 +13,7 @@ def __getDirectoryNames():
         pass
 
     canvasDir = os.path.join(redRDir, "canvas")
+    canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
     rpyDir = os.path.join(redRDir, "canvas",'rpy')
     RDir = os.path.join(os.path.split(redRDir)[0], "R")
     widgetDir = os.path.join(redRDir, "libraries")
@@ -70,7 +71,7 @@ def __getDirectoryNames():
     #tempDir = setTempDir(tempDirHolder)
     # print tempDir
         
-    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
