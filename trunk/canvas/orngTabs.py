@@ -802,7 +802,7 @@ def constructCategoriesPopup(canvasDlg):
             categoriesPopup.catActions.append(catmenu) # put the catmenu in the categoriespopup
             insertChildActions(canvasDlg, catmenu, categoriesPopup, itab)
             insertWidgets(canvasDlg, catmenu, categoriesPopup, str(itab.getAttribute('name'))) 
-    #print redREnviron.settings["WidgetTabs"]
+    # print redREnviron.settings["WidgetTabs"]
     try:
         for category, show in redREnviron.settings["WidgetTabs"]:
             if not show or not canvasDlg.widgetRegistry.has_key(category):

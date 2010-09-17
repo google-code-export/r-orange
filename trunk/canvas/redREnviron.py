@@ -117,7 +117,10 @@ def loadSettings():
     settings.setdefault("widgetSelectedColor", (0, 255, 0))
     settings.setdefault("widgetActiveColor", (0,0,255))
     settings.setdefault("lineColor", (0,255,0))
+    
+    settings.setdefault("WidgetTabs", [])
 
+    
 
     settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
@@ -194,7 +197,7 @@ def addOrangeDirectoriesToPath(directoryNames):
     
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
-            sys.path.append(path)
+            sys.path.insert(0,path)
 
 # try:        
     # if version:
