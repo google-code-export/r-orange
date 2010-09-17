@@ -434,7 +434,8 @@ class MyTableModel(QAbstractTableModel):
         self.filteredOn = filteredOn
         QAbstractTableModel.__init__(self,parent) 
         self.initData(Rdata)
-        
+        self.filter_delete = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_delete.gif'))
+        self.filter_add = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_add.gif'))
     def flags(self,index):
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
@@ -473,7 +474,7 @@ class MyTableModel(QAbstractTableModel):
         return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
-        print 'in setData', data.toString(), index.row(),index.column(), role
+        # print 'in setData', data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
         elif role == Qt.EditRole: 
@@ -501,10 +502,13 @@ class MyTableModel(QAbstractTableModel):
         elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
             # print 'DecorationRole'
             if col+1 in self.filteredOn:
-                icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_delete.gif'))
+                # print self.filter_delete
+                return QVariant(self.filter_delete)
             else:
-                icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_add.gif'))
-            return QVariant(icon)
+                # print self.filter_add
+                return QVariant(self.filter_add)
+                
+            #return QVariant(icon)
         elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
             return QVariant(self.rownames[col])
         return QVariant()

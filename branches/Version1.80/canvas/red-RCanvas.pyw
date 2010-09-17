@@ -70,7 +70,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetActiveColor   = QColor(*redREnviron.settings["widgetActiveColor"])
         self.lineColor           = QColor(*redREnviron.settings["lineColor"])
 
-        if not redREnviron.settings.has_key("WidgetTabs") or redREnviron.settings["WidgetTabs"] == []:
+        if not redREnviron.settings.has_key("WidgetTabs") or not redREnviron.settings["WidgetTabs"] or redREnviron.settings["WidgetTabs"] == []:
             redREnviron.settings["WidgetTabs"] = [(name, Qt.Checked) for name in ["Data", "Visualize", "Classify", "Regression", "Evaluate", "Unsupervised", "Associate", "Text", "Genomics", "Prototypes"]]
         
         # output window

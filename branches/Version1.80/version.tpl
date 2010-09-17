@@ -1,5 +1,5 @@
 !define NAME "Red-R"
 !define REDRVERSION "1.80"
-!define TYPE "developers"
+!define TYPE "compiled"
 !define DATE "$WCDATE=%Y.%m.%d$"
 !define SVNVERSION "$WCREV$"
