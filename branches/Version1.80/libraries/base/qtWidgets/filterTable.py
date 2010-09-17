@@ -88,14 +88,16 @@ class filterTable(widgetState, QTableView):
 
         
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
-        print 'in setRTable', data
+        # print 'in setRTable', data
         if self.R('class(%s)' %data, silent=True) != 'data.frame':
             data = 'as.data.frame(%s)' %data
         #self.Rdata = Rdata
         if not filtered:
             self.Rdata = data
             self.filteredData = data
+            self.criteriaList = {}
             filteredCols = []
+            
         else:
             filteredCols = self.criteriaList.keys()
         total = self.R('nrow(%s)' % self.Rdata)        
