@@ -74,7 +74,7 @@ class aov(OWRpy):
         self.R('txt<-capture.output(summary('+self.Rvariables['aov']+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
+        self.RoutputWindow.insertPlainText(tmp)
         newData = redRRModelFit(data = self.Rvariables["aov"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

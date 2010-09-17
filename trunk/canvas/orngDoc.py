@@ -625,17 +625,24 @@ class SchemaDoc(QWidget):
             self.addFolderToZip(myZipFile,folder)  
         myZipFile.close()
         return (1,zipFilename)
-        
+    
+    def copy(self):
+        ## copy the selected files and reload them as templates in the schema
+        self.save(copy=True)
+    
     # save the file
-    def save(self, filename = None,template = False):
+    
+    def save(self, filename = None, template = False, copy = False):
 
         if template:
             tempDialog = TemplateDialog(self)
             if tempDialog.exec_() == QDialog.Rejected:
                 return
         print '|#| start save schema'
-        if filename == None:
+        if filename == None and not copy:
             filename = os.path.join(self.schemaPath, self.schemaName)
+        elif copy:
+            filename = os.path.join(redREnviron.directoryNames['tempDir'], 'copy.rrts')
         pos = self.canvasDlg.pos()
         size = self.canvasDlg.size()
         progressBar = self.startProgressBar(
@@ -665,7 +672,11 @@ class SchemaDoc(QWidget):
         requireRedRLibraries = {}
         settingsDict = {}
         #save widgets
-        for widget in self.widgets:
+        if not copy:
+            tempWidgets = self.widgets
+        else:
+            tempWidgets = self.canvasView.getSelectedWidgets()## the selected widgets.
+        for widget in tempWidgets:
             temp = doc.createElement("widget")
             temp.setAttribute("xPos", str(int(widget.x())) )
             temp.setAttribute("yPos", str(int(widget.y())) )
@@ -706,6 +717,16 @@ class SchemaDoc(QWidget):
         #required.setAttribute("requiredPackages", str({'r':r}))
         
         #save connections
+        if not copy:
+            tempLines = self.lines
+        else:
+            tempLines = [] ## the lines between the tempWidgets.
+            for w in tempWidgets:
+                for e in tempWidgets:
+                    tempLine = self.getLine(w, e)
+                    if tempLine:
+                        tempLines.append(tempLine)
+                        
         for line in self.lines:
             temp = doc.createElement("channel")
             temp.setAttribute("outWidgetCaption", line.outWidget.caption)
@@ -726,7 +747,7 @@ class SchemaDoc(QWidget):
         progress += 1
         progressBar.setValue(progress)
 
-        if not template:
+        if not template and not copy:
             tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
             tempR = os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/')
             file = open(tempschema, "wt")
@@ -741,7 +762,7 @@ class SchemaDoc(QWidget):
             RSession.Rcommand('save.image("' + tempR + '")')  # save the R data
             print 'image saved.'
             self.createZipFile(filename,[],[redREnviron.directoryNames['tempDir']])# collect the files that are in the tempDir and save them into the zip file.
-        else :
+        elif template:
             tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
             file = open(tempschema, "wt")
             file.write(xmlText)
@@ -751,6 +772,17 @@ class SchemaDoc(QWidget):
             zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'),'settings.pickle')
             zout.close()
             doc.unlink()
+        elif copy:
+            tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
+            file = open(tempschema, "wt")
+            file.write(xmlText)
+            file.close()
+            zout = zipfile.ZipFile(filename, "w")
+            zout.write(tempschema,"tempSchema.tmp")
+            zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'),'settings.pickle')
+            zout.close()
+            doc.unlink()
+            self.loadTemplate(filename)
             
         
         if os.path.splitext(filename)[1].lower() == ".rrs":

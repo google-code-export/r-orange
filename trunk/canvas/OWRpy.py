@@ -26,6 +26,7 @@ from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButt
 from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
 from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
 from libraries.base.qtWidgets.splitter import splitter as redRSplitter
+from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
 
 
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   

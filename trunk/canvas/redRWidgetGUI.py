@@ -10,6 +10,7 @@ from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.groupBox import groupBox as redRgroupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
+from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
 from PyQt4 import QtWebKit
 import urllib, os, redREnviron
 from PyQt4.QtCore import *
@@ -95,8 +96,8 @@ class redRWidgetGUI(QMainWindow):
         
         self.setStatusBar(self.statusBar)
         
-        self.status = redRwidgetLabel(self.statusBar, '')
-        self.status.setText('Processing not yet performed.')
+        self.status = redRStatusLabel(self.statusBar, '')
+        self.status.setStatus(0)
         self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.statusBar.addWidget(self.status,4)
         #self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")

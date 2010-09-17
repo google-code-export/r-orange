@@ -320,6 +320,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetPopup.addSeparator()
         rename = self.widgetPopup.addAction( "&Rename", self.schema.canvasView.renameActiveWidget, Qt.Key_F2)
         delete = self.widgetPopup.addAction("Remove", self.schema.canvasView.removeActiveWidget, Qt.Key_Delete)
+        copy = self.widgetPopup.addAction("&Copy", self.schema.copy, Qt.Key_F12)
         self.widgetPopup.setEnabled(0)
 
         self.menuBar = QMenuBar(self)

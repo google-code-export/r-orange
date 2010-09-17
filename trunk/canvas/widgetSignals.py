@@ -65,13 +65,14 @@ class widgetSignals():
             self.removeInformation(id = 'attention')
             self.removeError()
             #self.sentItems.append((name, variable))
-            self.status.setText('Data sent.')
+            self.status.setStatus(2)
         except:
             self.setError(id = 'sendError', text = 'Failed to send data')
             import sys, traceback
             print '-'*60
             traceback.print_exc(file=sys.stdout)
             print '-'*60        
+            self.status.setStatus(3)
 
 
     # does widget have a signal with name in inputs
