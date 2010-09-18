@@ -105,7 +105,7 @@ class redRWidgetGUI(QMainWindow):
         self.status = redRStatusLabel(self.statusBar, '')
         self.status.setStatus(0)
         self.status.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.statusBar.addWidget(self.status,4)
+        self.statusBar.addPermanentWidget(self.status,4)
         #self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
         # self.statusBar.setStyleSheet("QLabel { border-top: 2px solid red; } ")
 
@@ -238,7 +238,7 @@ class redRWidgetGUI(QMainWindow):
             self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.leftDock.setWidget(self.GUIDialog)
             self.leftDockButton = redRbutton(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
-            self.statusBar.insertPermanentWidget(1,self.leftDockButton)
+            self.statusBar.insertPermanentWidget(2,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
         # print '|#| end init of redRWidgetGUI %s' % str(self.windowState)
