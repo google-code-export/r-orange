@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='', label=None,orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
+    def __init__(self,widget,text='', label=None, id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
         QLineEdit.__init__(self,widget)
         if widget:
             if label:
@@ -37,15 +37,12 @@ class lineEdit(QLineEdit,widgetState):
             self.setMaximumWidth(width)
             self.setMinimumWidth(width)
         self.setText(text)
+        self.id = id
+        self.label = label
         # self.setText('asdf')
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
         self.label = label
-    def getSettings(self):
-        #print 'in get settings' + self.text()
-        r = {'text': self.text()}
-        # print r
-        return r
     def hide(self):
         if self.hasLabel:
             self.hb.hide()
@@ -56,10 +53,20 @@ class lineEdit(QLineEdit,widgetState):
             self.hb.show()
         else:
             QLineEdit.show(self)
+    def widgetId(self):
+        return self.id
+    def widgetLabel(self):
+        return self.label
+    def getSettings(self):
+        #print 'in get settings' + self.text()
+        r = {'text': self.text(),'id': self.id}
+        # print r
+        return r
     def loadSettings(self,data):
         try:
             #print 'called load' + str(value)     
             self.setText(unicode(data['text']))
+            self.id = data['id']
             #self.setEnabled(data['enabled'])
         except:
             print 'Loading of lineEdit encountered an error.'
