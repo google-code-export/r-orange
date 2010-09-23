@@ -572,6 +572,7 @@ class SchemaDoc(QWidget):
         
         name = QFileDialog.getSaveFileName(self, "Save File", os.path.join(self.schemaPath, self.schemaName), "Red-R Widget Schema (*.rrs)")
         if not name or name == None: return False
+        name = str(name.toAscii())
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == "": return False
         if os.path.splitext(str(name))[1].lower() != ".rrs": name = name + ".rrs"
@@ -580,6 +581,7 @@ class SchemaDoc(QWidget):
     def saveTemplate(self):
         name = QFileDialog.getSaveFileName(self, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
         if not name or name == None: return False
+        name = str(name.toAscii())
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == '': return False
         if os.path.splitext(str(name))[1].lower() != ".rrts": name = name + '.rrts'

@@ -118,8 +118,8 @@ class ReportWindow(QWidget):
         filename = QFileDialog.getSaveFileName(self, "Save Report", reportsDir, "Web page (*.html *.htm)")
         if not filename:
             return
-
-        filename = str(filename)
+        filename = str(filename.toAscii())
+        
         path, fname = os.path.split(filename)
         if not os.path.exists(path):
             try:

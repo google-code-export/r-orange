@@ -327,6 +327,7 @@ class OrangeCanvasDlg(QMainWindow):
     def importSchema(self):
         name = QFileDialog.getOpenFileName(self, "Import File", redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
         if name.isEmpty(): return
+        name = str(name.toAscii())
         
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.schema.loadDocument(str(name), freeze = 0, importing = True)
@@ -336,7 +337,7 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         if name.isEmpty(): return
-        
+        name = str(name.toAscii())
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 0, importing = False)
@@ -346,8 +347,9 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemOpenFreeze(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
-        if name.isEmpty():
-            return
+        if name.isEmpty(): return
+        name = str(name.toAscii())
+        
         self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 1)
         self.addToRecentMenu(str(name))
@@ -479,7 +481,7 @@ class OrangeCanvasDlg(QMainWindow):
         import datetime
         qname = QFileDialog.getSaveFileName(self, "Write Report to File", redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
         if qname.isEmpty(): return
-        
+        qname = str(qname.toAscii())
         
         name = str(qname) # this is the file name of the Report
         if os.path.splitext(str(name))[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
@@ -562,7 +564,7 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveOutputWindow(self):
         qname = QFileDialog.getSaveFileName(self, "Save Output To File", redREnviron.directoryNames['canvasSettingsDir'] + "/Output.html", "HTML Document (*.html)")
         if qname.isEmpty(): return
-        name = str(qname)
+        qname = str(qname.toAscii())
 
         text = str(self.output.textOutput.toHtml())
         #text = text.replace("</nobr>", "</nobr><br>")
@@ -612,6 +614,7 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Install Package", 
         redREnviron.settings["saveSchemaDir"], "Package (*.rrp)")
         if name.isEmpty(): return
+        name = str(name.toAscii())
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.packageManagerGUI.show()
         self.packageManagerGUI.installPackageFromFile(str(name))

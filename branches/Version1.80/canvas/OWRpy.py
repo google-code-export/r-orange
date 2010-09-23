@@ -126,10 +126,12 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
         #print str(redREnviron.settings)
         if file == None and ('HomeFolder' not in redREnviron.settings.keys()):
-            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['saveSchemaDir']), "PDF (*.PDF)"))
+            file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['saveSchemaDir']), "PDF (*.PDF)")
         elif file == None: 
-            file = str(QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['HomeFolder']), "PDF (*.PDF)"))
+            file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['HomeFolder']), "PDF (*.PDF)")
         if file.isEmpty(): return
+        file = str(file.toAscii())
+
         if file: redREnviron.settings['HomeFolder'] = os.path.split(file)[0]
         self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
         self.R(query, 'setRData')

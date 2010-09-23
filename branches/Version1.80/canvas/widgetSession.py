@@ -68,7 +68,7 @@ class widgetSession():
         #if isinstance(d,QObject):
         # print str(type(d))
         if re.search('PyQt4|OWGUIEx|OWToolbars',str(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
-            print 'QT object NOT Pickleable'
+            #print 'QT object NOT Pickleable'
             return False
         elif type(d) in [list, dict, tuple]:
             #ok = True

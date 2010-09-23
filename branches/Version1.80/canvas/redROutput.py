@@ -99,9 +99,17 @@ class OutputWindow(QDialog):
             self.canvasDlg.setStatusBarEvent(QString(text))
 
     # simple printing of text called by print calls
+    def safe_str(self,obj):
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            # obj is unicode
+            return unicode(obj).encode('unicode_escape')
+
     def write(self, text):
-            
+        text = self.safe_str(text)
         # if text[-1:] == "\n":
+        
         self.allOutput += text.replace("\n", "<br>\n")
         # else:
             # self.allOutput += text + "\n"

@@ -23,7 +23,7 @@ class comboBox(QComboBox,widgetState):
         self.ids = [] 
         
         if items:
-            self.addItems([unicode(i) for i in items],itemIds)
+            self.addItems([i for i in items],itemIds)
         #if editable:
         self.setEditable(editable)
         
@@ -60,7 +60,10 @@ class comboBox(QComboBox,widgetState):
         # print data
         try:
             self.clear()
-            self.addItems([unicode(i) for i in data['items']],data['ids'])
+            if 'ids' in data.keys():
+                self.addItems([i for i in data['items']],data['ids'])
+            else:
+                self.addItems([i for i in data['items']])
             self.setCurrentIndex(data['current'])
             
             #self.setEnabled(data['enabled'])

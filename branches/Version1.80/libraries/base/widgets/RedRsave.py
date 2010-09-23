@@ -35,6 +35,7 @@ class RedRsave(OWRpy):
             import redREnviron
             res = QFileDialog.getSaveFileName(self, 'Save File Name', redREnviron.directoryNames['documentsDir'], 'R Data File (.RData)')
             if res.isEmpty(): return
+            name = str(name.toAscii())
             self.RFunctionParamfile_lineEdit.setText(str(res))
         injection = []
         #if str(self.RFunctionParamfile_lineEdit.text()) != '':
