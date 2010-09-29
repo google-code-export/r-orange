@@ -231,28 +231,29 @@ class readFile(OWRpy):
     def loadFile(self,scan=False):
         #print scan
         fn = self.filecombo.getCurrentFile()
-        if not fn:
+        if not fn and not scan == 'clipboard':
+            print 'No file selected'
             return
+        if not scan =='clipboard':
+            self.R(self.Rvariables['filename'] + ' = "' + fn + '"') # should protext if R can't find this file
+            
+            # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
+                # self.delimiter.setChecked('Tab')
+            # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
+                # self.delimiter.setChecked('Comma')
 
-        self.R(self.Rvariables['filename'] + ' = "' + fn + '"') # should protext if R can't find this file
-        
-        # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
-            # self.delimiter.setChecked('Tab')
-        # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
-            # self.delimiter.setChecked('Comma')
-
-        if self.delimiter.getChecked() == 'Tab': #'tab'
-            sep = '\\t'
-        elif self.delimiter.getChecked() == 'Space':
-            sep = ' '
-        elif self.delimiter.getChecked() == 'Comma':
-            sep = ','
-        elif self.delimiter.getChecked() == 'Other':
-            sep = str(self.otherSepText.text())
-        otherOptions = ''
-        for i in self.otherOptions.getChecked():
-            otherOptions += str(i) + '=TRUE,' 
-        
+            if self.delimiter.getChecked() == 'Tab': #'tab'
+                sep = '\\t'
+            elif self.delimiter.getChecked() == 'Space':
+                sep = ' '
+            elif self.delimiter.getChecked() == 'Comma':
+                sep = ','
+            elif self.delimiter.getChecked() == 'Other':
+                sep = str(self.otherSepText.text())
+            otherOptions = ''
+            for i in self.otherOptions.getChecked():
+                otherOptions += str(i) + '=TRUE,' 
+            
         if 'Column Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
         else:
@@ -293,6 +294,7 @@ class readFile(OWRpy):
                 self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
                 processingNotice=processing)
             elif scan == 'clipboard':
+                self.R(self.Rvariables['filename']+'<-\'clipboard\'')
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
                 self.R(RStr, processingNotice=processing)
                 print 'scan was to clipboard'

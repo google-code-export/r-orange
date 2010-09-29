@@ -68,7 +68,7 @@ class rExecutor(OWRpy):
         statusBox = groupBox(rightArea, label = "Status")
         self.sendStatus = widgetLabel(statusBox, 'Nothing Sent')
         self.dataBox = groupBox(leftArea, label = "Input Infromation")
-        self.status = widgetLabel(self.dataBox, "No Input")
+        self.mystatus = widgetLabel(self.dataBox, "No Input")
         
         # self.metadataBox = widgetBox(leftArea, "Metadata")
         # self.infoM = widgetLabel(self.metadataBox, "No Meta Data")
@@ -162,7 +162,7 @@ class rExecutor(OWRpy):
                 elif thisclass == 'list': # the object is a list
                     self.isList()
                 else:
-                    self.status.setText("R object is of non-standard type.")
+                    self.mystatus.setText("R object is of non-standard type.")
             if thisclass.__class__.__name__ == 'list': # we need to handle multible classes 
                 for item in thisclass:
                     if item == 'numeric': # we have a numeric vector as the object
@@ -176,16 +176,16 @@ class rExecutor(OWRpy):
                     elif item == 'list': # the object is a list
                         self.isList()
                     else:
-                        self.status.setText("R object is of non-standard type.")
+                        self.mystatus.setText("R object is of non-standard type.")
                     
         else: return
     
     def isNumeric(self):
-        self.status.setText("Numeric Vector Connected of length %s" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("Numeric Vector Connected of length %s" % str(self.R('length('+self.data+')')))
     def isCharacter(self):
-        self.status.setText("Character Vector Connected of length %s" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("Character Vector Connected of length %s" % str(self.R('length('+self.data+')')))
     def isDataFrame(self):
-        self.status.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
             self.dfselected = listBox(self.dataBox, self)
@@ -196,7 +196,7 @@ class rExecutor(OWRpy):
             for e in colnames:
                 self.dfselected.addItem(e)
     def isMatrix(self):
-        self.status.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
+        self.mystatus.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = listBox(self.dataBox, self)
@@ -206,7 +206,7 @@ class rExecutor(OWRpy):
             except:
                 print 'Error with colnames, may not exist.'
     def isList(self):
-        self.status.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
         
     def getReportText(self, fileDir):
         ## report for this entry
