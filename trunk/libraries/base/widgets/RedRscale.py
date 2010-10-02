@@ -55,6 +55,7 @@ class RedRscale(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['scale']+'<-scale(x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('row.names('+self.Rvariables['scale']+')<-row.names('+self.RFunctionParam_x+')')
         newData = redRRMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

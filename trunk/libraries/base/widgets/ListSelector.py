@@ -77,8 +77,8 @@ class ListSelector(OWRpy):
         # use signals converter in OWWidget to convert to the signals class
         myclass = self.R('class('+self.Rvariables['listelement']+')')
         if myclass == 'data.frame':
-            self.makeCM(self.Rvariables['cm'], self.Rvariables['listelement'])
-            newData = redRRDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'], cm = self.Rvariables['cm'])
+            
+            newData = redRRDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'])
             self.rSend("id0", newData)
             #self.infoa.setText('Sent Data Frame')
             slot = 'Data Frame'

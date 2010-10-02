@@ -407,7 +407,7 @@ class graphicsView(QGraphicsView, widgetState):
             self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'))
         elif imageType == 'ps':
             self.R('postscript(file = \'%s\')' % fileName.replace('\\', '/'))
-        elif imageType == 'bit':
+        elif imageType == 'bmp':
             self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'))
         elif imageType == 'jpeg':
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
