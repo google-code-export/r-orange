@@ -1,12 +1,13 @@
 from libraries.base.signalClasses.RVariable import *
 from libraries.base.signalClasses.UnstructuredDict import *
 from libraries.base.signalClasses.StructuredDict import *
+from libraries.base.signalClasses.RArbitraryList import *
 import time
-class RList(RVariable, UnstructuredDict):
+class RList(RArbitraryList, UnstructuredDict):
     convertFromList = [UnstructuredDict, StructuredDict]
-    convertToList = [RVariable, UnstructuredDict]
+    convertToList = [RVariable, UnstructuredDict, RArbitraryList]
     def __init__(self, data, parent = None, checkVal = True):
-        RVariable.__init__(self, data = data, parent = parent, checkVal = False)
+        RArbitraryList.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
         self.newDataID = str(time.time()).replace('.', '_')
@@ -28,6 +29,8 @@ class RList(RVariable, UnstructuredDict):
         elif varClass == BaseRedRVariable:
             return self._convertToVariable()
         elif varClass == RList:
+            return self
+        elif varClass == RArbitraryList:
             return self
         elif varClass == UnstructuredDict:
             return self._convertToUnstructuredDict()
