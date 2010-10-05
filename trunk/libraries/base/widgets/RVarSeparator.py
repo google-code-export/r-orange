@@ -16,6 +16,7 @@ import libraries.base.signalClasses.RVector as rvec
 import libraries.base.signalClasses.RList as rlist
 import libraries.base.signalClasses.RMatrix as rmat
 import libraries.base.signalClasses.RDataFrame as rdf
+import libraries.base.signalClasses.RArbitraryList as ral
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
@@ -33,6 +34,7 @@ class RVarSeparator(OWRpy):
         self.outputs.addOutput('id2', 'R Data Frame (Data Table)', rdf.RDataFrame)
         self.outputs.addOutput('id3', 'R List', rlist.RList)
         self.outputs.addOutput('id4', 'R Vector', rvec.RVector)
+        self.outputs.addOutput('ral', 'R Arbitrary List', ral.RArbitraryList)
 
        
         # self.help.setHtml('The R Variable Separator is used to separate variables from a loaded R session.  Connecting the R Loader widget to this widget will display a list of available variables in the local environment to which the session was loaded.  Clicking on an element in the list will send that element on to downstream widgets.  One should take note of the class of the element that is sent as this will specify the output connection of the data.  More infromation is available on the <a href="http://www.red-r.org/?cat=10">RedR website</a>.')
@@ -74,7 +76,7 @@ class RVarSeparator(OWRpy):
         dataClass = self.R('class('+self.sendThis+')')
             
         if type(dataClass) is str:
-            if dataClass == 'numeric': # we have a numeric vector as the object
+            if dataClass in ['numeric', 'character', 'real', 'complex', 'factor']: # we have a numeric vector as the object
                 newData = rvec.RVector(data = self.sendThis)
                 self.rSend('id4', newData)
                 self.status.setText('Data sent through the R Vector channel')
@@ -93,6 +95,12 @@ class RVarSeparator(OWRpy):
                 self.rSend('id2', newData)
                 self.status.setText('Data sent through the R Data Frame channel')
             elif dataClass == 'list': # the object is a list
+                for i in range(self.R('length('+self.sendThis+')')):
+                    if self.R('class(%s[[%s]])' % (self.sendThis, i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
+                        newData = ral.RArbitraryList(data = self.sendThis)
+                        self.status.setText('Data sent through the R Arbitrary List channel')
+                        self.rSend('ral', newData)
+                        return
                 newData = rlist.RList(data = self.sendThis)
                 self.rSend('id3', newData)
                 self.status.setText('Data sent through the R List channel')

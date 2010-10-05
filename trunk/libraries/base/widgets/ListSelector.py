@@ -14,6 +14,7 @@ from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
+from libraries.base.signalClasses.RArbitraryList import RArbitraryList as redRRArbitraryList
 
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -31,7 +32,7 @@ class ListSelector(OWRpy):
         self.setRvariableNames(['listelement'])
         self.data = None
         
-        self.inputs.addInput('id0', 'R List', redRRList, self.process)
+        self.inputs.addInput('id0', 'R List', [redRRList, redRRArbitraryList] , self.process)
 
         self.outputs.addOutput('id0', 'R Data Frame', redRRDataFrame)
         self.outputs.addOutput('id1', 'R Vector', redRRVector)

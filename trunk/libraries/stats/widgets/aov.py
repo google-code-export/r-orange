@@ -35,11 +35,9 @@ class aov(OWRpy):
         self.RFunctionParamqr_lineEdit =  lineEdit(self.advancedTab,  label = "qr:", text = 'TRUE')
         self.RFunctionParamprojections_lineEdit =  lineEdit(self.advancedTab,  label = "projections:", text = 'FALSE')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        self.RoutputWindow = textEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
-        if not self.require_librarys(["stats"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
+        
         if data:
             self.removeWarning()
             self.RFunctionParam_data=data.getData()

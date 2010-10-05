@@ -113,6 +113,12 @@ class rExecutor(OWRpy):
                 self.rSend("id4", newData)
                 self.sendStatus.setText(thisdata+' sent through the Matrix channel')
             elif thisdataclass == 'list': # the object is a list
+                for i in range(self.R('length('+self.command.text()+')')):
+                    if self.R('class(%s[[%s]])' % (self.command.text(), i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
+                        newData = ral.RArbitraryList(data = self.sendThis)
+                        self.status.setText('Data sent through the R Arbitrary List channel')
+                        self.rSend('ral', newData)
+                        return
                 newData = redRRList(data = str(self.command.text()))
                 self.rSend("id1", newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
