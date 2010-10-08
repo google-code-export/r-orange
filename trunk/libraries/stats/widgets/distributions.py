@@ -48,16 +48,14 @@ class distributions(OWRpy):
         
         #START THE GUI LAYOUT
         area = widgetBox(self.controlArea,orientation='horizontal')       
-        
         options = widgetBox(area,orientation='vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
         self.count = RedRSpinBox(options, label='# Observations to Generate', min = 0,max=60000000, value = 10)
         
         self.methodButtons = redRcomboBox(options,  label = "Distributions", 
-        items = ["Normal",'Beta','Binomial','Cauchy','Chi Square'],
-        itemIds = ["rnorm",'rbeta','rbinom','rcauchy','rchisq'], 
-        editable=True,
-        callback = self.onDistChange)
+        items = ["Normal",'Beta','Binomial','Cauchy','Chi Square','Exponential','F','Gamma'],
+        itemIds = ["rnorm",'rbeta','rbinom','rcauchy','rchisq','rexp','rf','rgamma'], 
+        editable=True, callback = self.onDistChange)
         
         textBoxWidth = 70
         self.distOptions = widgetBox(options)
@@ -70,10 +68,11 @@ class distributions(OWRpy):
         self.betaShape2 = redRlineEdit(self.betaDist, label='Shape 2', id='shape2', width=textBoxWidth,text='1')
         self.betaNCP = redRlineEdit(self.betaDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.betaDist.hide()
+
         
         self.binomDist = groupBox(self.distOptions,label='Binomial Distribution')
         self.binomSize = redRlineEdit(self.binomDist, label='Size', id='size', width=textBoxWidth,text='1')
-        self.binomProb = redRlineEdit(self.binomDist, label='Probability', id='prob', width=textBoxWidth,text='1')
+        self.binomProb = redRlineEdit(self.binomDist, label='Probability', id='prob', width=textBoxWidth,text='.5')
         self.binomDist.hide()
         
         
@@ -82,10 +81,26 @@ class distributions(OWRpy):
         self.cauchyScale = redRlineEdit(self.cauchyDist, label='Scale', id='scale', width=textBoxWidth,text='1')
         self.cauchyDist.hide()
         
+        self.gammaDist = groupBox(self.distOptions,label='Gamma Distribution')
+        self.gammaShape = redRlineEdit(self.gammaDist, label='Shape', id='location', width=textBoxWidth,text='1')
+        self.gammaRate = redRlineEdit(self.gammaDist, label='Rate', id='scale', width=textBoxWidth,text='1')
+        self.gammaScale = redRlineEdit(self.gammaDist, label='Scale', id='scale', width=textBoxWidth,text='.5')
+        self.gammaDist.hide()
+        
         self.chiDist = groupBox(self.distOptions,label='Chi Square Distribution')
-        self.chiDF = redRlineEdit(self.chiDist, label='Degrees of Freedom ', id='df', width=textBoxWidth,text='1')
+        self.chiDF = redRlineEdit(self.chiDist, label='Degrees of Freedom', id='df', width=textBoxWidth,text='1')
         self.chiNCP = redRlineEdit(self.chiDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
         self.chiDist.hide()
+        
+        self.fDist = groupBox(self.distOptions,label='F Distribution')
+        self.fDF1 = redRlineEdit(self.fDist, label='Degrees of Freedom 1', id='df1', width=textBoxWidth,text='1')
+        self.fDF2 = redRlineEdit(self.fDist, label='Degrees of Freedom 2', id='df2', width=textBoxWidth,text='1')
+        self.fNCP = redRlineEdit(self.fDist, label='Non-centrality', id='ncp', width=textBoxWidth,text='0')
+        self.fDist.hide()
+        
+        self.expDist = groupBox(self.distOptions,label='Exponential Distribution')
+        self.expRate = redRlineEdit(self.expDist, label='Rate ', id='rate', width=textBoxWidth,text='1')
+        self.expDist.hide()
         
         commit = redRCommitButton(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
         options.layout().setAlignment(commit, Qt.AlignRight)
@@ -95,7 +110,9 @@ class distributions(OWRpy):
     def onDistChange(self):
         for i in self.distOptions.findChildren(groupBox):
             i.setHidden(True)
-
+        # print self.distOptions.findChild(self.methodButtons.currentId(),widgetBox)
+        # self.distOptions.findChild(widgetBox,self.methodButtons.currentId()).show()
+        
         if self.methodButtons.currentId() == 'rnorm':
             self.normalDist.show()
         elif self.methodButtons.currentId() == 'rbeta':
@@ -106,6 +123,12 @@ class distributions(OWRpy):
             self.cauchyDist.show()
         elif self.methodButtons.currentId() == 'rchisq':
             self.chiDist.show()
+        elif self.methodButtons.currentId() == 'rexp':
+            self.expDist.show()
+        elif self.methodButtons.currentId() == 'rf':
+            self.fDist.show()
+        elif self.methodButtons.currentId() == 'rgamma':
+            self.gammaDist.show()
                 
     # this function actually does the work in R 
     # its call by clicking the Commit button
@@ -129,6 +152,16 @@ class distributions(OWRpy):
         elif dist == 'rchisq':
             self.injection.append('%s=%s' % (self.chiDF.widgetId(), self.chiDF.text()))
             self.injection.append('%s=%s' % (self.chiNCP.widgetId(), self.chiNCP.text()))
+        elif dist == 'rexp':
+            self.injection.append('%s=%s' % (self.expRate.widgetId(), self.expRate.text()))
+        elif dist == 'rf':
+            self.injection.append('%s=%s' % (self.fDF1.widgetId(), self.fDF1.text()))
+            self.injection.append('%s=%s' % (self.fDF2.widgetId(), self.fDF2.text()))
+            self.injection.append('%s=%s' % (self.fNCP.widgetId(), self.fNCP.text()))
+        elif dist == 'rgamma':
+            self.injection.append('%s=%s' % (self.gammaRate.widgetId(), self.gammaRate.text()))
+            self.injection.append('%s=%s' % (self.gammaScale.widgetId(), self.gammaScale.text()))
+            self.injection.append('%s=%s' % (self.gammaShape.widgetId(), self.gammaShape.text()))
         
         return self.injection
         

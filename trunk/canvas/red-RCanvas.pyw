@@ -185,7 +185,7 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.setTempDir('temp_'+redREnviron.settings['id'])
         try:
             if 'firstLoad' not in redREnviron.settings.keys():
-                redREnviron.settings['firstLoad'] = 1
+                redREnviron.settings['firstLoad'] = True
             if redREnviron.settings['firstLoad']:
                 self.startSetupWizard()
         except:
@@ -198,7 +198,6 @@ class OrangeCanvasDlg(QMainWindow):
         if setupWizard.exec_() == QDialog.Accepted:
             redREnviron.settings['email'] = str(setupWizard.email.text())
             redREnviron.settings['canContact'] = str(setupWizard.allowContact.getChecked()) == 'Yes'
-            redREnviron.settings['firstLoad'] = 'Don\'t Show at Startup' not in setupWizard.showAtStartup.getChecked()
             try:
                 redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
             except:
@@ -207,10 +206,12 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings['printExceptionInStatusBar'] = 'Print last exception in status bar' in setupWizard.redRExceptionHandling.getChecked()
             redREnviron.settings['uploadError'] = 'Submit Error Report' in setupWizard.redRExceptionHandling.getChecked()
             redREnviron.settings['askToUploadError'] = 'Always ask before submitting error report' in setupWizard.redRExceptionHandling.getChecked()
+        
+            if 'Start Example' in setupWizard.showExample.getChecked():
+                self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
             
-        if 'Start Example' in setupWizard.showExample.getChecked():
-            self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
         #print redREnviron.settings
+        redREnviron.settings['firstLoad'] = False
         redREnviron.saveSettings()
                 
         
@@ -335,6 +336,8 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Import File", redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
         if name.isEmpty(): return
         
+        name = str(name.toAscii())
+        
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.schema.loadDocument(str(name), freeze = 0, importing = True)
         self.addToRecentMenu(str(name))
@@ -342,8 +345,10 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemOpen(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
+        
         if name.isEmpty(): return
         
+        name = str(name.toAscii())
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 0, importing = False)
@@ -353,8 +358,10 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemOpenFreeze(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
+        
         if name.isEmpty():
             return
+        name = str(name.toAscii())
         self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 1)
         self.addToRecentMenu(str(name))
@@ -619,6 +626,7 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Install Package", 
         redREnviron.settings["saveSchemaDir"], "Package (*.rrp)")
         if name.isEmpty(): return
+        name = str(name.toAscii())
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.packageManagerGUI.show()
         self.packageManagerGUI.installPackageFromFile(str(name))

@@ -54,11 +54,9 @@ class RedRInitWizard(QWizard):
         self.runExamplePage = QWizardPage()
         self.runExamplePage.setLayout(QVBoxLayout())
         self.runExamplePage.setTitle('Finish')
-        self.runExamplePage.setSubTitle('Thanks for setting up Red-R.\nIf you don\'t want to see this at startup then leave the "Don\'t Show at Startup" checked.\n\nIf you want to start an example schema to help you get started then check the "Start Example" box.')
-        self.showAtStartup = redRcheckBox(self.runExamplePage, buttons = ['Don\'t Show at Startup'])
-        self.showAtStartup.setChecked('Don\'t Show at Startup')
-        self.showExample = redRcheckBox(self.runExamplePage, buttons = ['Start Example'])
-        self.showExample.setChecked('Start Example')
+        self.runExamplePage.setSubTitle('Thanks for setting up Red-R.\n\nIf you want to start an example schema to help you get started then check the "Start Example" box.')
+        self.showExample = redRcheckBox(self.runExamplePage, buttons = ['Start Example'], setChecked=['Start Example'])
+        
         
         self.addPage(self.registerPage)
         self.addPage(self.errorReportingPage)
