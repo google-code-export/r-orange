@@ -1,10 +1,7 @@
 """
 <name>Row or Column Names</name>
-<description>Returns a vector of rownames coresponding to the row names of a data table.</description>
 <tags>Subsetting</tags>
 <icon>readfile.png</icon>
-<author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
-<RFunctions>base:rownames, base:colnames</RFunctions>
 """
 from OWRpy import * 
 import redRGUI 

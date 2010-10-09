@@ -1,12 +1,7 @@
 """
 <name>View Data Table</name>
-<description>Shows data in a spreadsheet.</description>
 <tags>View Data</tags>
-<RFunctions>base:data.frame,base:matrix</RFunctions>
 <icon>datatable.png</icon>
-<author>Red-R Core Development Team</author>
-<inputs>Data Table(RDataFrame)</inputs>
-<outputs>No Signals but can save a table.</outputs>
 """
 
 from OWRpy import *

@@ -1,10 +1,7 @@
 """
 <name>Intersect</name>
-<description>Use the Set Operations widget.</description>
 <tags>Deprecated</tags>
-<RFunctions>base:intersect</RFunctions>
 <icon>datatable.png</icon>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
 """
 from OWRpy import * 
 import redRGUI 

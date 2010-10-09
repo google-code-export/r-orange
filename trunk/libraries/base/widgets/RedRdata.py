@@ -1,10 +1,6 @@
 """
 <name>R Datasets</name>
-<author>Red-R Core Development Team</author>
-<description>Loads data from R into Red-R.  This widget allows access to example data from within R and is useful when testing schemas or widgets to ensure that they are working as indicated in R documentation.  Novice users may also find this widget useful for exploring widget functionality when they have no data of their own to explore.</description>
-<RFunctions>base:data</RFunctions>
 <tags>Data Input</tags>
-<icon></icon>
 """
 from OWRpy import * 
 import redRGUI 

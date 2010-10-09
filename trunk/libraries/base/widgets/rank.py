@@ -1,11 +1,6 @@
 """
 <name>Rank</name>
-
-<description>This Widget ranks elements in a vector and returns a ranked vector.</description>
 <tags>Data Manipulation</tags>
-<icon>readfile.png</icon>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>base:rank</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 

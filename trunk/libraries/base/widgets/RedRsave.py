@@ -1,10 +1,6 @@
 """
 <name>save</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description></description>
-<RFunctions>base:save</RFunctions>
 <tags>Prototypes</tags>
-<icon></icon>
 """
 from OWRpy import * 
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 

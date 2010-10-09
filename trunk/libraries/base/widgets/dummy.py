@@ -1,10 +1,7 @@
 """
 <name>Dummy</name>
-<discription>A dummy widget to act as a placeholder if widget load fails</discription>
-<author>Kyle R. Covington</author>
 <tags>R</tags>
 <icon>dummy.png</icon>
-<priority>4010</priority>
 """
 from OWRpy import * 
 import OWGUI 

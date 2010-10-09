@@ -1,10 +1,6 @@
 """
 <name>List Selection</name>
-<description>Allows viewing of a list and picks parts of a list and sends them.</description>
 <tags>Subsetting</tags>
-<RFunctions>base:list</RFunctions>
-<icon>rexecutor.png</icon>
-<author>Kyle R. Covington</author>
 """
 
 from OWRpy import *

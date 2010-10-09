@@ -2,9 +2,6 @@
 
 """
 <name>Math</name>
-<author>Written by Kyle R. Covington, inspired by Anup Parikh</author>
-<description>Performs basic mathematical opperations on a table.  These include changing the class of a column.  Opperations such as log, exponent, addition, sumtraction, multiplication, and division are supported.</description>
-<RFunctions></RFunctions>
 <tags>Data Manipulation</tags>
 """
 from OWRpy import * 
@@ -45,7 +42,7 @@ class mathWidget(OWRpy):
         
         self.functionListBox = listBox(rightArea, items = self.functionsList, callback = self.funcionPressed)
         
-        self.helpButton = button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
+        #self.helpButton = button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
         self.dialog = dialog(self)
         self.dialogTopArea = groupBox(self.dialog, label = 'Left Side')
         self.dialogTopLineEdit = lineEdit(self.dialogTopArea, label = 'Constant', toolTip = 'Must be a number')

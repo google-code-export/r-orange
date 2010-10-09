@@ -1,10 +1,6 @@
 """
 <name>Reshape Data</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
 <tags>Data Manipulation</tags>
-<RFunctions>reshape:melf</RFunctions>
-<icon>rexecutor.png</icon>
-<priority>2060</priority>
 """
 from OWRpy import * 
 import redRGUI 

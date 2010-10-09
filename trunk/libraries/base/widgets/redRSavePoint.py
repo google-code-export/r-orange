@@ -2,11 +2,7 @@
 
 """
 <name>Red-R Save Point</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Allows the user to connect data and treat this as a save point.  the outputs will not be removed even if the upstream widgets are deleted.</description>
 <tags>R</tags>
-<icon></icon>
-<RFunctions></RFunctions>
 """
 
 from OWRpy import * 

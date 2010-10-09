@@ -1,11 +1,6 @@
 """
 <name>scale</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>base:scale</RFunctions>
 <tags>Prototypes</tags>
-<icon>icons/RExecutor.png</icon>
-<inputWidgets></inputWidgets>
-<outputWidgets>plotting_plot, base_RDataTable, base_ListSelector</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

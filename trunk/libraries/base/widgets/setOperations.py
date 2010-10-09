@@ -1,10 +1,7 @@
 """
 <name>Set Operations</name>
-<description>Performs set union, intersection, (asymmetric!) difference.</description>
 <tags>Data Manipulation</tags>
-<RFunctions>base:intersect</RFunctions>
 <icon>datatable.png</icon>
-<author>Red-R Development Team</author>
 """
 
 from OWRpy import * 

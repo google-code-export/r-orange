@@ -1,9 +1,6 @@
 """
 <name>Widget Maker</name>
-<description>A widget for making the initial framework of a functional widget given an R package and function.</description>
 <tags>R</tags>
-<icon>Default.png</icon>
-<author>Kyle R. Covington</author>
 """
 
 from OWRpy import *

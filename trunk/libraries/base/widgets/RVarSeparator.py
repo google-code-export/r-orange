@@ -1,12 +1,7 @@
 """
 <name>R Variable Selection</name>
-<author>Kyle R. Covington</author>
-<description>Separates variables from an environment and sends them.  Generally used with the R Loader Widget.</description>
 <tags>R</tags>
 <icon>rexecutor.png</icon>
-<priority>10</priority>
-<inputWidgets></inputWidgets>
-<outputWidgets>plotting_plot, base_rViewer, base_summary</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

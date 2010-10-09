@@ -1,10 +1,7 @@
 """
 <name>Row Filtering</name>
-<description>Shows data in a spreadsheet.  The data can be subset and passed to other widgets.</description>
-<tags>Data Visualization, Subsetting</tags>
-<RFunctions>base:data.frame,base:matrix</RFunctions>
+<tags>Subsetting</tags>
 <icon>filter.png</icon>
-<author>Red-R Core Development Team</author>
 """
 
 from OWRpy import *

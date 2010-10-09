@@ -1,12 +1,6 @@
 """
 <name>Apply</name>
-<author>Red-R Development Team</author>
-<description>Applies math across a data table.  These functions could include max (maximum value), mean (the mean value), median (median value), etc.>description>
-<RFunctions>base:apply</RFunctions>
 <tags>Data Manipulation</tags>
-<icon>rexecutor.png</icon>
-<inputWidgets></inputWidgets>
-<outputWidgets>plotting_plot, base_RDataTable, base_ListSelector, base_DataExplorer, base_rowcolPicker, base_rViewer</outputWidgets>
 """
 from OWRpy import * 
 import redRGUI 

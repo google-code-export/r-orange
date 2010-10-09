@@ -1,9 +1,6 @@
 """
 <name>Sort</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>base:sort</RFunctions>
 <tags>Data Manipulation</tags>
-<icon>RExecutor.png</icon>
 """
 from OWRpy import *
 import redRGUI 

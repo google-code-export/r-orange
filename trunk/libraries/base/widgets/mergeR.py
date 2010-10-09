@@ -1,9 +1,6 @@
 """
 <name>Merge</name>
-<description>Merges or subsets two datasets depending on options.</description>
 <tags>Data Manipulation</tags>
-<author>Red-R Development Team</author>
-<RFunctions>base:match,base:merge</RFunctions>
 <icon>merge2.png</icon>
 """
 

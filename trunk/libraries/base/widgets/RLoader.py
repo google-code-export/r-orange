@@ -1,11 +1,6 @@
 """
 <name>Load R Session</name>
-<author>Kyle R. Covington</author>
-<description>Loads a previously saved Rdata session and allows the user to connect to a separator to send previously saved variables.  Should be used in conjunction with the R variable separator.</description>
 <tags>R</tags>
-<RFunctions>base:new.env,base:load</RFunctions>
-<icon>rexecutor.png</icon>
-<priority>10</priority>
 """
 from OWRpy import * 
 import redRGUI

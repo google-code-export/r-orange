@@ -1,10 +1,6 @@
 """
 <name>Transpose</name>
-<author>Red-R Development Team</author>
-<description>Transposes a data table and sends.</description>
 <tags>Data Manipulation</tags>
-<RFunctions>utils:t</RFunctions>
-<icon>rexecutor.png</icon>
 """
 from OWRpy import * 
 

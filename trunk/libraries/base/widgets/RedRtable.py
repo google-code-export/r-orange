@@ -1,10 +1,6 @@
 """
 <name>Convert To Table/Prop Table</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Converts a data table of factors to counts of the unique combinations of levels.  For exampel if your data table consisted of rows representing observations of cars with columns indicating make, color, and year, this widget would return a list of counts for each make color year combination.</description>
-<RFunctions>base:table</RFunctions>
 <tags>Data Manipulation</tags>
-<icon></icon>
 """
 from OWRpy import * 
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 

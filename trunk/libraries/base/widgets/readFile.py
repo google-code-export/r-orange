@@ -1,12 +1,7 @@
 """
 <name>Read Files</name>
-<description>Reads files from a text file and brings them into RedR.  These files should be like a table and should have values that are separated either by a tab, space, or comma.  You can use the scan feature to scan a small part of your data and make sure that it is in the correct format.  You can also set a column to represent the row names of your data.  This is encouraged if you have row names as some widgets rely on row names to help them function.</description>
 <tags>Data Input</tags>
-<RFunctions>utils:read.table</RFunctions>
 <icon>readfile.png</icon>
-<priority>10</priority>
-<inputWidgets></inputWidgets>
-<outputWidgets>plotting_plot, base_RDataTable, base_Melt_DF, base_ListSelector, base_DataExplorer</outputWidgets>
 """
 
 from OWRpy import *

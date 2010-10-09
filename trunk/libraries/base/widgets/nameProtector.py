@@ -1,11 +1,6 @@
 """
 <name>Create Valid Rows\Columns</name>
-<discription>R does not handle attachment of column names that begin with integers.  This is usually handled by R functions that read in data however some precompiled data escapes this protection.</discription>
-<author>Red-R Development Team</author>
 <tags>R</tags>
-<RFunctions>base:make.names</RFunctions>
-<icon>RExecutor.PNG</icon>
-<priority>4010</priority>
 """
 from OWRpy import * 
 import OWGUI 

@@ -1,9 +1,6 @@
 """
 <name>Row or Column Selection</name>
-<description>Subsets a data.frame object to pass to subsequent widgets.</description>
 <tags>Subsetting</tags>
-<author>Anup Parikh (anup@red-r.org) and Kyle R Covington (kyle@red-r.org)</author>
-<RFunctions>base:rownames,base:colnames,base:summary</RFunctions>
 <icon>Subset.png</icon>
 """
 
