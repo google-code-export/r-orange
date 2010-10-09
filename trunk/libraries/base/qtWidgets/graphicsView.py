@@ -269,21 +269,25 @@ class graphicsView(QGraphicsView, widgetState):
         print 'save as pdf'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".pdf", "PDF Document (.pdf)")
         if qname.isEmpty(): return
+        qname = str(qname.toAscii())
         self.saveAs(str(qname), 'pdf')
     def saveAsPostScript(self):
         print 'save as post script'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".eps", "Post Script (.eps)")
         if qname.isEmpty(): return
+        qname = str(qname.toAscii())
         self.saveAs(str(qname), 'ps')
     def saveAsBitmap(self):
         print 'save as bitmap'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".bmp", "Bitmap (.bmp)")
         if qname.isEmpty(): return
+        qname = str(qname.toAscii())
         self.saveAs(str(qname), 'bmp')
     def saveAsJPEG(self):
         print 'save as jpeg'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+str(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
         if qname.isEmpty(): return
+        qname = str(qname.toAscii())
         self.saveAs(str(qname), 'jpeg')
     def mousePressEvent(self, mouseEvent):
         

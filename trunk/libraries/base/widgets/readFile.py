@@ -178,8 +178,11 @@ class readFile(OWRpy):
         print self.path
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
-        print str(fn)
+        #print str(fn)
         if fn.isEmpty(): return
+        fn = str(fn.toAscii())
+        # print type(fn), fn
+        
         self.path = os.path.split(str(fn))[0]
         self.filecombo.addFile(fn)
         self.saveGlobalSettings()

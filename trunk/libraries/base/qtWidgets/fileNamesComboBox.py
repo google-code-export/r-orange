@@ -27,7 +27,7 @@ class fileNamesComboBox(comboBox):
         # print data
         try:
             self.clear()
-            self.files = [unicode(i) for i in data['files']]
+            self.files = [i for i in data['files']]
             self.setFileList()
             # self.addItems(self.files)
             ind = self.findText(data['current'])
@@ -66,6 +66,9 @@ class fileNamesComboBox(comboBox):
             
         
     def addFile(self,fn):
+        # print '@##############', type(fn), fn
+        # for x in self.files:
+            # print type(x),x
         if fn in self.files:
             self.files.remove(str(fn))
         self.files.insert(1,str(fn))

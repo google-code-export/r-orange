@@ -156,7 +156,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         name = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'),
         "Text file (*.csv *.tab *.txt );; All Files (*.*)")
         if name.isEmpty(): return
-
+        name = str(name.toAscii())
         if self.separator.currentText() == 'Tab': #'tab'
             sep = '\t'
         elif self.separator.currentText() == 'Space':
