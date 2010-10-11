@@ -92,7 +92,7 @@ class packageManager:
                 self.installRRP(package,path)
             except:
                 try:
-                    packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.rrp')
+                    packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
                     url = str(self.repository+'/'+package+'/'+packageName)
                     path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
                     print url

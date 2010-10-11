@@ -58,10 +58,11 @@ class rExecutor(OWRpy):
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         rightArea = widgetBox(area)
 
-        runbox = groupBox(rightArea, label = "Command Line", orientation='horizontal')
+        runbox = groupBox(rightArea, label = "Command Edit:", orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
-        self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
+        self.command = textEdit(runbox, label = 'Command Edit:')
+        #self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         processbutton = button(runbox, label = "&Run", callback = self.runR, width=100)
         statusBox = groupBox(rightArea, label = "Status")
         self.sendStatus = widgetLabel(statusBox, 'Nothing Sent')
@@ -90,55 +91,65 @@ class rExecutor(OWRpy):
     def putrecieved(self):
         self.command.insert(str(self.data))
     def sendThis(self):
-        
-        thisdataclass = self.R('class('+str(self.command.text())+')')
-        thisdata = str(self.command.text())
+        if str(self.command.textCursor().selectedText()) != '':
+                text = str(self.command.textCursor().selectedText())
+        else:
+                self.sendStatus.setText('No object Selected')
+                return
+        thisdataclass = self.R('class('+str(text)+')')
+        thisdata = str(text)
         # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
-            newData = redRRVariable(data = str(self.command.text()))
+            newData = redRRVariable(data = str(text))
             self.rSend("id3", newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
-                newData = redRRVector(data = str(self.command.text()))
+                newData = redRRVector(data = str(text))
                 self.rSend("id2", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
-                newData = redRRDataFrame(data = str(self.command.text()))
+                newData = redRRDataFrame(data = str(text))
                 self.rSend("id0", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:
-                newData = redRRMatrix(data = str(self.command.text()))
+                newData = redRRMatrix(data = str(text))
                 self.rSend("id4", newData)
                 self.sendStatus.setText(thisdata+' sent through the Matrix channel')
             elif thisdataclass == 'list': # the object is a list
-                for i in range(self.R('length('+self.command.text()+')')):
-                    if self.R('class(%s[[%s]])' % (self.command.text(), i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
+                for i in range(self.R('length('+text+')')):
+                    if self.R('class(%s[[%s]])' % (text, i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
                         newData = ral.RArbitraryList(data = self.sendThis)
                         self.status.setText('Data sent through the R Arbitrary List channel')
                         self.rSend('ral', newData)
                         return
-                newData = redRRList(data = str(self.command.text()))
+                newData = redRRList(data = str(text))
                 self.rSend("id1", newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                newData = redRRVariable(data = str(self.command.text()))
+                newData = redRRVariable(data = str(text))
                 self.rSend("id3", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
-            newData = redRRVariable(data = str(self.command.text()))
+            newData = redRRVariable(data = str(text))
             self.rSend("id3", newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):
-        self.R('txt<-"R error occured" #Benign error in case a real error occurs')
-        self.R('txt<-capture.output('+str(self.command.text())+')')
+        #self.R('txt<-"R error occured" #Benign error in case a real error occurs')
+        try:
+            if str(self.command.textCursor().selectedText()) != '':
+                text = str(self.command.textCursor().selectedText())
+            else:
+                text = str(self.command.toPlainText())
+            self.R('txt<-capture.output(eval(parse(text = \"'+str(text).replace('\"', '\\\"')+'\")))')
 
-        pasted = self.R('paste(txt, collapse = " \n")')
-        # if type(pasted) != type(''):
-            # pasted = 'Error occured with evaluation, please chech output for error.'
-        self.thistext.insertPlainText('>>>'+str(self.command.text())+'##Done')
-        self.thistext.insertPlainText('\n'+pasted+'\n')
-        self.thistext.setAlignment(Qt.AlignBottom)
-    
+            pasted = self.R('paste(txt, collapse = " \n")')
+            # if type(pasted) != type(''):
+                # pasted = 'Error occured with evaluation, please chech output for error.'
+            self.thistext.insertPlainText('>>>'+str(text)+'##Done')
+            self.thistext.insertPlainText('\n'+pasted+'\n')
+            self.thistext.setAlignment(Qt.AlignBottom)
+        except Exception as inst:
+            self.thistext.insertPlainText('Error Occurred: %s' % inst)
     def putRHistory(self):
         self.thistext.clear()
         self.thistext.insertPlainText('\n'.join(OWRpy.globalRHistory))

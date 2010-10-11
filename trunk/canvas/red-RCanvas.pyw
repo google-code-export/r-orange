@@ -624,7 +624,7 @@ class OrangeCanvasDlg(QMainWindow):
         webbrowser.open(os.path.join(redREnviron.directoryNames['redRDir'], "doc/canvas/default.htm"))
     def menuItemInstallPackage(self):
         name = QFileDialog.getOpenFileName(self, "Install Package", 
-        redREnviron.settings["saveSchemaDir"], "Package (*.rrp)")
+        redREnviron.settings["saveSchemaDir"], "Package (*.zip)")
         if name.isEmpty(): return
         name = str(name.toAscii())
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
