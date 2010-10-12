@@ -39,7 +39,7 @@ class widgetSession():
                     continue
                 i += 1
                 self.progressBarAdvance(i)
-                #print 'frist att: ' + att
+                # print 'frist att: ' + att
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
             except:
@@ -97,8 +97,9 @@ class widgetSession():
             
     def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
-        # print 'var class', var.__class__.__name__
         from redRGUI import widgetState
+        from signals import BaseRedRVariable
+        # print 'var class', var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
         if isinstance(var, widgetState):
             # print 'getting gui settings\n\n'
             try:
@@ -116,9 +117,9 @@ class widgetSession():
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
         #elif isinstance(var, signals.BaseRedRVariable):
-        elif isinstance(var, signals.BaseRedRVariable):
+        elif isinstance(var, BaseRedRVariable) or issubclass(var.__class__,BaseRedRVariable) :
             settings['signalsObject'] = var.saveSettings()
-            print '|#|  Saving signalsObject '#, settings['signalsObject']
+            print '|#| Saving signalsObject '#, settings['signalsObject']
         elif not checkIfPickleable: 
             settings['pythonObject'] =  var
         elif self.isPickleable(var):
@@ -149,8 +150,9 @@ class widgetSession():
     def setSettings(self,settings, globalSettings = False):
         print 'on set settings'
         #settings = self.sqlite.setObject(settingsID)
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(settings)
         for k,v in settings.iteritems():
             try:
                 #print k

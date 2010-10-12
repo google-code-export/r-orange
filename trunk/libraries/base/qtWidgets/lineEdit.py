@@ -43,6 +43,9 @@ class lineEdit(QLineEdit,widgetState):
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
         self.label = label
+    
+    def text(self):
+        return str(QLineEdit.text(self).toAscii())
     def hide(self):
         if self.hasLabel:
             self.hb.hide()

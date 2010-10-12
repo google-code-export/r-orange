@@ -8,10 +8,12 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
 
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RList import RList as redRRList
+
 class RedRhclust(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -46,6 +48,6 @@ class RedRhclust(OWRpy):
         injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['hclust']+'<-hclust(d=dist(x='+str(self.RFunctionParam_d)+', method = \''+str(self.RFunctionParamdistmethod_comboBox.currentText())+'\'),'+inj+')')
-        newData = signals.redRRList(data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRList(data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

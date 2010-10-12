@@ -76,6 +76,7 @@ class RedRScatterplot(OWRpy):
         self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
         self.paintLegend = textEdit(options)
         
+        self.asdfasdfasdfadfasdfasdf = redRRDataFrame(data = 'data.frame()', parent = None) 
         # self.graph.resize(350, 350)
 
         
@@ -124,14 +125,14 @@ class RedRScatterplot(OWRpy):
             self.plot()
         
     def plot(self, newZoom = True):
-        xCol = str(self.xColumnSelector.currentText())
-        yCol = str(self.yColumnSelector.currentText())
-        paintClass = str(self.paintCMSelector.currentText())
+        xCol = self.xColumnSelector.currentText()
+        yCol = self.yColumnSelector.currentText()
+        paintClass = self.paintCMSelector.currentText()
         self.xData = []
         self.yData = []
         if xCol == yCol: return
-        self.graph.setXaxisTitle(str(xCol))
-        self.graph.setYLaxisTitle(str(yCol))
+        self.graph.setXaxisTitle(xCol)
+        self.graph.setYLaxisTitle(yCol)
         self.graph.setShowXaxisTitle(True)
         self.graph.setShowYLaxisTitle(True)
         self.graph.clear()

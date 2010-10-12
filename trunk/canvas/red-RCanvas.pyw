@@ -349,7 +349,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         if name.isEmpty(): return
         name = str(name.toAscii())
-        name = str(name.toAscii())
+        
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.schema.clear()
         self.schema.loadDocument(str(name), freeze = 0, importing = False)

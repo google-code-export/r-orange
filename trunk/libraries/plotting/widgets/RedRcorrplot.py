@@ -8,7 +8,7 @@
 """
 from OWRpy import * 
 import redRGUI 
-import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button

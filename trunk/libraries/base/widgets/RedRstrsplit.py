@@ -5,6 +5,9 @@
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses as signals
+from libraries.base.signalClasses.RVector import RVector as redRRVector
+from libraries.base.signalClasses.RList import RList as redRRList
+
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.button import button
@@ -68,12 +71,12 @@ class RedRstrsplit(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+str(self.RFunctionParam_x)+') ,'+inj+')')
-        newData = signals.redRRList(data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRList(data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
         if str(self.RFunctionParamunlist_radioButtons.getChecked()) == 'Send list and vector':
-            newData = signals.redRRVector(data = 'unlist('+self.Rvariables['strsplit']+')')
+            newData = redRRVector(data = 'unlist('+self.Rvariables['strsplit']+')')
             self.rSend("id1", newData)
             
     def getReportText(self, fileDir):

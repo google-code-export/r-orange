@@ -205,12 +205,12 @@ class OutputWindow(QDialog):
             ##err['output'] = self.allOutput
             if os.name == 'nt':
                 err['os'] = 'Windows'
-            else:
-                err['os'] = 'Not Specified'
+            # else:
+                # err['os'] = 'Not Specified'
             if redREnviron.settings['canContact']:
                 err['email'] = redREnviron.settings['email']
-            else:
-                err['email'] = 'None; no contact'
+            # else:
+                # err['email'] = 'None; no contact'
             #err['id'] = redREnviron.settings['id']
             #print err, 'Error'
             params = urllib.urlencode(err)
@@ -234,7 +234,7 @@ class OutputWindow(QDialog):
         
         t = datetime.today().isoformat(' ')
         toUpload = {}
-        toUpload['time'] = t
+        #toUpload['time'] = t
         toUpload['errorType'] = self.getSafeString(type.__name__)
         toUpload['traceback'] = text
         toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]

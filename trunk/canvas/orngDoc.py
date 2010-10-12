@@ -685,6 +685,7 @@ class SchemaDoc(QWidget):
             temp.setAttribute("caption", widget.caption)
             
             temp.setAttribute("widgetName", widget.widgetInfo.fileName)
+            temp.setAttribute("package", widget.widgetInfo.package['Name'])
             temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
             temp.setAttribute('widgetID', widget.instance.widgetID)
             print 'save in orngDoc ' + str(widget.caption)
@@ -738,10 +739,10 @@ class SchemaDoc(QWidget):
             temp.setAttribute("enabled", str(line.getEnabled()))
             temp.setAttribute("signals", str(line.outWidget.instance.outputs.getLinkPairs(line.inWidget.instance)))
             lines.appendChild(temp)
-        print '\n\n', lines, 'lines\n\n'
+        # print '\n\n', lines, 'lines\n\n'
         if template:
             taglist = str(tempDialog.tagsList.text())
-            tempDescription = str(tempDialog.descriptionEdit.toHtml())
+            tempDescription = str(tempDialog.descriptionEdit.toPlainText())
             saveTagsList.setAttribute("tagsList", taglist)
             saveDescription.setAttribute("tempDescription", tempDescription)
             print taglist, tempDescription
