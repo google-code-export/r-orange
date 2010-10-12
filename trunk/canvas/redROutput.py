@@ -175,8 +175,9 @@ class OutputWindow(QDialog):
         
     def uploadException(self,err):
         import httplib,urllib
-        import sys,pickle,os
-
+        import sys,pickle,os, re
+        #print redREnviron.settings['askToUploadError'], 'askToUploadError'
+        #print redREnviron.settings['uploadError'], 'uploadError'
         if not redREnviron.settings['askToUploadError']:
             res = redREnviron.settings['uploadError']
         else:
@@ -192,21 +193,31 @@ class OutputWindow(QDialog):
             self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
             res = self.msg.exec_()
             redREnviron.settings['uploadError'] = res
-            
+        #print res
         if res == 1:
+            print 'in res'
             err['version'] = redREnviron.version['SVNVERSION']
             err['type'] = redREnviron.version['TYPE']
-            err['output'] = self.allOutput
-            err['os'] = os.name
+            err['redRversion'] = redREnviron.version['REDRVERSION']
+            print err['traceback']
+            
+            
+            ##err['output'] = self.allOutput
+            if os.name == 'nt':
+                err['os'] = 'Windows'
+            else:
+                err['os'] = 'Not Specified'
             if redREnviron.settings['canContact']:
                 err['email'] = redREnviron.settings['email']
             else:
                 err['email'] = 'None; no contact'
-            err['id'] = redREnviron.settings['id']
+            #err['id'] = redREnviron.settings['id']
+            #print err, 'Error'
             params = urllib.urlencode(err)
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = httplib.HTTPConnection("www.red-r.org",80)
+            conn = httplib.HTTPConnection("localhost",80)
             conn.request("POST", "/errorReport.php", params,headers)
+            #print err
             # response = conn.getresponse()
             # print response.status, response.reason
             # data = response.read()
@@ -226,7 +237,7 @@ class OutputWindow(QDialog):
         toUpload['time'] = t
         toUpload['errorType'] = self.getSafeString(type.__name__)
         toUpload['traceback'] = text
-
+        toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]
         
         if redREnviron.settings["printExceptionInStatusBar"]:
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
