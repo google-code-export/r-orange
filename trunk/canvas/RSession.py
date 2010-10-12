@@ -54,7 +54,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     except rpy.RPyRException as inst:
         print inst
         mutex.unlock()
-        raise RuntimeError(str(inst))
+        raise RuntimeError(str(inst) + '  Orriginal Query was:  ' + str(query))
         return None # now processes can catch potential errors
         
     # print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists

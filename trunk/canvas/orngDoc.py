@@ -1103,26 +1103,26 @@ class SchemaDoc(QWidget):
                 tt += '\n\n\n--------------------\n\n\n'
                 tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
                 if str(widget.instance.notes.toPlainText()) != '':
-                    tt += str(widget.instance.notes.toPlainText())+'\n\n'
+                    tt += str(r'\n'+widget.instance.notes.toPlainText()).replace(r'\n', r'\n\t')+'\n\n'
                 else:
                     tt += 'No notes were entered in the widget face.\n\n'
                 tt += '\n\n\n--------------------\n\n\n'
-                tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
-                try:
-                    if widget.instance.inputs:
+                # tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
+                # try:
+                    # if widget.instance.inputs:
                         
-                        for input in widget.instance.inputs:
-                            for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
-                                tt += '-The Signal *%s* is linked to widget *%s*\n\n' % (input[0], iwidget.captionTitle)
-                except: pass
-                try:
-                    if widget.instance.outputs:
-                        #tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
-                        for output in widget.instance.outputs:
-                            for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
-                                tt += '-This widget sends the signal *%s* to widget *%s*\n\n' % (output[0], owidget.captionTitle)
-                except:
-                    pass
+                        # for input in widget.instance.inputs:
+                            # for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
+                                # tt += '-The Signal *%s* is linked to widget *%s*\n\n' % (input[0], iwidget.captionTitle)
+                # except: pass
+                # try:
+                    # if widget.instance.outputs:
+                        ##tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
+                        # for output in widget.instance.outputs:
+                            # for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
+                                # tt += '-This widget sends the signal *%s* to widget *%s*\n\n' % (output[0], owidget.captionTitle)
+                # except:
+                    # pass
             except Exception as inst:
                 print '##########################'
                 print str(inst)

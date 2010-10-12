@@ -180,7 +180,16 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          #inputList = inputList, outputList = outputList
                          )
     
-            for attr, deflt in (('inputs>', 'None'), ('outputs>', 'None'), ("contact>", "") , ("icon>", "Default.png"), ("priority>", "5000"), ("description>", ""), ("tags>", "Prototypes"), ("outputWidgets>", ""), ("inputWidgets>", "")):
+            for attr, deflt in (
+                #('inputs>', 'None'), ('outputs>', 'None'), 
+                ("contact>", "")
+                ,("icon>", "Default.png")
+                ,("priority>", "5000")
+                ,("description>", "")
+                ,("tags>", "Prototypes")
+                ,("outputWidgets>", ""),
+                ,("inputWidgets>", "")
+                ):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
                 setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
                 
@@ -203,7 +212,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.
             #widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
             #if len(widgetInfo.inputs) == 0:
-            formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; %s<br>" % widgetInfo.inputs
+            #formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; %s<br>" % widgetInfo.inputs
             # else:
                 # formatedInList = "<b>Inputs:</b><br>"
                 # for signal in widgetInfo.inputs:
@@ -211,13 +220,13 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     
             #widgetInfo.outputs = [OutputSignal(*signal) for signal in eval(widgetInfo.outputList)]
             #if len(widgetInfo.outputs) == 0:
-            formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; %s<br>" % widgetInfo.outputs
+            #formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; %s<br>" % widgetInfo.outputs
             # else:
                 # formatedOutList = "<b>Outputs:</b><br>"
                 # for signal in widgetInfo.outputs:
                     # formatedOutList += " &nbsp; &nbsp; - " + signal.name + " (" + signal.type + ")<br>"
     
-            widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s<hr>%s<hr>%s" % (name, widgetInfo.description, formatedInList[:-4], formatedOutList[:-4]) 
+            widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s" % (name, widgetInfo.description) #, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))
         except Exception, msg:
             print redRExceptionHandling.formatException(errorMsg='Error in widget %s in package %s' % (package['Name'], widgetName))

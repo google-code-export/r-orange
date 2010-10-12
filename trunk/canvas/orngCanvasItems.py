@@ -535,6 +535,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
 
     def updateTooltip(self):
+        return
         if self.ghost: return
         string = "<nobr><b>" + self.caption + "</b></nobr><hr>Inputs:<br>"
 

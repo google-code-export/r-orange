@@ -550,10 +550,10 @@ class graphicsView(QGraphicsView, widgetState):
                 self._setLegend()
             fileName = str(self.imageFileName)
             print fileName
-        except:
+        except Exception as inst:
             self.R('dev.off()') ## we still need to turn off the graphics device
             print 'Plotting exception occured'
-            raise Exception, 'plotting exception occured'
+            raise Exception(str(inst))
         self.R('dev.off()')
         self.clear()
         fileName = str(self.imageFileName)

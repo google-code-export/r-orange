@@ -51,6 +51,10 @@ class hist(OWRpy):
     def commitFunction(self):
         if self.RFunctionParam_x == '': return
         if self.needsColumns:
+            ## check if numeric
+            if self.R('class('+str(self.RFunctionParam_x)+'$'+str(self.column.currentText())+')') not in ['numeric']: 
+                self.status.setText('Data not numeric')
+                return
             injection = []
             if self.RFunctionParam_main.text() != '':
                 injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
@@ -66,6 +70,9 @@ class hist(OWRpy):
             self.plotArea.plot('x=as.numeric('+str(self.RFunctionParam_x)+'$'+str(self.column.currentText())+')'+','+inj, function = 'hist')
             return
         else:
+            if self.R('class('+str(self.RFunctionParam_x)+')') not in ['numeric']: 
+                self.status.setText('Data not numeric')
+                return
             try:
                 self.plotArea.plot('x=as.numeric('+str(self.RFunctionParam_x)+','+inj, function = 'hist')
             except:

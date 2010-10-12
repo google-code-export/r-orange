@@ -1,14 +1,16 @@
 """
-<name>attributes</name>
+<name>Attributes</name>
 <author>Generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>base:attributes</RFunctions>
-<tags>Prototypes</tags>
+<tags>Stats</tags>
 <icon></icon>
 """
 from OWRpy import * 
 import redRGUI 
 import libraries.base.signalClasses as signals
+import libraries.base.signalClasses.RVariable.RVariable as redRRVariable
+
 
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
