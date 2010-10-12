@@ -20,15 +20,15 @@ import xml.etree.ElementTree as etree
 class packageManager:
     def __init__(self):
         self.urlOpener = urllib.FancyURLopener()
-        self.repository = 'http://www.red-r.org/packages/Red-R-' + redREnviron.version['REDRVERSION'] 
+        self.repository = 'http://www.red-r.org/repository/Red-R-' + redREnviron.version['REDRVERSION'] 
         self.version = redREnviron.version['REDRVERSION']
         (self.updatePackages, self.localPackages, self.sitePackages) = self.getPackages()
         
     def resolveRDependencies(self, packageList):
         import RSession
-        
         packageList = [x.strip() for x in packageList]
         RSession.require_librarys(packageList)
+
     def installRRP(self,packageName,filename):
 
         installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
