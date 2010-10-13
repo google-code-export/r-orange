@@ -15,7 +15,7 @@ def __getDirectoryNames():
     canvasDir = os.path.join(redRDir, "canvas")
     canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
     rpyDir = os.path.join(redRDir, "canvas",'rpy')
-    RDir = os.path.join(os.path.split(redRDir)[0], "R")
+    RDir = os.path.join(os.path.split(redRDir)[0], "R-2.9.2")
     widgetDir = os.path.join(redRDir, "libraries")
     libraryDir = os.path.join(redRDir, "libraries")
     qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')

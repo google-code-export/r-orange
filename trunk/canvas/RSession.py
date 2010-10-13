@@ -5,7 +5,7 @@ import sys, os, redREnviron, numpy
 if sys.platform=="win32":
     from rpy_options import rpy_options
     rpy_options['RHOME'] = redREnviron.directoryNames['RDir']
-    rpy_options['RVERSION'] = '2.9.1'
+    rpy_options['RVERSION'] = '2.9.2'
     rpy_options['VERBOSE'] = False
 else: # need this because linux doesn't need to use the RPATH
     personalLibDir = os.path.join(redREnviron.directoryNames['settingsDir'], 'RLibraries')

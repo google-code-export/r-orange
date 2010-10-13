@@ -187,7 +187,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                 ,("priority>", "5000")
                 ,("description>", "")
                 ,("tags>", "Prototypes")
-                ,("outputWidgets>", ""),
+                ,("outputWidgets>", "")
                 ,("inputWidgets>", "")
                 ):
                 istart, iend = data.find("<"+attr), data.find("</"+attr)
