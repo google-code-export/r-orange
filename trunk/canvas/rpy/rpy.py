@@ -26,7 +26,7 @@ from rpy_options import rpy_options
 import rpy_io
 import UserDict
 import time, os, sys, atexit, glob
-import rpy_tools
+# import rpy_tools
 import redREnviron
 # print rpy_options
 
@@ -48,6 +48,7 @@ RHOME=redREnviron.directoryNames['RDir']
 RVERSION='2.9.2'
 RVER='2092'
 RUSER=redREnviron.directoryNames['RDir']
+VERBOSE=True
 
 # Get necessary paths and version information
 
@@ -75,7 +76,6 @@ RUSER=redREnviron.directoryNames['RDir']
     # RUSER = rpy_tools.get_R_USER()
 
 
-VERBOSE=rpy_options['VERBOSE']
 
 if VERBOSE:
     print "RHOME=",RHOME
