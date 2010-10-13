@@ -101,26 +101,26 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
             print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'array': # want a numpy array
         if type(output) == list:
-            print 'Converting list to array'
+            #print 'Converting list to array'
             output = numpy.array(output)
             
         elif type(output) in [str, int, float, bool]:
-            print 'Converting single type to array'
+            #print 'Converting single type to array'
             output = numpy.array([output])
             
         elif type(output) == dict:
-            print 'Converting Dict to Array'
+            #print 'Converting Dict to Array'
             newOutput = []
             for key in output.keys():
                 newOutput.append(output[key])
             output = newOutput
         elif type(output) in [numpy.ndarray]:
-            print 'Type is already array'
+            #print 'Type is already array'
             pass
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'listOfLists' or listOfLists:
-        print 'Converting to list of lists'
+        #print 'Converting to list of lists'
         
         if type(output) in [str, int, float, bool]:
             output =  [[output]]

@@ -9,6 +9,7 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 ##############################################################################
 
 
+
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -84,9 +85,6 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #boxSettings = groupBox(self.advancedOptions, label = "Settings")
 
-        
-        # self.table = Rtable(self.tableBox,sortable=True,Rdata='data')
-        
         self.table = filterTable(self.tableBox,sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.itemClicked)
         
@@ -228,7 +226,4 @@ class TableItemDelegate(QItemDelegate):
 
         self.drawDisplay(painter, option, option.rect, text)
         painter.restore()
-
-
-
 
