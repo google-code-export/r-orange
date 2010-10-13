@@ -6,7 +6,7 @@ if sys.platform=="win32":
     from rpy_options import rpy_options
     rpy_options['RHOME'] = redREnviron.directoryNames['RDir']
     rpy_options['RVERSION'] = '2.9.2'
-    rpy_options['VERBOSE'] = False
+    rpy_options['VERBOSE'] = True
 else: # need this because linux doesn't need to use the RPATH
     personalLibDir = os.path.join(redREnviron.directoryNames['settingsDir'], 'RLibraries')
     if not os.path.isdir(personalLibDir):
@@ -14,7 +14,7 @@ else: # need this because linux doesn't need to use the RPATH
     print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
     
-import rpy
+import canvas.rpy.rpy as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 

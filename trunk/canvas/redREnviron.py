@@ -160,6 +160,10 @@ def loadSettings():
     settings.setdefault("firstLoad", 1)
     settings.setdefault("email", '')
     settings.setdefault('canContact', 1)
+    
+    
+    
+    
     return settings
     
 # Saves settings to this widget's .ini file

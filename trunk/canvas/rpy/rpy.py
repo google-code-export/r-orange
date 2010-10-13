@@ -27,6 +27,7 @@ import rpy_io
 import UserDict
 import time, os, sys, atexit, glob
 import rpy_tools
+import redREnviron
 # print rpy_options
 
 # If we cannot import Numeric, it should have been detected at
@@ -43,30 +44,36 @@ import rpy_tools
         # HAS_NUMERIC = 0
         # pass
 HAS_NUMERIC = 0
+RHOME=redREnviron.directoryNames['RDir']
+RVERSION='2.9.2'
+RVER='2092'
+RUSER=redREnviron.directoryNames['RDir']
 
 # Get necessary paths and version information
-RHOME=os.environ.get('RHOME',None)
-    
-if not RHOME:
-    if rpy_options['RHOME'] is not None:
-        RHOME = rpy_options['RHOME']
-    else:
-        RHOME = rpy_tools.get_R_HOME()
 
-if rpy_options['RVERSION'] is not None:
-    RVERSION = rpy_options['RVERSION']
-else:
-    RVERSION = rpy_tools.get_R_VERSION(RHOME)
+# RHOME=os.environ.get('RHOME',None)
+  
+# if not RHOME:
+    # if rpy_options['RHOME'] is not None:
+        # RHOME = rpy_options['RHOME']
+    # else:
+        # RHOME = rpy_tools.get_R_HOME()
 
-if rpy_options['RVER'] is not None:
-    RVER = rpy_options['RVER']
-else:
-    RVER = rpy_tools.get_R_VERSION_CODE(RVERSION)
+# if rpy_options['RVERSION'] is not None:
+    # RVERSION = rpy_options['RVERSION']
+# else:
+    # RVERSION = rpy_tools.get_R_VERSION(RHOME)
 
-if rpy_options['RUSER'] is not None:
-    RUSER = rpy_options['RUSER']
-else:
-    RUSER = rpy_tools.get_R_USER()
+# if rpy_options['RVER'] is not None:
+    # RVER = rpy_options['RVER']
+# else:
+    # RVER = rpy_tools.get_R_VERSION_CODE(RVERSION)
+
+# if rpy_options['RUSER'] is not None:
+    # RUSER = rpy_options['RUSER']
+# else:
+    # RUSER = rpy_tools.get_R_USER()
+
 
 VERBOSE=rpy_options['VERBOSE']
 
