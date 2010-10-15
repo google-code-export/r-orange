@@ -1049,4 +1049,17 @@ class redRGraph(QwtPlot,widgetState):
         pass # there are no settings to set at the moment
         
     def getReportText(self, fileDir):
-        return 'Please see the Red-R .rrs file for more information about the plot in this widget.\n\n'
+        import os
+        image = QImage(self.width(), self.height(), QImage.Format_ARGB32_Premultiplied)
+        painter = QPainter(image)
+        self.render(painter) #
+        painter.end()
+        image = image.scaled(1000,1000, Qt.KeepAspectRatio)
+        imageFile = os.path.join(fileDir, 'scatterplot.png').replace('\\', '/')
+        if not image.save(imageFile):
+            print 'Error in saving image in redRGraph'
+            return ''
+
+        text = '.. image:: '+fileDir+'/scatterplot.png\n    :scale: 50%%\n\n'
+        
+        return {'label':'Scatter Plot','text':text}

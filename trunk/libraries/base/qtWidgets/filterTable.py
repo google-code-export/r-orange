@@ -1,7 +1,8 @@
 from redRGUI import widgetState
 import os.path
-import redREnviron
+import redREnviron, redRReports
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.scrollArea import scrollArea
@@ -15,7 +16,7 @@ from PyQt4.QtGui import *
 import sip
 
 class filterTable(widgetState, QTableView):
-    def __init__(self,widget,Rdata=None, editable=False, sortable=True, filterable=False,
+    def __init__(self,widget,label=None, Rdata=None, editable=False, sortable=True, filterable=False,
     selectionBehavior=QAbstractItemView.SelectRows, 
     selectionMode = QAbstractItemView.NoSelection, 
     showResizeButtons = True,
@@ -23,7 +24,11 @@ class filterTable(widgetState, QTableView):
     callback=None):
         #widgetBox.__init__(self,widget,orientation='vertical')
         
-        mainBox = widgetBox(widget,orientation='vertical')
+        if label:
+            mainBox = groupBox(widget,label=label, orientation='vertical')
+        else:
+            mainBox = widgetBox(widget,orientation='vertical')
+        self.label = label
         
         QTableView.__init__(self,widget)
         mainBox.layout().addWidget(self)
@@ -31,7 +36,7 @@ class filterTable(widgetState, QTableView):
         leftBox = widgetBox(box,orientation='horizontal')
         if filterable:
             self.clearButton = button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
-        self.label = widgetLabel(leftBox,label='',wordWrap=False) 
+        self.dataInfo = widgetLabel(leftBox,label='',wordWrap=False) 
         box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
         if showResizeButtons:
@@ -103,9 +108,9 @@ class filterTable(widgetState, QTableView):
         total = self.R('nrow(%s)' % self.Rdata)        
         if self.filterable:
             filtered = self.R('nrow(%s)' % data)
-            self.label.setText('Showing %d of %d rows.' % (filtered,total))
+            self.dataInfo.setText('Showing %d of %d rows.' % (filtered,total))
         else:
-            self.label.setText('Showing %d rows.' % (total))
+            self.dataInfo.setText('Showing %d rows.' % (total))
 
         self.tm = MyTableModel(data,self,editable=self.editable, 
         filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
@@ -367,7 +372,7 @@ class filterTable(widgetState, QTableView):
             self.onFilterCallback()
              
     def getFilteredData(self):
-        return self.filteredData
+        return self.tm.Rdata
     def sort(self,col,order):
         #self.tm.sort(col-1,order)
         self.sortByColumn(col-1, order)
@@ -411,15 +416,15 @@ class filterTable(widgetState, QTableView):
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):
-        # import os
-        # fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
-        # fname = fname.replace('\\', '/')
-        # print fname
-        #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
-        # self.R('txt<-capture.output(summary('+self.Rdata+'))')
-        # tmp = self.R('paste(txt, collapse ="\n      ")')
-        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.\n\n'
-        return text
+        data = self.R('as.matrix(%s)'% self.getFilteredData())
+        colNames = self.R('colnames(%s)' % self.getFilteredData())
+        text = redRReports.createTable(data, columnNames = colNames)
+        if self.label:
+            label = self.label
+        else:
+            label='Data Table';
+        
+        return {'label': label, 'text': text}
 
 
 class MyTableModel(QAbstractTableModel): 

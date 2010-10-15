@@ -75,4 +75,9 @@ class spinBox(QSpinBox,widgetState):
             QSpinBox.show(self)
             
     def getReportText(self, fileDir):
-        return '%s set to %s' % (self.label, self.value())
+        if self.label:
+            label = self.label
+        else:
+            label = "SpinBox with no label"
+        return {'label': label, 'text':str(self.value())}
+        

@@ -1,9 +1,7 @@
 """
 <name>Scatterplot</name>
-<description>An interactive scatterplot widget that allows one to select regions of an XY scatterplot and use this as a selection.</description>
 <tags>Plotting, Subsetting</tags>
 <icon>scatterplot.png</icon>
-<priority>10</priority>
 """
 
 from OWRpy import *
@@ -15,7 +13,7 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from PyQt4.QtGui import *
 ### currently depricated until fixed
 from libraries.base.qtWidgets.checkBox import checkBox
-from libraries.base.qtWidgets.redRGraph import redRGraph
+from libraries.plotting.qtWidgets.redRGraph import redRGraph
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
@@ -76,9 +74,11 @@ class RedRScatterplot(OWRpy):
         self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
         self.paintLegend = textEdit(options)
         
-        self.asdfasdfasdfadfasdfasdf = redRRDataFrame(data = 'data.frame()', parent = None) 
+        self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))')
+        data = redRRDataFrame(data = 'data', parent = None) 
         # self.graph.resize(350, 350)
-
+        self.gotX(data)
+        
         
     def showSelected(self):
         if self.data == None:

@@ -43,6 +43,4 @@ class button(QPushButton,widgetState):
         pass
     def loadSettings(self,data):
         pass
-    def getReportText(self, fileDir):
-        return ''
 

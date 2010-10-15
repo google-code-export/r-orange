@@ -172,17 +172,17 @@ class rowcolPicker(OWRpy):
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         self.SubsetByAttached = 0
-    def getReportText(self, fileDir):
-        if self.SubsetByAttached:
-            text = 'Data was subset by '+str(self.rowcolBox.getChecked())+' '+str(self.subsetColumn.currentText())+'\n\n'
-        else:
-            text = 'Data was subset by the following selections:\n\n'
-            selectedDFItems = []
-            for name in self.attributes.selectedItems():
-                selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
+    # def getReportText(self, fileDir):
+        # if self.SubsetByAttached:
+            # text = 'Data was subset by '+str(self.rowcolBox.getChecked())+' '+str(self.subsetColumn.currentText())+'\n\n'
+        # else:
+            # text = 'Data was subset by the following selections:\n\n'
+            # selectedDFItems = []
+            # for name in self.attributes.selectedItems():
+                # selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
                 
-            for name in selectedDFItems:
-                text += '-'+str(name)+'\n\n'
+            # for name in selectedDFItems:
+                # text += '-'+str(name)+'\n\n'
                 
-        text += '\n\n'
-        return text
+        # text += '\n\n'
+        # return text

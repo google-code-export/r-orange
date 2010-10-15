@@ -11,6 +11,8 @@ import textwrap
 import cPickle
 import pickle
 import types
+import redRReports
+
 import libraries.base.signalClasses.RDataFrame as rdf
 
 from libraries.base.qtWidgets.scrollArea import scrollArea
@@ -183,7 +185,7 @@ class readFile(OWRpy):
         fn = str(fn.toAscii())
         # print type(fn), fn
         
-        self.path = os.path.split(str(fn))[0]
+        self.path = os.path.split(fn)[0]
         self.filecombo.addFile(fn)
         self.saveGlobalSettings()
         self.scanNewFile()
@@ -233,7 +235,7 @@ class readFile(OWRpy):
             print 'No file selected'
             return
         if not scan =='clipboard':
-            self.R(self.Rvariables['filename'] + ' = "' + fn + '"') # should protext if R can't find this file
+            self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn)) 
             
             # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
                 # self.delimiter.setChecked('Tab')
@@ -367,6 +369,8 @@ class readFile(OWRpy):
             # there must not have been any way to update the scan, perhaps one of the file names was wrong
             self.scanarea.clear()
             self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
+        
+        # print self.getReportText('./')
           
     def html_table(self,lol,rownames):
         s = '<table border="1" cellpadding="3">'
@@ -390,36 +394,50 @@ class readFile(OWRpy):
         self.updateGUI()
         sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("od1", sendData)
-        
+    """        
     def getReportText(self, fileDir):
         ## custom implementation of the reporting system for read Files.
-        text = ''
-        try:
-            text += 'File Source: '+str(self.filecombo.currentText())+'\n\n'
-            text += 'Reading Data\n\nData was read into the canvas using the following settings:\n\n'
-            text += 'Column Seperator: '+str(self.delimiter.getChecked())+'\n\n'
-            text += 'Use Column Header:'
-            if 'Column Headers' in self.hasHeader.getChecked():
-                text += ' Yes\n\n'
-            else:
-                text += ' No\n\n'
-            text += 'The following column in the orriginal data was used as the Rownames for the table: %s\n\n' %(self.rownames)
-            text += 'Other options include the following:\n\n'
-            for i in self.otherOptions.getChecked():
-                text += str(i) + '=TRUE\n\n'
+
+        params = [['File Source',self.filecombo.getCurrentFile()],
+        ['Column Delimiter',str(self.delimiter.getChecked())]
+        ]
+        text = redRReports.createTable(params,columnNames = ['Parameter','Value'],
+        tableName='Parameters')
+        
+        params = []
+        for i in range(len(self.colNames)):
+            params.append([self.colNames[i], self.colClasses[i]])
+
+ 
+        text += redRReports.createTable(params,columnNames = ['Column','Data Type'],
+        tableName='Data Types of Columns')
+        # print text
+        # text = ''
+        # try:
+            # text += 'File Source: '+self.filecombo.currentText()+'\n\n'
+            # text += 'Reading Data\n\nData was read into the canvas using the following settings:\n\n'
+            # text += 'Column Seperator: '+str(self.delimiter.getChecked())+'\n\n'
+            # text += 'Use Column Header:'
+            # if 'Column Headers' in self.hasHeader.getChecked():
+                # text += ' Yes\n\n'
+            # else:
+                # text += ' No\n\n'
+            # text += 'The following column in the orriginal data was used as the Rownames for the table: %s\n\n' %(self.rownames)
+            # text += 'Other options include the following:\n\n'
+            # for i in self.otherOptions.getChecked():
+                # text += str(i) + '=TRUE\n\n'
                 
-            text += '\n\nClasses for the columns are as follows:\n\n'
-            for i in range(len(rownames)):
-                text += '%s set to %s \n\n' % (self.colNames[i], self.colClasses[i])
-            text += '\n\n'
-        except Exception as inst:
-            print '<strong>', str(inst), '</strong>'
-            pass
+            # text += '\n\nClasses for the columns are as follows:\n\n'
+            # for i in range(len(self.rownames)):
+                # text += '%s set to %s \n\n' % (self.colNames[i], self.colClasses[i])
+            # text += '\n\n'
+        # except Exception as inst:
+            # print '<strong>', str(inst), '</strong>'
+            # pass
         
         
         return text
         
-        
-        
+    """       
     
         

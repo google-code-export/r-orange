@@ -113,8 +113,6 @@ class zoomSelectToolbar(QGroupBox,widgetState):
         cursor = f[4]
         if not cursor is None:
             self.graph.setCursor(cursor)
-    def getReportText(self, fileDir):
-        return ''
 
     # for backward compatibility with a previous version of this class
     def actionZooming(self): self.action(0)

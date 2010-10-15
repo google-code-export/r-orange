@@ -17,7 +17,7 @@ import orngRegistry, OWGUI
 import redROutput
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
-
+import redRReports
 
 class OrangeCanvasDlg(QMainWindow):
     
@@ -114,6 +114,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         # create a schema
         self.schema = orngDoc.SchemaDoc(self)
+        self.reports = redRReports.reports(self,self.schema)
         
         self.setCentralWidget(self.schema)
         self.schema.setFocus()
@@ -490,82 +491,7 @@ class OrangeCanvasDlg(QMainWindow):
         #self.output.setFocus()
     def menuItemReport(self):
         ## start the report generator, handled in orngDoc (where else)
-        import datetime
-        qname = QFileDialog.getSaveFileName(self, "Write Report to File", redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
-        if qname.isEmpty(): return
-        qname = str(qname.toAscii())
-        
-        name = str(qname) # this is the file name of the Report
-        if os.path.splitext(str(name))[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
-        fileDir = os.path.split(name)[0]
-        try:
-            fileDir2 = os.path.join(fileDir, os.path.splitext("Data-"+str(os.path.split(name)[1]))[0])
-            fileDir2 = str(fileDir2).replace('\\', '/')
-            fd3 = []
-            for p in fileDir2.split('/'):
-                if len(p) > 8 and ' ' in p:
-                    fd3.append(p.replace(' ', '')[:6]+'~1')
-                else:
-                    fd3.append(p)
-            fileDir2 = '/'.join(fd3)
-            os.mkdir(fileDir2)  # makes a file to place the temp data into.  This will be deleted once the odt file is made.
-            
-        except Exception as inst:
-            print 'Exception, Data directory must exist.', str(inst)
-        print fileDir2
-        
-        ## first take a picture of the canvas and save as png.
-        image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
-        painter = QPainter(image)
-        self.schema.canvasView.scene().render(painter) #
-        painter.end()
-        imageFile = os.path.join(fileDir2, 'canvas-image.png').replace('\\', '/')
-        if not image.save(imageFile):
-            print 'Error in saving schema'
-            print image
-            print image.width(), 'width'
-
-        text = '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
-        text += 'Schema Image\n\n'
-        text += '.. image:: %s\n  :scale: 50%%\n' % (imageFile)
-        text += self.schema.getReportText(fileDir2)
-        #text += '</body></html>'
-        
-        file = open(str(os.path.join(fileDir2, 'content.rst')).replace('\\','/'), "wt")
-        file.write(text)
-        file.close()
-        
-        from docutils.core import publish_string
-        if os.path.splitext(str(name))[1].lower() in [".odt"]:#, ".html", ".tex"]
-            from docutils.writers.odf_odt import Writer, Reader
-            reader = Reader()
-            writer = Writer()
-            output = publish_string(str(text), reader = reader, writer = writer)
-            file = open(name, 'wb')
-            file.write(output)
-            file.close()
-            
-            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
-        elif os.path.splitext(str(name))[1].lower() in [".tex"]:# , ".tex"]
-            output = publish_string(str(text), writer_name='latex')#, writer = writer, reader = reader)
-
-            file = open(name, 'w')
-            file.write(output)
-            file.close()
-            
-            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
-
-        elif os.path.splitext(str(name))[1].lower() in [".html"]:# , ".tex"]
-            
-            output = publish_string(str(text), writer_name='html')
-            print output
-            print type(output)
-            print str(output)
-            file = open(name, 'w')
-            file.write(output)
-            file.close()
-            
-            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", QMessageBox.Ok + QMessageBox.Default )
+        self.reports.createReportsMenu()
 
         
     def menuItemClearOutputWindow(self):

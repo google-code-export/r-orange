@@ -60,5 +60,3 @@ class treeWidget(QTreeWidget, widgetState):
                     continue
         except:
             print 'Exception during setting assignment.'
-    def getReportText(self, fileDir):
-        return ''

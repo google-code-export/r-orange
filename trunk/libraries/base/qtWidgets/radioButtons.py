@@ -44,7 +44,7 @@ class radioButtons(widgetBox,widgetState):
     def getChecked(self):
         button = self.buttons.checkedButton()
         if button == 0 or button == None or button.isEnabled()==False: return 0
-        else: return button.text()
+        else: return str(button.text().toAscii())
     
     def disable(self,buttons):
         for i in self.buttons.buttons():
@@ -68,7 +68,13 @@ class radioButtons(widgetBox,widgetState):
         self.setChecked(data['checked'])
         
     def getReportText(self, fileDir):
-        text = '%s with the following element selected:\n\n' % (self.label, self.getChecked())
-        return text
+        if not self.label:
+            label = "RadioButton with No Label"
+        else:
+            label = self.label
+        r = {'label': label, 'text': self.getChecked()}
+
+        #text = '%s with the following element selected:\n\n' % (self.label, self.getChecked())
+        return r
 
 

@@ -114,4 +114,11 @@ class comboBox(QComboBox,widgetState):
         if index != -1:
             self.setCurrentIndex(index)
     def getReportText(self, fileDir):
-        return '%s set to %s' % (self.label, self.currentText())
+        if not self.label:
+            label = "ComboBox with No Label"
+        else:
+            label = self.label
+
+        r = {'label': label, 'text': self.currentText()}
+        #return '%s set to %s' % (self.label, self.currentText())
+        return r

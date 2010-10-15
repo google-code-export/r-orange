@@ -39,6 +39,7 @@ class RFormulaEntry(groupBox, widgetState):
         self.outcomeVariable = comboBox(self.modelBox, label = 'Outcome (f(x)):')
         widgetLabel(self.modelBox, ' = ')
         self.modelLineEdit = lineEdit(self.modelBox, label = None)
+        self.label = label
     def clear(self):
         self.elementsListBox.clear()
         self.outcomeVariable.clear()
@@ -106,5 +107,6 @@ class RFormulaEntry(groupBox, widgetState):
         self.elementsListBox.update(items)
             
     def getReportText(self, fileDir):
-        return 'The following formula was used: %s ~ %s' % self.formula()
+        (a,b) = self.Formula()
+        return {'label': self.label, 'text':a + ' ~ ' + b}
         

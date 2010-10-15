@@ -1,7 +1,7 @@
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
-
+import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -89,7 +89,7 @@ class listBox(QListWidget,widgetState):
                 index = self.count()
 
             source = ev.mimeData().source
-            selectedItemIndices = eval(str(ev.mimeData().text()))
+            selectedItemIndices = eval(str(ev.mimeData().text().toAscii()))
 
             if self.ogLabels != None and self.ogValue != None:
                 allSourceItems = getdeepattr(source.widget, source.ogLabels, default = [])
@@ -143,7 +143,7 @@ class listBox(QListWidget,widgetState):
         selected = []
         for i in range(self.count()):
             # print i
-            items.append(str(self.item(i).text()))
+            items.append(str(self.item(i).text().toAscii()))
             if self.isItemSelected(self.item(i)):
                 selected.append(i)
 
@@ -179,7 +179,7 @@ class listBox(QListWidget,widgetState):
             # if self.isItemSelected(self.item(i)): i = i + 1
         # return i
     def getCurrentSelection(self):
-            return [str(i.text()) for i in self.selectedItems()]
+            return [str(i.text().toAscii()) for i in self.selectedItems()]
                 
     def items(self):
         items = []
@@ -189,7 +189,7 @@ class listBox(QListWidget,widgetState):
     def getItems(self):
         items = []
         for i in range(0, self.count()):
-            items.append(str(self.item(i).text()))
+            items.append(str(self.item(i).text().toAscii()))
         return items
         
     def addRItems(self, items):
@@ -198,7 +198,7 @@ class listBox(QListWidget,widgetState):
         else:
             self.addItems([items])
     def update(self, items):
-        current = [str(item.text()) for item in self.selectedItems()]
+        current = [str(item.text().toAscii()) for item in self.selectedItems()]
         self.clear()
         self.addRItems(items)
         index = []
@@ -218,5 +218,23 @@ class listBox(QListWidget,widgetState):
         else:
             QListWidget.show(self)
     def getReportText(self, fileDir):
-    
-        return 'Please see the Red-R .rrs file for more information.\n\n'
+        items = self.getItems()
+        selected = self.getCurrentSelection()
+        new = []
+        for x in items:
+            if x in selected:
+                new.append(['selected', x])
+            else:
+                new.append(['',x])
+        #print new
+        text = redRReports.createTable(new)
+        text += '\nSelected text has * in front'
+
+        if not self.label:
+            label = "ListBox with No Label"
+        else:
+            label = self.label
+
+        r = {'label': label, 'text': text}
+
+        return r

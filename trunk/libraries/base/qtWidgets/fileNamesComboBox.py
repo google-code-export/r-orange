@@ -11,11 +11,13 @@ class fileNamesComboBox(comboBox):
         
         comboBox.__init__(self,widget,label=label,items=None, orientation=orientation,
         callback=callback,callback2=callback2, **args)
+        self.label = label
         if files:
             self.files = files
         else:
             self.files=['Select File']
         self.setFileList()
+        
         
     def getSettings(self):
         r = {'files':self.files,'current':self.currentText()}
@@ -49,7 +51,8 @@ class fileNamesComboBox(comboBox):
         self.clear()
         #newFiles = []
         for file in self.files:
-            #print file
+            #print type(file), file
+            
             if os.path.exists(file) or file =='Select File':
                 self.addItem(os.path.basename(file))
                 # newFiles.append(file)
@@ -70,13 +73,22 @@ class fileNamesComboBox(comboBox):
         # for x in self.files:
             # print type(x),x
         if fn in self.files:
-            self.files.remove(str(fn))
-        self.files.insert(1,str(fn))
+            self.files.remove(fn)
+        self.files.insert(1,fn)
         self.setFileList()
-        # self.addItem(os.path.basename(str(fn)))
+
         
     def getCurrentFile(self):
         if len(self.files) ==0 or self.currentIndex() == 0:
             return False
         return self.files[self.currentIndex()].replace('\\', '/')
         
+    def getReportText(self, fileDir):
+        if not self.label:
+            label = "File Select"
+        else:
+            label = self.label
+        
+        r = {'label': label, 'text': self.getCurrentFile()}
+        #return '%s set to %s' % (self.label, self.currentText())
+        return r

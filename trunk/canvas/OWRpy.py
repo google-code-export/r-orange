@@ -8,7 +8,7 @@ from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
-import RSession, redREnviron, os
+import RSession, redREnviron, os, redRReports
 import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
@@ -165,7 +165,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             
         return
         
-    def getReportText(self, fileDir):
+    def getReportText2(self, fileDir):
         ## move through all of the qtWidgets in self and show their report outputs, should be implimented by each widget.
         children = self.controlArea.children()
         print children
@@ -186,6 +186,38 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
                 print inst
                 continue
         return text
+    def getReportText3(self, fileDir):
+        ## move through all of the qtWidgets in self and show their report outputs, 
+        ## should be implimented by each widget.
+        from redRGUI import widgetState
+        children = self.controlArea.findChildren(QWidget)
+        # print children
+        #import re
+        reportData = []
+        for i in children:
+            #print i.__class__.__name__
+            if isinstance(i, widgetState):
+                d = i.getReportText(fileDir)
+                if d:
+                    reportData.append(d)
+        
+
+        arrayOfArray = []
+        for d in reportData:
+            if type(d) is dict:
+                arrayOfArray.append([d['label'], d['text']])
+            elif type(d) is list:
+                for x in d:
+                    arrayOfArray.append([x['label'], x['text']])
+                    
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(arrayOfArray)
+        text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
+        tableName='Parameters')
+        print text
+        return text        
+
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         if not repository and 'CRANrepos' in redREnviron.settings.keys():

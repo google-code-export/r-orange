@@ -81,11 +81,11 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         
 
         #The table
-        self.tableBox = groupBox(self.controlArea, label = 'Data Table')
+        self.tableBox = widgetBox(self.controlArea)
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #boxSettings = groupBox(self.advancedOptions, label = "Settings")
 
-        self.table = filterTable(self.tableBox,sortable=True,
+        self.table = filterTable(self.tableBox,label = 'Data Table', sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.itemClicked)
         
         
@@ -199,7 +199,8 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.colButton.setIcon(QIcon(pixmap))
 
     def getReportText(self, fileDir):
-        return 'See the Red-R .rrs file or an output of the table to see the data.\n\n'
+        text = self.table.getReportText(fileDir)
+        return text
 
 class TableItemDelegate(QItemDelegate):
     def __init__(self, widget = None, table = None):

@@ -76,12 +76,9 @@ class lineEdit(QLineEdit,widgetState):
             print 'Loading of lineEdit encountered an error.'
             
     def getReportText(self, fileDir):
-        print 'getting report text for lineEdit'
-        t = ''
         if self.label:
-            t += self.label+': '
-        if str(self.text()) != '':
-            t += str(self.text())+'\n\n'
+            r = {'label': self.label, 'text': self.text()}
         else:
-            t += 'No data input\n\n'
-        return t
+            r = {'label': 'Line Edit', 'text': self.text()}
+        
+        return r

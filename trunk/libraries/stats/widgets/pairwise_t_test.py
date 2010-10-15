@@ -69,5 +69,5 @@ class pairwise_t_test(OWRpy):
         self.rSend("id0", out)
     def getReportText(self, fileDir):
         text = 'Pairwise T-Test of the attached data.  Result below:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += self.RoutputWindow.getReportText()+'\n\n'
         return text

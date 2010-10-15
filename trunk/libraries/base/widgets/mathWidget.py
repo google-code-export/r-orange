@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.dialog import dialog
-from libraries.base.qtWidgets.Rtable import Rtable
+from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
@@ -35,7 +35,7 @@ class mathWidget(OWRpy):
         leftArea = groupBox(mainArea, label = 'Table View')
         rightArea = groupBox(mainArea, label = 'Math Box')
         
-        self.table = Rtable(leftArea)
+        self.table = redRfilterTable(leftArea,filterable=False,sortable=False)
         
         self.functionLineEdit = lineEdit(rightArea, label = 'Function Search or Run', callback = self.functionDone)
         QObject.connect(self.functionLineEdit, SIGNAL('textChanged(const QString&)'), lambda s: self.textChanged(s))

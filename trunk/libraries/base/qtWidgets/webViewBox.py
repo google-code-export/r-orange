@@ -34,6 +34,3 @@ class webViewBox(QtWebKit.QWebView,widgetState):
     def sizeHint(self):
         return QSize(10,10)
 
-    def getReportText(self, fileDir):
-        return ''
-        

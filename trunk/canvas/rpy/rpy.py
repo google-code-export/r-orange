@@ -26,7 +26,7 @@ from rpy_options import rpy_options
 import rpy_io
 import UserDict
 import time, os, sys, atexit, glob
-# import rpy_tools
+import rpy_tools
 import redREnviron
 # print rpy_options
 
@@ -45,10 +45,10 @@ import redREnviron
         # pass
 HAS_NUMERIC = 0
 RHOME=redREnviron.directoryNames['RDir']
-RVERSION='2.9.2'
-RVER='2092'
+RVERSION='2.9.1'
+RVER='2091'
 RUSER=redREnviron.directoryNames['RDir']
-VERBOSE=True
+VERBOSE=False
 
 # Get necessary paths and version information
 

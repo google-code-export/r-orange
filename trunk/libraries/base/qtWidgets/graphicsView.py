@@ -402,8 +402,16 @@ class graphicsView(QGraphicsView, widgetState):
         self.extrasLineEdit.loadSettings(data['addSettings'])
         self.addImage(data['image'])
     def getReportText(self, fileDir):
-        #return ''
-        pass
+        image = self.returnImage()
+        image = image.scaled(1000,1000, Qt.KeepAspectRatio)
+        imageFile = os.path.join(fileDir, self.image + '.png').replace('\\', '/')
+        if not image.save(imageFile):
+            print 'Error in saving image in graphicsView'
+            return ''
+        
+        text = '.. image:: %s\n    :scale: 50%%\n\n' % imageFile
+        
+        return {'label':self.image,'text':text}        
         
     def saveAs(self, fileName, imageType):
         if self.query == '': return

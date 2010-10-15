@@ -32,17 +32,4 @@ class tabWidget(QTabWidget,widgetState):
         #print 'called load' + str(value)
         self.setCurrentIndex(data['currentIndex'])
         
-    def getReportText(self, fileDir):
-        try:
-            children = self.children()
-            text = ''
-            for i in children:
-                try:
-                    text += i.getReportText(fileDir)
-                except Exception as inst:
-                    print inst
-                    continue
-        except:
-            text = ''
-        return text
 

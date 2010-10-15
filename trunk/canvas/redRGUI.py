@@ -14,6 +14,8 @@ class widgetState:
         # print ' in wdiget state'
         self.setEnabled(data['enabled'])
         self.setHidden(data['hidden'])
+    def getReportText(self,fileDir):
+        return False
     def getSettings(self):
         pass
     def loadSettings(self,data):

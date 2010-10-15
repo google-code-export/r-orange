@@ -1081,57 +1081,7 @@ class SchemaDoc(QWidget):
             QWidget.keyPressEvent(self, e)
             
     
-# #######################################
-# # Report Generator
-# #######################################
-    def getReportText(self, fileDir):
-        ## very simply we need to loop through the widgets and get some info about them and put that into the report.
-        
-        text = ''
-        contents = ''
-        # show the report list and allow the user to select widgets to include in the report.
-        repDlg = ReportDialog(self.canvasDlg, self.widgets)
-        if repDlg.exec_() == QDialog.Rejected:
-            return
-        ## get the report info for the included widgets.
-        for widget in self.widgets:
-            if not widget.instance.includeInReport.isChecked(): continue # don't include those that don't need to be in the report.
-            tt = ''
-            tt += '\n\n\n--------------------\n\n\n'
-            tt += '\n%s\n%s\n'%(widget.caption, '))))))))))))))))))))))))))))))))))))')
-            try:
-                tt += widget.instance.getReportText(fileDir)
-                tt += '\n\n\n--------------------\n\n\n'
-                tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
-                if str(widget.instance.notes.toPlainText()) != '':
-                    tt += str(r'\n'+widget.instance.notes.toPlainText()).replace(r'\n', r'\n\t')+'\n\n'
-                else:
-                    tt += 'No notes were entered in the widget face.\n\n'
-                tt += '\n\n\n--------------------\n\n\n'
-                # tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
-                # try:
-                    # if widget.instance.inputs:
-                        
-                        # for input in widget.instance.inputs:
-                            # for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
-                                # tt += '-The Signal *%s* is linked to widget *%s*\n\n' % (input[0], iwidget.captionTitle)
-                # except: pass
-                # try:
-                    # if widget.instance.outputs:
-                        ##tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
-                        # for output in widget.instance.outputs:
-                            # for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
-                                # tt += '-This widget sends the signal *%s* to widget *%s*\n\n' % (output[0], owidget.captionTitle)
-                # except:
-                    # pass
-            except Exception as inst:
-                print '##########################'
-                print str(inst)
-                print '##########################'
-                tt += 'Error occured in report generation for this widget'
-            text += tt+'\n\n'
-            
-        return text
+
 # #######################################
 # # Progress Bar
 # #######################################
@@ -1149,52 +1099,6 @@ class SchemaDoc(QWidget):
         progressBar.show()
         return progressBar
 
-class ReportDialog(QDialog):
-    def __init__(self, parent, widgets = None):
-        QDialog.__init__(self, parent)
-        
-        self.setWindowTitle('Report Widget Selector')
-        
-        self.setLayout(QVBoxLayout())
-        layout = self.layout()
-        
-        mainWidgetBox = QWidget(self)
-        mainWidgetBox.setLayout(QVBoxLayout())
-        layout.addWidget(mainWidgetBox)
-
-        topWidgetBox = QWidget(mainWidgetBox)
-        topWidgetBox.setLayout(QHBoxLayout())
-        mainWidgetBox.layout().addWidget(topWidgetBox)
-        
-        topWidgetBox.layout().addWidget(QLabel('Tags:', topWidgetBox))
-        self.widgetList = QListWidget(topWidgetBox)
-        self.widgetList.setSelectionMode(QAbstractItemView.MultiSelection)
-        topWidgetBox.layout().addWidget(self.widgetList)
-        
-        self.widgetNames = {}
-        for widget in widgets:
-            self.widgetNames[widget.caption] = {'inReport': widget.instance.includeInReport.isChecked(), 'widget':widget}
-        print self.widgetNames.keys()
-        self.widgetList.addItems(self.widgetNames.keys())
-        count = int(self.widgetList.count())
-        
-        for i in range(count):
-            item = self.widgetList.item(i)
-            if self.widgetNames[str(item.text())]['inReport']:
-                self.widgetList.setItemSelected(item, True)
-        buttonWidgetBox = QWidget(mainWidgetBox)
-        buttonWidgetBox.setLayout(QHBoxLayout())
-        mainWidgetBox.layout().addWidget(buttonWidgetBox)
-        
-        acceptButton = QPushButton('Accept', buttonWidgetBox)
-        buttonWidgetBox.layout().addWidget(acceptButton)
-        QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
-        QObject.connect(self.widgetList, SIGNAL("itemClicked(QListWidgetItem *)"), self.widgetListItemClicked)
-        
-    def widgetListItemClicked(self, item):
-        itemText = str(item.text())
-        self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
-        
 
 class TemplateDialog(QDialog):
     def __init__(self, parent):

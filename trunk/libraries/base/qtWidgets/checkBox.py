@@ -34,7 +34,7 @@ class checkBox(widgetBox,widgetState):
             
     def setChecked(self,ids):
         for i in self.buttons.buttons():
-            if str(i.text()) in ids: i.setChecked(True)
+            if str(i.text().toAscii()) in ids: i.setChecked(True)
             else: i.setChecked(False)
     def checkAll(self):
         for i in self.buttons.buttons():
@@ -46,10 +46,10 @@ class checkBox(widgetBox,widgetState):
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
-            if i.isChecked(): checked.append(str(i.text()))
+            if i.isChecked(): checked.append(str(i.text().toAscii()))
         return checked
     def buttonAt(self,ind):
-        return self.buttons.button(ind).text()
+        return str(self.buttons.button(ind).text().toAscii())
         
     def hide(self):
         self.box.hide()
@@ -65,6 +65,18 @@ class checkBox(widgetBox,widgetState):
         # return
         
     def getReportText(self, fileDir):
-        t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
-        return t
+        selected = self.getChecked()
+        if self.label:
+            if len(selected):
+                text='Checked: ' + ', '.join(selected)
+            else:
+                text= 'Nothing Checked'
+            r = {'label': self.label, 'text': text}
+        else:
+            r = []
+            for c in self.getChecked():
+                r.append({'label': c, 'text': 'Checked'})
+            
+        #t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
+        return r
 

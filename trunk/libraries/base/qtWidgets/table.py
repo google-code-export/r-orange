@@ -8,7 +8,6 @@ class table(widgetState,QTableWidget):
         self.sortIndex = None
         self.oldSortingIndex = None
         self.data = None
-        print 'in base table'
        ### should turn this into a function as all widgets use it to some degree
         if widget and addToLayout and widget.layout():
             widget.layout().addWidget(self)
@@ -95,4 +94,11 @@ class table(widgetState,QTableWidget):
         sip.delete(self)
         
     def getReportText(self, fileDir):
-        return 'Please see the Red-R .rrs file for more information on this widget element.\n\n'
+        
+        text = redRReports.createTable(self.data)
+        # if self.label:
+            # label = self.label
+        # else:
+            label='Data Table';
+        
+        return {'label': label, 'text': text}

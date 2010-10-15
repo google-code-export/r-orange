@@ -3,6 +3,7 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.button import button
 
+import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -51,13 +52,19 @@ class textEdit(QTextEdit,widgetState):
             self.hb.hide()
         else:
             QTextEdit.hide(self)
+    def toPlainText(self):
+        return str(QTextEdit.toPlainText(self).toAscii())
     def show(self):
         if self.label:
             self.hb.show()
         else:
             QTextEdit.show(self)
-    def getReportText(self, fileDir):
-        return self.toPlainText()+'\n\n'
+    def getReportText(self,fileDir):
+        if not self.label:
+            label = "TextBox with No Label"
+        else:
+            label = self.label
+        return {'label': label, 'text': redRReports.createLitralBlock(self.toPlainText())}
         
     def printMe(self):
         printer = QPrinter()

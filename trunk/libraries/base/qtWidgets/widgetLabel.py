@@ -18,6 +18,8 @@ class widgetLabel(QLabel,widgetState):
             label = "<img style='margin-left:5px' src=\"%s\" /> %s" % (icon, label)
         self.setText(label)
         self.setWordWrap(wordWrap)
+    def text(self):
+        return str(QLabel.text(self).toAscii())
     def getSettings(self):
         # print 'in widgetLabel getSettings'
         r = {'text':self.text()}
@@ -27,7 +29,5 @@ class widgetLabel(QLabel,widgetState):
         # print 'in widgetLabel loadSettings'
         # print data
         self.setText(data['text'])
-    def getReportText(self, fileDir):
-        return ''
         
 

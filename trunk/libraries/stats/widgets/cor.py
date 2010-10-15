@@ -25,7 +25,7 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 # The wiget class name must be the same as the file name
 import libraries.base.signalClasses.RVariable as rvar
 
-from libraries.base.qtWidgets.Rtable import Rtable
+from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.radioButtons import radioButtons
@@ -80,7 +80,7 @@ class cor(OWRpy):
         self.sendOnSelect = checkBox(options,buttons=['Calculate on data Input'], 
         toolTips=['Calculate variance on data input.'])
 
-        self.RoutputWindow = Rtable(area,sortable=True)
+        self.RoutputWindow = redRfilterTable(area,sortable=True,filterable=False)
     
     # execute this function when data in the X channel is received
     # The function will be passed the data
