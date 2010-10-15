@@ -20,6 +20,7 @@ from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.graphicsView import graphicsView
+from libraries.base.qtWidgets.radioButtons import radioButtons
 class Heatmap(OWRpy):
     #This widget has no settings list
     def __init__(self, parent=None, signalManager=None):
@@ -34,7 +35,7 @@ class Heatmap(OWRpy):
         self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
         self.inputs.addInput('id1', 'Classes Data', redRRDataFrame, self.processClasses)
 
-        self.outputs.addOutput('id0', 'Cluster Subset List', redRRList)
+        #self.outputs.addOutput('id0', 'Cluster Subset List', redRRVector)
         self.outputs.addOutput('id1', 'Cluster Classes', redRRVector)
 
         
@@ -45,6 +46,8 @@ class Heatmap(OWRpy):
         button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
         button(infobox, label = 'Save as PDF', callback = self.saveAsPDF)
         button(infobox, label = 'Identify', callback = self.identify, width=200)
+        self.groupOrHeight = radioButtons(infobox, label = 'Identify by:', buttons = ['Groups' , 'Height'], setChecked = 'Groups')
+        self.groupOrHeightSpin = spinBox(infobox, label = 'Identify Value:', min = 1, value = 5)
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
@@ -150,19 +153,22 @@ class Heatmap(OWRpy):
                 
     def identify(self, kill = True):
         if self.plotdata == '': return
+        ## needs to be rewritten for Red-R 1.85 which uses rpy3.  no interactivity with graphics.
         
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
-        self.R('plot('+self.Rvariables['hclust']+')')
-        self.R(self.Rvariables['heatsubset']+'<-lapply(identify('+self.Rvariables['hclust']+'),names)')        
         
-        newData = redRRList(data = self.Rvariables['heatsubset'], parent = self.Rvariables['heatsubset'])
-        self.rSend("id0", newData)
         
-        self.R(self.Rvariables['heatvect']+'<-NULL; k<-1')
-        self.R('for(i in colnames('+self.plotdata+')){for(j in 1:length('+self.Rvariables['heatsubset']+')){if(i %in%  '+self.Rvariables['heatsubset']+'[[j]]){'+self.Rvariables['heatvect']+'[k]<-j; k <- k+1}}}')
+        ## now there is a plot the user must select the number of groups or the height at which to make the slices.
+        print str(self.groupOrHeight.getChecked())
+        if str(self.groupOrHeight.getChecked()) == 'Groups':
+            inj = 'k = ' + str(self.groupOrHeightSpin.value())
+        else:
+            inj = 'h = ' + str(self.groupOrHeightSpin.value())
+        self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
+        self.gview1.plotMultiple(self.Rvariables['hclust'], layers = ['rect.hclust(%s, %s)' % (self.Rvariables['hclust'], inj)])
+        newData = redRRVector(data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
+        self.rSend("id1", newData)
         
-        newDataVect = redRRVector(data = self.Rvariables['heatvect'])
-        self.rSend("id1", newDataVect)
         
     def getReportText(self, fileDir):
         ## print the plot to the fileDir and then send a text for an image of the plot

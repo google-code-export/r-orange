@@ -156,6 +156,7 @@ class readFile(OWRpy):
         if sys.platform=="win32":
             self.require_librarys(['RODBC'])
             self.setForExcel()
+        ##self.require_librarys(['ff'])
     def setForExcel(self):
         self.fileType.show()
     def otherSep(self,text):

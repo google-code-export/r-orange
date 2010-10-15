@@ -289,6 +289,9 @@ class graphicsView(QGraphicsView, widgetState):
         if qname.isEmpty(): return
         qname = str(qname.toAscii())
         self.saveAs(str(qname), 'jpeg')
+    def backToParent(self):
+        self.parent.layout().addWidget(self.controlArea)
+        self.dialog.hide()
     def mousePressEvent(self, mouseEvent):
         
         if mouseEvent.button() == Qt.RightButton:
@@ -783,16 +786,19 @@ class colorListDialog(QDialog):
         return RSession.Rcommand(query = query)
 
 class dialog(QDialog):
-    def __init__(self, parent = None, layout = 'vertical',title=None):
+    def __init__(self, parent, layout = 'vertical',title=None):
         QDialog.__init__(self,parent)
         self.ltys = []
+        self.parent = parent
         if title:
             self.setWindowTitle(title)
         if layout == 'horizontal':
             self.setLayout(QHBoxLayout())
         else:
             self.setLayout(QVBoxLayout())
-            
+    def close(self):
+        self.parent.backToParent()
+        self.done()
 class lineTypeDialog(dialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Line Type Dialog'):
         dialog.__init__(self, parent = parent, layout = layout, title = title)

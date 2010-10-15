@@ -2,17 +2,8 @@
 ## Controls the execution of R funcitons into the underlying R session
 
 import sys, os, redREnviron, numpy
-#if sys.platform=="win32":
-#    from rpy_options import rpy_options
-#    rpy_options['RHOME'] = redREnviron.directoryNames['RDir']
-#    rpy_options['RVERSION'] = '2.9.1'
-#    rpy_options['VERBOSE'] = False
-#else: # need this because linux doesn't need to use the RPATH
-#    personalLibDir = os.path.join(redREnviron.directoryNames['settingsDir'], 'RLibraries')
-#    if not os.path.isdir(personalLibDir):
-#        os.makedirs(personalLibDir)
-#   print 'Cant find windows environ varuable RPATH, you are not using a win32 machine.'
 
+os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'], 'R-2.9.2')
     
 import rpy2.robjects as rpy
 from PyQt4.QtCore import *
@@ -62,9 +53,12 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     output = convertToPy(output)
     if type(output) == list and len(output) == 1:
         output = output[0]
-    print 'This is the output:', outputs
+    print 'This is the output:', output
     # print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists
+    
+    
     if wantType == None:
+        print 'Warning!! WantType is None.  This will prevent a return in Red-R 1.90!!!'
         pass
     elif wantType == 'list':
         if type(output) is list:
@@ -157,7 +151,7 @@ def convertToPy(inobject):
     print inobject.getrclass()
     try:
         newData = {}                                                                                       ## set up a new dict to place the data in, sometimes this is replaced with a vector 
-        if inobject.getrclass()[0] in ['numeric', 'logical']:                                       ## keep the items as ints/floats if they are numeric or logical
+        if inobject.getrclass()[0] in ['numeric', 'logical', 'integer', 'complex']:                                       ## keep the items as ints/floats if they are numeric or logical
             return [i for i in inobject]
         elif inobject.getrclass()[0] in ['factor']:                                                     ## if factor the string representation of the factor levels is returned, this is useful for printing the output when python needs to format the printing
             import rpy2.robjects as ro
@@ -185,11 +179,12 @@ def convertToPy(inobject):
             return newData
         elif str(inobject.names) == 'NULL': ## names don't exist                            ## if we made it this far then the object could be a list or data.frame or at least something that isn't made of atomics if there are names then we want to make a dict of names, if not then make a dict of indices to work over.
             for i in range(len(inobject)):
-                newData[i] = convertToPy[i]
+                newData[i] = convertToPy([i])
             return newData
         else:                                                                                                     ## if all else fails then return the string representation of the object, it's likely that pure python may be able to do nothing more with the object.
             return str(inobject)
-    except:
+    except Exception as e:
+        print str(e)
         return None
 def getInstalledLibraries():
     if sys.platform=="win32":
@@ -203,7 +198,7 @@ def setLibPaths(libLoc):
     Rcommand('.libPaths(\''+str(libLoc)+'\')') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
     
 if sys.platform=="win32":
-    libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
+    libPath = os.path.join(os.environ['R_HOME'], 'library').replace('\\','/')
 else:
     libPath = personalLibDir
 setLibPaths(libPath)

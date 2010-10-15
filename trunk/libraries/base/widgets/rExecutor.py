@@ -83,7 +83,7 @@ class rExecutor(OWRpy):
 
         sendbutton = button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
     def addlsList(self):
-        self.command.insert(str(self.lsList.selectedItems()[0].text()))
+        self.command.insertPlainText(str(self.lsList.selectedItems()[0].text()))
     def refreshLsList(self):
         self.lsList.update(self.R('ls()', wantType = 'list'))
     def clearOutput(self):
@@ -139,7 +139,7 @@ class rExecutor(OWRpy):
             if str(self.command.textCursor().selectedText()) != '':
                 text = str(self.command.textCursor().selectedText())
             else:
-                text = str(self.command.toPlainText())
+                text = str(self.command.toPlainText().toAscii())
             self.R('txt<-capture.output(eval(parse(text = \"'+str(text).replace('\"', '\\\"')+'\")))')
 
             pasted = self.R('paste(txt, collapse = " \n")')
