@@ -3,7 +3,7 @@
 
 import sys, os, redREnviron, numpy
 
-os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'], 'R-2.9.2')
+os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
     
 import rpy2.robjects as rpy
 from PyQt4.QtCore import *

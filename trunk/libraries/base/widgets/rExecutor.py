@@ -139,7 +139,7 @@ class rExecutor(OWRpy):
             if str(self.command.textCursor().selectedText()) != '':
                 text = str(self.command.textCursor().selectedText())
             else:
-                text = str(self.command.toPlainText().toAscii())
+                text = str(self.command.toPlainText())
             self.R('txt<-capture.output(eval(parse(text = \"'+str(text).replace('\"', '\\\"')+'\")))')
 
             pasted = self.R('paste(txt, collapse = " \n")')
