@@ -9,7 +9,7 @@ from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
 import RSession, redREnviron, os, redRReports
-import rpy
+#import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.button import button as redRButton
