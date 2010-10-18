@@ -369,6 +369,8 @@ class readFile(OWRpy):
         except Exception as e:
             print str(e)
             # there must not have been any way to update the scan, perhaps one of the file names was wrong
+            import redRExceptionHandling
+            print redRExceptionHandling.formatException()
             self.scanarea.clear()
             self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
         

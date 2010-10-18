@@ -5,7 +5,7 @@ import sys, os, redREnviron, numpy
 
 os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
     
-import rpy2.robjects as rpy
+import rpy3.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -169,14 +169,20 @@ def convertToPy(inobject):
                 except:
                     print 'Import error 4, we failed!!!'
                     raise Exception
+                    
     print inobject.getrclass()
+    print 'in convertToPy', inobject.getrclass()
+    if inobject.getrclass()[0] in ['data.frame','matrix']:
+        print 'return the r object'
+        return inobject
+        
     try:
         return co.convert(inobject)
         # newData = {}                                                                                       ## set up a new dict to place the data in, sometimes this is replaced with a vector 
         # if inobject.getrclass()[0] in ['numeric', 'logical', 'integer', 'complex']:                                       ## keep the items as ints/floats if they are numeric or logical
             # return [i for i in inobject]
         # elif inobject.getrclass()[0] in ['factor']:                                                     ## if factor the string representation of the factor levels is returned, this is useful for printing the output when python needs to format the printing
-            # import rpy2.robjects as ro
+            # import rpy3.robjects as ro
             # levels = ro.r.levels(inobject)
             # return [levels[i-1] for i in inobject]
         # elif inobject.getrclass()[0] in ['character']:                                               ## if character we put everything in as a string
