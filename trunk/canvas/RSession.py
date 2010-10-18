@@ -8,7 +8,7 @@ os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
 import rpy2.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import canvas.rpy._conversion as co
 mutex = QMutex()
 def assign(name, object):
     try:
@@ -44,16 +44,20 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         
         output = rpy.r(query)
     except Exception as inst:
-	
         print inst
         mutex.unlock()
         raise RuntimeError(str(inst) + '  Orriginal Query was:  ' + str(query))
         return None # now processes can catch potential errors
-    print output.getrclass()
+    if wantType == 'NoConversion': 
+        
+        mutex.unlock()
+        return
+    
+    ##print output.getrclass()
     output = convertToPy(output)
     if type(output) == list and len(output) == 1:
         output = output[0]
-    print 'This is the output:', output
+    ##print 'This is the output:', output
     # print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists
     
     
@@ -150,39 +154,40 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
 def convertToPy(inobject):
     print inobject.getrclass()
     try:
-        newData = {}                                                                                       ## set up a new dict to place the data in, sometimes this is replaced with a vector 
-        if inobject.getrclass()[0] in ['numeric', 'logical', 'integer', 'complex']:                                       ## keep the items as ints/floats if they are numeric or logical
-            return [i for i in inobject]
-        elif inobject.getrclass()[0] in ['factor']:                                                     ## if factor the string representation of the factor levels is returned, this is useful for printing the output when python needs to format the printing
-            import rpy2.robjects as ro
-            levels = ro.r.levels(inobject)
-            return [levels[i-1] for i in inobject]
-        elif inobject.getrclass()[0] in ['character']:                                               ## if character we put everything in as a string
-            return [str(i) for i in inobject]
-        elif inobject.getrclass()[0] in ['array', 'matrix']:                                          ## this one needs the most work, converting 2d matrices into arrays is rather easy, doing this in higher dimentions is more difficult, if the RArray object has more access to the underlying data and it's organization this could be improved.
-            if len(inobject.dim) == 2:
-                newData = []
-                for i in range(inobject.dim[0]):
-                    newRow = []
-                    for j in range(inobject.dim[1]):
-                        newRow.append(inobject[i + inobject.dim[0]*j])
-                    newData.append(newRow)
+        return co.convert(inobject)
+        # newData = {}                                                                                       ## set up a new dict to place the data in, sometimes this is replaced with a vector 
+        # if inobject.getrclass()[0] in ['numeric', 'logical', 'integer', 'complex']:                                       ## keep the items as ints/floats if they are numeric or logical
+            # return [i for i in inobject]
+        # elif inobject.getrclass()[0] in ['factor']:                                                     ## if factor the string representation of the factor levels is returned, this is useful for printing the output when python needs to format the printing
+            # import rpy2.robjects as ro
+            # levels = ro.r.levels(inobject)
+            # return [levels[i-1] for i in inobject]
+        # elif inobject.getrclass()[0] in ['character']:                                               ## if character we put everything in as a string
+            # return [str(i) for i in inobject]
+        # elif inobject.getrclass()[0] in ['array', 'matrix']:                                          ## this one needs the most work, converting 2d matrices into arrays is rather easy, doing this in higher dimentions is more difficult, if the RArray object has more access to the underlying data and it's organization this could be improved.
+            # if len(inobject.dim) == 2:
+                # newData = []
+                # for i in range(inobject.dim[0]):
+                    # newRow = []
+                    # for j in range(inobject.dim[1]):
+                        # newRow.append(inobject[i + inobject.dim[0]*j])
+                    # newData.append(newRow)
                     
-                return newData
-            else:
-                    raise Exception("Arrays of greater than two dimentions not supported.")
+                # return newData
+            # else:
+                    # raise Exception("Arrays of greater than two dimentions not supported.")
 
-        elif inobject.getrclass()[0] in ['data.frame', 'list']:
-            print 'Got data.frame'
-            for i in range(len(inobject)):
-                newData[inobject.names[i]] = convertToPy(inobject[i])
-            return newData
-        elif str(inobject.names) == 'NULL': ## names don't exist                            ## if we made it this far then the object could be a list or data.frame or at least something that isn't made of atomics if there are names then we want to make a dict of names, if not then make a dict of indices to work over.
-            for i in range(len(inobject)):
-                newData[i] = convertToPy([i])
-            return newData
-        else:                                                                                                     ## if all else fails then return the string representation of the object, it's likely that pure python may be able to do nothing more with the object.
-            return str(inobject)
+        # elif inobject.getrclass()[0] in ['data.frame', 'list']:
+            # print 'Got data.frame'
+            # for i in range(len(inobject)):
+                # newData[inobject.names[i]] = convertToPy(inobject[i])
+            # return newData
+        # elif str(inobject.names) == 'NULL': ## names don't exist                            ## if we made it this far then the object could be a list or data.frame or at least something that isn't made of atomics if there are names then we want to make a dict of names, if not then make a dict of indices to work over.
+            # for i in range(len(inobject)):
+                # newData[i] = convertToPy([i])
+            # return newData
+        # else:                                                                                                     ## if all else fails then return the string representation of the object, it's likely that pure python may be able to do nothing more with the object.
+            # return str(inobject)
     except Exception as e:
         print str(e)
         return None

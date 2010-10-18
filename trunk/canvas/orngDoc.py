@@ -801,8 +801,9 @@ class SchemaDoc(QWidget):
         return True
     # load a scheme with name "filename"
     def loadTemplate(self, filename, caption = None, freeze = 0):
+        self.sessionID += 1 ## must increase the session ID here because otherwise the template will load in the current session and everything will be out of wack!!!
         self.loadDocument(filename = filename, caption = caption, freeze = freeze)
-        self.sessionID += 1
+        
     def checkID(self, widgetID):
         for widget in self.widgets:
             if widget.instance.widgetID == widgetID:

@@ -33,7 +33,7 @@ class Heatmap(OWRpy):
         self.colvChoice = None
         
         self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
-        self.inputs.addInput('id1', 'Classes Data', redRRDataFrame, self.processClasses)
+        self.inputs.addInput('id1', 'Classes Data', redRRVector, self.processClasses)
 
         #self.outputs.addOutput('id0', 'Cluster Subset List', redRRVector)
         self.outputs.addOutput('id1', 'Cluster Classes', redRRVector)
@@ -44,15 +44,14 @@ class Heatmap(OWRpy):
         #GUI
         infobox = groupBox(self.controlArea, label = "Options")
         button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
-        button(infobox, label = 'Save as PDF', callback = self.saveAsPDF)
         button(infobox, label = 'Identify', callback = self.identify, width=200)
-        self.groupOrHeight = radioButtons(infobox, label = 'Identify by:', buttons = ['Groups' , 'Height'], setChecked = 'Groups')
+        self.groupOrHeight = radioButtons(infobox, label = 'Identify by:', buttons = ['Groups' , 'Height'], setChecked = 'Groups', orientation = 'horizontal')
         self.groupOrHeightSpin = spinBox(infobox, label = 'Identify Value:', min = 1, value = 5)
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
         self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
-        self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
+        #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         self.rowDendrogram = checkBox(infobox, buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
         self.plotOnConnect = checkBox(infobox, buttons=['Plot on Connect'])
         self.showClasses = checkBox(infobox, buttons = ['Show Classes'])
@@ -67,19 +66,6 @@ class Heatmap(OWRpy):
     def onLoadSavedSession(self):
         print 'load heatmap'
         self.processSignals()
-    def saveAsPDF(self):
-        self.status.setText('Saving as PDF')
-        if self.classes and ('Show Classes' in self.showClasses.getChecked()):
-            colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
-        else:
-            colClasses = ''
-        colorType = str(self.colorTypeCombo.currentText())
-        if colorType == 'rainbow':
-            col = 'rainbow(50, start = '+str(self.startSaturation.value()/100)+', end = '+str(self.endSaturation.value()/100)+')'
-        else:
-            col = colorType+'(50)'
-        self.savePDF('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
-        #self.stats.setText('File Saved')
     def processMatrix(self, data =None):
         
         if data:
@@ -102,17 +88,18 @@ class Heatmap(OWRpy):
     def processClasses(self, data):
         if data:
             self.classesData = data.getData()
-            self.classesDropdown.update(self.R('colnames('+data.data+')', wantType = 'list'))
+            #self.classesDropdown.update(self.R('colnames('+data.data+')', wantType = 'list'))
+            self.showClasses.setEnabled(True)
         else:
-            self.classesDropdown.clear()
+            #self.classesDropdown.clear()
             self.classesData = ''
     def makePlot(self):
         if self.plotdata == '': return
         self.status.setText("You are plotting "+self.plotdata)
-        if str(self.classesDropdown.currentText()) != '':
-            self.classes = self.classesData+'$'+str(self.classesDropdown.currentText())
-        if self.classes and ('Show Classes' in self.showClasses.getChecked()):
-            colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
+        # if str(self.classesDropdown.currentText()) != '':
+            # self.classes = self.classesData+'[,\''+str(self.classesDropdown.currentText()) + '\']'
+        if 'Show Classes' in self.showClasses.getChecked():
+            colClasses = ', ColSideColors=' + self.classesData + ''
         else:
             colClasses = ''
         colorType = str(self.colorTypeCombo.currentText())
@@ -165,7 +152,7 @@ class Heatmap(OWRpy):
         else:
             inj = 'h = ' + str(self.groupOrHeightSpin.value())
         self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
-        self.gview1.plotMultiple(self.Rvariables['hclust'], layers = ['rect.hclust(%s, %s)' % (self.Rvariables['hclust'], inj)])
+        self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], self.groupOrHeightSpin.value(), self.groupOrHeightSpin.value())])
         newData = redRRVector(data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         

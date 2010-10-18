@@ -293,17 +293,17 @@ class readFile(OWRpy):
                 if not scan:
                     nrows = '0'
                 self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
-                processingNotice=processing)
+                processingNotice=processing, wantType = 'NoConversion')
             elif scan == 'clipboard':
-                self.R(self.Rvariables['filename']+'<-\'clipboard\'')
+                self.R(self.Rvariables['filename']+'<-\'clipboard\'', wantType = 'NoConversion')
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
-                self.R(RStr, processingNotice=processing)
+                self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
                 print 'scan was to clipboard'
                 self.commit()
             else:
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
                 print '####################', processing
-                self.R(RStr, processingNotice=processing)
+                self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
         except:
             print sys.exc_info() 
             print RStr
@@ -366,7 +366,8 @@ class readFile(OWRpy):
                     self.columnTypes.layout().addWidget(s,k,1)
                     
                     self.dataTypes.append([i,s])
-        except:
+        except Exception as e:
+            print str(e)
             # there must not have been any way to update the scan, perhaps one of the file names was wrong
             self.scanarea.clear()
             self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')

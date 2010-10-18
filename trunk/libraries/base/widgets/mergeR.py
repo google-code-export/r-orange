@@ -137,7 +137,9 @@ class mergeR(OWRpy):
             if self.colBsel == 'Rownames': cbs = '0'
             else: cbs = self.colBsel
             
-            self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+', by.x='+cas+', by.y='+cbs+','+options+')')
+            self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+', by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
+            if self.colAsel == 'Rownames':
+                self.R('rownames('+self.Rvariables['merged']+')<-rownames('+self.dataA+')', wantType = 'NoConversion')
             self.sendMe()
 
     def sendMe(self,kill=False):
