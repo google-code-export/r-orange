@@ -279,6 +279,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions = QMenu("&Options", self)
         self.menuOptions.addAction( "Enable All Links",  self.menuItemEnableAll, Qt.CTRL+Qt.Key_E)
         self.menuOptions.addAction( "Disable All Links",  self.menuItemDisableAll, Qt.CTRL+Qt.Key_D)
+        self.menuOptions.addAction( "Select All Widgets", self.selectAllWidgets, Qt.CTRL+Qt.Key_A)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
@@ -474,7 +475,8 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuItemDisableAll(self):
         self.schema.disableAllLines()
-
+    def selectAllWidgets(self):
+        self.schema.selectAllWidgets()
     def menuItemSaveSettings(self):
         self.menuSaveSettings = not self.menuSaveSettings
         self.menuOptions.setItemChecked(self.menuSaveSettingsID, self.menuSaveSettings)

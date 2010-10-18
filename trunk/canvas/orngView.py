@@ -159,7 +159,11 @@ class SchemaView(QGraphicsView):
     def unselectAllWidgets(self):
         for item in self.doc.widgets:
             item.setSelected(0)
-
+        self.scene().update()
+    def selectAllWidgets(self):
+        for item in self.doc.widgets:
+            item.setSelected(1)
+        self.scene().update()
     def getItemsAtPos(self, pos, itemType = None):
         if type(pos) == QPointF:
             pos = QGraphicsRectItem(QRectF(pos, QSizeF(1,1)))

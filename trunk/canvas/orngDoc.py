@@ -61,7 +61,8 @@ class SchemaDoc(QWidget):
     def closeAllWidgets(self):
         for i in self.widgets:
             i.instance.close()
-            
+    def selectAllWidgets(self):
+        self.canvasView.selectAllWidgets()
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
     def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):
