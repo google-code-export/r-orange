@@ -8,7 +8,7 @@ os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
 import rpy2.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import canvas.rpy._conversion as co
+
 mutex = QMutex()
 def assign(name, object):
     try:
@@ -152,6 +152,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     return output
 	
 def convertToPy(inobject):
+    import canvas.redrrpy._conversion as co
     print inobject.getrclass()
     try:
         return co.convert(inobject)
