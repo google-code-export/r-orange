@@ -1,6 +1,48 @@
 /* conversion package for rpy3.  This will take a SEXP obect and convert to a python object of the expected class as would be seen in rpy1
 
-This module is derived from the functions that appeared in rpy1 with some changes by Kyle R Covington KRC*/
+This module is derived from the functions that appeared in rpy1 with some changes by Kyle R Covington (KRC).  The orriginal licence block is reproduced below.*/
+
+/*
+ * $Id: rpymodule.c 510 2008-05-09 21:16:59Z warnes $
+ * Implementation of the module '_rpy' and the 'Robj' type.
+ */
+
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is the RPy python module.
+ *
+ * The Initial Developer of the Original Code is Walter Moreira.
+ * Portions created by the Initial Developer are Copyright (C) 2002
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *    Kyle R Covington <kyle@red-r.org> (Maintainer)// orriginally Gregory R. Warnes <greg@warnes.net> (Maintainer)
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+ 
 
 //#include <R.h>
 //#include <Rinternals.h>
@@ -431,7 +473,7 @@ to_Pyobj_basic(SEXP robj, PyObject **obj)
 }
 
 PyObject *
-to_Pyobj_with_mode(SEXP robj, int mode)
+to_Pyobj_with_mode(SEXP robj, int mode)  // only basic conversion is supported at this time
 {
 
   PyObject *obj;
@@ -471,19 +513,20 @@ to_Pyobj_with_mode(SEXP robj, int mode)
   return obj;
 }
 
+// the convert_to_py function is used to convert a PySexpObject to a SEXP and then perform the conversion.  This function was created by KRC
 static PyObject *
 convert_to_py(PyObject * self, PyObject * args)
 {
-    PyObject * obj;
-    SEXP * robj;
-    PySexpObject * rpyObj;
+    PyObject * obj;             // init a new py obj
+    SEXP * robj;                // make a holder for the SEXP obj
+    PySexpObject * rpyObj;      // make a holder for the PySexpObject
     
     // if(my_callback){
         // argslist = Py_BuildValue("(O)", Py_BuildValue("(s)", "converter initialized"));
         // PyObject_CallObject(my_callback, argslist);
     // }
     
-    if (!PyArg_ParseTuple(args, "O", &rpyObj)) // parse the command as s and set to command
+    if (!PyArg_ParseTuple(args, "O", &rpyObj)) // parse the args to set the PySexpObject to the incomming PySexpObject
         {
             // if(my_callback){
             // argslist = Py_BuildValue("(O)", Py_BuildValue("(s)", "conversion to rpyobj failed"));
@@ -492,24 +535,14 @@ convert_to_py(PyObject * self, PyObject * args)
         // return Py_BuildValue("s", "conversion failed to set O ln 306");
         return NULL;
         }
-    robj = RPY_SEXP(rpyObj);
-    obj = to_Pyobj_with_mode(robj, BASIC_CONVERSION);
-    // if (!obj);
-        
-        // return Py_BuildValue("s", "conversion failed");
-        
-    return obj;
+    robj = RPY_SEXP(rpyObj);        // extract the SEXP from the PySexpObject    
+    obj = to_Pyobj_with_mode(robj, BASIC_CONVERSION);           // perform the conversion
+    return obj;                     // return the new obj
 }
 static PyMethodDef RConvert[] = {
     //...
     {"convert", convert_to_py, METH_VARARGS,
         "Convert using the basic conversion."},
-    // {"fromRVector",  to_Pyobj_vector, METH_VARARGS,
-     // "Convert from an RVector to a python list"},
-    // {"fromRDataFrame", to_PyDict, METH_VARARGS,
-     // "Convert from an RDataFrame to a python dict"},
-    // {"fromRMatrix", to_PyArray, METH_VARARGS,
-     // "Convert from an RMatrix to a python list of lists"},
      // {"setCallback", test_set_callback, METH_VARARGS,
      // "Sets the callback for this session."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
@@ -517,9 +550,6 @@ static PyMethodDef RConvert[] = {
 PyMODINIT_FUNC
 init_conversion(void)
 {
-    // const char textOut[100];
-    // strcat(textOut, "Please Pass An Argument to test.system");
     (void) Py_InitModule("_conversion", RConvert);
-    //PyObject_Print(Py_BuildValue("s", textOut), stdout, 0);
 }
 
