@@ -426,8 +426,11 @@ class SchemaDoc(QWidget):
         return newwidget
     def resolveCollisions(self, newwidget, x, y):
         if x==-1 or y==-1:
-            if self.widgets != []:
-                x = self.widgets[-1].x() + 110
+            if self.canvasView.getSelectedWidgets():
+                x = self.canvasView.getSelectedWidgets()[-1].x() + 110
+                y = self.canvasView.getSelectedWidgets()[-1].y()
+            elif self.widgets != []:
+                x = self.widgets[-1].x() + 110  # change to selected widget 
                 y = self.widgets[-1].y()
             else:
                 x = 30
@@ -545,7 +548,16 @@ class SchemaDoc(QWidget):
             if widget.instance == widgetInstance:
                 return widget
         return None
-
+    def handleDirty(self, ow, iw, dirty):
+        line = self.getLine(self.findWidgetFromInstance(ow), self.findWidgetFromInstance(iw))
+        line.dirty = dirty
+        print 'handling dirty', dirty
+        self.canvas.update()
+    def handleNone(self, ow, iw, none):
+        line = self.getLine(self.findWidgetFromInstance(ow), self.findWidgetFromInstance(iw))
+        line.noData = none
+        print 'handling none', none
+        self.canvas.update()
     # ###########################################
     # SAVING, LOADING, ....
     # ###########################################

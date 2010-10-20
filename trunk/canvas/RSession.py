@@ -152,23 +152,9 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     return output
 	
 def convertToPy(inobject):
-    try:
-        import canvas.redrrpy._conversion as co
-    except:
-        print 'import error 1'
-        try:
-            import canvas.redrrpy._conversion as co
-        except:
-            print 'import error 2'
-            try:
-                import _conversion as co
-            except:
-                print 'import error 3'
-                try:
-                    import _conversion as co
-                except:
-                    print 'Import error 4, we failed!!!'
-                    raise Exception
+    
+    import canvas.redrrpy._conversion as co
+    
                     
     print inobject.getrclass()
     print 'in convertToPy', inobject.getrclass()

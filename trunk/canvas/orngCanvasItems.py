@@ -96,7 +96,8 @@ class CanvasLine(QGraphicsLineItem):
         self.setZValue(-10)
         self.caption = ""
         self.updateTooltip()
-        
+        self.dirty = False
+        self.noData = False
         # this might seem unnecessary, but the pen size 20 is used for collision detection, when we want to see whether to to show the line menu or not 
         self.setPen(QPen(self.canvasDlg.lineColor, 20, Qt.SolidLine))        
 
@@ -122,8 +123,13 @@ class CanvasLine(QGraphicsLineItem):
         p1 = self.outWidget.getRightEdgePoint()
         p2 = self.inWidget.getLeftEdgePoint()
         self.setLine(p1.x(), p1.y(), p2.x(), p2.y())
-        
-        painter.setPen(QPen(self.canvasDlg.lineColor, 5 , self.getEnabled() and Qt.SolidLine or Qt.DashLine, Qt.RoundCap))
+        if self.dirty:
+            color = QColor('#999999')
+        elif self.noData:
+            color = QColor('#990000')
+        else:
+            color = self.canvasDlg.lineColor
+        painter.setPen(QPen(color, 5 , self.getEnabled() and Qt.SolidLine or Qt.DashLine, Qt.RoundCap))
         painter.drawLine(p1, p2)
 
         if redREnviron.settings["showSignalNames"]:
@@ -189,6 +195,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             self.instance.setWidgetStateHandler(self.updateWidgetState)
             self.instance.setEventHandler(canvasDlg.output.widgetEvents)
             self.instance.setWidgetWindowIcon(widgetInfo.icon)
+            self.instance.canvasWidget = self
             
         #self.setForces(forceInSignals, forceOutSignals) # a patch for dummywidget
         self.isProcessing = 0   # is this widget currently processing signals

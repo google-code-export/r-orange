@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import orngDoc
 
 class OutputHandler:
     def __init__(self, parent):                         ## set up the outputHandler, this will take care of sending signals to 
@@ -11,7 +11,7 @@ class OutputHandler:
         return self.outputSignals
     def addOutput(self, id, name, signalClass):
         self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent, 'sid':id}   # set up an 'empty' signal
-        
+
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
             if id not in self.outputSignals.keys():
@@ -96,6 +96,21 @@ class OutputHandler:
                     links.append((id, self.outputSignals[id]['connections'][con]['signal']['sid']))
                     
         return links
+    def getAllSignalLinksSignals(self):
+        links = []
+        for id in self.outputSignals.keys():
+            for con in self.outputSignals[id]['connections'].keys():
+                links.append(self.outputSignals[id]['connections'][con])
+                    
+        return links
+    def getWidgetConnections(self, widget):
+        links = []
+        for id in self.outputSignals.keys():
+            for con in self.outputSignals[id]['connections'].keys():
+                if self.outputSignals[id]['connections'][con]['signal']['parent'] == widget:
+                    links.append(self.outputSignals[id]['connections'][con])
+                    
+        return links
     def getSignal(self, id):
         if id in self.outputSignals.keys():
             return self.outputSignals[id]
@@ -119,25 +134,36 @@ class OutputHandler:
             handler = connection['signal']['handler']
             multiple = connection['signal']['multiple']
             print '\n\n\n', connection['signal']['signalClass'], '\n\n\n'
+            print '\n\n\n', 'Signal Value is\n', signal['value'], '\n\n\n'
             if signal['value'] == None: # if there is no data then it doesn't matter what the signal class is, becase none will be sent anyway
                 self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent']) 
+                self._handleNone(connection['signal']['parent'], connection['signal']['sid'], True)
+                self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
             elif signal['signalClass'] == 'All' or 'All' in connection['signal']['signalClass']:
                 print '\n\n\nprocessing signal %s using handler: %s with multiple: %s\n\n\n\n' % (signal['value'], handler, multiple)
                 self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent']) 
+                self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
+                self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
             elif signal['signalClass'] in connection['signal']['signalClass']:
                 self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent'])
+                self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
+                self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
             else:
                 for sig in connection['signal']['signalClass']:
                     try:
                         if sig in signal['signalClass'].convertToList:
                             newVal = signal['value'].convertToClass(sig)
                             self._handleSignal(newVal, handler, multiple, connection['signal']['parent'])
+                            self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
+                            self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
                             connection['signal']['value'] = newVal
                             break
                         elif signal['signalClass'] in sig.convertFromList:
                             tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
                             newVal = tempSignal.convertFromClass(signal['value'])
                             self._handleSignal(newVal, handler, multiple, connection['signal']['parent'])
+                            self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
+                            self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
                             connection['signal']['value'] = newVal
                             break
                     except:
@@ -153,11 +179,42 @@ class OutputHandler:
         # collect the connections
         connections = signal['connections']
         
+        ## mark signals as dirty, this should happen before processing any data
+        for cKey in connections.keys():
+            self._markDirty(connections[cKey])
+        ## update the canvas to indicate that the signal is not dirty any more
+        
         ## handle conversions and send data.
         for cKey in connections.keys():
             self._processSingle(signal, connections[cKey])
-
-                    
+    def markAllDirty(self):
+        ## step one, get all of the connections
+        cons = self.getAllSignalLinksSignals() ## gets all of the signals attached to any output signal
+        for c in cons:
+            self._markDirty(c)
+    def _markDirty(self, connection):
+        print 'Connection\n',connection, '\n\n'
+        
+        parent = connection['signal']['parent']
+        id = connection['signal']['sid']
+        self._handleDirty(parent, id, dirty = True)
+    def _handleDirty(self, parentWidget, id, dirty):
+        parentWidget.inputs.markDirty(id, dirty)
+        ## get all connections from the out to the in widget, we need to check if any of these are dirty
+        links = self.getWidgetConnections(parentWidget)
+        for l in links:
+            if parentWidget.inputs.getSignal(l['signal']['sid'])['dirty']:
+                self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, True)
+                return
+        self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, False)
+    def _handleNone(self, parentWidget, id, none):
+        parentWidget.inputs.markNone(id, none)
+        links = self.getWidgetConnections(parentWidget)
+        for l in links:
+            if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
+                self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, True)
+                return
+        self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, False)
     def _handleSignal(self, value, handler, multiple, parentWidget):
         try:
             if multiple:
@@ -234,6 +291,11 @@ class OutputHandler:
         ## send None through all of the channels
         for w in dWidgets:
             w.outputs.propogateNone(ask = False)
+    def propogateDirty(self):
+        ## tell all connected widgets to set their signals to be dirty
+        dWidgets = self.linkingWidgets()
+        for w in dWidgets:
+            w.propogateDirty()
             
     
 class InputHandler:
@@ -254,7 +316,23 @@ class InputHandler:
             'multiple':multiple,
             'sid':id, 
             'id':str(id)+'_'+self.parent.widgetID, 
-            'parent':self.parent}
+            'parent':self.parent,
+            'dirty':False,
+            'none': False}
+    def markDirty(self, id, dirty = True): # mark an input as dirty
+        self.inputs[id]['dirty'] = dirty
+        if dirty:
+            self.propogateDirty() ## if an in signal is dirty then the out signals should also be dirty.
+    def markNone(self, id, none = True):
+        self.inputs[id]['none'] = none  ## if a signal has none then it needs to be set to show red.
+    def dirty(self):                        # check if inputs are dirty
+        for k, i in self.inputs.items():
+            if i['dirty']: return True
+        return False
+    def clean(self):                        # check if inputs are clean (opposite of dirty)
+        return not self.dirty()
+    def propogateDirty(self):
+        self.parent.outputs.markAllDirty()
     def signalIDs(self):
         return self.inputs.keys()
 

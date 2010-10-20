@@ -10,6 +10,7 @@ from string import *
 from orngSignalManager import *
 import canvas.signals as signals
 from redRSignalManager import *
+import orngDoc
 
 
 class widgetSignals():
@@ -73,6 +74,7 @@ class widgetSignals():
             traceback.print_exc(file=sys.stdout)
             print '-'*60        
             self.status.setStatus(3)
+        self.R('gc()')
 
 
     # does widget have a signal with name in inputs
