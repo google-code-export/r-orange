@@ -143,10 +143,12 @@ class graphicsView(QGraphicsView, widgetState):
         
         self.standardImageType = 'svg'
         self.plotExactlySwitch = False ## a switch that can be activated to allow plotting exactly as the plot is sent, no function generation will be performed and all attribute alteration will be disabled
-        
+        QObject.connect(self.dialog, SIGNAL('finished(int)'), self.dialogClosed)
     ################################
     ####  Menu Actions         #####
     ################################
+    def dialogClosed(self, int):
+        self.backToParent()
     def setImageSVG(self):
         self.setStandardImageType('svg')
     def setImagePNG(self):
@@ -796,9 +798,7 @@ class dialog(QDialog):
             self.setLayout(QHBoxLayout())
         else:
             self.setLayout(QVBoxLayout())
-    def close(self):
-        self.parent.backToParent()
-        self.done()
+
 class lineTypeDialog(dialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Line Type Dialog'):
         dialog.__init__(self, parent = parent, layout = layout, title = title)

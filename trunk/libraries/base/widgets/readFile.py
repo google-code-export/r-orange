@@ -285,14 +285,15 @@ class readFile(OWRpy):
             ccl = 'c(' + ','.join(cls) + ')'
         else:
             ccl = 'NA'
-        
+        Rstr = 'None'
         try:
             if self.fileType.getChecked() == 'Excel':
+                Rstr = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
                 self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']))
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
                 if not scan:
                     nrows = '0'
-                self.R('%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows),
+                self.R(RStr,
                 processingNotice=processing, wantType = 'NoConversion')
             elif scan == 'clipboard':
                 self.R(self.Rvariables['filename']+'<-\'clipboard\'', wantType = 'NoConversion')

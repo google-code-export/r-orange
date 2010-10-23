@@ -31,7 +31,7 @@ class mergeR(OWRpy):
 
         self.outputs.addOutput('id0', 'Merged', redRRDataFrame)
 
-
+        raise Exception, 'test except'
         #default values        
         self.colAsel = None
         self.colBsel = None
