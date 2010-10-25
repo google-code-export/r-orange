@@ -14,7 +14,7 @@ sys.path.append(mypath)
 import redREnviron
 import redRExceptionHandling
 import orngRegistry, OWGUI
-import redROutput
+import redROutput, redRUpdateManager
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
 
@@ -51,6 +51,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.closeAll_pic = os.path.join(canvasPicsDir, "downgreenarrow.png")
         self.text_icon = os.path.join(canvasPicsDir, "text.png")
         self.file_print= os.path.join(canvasPicsDir, "print.png")
+        #self.update= os.path.join(canvasPicsDir, "update.png")
         self.file_exit = os.path.join(canvasPicsDir, "exit.png")
         canvasIconName = os.path.join(canvasPicsDir, "CanvasIcon.png")
         if os.path.exists(canvasIconName):
@@ -98,8 +99,6 @@ class OrangeCanvasDlg(QMainWindow):
             print "Unable to load all necessary icons. Please reinstall Red-R."
 
         self.setStatusBar(MyStatusBar(self))
-        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
-
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         redRGUI.registerQTWidgets()
         
@@ -118,6 +117,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.setCentralWidget(self.schema)
         self.schema.setFocus()
 
+        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
+        self.updateManager = redRUpdateManager.updateManager(self)
         
 
         # create menu
@@ -127,10 +128,14 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
-        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", self.schema.showAllWidgets)
-        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", self.schema.closeAllWidgets)
+        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", 
+        self.schema.showAllWidgets)
+        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", 
+        self.schema.closeAllWidgets)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
+        #self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
+        self.toolbar.addAction(QIcon(os.path.join(canvasPicsDir, "update.png")), 
+        "Check for Updates", self.menuCheckForUpdates)
 
         self.toolbar.addSeparator()
 
@@ -185,7 +190,13 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings['id'] = str(time.time())
         if redREnviron.settings['firstLoad']:
             self.startSetupWizard()
+
+
+        self.updateManager.showUpdateDialog(auto=True)
+                
         qApp.processEvents()
+        
+        
 
 
     def startSetupWizard(self):
@@ -387,7 +398,7 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveAsAppTabs(self):
         return ## depricated
         self.schema.saveDocumentAsApp(asTabs = 1)
-
+        
     def menuItemPrinter(self):
         try:
             printer = QPrinter()
@@ -602,7 +613,10 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuOpenPackageManager(self):
         self.packageManagerGUI.exec_()
-        
+ 
+    def menuCheckForUpdates(self):
+        self.updateManager.showUpdateDialog(auto=False)
+       
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
         webbrowser.open("file:///" + os.path.join(redREnviron.directoryNames['redRDir'], "doc/catalog/index.html"))
@@ -628,7 +642,7 @@ class OrangeCanvasDlg(QMainWindow):
         #webbrowser.open("http://www.ailab.si/orange/orangeCanvas") # to be added on the web
         webbrowser.open("http://www.red-r.org")
 
-    def menuCheckForUpdates(self):
+    # def menuCheckForUpdates(self):
         # import updateOrange
         # self.updateDlg = updateOrange.updateOrangeDlg(None, "", Qt.WDestructiveClose)
         #redREnviron.settings['svnSettings'], redREnviron.settings['versionNumber'] = updateRedR.start(redREnviron.settings['svnSettings'], redREnviron.settings['versionNumber'], silent = False)
