@@ -17,6 +17,8 @@ import xml.dom.minidom
 import redRGUI, redRExceptionHandling,re 
 import xml.etree.ElementTree as etree
 from datetime import date
+import win32api, win32process
+from win32com.shell import shell, shellcon
 
 class updateManager():
     def __init__(self,schema):
@@ -27,14 +29,16 @@ class updateManager():
             
         
     def checkForUpdate(self):
-
+        print 'checkForUpdate'
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RUpdates.xml')
-        #(file,headers) = urllib2.urlopen(self.repository +'/currentVersion.xml')
-        self.downloadFile(self.repository +'/currentVersion.xml', file)
+        f = urllib2.urlopen(self.repository +'/currentVersion.xml')
+        output = open(file,'wb')
+        output.write(f.read())
+        output.close()
+        
+        #self.downloadFile(self.repository +'/currentVersion.xml', file)
         
         self.availableUpdate = self.parseUpdatesXML(file)
-
-        
         if (self.availableUpdate['redRVerion'] == self.version 
         and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']):
             return True
@@ -42,11 +46,14 @@ class updateManager():
     
     def showUpdateDialog(self,auto=False):
         if not redREnviron.checkInternetConnection():
-            return False
+            if not auto:
+              self.showNoInternet()
+            return
+
         today = date.today()
         if redREnviron.settings['checkedForUpdates'] != 0:
             diff =  today - redREnviron.settings['checkedForUpdates']
-            if int(diff.days) < 10 and auto:
+            if int(diff.days) < 2 and auto:
                 return
                 
         redREnviron.settings['checkedForUpdates'] = today
@@ -91,6 +98,18 @@ class updateManager():
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
         
         redRbutton(buttonArea2, label = 'Done', callback = UpdatePopup.reject)
+        UpdatePopup.exec_()    
+    def showNoInternet(self):
+        UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
+        UpdatePopup.setMinimumWidth(350)
+        UpdatePopup.setMinimumHeight(350)
+        changeLogBox = redRwebViewBox(UpdatePopup)
+        changeLogBox.setHtml('No Internet Connection.')
+        
+        buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
+        
+        redRbutton(buttonArea2, label = 'Done', callback = UpdatePopup.reject)
         UpdatePopup.exec_()
     def showUpdateAvaliable(self,update):
         UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
@@ -108,17 +127,21 @@ class updateManager():
         redRbutton(buttonArea2, label = 'Close Red-R and Update', callback = UpdatePopup.accept)
         redRbutton(buttonArea2, label = 'Cancel', callback = UpdatePopup.reject)
         if UpdatePopup.exec_() == QDialog.Accepted:
-            self.update(update)
+            self.downloadUpdate(update)
         
-    def update(self,update):
+    def downloadUpdate(self,update):
         if redREnviron.version['TYPE'] =='compiled':
             url = update['compiledFileName']
-            file = os.path.join(redREnviron.directoryNames['downloadsDir'],os.path.basename(update['compiledFileName']))
+            file = os.path.join(redREnviron.directoryNames['downloadsDir'],
+            os.path.basename(update['compiledFileName']))
         else:
             url = update['developerFileName']
-            file = os.path.join(redREnviron.directoryNames['downloadsDir'],update['developerFileName'])
+            file = os.path.join(redREnviron.directoryNames['downloadsDir'],
+            os.path.basename(update['developerFileName']))
         
-        #print url, file
+        # self.execUpdate(file)
+        # return
+        print url, file
         self.progressBar = QProgressDialog(self.schema)
         self.progressBar.setCancelButtonText(QString())
         self.progressBar.setWindowTitle('Downloading...')
@@ -127,7 +150,14 @@ class updateManager():
         i = 0
         self.progressBar.setValue(i)
         self.progressBar.show()
-        self.downloadFile(url,file,finishedFun=self.execUpdate, progressFun=self.updateProgress)
+        self.manager = QNetworkAccessManager(self.schema)
+        reply = self.manager.get(QNetworkRequest(QUrl(url)))
+        
+        self.manager.connect(reply,SIGNAL("downloadProgress(qint64,qint64)"), self.updateProgress)
+        
+        self.manager.connect(self.manager,SIGNAL("finished(QNetworkReply*)"),
+        lambda reply: self.replyFinished(reply, file,self.closeAndUpdate))
+        # self.downloadFile(url,file,finishedFun=self.closeAndUpdate, progressFun=self.updateProgress)
     
     def updateProgress(self, read,total):
         self.progressBar.setValue(round((float(read) / float(total))*100))
@@ -135,26 +165,34 @@ class updateManager():
        
     def execUpdate(self,file):
         installDir = os.path.split(os.path.abspath(redREnviron.directoryNames['redRDir']))[0]
-        print installDir
-        import win32api
-        
+        # print installDir
         cmd = "%s /D=%s" % (file,installDir)
-        win32api.ShellExecute(0,'open',file,"/D=%s" % installDir,
-        redREnviron.directoryNames['downloadsDir'],1)
+        try:
+            shell.ShellExecuteEx(shellcon.SEE_MASK_NOCLOSEPROCESS,0,'open',file,"/D=%s" % installDir,
+            redREnviron.directoryNames['downloadsDir'],0)
+            # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
+        except:
+            import redRExceptionHandling
+            print redRExceptionHandling.formatException()
+            mb = QMessageBox("Error", "There was an Error in updating Red-R.", 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                QMessageBox.NoButton, QMessageBox.NoButton, self.schema)
+            mb.exec_()
+            return
+        # print 'asdfasdfa'
         
-        qApp.canvasDlg.closeEvent(self)
-
-    def downloadFile(self,url,file,finishedFun=None, progressFun=None):    
-        self.manager = QNetworkAccessManager(self.schema)
+    def closeAndUpdate(self,file):
+        qApp.canvasDlg.closeEvent(QCloseEvent(),postCloseFun=lambda:self.execUpdate(file))
         
-        reply = self.manager.get(QNetworkRequest(QUrl(url)))
+    # def downloadFile(self,url,file,finishedFun=None, progressFun=None):    
+        # self.manager = QNetworkAccessManager(self.schema)
+        # reply = self.manager.get(QNetworkRequest(QUrl(url)))
         
-        if progressFun:
-            self.manager.connect(reply,SIGNAL("downloadProgress(qint64,qint64)"), progressFun)
+        # if progressFun:
+            # self.manager.connect(reply,SIGNAL("downloadProgress(qint64,qint64)"), progressFun)
         
-        self.manager.connect(self.manager,SIGNAL("finished(QNetworkReply*)"),
-        lambda reply: self.replyFinished(reply, file,finishedFun))
-        
+        # self.manager.connect(self.manager,SIGNAL("finished(QNetworkReply*)"),
+        # lambda reply: self.replyFinished(reply, file,finishedFun))
     def replyFinished(self, reply,file,finishedFun):
         self.reply = reply
         output = open(file,'wb')

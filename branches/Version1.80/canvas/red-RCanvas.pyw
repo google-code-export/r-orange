@@ -127,24 +127,32 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
-        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
+
+        self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", 
         self.schema.showAllWidgets)
         self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", 
         self.schema.closeAllWidgets)
+        
         self.toolbar.addSeparator()
-        #self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
+        self.toolbar.addAction(QIcon(self.file_print), "Generate Report", self.menuItemReport)
+        
+        self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(os.path.join(canvasPicsDir, "update.png")), 
         "Check for Updates", self.menuCheckForUpdates)
-
+        
         self.toolbar.addSeparator()
+        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), 
+        "Reload Widgets", self.reloadWidgets)
 
-        w = QWidget()
-        w.setLayout(QHBoxLayout())
-        items = ["%d x %d" % (v,v) for v in self.toolbarIconSizeList]
-        redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
-        OWGUI.comboBoxWithCaption(w, redREnviron.settings, "toolbarIconSize", "Icon size:", items = items, tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", callback = self.createWidgetsToolbar, debuggingEnabled = 0)
-        self.toolbar.addWidget(w)
+        #self.toolbar.addSeparator()
+
+        # w = QWidget()
+        # w.setLayout(QHBoxLayout())
+        # items = ["%d x %d" % (v,v) for v in self.toolbarIconSizeList]
+        # redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
+        # OWGUI.comboBoxWithCaption(w, redREnviron.settings, "toolbarIconSize", "Icon size:", items = items, tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", callback = self.createWidgetsToolbar, debuggingEnabled = 0)
+        # self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
         self.createWidgetsToolbar() # also creates the categories popup
@@ -712,7 +720,7 @@ class OrangeCanvasDlg(QMainWindow):
 
 
 
-    def closeEvent(self, ce):
+    def closeEvent(self, ce, postCloseFun=None):
         print '|#| redRCanvas closeEvent'
         # save the current width of the toolbox, if we are using it
         if isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
@@ -742,6 +750,9 @@ class OrangeCanvasDlg(QMainWindow):
 
         
         if closed:
+            if postCloseFun:
+                postCloseFun()
+
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             self.schema.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
@@ -754,6 +765,7 @@ class OrangeCanvasDlg(QMainWindow):
             import redRHistory
             redRHistory.saveConnectionHistory()
             ce.accept()
+            
             QMainWindow.closeEvent(self,ce)
         else:
             ce.ignore()
