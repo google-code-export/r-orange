@@ -236,7 +236,7 @@ class SignalDialog(QDialog):
         self.resize(width+50, height+80)
         
         ## process the signals so that active connections are show.
-        links = outWidget.instance.outputs.getSignalLinks(inWidget.instance)
+        links = outWidget.instance().outputs.getSignalLinks(inWidget.instance)
         for (outName, inName) in links:
             self.addLink(outName, inName)
         print 'Output Handler Returned the following links', links
@@ -267,22 +267,22 @@ class SignalDialog(QDialog):
             return 1
         print outName, inName, 'Names'
         # check if correct types
-        outType = self.outWidget.instance.outputs.getSignal(outName)['signalClass']
-        inType = self.inWidget.instance.inputs.getSignal(inName)['signalClass']
+        outType = self.outWidget.instance().outputs.getSignal(outName)['signalClass']
+        inType = self.inWidget.instance().inputs.getSignal(inName)['signalClass']
         if not outType or not inType:
             raise Exception, 'None sent as signal type'
             
             
-        if not self.inWidget.instance.inputs.doesSignalMatch(inName, outType): return 0
+        if not self.inWidget.instance().inputs.doesSignalMatch(inName, outType): return 0
         inSignal = None
-        inputs = self.inWidget.instance.inputs.getAllInputs()
+        inputs = self.inWidget.instance().inputs.getAllInputs()
         for id, signal in inputs.items():
             if id == inName: inSignal = id
 
         # if inName is a single signal and connection already exists -> delete it
         for (outN, inN) in self._links:
-            print inSignal, inN, inName, self.inWidget.instance.inputs.getSignal(inSignal)['multiple']
-            if inSignal and inN == inName and not self.inWidget.instance.inputs.getSignal(inSignal)['multiple']:
+            print inSignal, inN, inName, self.inWidget.instance().inputs.getSignal(inSignal)['multiple']
+            if inSignal and inN == inName and not self.inWidget.instance().inputs.getSignal(inSignal)['multiple']:
                 self.removeLink(outN, inN)
 
         self._links.append((outName, inName))
@@ -293,7 +293,7 @@ class SignalDialog(QDialog):
     def removeLink(self, outName, inName): #removes from the list of instances
         res = QMessageBox.question(self.canvasView, 'Red-R Connections', 'Are you sure you want to remove that signal?\n\nThe downstream widget will recieve empty data.', QMessageBox.Yes | QMessageBox.No)
         if res == QMessageBox.Yes:
-            self.outWidget.instance.outputs.removeSignal(self.inWidget.instance.inputs.getSignal(inName), outName)
+            self.outWidget.instance().outputs.removeSignal(self.inWidget.instance().inputs.getSignal(inName), outName)
             self.canvasView.removeLink(outName, inName)
             self._links.remove((outName, inName))
 
@@ -323,7 +323,7 @@ class SignalCanvasView(QGraphicsView):
 
     def addSignalList(self, outWidget, inWidget):
         self.scene().clear()
-        outputs, inputs = outWidget.instance.outputs.getAllOutputs(), inWidget.instance.inputs.getAllInputs()
+        outputs, inputs = outWidget.instance().outputs.getAllOutputs(), inWidget.instance().inputs.getAllInputs()
         outIcon, inIcon = self.canvasDlg.getWidgetIcon(outWidget.widgetInfo), self.canvasDlg.getWidgetIcon(inWidget.widgetInfo)
         self.lines = []
         self.outBoxes = []

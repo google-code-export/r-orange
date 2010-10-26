@@ -25,9 +25,9 @@ class dotchart(OWRpy):
         
         self.standardTab = self.controlArea
         
-        self.RFunctionParammain_lineEdit =  lineEdit(self.standardTab,  label = "Main Title:", text = 'NULL')
-        self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "X Label:", text = 'NULL')
-        self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "Y Label:", text = 'NULL')
+        self.RFunctionParammain_lineEdit =  lineEdit(self.standardTab,  label = "Main Title:")
+        self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "X Label:")
+        self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "Y Label:")
         self.labelNames = comboBox(self.standardTab, label = 'Label Data')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
@@ -55,18 +55,18 @@ class dotchart(OWRpy):
             return
         injection = []
         if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+str(self.RFunctionParamxlab_lineEdit.text())+''
+            string = ',xlab=\"'+str(self.RFunctionParamxlab_lineEdit.text())+'\"'
             injection.append(string)
         if self.labels != '':
             injection.append('labels = '+self.labels + '$' + str(self.labelNames.currentText()))
         if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab='+str(self.RFunctionParamylab_lineEdit.text())+''
+            string = ',ylab=\"'+str(self.RFunctionParamylab_lineEdit.text())+'\"'
             injection.append(string)
         if str(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main='+str(self.RFunctionParammain_lineEdit.text())+''
+            string = ',main=\"'+str(self.RFunctionParammain_lineEdit.text())+'\"'
             injection.append(string)
-        inj = ','.join(injection)
-        self.Rplot('dotchart(x='+str(self.RFunctionParam_x)+', '+inj+')')
+        inj = ''.join(injection)
+        self.Rplot('dotchart(x='+str(self.RFunctionParam_x)+inj+')')
         
     def getReportText(self, fileDir):
         if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'

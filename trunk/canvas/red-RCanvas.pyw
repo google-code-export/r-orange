@@ -280,6 +280,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction( "Enable All Links",  self.menuItemEnableAll, Qt.CTRL+Qt.Key_E)
         self.menuOptions.addAction( "Disable All Links",  self.menuItemDisableAll, Qt.CTRL+Qt.Key_D)
         self.menuOptions.addAction( "Select All Widgets", self.selectAllWidgets, Qt.CTRL+Qt.Key_A)
+        self.menuOptions.addAction("New Tab", self.schema.newTab)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
@@ -320,11 +321,13 @@ class OrangeCanvasDlg(QMainWindow):
 
         # widget popup menu
         self.widgetPopup = QMenu("Widget", self)
-        self.widgetPopup.addAction( "Open",  self.schema.canvasView.openActiveWidget)
+        self.widgetPopup.addAction( "Open",  self.schema.activeTab().openActiveWidget)
         self.widgetPopup.addSeparator()
-        rename = self.widgetPopup.addAction( "&Rename", self.schema.canvasView.renameActiveWidget, Qt.Key_F2)
-        delete = self.widgetPopup.addAction("Remove", self.schema.canvasView.removeActiveWidget, Qt.Key_Delete)
-        copy = self.widgetPopup.addAction("&Copy", self.schema.copy, Qt.Key_F12)
+        rename = self.widgetPopup.addAction( "&Rename", self.schema.activeTab().renameActiveWidget, Qt.Key_F2)
+        delete = self.widgetPopup.addAction("Remove", self.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
+        copy = self.widgetPopup.addAction("&Copy", self.schema.copy, Qt.CTRL+Qt.Key_C)
+        cloneToTab = self.widgetPopup.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_V)
+        
         self.widgetPopup.setEnabled(0)
 
         self.menuBar = QMenuBar(self)
@@ -380,6 +383,7 @@ class OrangeCanvasDlg(QMainWindow):
     def reloadWidgets(self): # should have a way to set the desired tab location 
         print 'step 1'
         self.widgetRegistry = orngRegistry.readCategories()
+        #redRObjects.readCategories()
         print 'step 2'
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
         print 'step 3'

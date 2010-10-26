@@ -31,6 +31,7 @@ class Heatmap(OWRpy):
         self.plotdata = ''
         self.rowvChoice = None
         self.colvChoice = None
+        self.listOfColors = ['red', 'white', 'blue']
         
         self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
         self.inputs.addInput('id1', 'Classes Data', redRRVector, self.processClasses)
@@ -50,7 +51,7 @@ class Heatmap(OWRpy):
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        redRButton(self.controlArea, label = 'Reset Colors', callback = self.resetColors)
         #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         self.rowDendrogram = checkBox(infobox, buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
         self.plotOnConnect = checkBox(infobox, buttons=['Plot on Connect'])
@@ -60,9 +61,13 @@ class Heatmap(OWRpy):
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
         self.gview1 = graphicsView(self.controlArea)
         self.gview1.image = 'heatmap1_'+self.widgetID
-        self.gview2 = graphicsView(self.controlArea)
-        self.gview2.image = 'heatmap2_'+self.widgetID
-        
+        #self.gview2 = graphicsView(self.controlArea)
+        #self.gview2.image = 'heatmap2_'+self.widgetID
+    def resetColors(self):
+        cd = colorListDialog(self)
+        if cd.exec_() != QDialog.Accepted:
+            return
+        self.listOfColors = cd.listOfColors
     def onLoadSavedSession(self):
         print 'load heatmap'
         self.processSignals()
@@ -102,14 +107,14 @@ class Heatmap(OWRpy):
             colClasses = ', ColSideColors=' + self.classesData + ''
         else:
             colClasses = ''
-        colorType = str(self.colorTypeCombo.currentText())
-        if colorType == 'rainbow':
-            start = float(float(self.startSaturation.value())/100)
-            end = float(float(self.endSaturation.value())/100)
-            print start, end
-            col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
-        else:
-            col = colorType+'(50)'
+        # colorType = str(self.colorTypeCombo.currentText())
+        # if colorType == 'rainbow':
+            # start = float(float(self.startSaturation.value())/100)
+            # end = float(float(self.endSaturation.value())/100)
+            # print start, end
+            # col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
+        # else:
+            # col = colorType+'(50)'
         if 'Plot Row Dendrogram' in self.rowDendrogram.getChecked():
             self.rowvChoice = 'NULL'
         else:
@@ -118,17 +123,18 @@ class Heatmap(OWRpy):
             self.colvChoice = 'NULL'
         else:
             self.colvChoice = 'NA'
-        self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+'')
+        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))')
+        self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= tempPalette(50)'+ colClasses+'')
         # for making the pie plot
-        if colorType == 'rainbow':
-            start = float(float(self.startSaturation.value())/100)
-            end = float(float(self.endSaturation.value())/100)
-            print start, end
-            col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
-        else:
-            col = colorType+'(10)'
+        # if colorType == 'rainbow':
+            # start = float(float(self.startSaturation.value())/100)
+            # end = float(float(self.endSaturation.value())/100)
+            # print start, end
+            # col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
+        # else:
+            # col = colorType+'(10)'
         #self.R('dev.new()')
-        self.gview2.plot(query = 'rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+'', function = 'pie')
+        # self.gview2.plot(query = 'rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+'', function = 'pie')
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -202,3 +208,70 @@ class Heatmap(OWRpy):
             text = 'Nothing to plot from this widget'
             
         return text
+        
+class colorListDialog(QDialog):
+    def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(title)
+        if layout == 'horizontal':
+            self.setLayout(QHBoxLayout())
+        else:
+            self.setLayout(QVBoxLayout())
+        
+        self.listOfColors = []
+        self.controlArea = redRWidgetBox(self)
+        mainArea = redRWidgetBox(self.controlArea, 'horizontal')
+        leftBox = redRWidgetBox(mainArea)
+        rightBox = redRWidgetBox(mainArea)
+        ## GUI
+        
+        # color list
+        self.colorList = redRListBox(leftBox, label = 'Color List')
+        redRButton(leftBox, label = 'Add Color', callback = self.addColor)
+        redRButton(leftBox, label = 'Remove Color', callback = self.removeColor)
+        redRButton(leftBox, label = 'Clear Colors', callback = self.colorList.clear)
+        redRButton(mainArea, label = 'Finished', callback = self.accept)
+        # attribute list
+        
+        if data:
+            self.attsList = listBox(rightBox, label = 'Data Parameters', callback = self.attsListSelected)
+            names = self.R('names('+data+')')
+            print names
+            self.attsList.update(names)
+        self.data = data
+    def attsListSelected(self):
+        ## return a list of numbers coresponding to the levels of the data selected.
+        self.listOfColors = self.R('as.numeric(as.factor('+self.data+'$'+str(self.attsList.selectedItems()[0].text())+'))')
+        
+    def addColor(self):
+        colorDialog = QColorDialog(self)
+        color = colorDialog.getColor()
+        colorDialog.hide()
+        newItem = QListWidgetItem()
+        newItem.setBackgroundColor(color)
+        self.colorList.addItem(newItem)
+        
+        self.processColors()
+    def removeColor(self):
+        for item in self.colorList.selectedItems():
+            self.colorList.removeItemWidget(item)
+            
+        self.processColors()
+    def setColors(self, colorList):
+        self.colorList.clear()
+        try:
+            for c in colorList:
+                col = QColor()
+                col.setNamedColor(str(c))
+                newItem = QListWidgetItem()
+                newItem.setBackgroundColor(col)
+                self.colorList.addItem(newItem)
+        except:
+            pass # it might happen that we can't show the colors that's not good but also not disasterous either.
+    def processColors(self):
+        self.listOfColors = []
+        for item in self.colorList.items():
+            self.listOfColors.append('"'+str(item.backgroundColor().name())+'"')
+    def R(self, query):
+        return RSession.Rcommand(query = query)
+
