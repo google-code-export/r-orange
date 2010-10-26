@@ -1,3 +1,23 @@
+################################################################
+## Red-R is a visual programming interface for R designed to bring 
+## the power of the R statistical environment to a broader audience.
+## Copyright (C) 2010  name of Red-R Development
+## 
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+################################################################
+
 # R Signal Thread
 ## Controls the execution of R funcitons into the underlying R session
 
@@ -8,6 +28,7 @@ os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
 import rpy3.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import canvas.redrrpy._conversion as co
 
 mutex = QMutex()
 def assign(name, object):
@@ -49,9 +70,8 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         raise RuntimeError(str(inst) + '  Orriginal Query was:  ' + str(query))
         return None # now processes can catch potential errors
     if wantType == 'NoConversion': 
-        
         mutex.unlock()
-        return
+        return output
     
     ##print output.getrclass()
     output = convertToPy(output)
@@ -152,15 +172,10 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     return output
 	
 def convertToPy(inobject):
-    
-    import canvas.redrrpy._conversion as co
-    
-                    
-    print inobject.getrclass()
     print 'in convertToPy', inobject.getrclass()
-    if inobject.getrclass()[0] in ['data.frame','matrix']:
-        print 'return the r object'
-        return inobject
+    # if inobject.getrclass()[0] in ['data.frame','matrix']:
+        # print 'return the r object'
+        # return inobject
         
     try:
         return co.convert(inobject)
