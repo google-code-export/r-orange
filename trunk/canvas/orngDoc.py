@@ -901,6 +901,7 @@ class SchemaDoc(QWidget):
         # create xml document
         doc = Document()
         schema = doc.createElement("schema")
+        header = doc.createElement('header')
         widgets = doc.createElement("widgets")
         lines = doc.createElement("channels")
         settings = doc.createElement("settings")
@@ -916,7 +917,12 @@ class SchemaDoc(QWidget):
         schema.appendChild(saveTagsList)
         schema.appendChild(saveDescription)
         schema.appendChild(tabs)
+        schema.appendChild(header)
         requiredRLibraries = {}
+        
+        # make the header
+        header.setAttribute('version', redREnviron.version['REDRVERSION'])
+        
         
         #save widgets
         if copy:  ## copy should obtain the selected widget icons and their associated widgets, we then make a temp copy of that and then redisplay
@@ -1067,6 +1073,7 @@ class SchemaDoc(QWidget):
             'Cannot load file with extension ' + str(filename.split('.')[-1]),  
             QMessageBox.Ok + QMessageBox.Default)
             return
+        
         loadingProgressBar = self.startProgressBar('Loading '+str(os.path.basename(filename)),
         'Loading '+str(filename), 2)
         
@@ -1100,6 +1107,20 @@ class SchemaDoc(QWidget):
 
         ## get info from the schema
         schema = doc.firstChild
+        try:
+            
+            version = schema.getElementsByTagName("header")[0].getAttribute('version')
+            if not version:
+                ## we should move everything to the earlier versions of orngDoc for loading.
+                self.loadDocument180(filename, caption = None, freeze = 0, importing = 0)
+                loadingProgressBar.hide()
+                loadingProgressBar.close()
+                return
+        except:
+            self.loadDocument180(filename, caption = None, freeze = 0, importing = 0)
+            loadingProgressBar.hide()
+            loadingProgressBar.close()
+            return
         widgets = schema.getElementsByTagName("widgets")[0]
         tabs = schema.getElementsByTagName("tabs")[0]
         #settings = schema.getElementsByTagName("settings")
@@ -1151,6 +1172,98 @@ class SchemaDoc(QWidget):
         qApp.restoreOverrideCursor()
         loadingProgressBar.hide()
         loadingProgressBar.close()
+    def loadDocument180(self, filename, caption = None, freeze = 0, importing = 0):
+        import redREnviron
+        if filename.split('.')[-1] in ['rrts']:
+            tmp=True
+        elif filename.split('.')[-1] in ['rrs']:
+            tmp=False
+        else:
+            QMessageBox.information(self, 'Red-R Error', 
+            'Cannot load file with extension ' + str(filename.split('.')[-1]),  
+            QMessageBox.Ok + QMessageBox.Default)
+            return
+        
+        loadingProgressBar = self.startProgressBar('Loading '+str(os.path.basename(filename)),
+        'Loading '+str(filename), 2)
+        
+        ## What is the purpose of this???
+        if not os.path.exists(filename):
+            if os.path.splitext(filename)[1].lower() != ".tmp":
+                QMessageBox.critical(self, 'Red-R Canvas', 
+                'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
+            return
+            loadingProgressBar.hide()
+            loadingProgressBar.close()
+        ###
+            
+        # set cursor
+        qApp.setOverrideCursor(Qt.WaitCursor)
+        
+        if os.path.splitext(filename)[1].lower() == ".rrs":
+            self.schemaPath, self.schemaName = os.path.split(filename)
+            self.canvasDlg.setCaption(caption or self.schemaName)
+        if importing: # a normal load of the session
+            self.schemaName = ""
+
+        loadingProgressBar.setLabelText('Loading Schema Data, please wait')
+
+        ### unzip the file ###
+        print filename
+        zfile = zipfile.ZipFile( str(filename), "r" )
+        for name in zfile.namelist():
+            file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
+        doc = parse(os.path.join(redREnviron.directoryNames['tempDir'],'tempSchema.tmp')) # load the doc data for the data in the temp dir.
+
+        ## get info from the schema
+        schema = doc.firstChild
+        widgets = schema.getElementsByTagName("widgets")[0]
+        lines = schema.getElementsByTagName('channels')[0]
+        f = open(os.path.join(redREnviron.directoryNames['tempDir'],'settings.pickle'))
+        settingsDict = eval(str(f.read()))
+        f.close()
+        
+        #settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+        self.loadedSettingsDict = settingsDict
+        
+        self.loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
+        
+        ## make sure that there are no duplicate widgets.
+        if not tmp:
+            ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
+            if not self.checkWidgetDuplication(widgets = widgets):
+                QMessageBox.information(self, 'Schema Loading Failed', 'Duplicated widgets were detected between this schema and the active one.  Loading is not possible.',  QMessageBox.Ok + QMessageBox.Default)
+        
+                return
+            RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
+        
+        loadingProgressBar.setLabelText('Loading Widgets')
+        loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
+        loadingProgressBar.setValue(0)
+        globalData.globalData = cPickle.loads(self.loadedSettingsDict['_globalData'])
+        (loadedOkW, tempFailureTextW) = self.loadWidgets180(widgets = widgets, loadingProgressBar = loadingProgressBar, tmp = tmp)
+        
+        lineList = lines.getElementsByTagName("channel")
+        loadingProgressBar.setLabelText('Loading Lines')
+        (loadedOkL, tempFailureTextL) = self.loadLines(lineList, loadingProgressBar = loadingProgressBar, 
+        freeze = freeze, tmp = tmp)
+
+        for widget in self.widgets: widget.updateTooltip()
+        self.activeCanvas().update()
+        #self.saveTempDoc()
+        
+        if not loadedOkW and loadedOkL:
+            failureText = tempFailureTextW + tempFailureTextL
+            QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
+        
+        for widget in self.widgets:
+            widget.instance().setLoadingSavedSession(False)
+        qApp.restoreOverrideCursor() 
+        qApp.restoreOverrideCursor()
+        qApp.restoreOverrideCursor()
+        loadingProgressBar.hide()
+        loadingProgressBar.close()
+        
     def loadTabs(self, tabs, loadingProgressBar, tmp):
         # load the tabs
         print tabs.toprettyxml()
@@ -1226,11 +1339,43 @@ class SchemaDoc(QWidget):
                 if not self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
                     ## try to add using the old settings
                     self.addLink175(outWidget, inWidget, outName, inName, enabled)
+            lineInstance = self.getLine(outWidget, inWidget)
+            try: ## protection for update.
+                lineInstance.dirty = eval(str(line.getAttribute("dirty")))
+                ineInstance.noData = eval(str(line.getAttribute('noData')))
+            except:
+                pass
             print '######## enabled ########\n\n', enabled, '\n\n'
             #self.addLine(outWidget, inWidget, enabled, process = False)
             #self.signalManager.setFreeze(0)
             qApp.processEvents()
             
+        return (loadedOk, failureText)
+    def loadWidgets180(self, widgets, loadingProgressBar, tmp):
+        lpb = 0
+        loadedOk = 1
+        failureText = ''
+        addY = self.minimumY()
+        for widget in widgets.getElementsByTagName("widget"):
+            try:
+                name = widget.getAttribute("widgetName")
+
+                widgetID = widget.getAttribute('widgetID')
+                settings = cPickle.loads(self.loadedSettingsDict[widgetID]['settings'])
+                inputs = cPickle.loads(self.loadedSettingsDict[widgetID]['inputs'])
+                outputs = cPickle.loads(self.loadedSettingsDict[widgetID]['outputs'])
+                xPos = int(widget.getAttribute('xPos'))
+                yPos = int(widget.getAttribute('yPos'))
+                caption = str(widget.getAttribute('caption'))
+                ## for backward compatibility we need to make both the widgets and the instances.
+                #self.addWidgetInstanceByFileName(name, settings, inputs, outputs)
+                widgetInfo =  self.canvasDlg.widgetRegistry['widgets'][name]
+                self.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs)
+                #print 'Settings', settings
+                lpb += 1
+                loadingProgressBar.setValue(lpb)
+            except Exception as inst:
+                print str(inst), 'Widget load failure'
         return (loadedOk, failureText)
     def loadWidgets(self, widgets, loadingProgressBar, tmp):
         

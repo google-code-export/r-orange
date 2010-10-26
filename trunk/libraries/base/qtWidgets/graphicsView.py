@@ -430,10 +430,16 @@ class graphicsView(QGraphicsView, widgetState):
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
         
         if not self.plotExactlySwitch:
-            query = '%s(%s, %s)' % (self.function, self.query, self.extras)
+            self.extras = self._setParameters()
+            if str(self.extrasLineEdit.text()) != '':
+                self.extras += ', '+str(self.extrasLineEdit.text())
+            if self.extras != '':
+                fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
+            else:
+                fullquery = '%s(%s)' % (self.function, self.query)
         else:
-            query = self.query
-        self.R(query)
+            fullquery = self.query
+        self.R(fullquery)
         for l in self.layers:
             self.R(l)
         

@@ -140,13 +140,13 @@ class rExecutor(OWRpy):
                 text = str(self.command.textCursor().selectedText())
             else:
                 text = str(self.command.toPlainText())
-            self.R('txt<-capture.output(eval(parse(text = \"'+str(text).replace('\"', '\\\"')+'\")))')
+            output = self.R('capture.output(eval(parse(text = \"'+str(text).replace('\"', '\\\"')+'\")))', wantType = 'list')
 
-            pasted = self.R('paste(txt, collapse = " \n")')
+            #pasted = self.R('paste(txt, collapse = " \n")')
             # if type(pasted) != type(''):
                 # pasted = 'Error occured with evaluation, please chech output for error.'
-            self.thistext.insertPlainText('>>>'+str(text)+'##Done')
-            self.thistext.insertPlainText('\n'+pasted+'\n')
+            #self.thistext.insertPlainText('>>>'+str(text)+'##Done')
+            self.thistext.insertPlainText('\n'+'\n'.join(output)+'\n')
             self.thistext.setAlignment(Qt.AlignBottom)
         except Exception as inst:
             self.thistext.insertPlainText('Error Occurred: %s' % inst)

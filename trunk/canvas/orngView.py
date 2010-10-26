@@ -71,6 +71,7 @@ class SchemaView(QGraphicsView):
         widgets = self.getSelectedWidgets()
         if len(widgets) != 1: return
         widget = widgets[0]
+        print 'Showing widget instance.', widget.instance().widgetID
         widget.instance().show()
         if widget.instance().isMinimized():  # if widget is minimized, show its normal size
             widget.instance().showNormal()
