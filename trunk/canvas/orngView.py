@@ -71,10 +71,9 @@ class SchemaView(QGraphicsView):
         widgets = self.getSelectedWidgets()
         if len(widgets) != 1: return
         widget = widgets[0]
-        print 'Showing widget instance.', widget.instance().widgetID
-        widget.instance().show()
-        if widget.instance().isMinimized():  # if widget is minimized, show its normal size
-            widget.instance().showNormal()
+        widget.instance.show()
+        if widget.instance.isMinimized():  # if widget is minimized, show its normal size
+            widget.instance.showNormal()
 
     # popMenuAction - user selected to rename active widget
     def renameActiveWidget(self):
@@ -91,7 +90,7 @@ class SchemaView(QGraphicsView):
                     QMessageBox.information(self, 'Red-R Canvas', 'Unable to rename widget. An instance with that name already exists.')
                     return
             widget.updateText(newName)
-            widget.instance().setWindowTitle(newName)
+            widget.instance.setWindowTitle(newName)
 
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
@@ -125,7 +124,7 @@ class SchemaView(QGraphicsView):
             #oldEnabled = self.doc.signalManager.getLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance)
             
             # we enable or disable all of the links simultaneously (only way to do it with this interface.
-            self.selectedLine.outWidget.instance().outputs.setSignalEnabled(self.selectedLine.inWidget.instance(), not self.selectedLine.outWidget.instance().outputs.isSignalEnabled(self.selectedLine.inWidget.instance()))
+            self.selectedLine.outWidget.instance.outputs.setSignalEnabled(self.selectedLine.inWidget.instance, not self.selectedLine.outWidget.instance.outputs.isSignalEnabled(self.selectedLine.inWidget.instance))
             #self.doc.signalManager.setLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance, not oldEnabled)
             self.selectedLine.updateTooltip()
             self.selectedLine.inWidget.updateTooltip()
@@ -216,10 +215,15 @@ class SchemaView(QGraphicsView):
 
         # we clicked on a widget or on a line
         else:
-            if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget          
-                print activeItem, 'An item was clicked'
+            if type(activeItem) in [orngCanvasItems.CanvasWidget, orngCanvasItems.GhostWidget]:        # if we clicked on a widget
                 self.tempWidget = activeItem
 
+                ## if it was a ghost widget we need to do something
+                # print type(self.tempWidget)
+                
+                # if isinstance(self.tempWidget, orngCanvasItems.GhostWidget) and self.tempWidget.ghost:
+                    # self.tempWidget.convertToCanvasWidget()
+                # did we click inside the boxes to draw connections
                 if ev.button() == Qt.LeftButton:
                     self.bWidgetDragging = True
                     if self.doc.ctrlPressed:
@@ -355,15 +359,14 @@ class SchemaView(QGraphicsView):
     def mouseDoubleClickEvent(self, ev):
         point = self.mapToScene(ev.pos())
         activeItem = self.scene().itemAt(point)
-        if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget
-            print activeItem, 'Item double clicked'
+        if type(activeItem) in [orngCanvasItems.CanvasWidget, orngCanvasItems.GhostWidget]:        # if we clicked on a widget
             self.tempWidget = activeItem
             self.openActiveWidget()
         elif type(activeItem) == orngCanvasItems.CanvasLine:
             if self.doc.signalManager.signalProcessingInProgress:
                 QMessageBox.information( self, "Orange Canvas", "Please wait until Orange finishes processing signals.")
                 return
-            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance().outputs.isSignalEnabled(activeItem.inWidget.instance()))
+            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance.outputs.isSignalEnabled(activeItem.inWidget.instance))
             activeItem.inWidget.updateTooltip()
             activeItem.outWidget.updateTooltip()
             activeItem.updateTooltip()
@@ -374,14 +377,14 @@ class SchemaView(QGraphicsView):
 
     def progressBarHandler(self, widgetInstance, value):
         for widget in self.doc.widgets:
-            if widget.instance() == widgetInstance:
+            if widget.instance == widgetInstance:
                 widget.setProgressBarValue(value)
                 qApp.processEvents()        # allow processing of other events
                 return
 
     def processingHandler(self, widgetInstance, value):
         for widget in self.doc.widgets:
-            if widget.instance() == widgetInstance:
+            if widget.instance == widgetInstance:
                 widget.setProcessing(value)
                 self.repaint()
                 widget.update()
