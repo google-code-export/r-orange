@@ -11,7 +11,7 @@ import orngView, orngCanvasItems, orngTabs
 from orngDlgs import *
 import RSession, globalData, redRPackageManager, redRHistory
 from orngSignalManager import SignalManager, SignalDialog
-import cPickle, math, orngHistory, zipfile, urllib, sip
+import cPickle, math, orngHistory, zipfile, urllib, sip, redRObjects, redRSaveLoad
 #import pprint, 
 # pp = pprint.PrettyPrinter(indent=4)
 
@@ -21,8 +21,8 @@ class SchemaDoc(QWidget):
         self.canvasDlg = canvasDlg
         self.ctrlPressed = 0
         self.version = 'trunk'                  # should be changed before making the installer or when moving to a new branch.
-        self.lines = []                         # list of orngCanvasItems.CanvasLine items
-        self.widgets = []                       # list of orngCanvasItems.CanvasWidget items
+        #self.lines = []                         # list of orngCanvasItems.CanvasLine items
+        #self.widgets = []                       # list of orngCanvasItems.CanvasWidget items
         self.signalManager = SignalManager()    # signal manager to correctly process signals
 
         self.sessionID = 0
@@ -33,9 +33,6 @@ class SchemaDoc(QWidget):
         self.tabsWidget = QTabWidget()
         self.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
-        self.canvas = {}
-        self.canvasView = {}
-        self.canvasTabs = {}
         self.instances = {}
         self.makeSchemaTab('General')
         
@@ -43,65 +40,73 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
-    def widgetIcons(self, tab):  # moving to redrObjects
-        icons = []
-        for w in self.widgets:
-            if w.tab == tab:
-                icons.append(w)
-        return icons
-    def widgetLines(self, tab): # moving to redrObjects
-        lines = []
-        for l in self.lines:
-            if l.tab == tab:
-                lines.append(l)
-        return lines
-    def activeTab(self):
-        return self.canvasView[str(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))]
-    def activeTabName(self):
+    def widgets(self):
+        wlist = []
+        rolist = redRObjects.getIconsByTab()
+        for k, l in rolist.items():
+            wlist += l
+        return wlist
+    def lines(self):
+        llist = []
+        rolist = redRObjects.getLinesByTab()
+        for k, l in rolist.items():
+            llist += l
+        return llist
+    def widgetIcons(self, tab):  # moving to redrObjects / moved
+        return redRObjects.getIconsByTab(tab)
+        # icons = []
+        # for w in self.widgets:
+            # if w.tab == tab:
+                # icons.append(w)
+        # return icons
+    def widgetLines(self, tab): # moving to redrObjects / moved
+        return redRObjects.getLinesByTab(tab)
+        # lines = []
+        # for l in self.lines:
+            # if l.tab == tab:
+                # lines.append(l)
+        # return lines
+    def activeTab(self): # part of the view
+        return redRObjects.activeTab()
+    def activeTabName(self):    # part of the view
         return str(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))
-    def activeCanvas(self):
-        return self.canvas[str(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))]
-    def setTabActive(self, name):
+    def activeCanvas(self):     # part of the view
+        return redRObjects.activeCanvas() # self.canvas[str(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))]
+    def setTabActive(self, name):   # part of the view
         for i in range(self.tabsWidget.count()):
             if str(self.tabsWidget.tabText(i)) == name:
                 self.tabsWidget.setCurrentIndex(i)
                 break
         
-    def makeSchemaTab(self, tabname):
-        if tabname in self.canvasTabs.keys():
+    def makeSchemaTab(self, tabname):   # part of the view
+        print 'making new tab', tabname
+        if tabname in redRObjects.tabNames():
             self.setTabActive(tabname)
             return
-        self.canvasTabs[tabname] = QWidget()
-        self.canvasTabs[tabname].setLayout(QVBoxLayout())
-        self.tabsWidget.addTab(self.canvasTabs[tabname], tabname)
-        self.canvas[tabname] = QGraphicsScene()
-        self.canvasView[tabname] = orngView.SchemaView(self, self.canvas[tabname], self.canvasTabs[tabname])
-        self.canvasTabs[tabname].layout().addWidget(self.canvasView[tabname])
-    # save a temp document whenever anything changes. this doc is deleted on closeEvent
-    # in case that Orange crashes, Canvas on the next start offers an option to reload the crashed schema with links frozen
-    def saveTempDoc(self):
-        return
-        if self.widgets != []:
-            tempName = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "tempSchema.tmp")
-            self.save(tempName,True)
-        
-    def removeTempDoc(self):
-        tempName = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "tempSchema.tmp")
-        if os.path.exists(tempName):
-            os.remove(tempName)
-
-
-    def showAllWidgets(self):
-        for i in self.instances:
-            i.show()
-    def closeAllWidgets(self):
-        for k, i in self.instances.items():
-            i.close()
+        print 'setting the tab widget'
+        redRObjects.setActiveTab(tabname)
+        self.tabsWidget.addTab(redRObjects.makeTabView(tabname, self), tabname)
+    def removeSchemaTab(self, tabname):
+        ## first we need to clear all of the widgets from the tab
+        widgets = redRObjects.getIconsByTab(tabname)[tabname]
+        for w in widgets:
+            self.removeWidget(w)
+        ## next find the index
+        i = self.tabsWidget.currentIndex()
+        ## remove the widget
+        if tabname != 'General':  ## General tab is a special case, this will always be present.
+            self.tabsWidget.removeTab(i)
+            ## remove the references to the tab in the redRObjects
+            redRObjects.removeSchemaTab(tabname)
+    def showAllWidgets(self): # move to redRObjects
+        redRObjects.showAllWidgets()
+    def closeAllWidgets(self):   # move to redRObjects
+        redRObjects.closeAllWidgets()
     def selectAllWidgets(self):
         self.activeTab().selectAllWidgets()
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
-    def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):
+    def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):  # adds the signal link between the data and instantiates the line on the canvas.  move to the signal manager or the view?
         print '############ ADDING LINE ##################\n\n', outWidget, inWidget, process, '\n\n\n'
         if outWidget == inWidget: 
             print 'Same widget'
@@ -165,7 +170,7 @@ class SchemaDoc(QWidget):
     def resetActiveSignals(self, outWidget, inWidget, newSignals = None, enabled = 1):
         #print "<extra>orngDoc.py - resetActiveSignals() - ", outWidget, inWidget, newSignals
         signals = []
-        for line in self.lines:
+        for line in self.lines():
             if line.outWidget == outWidget and line.inWidget == inWidget:
                 signals = line.getSignals()
 
@@ -196,10 +201,10 @@ class SchemaDoc(QWidget):
         outWidget.updateTooltip()
         inWidget.updateTooltip()
 
-
-
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
+        return redRObjects.addLine(outWidget, inWidget, outSignalName, inSignalName, doc = self, enabled = enabled, process = process, loading = loading)
+    """
         if outWidget.instance().outputs.getSignal(outSignalName) in inWidget.instance().inputs.getLinks(inSignalName): return ## the link already exists
             
         
@@ -244,7 +249,7 @@ class SchemaDoc(QWidget):
         redRHistory.addConnectionHistory(outWidget, inWidget)
         redRHistory.saveConnectionHistory()
         return 1
-
+        """
     def addLink175(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = False, loading = False):
         ## compatibility layer for older schemas on changing signal classes.  this is actually a good way to allow for full compatibility between versions.
 
@@ -271,93 +276,97 @@ class SchemaDoc(QWidget):
             print 'Adding link adsfasdfasdf', outName, inName
             self.addLink(outWidget, inWidget, outName, inName, enabled, process = False)  # under no circumstance will we process an old signal again.
         
-        
+    ### moved to redRObjects
     # remove only one signal from connected two widgets. If no signals are left, delete the line
     def removeLink(self, outWidget, inWidget, outSignalName, inSignalName):
-        #print "<extra> orngDoc.py - removeLink() - ", outWidget, inWidget, outSignalName, inSignalName
-        outWidget.instance().outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName)
+        return redRObjects.removeLine(outWidget, inWidget, outSignalName, inSignalName)
+    """ ##Depricated removelink functionality
+            #print "<extra> orngDoc.py - removeLink() - ", outWidget, inWidget, outSignalName, inSignalName
+            outWidget.instance().outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName)
 
-        if not outWidget.instance().outputs.signalLinkExists(inWidget.instance):
-            self.removeLine(outWidget, inWidget)
+            if not outWidget.instance().outputs.signalLinkExists(inWidget.instance):
+                self.removeLine(outWidget, inWidget)
 
-        self.saveTempDoc()
+            #self.saveTempDoc()
 
 
-    # remove line line
-    def removeLine1(self, line):
-        #print 'removing a line from' + str(outName) +'to' +str(inName)
-        
-        ## remove the signal by sending None through the channel
-        print '##########  SEND NONE ###############'
-        obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance)
-        for (s, id) in obsoleteSignals:
-            signal = line.inWidget.instance().inputs.getSignal(id)
-            line.outWidget.instance().outputs.removeSignal(signal, s)
-        print '##########  REMOVE LINE #############'
-        
-        # print linksIn
-        # for key in linksIn.keys():
-            # print linksIn[key], 'linksIn[key]'
-            # for i in range(len(linksIn[key])):
-                # if line.outWidget.instance == linksIn[key][i][1]:
-                    # try:
-                        # linksIn[key][i][2](None, linksIn[key][i][1].widgetID)
-                    # except:
-                        # linksIn[key][i][2](None)
-        
-        # remove the image of the line
-        # for (outName, inName) in line.getSignals():
-            # self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
-        self.lines.remove(line)
-        line.inWidget.removeLine(line)
-        line.outWidget.removeLine(line)
-        line.inWidget.updateTooltip()
-        line.outWidget.updateTooltip()
-        line.remove()
-        self.saveTempDoc()
-
-    # remove line, connecting two widgets
-    def removeLine(self, outWidget, inWidget):
-
-        line = self.getLine(outWidget, inWidget)
-        if line:
-            self.removeLine1(line)
+        # remove line line
+        def removeLine1(self, line):
+            #print 'removing a line from' + str(outName) +'to' +str(inName)
             
-        
+            ## remove the signal by sending None through the channel
+            print '##########  SEND NONE ###############'
+            obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance)
+            for (s, id) in obsoleteSignals:
+                signal = line.inWidget.instance().inputs.getSignal(id)
+                line.outWidget.instance().outputs.removeSignal(signal, s)
+            print '##########  REMOVE LINE #############'
             
-    def addGhostWidgetsForWidget(self, newwidget):
-        #return []
-        if newwidget.instance().outputs != []:
-            try:
-                print newwidget.widgetInfo.fileName
-                ## add the chost widgets to the canvas and attach ghost lines to them
+            # print linksIn
+            # for key in linksIn.keys():
+                # print linksIn[key], 'linksIn[key]'
+                # for i in range(len(linksIn[key])):
+                    # if line.outWidget.instance == linksIn[key][i][1]:
+                        # try:
+                            # linksIn[key][i][2](None, linksIn[key][i][1].widgetID)
+                        # except:
+                            # linksIn[key][i][2](None)
+            
+            # remove the image of the line
+            # for (outName, inName) in line.getSignals():
+                # self.signalManager.removeLink(line.outWidget.instance, line.inWidget.instance, outName, inName)   # update SignalManager
+            self.lines.remove(line)
+            line.inWidget.removeLine(line)
+            line.outWidget.removeLine(line)
+            line.inWidget.updateTooltip()
+            line.outWidget.updateTooltip()
+            line.remove()
+            #self.saveTempDoc()
+
+        # remove line, connecting two widgets
+        def removeLine(self, outWidget, inWidget):
+
+            line = self.getLine(outWidget, inWidget)
+            if line:
+                self.removeLine1(line)
                 
-                topCons = redRHistory.getTopConnections(newwidget)
-                print topCons
-                widgets = []
-                off = [150, 50, -50, -150]
-                i = 0
-                for con in topCons:
-                    print con
-                    ## con is the fileName of the widget we need to find the info from the filename
+            
+        """
+    """ ##Depricated ghost functionality
+        def addGhostWidgetsForWidget(self, newwidget):
+            #return []
+            if newwidget.instance().outputs != []:
+                try:
+                    print newwidget.widgetInfo.fileName
+                    ## add the chost widgets to the canvas and attach ghost lines to them
                     
-                    wInfo = self.canvasDlg.widgetRegistry['widgets'][con]
-                    
-                    
-                    widgets.append(self.addGhostWidget(wInfo, x = newwidget.x() + 150, y = newwidget.y() + off[i], creatingWidget = newwidget)) # add the ghost widget
-                    #self.addLine(newwidget, widgets[-1], ghost = True)
-                    i += 1
-            except: 
-                type, val, traceback = sys.exc_info()
-                sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas           
-                widgets = []
-            return widgets
+                    topCons = redRHistory.getTopConnections(newwidget)
+                    print topCons
+                    widgets = []
+                    off = [150, 50, -50, -150]
+                    i = 0
+                    for con in topCons:
+                        print con
+                        ## con is the fileName of the widget we need to find the info from the filename
+                        
+                        wInfo = redRObjects.widgetRegistry()['widgets'][con]
+                        
+                        
+                        widgets.append(self.addGhostWidget(wInfo, x = newwidget.x() + 150, y = newwidget.y() + off[i], creatingWidget = newwidget)) # add the ghost widget
+                        #self.addLine(newwidget, widgets[-1], ghost = True)
+                        i += 1
+                except: 
+                    type, val, traceback = sys.exc_info()
+                    sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas           
+                    widgets = []
+                return widgets
+        """
     def getSuggestWidgets(self, newwidget):
         topCons = redRHistory.getTopConnections(newwidget)
         actions = []
         for con in topCons:
             try:
-                wInfo = self.canvasDlg.widgetRegistry['widgets'][con]
+                wInfo = redRObjects.widgetRegistry()['widgets'][con]
                 newAct = QTreeWidgetItem([wInfo.name])
                 newAct.setIcon(0, QIcon(wInfo.icon))
                 newAct.widgetInfo = wInfo
@@ -365,52 +374,53 @@ class SchemaDoc(QWidget):
             except:
                 continue
         return actions
-    def killGhost(self, widget): # remove the ghost widgets
-        self.removeWidget(widget)
-    # add new ghost widget
-    def addGhostWidget(self, widgetInfo, x= -1, y=-1, caption = '', widgetSettings = None, saveTempDoc = True, creatingWidget = None):
-        qApp.setOverrideCursor(Qt.WaitCursor)
-        
-        ## add the ghost widget to the canvas
-        newGhostWidget = orngCanvasItems.GhostWidget(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, creatingWidget = creatingWidget)
-        
-        ## resolve collisions
-        self.resolveCollisions(newGhostWidget, x, y)
-        
-        ## set the caption and add the new widget to the list of widgets
-        if caption == "": caption = newGhostWidget.caption
+    """ ## Depricated Ghost functionality
+        def killGhost(self, widget): # remove the ghost widgets
+            self.removeWidget(widget)
+        # add new ghost widget
+        def addGhostWidget(self, widgetInfo, x= -1, y=-1, caption = '', widgetSettings = None, saveTempDoc = True, creatingWidget = None):
+            qApp.setOverrideCursor(Qt.WaitCursor)
+            
+            ## add the ghost widget to the canvas
+            newGhostWidget = orngCanvasItems.GhostWidget(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, widgetSettings, creatingWidget = creatingWidget)
+            
+            ## resolve collisions
+            self.resolveCollisions(newGhostWidget, x, y)
+            
+            ## set the caption and add the new widget to the list of widgets
+            if caption == "": caption = newGhostWidget.caption
 
-        if self.getWidgetByCaption(caption):
-            i = 2
-            while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
-            caption = caption + " (" + str(i) + ")"
-        newGhostWidget.updateText(caption)
-        newGhostWidget.caption = caption
-        
+            if self.getWidgetByCaption(caption):
+                i = 2
+                while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
+                caption = caption + " (" + str(i) + ")"
+            newGhostWidget.updateText(caption)
+            newGhostWidget.caption = caption
+            
 
-        self.widgets.append(newGhostWidget)
-        self.activeCanvas().update()
-        # show the widget and activate the settings
-        try:
-            #self.signalManager.addWidget(newGhostWidget.instance)
-            newGhostWidget.show()
-            newGhostWidget.updateTooltip()
-            newGhostWidget.setProcessing(0)
-            orngHistory.logAddWidget(self.schemaID, id(newGhostWidget), (newGhostWidget.widgetInfo.packageName, newGhostWidget.widgetInfo.name), newGhostWidget.x(), newGhostWidget.y())
-        except:
-            type, val, traceback = sys.exc_info()
-            sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
+            self.widgets.append(newGhostWidget)
+            self.activeCanvas().update()
+            # show the widget and activate the settings
+            try:
+                #self.signalManager.addWidget(newGhostWidget.instance)
+                newGhostWidget.show()
+                newGhostWidget.updateTooltip()
+                newGhostWidget.setProcessing(0)
+                orngHistory.logAddWidget(self.schemaID, id(newGhostWidget), (newGhostWidget.widgetInfo.packageName, newGhostWidget.widgetInfo.name), newGhostWidget.x(), newGhostWidget.y())
+            except:
+                type, val, traceback = sys.exc_info()
+                sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
 
-        qApp.restoreOverrideCursor()
-        return newGhostWidget  # now the ghost widgets are ready to be used.  To activate we just click them and make them permanent.  So we need a new setting (ghost and non ghost)
-    # add new widget
-    
-    def newTab(self):
+            qApp.restoreOverrideCursor()
+            return newGhostWidget  # now the ghost widgets are ready to be used.  To activate we just click them and make them permanent.  So we need a new setting (ghost and non ghost)
+        # add new widget
+        """
+    def newTab(self): # part of the view
         td = NewTabDialog(self.canvasDlg)
         if td.exec_() != QDialog.Rejected:
             self.makeSchemaTab(str(td.tabName.text()))
             self.setTabActive(str(td.tabName.text()))
-    def cloneToTab(self):
+    def cloneToTab(self):   # part of the view
         tempWidgets = self.activeTab().getSelectedWidgets()
         td = CloneTabDialog(self.canvasDlg)
         if td.exec_() == QDialog.Rejected: return ## nothing interesting to do
@@ -424,7 +434,7 @@ class SchemaDoc(QWidget):
         self.setTabActive(viewID)
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
+            newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
             print newwidget
         except:
@@ -441,14 +451,14 @@ class SchemaDoc(QWidget):
         if caption == "":
             caption = widget.caption + ' (Clone)'
         newwidget.updateText(caption)
-        self.widgets.append(newwidget)
-        if saveTempDoc:
-            self.saveTempDoc()
+        ##self.widgets.append(newwidget)
+        # if saveTempDoc:
+            # self.saveTempDoc()
         self.activeCanvas().update()
 
         # show the widget and activate the settings
         try:
-            self.signalManager.addWidget(newwidget.instance)
+            self.signalManager.addWidget(newwidget.instance())
             newwidget.show()
             newwidget.updateTooltip()
             newwidget.setProcessing(1)
@@ -467,7 +477,7 @@ class SchemaDoc(QWidget):
  
     #def addWidgetInstance(self, name, inputs = None, outputs = None, widgetID = None):
     def addWidgetIcon(self, widgetInfo, instanceID):
-        newwidget = orngCanvasItems.CanvasWidget(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
+        newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
         if self.getWidgetByCaption(newwidget.caption):
             caption = newwidget.caption
             i = 2
@@ -475,7 +485,7 @@ class SchemaDoc(QWidget):
             caption = caption + " (" + str(i) + ")"
             print 'caption now set to ', caption
             newwidget.updateText(caption)
-        self.widgets.append(newwidget)
+        ##self.widgets.append(newwidget)
         return newwidget
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -508,8 +518,8 @@ class SchemaDoc(QWidget):
         
 
         
-        if saveTempDoc:
-            self.saveTempDoc()
+        # if saveTempDoc:
+            # self.saveTempDoc()
         self.activeCanvas().update()
 
         # show the widget and activate the settings
@@ -531,53 +541,56 @@ class SchemaDoc(QWidget):
         qApp.restoreOverrideCursor()
         return newwidget
     def addInstance(self, signalManager, widgetInfo, widgetSettings = None, forceInSignals = None, forceOutSignals = None):
-        print 'adding instance'
-        m = __import__(widgetInfo.fileName)
-        #m = __import__('libraries.' + widgetInfo.packageName + '.widgets.' + widgetInfo.widgetName)
-        
-        instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
-        _owInfo = redREnviron.settings["owInfo"],
-        _owWarning = redREnviron.settings["owWarning"],
-        _owError = redREnviron.settings["owError"],
-        _owShowStatus = redREnviron.settings["owShow"],
-        _packageName = widgetInfo.packageName)
-        instance.__dict__['_widgetInfo'] = widgetInfo
-        
-        if widgetInfo.name == 'Dummy': 
-            print 'Loading dummy step 3'
-            instance.__init__(signalManager = signalManager,
-            forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
-        else: instance.__init__(signalManager = signalManager)
-        
-        instance.loadGlobalSettings()
-        if widgetSettings:
-            instance.setSettings(widgetSettings)
-            if '_customSettings' in widgetSettings.keys():
-                instance.loadCustomSettings(widgetSettings['_customSettings'])
-            else:
-                instance.loadCustomSettings(widgetSettings)
+        return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals)
+        """
+            print 'adding instance'
+            m = __import__(widgetInfo.fileName)
+            #m = __import__('libraries.' + widgetInfo.packageName + '.widgets.' + widgetInfo.widgetName)
+            
+            instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
+            _owInfo = redREnviron.settings["owInfo"],
+            _owWarning = redREnviron.settings["owWarning"],
+            _owError = redREnviron.settings["owError"],
+            _owShowStatus = redREnviron.settings["owShow"],
+            _packageName = widgetInfo.packageName)
+            instance.__dict__['_widgetInfo'] = widgetInfo
+            
+            if widgetInfo.name == 'Dummy': 
+                print 'Loading dummy step 3'
+                instance.__init__(signalManager = signalManager,
+                forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
+            else: instance.__init__(signalManager = signalManager)
+            
+            instance.loadGlobalSettings()
+            if widgetSettings:
+                instance.setSettings(widgetSettings)
+                if '_customSettings' in widgetSettings.keys():
+                    instance.loadCustomSettings(widgetSettings['_customSettings'])
+                else:
+                    instance.loadCustomSettings(widgetSettings)
 
-        instance.setProgressBarHandler(self.activeTab().progressBarHandler)   # set progress bar event handler
-        instance.setProcessingHandler(self.activeTab().processingHandler)
-        #instance.setWidgetStateHandler(self.updateWidgetState)
-        instance.setEventHandler(self.canvasDlg.output.widgetEvents)
-        instance.setWidgetWindowIcon(widgetInfo.icon)
-        instance.canvasWidget = self
-        instance.widgetInfo = widgetInfo
-        print 'adding instance'
-        self.instances[instance.widgetID] = instance
-        
-        return instance.widgetID
+            instance.setProgressBarHandler(self.activeTab().progressBarHandler)   # set progress bar event handler
+            instance.setProcessingHandler(self.activeTab().processingHandler)
+            #instance.setWidgetStateHandler(self.updateWidgetState)
+            instance.setEventHandler(self.canvasDlg.output.widgetEvents)
+            instance.setWidgetWindowIcon(widgetInfo.icon)
+            instance.canvasWidget = self
+            instance.widgetInfo = widgetInfo
+            print 'adding instance'
+            self.instances[instance.widgetID] = instance
+            
+            return instance.widgetID
+            """
     def returnInstance(self, id):
-        return self.instances[id]
+        return redRObjects.getWidgetInstanceByID(id)
     def resolveCollisions(self, newwidget, x, y):
         if x==-1 or y==-1:
             if self.activeTab().getSelectedWidgets():
                 x = self.activeTab().getSelectedWidgets()[-1].x() + 110
                 y = self.activeTab().getSelectedWidgets()[-1].y()
-            elif self.widgets != []:
-                x = self.widgets[-1].x() + 110  # change to selected widget 
-                y = self.widgets[-1].y()
+            elif self.widgets() != []:
+                x = self.widgets()[-1].x() + 110  # change to selected widget 
+                y = self.widgets()[-1].y()
             else:
                 x = 30
                 y = 50
@@ -598,7 +611,7 @@ class SchemaDoc(QWidget):
                     break
     
     def instanceStillWithIcon(self, instanceID):
-        for widget in self.widgets:
+        for widget in self.widgets():
             print widget.instanceID
             if widget.instanceID == instanceID:
                 return True
@@ -617,34 +630,34 @@ class SchemaDoc(QWidget):
             #self.signalManager.removeWidget(widget.instance()) # sending occurs before this point
             
             widget.remove() ## here we need to check if others have the widget instance.
-            if widget in self.widgets:
-                self.widgets.remove(widget)
+            if widget in self.widgets():
+                redRObjects.removeWidgetIcon(widget)
         except:
             import redRExceptionHandling
             print redRExceptionHandling.formatException()
         if not self.instanceStillWithIcon(instanceID):
-            sip.delete(self.instances[instanceID])
-            del self.instances[instanceID]
+            redRObjects.removeWidgetInstanceByID(instanceID)
     def clear(self):
         print '|#| orngDoc clear'
         self.canvasDlg.setCaption()
-        for widget in self.widgets[::-1]:   
-            self.removeWidget(widget, saveTempDoc = False)   # remove widgets from last to first
+        for t in redRObjects.tabNames():
+            if t == 'General': continue
+            self.removeSchemaTab(t)
         RSession.Rcommand('rm(list = ls())')
         self.activeCanvas().update()
         self.schemaName = ""
-        self.saveTempDoc()
+        #self.saveTempDoc()
         
 
     def enableAllLines(self):
-        for line in self.lines:
+        for k, line in redRObjects.lines().items():
             self.signalManager.setLinkEnabled(line.outWidget.instance, line.inWidget.instance, 1)
             line.setEnabled(1)
             #line.repaintLine(self.canvasView)
         self.activeCanvas().update()
 
     def disableAllLines(self):
-        for line in self.lines:
+        for k, line in redRObjects.lines().items():
             self.signalManager.setLinkEnabled(line.outWidget.instance, line.inWidget.instance, 0)
             line.setEnabled(0)
             #line.repaintLine(self.canvasView)
@@ -654,7 +667,7 @@ class SchemaDoc(QWidget):
     def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         try:
             if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
-            widget = self.canvasDlg.widgetRegistry['widgets'][widgetFileName]
+            widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
             return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
         except Exception as inst:
             print '|###| Loading exception occured for widget '+widgetFileName
@@ -662,7 +675,7 @@ class SchemaDoc(QWidget):
             return None
     # addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) 
     def addWidgetIconByFileName(self, name, x= -1, y=-1, caption = "", instance = None):
-        widget = self.canvasDlg.widgetRegistry['widgets'][name]
+        widget = redRObjects.widgetRegistry()['widgets'][name]
         newwidget = self.addWidgetIcon(widget, instance)
         self.resolveCollisions(newwidget, x, y)
         if caption == "": 
@@ -676,7 +689,7 @@ class SchemaDoc(QWidget):
     def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None):
         try:
             #if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
-            widget = self.canvasDlg.widgetRegistry['widgets'][name]
+            widget = redRObjects.widgetRegistry()['widgets'][name]
             return self.addInstance(self.signalManager, widget, settings, inputs, outputs)
         except Exception as inst:
             print '|###| Loading exception occured for widget '+name
@@ -684,63 +697,32 @@ class SchemaDoc(QWidget):
             return None
     # return the widget icon that has caption "widgetName"
     def getWidgetByCaption(self, widgetName):
-        for widget in self.widgets:
-            print widget.caption
-            if widget.caption == widgetName:
-                return widget
-        return None
+        return redRObjects.getIconByIconCaption(widgetName)
     def getWidgetByInstance(self, instance):
-        for widget in self.widgets:
-            if widget.instance() == instance:
-                return widget
-        return None
+        return redRObjects.getIconByIconInstanceRef(instance)
     def getWidgetByID(self, widgetID):
-        for widget in self.widgets:
-            print widget.instanceID
-            if (widget.instanceID == widgetID):# and widget.tab == self.activeTabName():
-                return widget
-        return None
+        return redRObjects.getIconByIconInstanceID(widgetID)
     def getWidgetByIDActiveTabOnly(self, widgetID):
-        for widget in self.widgets:
-            print widget.instanceID
-            if (widget.instanceID == widgetID) and widget.tab == self.activeTabName():
-                return widget
-        return None
-    # def getWidgetIconByWidgetID(self, id):
-        # for widget in self.widgets:
-            # if widget.instanceID == id:
-                # return widget
+        return redRObjects.getWidgetByIDActiveTabOnly(widgetID)
     def getWidgetCaption(self, widgetInstance):
-        for widget in self.widgets:
-            if widget.instance == widgetInstance:
-                return widget.caption
-        print "Error. Invalid widget instance : ", widgetInstance
-        return ""
-
+        widget = redRObjects.getIconByIconInstanceRef(widgetInstance)
+        if widget == None:
+            print "Error. Invalid widget instance : ", widgetInstance
+            return ""
+        return widget.caption
 
     # get line from outWidget to inWidget
     def getLine(self, outWidget, inWidget):
-        print outWidget, inWidget
-        for line in self.lines:
-            print line.outWidget, line.inWidget, line.outWidget == outWidget, line.inWidget == inWidget
-            if line.outWidget == outWidget and line.inWidget == inWidget:
-                return line
-        return None
+        return redRObjects.getLine(outWidget, inWidget)
     # find canvasItems from widget ID
     def findWidgetFromID(self, widgetID):
-        for widget in self.widgets:
-            if widget.instance().widgetID == widgetID:
-                return widget.instance
-        return None
+        return redRObjects.getIconByIconInstanceID()
 
     # find orngCanvasItems.CanvasWidget from widget instance
     def findWidgetFromInstance(self, widgetInstance):
-        for widget in self.widgets:
-            if widget.instanceID == widgetInstance:
-                return widget
-        return None
+        return redRObjects.getIconByIconInstanceRef(widgetInstance)
     def handleDirty(self, ow, iw, dirty):
-        line = self.getLine(self.getWidgetByInstance(ow), self.getWidgetByInstance(iw))
+        line = self.getLine(ow, iw)
         if not line or line == None:
             print ow.widgetID, iw.widgetID
             return
@@ -748,7 +730,7 @@ class SchemaDoc(QWidget):
         print 'handling dirty', dirty
         self.canvas.update()
     def handleNone(self, ow, iw, none):
-        line = self.getLine(self.getWidgetByInstance(ow), self.getWidgetByInstance(iw))
+        line = self.getLine(ow, iw)
         if line:
             line.noData = none
             print 'handling none', none
@@ -762,7 +744,7 @@ class SchemaDoc(QWidget):
         ## calculate the miinimum Y position on the canvas.  
         ## When loading new widgets will be adjusted down by this amount.
         y = 0
-        for widget in self.widgets:
+        for widget in self.widgets():
             if widget.y() > y:
                 y = widget.y()
                 
@@ -843,38 +825,41 @@ class SchemaDoc(QWidget):
         self.save(copy=True)
     
     def saveInstances(self, instances, widgets, doc, progressBar):
-        settingsDict = {}
-        requireRedRLibraries = {}
-        progress = 0
-        for k, widget in instances.items():
-            temp = doc.createElement("widget")
+        return redRSaveLoad.saveInstances(instances, widgets, doc, progressBar)
+        """
+            settingsDict = {}
+            requireRedRLibraries = {}
+            progress = 0
+            for k, widget in instances.items():
+                temp = doc.createElement("widget")
+                
+                temp.setAttribute("widgetName", widget.widgetInfo.fileName)
+                temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
+                temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
+                temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
+                temp.setAttribute('widgetID', widget.widgetID)
+                print 'save in orngDoc ' + str(widget.captionTitle)
+                progress += 1
+                progressBar.setValue(progress)
+                
+                s = widget.getSettings()
+                i = widget.getInputs()
+                o = widget.getOutputs()
+                
+                #map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
+                #requiredRLibraries.extend()
+                #del s['requiredRLibraries']
+                settingsDict[widget.widgetID] = {}
+                settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
+                settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
+                settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
+                
+                if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
+                    requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
             
-            temp.setAttribute("widgetName", widget.widgetInfo.fileName)
-            temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
-            temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
-            temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
-            temp.setAttribute('widgetID', widget.widgetID)
-            print 'save in orngDoc ' + str(widget.captionTitle)
-            progress += 1
-            progressBar.setValue(progress)
-            
-            s = widget.getSettings()
-            i = widget.getInputs()
-            o = widget.getOutputs()
-            
-            #map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
-            #requiredRLibraries.extend()
-            #del s['requiredRLibraries']
-            settingsDict[widget.widgetID] = {}
-            settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
-            settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
-            settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
-            
-            if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
-                requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
-        
-            widgets.appendChild(temp)
-        return (widgets, settingsDict, requireRedRLibraries)
+                widgets.appendChild(temp)
+            return (widgets, settingsDict, requireRedRLibraries)
+            """
     
     
     # save the file
@@ -895,7 +880,7 @@ class SchemaDoc(QWidget):
         progressBar = self.startProgressBar(
         'Saving '+str(os.path.basename(filename)),
         'Saving '+str(os.path.basename(filename)),
-        len(self.widgets)+len(self.lines)+3)
+        len(self.widgets())+len(self.lines())+3)
         progress = 0
 
         # create xml document
@@ -935,7 +920,7 @@ class SchemaDoc(QWidget):
         # save tabs and the icons
         if not copy or template:
             #tabs.setAttribute('tabNames', str(self.canvasTabs.keys()))
-            for t in self.canvasTabs.keys():
+            for t in redRObjects.tabNames():
                 temp = doc.createElement('tab')
                 temp.setAttribute('name', t)
                 ## set all of the widget icons on the tab
@@ -1055,7 +1040,7 @@ class SchemaDoc(QWidget):
         self.loadDocument(filename = filename, caption = caption, freeze = freeze)
         
     def checkID(self, widgetID):
-        for widget in self.widgets:
+        for widget in self.widgets():
             if widget.instance().widgetID == widgetID:
                 return False
         else:
@@ -1248,7 +1233,7 @@ class SchemaDoc(QWidget):
         (loadedOkL, tempFailureTextL) = self.loadLines(lineList, loadingProgressBar = loadingProgressBar, 
         freeze = freeze, tmp = tmp)
 
-        for widget in self.widgets: widget.updateTooltip()
+        for widget in self.widgets(): widget.updateTooltip()
         self.activeCanvas().update()
         #self.saveTempDoc()
         
@@ -1256,7 +1241,7 @@ class SchemaDoc(QWidget):
             failureText = tempFailureTextW + tempFailureTextL
             QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
         
-        for widget in self.widgets:
+        for widget in self.widgets():
             widget.instance().setLoadingSavedSession(False)
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
@@ -1327,7 +1312,7 @@ class SchemaDoc(QWidget):
             if inWidget == None or outWidget == None:
                 print 'Expected ID\'s', inIndex, outIndex
                 print '\n\nAvailable indicies are listed here.\'\''
-                for widget in self.widgets:
+                for widget in self.widgets():
                     print widget.instance().widgetID
                 failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
                 loadedOk = 0
@@ -1369,7 +1354,7 @@ class SchemaDoc(QWidget):
                 caption = str(widget.getAttribute('caption'))
                 ## for backward compatibility we need to make both the widgets and the instances.
                 #self.addWidgetInstanceByFileName(name, settings, inputs, outputs)
-                widgetInfo =  self.canvasDlg.widgetRegistry['widgets'][name]
+                widgetInfo =  redRObjects.widgetRegistry()['widgets'][name]
                 self.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs)
                 #print 'Settings', settings
                 lpb += 1
@@ -1441,7 +1426,7 @@ class SchemaDoc(QWidget):
             traceback.print_exc(file=sys.stdout)
             print '-'*60        
     def dumpWidgetVariables(self):
-        for widget in self.widgets:
+        for widget in self.widgets():
             self.canvasDlg.output.write("<hr><b>%s</b><br>" % (widget.caption))
             v = vars(widget.instance).keys()
             v.sort()
@@ -1472,8 +1457,8 @@ class SchemaDoc(QWidget):
         widgetToAdd = self.canvasDlg.widgetShortcuts.get(pressed)
         if widgetToAdd:
             self.addWidget(widgetToAdd)
-            if e.modifiers() & Qt.ShiftModifier and len(self.widgets) > 1:
-                self.addLine(self.widgets[-2], self.widgets[-1])
+            if e.modifiers() & Qt.ShiftModifier and len(self.widgets()) > 1:
+                self.addLine(self.widgets()[-2], self.widgets()[-1])
         else:
             #e.ignore()
             QWidget.keyPressEvent(self, e)

@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager
-import signals, redREnviron
+import signals, redREnviron, redRObjects
 ERROR = 0
 WARNING = 1
 
@@ -44,7 +44,7 @@ class TempCanvasLine(QGraphicsLineItem):
         if widgets:
             self.widget = widgets[0]
         else:
-            dists = [(getattr(w, func)(newPos), w) for w in schema.widgets]
+            dists = [(getattr(w, func)(newPos), w) for w in redRObjects.getIconsByTab([redRObjects.activeTabName()])[redRObjects.activeTabName()]]
             dists.sort()
             if dists and dists[0][0] < 20:
                 self.widget = dists[0][1]

@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngDoc
+import orngDoc, redRObjects
 
 class OutputHandler:
     def __init__(self, parent):                         ## set up the outputHandler, this will take care of sending signals to 
@@ -188,33 +188,43 @@ class OutputHandler:
         for cKey in connections.keys():
             self._processSingle(signal, connections[cKey])
     def markAllDirty(self):
+        return
         ## step one, get all of the connections
         cons = self.getAllSignalLinksSignals() ## gets all of the signals attached to any output signal
         for c in cons:
             self._markDirty(c)
     def _markDirty(self, connection):
+        return
         print 'Connection\n',connection, '\n\n'
         
         parent = connection['signal']['parent']
         id = connection['signal']['sid']
-        self._handleDirty(parent, id, dirty = True)
+        #self._handleDirty(parent, id, dirty = True)
     def _handleDirty(self, parentWidget, id, dirty):
-        parentWidget.inputs.markDirty(id, dirty)
-        ## get all connections from the out to the in widget, we need to check if any of these are dirty
-        links = self.getWidgetConnections(parentWidget)
-        for l in links:
-            if parentWidget.inputs.getSignal(l['signal']['sid'])['dirty']:
-                self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, True)
-                return
-        self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, False)
+        return
+        # parentWidget.inputs.markDirty(id, dirty)
+        # get all connections from the out to the in widget, we need to check if any of these are dirty
+        # links = self.getWidgetConnections(parentWidget)
+        # for l in links:
+            # if parentWidget.inputs.getSignal(l['signal']['sid'])['dirty']:
+                # self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, True)
+                # return
+        # self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, False)
     def _handleNone(self, parentWidget, id, none):
         parentWidget.inputs.markNone(id, none)
         links = self.getWidgetConnections(parentWidget)
+        line = redRObjects.getLine(redRObjects.getIconByIconInstanceID(self.parent.widgetID), redRObjects.getIconByIconInstanceID(parentWidget.widgetID))
+        print 'The line is ', line, 'the signal is ', none
         for l in links:
             if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
-                self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, True)
+                line.setNoData(True)
+                redRObjects.activeCanvas().update()
                 return
-        self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, False)
+                #self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, True)
+                # return
+        line.setNoData(False)
+        redRObjects.activeCanvas().update()
+        # self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, False)
     def _handleSignal(self, value, handler, multiple, parentWidget):
         try:
             if multiple:
