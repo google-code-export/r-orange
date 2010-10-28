@@ -15,6 +15,7 @@ from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.dialog import dialog as redRdialog
 
 def createTable(arrayOfArray,tableName='', columnNames=None):
+    # print len(arrayOfArray), len(arrayOfArray[0]), arrayOfArray
     if len(arrayOfArray) == 0 or len(arrayOfArray[0]) == 0:
         return '';
     if columnNames:
@@ -29,6 +30,7 @@ def createTable(arrayOfArray,tableName='', columnNames=None):
         for cell in row:
             if type(cell) is not str:
                 cell = str(cell)
+                print cell
             if re.search('.. csv-table::|.. image::|::', cell):
                 toAppend.append([row[0],cell])
                 formatted.append('See Below')

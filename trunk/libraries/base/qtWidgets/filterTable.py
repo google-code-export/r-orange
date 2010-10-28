@@ -372,7 +372,10 @@ class filterTable(widgetState, QTableView):
             self.onFilterCallback()
              
     def getFilteredData(self):
-        return self.tm.Rdata
+        try:
+            return self.tm.Rdata
+        except:
+            return None
     def sort(self,col,order):
         #self.tm.sort(col-1,order)
         self.sortByColumn(col-1, order)
@@ -416,9 +419,13 @@ class filterTable(widgetState, QTableView):
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):
-        data = self.R('as.matrix(%s)'% self.getFilteredData())
-        colNames = self.R('colnames(%s)' % self.getFilteredData())
-        text = redRReports.createTable(data, columnNames = colNames)
+        if self.getFilteredData():
+            data = self.R('as.matrix(%s)'% self.getFilteredData())
+            colNames = self.R('colnames(%s)' % self.getFilteredData())
+            text = redRReports.createTable(data, columnNames = colNames)
+        else:
+            text = ''
+            
         if self.label:
             label = self.label
         else:
