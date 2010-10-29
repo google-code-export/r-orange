@@ -73,6 +73,7 @@ class ListSelector(OWRpy):
         self.Rvariables['listelement'] = self.data+'[['+name+']]'
         # use signals converter in OWWidget to convert to the signals class
         myclass = self.R('class('+self.Rvariables['listelement']+')')
+        print myclass
         if myclass == 'data.frame':
             
             newData = redRRDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'])
@@ -84,7 +85,7 @@ class ListSelector(OWRpy):
             self.rSend("id2", newData)
             #self.infoa.setText('Sent List')
             slot = 'List'
-        elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer']:
+        elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer', ['POSIXt', 'POSIXct']]:
             newData = redRRVector(data = self.Rvariables['listelement'])
             self.rSend("id1", newData)
             #self.infoa.setText('Sent Vector')

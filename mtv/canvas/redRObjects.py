@@ -16,7 +16,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngCanvasItems, redREnviron, orngView, time
+import orngCanvasItems, redREnviron, orngView, time, orngRegistry
 
 _widgetRegistry = {}
 _lines = {}
@@ -28,9 +28,13 @@ _canvasScene = {}
 _activeTab = 'TestTab'
 
 def readCategories():
+    global _widgetRegistry
     _widgetRegistry = orngRegistry.readCategories()
 
 def widgetRegistry():
+    global _widgetRegistry
+    if _widgetRegistry == {} or len(_widgetRegistry.keys()) == 0:
+        readCategories()
     return _widgetRegistry
     
 ##############################
@@ -41,14 +45,12 @@ def tabNames():
 
 def makeTabView(tabname, parent):
     global _activeTab
-    print 'in makeTabView', tabname, _activeTab
     w = QWidget()
     w.setLayout(QVBoxLayout())
     _canvasScene[tabname] = QGraphicsScene()
     _canvasView[tabname] = orngView.SchemaView(parent, _canvasScene[tabname], w)
     w.layout().addWidget(_canvasView[tabname])
     _activeTab = tabname
-    print _activeTab, tabname
     return w
     
 # def removeTabView(tabname, parent):
@@ -56,7 +58,6 @@ def makeTabView(tabname, parent):
 def activeTab():
     global _activeTab
     global _canvasView
-    print _activeTab, 'This is the active tab name'
     return _canvasView[_activeTab]
 
 def activeCanvas():
@@ -68,7 +69,6 @@ def activeTabName():
     return _activeTab
     
 def makeSchemaTab(tabname):
-    print 'makeing tab', tabname
     if tabname in _canvasTabs.keys():
         return activeTab(tabname)
         
@@ -96,16 +96,17 @@ def removeSchemaTab(tabname):
 def getIconsByTab(tabs = None):  # returns a dict of lists of icons for a specified tab, if no tab specified then all incons on all tabs are returned.
     global _widgetIcons
     global _canvasScene
-    print 'Getting icons'
     if tabs == None:
         tabs = _canvasScene.keys()
-    print tabs, 'Tabs'
+    if type(tabs) != list:
+        tabs = [tabs]
+    #print tabs, 'Tabs'
     tabIconsList = {}
     for t in tabs:
-        print t
+        #print t
         icons = []
         for k, wi in _widgetIcons.items():
-            print wi
+            #print wi
             if wi.tab == t:
                 icons.append(wi)
         tabIconsList[t] = icons
@@ -150,7 +151,7 @@ def getIconByIconInstanceID(id):
             return i
     return None
     
-def getWidgetByIDActiveTabOnly(self, widgetID):
+def getWidgetByIDActiveTabOnly(widgetID):
     for k, widget in _widgetIcons.items():
         print widget.instanceID
         if (widget.instanceID == widgetID) and (widget.tab == activeTabName()):
@@ -173,7 +174,10 @@ def closeAllWidgets():
     for k, i in _widgetInstances.items():
         i.close()
         
-def addInstance(sm, info, settings, insig, outsig):
+def addInstance(sm, info, settings, insig, outsig, id = None):
+    global _widgetInstances
+    global _widgetIcons
+    global _widgetInfo
     print 'adding instance'
     m = __import__(info.fileName)
     instance = m.__dict__[info.widgetName].__new__(m.__dict__[info.widgetName],
@@ -206,12 +210,23 @@ def addInstance(sm, info, settings, insig, outsig):
     #instance.canvasWidget = self
     instance.widgetInfo = info
     print 'adding instance'
-    _widgetInstances[instance.widgetID] = instance
+    if id == None:
+        id = instance.widgetID
+    else:
+        instance.widgetID = id
+    _widgetInstances[id] = instance
     
     return instance.widgetID
 def getWidgetInstanceByID(id):
+    global _widgetInstances
     return _widgetInstances[id]
-    
+
+def instances(wantType = 'list'):
+    global _widgetInstances
+    if wantType == 'list':## return all of the instances in a list
+        return [w for (k, w) in _widgetInstances.items()]
+    else:
+        return _widgetInstances
 def removeWidgetInstanceByID(id):
     import sip
     sip.delete(getWidgetInstanceByID(id))
@@ -225,6 +240,8 @@ def getLinesByTab(tabs = None):
     global _canvasScene
     if tabs == None:
         tabs = _canvasScene.keys()
+    if type(tabs) != list:
+        tabs = [tabs]
     tabLinesList = {}
     for t in tabs:
         lineList = []
@@ -294,21 +311,22 @@ def removeLine(outWidget, inWidget, outSignalName, inSignalName):
     if not outWidget.instance().outputs.signalLinkExists(inWidget.instance()):
         line = getLine(outWidget, inWidget)
         if line:
-            obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance)
-            for (s, id) in obsoleteSignals:
-                signal = line.inWidget.instance().inputs.getSignal(id)
-                line.outWidget.instance().outputs.removeSignal(signal, s)
             removeLineInstance(line)
-            line.inWidget.removeLine(line)
-            line.outWidget.removeLine(line)
-            line.inWidget.updateTooltip()
-            line.outWidget.updateTooltip()
-            line.remove()
+            
+            
 def removeLineInstance(line):
+    obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance)
+    for (s, id) in obsoleteSignals:
+        signal = line.inWidget.instance().inputs.getSignal(id)
+        line.outWidget.instance().outputs.removeSignal(signal, s)
     for k, l in _lines.items():
         if l == line:
             del _lines[k]   
-            
+    line.inWidget.removeLine(line)
+    line.outWidget.removeLine(line)
+    line.inWidget.updateTooltip()
+    line.outWidget.updateTooltip()
+    line.remove()
 def lines():
     return _lines
 ###########################

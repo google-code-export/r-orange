@@ -478,13 +478,13 @@ class SchemaDoc(QWidget):
     #def addWidgetInstance(self, name, inputs = None, outputs = None, widgetID = None):
     def addWidgetIcon(self, widgetInfo, instanceID):
         newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
-        if self.getWidgetByCaption(newwidget.caption):
-            caption = newwidget.caption
-            i = 2
-            while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
-            caption = caption + " (" + str(i) + ")"
-            print 'caption now set to ', caption
-            newwidget.updateText(caption)
+        #if self.getWidgetByCaption(newwidget.caption):
+        caption = newwidget.caption
+        i = 1
+        while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
+        caption = caption + " (" + str(i) + ")"
+        print 'caption now set to ', caption
+        newwidget.updateText(caption)
         ##self.widgets.append(newwidget)
         return newwidget
     def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
@@ -540,8 +540,8 @@ class SchemaDoc(QWidget):
         ## try to set up the ghost widgets
         qApp.restoreOverrideCursor()
         return newwidget
-    def addInstance(self, signalManager, widgetInfo, widgetSettings = None, forceInSignals = None, forceOutSignals = None):
-        return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals)
+    def addInstance(self, signalManager, widgetInfo, widgetSettings = None, forceInSignals = None, forceOutSignals = None, id = None):
+        return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals, id = id)
         """
             print 'adding instance'
             m = __import__(widgetInfo.fileName)
@@ -623,8 +623,8 @@ class SchemaDoc(QWidget):
             return
         instanceID = widget.instanceID
         #widget.closing = close
-        while widget.inLines != []: self.removeLine1(widget.inLines[0])
-        while widget.outLines != []:  self.removeLine1(widget.outLines[0])
+        while widget.inLines != []: redRObjects.removeLineInstance(widget.inLines[0])
+        while widget.outLines != []:  redRObjects.removeLineInstance(widget.outLines[0])
 
         try:
             #self.signalManager.removeWidget(widget.instance()) # sending occurs before this point
@@ -641,7 +641,7 @@ class SchemaDoc(QWidget):
         print '|#| orngDoc clear'
         self.canvasDlg.setCaption()
         for t in redRObjects.tabNames():
-            if t == 'General': continue
+            #if t == 'General': continue
             self.removeSchemaTab(t)
         RSession.Rcommand('rm(list = ls())')
         self.activeCanvas().update()
@@ -675,6 +675,7 @@ class SchemaDoc(QWidget):
             return None
     # addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) 
     def addWidgetIconByFileName(self, name, x= -1, y=-1, caption = "", instance = None):
+        print redRObjects.widgetRegistry().keys(), '\n\n widgetRegistry keys'
         widget = redRObjects.widgetRegistry()['widgets'][name]
         newwidget = self.addWidgetIcon(widget, instance)
         self.resolveCollisions(newwidget, x, y)
@@ -686,11 +687,11 @@ class SchemaDoc(QWidget):
                 caption = caption + " (" + str(i) + ")"
             newwidget.updateText(caption)
             
-    def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None):
+    def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None, id = None):
         try:
             #if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
             widget = redRObjects.widgetRegistry()['widgets'][name]
-            return self.addInstance(self.signalManager, widget, settings, inputs, outputs)
+            return self.addInstance(self.signalManager, widget, settings, inputs, outputs, id = id)
         except Exception as inst:
             print '|###| Loading exception occured for widget '+name
             print str(inst)
@@ -913,7 +914,7 @@ class SchemaDoc(QWidget):
         if copy:  ## copy should obtain the selected widget icons and their associated widgets, we then make a temp copy of that and then redisplay
             tempWidgets = self.activeTab().getSelectedWidgets()
         else:
-            tempWidgets = self.instances ## all of the widget instances, these are not the widget icons
+            tempWidgets = redRObjects.instances(wantType = 'dict') ## all of the widget instances, these are not the widget icons
         (widgets, settingsDict, requireRedRLibraries) = self.saveInstances(tempWidgets, widgets, doc, progressBar)
         
         
@@ -925,7 +926,8 @@ class SchemaDoc(QWidget):
                 temp.setAttribute('name', t)
                 ## set all of the widget icons on the tab
                 widgetIcons = doc.createElement('widgetIcons')
-                for wi in self.widgetIcons(t):
+                for wi in self.widgetIcons(t)[t]:  ## extract only the list for this tab thus the [t] syntax
+                    print wi
                     witemp = doc.createElement('widgetIcon')
                     witemp.setAttribute('name', str(wi.getWidgetInfo().fileName))             # save icon name
                     witemp.setAttribute('instance', str(wi.instanceID))        # save instance ID
@@ -946,7 +948,7 @@ class SchemaDoc(QWidget):
                             # if tempLine:
                                 # tempLines.append(tempLine)
                 tabLines = doc.createElement('tabLines')
-                for line in self.widgetLines(t):
+                for line in self.widgetLines(t)[t]:
                     chtemp = doc.createElement("channel")
                     chtemp.setAttribute("outWidgetCaption", line.outWidget.caption)
                     chtemp.setAttribute('outWidgetIndex', line.outWidget.instance().widgetID)
@@ -1101,6 +1103,8 @@ class SchemaDoc(QWidget):
                 loadingProgressBar.hide()
                 loadingProgressBar.close()
                 return
+            else:
+                print 'The version is:', version
         except:
             self.loadDocument180(filename, caption = None, freeze = 0, importing = 0)
             loadingProgressBar.hide()
@@ -1126,7 +1130,7 @@ class SchemaDoc(QWidget):
         
                 return
             RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
-        
+        print 'loading widgets'
         loadingProgressBar.setLabelText('Loading Widgets')
         loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
         loadingProgressBar.setValue(0)
@@ -1136,22 +1140,6 @@ class SchemaDoc(QWidget):
         #####  move through all of the tabs and load them.
         (loadedOkT, tempFailureTextT) = self.loadTabs(tabs = tabs, loadingProgressBar = loadingProgressBar, tmp = tmp)
         
-            
-        # lineList = lines.getElementsByTagName("channel")
-        # loadingProgressBar.setLabelText('Loading Lines')
-        # (loadedOkL, tempFailureTextL) = self.loadLines(lineList, loadingProgressBar = loadingProgressBar, 
-        # freeze = freeze, tmp = tmp)
-
-        # for widget in self.widgets: widget.updateTooltip()
-        # self.activeCanvas().update()
-        # self.saveTempDoc()
-        
-        # if not loadedOkW and loadedOkL:
-            # failureText = tempFailureTextW + tempFailureTextL
-            # QMessageBox.information(self, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
-        
-        # for widget in self.widgets:
-            # widget.instance().setLoadingSavedSession(False)
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
         qApp.restoreOverrideCursor()
@@ -1252,6 +1240,7 @@ class SchemaDoc(QWidget):
     def loadTabs(self, tabs, loadingProgressBar, tmp):
         # load the tabs
         print tabs.toprettyxml()
+        loadedOK = True
         for t in tabs.getElementsByTagName('tab'):
             print t
             self.makeSchemaTab(t.getAttribute('name'))
@@ -1265,6 +1254,7 @@ class SchemaDoc(QWidget):
                 caption = witemp.getAttribute("caption")          # save the caption
                 print 'loading widgeticon', name, instance, xPos, yPos, caption
                 self.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
+                print [w.instanceID for k, w in redRObjects._widgetIcons.items()]
             for litemp in t.getElementsByTagName('tabLines')[0].getElementsByTagName('channel'):
                 outIconID = litemp.getAttribute('outWidgetIndex')
                 inIconID = litemp.getAttribute('inWidgetIndex')
@@ -1274,7 +1264,11 @@ class SchemaDoc(QWidget):
                 inWidget = self.getWidgetByIDActiveTabOnly(inIconID)
                 outWidget = self.getWidgetByIDActiveTabOnly(outIconID)
                 
-                print 'loading line', outIconID, inIconID, enabled, signals, noData
+                print 'loading line', outIconID, outWidget, inIconID, inWidget, enabled, signals, noData
+                if outWidget == None or inWidget == None:
+                    print 'One of the widgets was a None', inIconID, outIconID, redRObjects._widgetIcons.keys()
+                    loadedOK = False
+                    continue
                 ## now add the line with it's settings.
                 for (outName, inName) in signals:
                     self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False)
@@ -1360,7 +1354,7 @@ class SchemaDoc(QWidget):
                 lpb += 1
                 loadingProgressBar.setValue(lpb)
             except Exception as inst:
-                print str(inst), 'Widget load failure'
+                print str(inst), 'Widget load failure 180'
         return (loadedOk, failureText)
     def loadWidgets(self, widgets, loadingProgressBar, tmp):
         
@@ -1371,13 +1365,14 @@ class SchemaDoc(QWidget):
         for widget in widgets.getElementsByTagName("widget"):
             try:
                 name = widget.getAttribute("widgetName")
-
+                print name
                 widgetID = widget.getAttribute('widgetID')
+                print widgetID
                 settings = cPickle.loads(self.loadedSettingsDict[widgetID]['settings'])
                 inputs = cPickle.loads(self.loadedSettingsDict[widgetID]['inputs'])
                 outputs = cPickle.loads(self.loadedSettingsDict[widgetID]['outputs'])
-
-                self.addWidgetInstanceByFileName(name, settings, inputs, outputs)
+                print 'adding instance', widgetID, inputs, outputs
+                self.addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
                 #print 'Settings', settings
                 lpb += 1
                 loadingProgressBar.setValue(lpb)

@@ -20,6 +20,8 @@
 
 # def 
 
+import os, sys, redRObjects, cPickle
+
 def saveInstances(instances, widgets, doc, progressBar):
         settingsDict = {}
         requireRedRLibraries = {}

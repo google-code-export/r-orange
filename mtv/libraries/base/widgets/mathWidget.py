@@ -23,7 +23,7 @@ class mathWidget(OWRpy):
         self.setRvariableNames(['math'])
         
         self.counter = 1
-        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR']
+        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR', 'toDateTime (MDY)', 'toDateTime (DMY)', 'toDateTime (YMD)']
         
         self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotData)
 
@@ -118,7 +118,13 @@ class mathWidget(OWRpy):
                     self.counter += 1
                 except:
                     self.status.setText('An error occured in your function')
-                    
+            elif function in ['toDateTime (MDY)', 'toDateTime(YMD)', 'toDateTime(DMY)']:
+                if function == 'toDateTime (MDY)':
+                    self.R(self.data+'$dateAsMDY'+str(self.counter)+'<-strptime('+topText+', "%m/%d/%y")')
+                elif function == 'toDateTime (YMD)':
+                    self.R(self.data+'$dateAsMDY'+str(self.counter)+'<-strptime('+topText+', "%y/%m/%d")')
+                elif function == 'toDateTime (DMY)':
+                    self.R(self.data+'$dateAsMDY'+str(self.counter)+'<-strptime('+topText+', "%d/%m/%y")')
             elif function in ['match']:
                 try:
                     self.R(self.data+'$'+function+str(self.counter)+'<-'+function+'('+topText+', '+bottomText+')')
