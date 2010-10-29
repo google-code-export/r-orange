@@ -1487,7 +1487,7 @@ class CloneTabDialog(QDialog):
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
         
-        mainWidgetBox.layout().addWidget(QLabel('Set tags as comma ( , ) delimited list', mainWidgetBox))
+        mainWidgetBox.layout().addWidget(QLabel('Select the Destination for the Clone.', mainWidgetBox))
         
         
         topWidgetBox = QWidget(mainWidgetBox)
@@ -1519,7 +1519,7 @@ class NewTabDialog(QDialog):
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
         
-        mainWidgetBox.layout().addWidget(QLabel('Set tags as comma ( , ) delimited list', mainWidgetBox))
+        mainWidgetBox.layout().addWidget(QLabel('New Tab Name', mainWidgetBox))
         
         
         topWidgetBox = QWidget(mainWidgetBox)
