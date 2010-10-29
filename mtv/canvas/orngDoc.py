@@ -98,7 +98,11 @@ class SchemaDoc(QWidget):
         if mb.exec_() == QMessageBox.Ok:
             self.removeSchemaTab(redRObjects.activeTabName())
     def removeSchemaTab(self, tabname):
+        # set the tab in question to the active tab, this will set the current tab index so we can remove easily.
+        self.setTabActive(tabname)
+        
         ## first we need to clear all of the widgets from the tab
+        
         widgets = redRObjects.getIconsByTab(tabname)[tabname]
         for w in widgets:
             self.removeWidget(w)
@@ -214,7 +218,37 @@ class SchemaDoc(QWidget):
 
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
-        return redRObjects.addLine(outWidget, inWidget, outSignalName, inSignalName, doc = self, enabled = enabled, process = process, loading = loading)
+        ## addLink should move through all of the icons on all canvases and check if there are icons which are clones of the outWidget and inWidget
+        ## after this lines should be created between those widgets and the lines should be set to enabled and data.
+        tabStructure = redRObjects.getIconsByTab()
+        for tname, icons in tabStructure.items():
+            print tname
+            self.setTabActive(tname)
+            instanceList = [i.instance() for i in icons]
+            if (outWidget.instance() in instanceList) and (inWidget.instance() in instanceList):
+                redRObjects.addLine(redRObjects.getWidgetByIDActiveTabOnly(outWidget.instanceID), redRObjects.getWidgetByIDActiveTabOnly(inWidget.instanceID), 
+        newline =  redRObjects.addLine(outWidget, inWidget, outSignalName, inSignalName, doc = self, enabled = enabled, process = process, loading = loading)
+        tabIconStructure = redRObjects.getIconsByTab()
+        ot = self.activeTabName()
+        print '\n\n\n Adding lines on other canvases \n\n\n'
+        owi = outWidget.instance()
+        iwi = inWidget.instance()
+        owicons = redRObjects.getIconByIconInstanceRef(owi)
+        iwicons = redRObjects.getIconByIconInstanceRef(iwi)
+        for tname, icons in tabIconStructure.items():
+            self.setTabActive(tname)
+            o = None
+            i = None
+            for oicon in owicons:
+                if oicon in icons:
+                    o = oicon
+            for iicon in iwicons:
+                if iicon in icons:
+                    i = iicon
+            if i!= None and o != None:
+                redRObjects.addLine(o, i, outSignalName, inSignalName, doc = self, enabled = enabled, process = False, loading = loading)
+        self.setTabActive(ot)
+        return newline
     """
         if outWidget.instance().outputs.getSignal(outSignalName) in inWidget.instance().inputs.getLinks(inSignalName): return ## the link already exists
             
@@ -439,6 +473,7 @@ class SchemaDoc(QWidget):
         tabName = str(td.tabList.selectedItems()[0].text())
         if tabName == str(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
+            print 'Cloning Widget'
             self.cloneWidget(w, tabName, caption = w.caption + ' (Clone)')
         self.setTabActive(tabName) ## set the new tab as active so the user knows something happened.
     def cloneWidget(self, widget, viewID = None, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True):
@@ -448,7 +483,7 @@ class SchemaDoc(QWidget):
         try:
             newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
-            print newwidget
+            #print newwidget
         except:
             type, val, traceback = sys.exc_info()
             print str(traceback)
@@ -482,8 +517,26 @@ class SchemaDoc(QWidget):
             type, val, traceback = sys.exc_info()
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
 
-            
-        ## try to set up the ghost widgets
+        ### add lines to widgets on the current active tab if there is a link from the widget in question to one of the other widgets on the canvas.
+        print 'Adding lines'
+        tabWidgets = redRObjects.getIconsByTab(redRObjects.activeTabName())[redRObjects.activeTabName()]
+        for tw in tabWidgets: ## tw is a list of icons on the current tab (the only one we care about)
+            print 'Tab widget', tw, tw.instance()
+            lw = tw.instance().outputs.linkingWidgets()  ## lw is a list of instances that are linked to the instance of the tw icon.  
+            print 'linking widgets', lw
+            if tw == newwidget: ## found the widget so we need to look at the connections made by this widget to others.
+                for tw2 in tabWidgets:
+                    print tw2.instance(), lw
+                    if tw2.instance() in lw: ## there is a link so we make a line.
+                        line = redRObjects.getLine(tw, tw2)
+                        line2 = redRObjects.addCanvasLine(tw, tw2, self, line.getEnabled())
+                        line2.setNoData(line.noData)
+            else:
+                print tw.instance(), lw
+                if newwidget.instance() in lw:
+                    line = redRObjects.getLine(tw, newwidget)
+                    line2 = redRObjects.addCanvasLine(tw, newwidget, self, line.getEnabled())
+                    line2.setNoData(line.noData)
         qApp.restoreOverrideCursor()
         return newwidget
  
@@ -656,7 +709,10 @@ class SchemaDoc(QWidget):
             #if t == 'General': continue
             self.removeSchemaTab(t)
         RSession.Rcommand('rm(list = ls())')
-        self.activeCanvas().update()
+        #self.activeCanvas().update()
+        scenes = redRObjects.scenes()
+        for s in scenes:
+            s.update()
         self.schemaName = ""
         #self.saveTempDoc()
         

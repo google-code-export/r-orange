@@ -144,7 +144,7 @@ class SchemaView(QGraphicsView):
 
     def deleteLine(self, line):
         if line != None:
-            self.doc.removeLine1(line)
+            redRObjects.removeLineInstance(line)
 
     # resend signals between two widgets. receiving widget will process the received data
     def resendSignals(self):

@@ -18,6 +18,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import orngCanvasItems, redREnviron, orngView, time, orngRegistry
 
+defaultTabName = 'General'
 _widgetRegistry = {}
 _lines = {}
 _widgetIcons = {}
@@ -60,6 +61,10 @@ def activeTab():
     global _canvasView
     return _canvasView[_activeTab]
 
+def scenes():
+    global _canvasScene
+    return [s for k, s in _canvasScene.items()]
+    
 def activeCanvas():
     global _canvasScene
     global _activeTab
@@ -83,6 +88,7 @@ def setActiveTab(tabname):
     global _activeTab
     _activeTab = tabname
 def removeSchemaTab(tabname):
+    if tabname == defaultTabName: return ## can't remove the general tab
     global _canvasView
     #global _canvas
     #global _canvasTabs
@@ -137,22 +143,25 @@ def getIconByIconID(id):
     return _widgetIcons[id]
     
 def getIconByIconCaption(caption):
+    icons = []
     for k, i in _widgetIcons.items():
         if i.caption == caption:
-            return i
-    return None
+            icons.append(i)
+    return icons
     
 def getIconByIconInstanceRef(instance):
+    icons = []
     for k, i in _widgetIcons.items():
         if i.instanceID == instance.widgetID:
-            return i
-    return None
+            icons.append(i)
+    return icons
     
 def getIconByIconInstanceID(id):
+    icons = []
     for k, i in _widgetIcons.items():
         if i.instanceID == id:
-            return i
-    return None
+            icons.append(i)
+    return icons
     
 def getWidgetByIDActiveTabOnly(widgetID):
     for k, widget in _widgetIcons.items():
@@ -254,16 +263,39 @@ def getLinesByTab(tabs = None):
         tabLinesList[t] = lineList
     return tabLinesList
 
-def getLine(outInstance, inInstance):  ## lines are defined by an in icon and an out icon.  there should only be one valid combination in the world.
+def getLinesByInstanceIDs(outInstance, inInstance):
+    __lineList = []
+    tempLines = []
+    for k, l in _lines.items():
+        __lineList.append((l, l.outWidget, l.inWidget))
+    for ll in __lineList:
+        if (ll[1].instanceID == outInstance) and (ll[2].instanceID == inInstance):
+            tempLines.append(ll[0])
+    return tempLines
+    
+def getLine(outIcon, inIcon):  ## lines are defined by an in icon and an out icon.  there should only be one valid combination in the world.
     __lineList = []
     for k, l in _lines.items():
         __lineList.append((l, l.outWidget, l.inWidget))
     for ll in __lineList:
-        if (ll[1].instanceID == outInstance.instanceID) and (ll[2].instanceID == inInstance.instanceID):
+        if (ll[1].instanceID == outIcon.instanceID) and (ll[2].instanceID == inIcon.instanceID):
             return ll[0]
     return None
+def addCanvasLine(outWidget, inWidget, doc, enabled = -1):
+    line = orngCanvasItems.CanvasLine(doc.signalManager, doc.canvasDlg, doc.activeTab(), outWidget, inWidget, doc.activeCanvas(), activeTabName())
+    _lines[str(time.time())] = line
+    if enabled:
+        line.setEnabled(1)
+    else:
+        line.setEnabled(0)
+    line.show()
+    outWidget.addOutLine(line)
+    outWidget.updateTooltip()
+    inWidget.addInLine(line)
+    inWidget.updateTooltip()
+    return line
 def addLine(outWidget, inWidget, outSignalName, inSignalName, doc, enabled = 1, process = True, loading = False):
-        if outWidget.instance().outputs.getSignal(outSignalName) in inWidget.instance().inputs.getLinks(inSignalName): return ## the link already exists
+        #if outWidget.instance().outputs.getSignal(outSignalName) in inWidget.instance().inputs.getLinks(inSignalName): return ## the link already exists
             
         
         if inWidget.instance().inputs.getSignal(inSignalName):
@@ -273,25 +305,15 @@ def addLine(outWidget, inWidget, outSignalName, inSignalName, doc, enabled = 1, 
                 existing = inWidget.instance().inputs.getLinks(inSignalName)
                 for l in existing:
                     l['parent'].outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l['sid'])
-                    removeLine(getWidgetByInstance(l['parent']), inWidget, l['sid'], inSignalName)
+                    removeLine(l['parent'], inWidget.instance(), l['sid'], inSignalName)
                 
         line = getLine(outWidget, inWidget)
         if not line:
-            line = orngCanvasItems.CanvasLine(doc.signalManager, doc.canvasDlg, doc.activeTab(), outWidget, inWidget, doc.activeCanvas(), activeTabName())
-            _lines[str(time.time())] = line
-            if enabled:
-                line.setEnabled(1)
-            else:
-                line.setEnabled(0)
-            line.show()
-            outWidget.addOutLine(line)
-            outWidget.updateTooltip()
-            inWidget.addInLine(line)
-            inWidget.updateTooltip()
+            line = addCanvasLine(outWidget, inWidget, doc, enabled = enabled)
         
         ok = outWidget.instance().outputs.connectSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
         if not ok and not loading:
-            removeLine(outWidget, inWidget, outSignalName, inSignalName)
+            removeLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName)
             ## we should change this to a dialog so that the user can connect the signals manually if need be.
             QMessageBox.information( self, "Red-R Canvas", "Unable to add link. Something is really wrong; try restarting Red-R Canvas.", QMessageBox.Ok + QMessageBox.Default )
             
@@ -308,13 +330,17 @@ def addLine(outWidget, inWidget, outSignalName, inSignalName, doc, enabled = 1, 
         redRHistory.saveConnectionHistory()
         return 1
         
-def removeLine(outWidget, inWidget, outSignalName, inSignalName):
-    outWidget.instance().outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName)
+def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName):
+    outWidgetInstance.outputs.removeSignal(inWidgetInstance.inputs.getSignal(inSignalName), outSignalName)
     
-    if not outWidget.instance().outputs.signalLinkExists(inWidget.instance()):
-        line = getLine(outWidget, inWidget)
-        if line:
-            removeLineInstance(line)
+    if not outWidgetInstance.outputs.signalLinkExists(inWidgetInstance): ## move through all of the icons and remove all lines connecting.
+        ows = getIconByIconInstanceRef(outWidgetInstance)
+        iws = getIconByIconInstanceRef(inWidgetInstance)
+        for o in ows:
+            for i in iws:
+                line = getLine(o, i)
+                if line:
+                    removeLineInstance(line)
             
             
 def removeLineInstance(line):

@@ -213,17 +213,18 @@ class OutputHandler:
     def _handleNone(self, parentWidget, id, none):
         parentWidget.inputs.markNone(id, none)
         links = self.getWidgetConnections(parentWidget)
-        line = redRObjects.getLine(redRObjects.getIconByIconInstanceID(self.parent.widgetID), redRObjects.getIconByIconInstanceID(parentWidget.widgetID))
-        print 'The line is ', line, 'the signal is ', none
-        for l in links:
-            if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
-                line.setNoData(True)
-                redRObjects.activeCanvas().update()
-                return
-                #self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, True)
-                # return
-        line.setNoData(False)
-        redRObjects.activeCanvas().update()
+        lines = redRObjects.getLinesByInstanceIDs(self.parent.widgetID, parentWidget.widgetID)
+        for line in lines:
+            print 'The line is ', line, 'the signal is ', none
+            for l in links:
+                if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
+                    line.setNoData(True)
+                    redRObjects.activeCanvas().update()
+                    #self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, True)
+                    # return
+                else:
+                    line.setNoData(False)
+                    redRObjects.activeCanvas().update()
         # self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, False)
     def _handleSignal(self, value, handler, multiple, parentWidget):
         try:
