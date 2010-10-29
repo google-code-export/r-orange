@@ -25,7 +25,7 @@ _widgetInstances = {}
 _canvasTabs = {}
 _canvasView = {}
 _canvasScene = {}
-_activeTab = 'TestTab'
+_activeTab = ''
 
 def readCategories():
     global _widgetRegistry

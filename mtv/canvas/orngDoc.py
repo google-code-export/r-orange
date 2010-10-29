@@ -31,6 +31,7 @@ class SchemaDoc(QWidget):
         self.loadedSettingsDict = {}
         self.setLayout(QVBoxLayout())
         self.tabsWidget = QTabWidget()
+        QObject.connect(self.tabsWidget, SIGNAL('currentChanged(int)'), self.resetActiveTab)
         self.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
         self.instances = {}
@@ -40,6 +41,10 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
+    def resetActiveTab(self, int):
+        self.setActiveTab(str(self.tabsWidget.tabText(int)))
+    def setActiveTab(self, tabname):
+        redRObjects.setActiveTab(tabname)
     def widgets(self):
         wlist = []
         rolist = redRObjects.getIconsByTab()
@@ -418,6 +423,7 @@ class SchemaDoc(QWidget):
     def newTab(self): # part of the view
         td = NewTabDialog(self.canvasDlg)
         if td.exec_() != QDialog.Rejected:
+            if str(td.tabName.text()) == "": return
             self.makeSchemaTab(str(td.tabName.text()))
             self.setTabActive(str(td.tabName.text()))
     def cloneToTab(self):   # part of the view
