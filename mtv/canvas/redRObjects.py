@@ -75,7 +75,7 @@ def makeSchemaTab(tabname):
     _canvasTabs[tabname] = QWidget()
     _canvasTabs[tabname].setLayout(QVBoxLayout())
     _tabsWidget.addTab(_canvasTabs[tabname], tabname)
-    _canvas[tabname] = QGraphicsScene()
+    #_canvas[tabname] = QGraphicsScene()
     _canvasView[tabname] = orngView.SchemaView(self, _canvas[tabname], _canvasTabs[tabname])
     _canvasTabs[tabname].layout().addWidget(self.canvasView[tabname])
     setActiveTab(tabname)
@@ -84,11 +84,14 @@ def setActiveTab(tabname):
     _activeTab = tabname
 def removeSchemaTab(tabname):
     global _canvasView
-    global _canvas
-    global _canvasTabs
+    #global _canvas
+    #global _canvasTabs
+    global _canvasScene
     del _canvasView[tabname]
-    del _canvas[tabname]
-    del _canvasTabs[tabname]
+    del _canvasScene[tabname]
+    #del _canvas[tabname]
+    #del _canvasTabs[tabname]
+    
     
 ###############################
 #######     icons       #######

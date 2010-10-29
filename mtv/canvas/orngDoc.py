@@ -91,6 +91,12 @@ class SchemaDoc(QWidget):
         print 'setting the tab widget'
         redRObjects.setActiveTab(tabname)
         self.tabsWidget.addTab(redRObjects.makeTabView(tabname, self), tabname)
+    def removeCurrentTab(self):
+        mb = QMessageBox("Remove Current Tab", "Are you sure that you want to remove the current tab?\n\nAny widgets that have not been cloned will be lost!!!", 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+        if mb.exec_() == QMessageBox.Ok:
+            self.removeSchemaTab(redRObjects.activeTabName())
     def removeSchemaTab(self, tabname):
         ## first we need to clear all of the widgets from the tab
         widgets = redRObjects.getIconsByTab(tabname)[tabname]

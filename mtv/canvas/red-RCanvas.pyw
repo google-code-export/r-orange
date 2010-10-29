@@ -17,7 +17,7 @@ import orngRegistry, OWGUI
 import redROutput
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
-import redRReports
+import redRReports, redRObjects
 
 class OrangeCanvasDlg(QMainWindow):
     
@@ -280,12 +280,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction( "Enable All Links",  self.menuItemEnableAll, Qt.CTRL+Qt.Key_E)
         self.menuOptions.addAction( "Disable All Links",  self.menuItemDisableAll, Qt.CTRL+Qt.Key_D)
         self.menuOptions.addAction( "Select All Widgets", self.selectAllWidgets, Qt.CTRL+Qt.Key_A)
-        self.menuOptions.addAction("New Tab", self.schema.newTab)
+        #self.menuOptions.addAction("New Tab", self.schema.newTab)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
         self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
 
+        self.menuTabs = QMenu("&Tabs", self)
+        self.menuTabs.addAction("Add New Tab", self.schema.newTab)
+        self.menuTabs.addAction("Remove Current Tab", self.schema.removeCurrentTab)
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
         #self.menuOptions.addAction("Dump widget variables", self.dumpVariables)
@@ -333,6 +336,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuBar = QMenuBar(self)
         self.menuBar.addMenu(self.menuFile)
         self.menuBar.addMenu(self.menuOptions)
+        self.menuBar.addMenu(self.menuTabs)
         self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.packageMenu)
         self.menuBar.addMenu(self.menuHelp)
@@ -598,23 +602,23 @@ class OrangeCanvasDlg(QMainWindow):
             self.lineColor           = dlg.lineIcon.color
             
             # update settings in widgets in current documents
-            for widget in self.schema.widgets:
-                widget.instance._owInfo      = redREnviron.settings["owInfo"]
-                widget.instance._owWarning   = redREnviron.settings["owWarning"]
-                widget.instance._owError     = redREnviron.settings["owError"]
-                widget.instance._owShowStatus= redREnviron.settings["owShow"]
+            for widget in self.schema.widgets():
+                widget.instance()._owInfo      = redREnviron.settings["owInfo"]
+                widget.instance()._owWarning   = redREnviron.settings["owWarning"]
+                widget.instance()._owError     = redREnviron.settings["owError"]
+                widget.instance()._owShowStatus= redREnviron.settings["owShow"]
                 # widget.instance.updateStatusBarState()
                 widget.resetWidgetSize()
                 widget.updateWidgetState()
                 
             # update tooltips for lines in all documents
-            for line in self.schema.lines:
+            for line in self.schema.lines():
                 line.showSignalNames = redREnviron.settings["showSignalNames"]
                 line.updateTooltip()
             
-            self.schema.canvasView.repaint()
-            if dlg.toAdd != [] or dlg.toRemove != []:
-                self.widgetRegistry = orngRegistry.readCategories()
+            redRObjects.activeTab().repaint()
+            # if dlg.toAdd != [] or dlg.toRemove != []:
+                # self.widgetRegistry = orngRegistry.readCategories()
 
 
     def updateStyle(self):
