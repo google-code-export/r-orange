@@ -1495,7 +1495,7 @@ class CloneTabDialog(QDialog):
         mainWidgetBox.layout().addWidget(topWidgetBox)
         
         self.tabList = QListWidget(topWidgetBox)
-        self.tabList.addItems(parent.schema.canvasView.keys())
+        self.tabList.addItems(redRObjects.tabNames())
         topWidgetBox.layout().addWidget(self.tabList)
         
         buttonWidgetBox = QWidget(mainWidgetBox)
