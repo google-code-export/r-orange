@@ -55,7 +55,7 @@ class dataEntry2(OWRpy):
         #self.splitCanvas.addWidget(box)
         
 
-        self.R(self.Rvariables['table'] + '<- matrix("",nrow=10,ncol=10)',wantType='list')
+        self.R(self.Rvariables['table'] + '<- matrix("",nrow=10,ncol=10)',, wantType = 'NoConversion')
         self.dataTable = Rtable(box, Rdata = self.Rvariables['table'], editable=True,sortable=True)
         # if self.dataTable.columnCount() < 1:
             # self.dataTable.setColumnCount(1)
@@ -252,7 +252,7 @@ class dataEntry2(OWRpy):
                     rname.append(rownames[str(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
-        self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
+        self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')', wantType = 'NoConversion')
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
         

@@ -53,11 +53,11 @@ class RedRpreProcess(OWRpy):
             string = ',method= c("'+'","'.join([str(i.text()) for i in self.RFunctionParammethod_listBox.selectedItems()])+'")'
             injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['preProcess']+'<-preProcess(x='+str(self.RFunctionParam_x)+'$'+str(self.trainingElement.currentText())+inj+')')
-        self.R(self.Rvariables['preProcess_values']+'<-list()')
+        self.R(self.Rvariables['preProcess']+'<-preProcess(x='+str(self.RFunctionParam_x)+'$'+str(self.trainingElement.currentText())+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['preProcess_values']+'<-list()', wantType = 'NoConversion')
         names = self.R('names('+self.RFunctionParam_x+')')
         for i in names:
-            self.R('%s$processed_%s<-predict(%s, %s$%s)' % (self.Rvariables['preProcess_values'], i, self.Rvariables['preProcess'], self.RFunctionParam_x, i))
+            self.R('%s$processed_%s<-predict(%s, %s$%s)' % (self.Rvariables['preProcess_values'], i, self.Rvariables['preProcess'], self.RFunctionParam_x, i), wantType = 'NoConversion')
         newData = signals.RModelFit.RModelFit(data = self.Rvariables["preProcess"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("preProcess Output", newData)

@@ -116,7 +116,7 @@ class apply(OWRpy):
         inj = ','.join(injection)
         
         # try:
-        self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+str(self.data)+','+inj+'))')
+        self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+str(self.data)+','+inj+'))', wantType = 'NoConversion')
         self.outputTable.setRTable(self.Rvariables['apply'])
         newData = redRRDataFrame(data = self.Rvariables['apply'])
         self.rSend("id0", newData)

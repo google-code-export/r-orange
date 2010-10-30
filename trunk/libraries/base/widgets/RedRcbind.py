@@ -63,7 +63,7 @@ class RedRcbind(OWRpy):
             string = 'deparse.level='+str(self.RFunctionParamdeparse_level_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['cbind']+'<-cbind('+str(self.RFunctionParam_a)+','+str(self.RFunctionParam_b)+','+inj+')')
+        self.R(self.Rvariables['cbind']+'<-cbind('+str(self.RFunctionParam_a)+','+str(self.RFunctionParam_b)+','+inj+')', wantType = 'NoConversion')
         newData = redRRDataFrame(data = self.Rvariables["cbind"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

@@ -49,7 +49,7 @@ class prcomp(OWRpy):
         else:
             injection.append('scale = FALSE')
         inj = ','.join(injection)
-        self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), '+inj+')')
+        self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), '+inj+')', wantType = 'NoConversion')
         
         newPRComp = redRRModelFit(data = self.Rvariables['prcomp'])
         self.rSend("id0", newPRComp)

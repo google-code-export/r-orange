@@ -101,10 +101,10 @@ class subset(OWRpy):
         
         if self.colAsel == None and self.colBsel == None and type(h) is str: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,"' + h +'"]'
-            +' %in% '+self.dataB+'[["'+h+'"]],]')
+            +' %in% '+self.dataB+'[["'+h+'"]],]', wantType = 'NoConversion')
         elif self.colAsel in ["'%s'" % x for x in self.colA.getItems()]  and self.colBsel in ["'%s'" % x for x in self.colB.getItems()]: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,' + self.colAsel +']'
-            +' %in% '+self.dataB+'[['+self.colBsel+']],]')
+            +' %in% '+self.dataB+'[['+self.colBsel+']],]', wantType = 'NoConversion')
         else:
             return
         newData = redRRDataFrame(data = self.Rvariables['subset'])
@@ -123,19 +123,19 @@ class subset(OWRpy):
             selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])')
-            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])')
+            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])', wantType = 'NoConversion')
+            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])', wantType = 'NoConversion')
         elif self.rowcolBox.getChecked() == 'Column':
-            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])')
-            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])')
+            self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])', wantType = 'NoConversion')
+            self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])', wantType = 'NoConversion')
             
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
-            self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')') # replace the colname if we are left with a 1 column data frame
+            self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')', wantType = 'NoConversion') # replace the colname if we are left with a 1 column data frame
             newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
             self.rSend('Reduced Vector', newVector)
             
         if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
-            self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))')
+            self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))', wantType = 'NoConversion')
             newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
             self.rSend('Not Reduced Vector', newVector)
             

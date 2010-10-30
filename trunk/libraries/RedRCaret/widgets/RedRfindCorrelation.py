@@ -74,32 +74,32 @@ class RedRfindCorrelation(OWRpy):
         nzvInj = ''.join(nzvInjection)
         if self.dataClass == 'list':
             if str(self.nearZero.getChecked()) == 'Yes':
-                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]][, -'+str(self.classLabels.currentText())+']', nzvInj))
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]][,-'+self.Rvariables['nearZero']+']')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
+                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]][, -'+str(self.classLabels.currentText())+']', nzvInj), wantType = 'NoConversion')
+                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]][,-'+self.Rvariables['nearZero']+']', wantType = 'NoConversion')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
                 remove = 'c(%s, %s)' % (self.Rvariables['findCorrelation'], self.Rvariables['nearZero'])
             else:
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]]')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
+                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]]', wantType = 'NoConversion')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
                 remove = self.Rvariables['findCorrelation']
             ## need to remove the findCorrelation from all of the class objects
-            self.R(self.Rvariables['findCorrelationOutput']+'<-list()')
+            self.R(self.Rvariables['findCorrelationOutput']+'<-list()', wantType = 'NoConversion')
             for i in range(self.R('length('+self.RFunctionParam_data+')')):
-                self.R(self.Rvariables['findCorrelationOutput']+'[['+str(i+1)+']]<-'+self.RFunctionParam_data+'[['+str(i + 1)+']][, -'+remove+']')
+                self.R(self.Rvariables['findCorrelationOutput']+'[['+str(i+1)+']]<-'+self.RFunctionParam_data+'[['+str(i + 1)+']][, -'+remove+']', wantType = 'NoConversion')
             newData = signals.RList.RList(data = self.Rvariables['findCorrelationOutput'])
             self.rSend("findCorrelation Output List", newData)
             self.rSend("findCorrelation Output", None)
         if self.dataClass == 'data.frame':
             if str(self.nearZero.getChecked()) == 'Yes':
-                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], str(self.RFunctionParam_x), nzvInj))
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[,-'+self.Rvariables['nearZero']+']')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
+                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], str(self.RFunctionParam_x), nzvInj), wantType = 'NoConversion')
+                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[,-'+self.Rvariables['nearZero']+']', wantType = 'NoConversion')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
                 remove = 'c(%s, %s)' % (self.Rvariables['findCorrelation'], self.Rvariables['nearZero'])
             else:
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x))
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
+                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x), wantType = 'NoConversion')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
                 remove = self.Rvariables['findCorrelation']
-            self.R(self.Rvariables['findCorrelationOutput']+'<-'+self.RFunctionParam_data+'[, -'+remove+']')
+            self.R(self.Rvariables['findCorrelationOutput']+'<-'+self.RFunctionParam_data+'[, -'+remove+']', wantType = 'NoConversion')
             newData = signals.RDataFrame.RDataFrame(data = self.Rvariables['findCorrelationOutput'], parent = self.Rvariables['findCorrelationOutput'])
             self.rSend("findCorrelation Output", newData)
             self.rSend("findCorrelation Output List", None)

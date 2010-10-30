@@ -122,10 +122,10 @@ class setOperations(OWRpy):
             
         if nameA and nameB:
             self.R(self.Rvariables['intersect']+'<-%s(y=%s[["%s"]],x=%s[["%s"]])' 
-            % (func, self.dataA,nameA,self.dataB,nameB))
+            % (func, self.dataA,nameA,self.dataB,nameB), wantType = 'NoConversion')
         elif len(h) ==1:
             self.R(self.Rvariables['intersect']+'<-%s(y=%s[["%s"]],x=%s[["%s"]])' 
-            % (func, self.dataA,h[0],self.dataB,h[0]))
+            % (func, self.dataA,h[0],self.dataB,h[0]), wantType = 'NoConversion')
         else:
             return
             

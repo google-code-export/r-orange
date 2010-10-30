@@ -421,13 +421,13 @@ class graphicsView(QGraphicsView, widgetState):
     def saveAs(self, fileName, imageType):
         if self.query == '': return
         if imageType == 'pdf':
-            self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'), wantType = 'NoConversion')
         elif imageType == 'ps':
-            self.R('postscript(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('postscript(file = \'%s\')' % fileName.replace('\\', '/'), wantType = 'NoConversion')
         elif imageType == 'bmp':
-            self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'), wantType = 'NoConversion')
         elif imageType == 'jpeg':
-            self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'), wantType = 'NoConversion')
         
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
@@ -438,12 +438,12 @@ class graphicsView(QGraphicsView, widgetState):
             else:
                 fullquery = '%s(%s)' % (self.function, self.query)
         else:
-            fullquery = self.query
-        self.R(fullquery)
+            query = self.query
+        self.R(query, wantType = 'NoConversion')
         for l in self.layers:
-            self.R(l)
+            self.R(l, wantType = 'NoConversion')
         
-        self.R('dev.off()')
+        self.R('dev.off()', wantType = 'NoConversion')
     ##############################
     ### Plotting #################\
     ##############################
@@ -470,7 +470,7 @@ class graphicsView(QGraphicsView, widgetState):
         if self._pch:
             function += ', pch = '+self._pch
         function += ')'
-        self.R(function)
+        self.R(function, wantType = 'NoConversion')
     def setLegendNames(self, parameter):
         ## sets the legend to plot the names as the set parameter.  This can come from either a call to the widget through it's own interface or through the widget.
         self._legendNames = parameter
@@ -523,16 +523,16 @@ class graphicsView(QGraphicsView, widgetState):
             self.require_librarys(['Cairo'])
             self.R('CairoSVG(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight)+', height = '+str(dheight)
-                +')')
+                +')', wantType = 'NoConversion')
             
         if imageType == 'png':
             self.R('png(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
-                +')')
+                +')', wantType = 'NoConversion')
         elif imageType == 'jpeg':
             self.R('jpeg(file=\''+str(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +str(dheight*100)+', height = '+str(dheight*100)
-                +')')
+                +')', wantType = 'NoConversion')
                 
     def plot(self, query, function = 'plot', dwidth=6, dheight=6, data = None, legend = False):
         ## performs a quick plot given a query and an imageType
@@ -558,22 +558,22 @@ class graphicsView(QGraphicsView, widgetState):
             fullquery = self.query
         
         try:
-            self.R(fullquery)
+            self.R(fullquery, wantType = 'NoConversion')
         
             
             print fullquery
             if len(layers) > 0:
                 for l in layers:
-                    self.R(l)
+                    self.R(l, wantType = 'NoConversion')
             if legend:
                 self._setLegend()
             fileName = str(self.imageFileName)
             print fileName
         except Exception as inst:
-            self.R('dev.off()') ## we still need to turn off the graphics device
+            self.R('dev.off()', wantType = 'NoConversion') ## we still need to turn off the graphics device
             print 'Plotting exception occured'
             raise Exception(str(inst))
-        self.R('dev.off()')
+        self.R('dev.off()', wantType = 'NoConversion')
         self.clear()
         fileName = str(self.imageFileName)
         print fileName
@@ -609,11 +609,11 @@ class graphicsView(QGraphicsView, widgetState):
             fullquery = self.query
         
         
-        self.R(fullquery)
+        self.R(fullquery, wantType = 'NoConversion')
         if len(self.layers) > 0:
             for l in self.layers:
-                self.R(l)
-        self.R('dev.off()')
+                self.R(l, wantType = 'NoConversion')
+        self.R('dev.off()', wantType = 'NoConversion')
         self.clear()
         fileName = str(self.imageFileName)
         self.addImage(fileName)

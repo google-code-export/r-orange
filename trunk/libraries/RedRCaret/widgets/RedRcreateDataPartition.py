@@ -66,22 +66,22 @@ class RedRcreateDataPartition(OWRpy):
             function = 'createFolds'
             injection.append(', k = '+str(self.RFunctionParam_folds_spinBox.value()))
         inj = ''.join(injection)
-        self.R(self.Rvariables['createDataPartition']+'<-'+function+'(y='+self.RFunctionParam_y+'$'+str(self.ListElementCombo.currentText())+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['createDataPartition']+')')
+        self.R(self.Rvariables['createDataPartition']+'<-'+function+'(y='+self.RFunctionParam_y+'$'+str(self.ListElementCombo.currentText())+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['createDataPartition']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
         newData = signals.RList.RList(data = self.Rvariables["createDataPartition"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("createDataPartition Output", newData)
-        self.R(self.Rvariables['dataOutputList']+'<-list()')
+        self.R(self.Rvariables['dataOutputList']+'<-list()', wantType = 'NoConversion')
         for i in range(self.R('length('+self.Rvariables['createDataPartition']+')')):
             ## make a new sub data table for each of the partition levels
             if str(self.functionCombo.currentText()) == 'Partition':
-                self.R('%s$Training_%s<-%s[%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)))
-                self.R('%s$Test_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)))
+                self.R('%s$Training_%s<-%s[%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)), wantType = 'NoConversion')
+                self.R('%s$Test_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)), wantType = 'NoConversion')
             else:
-                self.R('%s$Sample_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)))
+                self.R('%s$Sample_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)), wantType = 'NoConversion')
         
         newDataOutputList = signals.RList.RList(data = self.Rvariables['dataOutputList'])
         self.rSend("dataOutputList", newDataOutputList)

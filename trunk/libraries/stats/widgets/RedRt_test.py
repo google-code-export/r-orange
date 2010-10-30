@@ -71,8 +71,8 @@ class RedRt_test(OWRpy):
             string = ',conf.level='+str(self.RFunctionParamconf_level_lineEdit.text())+''
             injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['t.test']+'<-t.test(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['t.test']+')')
+        self.R(self.Rvariables['t.test']+'<-t.test(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['t.test']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

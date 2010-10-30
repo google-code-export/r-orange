@@ -65,7 +65,7 @@ class RedRplsr(OWRpy):
         string = 'validation=\''+str(self.RFunctionParamvalidation_comboBox.currentText())+'\''
         injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['plsr']+'<-plsr(data='+str(self.RFunctionParam_data)+',model = TRUE, x = TRUE, y = TRUE,'+inj+')')
+        self.R(self.Rvariables['plsr']+'<-plsr(data='+str(self.RFunctionParam_data)+',model = TRUE, x = TRUE, y = TRUE,'+inj+')', wantType = 'NoConversion')
         newData = signals.redRRModelFit(data = self.Rvariables["plsr"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

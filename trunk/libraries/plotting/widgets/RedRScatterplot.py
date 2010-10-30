@@ -74,7 +74,7 @@ class RedRScatterplot(OWRpy):
         self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
         self.paintLegend = textEdit(options)
         
-        self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))')
+        self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))', wantType = 'NoConversion')
         data = redRRDataFrame(data = 'data', parent = None) 
         # self.graph.resize(350, 350)
         self.gotX(data)
@@ -141,7 +141,7 @@ class RedRScatterplot(OWRpy):
         d = self.data
         self.paintLegend.clear()
         if paintClass in self.R('colnames('+self.data+')'): 
-            self.R(self.Rvariables['paint'] + ' <-as.factor('+self.data+'[,\''+paintClass+'\'])')
+            self.R(self.Rvariables['paint'] + ' <-as.factor('+self.data+'[,\''+paintClass+'\']), wantType = 'NoConversion'')
             levels = self.R('levels('+self.Rvariables['paint']+')', wantType = 'list')
             #print vectorClass
             if len(levels) > 50:
@@ -155,7 +155,7 @@ class RedRScatterplot(OWRpy):
                 subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
                 levels.append('NA')
         else:
-            self.R(self.Rvariables['paint']+'<-TRUE')
+            self.R(self.Rvariables['paint']+'<-TRUE', wantType = 'NoConversion')
             levels = ['ALL']
             subset.append(('ALL','TRUE'))
             
@@ -235,7 +235,7 @@ class RedRScatterplot(OWRpy):
             else: index.append('F')
             
         index = 'c('+','.join(index) + ')'
-        self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
+        self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True, wantType = 'NoConversion')
         
         data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
         data.copyAllOptionalData(self.dataParent)

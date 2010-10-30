@@ -72,13 +72,13 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.RvariablesNames.append(x)
             
     def makeCM(self, Variable):
-        self.R(Variable+'<-list()')
+        self.R(Variable+'<-list()', wantType = 'NoConversion')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):
         if CM == None: return
         if values == None: return
         if type(values) == type([]):
             values = 'c('+','.join(values)+')'
-        self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
+        self.R(CM+'$'+colname+self.variable_suffix+'<-'+values, wantType = 'NoConversion') # commit to R
 
     def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
         
@@ -144,9 +144,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         file = str(file.toAscii())
 
         if file: redREnviron.settings['HomeFolder'] = os.path.split(file)[0]
-        self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
-        self.R(query, 'setRData')
-        self.R('dev.off()')
+        self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')', wantType = 'NoConversion')
+        self.R(query, 'setRData', wantType = 'NoConversion')
+        self.R('dev.off()', wantType = 'NoConversion')
         self.status.setText('File saved as \"'+file+'\"')
         self.notes.setCursorToEnd()
         self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
@@ -233,7 +233,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
 
         for k in self.Rvariables:
             #print self.Rvariables[k]
-            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }')
+            self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
 
         self.customWidgetDelete()
         # if self.outputs:

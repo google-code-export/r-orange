@@ -21,7 +21,7 @@ class SandBox(OWRpy):
         
         self.lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Line Edit')
         
-        self.R('a <- list(b = c(1,2,3), d = c(6,7,8))')
+        self.R('a <- list(b = c(1,2,3), d = c(6,7,8))', wantType = 'NoConversion')
         
         try:
             self.lineEdit.setText(str(signals.conversion.RArray)+' '+str(RArray))

@@ -162,7 +162,7 @@ class MyTableModel(QAbstractTableModel):
             self.arraydata[index.row()][index.column()] = data.toString()
             Rcmd = '%s[%d,%d]="%s"' % (self.Rdata, index.row(), index.column(), data.toString())
             # print Rcmd
-            self.R(Rcmd)
+            self.R(Rcmd, wantType = 'NoConversion')
             print self.arraydata
             print self.arraydata[index.row()][index.column()]
             self.emit(SIGNAL("dataChanged()"))
@@ -212,10 +212,10 @@ class MyTableModel(QAbstractTableModel):
             headers = [str(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))')
-        self.R('colnames(t) = colnames('+self.Rdata+')')
-        self.R('rownames(t) = rownames("%s")' % '","'.join(headers))
-        self.R(self.Rdata+'=rbind('+self.Rdata+',t)')
+        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
+        self.R('colnames(t) = colnames('+self.Rdata+')', wantType = 'NoConversion')
+        self.R('rownames(t) = rownames("%s")' % '","'.join(headers), wantType = 'NoConversion')
+        self.R(self.Rdata+'=rbind('+self.Rdata+',t)', wantType = 'NoConversion')
 
 
         self.emit(SIGNAL("endInsertRows()"))

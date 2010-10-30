@@ -68,8 +68,8 @@ class RedRvar_test(OWRpy):
             except:
                 self.status.setText('Confidence Interval not a number')
         inj = ','.join(injection)
-        self.R(self.Rvariables['var.test']+'<-var.test(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['var.test']+')')
+        self.R(self.Rvariables['var.test']+'<-var.test(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['var.test']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

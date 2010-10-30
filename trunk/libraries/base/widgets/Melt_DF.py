@@ -70,9 +70,9 @@ class Melt_DF(OWRpy):
             if ivStr == ', id.var = c(\'\')': ivStr = ''
         except:
             ivStr = ''
-        self.R('OldRownames<-rownames('+str(self.RFunctionParam_data)+')')
-        self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', OldRownames),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')')
-        self.R('rm(OldRownames)')
+        self.R('OldRownames<-rownames('+str(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', OldRownames),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')', wantType = 'NoConversion')
+        self.R('rm(OldRownames)', wantType = 'NoConversion')
         # copy the signals class and send the newData
         newData = redRRDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()

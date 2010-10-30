@@ -128,7 +128,7 @@ class mergeR(OWRpy):
             self.colA.setCurrentRow( self.R('which(colnames('+self.dataA+') == "' + h + '")-1'))
             self.colB.setCurrentRow( self.R('which(colnames('+self.dataB+') == "' + h + '")-1'))
             
-            self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+','+options+')')
+            self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+','+options+')', wantType = 'NoConversion')
             self.sendMe()
         elif self.colAsel and self.colBsel:
             if self.colAsel == 'Rownames': cas = '0'

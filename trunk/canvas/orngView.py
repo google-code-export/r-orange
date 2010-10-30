@@ -183,7 +183,7 @@ class SchemaView(QGraphicsView):
         if self.widgetSelectionRect:
             self.widgetSelectionRect.hide()
             self.widgetSelectionRect = None
-
+        self.unselectAllWidgets()
         # do we start drawing a connection line
         if ev.button() == Qt.LeftButton:
             widgets = [item for item in self.doc.widgets if item.mouseInsideRightChannel(self.mouseDownPosition)] + [item for item in self.doc.widgets if item.mouseInsideLeftChannel(self.mouseDownPosition)]           

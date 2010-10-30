@@ -175,7 +175,7 @@ class distributions(OWRpy):
         inj = ','.join(self.injection)
         
         # make the R call. The results will be saved in the 'cor' variable we declared earlier
-        self.R('%s <- %s(%s,%s)' % (self.Rvariables['distri'], dist, self.count.value(),inj))
+        self.R('%s <- %s(%s,%s)' % (self.Rvariables['distri'], dist, self.count.value(),inj), wantType = 'NoConversion')
         
         # create a new signal of type RMatrix and load the results 
         newData = redRRVector(data = '%s' % self.Rvariables["distri"]) 

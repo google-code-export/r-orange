@@ -71,7 +71,7 @@ class dotchart(OWRpy):
     def getReportText(self, fileDir):
         if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")', wantType = 'NoConversion')
             
         injection = []
         if str(self.RFunctionParamxlab_lineEdit.text()) != '':
@@ -87,8 +87,8 @@ class dotchart(OWRpy):
             string = 'main='+str(self.RFunctionParammain_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('dotchart(x='+str(self.RFunctionParam_x)+','+inj+')')
-        self.R('dev.off()')
+        self.R('dotchart(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
+        self.R('dev.off()', wantType = 'NoConversion')
         text = 'The following plot was generated:\n\n'
         #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
         text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'

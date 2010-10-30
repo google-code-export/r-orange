@@ -39,10 +39,10 @@ class boxplot(OWRpy):
     def getReportText(self, fileDir):
         if self.x == '': return 'Nothing to plot from this widget.\n\n'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")', wantType = 'NoConversion')
             
-        self.R('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE'+str(self.commandLine.text())+')')
-        self.R('dev.off()')
+        self.R('boxplot(x=as.list('+str(self.RFunctionParam_x)+'), notch = TRUE'+str(self.commandLine.text())+')', wantType = 'NoConversion')
+        self.R('dev.off()', wantType = 'NoConversion')
         text = 'The following plot was generated:\n\n'
         #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
         text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'

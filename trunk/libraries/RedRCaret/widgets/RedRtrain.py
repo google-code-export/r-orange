@@ -39,7 +39,7 @@ class RedRtrain(OWRpy):
         
         if data:
             if self.R('class('+data.getData()+')') == 'data.frame':
-                self.R(self.Rvariables['tempData']+'<-list(TrainingData = '+data.getData()+')')
+                self.R(self.Rvariables['tempData']+'<-list(TrainingData = '+data.getData()+')', wantType = 'NoConversion')
                 self.RFunctionParam_data = self.Rvariables['tempData']
             else:
                 self.RFunctionParam_data=data.getData()
@@ -71,11 +71,11 @@ class RedRtrain(OWRpy):
         string = ',method=\"'+str(self.RFunctionParammethod_comboBox.currentText())+'\"'
         injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['train']+'<-train(x='+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']][,!names('+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']]) %in% c(\''+str(self.resultVariable.currentText())+'\')], y = '+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']][,c(\''+str(self.resultVariable.currentText())+'\')]'+inj+')')
+        self.R(self.Rvariables['train']+'<-train(x='+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']][,!names('+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']]) %in% c(\''+str(self.resultVariable.currentText())+'\')], y = '+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']][,c(\''+str(self.resultVariable.currentText())+'\')]'+inj+')', wantType = 'NoConversion')
         newData = signals.RModelFit.RModelFit(data = self.Rvariables["train"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("train Output", newData)
-        self.R('txt<-capture.output('+self.Rvariables['train']+')')
+        self.R('txt<-capture.output('+self.Rvariables['train']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

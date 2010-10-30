@@ -118,7 +118,8 @@ class Heatmap(OWRpy):
             self.colvChoice = 'NULL'
         else:
             self.colvChoice = 'NA'
-        self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= '+col+ colClasses+'')
+        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))', wantType = 'NoConversion')
+        self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= tempPalette(50)'+ colClasses+'')
         # for making the pie plot
         if colorType == 'rainbow':
             start = float(float(self.startSaturation.value())/100)
@@ -142,7 +143,7 @@ class Heatmap(OWRpy):
         if self.plotdata == '': return
         ## needs to be rewritten for Red-R 1.85 which uses rpy3.  no interactivity with graphics.
         
-        self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
+        self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))', wantType = 'NoConversion')
         
         
         ## now there is a plot the user must select the number of groups or the height at which to make the slices.
@@ -151,54 +152,76 @@ class Heatmap(OWRpy):
             inj = 'k = ' + str(self.groupOrHeightSpin.value())
         else:
             inj = 'h = ' + str(self.groupOrHeightSpin.value())
-        self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
+        self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')', wantType = 'NoConversion')       
         self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], self.groupOrHeightSpin.value(), self.groupOrHeightSpin.value())])
         newData = redRRVector(data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         
         
-    def getReportText(self, fileDir):
-        ## print the plot to the fileDir and then send a text for an image of the plot
-        if self.plotdata != '':
-            self.R('png(file="'+fileDir+'/heatmap'+str(self.widgetID)+'.png")')
-            if str(self.classesDropdown.currentText()) != '':
-                self.classes = self.classesData+'$'+str(self.classesDropdown.currentText())
-            if self.classes and ('Show Classes' in self.showClasses.getChecked()):
-                colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
-            else:
-                colClasses = ''
-            colorType = str(self.colorTypeCombo.currentText())
-            if colorType == 'rainbow':
-                start = float(float(self.startSaturation.value())/100)
-                end = float(float(self.endSaturation.value())/100)
-                print start, end
-                col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
-            else:
-                col = colorType+'(50)'
-            self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
-            self.R('dev.off()')
-            # for making the pie plot
-            self.R('png(file="'+fileDir+'/pie'+str(self.widgetID)+'.png")')
-            if colorType == 'rainbow':
-                start = float(float(self.startSaturation.value())/100)
-                end = float(float(self.endSaturation.value())/100)
-                print start, end
-                col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
-            else:
-                col = colorType+'(10)'
-            self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
-            self.R('dev.off()')
-            self.R('png(file="'+fileDir+'/identify'+str(self.widgetID)+'.png")')
-            self.R('plot(hclust(dist(t('+self.plotdata+'))))')
-            self.R('dev.off()')
-            text = 'The following plot was generated in the Heatmap Widget:\n\n'
-            text += '.. image:: '+fileDir+'/heatmap'+str(self.widgetID)+'.png\n     :scale: 50%%\n\n'
-            #text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
-            text += '.. image:: '+fileDir+'/pie'+str(self.widgetID)+'.png\n     :scale: 30%%\n\n'
-            text += '**Intensity Chart:** Intensity levels are shown in this pie chart from low values to high.\n\n'
-            text += '.. image:: '+fileDir+'/identify'+str(self.widgetID)+'.png\n   :scale: 50%%\n\n\n'
-            text += '**Clustering:** A cluster dendrogram of the column data.\n\n'
+    
+class colorListDialog(QDialog):
+    def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(title)
+        if layout == 'horizontal':
+            self.setLayout(QHBoxLayout())
         else:
-            text = 'Nothing to plot from this widget'
+            self.setLayout(QVBoxLayout())
+        
+        self.listOfColors = []
+        self.controlArea = redRWidgetBox(self)
+        mainArea = redRWidgetBox(self.controlArea, 'horizontal')
+        leftBox = redRWidgetBox(mainArea)
+        rightBox = redRWidgetBox(mainArea)
+        ## GUI
+        
+        # color list
+        self.colorList = redRListBox(leftBox, label = 'Color List')
+        redRButton(leftBox, label = 'Add Color', callback = self.addColor)
+        redRButton(leftBox, label = 'Remove Color', callback = self.removeColor)
+        redRButton(leftBox, label = 'Clear Colors', callback = self.colorList.clear)
+        redRButton(mainArea, label = 'Finished', callback = self.accept)
+        # attribute list
+        
+        if data:
+            self.attsList = listBox(rightBox, label = 'Data Parameters', callback = self.attsListSelected)
+            names = self.R('names('+data+')')
+            print names
+            self.attsList.update(names)
+        self.data = data
+    def attsListSelected(self):
+        ## return a list of numbers coresponding to the levels of the data selected.
+        self.listOfColors = self.R('as.numeric(as.factor('+self.data+'$'+str(self.attsList.selectedItems()[0].text())+'))')
+        
+    def addColor(self):
+        colorDialog = QColorDialog(self)
+        color = colorDialog.getColor()
+        colorDialog.hide()
+        newItem = QListWidgetItem()
+        newItem.setBackgroundColor(color)
+        self.colorList.addItem(newItem)
+        
+        self.processColors()
+    def removeColor(self):
+        for item in self.colorList.selectedItems():
+            self.colorList.removeItemWidget(item)
             
-        return text
+        self.processColors()
+    def setColors(self, colorList):
+        self.colorList.clear()
+        try:
+            for c in colorList:
+                col = QColor()
+                col.setNamedColor(str(c))
+                newItem = QListWidgetItem()
+                newItem.setBackgroundColor(col)
+                self.colorList.addItem(newItem)
+        except:
+            pass # it might happen that we can't show the colors that's not good but also not disasterous either.
+    def processColors(self):
+        self.listOfColors = []
+        for item in self.colorList.items():
+            self.listOfColors.append('"'+str(item.backgroundColor().name())+'"')
+    def R(self, query):
+        return RSession.Rcommand(query = query)
+

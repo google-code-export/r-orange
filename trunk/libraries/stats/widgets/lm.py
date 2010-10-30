@@ -78,7 +78,7 @@ class lm(OWRpy):
         self.RFunctionParam_formula = self.formulEntry.Formula()[0] + ' ~ ' + self.formulEntry.Formula()[1]
 
         
-        self.R(self.Rvariables['lm']+'<-lm(data='+str(self.RFunctionParam_data)+',subset='+str(self.RFunctionParam_subset.text())+',qr='+str(self.RFunctionParam_qr.text())+',formula='+str(self.RFunctionParam_formula)+',singular_ok='+str(self.RFunctionParam_singular_ok.text())+',y='+str(self.RFunctionParam_y.text())+',weights='+str(self.RFunctionParam_weights.text())+',offset='+str(self.RFunctionParam_offset.text())+',contrasts='+str(self.RFunctionParam_contrasts.text())+',x='+str(self.RFunctionParam_x.text())+',model='+str(self.RFunctionParam_model.text())+',method="'+str(self.RFunctionParam_method.text())+'")')
+        self.R(self.Rvariables['lm']+'<-lm(data='+str(self.RFunctionParam_data)+',subset='+str(self.RFunctionParam_subset.text())+',qr='+str(self.RFunctionParam_qr.text())+',formula='+str(self.RFunctionParam_formula)+',singular_ok='+str(self.RFunctionParam_singular_ok.text())+',y='+str(self.RFunctionParam_y.text())+',weights='+str(self.RFunctionParam_weights.text())+',offset='+str(self.RFunctionParam_offset.text())+',contrasts='+str(self.RFunctionParam_contrasts.text())+',x='+str(self.RFunctionParam_x.text())+',model='+str(self.RFunctionParam_model.text())+',method="'+str(self.RFunctionParam_method.text())+'")', wantType = 'NoConversion')
         newData = redRRLMFit(data = self.Rvariables['lm'])
         self.rSend("id0", newData)
         

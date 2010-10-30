@@ -52,7 +52,7 @@ class kruskal_test(OWRpy):
         injection.append(string)
 
         inj = ','.join(injection)
-        self.R('txt<-capture.output(kruskal.test('+inj+', data='+str(self.RFunctionParam_data)+'))')
+        self.R('txt<-capture.output(kruskal.test('+inj+', data='+str(self.RFunctionParam_data)+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')

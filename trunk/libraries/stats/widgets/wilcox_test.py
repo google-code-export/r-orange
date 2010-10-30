@@ -45,7 +45,7 @@ class wilcox_test(OWRpy):
         if self.RFunctionParam_y != '':
             injection.append(str('y='+str(self.RFunctionParam_y)))
         inj = ','.join(injection)
-        self.R('txt<-capture.output('+self.Rvariables['wilcox.test']+'<-wilcox.test(x='+str(self.RFunctionParam_x)+','+inj+'))')
+        self.R('txt<-capture.output('+self.Rvariables['wilcox.test']+'<-wilcox.test(x='+str(self.RFunctionParam_x)+','+inj+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

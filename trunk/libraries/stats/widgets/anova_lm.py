@@ -35,7 +35,7 @@ class anova_lm(OWRpy):
         else: self.RFunctionParam_object = ''
     def commitFunction(self):
         if self.RFunctionParam_object == '': return
-        self.R('txt<-capture.output('+'anova.lm(object='+str(self.RFunctionParam_object)+'))')
+        self.R('txt<-capture.output('+'anova.lm(object='+str(self.RFunctionParam_object)+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

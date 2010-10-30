@@ -68,8 +68,8 @@ class aov(OWRpy):
             string = 'projections='+str(self.RFunctionParamprojections_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['aov']+'<-aov(data='+str(self.RFunctionParam_data)+','+inj+')')
-        self.R('txt<-capture.output(summary('+self.Rvariables['aov']+'))')
+        self.R(self.Rvariables['aov']+'<-aov(data='+str(self.RFunctionParam_data)+','+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output(summary('+self.Rvariables['aov']+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

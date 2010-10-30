@@ -36,7 +36,7 @@ class firstWidget(OWRpy):
         captureCmd  = 'txt<-capture.output(' + userEnteredRcmd +')'
         # execute the R code in the underlying R session. 
         #self.R is a functionality from OWRpy
-        self.R(captureCmd)
+        self.R(captureCmd, wantType = 'NoConversion')
         #format the txt variable for string output
         pasted = self.R('paste(txt, collapse = " \n")')
         #set the text in the output area

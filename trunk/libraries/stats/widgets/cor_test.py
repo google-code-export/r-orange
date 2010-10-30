@@ -48,8 +48,8 @@ class cor_test(OWRpy):
         if str(self.RFunctionParam_x) == '': return
         injection = []
         inj = ','.join(injection)
-        self.R(self.Rvariables['cor.test']+'<-cor.test(y=as.numeric(as.character('+str(self.RFunctionParam_y)+')),x=as.numeric(as.character('+str(self.RFunctionParam_x)+')),'+','+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['cor.test']+')')
+        self.R(self.Rvariables['cor.test']+'<-cor.test(y=as.numeric(as.character('+str(self.RFunctionParam_y)+')),x=as.numeric(as.character('+str(self.RFunctionParam_x)+')),'+','+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['cor.test']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

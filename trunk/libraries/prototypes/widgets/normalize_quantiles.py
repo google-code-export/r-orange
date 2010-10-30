@@ -29,8 +29,8 @@ class normalize_quantiles(OWRpy):
             self.commitFunction()
     def commitFunction(self):
         if str(self.RFunctionParam_x) == '': return
-        self.R(self.Rvariables['normalize.quantiles']+'<-normalize.quantiles(x=as.matrix('+str(self.RFunctionParam_x)+'), copy=T)')
-        self.R('rownames('+self.Rvariables['normalize.quantiles']+') <- rownames('+ self.RFunctionParam_x +')')
-        self.R('colnames('+self.Rvariables['normalize.quantiles']+') <- colnames('+ self.RFunctionParam_x +')')
+        self.R(self.Rvariables['normalize.quantiles']+'<-normalize.quantiles(x=as.matrix('+str(self.RFunctionParam_x)+'), copy=T)', wantType = 'NoConversion')
+        self.R('rownames('+self.Rvariables['normalize.quantiles']+') <- rownames('+ self.RFunctionParam_x +')', wantType = 'NoConversion')
+        self.R('colnames('+self.Rvariables['normalize.quantiles']+') <- colnames('+ self.RFunctionParam_x +')', wantType = 'NoConversion')
         newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables["normalize.quantiles"]+')')
         self.rSend("normalize.quantiles Output", newData)

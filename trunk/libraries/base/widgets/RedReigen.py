@@ -59,7 +59,7 @@ class RedReigen(OWRpy):
             string = 'EISPACK=FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['eigen']+'<-eigen(x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R(self.Rvariables['eigen']+'<-eigen(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         newData = signals.redRRList(data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
