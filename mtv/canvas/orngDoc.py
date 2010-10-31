@@ -164,10 +164,10 @@ class SchemaDoc(QWidget):
             
 
             #self.signalManager.setFreeze(1)
-            linkCount = 0
+            
             for (outName, inName) in possibleConnections:
                 print 'Adding link adsfasdfasdf', outName, inName
-                linkCount += self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
+                self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
 
         #self.signalManager.setFreeze(0, outWidget.instance)
 
@@ -220,35 +220,33 @@ class SchemaDoc(QWidget):
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
         ## addLink should move through all of the icons on all canvases and check if there are icons which are clones of the outWidget and inWidget
         ## after this lines should be created between those widgets and the lines should be set to enabled and data.
-        tabStructure = redRObjects.getIconsByTab()
-        for tname, icons in tabStructure.items():
-            print tname
-            self.setTabActive(tname)
-            instanceList = [i.instance() for i in icons]
-            if (outWidget.instance() in instanceList) and (inWidget.instance() in instanceList):
-                redRObjects.addLine(redRObjects.getWidgetByIDActiveTabOnly(outWidget.instanceID), redRObjects.getWidgetByIDActiveTabOnly(inWidget.instanceID), 
-        newline =  redRObjects.addLine(outWidget, inWidget, outSignalName, inSignalName, doc = self, enabled = enabled, process = process, loading = loading)
-        tabIconStructure = redRObjects.getIconsByTab()
-        ot = self.activeTabName()
-        print '\n\n\n Adding lines on other canvases \n\n\n'
-        owi = outWidget.instance()
-        iwi = inWidget.instance()
-        owicons = redRObjects.getIconByIconInstanceRef(owi)
-        iwicons = redRObjects.getIconByIconInstanceRef(iwi)
-        for tname, icons in tabIconStructure.items():
-            self.setTabActive(tname)
-            o = None
-            i = None
-            for oicon in owicons:
-                if oicon in icons:
-                    o = oicon
-            for iicon in iwicons:
-                if iicon in icons:
-                    i = iicon
-            if i!= None and o != None:
-                redRObjects.addLine(o, i, outSignalName, inSignalName, doc = self, enabled = enabled, process = False, loading = loading)
-        self.setTabActive(ot)
-        return newline
+        
+        if inWidget.instance().inputs.getSignal(inSignalName):
+            if not inWidget.instance().inputs.getSignal(inSignalName)['multiple']:
+                ## check existing link to the input signal
+                
+                existing = inWidget.instance().inputs.getLinks(inSignalName)
+                for l in existing:
+                    l['parent'].outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), l['sid'])
+                    redRObjects.removeLine(l['parent'], inWidget.instance(), l['sid'], inSignalName)
+        
+        print 'Generating Lines'
+        lines = redRObjects.addLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName, doc = self, enabled = enabled, process = False, loading = loading)
+        
+        
+        ok = outWidget.instance().outputs.connectSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
+        if not ok and not loading:
+            #remove the lines
+            redRObjects.removeLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName)
+            ## we should change this to a dialog so that the user can connect the signals manually if need be.
+            QMessageBox.information( self, "Red-R Canvas", "Unable to add link. Something is really wrong; try restarting Red-R Canvas.", QMessageBox.Ok + QMessageBox.Default )
+            
+
+            return 0
+        elif not ok:
+            return 0
+        else:
+            return 1
     """
         if outWidget.instance().outputs.getSignal(outSignalName) in inWidget.instance().inputs.getLinks(inSignalName): return ## the link already exists
             
@@ -324,7 +322,10 @@ class SchemaDoc(QWidget):
     ### moved to redRObjects
     # remove only one signal from connected two widgets. If no signals are left, delete the line
     def removeLink(self, outWidget, inWidget, outSignalName, inSignalName):
-        return redRObjects.removeLine(outWidget, inWidget, outSignalName, inSignalName)
+        outWidget.outputs.removeSignal(inWidgetInstance.inputs.getSignal(inSignalName), outSignalName)
+    
+        if not outWidget.outputs.signalLinkExists(inWidgetInstance): ## move through all of the icons and remove all lines connecting, only do this if there is no more signal.
+            return redRObjects.removeLine(outWidget, inWidget, outSignalName, inSignalName)
     """ ##Depricated removelink functionality
             #print "<extra> orngDoc.py - removeLink() - ", outWidget, inWidget, outSignalName, inSignalName
             outWidget.instance().outputs.removeSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName)
@@ -470,7 +471,9 @@ class SchemaDoc(QWidget):
         tempWidgets = self.activeTab().getSelectedWidgets()
         td = CloneTabDialog(self.canvasDlg)
         if td.exec_() == QDialog.Rejected: return ## nothing interesting to do
-        tabName = str(td.tabList.selectedItems()[0].text())
+        try:
+            tabName = str(td.tabList.selectedItems()[0].text())
+        except: return 
         if tabName == str(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
             print 'Cloning Widget'
@@ -754,7 +757,8 @@ class SchemaDoc(QWidget):
                 while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
                 caption = caption + " (" + str(i) + ")"
             newwidget.updateText(caption)
-            
+        else:
+            newwidget.updateText(caption)
     def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None, id = None):
         try:
             #if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
@@ -1340,8 +1344,9 @@ class SchemaDoc(QWidget):
                 ## now add the line with it's settings.
                 for (outName, inName) in signals:
                     self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False)
-                    line = self.getLine(outWidget, inWidget)
-                    line.setNoData(noData)
+                lines = redRObjects.getLinesByWidgetInstanceID(outIconID, inIconID)
+                for l in lines:
+                    l.setNoData(noData)
                 
         return (True, '')
     def loadLines(self, lineList, loadingProgressBar, freeze, tmp):
