@@ -32,6 +32,7 @@ class SchemaView(QGraphicsView):
         self.linePopup.addAction("Remove", self.deleteSelectedLine)
         self.linePopup.addSeparator()
         self.setAcceptDrops(1)
+        self.controlHeld = False
 
     # ###########################################
     # drag and drop events. You can open a document by dropping it on the canvas
@@ -184,13 +185,20 @@ class SchemaView(QGraphicsView):
     # ###########################################
 
     # mouse button was pressed
+    def keyPressEvent(self, ev):
+        if ev.key() == Qt.Key_Control:
+            self.controlHeld = True
+    def keyReleaseEvent(self, ev):
+        if ev.key() == Qt.Key_Control:
+            self.controlHeld = False
     def mousePressEvent(self, ev):
         self.mouseDownPosition = self.mapToScene(ev.pos())
         
         if self.widgetSelectionRect:
             self.widgetSelectionRect.hide()
             self.widgetSelectionRect = None
-        self.unselectAllWidgets()  ## should clear the selections ahead of time KRC
+        if not self.controlHeld:
+            self.unselectAllWidgets()  ## should clear the selections ahead of time KRC
         # do we start drawing a connection line
         if ev.button() == Qt.LeftButton:
             widgets = [item for item in self.doc.widgets() if item.mouseInsideRightChannel(self.mouseDownPosition)] + [item for item in self.doc.widgets() if item.mouseInsideLeftChannel(self.mouseDownPosition)]           

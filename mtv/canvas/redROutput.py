@@ -9,33 +9,45 @@ import string
 from datetime import tzinfo, timedelta, datetime
 import traceback, redRExceptionHandling
 import os.path, os
-import redREnviron
+import redREnviron, log, SQLiteSession
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.dialog import dialog as redRdialog
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-
+from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)
         self.canvasDlg = canvasDlg
+        
+        self.defaultExceptionHandler = sys.excepthook
+        self.defaultSysOutHandler = sys.stdout
+
+        self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
+        ### error logging setup ###
+        self.errorDB = log.logDB()
+        self.errorHandler = SQLiteSession.SQLiteHandler(defaultDB = self.errorDB)
+        
         self.textOutput = QTextEdit(self)
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
         self.allOutput = ''
         
         self.setLayout(QVBoxLayout())
+        self.topWB = redRwidgetBox(self, orientation = 'horizontal')
+        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = self.errorHandler.getTableNames(), callback = self.processTable)
+        self.minSeverity = redRComboBox(self.topWB, label = 'Minimum Severity:', items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], callback = self.processTable)
+        self.typeCombo = redRComboBox(self.topWB, label = 'Output Type:', items = ['No Filter', 'Error', 'Comment', 'Message', 'Warning'], callback = self.processTable)
+        redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
+        redRbutton(self.topWB, label = 'Clear DB', callback = self.clearDataBase)
         self.layout().addWidget(self.textOutput)
         self.layout().setMargin(2)
         self.setWindowTitle("Output Window")
         self.setWindowIcon(QIcon(canvasDlg.outputPix))
 
-        self.defaultExceptionHandler = sys.excepthook
-        self.defaultSysOutHandler = sys.stdout
-
-        self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
+        
         self.unfinishedText = ""
         
         w = h = 500
@@ -51,7 +63,38 @@ class OutputWindow(QDialog):
         self.resize(w, h)
             
         self.hide()
-
+    def refresh(self):
+        self.tableCombo.update(self.errorHandler.getTableNames())
+        print self.errorHandler.getTableNames()
+        
+    def processTable(self):
+        if str(self.typeCombo.currentText()) != 'No Filter':
+            
+            response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity > %s AND ErrorType == \"%s\"" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText()), str(self.typeCombo.currentText())))
+        else:
+            response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity > %s" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText())))
+            
+        self.showTable(response)
+    def clearDataBase(self):
+        log.clearDB()
+    def showTable(self, response):
+        htmlText = self.toHTMLTable(response)
+        self.textOutput.clear()
+        self.textOutput.insertHtml(htmlText)
+    def toHTMLTable(self, response):
+        
+        s = '<h2>%s</h2>' % self.tableCombo.currentText()
+        s+= '<table border="1" cellpadding="3">'
+        s+= '  <tr><td><b>'
+        s+= '    </b></td><td><b>'.join(['Log ID', 'Severity', 'Error Type', 'Message'])
+        s+= '  </b></td></tr>'
+        
+        for row in response:
+            s+= '  <tr><td>'
+            s+= '    </td><td>'.join([str(i) for i in row])
+            s+= '  </td></tr>'
+        s+= '</table>'
+        return s
     def stopCatching(self):
         self.catchException(0)
         self.catchOutput(0)
@@ -115,37 +158,32 @@ class OutputWindow(QDialog):
             # self.allOutput += text + "\n"
 
         if redREnviron.settings["writeLogFile"]:
-            self.logFile.write(text.replace("\n", "<br>\n"))
+            log.log(3, 0, 2, text.replace("\n", "<br>\n"))
             
         if not redREnviron.settings['debugMode']: return 
         
         import re
         m = re.search('^(\|(#+)\|\s?)(.*)',text)
-        if redREnviron.settings['outputVerbosity'] ==0:
-            if m:
-                text = str(m.group(3))
-            
-        elif m and len(m.group(2)) >= redREnviron.settings['outputVerbosity']:
-            # text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(redREnviron.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (redREnviron.settings['outputVerbosity'])+1)
-            text = str(m.group(3)) + "\n"
-        else:
-            return
-
+        
         
         if redREnviron.settings["focusOnCatchOutput"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
-
+        # cursor = QTextCursor(self.textOutput.textCursor())                
+        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        # self.textOutput.setTextCursor(cursor)                             
+        # if re.search('#'*60 + '<br>',text):
+            # self.textOutput.insertHtml(text)                              
+        # else:
+            # self.textOutput.insertPlainText(text)                              
+        # cursor = QTextCursor(self.textOutput.textCursor())                
+        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         
-        cursor = QTextCursor(self.textOutput.textCursor())                
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        self.textOutput.setTextCursor(cursor)                             
-        if re.search('#'*60 + '<br>',text):
-            self.textOutput.insertHtml(text)                              
+        if m:
+            log.log(3, len(m.group(2)), 2, m.group(3))
         else:
-            self.textOutput.insertPlainText(text)                              
-        cursor = QTextCursor(self.textOutput.textCursor())                
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+            log.log(3, 0, 2, text)
+            
         if text[-1:] == "\n":
             if redREnviron.settings["printOutputInStatusBar"]:
                 self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
@@ -231,6 +269,7 @@ class OutputWindow(QDialog):
             self.canvasDlg.menuItemShowOutputWindow()
 
         text = redRExceptionHandling.formatException(type,value,tracebackInfo)
+        log.log(3,9,1,text)
         
         t = datetime.today().isoformat(' ')
         toUpload = {}
@@ -243,13 +282,13 @@ class OutputWindow(QDialog):
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
 
         
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)                             # existing text
-        self.textOutput.insertHtml(text)                                  # then append the text
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)
+        # cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        # self.textOutput.setTextCursor(cursor)                             # existing text
+        # self.textOutput.insertHtml(text)                                  # then append the text
+        # cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        # self.textOutput.setTextCursor(cursor)
         
         if redREnviron.settings["writeLogFile"]:
             self.logFile.write(str(text) + "<br>\n")
