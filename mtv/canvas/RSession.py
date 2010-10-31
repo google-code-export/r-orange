@@ -29,11 +29,13 @@ import rpy3.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import canvas.redrrpy._conversion as co
+import log
 
 mutex = QMutex()
 def assign(name, object):
     try:
         rpy.r.assign(name, object)
+        log.log(2, 5, 3, 'Assigned object to %s' % name)
         return True
     except:
         return False
@@ -41,13 +43,14 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     
     unlocked = mutex.tryLock()
     if not unlocked:
-        print 'R Session is LOCKED.  Please re-run your widget.'
+        mb = QMessageBox("R Session Locked", "The R Session is currently locked, please wait for the prior execution to finish.", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default,qApp.canvasDlg)
+        mb.exec_()
         return
         
     
     output = None
     if not silent:
-        print '|##| %s' % query
+        log.log(2, 2, 3, query)
     #####################Forked verions of R##############################
     # try:
         # output = qApp.R.R(query)            
@@ -65,7 +68,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         
         output = rpy.r(query)
     except Exception as inst:
-        print inst
+        log.log(2, 8, 1, "Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s." % (query, inst))
         mutex.unlock()
         raise RuntimeError(str(inst) + '  Orriginal Query was:  ' + str(query))
         return None # now processes can catch potential errors
@@ -193,7 +196,7 @@ def getInstalledLibraries():
         return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
 loadedLibraries = []
 def setLibPaths(libLoc):
-    Rcommand('.libPaths(\''+str(libLoc)+'\')') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
+    Rcommand('.libPaths(\''+str(libLoc)+'\')', wantType = 'NoConversion') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
     
 if sys.platform=="win32":
     libPath = os.path.join(os.environ['R_HOME'], 'library').replace('\\','/')
@@ -219,25 +222,28 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
         for library in librarys:
             if library in loadedLibraries: 
-                print 'library already loaded'
+                log.log(2, 1, 2, 'Library already loaded')
                 continue
             # print 'in loop', library, library in installedRPackages
             # print installedRPackages
             if installedRPackages and library and (library in installedRPackages):
+                log.log(2, 7, 3, 'Loading library %s.' % library)
                 Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
+                
                 loadedLibraries.append(library)
             elif library:
                 if redREnviron.checkInternetConnection():
                     mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
-                            Rcommand('setRepositories(ind=1:7)')
-                            Rcommand('install.packages("' + library + '")')#, lib=' + libPath + ')')
-                            loadedOK = Rcommand('require(' + library + ')')# lib.loc=' + libPath + ')')
+                            log.log(2, 8, 3, 'Installing library %s.' % library)
+                            Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
+                            Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')#, lib=' + libPath + ')')
+                            loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')# lib.loc=' + libPath + ')')
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
                             
                         except:
-                            print 'Library load failed'
+                            log.log(2, 9, 1, 'Library load failed')
                             loadedOK = False
                     else:
                         loadedOK = False

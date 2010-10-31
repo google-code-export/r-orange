@@ -29,9 +29,12 @@ class SQLiteHandler:
             for row in cursor:
                 response.append(row)
         except Exception as inst:
-            # print inst
-            pass
+            import log
+            log.logException(inst)
+            #pass
         finally:
+            #import log
+            #log.logException(query)
             conn.commit()
             conn.close()
             return response

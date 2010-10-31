@@ -15,10 +15,22 @@
     # along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
 import SQLiteSession, redREnviron, os
+from datetime import tzinfo, timedelta, datetime, time
 _logDB = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "log.db")
 handler = SQLiteSession.SQLiteHandler(defaultDB = _logDB)
+_tables = []
+_sessionID = redREnviron.settings['id']
+_outputManager = None
 
+def setOutputManager(om):
+    global _outputManager
+    _outputManager = om
+def getSessionID():
+    global _sessionID
+    return _sessionID
 def log(table, severity, errorType = 2, comment = ""):
+    global _tables
+    if comment in ['', '\n', '\t']: return
     if type(table) == int:
         if table == 1:
             table = 'Python'
@@ -35,16 +47,25 @@ def log(table, severity, errorType = 2, comment = ""):
             errorType = 'Message'
         elif errorType == 4:
             errorType = 'Warning'
-    handler.execute(query = "INSERT INTO %s (Severity, ErrorType, Comment) VALUES (%s, \"%s\", \"%s\")" % (table, severity, errorType, comment))
-    handler.execute(query = "INSERT INTO %s (Severity, ErrorType, Comment) VALUES (%s, \"%s\", \"%s\")" % ('All_Output', severity, errorType, comment))
+    if table not in _tables:
+        handler.setTable(table = table, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")")
+        _tables.append(table)
+        
+    handler.execute(query = "INSERT INTO %s (TimeStamp, Session, Severity, ErrorType, Comment) VALUES (\"%s\", \"%s\", %s, \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment))
+    handler.execute(query = "INSERT INTO %s (TimeStamp, Session, Severity, ErrorType, Comment) VALUES (\"%s\", \"%s\", %s, \"%s\", \"%s\")" % ('All_Output', datetime.today().isoformat(' '), _sessionID, severity, errorType, comment))
     
+def logException(string):
+    global _outputManager
+    if _outputManager:
+        _outputManager.exceptionText.insertPlainText(string)
 def logDB():
     return _logDB
 def clearDB():
     for t in ['All_Output', 'General', 'R', 'Python']:
-        handler.setTable(table = t, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"Severity\", \"ErrorType\", \"Comment\")", force = True)
+        handler.setTable(table = t, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")", force = True)
 def initializeTables():
     for t in ['All_Output', 'General', 'R', 'Python']:
-        handler.setTable(table = t, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"Severity\", \"ErrorType\", \"Comment\")")
+        handler.setTable(table = t, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")")
+        _tables.append(t)
         
 initializeTables()

@@ -6,7 +6,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
 import string
-from datetime import tzinfo, timedelta, datetime
+import time as ti
+from datetime import tzinfo, timedelta, datetime, time
 import traceback, redRExceptionHandling
 import os.path, os
 import redREnviron, log, SQLiteSession
@@ -16,6 +17,9 @@ from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.dialog import dialog as redRdialog
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
+from libraries.base.qtWidgets.radioButtons import radioButtons as redRradiobuttons
+from libraries.base.qtWidgets.tabWidget import tabWidget as redRTabWidget
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
@@ -36,16 +40,23 @@ class OutputWindow(QDialog):
         self.allOutput = ''
         
         self.setLayout(QVBoxLayout())
-        self.topWB = redRwidgetBox(self, orientation = 'horizontal')
-        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = self.errorHandler.getTableNames(), callback = self.processTable)
+        wb = redRwidgetBox(self)
+        tw = redRTabWidget(wb)
+        self.outputExplorer = tw.createTabPage('General Outputs')
+        self.topWB = redRwidgetBox(self.outputExplorer, orientation = 'horizontal')
+        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = ['All_Output, table'], callback = self.processTable)
+        self.tableCombo.update(self.errorHandler.getTableNames())
         self.minSeverity = redRComboBox(self.topWB, label = 'Minimum Severity:', items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], callback = self.processTable)
         self.typeCombo = redRComboBox(self.topWB, label = 'Output Type:', items = ['No Filter', 'Error', 'Comment', 'Message', 'Warning'], callback = self.processTable)
-        redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
+        #redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
+        self.sessionID = redRradiobuttons(self.topWB, buttons = ['Current Session Only', 'All Sessions'], setChecked = 'Current Session Only', callback = self.processTable)
         redRbutton(self.topWB, label = 'Clear DB', callback = self.clearDataBase)
-        self.layout().addWidget(self.textOutput)
-        self.layout().setMargin(2)
+        self.outputExplorer.layout().addWidget(self.textOutput)
+        self.outputExplorer.layout().setMargin(2)
         self.setWindowTitle("Output Window")
         self.setWindowIcon(QIcon(canvasDlg.outputPix))
+        self.exceptionTracker = tw.createTabPage('Exceptions')
+        self.exceptionText = redRTextEdit(self.exceptionTracker)
 
         
         self.unfinishedText = ""
@@ -61,18 +72,25 @@ class OutputWindow(QDialog):
             else: 
                 w = h = 500
         self.resize(w, h)
-            
+        self.lastTime = ti.time()
         self.hide()
+        log.setOutputManager(self)
     def refresh(self):
         self.tableCombo.update(self.errorHandler.getTableNames())
         print self.errorHandler.getTableNames()
         
     def processTable(self):
         if str(self.typeCombo.currentText()) != 'No Filter':
-            
-            response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity > %s AND ErrorType == \"%s\"" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText()), str(self.typeCombo.currentText())))
+            if str(self.sessionID.getChecked()) == 'Current Session Only':
+                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Session == \"%s\" AND Severity >= %s AND ErrorType == \"%s\"" % (str(self.tableCombo.currentText()).split(',')[0], log.getSessionID(), str(self.minSeverity.currentText()), str(self.typeCombo.currentText())))
+            else:
+                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity >= %s AND ErrorType == \"%s\"" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText()), str(self.typeCombo.currentText())))
         else:
-            response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity > %s" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText())))
+            if str(self.sessionID.getChecked()) == 'Current Session Only':
+                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Session == \"%s\" AND Severity >= %s" % (str(self.tableCombo.currentText()).split(',')[0], log.getSessionID(), str(self.minSeverity.currentText())))
+            else:
+                
+                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity >= %s" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText())))
             
         self.showTable(response)
     def clearDataBase(self):
@@ -86,7 +104,7 @@ class OutputWindow(QDialog):
         s = '<h2>%s</h2>' % self.tableCombo.currentText()
         s+= '<table border="1" cellpadding="3">'
         s+= '  <tr><td><b>'
-        s+= '    </b></td><td><b>'.join(['Log ID', 'Severity', 'Error Type', 'Message'])
+        s+= '    </b></td><td><b>'.join(['Log ID', 'Time Stamp', 'Session ID', 'Severity', 'Error Type', 'Message'])
         s+= '  </b></td></tr>'
         
         for row in response:
@@ -133,6 +151,7 @@ class OutputWindow(QDialog):
 
     def clear(self):
         self.textOutput.clear()
+        self.exceptionText.clear()
 
     # print text produced by warning and error widget calls
     def widgetEvents(self, text, eventVerbosity = 1):
@@ -157,10 +176,10 @@ class OutputWindow(QDialog):
         # else:
             # self.allOutput += text + "\n"
 
-        if redREnviron.settings["writeLogFile"]:
-            log.log(3, 0, 2, text.replace("\n", "<br>\n"))
+        # if redREnviron.settings["writeLogFile"]:
+            # log.log(3, 1, 2, text.replace("\n", "<br>\n"))
             
-        if not redREnviron.settings['debugMode']: return 
+        #if not redREnviron.settings['debugMode']: return 
         
         import re
         m = re.search('^(\|(#+)\|\s?)(.*)',text)
@@ -169,20 +188,20 @@ class OutputWindow(QDialog):
         if redREnviron.settings["focusOnCatchOutput"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
-        # cursor = QTextCursor(self.textOutput.textCursor())                
+        # cursor = QTextCursor(self.exceptionText.textCursor())                
         # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        # self.textOutput.setTextCursor(cursor)                             
+        # self.exceptionText.setTextCursor(cursor)                             
         # if re.search('#'*60 + '<br>',text):
-            # self.textOutput.insertHtml(text)                              
+            # self.exceptionText.insertHtml(text)                              
         # else:
-            # self.textOutput.insertPlainText(text)                              
-        # cursor = QTextCursor(self.textOutput.textCursor())                
+            # self.exceptionText.insertPlainText(text)                              
+        # cursor = QTextCursor(self.exceptionText.textCursor())                
         # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         
         if m:
-            log.log(3, len(m.group(2)), 2, m.group(3))
+            log.log(3, len(m.group(2)), 2, text)
         else:
-            log.log(3, 0, 2, text)
+            log.log(3, 1, 2, text)
             
         if text[-1:] == "\n":
             if redREnviron.settings["printOutputInStatusBar"]:
@@ -191,6 +210,8 @@ class OutputWindow(QDialog):
         else:
             self.unfinishedText += text
             
+        if ti.time() - self.lastTime > 10:
+            self.processTable()
 
     def flush(self):
         pass
@@ -282,13 +303,13 @@ class OutputWindow(QDialog):
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
 
         
-        # cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        # self.textOutput.setTextCursor(cursor)                             # existing text
-        # self.textOutput.insertHtml(text)                                  # then append the text
-        # cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
-        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        # self.textOutput.setTextCursor(cursor)
+        cursor = QTextCursor(self.exceptionText.textCursor())                # clear the current text selection so that
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        self.exceptionText.setTextCursor(cursor)                             # existing text
+        self.exceptionText.insertHtml(text)                                  # then append the text
+        cursor = QTextCursor(self.exceptionText.textCursor())                # clear the current text selection so that
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
+        self.exceptionText.setTextCursor(cursor)
         
         if redREnviron.settings["writeLogFile"]:
             self.logFile.write(str(text) + "<br>\n")
