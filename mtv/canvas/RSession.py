@@ -75,7 +75,10 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     if wantType == 'NoConversion': 
         mutex.unlock()
         return output
-    
+    elif wantType == 'list':
+        co.setWantType(1)
+    elif wantType == 'dict':
+        co.setWantType(2)
     ##print output.getrclass()
     output = convertToPy(output)
     if type(output) == list and len(output) == 1:
@@ -85,8 +88,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
     
     
     if wantType == None:
-        print 'Warning!! WantType is None.  This will prevent a return in Red-R 1.90!!!'
-        pass
+        raise Exception, 'WantType not specified'
     elif wantType == 'list':
         if type(output) is list:
             pass
@@ -126,26 +128,26 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
                         output[key] = nd
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
-    elif wantType == 'array': # want a numpy array
-        if type(output) == list:
-            #print 'Converting list to array'
-            output = numpy.array(output)
+    # elif wantType == 'array': # want a numpy array
+        # if type(output) == list:
+            ##print 'Converting list to array'
+            # output = numpy.array(output)
             
-        elif type(output) in [str, int, float, bool]:
-            #print 'Converting single type to array'
-            output = numpy.array([output])
+        # elif type(output) in [str, int, float, bool]:
+            ##print 'Converting single type to array'
+            # output = numpy.array([output])
             
-        elif type(output) == dict:
-            #print 'Converting Dict to Array'
-            newOutput = []
-            for key in output.keys():
-                newOutput.append(output[key])
-            output = newOutput
-        elif type(output) in [numpy.ndarray]:
-            #print 'Type is already array'
-            pass
-        else:
-            print 'Warning, conversion was not of a known type;', str(type(output))
+        # elif type(output) == dict:
+            ##print 'Converting Dict to Array'
+            # newOutput = []
+            # for key in output.keys():
+                # newOutput.append(output[key])
+            # output = newOutput
+        # elif type(output) in [numpy.ndarray]:
+            ##print 'Type is already array'
+            # pass
+        # else:
+            # print 'Warning, conversion was not of a known type;', str(type(output))
     elif wantType == 'listOfLists' or listOfLists:
         #print 'Converting to list of lists'
         

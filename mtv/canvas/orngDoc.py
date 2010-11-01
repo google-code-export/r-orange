@@ -12,6 +12,8 @@ from orngDlgs import *
 import RSession, globalData, redRPackageManager, redRHistory
 from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, orngHistory, zipfile, urllib, sip, redRObjects, redRSaveLoad
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
+from libraries.base.qtWidgets.splitter import splitter as redRSplitter
 #import pprint, 
 # pp = pprint.PrettyPrinter(indent=4)
 
@@ -28,12 +30,17 @@ class SchemaDoc(QWidget):
         self.sessionID = 0
         self.schemaPath = redREnviron.settings["saveSchemaDir"]
         self.schemaName = ""
+        
         self.loadedSettingsDict = {}
-        self.setLayout(QVBoxLayout())
+        self.setLayout(QHBoxLayout())
+        self.splitter = redRSplitter(self)
+        left = self.splitter.widgetArea()
         self.tabsWidget = QTabWidget()
         QObject.connect(self.tabsWidget, SIGNAL('currentChanged(int)'), self.resetActiveTab)
-        self.layout().addWidget(self.tabsWidget)
+        left.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
+        right = self.splitter.widgetArea()
+        self.notes = redRTextEdit(right, label = 'Notes')
         self.instances = {}
         self.makeSchemaTab('General')
         
