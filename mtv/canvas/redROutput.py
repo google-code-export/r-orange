@@ -149,6 +149,7 @@ class OutputWindow(QDialog):
         else:     sys.excepthook = self.defaultExceptionHandler
 
     def catchOutput(self, catch):
+        return
         if catch:    sys.stdout = self
         else:         sys.stdout = self.defaultSysOutHandler
 
@@ -172,49 +173,7 @@ class OutputWindow(QDialog):
             return unicode(obj).encode('unicode_escape')
 
     def write(self, text):
-        text = self.safe_str(text)
-        # if text[-1:] == "\n":
-        
-        self.allOutput += text.replace("\n", "<br>\n")
-        # else:
-            # self.allOutput += text + "\n"
-
-        # if redREnviron.settings["writeLogFile"]:
-            # log.log(3, 1, 2, text.replace("\n", "<br>\n"))
-            
-        #if not redREnviron.settings['debugMode']: return 
-        
-        import re
-        m = re.search('^(\|(#+)\|\s?)(.*)',text)
-        
-        
-        if redREnviron.settings["focusOnCatchOutput"]:
-            self.canvasDlg.menuItemShowOutputWindow()
-
-        # cursor = QTextCursor(self.exceptionText.textCursor())                
-        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        # self.exceptionText.setTextCursor(cursor)                             
-        # if re.search('#'*60 + '<br>',text):
-            # self.exceptionText.insertHtml(text)                              
-        # else:
-            # self.exceptionText.insertPlainText(text)                              
-        # cursor = QTextCursor(self.exceptionText.textCursor())                
-        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        
-        if m:
-            log.log(3, len(m.group(2)), 2, text)
-        else:
-            log.log(3, 1, 2, text)
-            
-        if text[-1:] == "\n":
-            if redREnviron.settings["printOutputInStatusBar"]:
-                self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
-            self.unfinishedText = ""
-        else:
-            self.unfinishedText += text
-            
-        # if ti.time() - self.lastTime > 10:
-            # self.processTable()
+        return
 
     def flush(self):
         pass
@@ -289,6 +248,7 @@ class OutputWindow(QDialog):
             return
         
     def exceptionHandler(self, type, value, tracebackInfo):
+        print 'Exception Occured, please see the output for more details.\n'
         if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
 

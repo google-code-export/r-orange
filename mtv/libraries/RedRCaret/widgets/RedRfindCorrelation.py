@@ -30,7 +30,7 @@ class RedRfindCorrelation(OWRpy):
         
         self.trainingData = redRComboBox(self.controlArea, label = 'Training Data')
         self.classLabels = redRComboBox(self.controlArea, label = 'Classes')
-        self.nearZero = redRRadioButtons(self.controlArea, label = 'Remove Near Zero Variance Predictors?' buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
+        self.nearZero = redRRadioButtons(self.controlArea, label = 'Remove Near Zero Variance Predictors?', buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
         
         self.nzvBox = redRWidgetBox(self.controlArea)
         self.freqCut = redRLineEdit(self.nzvBox, label = 'Frequency Cut:', text = '95/5')

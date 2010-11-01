@@ -8,23 +8,21 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class textEdit(QTextEdit,widgetState):
-    def __init__(self,widget,html='',label=None, orientation='vertical', editable=True,printable=False):
+    def __init__(self,widget,html='',label=None, orientation='vertical', editable=True,printable=True):
         QTextEdit.__init__(self,widget)
         self.label = label
+        self.hb = widgetBox(widget,orientation=orientation)
         if label:
-            self.hb = widgetBox(widget,orientation=orientation)
             widgetLabel(self.hb, label)
-            self.hb.layout().addWidget(self)
-            if printable:
-                button(self.hb, "Print", self.printMe)
-        else:
-            widget.layout().addWidget(self)
-            if printable:
-                button(widget, "Print", self.printMe)
+        self.hb.layout().addWidget(self)
+        wb = widgetBox(self.hb, orientation = 'horizontal')
+        if printable:
+            button(wb, "Print", self.printMe)
             
         if not editable:
             self.setReadOnly(True)
         self.insertHtml(html)
+        button(wb, "Clear", callback = self.clear)
         
 
     def hide(self):

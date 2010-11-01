@@ -40,7 +40,16 @@ class SchemaDoc(QWidget):
         left.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
         right = self.splitter.widgetArea()
-        self.notes = redRTextEdit(right, label = 'Notes')
+        rightSplitter = redRSplitter(right, orientation = 'vertical')
+        rightTop = rightSplitter.widgetArea(margin = 8)
+        rightBottom = rightSplitter.widgetArea(margin = 8)
+        self.notes = redRTextEdit(rightTop, label = 'Notes')
+        self.printOutput = redRTextEdit(rightBottom, label = 'Output')
+        
+        sys.stdout.write('test')
+        self.defaultSysOutHandler = sys.stdout
+        self.catchOutput(1)
+        
         self.instances = {}
         self.makeSchemaTab('General')
         
@@ -48,6 +57,38 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
+    def catchOutput(self, catch):
+        if catch:    sys.stdout = self
+        else:         sys.stdout = self.defaultSysOutHandler
+    def safe_str(self,obj):
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            # obj is unicode
+            return unicode(obj).encode('unicode_escape')
+    def write(self, text):
+        #sys.stdout.write(text)
+        import re
+        text = self.safe_str(text)
+        cursor = QTextCursor(self.printOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        self.printOutput.setTextCursor(cursor)                             
+        if re.search('#'*60 + '<br>',text):
+            self.printOutput.insertHtml(text)                              
+        else:
+            self.printOutput.insertPlainText(text + '\n')                              
+        cursor = QTextCursor(self.printOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        
+        m = re.search('^(\|(#+)\|\s?)(.*)',text)
+
+        if redREnviron.settings["focusOnCatchOutput"]:
+            self.canvasDlg.menuItemShowOutputWindow()
+        if m:
+            log.log(3, len(m.group(2)), 2, text)
+        else:
+            log.log(3, 1, 2, text)
+            
     def resetActiveTab(self, int):
         self.setActiveTab(str(self.tabsWidget.tabText(int)))
     def setActiveTab(self, tabname):
