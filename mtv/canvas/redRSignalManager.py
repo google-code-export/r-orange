@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngDoc, redRObjects
+import orngDoc, redRObjects, log
 
 class OutputHandler:
     def __init__(self, parent):                         ## set up the outputHandler, this will take care of sending signals to 
@@ -22,10 +22,10 @@ class OutputHandler:
             # now send data through
             signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
             if process:
-                print 'processing signal'
+                #print 'processing signal'
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
-            else:
-                print '\n\n#######################\n\nprocessing supressed\n\n###########################\n\n'
+            #else:
+                #print '\n\n#######################\n\nprocessing supressed\n\n###########################\n\n'
             return True
         except:
             return False
@@ -66,7 +66,7 @@ class OutputHandler:
                 # if res != QMessageBox.Yes: 
                     # print 'Deletion rejected'
                     # return
-                print 'propogating None in widgets'
+                #print 'propogating None in widgets'
                 signal['parent'].outputs.propogateNone()
     def setOutputData(self, signalName, value):
         self.outputSignals[signalName]['value'] = value
@@ -129,18 +129,18 @@ class OutputHandler:
         return False
     def _processSingle(self, signal, connection):
         try:
-            print signal
+            #print signal
             if not connection['enabled']: return 0
             handler = connection['signal']['handler']
             multiple = connection['signal']['multiple']
-            print '\n\n\n', connection['signal']['signalClass'], '\n\n\n'
-            print '\n\n\n', 'Signal Value is\n', signal['value'], '\n\n\n'
+            #print '\n\n\n', connection['signal']['signalClass'], '\n\n\n'
+            #print '\n\n\n', 'Signal Value is\n', signal['value'], '\n\n\n'
             if signal['value'] == None: # if there is no data then it doesn't matter what the signal class is, becase none will be sent anyway
                 self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent']) 
                 self._handleNone(connection['signal']['parent'], connection['signal']['sid'], True)
                 self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
             elif signal['signalClass'] == 'All' or 'All' in connection['signal']['signalClass']:
-                print '\n\n\nprocessing signal %s using handler: %s with multiple: %s\n\n\n\n' % (signal['value'], handler, multiple)
+                #print '\n\n\nprocessing signal %s using handler: %s with multiple: %s\n\n\n\n' % (signal['value'], handler, multiple)
                 self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent']) 
                 self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
                 self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
@@ -171,7 +171,7 @@ class OutputHandler:
                         print redRExceptionHandling.formatException()
         except:
             import redRExceptionHandling
-            print redRExceptionHandling.formatException()
+            log.log(1, 9, 1, redRExceptionHandling.formatException())
     def processData(self, id):
         # collect the signal ID
         signal = self.getSignal(id)
@@ -215,7 +215,7 @@ class OutputHandler:
         links = self.getWidgetConnections(parentWidget)
         lines = redRObjects.getLinesByInstanceIDs(self.parent.widgetID, parentWidget.widgetID)
         for line in lines:
-            print 'The line is ', line, 'the signal is ', none
+            #print 'The line is ', line, 'the signal is ', none
             for l in links:
                 if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
                     line.setNoData(True)
@@ -238,7 +238,8 @@ class OutputHandler:
             import redRExceptionHandling
             error = redRExceptionHandling.formatException(errorMsg="Error occured in processing signal in this widget.\nPlease check the widgets.\n\n",plainText=True)
             parentWidget.setWarning(id = 'signalHandlerWarning', text = str(error))
-            print error
+            #print error
+            log.log(1, 9, 1, error)
             parentWidget.status.setText('Error in processing signal')
             
     def hasOutputName(self, name):
@@ -269,7 +270,7 @@ class OutputHandler:
     def setOutputs(self, data):
         for (key, value) in data.items():
             if key not in self.outputSignals.keys():
-                print 'Signal does not exist'
+                #print 'Signal does not exist'
                 continue
             ## find the signal from the widget and connect it
             for (vKey, vValue) in value['connections'].items():
@@ -292,13 +293,13 @@ class OutputHandler:
         ## send None through all of my output channels
         
         for id in self.outputIDs():
-            print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
+            #print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
             self.parent.send(id, None)
         
         ## identify all of the downstream widgets and send none through them, then propogateNone in their inputs
         
         dWidgets = self.linkingWidgets()
-        print dWidgets
+        #print dWidgets
         ## send None through all of the channels
         for w in dWidgets:
             w.outputs.propogateNone(ask = False)
@@ -366,12 +367,12 @@ class InputHandler:
                         return True
                     elif 'convertFromList' in dir(ISignalClass) and OSignalClass in ISignalClass.convertFromList:
                         return True
-                    else:
-                        print OSignalClass
-                        print ISignalClass
+                    # else:
+                        # print OSignalClass
+                        # print ISignalClass
                         
-                        print str(OSignalClass.convertToList)
-                        print str(ISignalClass.convertFromList)
+                        # print str(OSignalClass.convertToList)
+                        # print str(ISignalClass.convertFromList)
         return False
         
     def getPossibleConnections(self, outputHandler):

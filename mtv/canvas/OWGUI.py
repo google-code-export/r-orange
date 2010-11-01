@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import math
+import math, log
 #import sys, traceback
 
 YesNo = NoYes = ("No", "Yes")
@@ -1316,8 +1316,6 @@ class ValueCallback(ControlledCallback):
             try:
                 self.acyclic_setattr(value)
             except:
-                print "OWGUI.ValueCallback: %s" % value
-                import traceback, sys
                 traceback.print_exception(*sys.exc_info())
 
 
@@ -1344,7 +1342,7 @@ class ValueCallbackLineEdit(ControlledCallback):
                 self.acyclic_setattr(value)
                 self.control.setCursorPosition(pos)
             except:
-                print "invalid value ", value, type(value)
+                log.log(1, 9, 1, "invalid value %s, %s" % (value, type(value)))
 
 
 class SetLabelCallback:
@@ -1482,7 +1480,7 @@ class CallFrontComboBox(ControlledCallFront):
                 values = ""
                 for i in range(self.control.count()):
                     values += str(self.control.itemText(i)) + (i < self.control.count()-1 and ", " or ".")
-                print "unable to set %s to value '%s'. Possible values are %s" % (self.control, value, values)
+                log.log(1, 9, 1, "unable to set %s to value '%s'. Possible values are %s" % (self.control, value, values))
                 #import traceback
                 #traceback.print_stack()
             else:
@@ -1500,7 +1498,7 @@ class CallFrontLogSlider(ControlledCallFront):
     def action(self, value):
         if value is not None:
             if value < 1e-30:
-                print "unable to set ", self.control, "to value ", value, " (value too small)"
+                log.log(1, 9, 1, "unable to set ", self.control, "to value ", value, " (value too small)")
             else:
                 self.control.setValue(math.log10(value))
 

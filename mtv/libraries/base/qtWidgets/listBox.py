@@ -221,15 +221,17 @@ class listBox(QListWidget,widgetState):
         items = self.getItems()
         selected = self.getCurrentSelection()
         new = []
+        
         for x in items:
             if x in selected:
-                new.append(['selected', x])
+                new.append(['Selected', x])
             else:
-                new.append(['',x])
+                new.append(['Not Selected',x])
         #print new
         text = redRReports.createTable(new)
-        text += '\nSelected text has * in front'
-
+        if text != '':
+            text += '\nSelected text has * in front'
+        
         if not self.label:
             label = "ListBox with No Label"
         else:

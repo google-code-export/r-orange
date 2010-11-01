@@ -24,10 +24,10 @@ class RDataFrame(RList, StructuredDict):
             return self._convertFromStructuredDict(signal)
     def _convertFromStructuredDict(self, signal):
         self.assignR('DataFrameConversion_'+self.newDataID, signal.getData())
-        self.R('DataFrameConversion_'+self.newDataID+'<-as.data.frame('+'DataFrameConversion_'+self.newDataID+')')
+        self.R('DataFrameConversion_'+self.newDataID+'<-as.data.frame('+'DataFrameConversion_'+self.newDataID+')', wantType = 'NoConversion')
         if 'row_names' in signal.getData().keys():
-            self.R('rownames('+'DataFrameConversion_'+self.newDataID+')<-'+'DataFrameConversion_'+self.newDataID+'$row_names')
-            self.R('DataFrameConversion_'+self.newDataID+'$row_names<-NULL')
+            self.R('rownames('+'DataFrameConversion_'+self.newDataID+')<-'+'DataFrameConversion_'+self.newDataID+'$row_names', wantType = 'NoConversion')
+            self.R('DataFrameConversion_'+self.newDataID+'$row_names<-NULL', wantType = 'NoConversion')
         return RDataFrame(data = 'DataFrameConversion_'+self.newDataID)  
     def convertToClass(self, varClass):
         if varClass == RList:

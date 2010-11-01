@@ -71,7 +71,8 @@ class BaseRedRVariable:
     def removeOptionalData(self, name):
         del self.dictAttrs['name']
     def deleteSignal(self):
-        print 'Deleting signal'
+        pass
+        #print 'Deleting signal'
         
 
 
@@ -108,7 +109,7 @@ def registerRedRSignals():
                 setattr(m, signalClass,c)  ## set the object in the empty module named signalClass to c.  This results in the ability to code as module.className to access the class.
             setattr(current_module,package,m)  ## sets the module.package to m (which is the module that contains the signal object  [[ current_module.package = m.Signal ---> current_module.package.Signal]]
         except:
-            print redRExceptionHandling.formatException()    
+            log.log(1, 9, 1, redRExceptionHandling.formatException())
 def setRedRSignalModule(modname, mod): # to be called on init of each signalClass package __init__
 
     ## goal is to eventually run setattr(current_module, --packageName--, --someModule--)

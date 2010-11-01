@@ -303,7 +303,7 @@ class redRWidgetGUI(QMainWindow):
 
     
     def showLeftDock(self):
-        print 'in updatedock left', self.leftDockButton.isChecked()
+        #print 'in updatedock left', self.leftDockButton.isChecked()
         
         if self.leftDockButton.isChecked():
             self.leftDock.show()
@@ -313,7 +313,7 @@ class redRWidgetGUI(QMainWindow):
             self.windowState['leftDockState'] = False
 
     def updateDocumentationDock(self):
-        print 'in updatedock right'
+        #print 'in updatedock right'
         if 'documentationState' not in self.windowState.keys():
             self.windowState['documentationState'] = {}
         
@@ -339,7 +339,7 @@ class redRWidgetGUI(QMainWindow):
             self.ROutputBox.hide()
             self.windowState['documentationState']['ROutputBox'] = False
         
-        print self.windowState['documentationState'].values()
+        #print self.windowState['documentationState'].values()
         if True in self.windowState['documentationState'].values():
             self.rightDock.show()
             # print 'resize t'
@@ -357,7 +357,7 @@ class redRWidgetGUI(QMainWindow):
         self.windowState['size'] = self.size()
         
     def closeEvent(self, event):
-        print 'in owrpy closeEvent'
+        #print 'in owrpy closeEvent'
         if self.rightDock.isFloating():
             self.rightDock.hide()
         if hasattr(self, "leftDock") and self.leftDock.isFloating():
@@ -396,7 +396,7 @@ class redRWidgetGUI(QMainWindow):
     def show(self):
         
         # print 'owbasewidget show'
-        print '|#| in onShow'
+        #print '|#| in onShow'
         # print self.windowState
         self.hasBeenShown = True
         if 'state' in self.windowState.keys():
@@ -458,7 +458,7 @@ class redRWidgetGUI(QMainWindow):
     
     def removeInformation(self,id=None):
         if id == None:
-            print '|#| remove information'
+            #print '|#| remove information'
             self.setState("Info", self.widgetState['Info'].keys())
         else:
             self.setState("Info", id)
@@ -481,7 +481,7 @@ class redRWidgetGUI(QMainWindow):
             for val in id:
                 if self.widgetState[stateType].has_key(val):
                     self.widgetState[stateType].pop(val)
-                    print '|#| pop %s' % str(val)
+                    #print '|#| pop %s' % str(val)
                     changed = 1
         else:
             #if type(id) == str:

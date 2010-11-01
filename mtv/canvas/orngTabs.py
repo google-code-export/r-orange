@@ -6,10 +6,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path, sys
 from string import strip, count, replace
-import orngDoc, redRExceptionHandling, orngRegistry
+import orngDoc, redRExceptionHandling, orngRegistry, redRObjects
 #from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx
-import redREnviron
+import redREnviron, log
 import xml.dom.minidom
 from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
@@ -136,9 +136,9 @@ class WidgetButton(QFrame, WidgetButtonBase):
              #dinwin.canvasView.scene().update()
 
         if inside:
-            print 'I\'m inside'
+            #print 'I\'m inside'
             if not widget:
-                print 'I\'m adding a widget!!!'
+                #print 'I\'m adding a widget!!!'
                 widget = schema.addWidget(self.widgetInfo, p.x(), p.y())
                 self.widgetDragging = schema, widget
 
@@ -529,8 +529,8 @@ class WidgetTree(WidgetListBase, QDockWidget):
         #self.setWidget(OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1))
         
     def activateSuggestWidget(self, action):
-        print action
-        print action.widgetInfo
+        #print action
+        #print action.widgetInfo
         newwidget = self.canvasDlg.schema.addWidget(action.widgetInfo)
         if self.suggestButtonsList.suggestingWidget:
             self.canvasDlg.schema.addLine(self.suggestButtonsList.suggestingWidget, newwidget)
@@ -695,7 +695,7 @@ class CanvasPopup(QMenu):
         self.quickActions = []
         self.candidates = []
         self.canvasDlg = canvasDlg
-        cats = self.canvasDlg.widgetRegistry
+        cats = redRObjects.widgetRegistry()
         self.suggestDict = {} #dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])]) ## gives an error in linux
         self.suggestItems = [QListWidgetItem(self.canvasDlg.getWidgetIcon(widget), widget.name) for widget in self.suggestDict.values()]
         self.categoriesYOffset = 0
@@ -763,11 +763,11 @@ class CanvasPopup(QMenu):
         self.addWidgetSuggest()
         for c in self.candidates:
             for category, show in redREnviron.settings["WidgetTabs"]:
-                if not show or not self.canvasDlg.widgetRegistry.has_key(category):
+                if not show or not redRObjects.widgetRegistry().has_key(category):
                     continue
                 
-                if c in self.canvasDlg.widgetRegistry[category]:
-                    widgetInfo = self.canvasDlg.widgetRegistry[category][c]
+                if c in redRObjects.widgetRegistry()[category]:
+                    widgetInfo = redRObjects.widgetRegistry()[category][c]
                     
                     icon = self.canvasDlg.getWidgetIcon(widgetInfo)
                     act = self.addAction(icon, widgetInfo.name)
@@ -792,7 +792,7 @@ def constructCategoriesPopup(canvasDlg):
     # f = open(tfile, 'r')
     # mainTabs = xml.dom.minidom.parse(f)
     # f.close() 
-    mainTabs = canvasDlg.widgetRegistry['tags']
+    mainTabs = redRObjects.widgetRegistry()['tags']
     treeXML = mainTabs.childNodes[0]
     #print treeXML.childNodes
     
@@ -805,12 +805,12 @@ def constructCategoriesPopup(canvasDlg):
     # print redREnviron.settings["WidgetTabs"]
     try:
         for category, show in redREnviron.settings["WidgetTabs"]:
-            if not show or not canvasDlg.widgetRegistry.has_key(category):
+            if not show or not redRObjects.widgetRegistry().has_key(category):
                 continue
             catmenu = categoriesPopup.addMenu(category)
             categoriesPopup.catActions.append(catmenu)
             #print canvasDlg.widgetRegistry[category]
-            for widgetInfo in sorted(canvasDlg.widgetRegistry[category].values(), key=lambda x:x.priority):
+            for widgetInfo in sorted(redRObjects.widgetRegistry()[category].values(), key=lambda x:x.priority):
                 icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
                 act = catmenu.addAction(icon, widgetInfo.name)
                 
@@ -818,17 +818,17 @@ def constructCategoriesPopup(canvasDlg):
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        print redRExceptionHandling.formatException()
+        log.log(1, 9, 1, redRExceptionHandling.formatException())
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
-    for template in canvasDlg.widgetRegistry['templates']:
+    for template in redRObjects.widgetRegistry()['templates']:
         try:
             icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'], 'Default.png'))
             act = catmenu.addAction(icon, template.name)
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            print redRExceptionHandling.formatException()
+            log.log(1, 9, 1, redRExceptionHandling.formatException())
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -851,11 +851,12 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
         return
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
+    log.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
     widgets = None
     #print str(canvasDlg.widgetRegistry['templates'])
     try:
-        for wName in canvasDlg.widgetRegistry['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
-            widgetInfo = canvasDlg.widgetRegistry['widgets'][wName]
+        for wName in redRObjects.widgetRegistry()['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
+            widgetInfo = redRObjects.widgetRegistry()['widgets'][wName]
             try:
                 if str(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
                     icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
@@ -867,10 +868,10 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                print redRExceptionHandling.formatException()
+                log.log(1, 9, 1, redRExceptionHandling.formatException())
                 pass
-    except:
-        print 'Exception in Tabs with widgetRegistry'#        
+    except Exception as inst:
+        log.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)
 class SearchBox(redRlineEditHint):
     def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label, orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
@@ -889,7 +890,7 @@ class SearchBox(redRlineEditHint):
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
                 if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    print 'Return pressed'
+                    #print 'Return pressed'
                     self.doneCompletion()
                 elif ev.key() == Qt.Key_Escape:
                     self.listWidget.hide()
@@ -910,7 +911,7 @@ class SearchBox(redRlineEditHint):
             
         else:
             itemText = str(self.text())
-            print 'Searching '+itemText+' on Red-R.org'
+            #print 'Searching '+itemText+' on Red-R.org'
             self.searchBox.show()
             url = 'http://www.red-r.org/?s='+itemText
             self.searchBox.updateUrl(url)

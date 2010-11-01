@@ -5,7 +5,7 @@ from docutils.writers.odf_odt import Writer, Reader
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRExceptionHandling
-import shutil
+import shutil, log
 
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
@@ -129,7 +129,7 @@ class reports(QDialog):
             os.mkdir(fileDir2)  
         
         except Exception as inst:
-            print redRExceptionHandling.formatException()
+            log.log(1, 9, 1, redRExceptionHandling.formatException())
         
         
         # show the report list and allow the user to select widgets to include in the report.
@@ -208,9 +208,7 @@ class reports(QDialog):
         painter.end()
         imageFile = os.path.join(fileDir, 'canvas-image.png').replace('\\', '/')
         if not image.save(imageFile):
-            print 'Error in saving schema'
-            print image
-            print image.width(), 'width'
+            log.log(1, 9, 1, 'Error in saving schema image in redRReports')
 
         text = """
 ===========================================

@@ -47,8 +47,8 @@ class intersect(OWRpy):
         if str(self.RFunctionParam_x) == '': 
             self.status.setText('No X data exists')
             return
-        self.R(self.Rvariables['intersect']+'<-intersect(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+')')
-        self.R('txt<-capture.output('+self.Rvariables['intersect']+')')
+        self.R(self.Rvariables['intersect']+'<-intersect(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['intersect']+')', wantType = 'NoConversion')
         
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse =" \n")')

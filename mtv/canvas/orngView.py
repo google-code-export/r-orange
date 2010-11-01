@@ -97,7 +97,7 @@ class SchemaView(QGraphicsView):
 
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
-        print "Trying to remove the widget"
+        #print "Trying to remove the widget"
         res = QMessageBox.question(self.doc.canvasDlg, 'Red-R Canvas Remove Widget', 'Are you sure you want to remove selected widget(s)?  This will remove the downstream data.', QMessageBox.Yes | QMessageBox.No)
         if res != QMessageBox.Yes: return
         if self.doc.signalManager.signalProcessingInProgress:
@@ -105,12 +105,12 @@ class SchemaView(QGraphicsView):
             return
 
         selectedWidgets = self.getSelectedWidgets()
-        print selectedWidgets
+        #print selectedWidgets
         if selectedWidgets == []:
             selectedWidgets = [self.tempWidget]
 
         for item in selectedWidgets:
-            print item
+            #print item
             self.doc.removeWidget(item)
 
         self.scene().update()
@@ -160,11 +160,11 @@ class SchemaView(QGraphicsView):
             self.selectedLine.updateTooltip()
 
     def unselectAllWidgets(self):
-        print 'unselecting widgets'
+        #print 'unselecting widgets'
         for k, items in redRObjects.getIconsByTab().items():
-            print k
+            #print k
             for item in items:
-                print item
+                #print item
                 item.setSelected(0)
         self.scene().update()
     def selectAllWidgets(self):
@@ -231,7 +231,7 @@ class SchemaView(QGraphicsView):
         # we clicked on a widget or on a line
         else:
             if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget          
-                print activeItem, 'An item was clicked'
+                #print activeItem, 'An item was clicked'
                 self.tempWidget = activeItem
 
                 if ev.button() == Qt.LeftButton:
@@ -370,7 +370,7 @@ class SchemaView(QGraphicsView):
         point = self.mapToScene(ev.pos())
         activeItem = self.scene().itemAt(point)
         if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget
-            print activeItem, 'Item double clicked'
+            #print activeItem, 'Item double clicked'
             self.tempWidget = activeItem
             self.openActiveWidget()
         elif type(activeItem) == orngCanvasItems.CanvasLine:

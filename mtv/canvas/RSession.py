@@ -39,7 +39,7 @@ def assign(name, object):
         return True
     except:
         return False
-def Rcommand(query, silent = False, wantType = None, listOfLists = False):
+def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     
     unlocked = mutex.tryLock()
     if not unlocked:
@@ -81,14 +81,11 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         co.setWantType(2)
     ##print output.getrclass()
     output = convertToPy(output)
-    if type(output) == list and len(output) == 1:
+    if type(output) == list and len(output) == 1 and wantType != 'list':
         output = output[0]
-    ##print 'This is the output:', output
-    # print '###########  Beginning Conversion ###############', wantType, 'listOfLists', listOfLists
-    
-    
     if wantType == None:
-        raise Exception, 'WantType not specified'
+        mutex.unlock()
+        raise Exception('WantType not specified')
     elif wantType == 'list':
         if type(output) is list:
             pass
@@ -105,89 +102,17 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         else:
             print 'Warning, conversion was not of a known type;', str(type(output))
     
-    elif wantType == 'dict':
-        if type(output) is dict:
-            pass
-        elif type(output) in [str, int, float, bool]:
-            output =  {'output':[output]}
-        elif type(output) == type([]):
-            output = {'output': output}
-        elif type(output) == type({}):
-            #print '#--#'+str(output)
-            for key in output:
-                if type(output[key]) not in [list]:  # the key does not point to a list so now we make some choices
-                    if type(output[key]) in [str, int, float, bool]:
-                        nd = output.copy()[key]
-                        print nd, output[key]
-                        output[key] = [nd]  ## forces coersion to a list
-                    elif type(output[key]) in [dict]:  # it is a dict, we need to coerce this to a list, com
-                        ## for some reason we are seeing dicts of returned statemtns.  This is very strange but we need to deal with it.
-                        nd = []
-                        for key2 in output[key].keys():
-                            nd.append(output[key][key2])
-                        output[key] = nd
-        else:
-            print 'Warning, conversion was not of a known type;', str(type(output))
-    # elif wantType == 'array': # want a numpy array
-        # if type(output) == list:
-            ##print 'Converting list to array'
-            # output = numpy.array(output)
-            
-        # elif type(output) in [str, int, float, bool]:
-            ##print 'Converting single type to array'
-            # output = numpy.array([output])
-            
-        # elif type(output) == dict:
-            ##print 'Converting Dict to Array'
-            # newOutput = []
-            # for key in output.keys():
-                # newOutput.append(output[key])
-            # output = newOutput
-        # elif type(output) in [numpy.ndarray]:
-            ##print 'Type is already array'
-            # pass
-        # else:
-            # print 'Warning, conversion was not of a known type;', str(type(output))
-    elif wantType == 'listOfLists' or listOfLists:
-        #print 'Converting to list of lists'
-        
-        if type(output) in [str, int, float, bool]:
-            output =  [[output]]
-        elif type(output) in [dict]:
-            newOutput = []
-            for name in output.keys():
-                nl = output[name]
-                if type(nl) not in [list]:
-                    nl = [nl]
-                newOutput.append(nl)
-                
-            output = newOutput
-        
-        elif type(output) in [list, numpy.ndarray]:
-            if len(output) == 0:
-                output = [output]
-            elif type(output[0]) not in [list]:
-                output = [output]
-        else:
-            print 'Warning, conversion was not of a known type;', str(type(output))
-            
-    else:
-        pass
     mutex.unlock()
     return output
 	
 def convertToPy(inobject):
-    print 'in convertToPy', inobject.getrclass()
-    # if inobject.getrclass()[0] in ['data.frame','matrix']:
-        # print 'return the r object'
-        # return inobject
-        
+    #print 'in convertToPy', inobject.getrclass()        
     try:
         if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
             return inobject
         return co.convert(inobject)
     except Exception as e:
-        print str(e)
+        log.log(1, 9, 1, str(e))
         return None
 def getInstalledLibraries():
     if sys.platform=="win32":

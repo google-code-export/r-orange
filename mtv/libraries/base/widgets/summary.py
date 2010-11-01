@@ -34,7 +34,7 @@ class summary(OWRpy):
             self.RFunctionParam_object=''
     def commitFunction(self):
         if str(self.RFunctionParam_object) == '': return
-        self.R('txt<-capture.output(summary(object='+str(self.RFunctionParam_object)+'))')
+        self.R('txt<-capture.output(summary(object='+str(self.RFunctionParam_object)+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

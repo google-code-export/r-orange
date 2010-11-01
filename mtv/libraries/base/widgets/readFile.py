@@ -236,7 +236,7 @@ class readFile(OWRpy):
             print 'No file selected'
             return
         if not scan =='clipboard':
-            self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn)) 
+            self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn), wantType = 'NoConversion') 
             
             # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
                 # self.delimiter.setChecked('Tab')
@@ -289,7 +289,7 @@ class readFile(OWRpy):
         try:
             if self.fileType.getChecked() == 'Excel':
                 Rstr = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
-                self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']))
+                self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']), wantType = 'NoConversion')
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
                 if not scan:
                     nrows = '0'

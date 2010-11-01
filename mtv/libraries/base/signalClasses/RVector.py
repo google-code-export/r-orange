@@ -60,7 +60,7 @@ class RVector(RMatrix):
             return self.RMatrixSignal
     def _convertToList(self):
         if not self.RListSignal:
-            self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))')
+            self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))', wantType = 'NoConversion')
             self.RListSignal = RList(data = 'list_of_'+self.data, parent = self.parent)
             self.RListSignal.dictAttrs = self.dictAttrs.copy()
             return self.RListSignal

@@ -41,7 +41,7 @@ class nameProtector(OWRpy):
     def gotDF(self, data):
         if data:
             self.parentData = data
-            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+data.getData())
+            self.R(self.Rvariables['newDataFromNameProtector']+'<-'+data.getData(), wantType = 'NoConversion')
             #newData = redRRDataFrame(data = self.Rvariables['newDataFromNameProtector'])
             self.data = self.Rvariables['newDataFromNameProtector']
             #self.data = data.getData()
@@ -72,19 +72,19 @@ class nameProtector(OWRpy):
         newData = self.parentData.copy()
         newData.data = self.Rvariables['newDataFromNameProtector']
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
-            self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))')
+            self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))', wantType = 'NoConversion')
             
         if str(self.namesProtectDFcomboBox.currentText()) != '':
-            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+str(self.namesProtectDFcomboBox.currentText())+'\'])')
+            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+str(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
-            self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))')
+            self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
         
         self.rSend("id0", newData)
         
     def vCommit(self): # make protected names for a vector
         if self.data == '': return
         
-        self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')')
+        self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')', wantType = 'NoConversion')
         self.parentData['data'] = self.Rvariables['nameProtector']
         self.rSend("id1", self.parentData)
     def getReportText(self, fileDir):

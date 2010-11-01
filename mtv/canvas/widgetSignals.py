@@ -10,7 +10,7 @@ from string import *
 from orngSignalManager import *
 import canvas.signals as signals
 from redRSignalManager import *
-import orngDoc
+import orngDoc, log
 
 
 class widgetSignals():
@@ -43,7 +43,8 @@ class widgetSignals():
     def send(self, signalName, value):
         ## make sure that the name is actually in the outputs, if not throw an error.
         if not self.outputs.hasOutputName(signalName):
-            print "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle)
+            log.log(1, 9, 1, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
+            raise Exception('Signal name mismatch')
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
         self.ROutput.setCursorToEnd()
@@ -56,10 +57,10 @@ class widgetSignals():
                 try:
                     self.linksOut[name][id].deleteSignal()
                 except Exception as inst:
-                    print str(inst)
+                    log.log(1, 9, 1, str(inst))
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
-        print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
+        #print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
         try:
             self.callSignalDelete(name)
             self.send(name, variable)
@@ -70,9 +71,9 @@ class widgetSignals():
         except:
             self.setError(id = 'sendError', text = 'Failed to send data')
             import sys, traceback
-            print '-'*60
+            
             traceback.print_exc(file=sys.stdout)
-            print '-'*60        
+            
             self.status.setStatus(3)
         self.R('gc()')
 
@@ -190,15 +191,15 @@ class widgetSignals():
 
     # signal manager calls this function when all input signals have updated the data
     def setLoadingSavedSession(self,state):
-        print 'setting setloadingSavedSession', state
+        #print 'setting setloadingSavedSession', state
         self.loadSavedSession = state
 
     def processSignals(self, convert = False): ## not called inside of this class 
-        print '|#| processSignals %s' % str(self.windowTitle())
+        #print '|#| processSignals %s' % str(self.windowTitle())
         if self.closing == True:
             return
         
-        print '|#| loadSavedSessionState %s' % str(self.loadSavedSession)
+        #print '|#| loadSavedSessionState %s' % str(self.loadSavedSession)
         if self.loadSavedSession:
             self.needProcessing = 0
             return
@@ -231,7 +232,7 @@ class widgetSignals():
                                     raise Exception, 'Signal not a child of a Red-R signal'
                                 
                                 if signal[1] != 'All':
-                                    print '|#| CONVERSION of %s to ' % oldValue.__class__, signal[1]
+                                    #print '|#| CONVERSION of %s to ' % oldValue.__class__, signal[1]
                                     if isinstance(oldValue, signal[1]):
                                         value = oldValue.convertToClass(signal[1])
                                     else:
@@ -243,16 +244,16 @@ class widgetSignals():
                                 else:
                                     value = oldValue ## send self with no conversion
                             if self.signalIsOnlySingleConnection(key):
-                                print "ProcessSignals: Calling %s with %s" % (handler, value)
+                                #print "ProcessSignals: Calling %s with %s" % (handler, value)
                                 handler(value)
                                 
                             else:
-                                print "ProcessSignals: Calling %s with %s (ID is %s)" % (handler, value, widgetFrom.widgetID)
+                                #print "ProcessSignals: Calling %s with %s (ID is %s)" % (handler, value, widgetFrom.widgetID)
                                 handler(value, widgetFrom.widgetID)
                             
                     except:
                         thistype, val, traceback = sys.exc_info()
-                        print 'Some exception occured'
+                        #print 'Some exception occured'
                         sys.excepthook(thistype, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 
@@ -269,7 +270,7 @@ class widgetSignals():
 
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):
-        print 'updating new signal data'
+        #print 'updating new signal data'
         if not self.linksIn.has_key(signalName): return
         for i in range(len(self.linksIn[signalName])):
             (dirty, widget, handler, signalData) = self.linksIn[signalName][i]

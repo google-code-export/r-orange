@@ -4,7 +4,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import sys, os, cPickle, time
+import sys, os, cPickle, time, log
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 # redREnviron.__getDirectoryNames()
@@ -95,7 +95,7 @@ class OrangeCanvasDlg(QMainWindow):
             self.warningIcon = None
             self.informationIcon = None
             self.widgetIcons = None
-            print "Unable to load all necessary icons. Please reinstall Red-R."
+            log.log(1, 9, 1,  "Unable to load all necessary icons. Please reinstall Red-R.")
 
         self.setStatusBar(MyStatusBar(self))
         self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
@@ -218,7 +218,7 @@ class OrangeCanvasDlg(QMainWindow):
         
     def createWidgetsToolbar(self):
         orngTabs.constructCategoriesPopup(self)
-        print 'Step 3a'
+       
         float = False
         if self.widgetsToolBar:
             if self.widgetsToolBar.isFloating():
@@ -228,15 +228,15 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
             self.removeDockWidget(self.widgetsToolBar)
 
-        print 'Step 3b'    
+           
         self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
         self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         self.widgetsToolBar.setFloating(float)
-        print 'Step 3c'
+        
         redREnviron.settings["WidgetTabs"] = self.tabs.createWidgetTabs(redREnviron.settings["WidgetTabs"], self.widgetRegistry, redREnviron.directoryNames['widgetDir'], redREnviron.directoryNames['picsDir'], self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
-        print 'Step 3d'
+        
 
     def readShortcuts(self):
         self.widgetShortcuts = {}
@@ -382,19 +382,19 @@ class OrangeCanvasDlg(QMainWindow):
             self.schema.loadDocument(fullName)
 
     def menuItemSave(self):
-        print 'click save'
+        
         self.schema.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
-        print 'step 1'
+        
         self.widgetRegistry = orngRegistry.readCategories()
         #redRObjects.readCategories()
-        print 'step 2'
+        
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
-        print 'step 3'
+        p
         self.createWidgetsToolbar()
-        print 'step 4'
+        
         signals.registerRedRSignals()
-        print 'step 5'
+        
         redRGUI.registerQTWidgets()
         
     def menuItemSaveAs(self):
@@ -415,7 +415,7 @@ class OrangeCanvasDlg(QMainWindow):
             printer = QPrinter()
             printDialog = QPrintDialog(printer)
             if printDialog.exec_() == QDialog.Rejected: 
-                print 'Printing Rejected'
+                
                 return
             painter = QPainter(printer)
             self.schema.canvas.render(painter)
@@ -425,7 +425,7 @@ class OrangeCanvasDlg(QMainWindow):
                     widget.instance.printWidget(printer)                
                 except: pass
         except:
-            print "Error in printing the schema"
+            log.log(1, 9, 1, "Error in printing the schema")
         
 
     def readRecentFiles(self):
@@ -647,7 +647,7 @@ class OrangeCanvasDlg(QMainWindow):
 
 
     def closeEvent(self, ce):
-        print '|#| redRCanvas closeEvent'
+        #print '|#| redRCanvas closeEvent'
         # save the current width of the toolbox, if we are using it
         if isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
             redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()

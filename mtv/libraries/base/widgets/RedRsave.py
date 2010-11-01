@@ -41,10 +41,10 @@ class RedRsave(OWRpy):
         index = 0
         items = []
         for i in [str(a) for (k, a) in self.RFunctionParam_list.items()]:
-            self.R('temp%s<-%s' % (str(index), (i)))
+            self.R('temp%s<-%s' % (str(index), (i)), wantType = 'NoConversion')
             
             items.append('temp%s' % str(index))
             index += 1
-        self.R('save('+str(','.join(items))+','+inj+')')
+        self.R('save('+str(','.join(items))+','+inj+')', wantType = 'NoConversion')
         for i in items:
-            self.R('rm(%s)' % i)
+            self.R('rm(%s)' % i, wantType = 'NoConversion')

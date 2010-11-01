@@ -57,14 +57,14 @@ class SQLiteHandler:
         try:
             self.execute("CREATE TABLE "+table+" "+colNames, database = database)
         except Exception as inst:
-            print inst
+            log.log(1, 9, 1, inst)
     def getTableNames(self, database = None):
         
         response = self.execute('SELECT * FROM SQLITE_MASTER WHERE type="table" OR type ="view"', database = database)
         info = []
         for row in response:  # collect the info for all of the tables and the views.
             info.append(str(row[1])+', '+ str(row[0]))
-            print row
+            #print row
         return info
         
     def newTableName(self):

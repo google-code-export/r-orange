@@ -19,8 +19,8 @@ class RedRdata(OWRpy):
         self.outputs.addOutput('id0', 'data Output', redRRDataFrame)
 
                 
-        self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True)
-        self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True)
+        self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
+        self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
         
         
         self.table = filterTable(self.controlArea,Rdata = self.Rvariables['datasets'], sortable=True,
@@ -61,7 +61,7 @@ class RedRdata(OWRpy):
             return
         # the package does not need to be loaded to get its datasets
         # self.loadPackage()
-        self.R('data("%s", package="%s")' % (dataset,package))
+        self.R('data("%s", package="%s")' % (dataset,package), wantType = 'NoConversion')
         try:
             newData = redRRDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')'))
             self.rSend("id0", newData)            

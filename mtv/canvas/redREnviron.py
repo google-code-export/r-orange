@@ -43,7 +43,8 @@ def __getDirectoryNames():
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
         except:
-            print 'Error occured in setting the settingsDir'
+            import log
+            log.log(1, 9, 1, 'Error occured in setting the settingsDir')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
@@ -168,7 +169,7 @@ def loadSettings():
     
 # Saves settings to this widget's .ini file
 def saveSettings():
-    print 'red-r canvas saveSettings'
+    #print 'red-r canvas saveSettings'
     filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
     file=open(filename, "wb")
     if settings["widgetListType"] == 1:        # tree view

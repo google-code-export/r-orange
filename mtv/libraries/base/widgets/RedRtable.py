@@ -31,12 +31,12 @@ class RedRtable(OWRpy):
             self.RFunctionParam_data=''
     def commitFunction(self):
         if str(self.RFunctionParam_data) == '': return
-        self.R(self.Rvariables['table']+'<-table(data='+str(self.RFunctionParam_data)+')')
-        self.R('txt<-capture.output('+self.Rvariables['table']+')')
+        self.R(self.Rvariables['table']+'<-table(data='+str(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['table']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
-        self.R(self.Rvariables['propTable']+'<-prop.table('+self.Rvariables['table']+')')
-        self.R('txt<-capture.output('+self.Rvariables['propTable']+')')
+        self.R(self.Rvariables['propTable']+'<-prop.table('+self.Rvariables['table']+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['propTable']+')', wantType = 'NoConversion')
         tmp2 = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp+'\n\n'+tmp2)
         newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables["table"]+')', parent = 'as.data.frame('+self.Rvariables["table"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.

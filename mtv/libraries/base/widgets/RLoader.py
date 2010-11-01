@@ -49,11 +49,11 @@ class RLoader(OWRpy):
         
     def loadSession(self, file = None):
         # open a dialog to pick a file and load it.
-        self.R(self.Rvariables['sessionEnviron']+'<-new.env()') # make a new environment for the data
+        self.R(self.Rvariables['sessionEnviron']+'<-new.env()', wantType = 'NoConversion') # make a new environment for the data
         file = self.filecombo.getCurrentFile()
         
         if not file: return
-        self.R('load(\''+file+'\', '+self.Rvariables['sessionEnviron']+')') #load the saved session into a protective environment
+        self.R('load(\''+file+'\', '+self.Rvariables['sessionEnviron']+')', wantType = 'NoConversion') #load the saved session into a protective environment
         
         
         self.infoa.setText('Data loaded from '+str(file))
@@ -66,7 +66,7 @@ class RLoader(OWRpy):
         #self.status.setText('Data sent.')
         
     def customWidgetDelete(self):
-        self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { local(rm(ls()), envir = ' + self.Rvariables['sessionEnviron'] + ')}')
+        self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { local(rm(ls()), envir = ' + self.Rvariables['sessionEnviron'] + ')}', wantType = 'NoConversion')
         
     def getReportText(self, fileDir):
         text = 'Data loaded from '+str(self.infoa.text()).replace('\\', '/')+'.\n\n'

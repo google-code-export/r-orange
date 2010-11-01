@@ -106,7 +106,7 @@ class widgetMaker(OWRpy):
     def parseFunction(self):
         self.args = {}
         try:
-            self.R('help('+str(self.functionName.text())+')') # show the help for the user to see the args.
+            self.R('help('+str(self.functionName.text())+')', wantType = 'NoConversion') # show the help for the user to see the args.
             holder = self.R('capture.output(args('+str(self.functionName.text())+'))')
             s = ''
             functionParams = s.join(holder)

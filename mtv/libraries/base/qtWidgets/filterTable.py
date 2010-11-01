@@ -372,7 +372,10 @@ class filterTable(widgetState, QTableView):
             self.onFilterCallback()
              
     def getFilteredData(self):
-        return self.tm.Rdata
+        try:
+            return self.tm.Rdata
+        except:
+            return None
     def sort(self,col,order):
         #self.tm.sort(col-1,order)
         self.sortByColumn(col-1, order)
@@ -416,9 +419,13 @@ class filterTable(widgetState, QTableView):
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):
-        data = self.R('as.matrix(%s)'% self.getFilteredData())
-        colNames = self.R('colnames(%s)' % self.getFilteredData())
-        text = redRReports.createTable(data, columnNames = colNames)
+        if self.getFilteredData():
+            data = self.R('as.matrix(%s)'% self.getFilteredData())
+            colNames = self.R('colnames(%s)' % self.getFilteredData())
+            text = redRReports.createTable(data, columnNames = colNames)
+        else:
+            text = ''
+            
         if self.label:
             label = self.label
         else:
@@ -536,7 +543,7 @@ class MyTableModel(QAbstractTableModel):
             self.currentRange['cstart'],
             self.currentRange['cend']
             ),
-            wantType = 'listOfLists',silent=True)
+            wantType = 'list',silent=True)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
@@ -647,7 +654,7 @@ class MyTableModel(QAbstractTableModel):
             # self.arraydata[index.row()][index.column()] = data.toString()
             Rcmd = '%s[%d,%d]="%s"' % (self.Rdata, index.row(), index.column(), data.toString())
             # print Rcmd
-            self.R(Rcmd)
+            self.R(Rcmd, wantType = 'NoConversion')
             # print self.arraydata
             # print self.arraydata[index.row()][index.column()]
             self.emit(SIGNAL("dataChanged()"))
@@ -701,10 +708,10 @@ class MyTableModel(QAbstractTableModel):
             headers = [str(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))')
-        self.R('colnames(t) = colnames('+self.Rdata+')')
-        self.R('rownames(t) = rownames("%s")' % '","'.join(headers))
-        self.R(self.Rdata+'=rbind('+self.Rdata+',t)')
+        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
+        self.R('colnames(t) = colnames('+self.Rdata+')', wantType = 'NoConversion')
+        self.R('rownames(t) = rownames("%s")' % '","'.join(headers), wantType = 'NoConversion')
+        self.R(self.Rdata+'=rbind('+self.Rdata+',t)', wantType = 'NoConversion')
 
 
         self.emit(SIGNAL("endInsertRows()"))

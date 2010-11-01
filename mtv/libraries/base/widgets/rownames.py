@@ -72,7 +72,7 @@ class rownames(OWRpy):
             string = 'do.NULL='+str(self.doNullButton.getChecked())
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         
         newData = redRRVector(data = self.Rvariables["rownames"])
 

@@ -16,7 +16,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngCanvasItems, redREnviron, orngView, time, orngRegistry
+import orngCanvasItems, redREnviron, orngView, time, orngRegistry, log
 
 defaultTabName = 'General'
 _widgetRegistry = {}
@@ -165,7 +165,7 @@ def getIconByIconInstanceID(id):
     
 def getWidgetByIDActiveTabOnly(widgetID):
     for k, widget in _widgetIcons.items():
-        print widget.instanceID
+        #print widget.instanceID
         if (widget.instanceID == widgetID) and (widget.tab == activeTabName()):
             return widget
     return None
@@ -190,7 +190,7 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
-    print 'adding instance'
+    log.log(1, 5, 3, 'adding instance')
     m = __import__(info.fileName)
     instance = m.__dict__[info.widgetName].__new__(m.__dict__[info.widgetName],
     _owInfo = redREnviron.settings["owInfo"],
@@ -201,7 +201,6 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     instance.__dict__['_widgetInfo'] = info
     
     if info.name == 'Dummy': 
-        print 'Loading dummy step 3'
         instance.__init__(signalManager = sm,
         forceInSignals = insig, forceOutSignals = outsig)
     else: instance.__init__(signalManager = sm)
@@ -221,7 +220,6 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     instance.setWidgetWindowIcon(info.icon)
     #instance.canvasWidget = self
     instance.widgetInfo = info
-    print 'adding instance'
     if id == None:
         id = instance.widgetID
     else:
@@ -298,27 +296,22 @@ def addLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName, do
         ## given an out and in instance connect a line to all of the icons with those instances.
         tabIconStructure = getIconsByTab()
         ot = activeTabName()
-        print '\n\n\n Adding lines on other canvases \n\n\n'
         owi = outWidgetInstance
         iwi = inWidgetInstance
         for tname, icons in tabIconStructure.items():
             doc.setTabActive(tname)
-            print tname
             o = None
             i = None
             for ic in icons:
                 if ic.instance() == iwi:
                     i = ic
-                    print 'found iwi instance icon', i
                 if ic.instance() == owi:
                     o = ic
-                    print 'found owi instance icon', o
                     
             if i!= None and o != None:  # this means that there are the widget icons in question in the canvas so we should add a line between them.
                 
         
                 line = getLine(o, i)
-                print 'line value is', line
                 if not line:
                     line = addCanvasLine(o, i, doc, enabled = enabled)
         doc.setTabActive(ot)
@@ -329,16 +322,13 @@ def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName)
         iwi = inWidgetInstance
         for tname, icons in tabIconStructure.items():
             
-            print tname
             o = None
             i = None
             for ic in icons:
                 if ic.instance() == iwi:
                     i = ic
-                    print 'found iwi instance icon', i
                 if ic.instance() == owi:
                     o = ic
-                    print 'found owi instance icon', o
                     
             if i!= None and o != None:  # this means that there are the widget icons in question in the canvas so we should add a line between them.
                 line = getLine(o, i)

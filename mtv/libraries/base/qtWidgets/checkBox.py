@@ -10,7 +10,8 @@ class checkBox(widgetBox,widgetState):
     orientation='vertical',callback = None, **args):
         
         widgetBox.__init__(self,widget,orientation=orientation)
-            
+        
+
         if label:
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)

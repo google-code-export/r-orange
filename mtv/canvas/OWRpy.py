@@ -80,7 +80,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             values = 'c('+','.join(values)+')'
         self.R(CM+'$'+colname+self.variable_suffix+'<-'+values) # commit to R
 
-    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = None, listOfLists = True):
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = 'convert', listOfLists = True):
         
         self.setRIndicator(True)
         #try:
@@ -168,12 +168,12 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
     def getReportText2(self, fileDir):
         ## move through all of the qtWidgets in self and show their report outputs, should be implimented by each widget.
         children = self.controlArea.children()
-        print children
+        #print children
         import re
         text = ''
         for i in children:
             try:
-                print i.__class__.__name__
+                #print i.__class__.__name__
                 if isinstance(i, QBoxLayout):
                     c = i.children()
                     for c1 in c:
@@ -181,9 +181,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
                 elif re.search('PyQt4|OWGUIEx|OWToolbars',str(type(i))) or i.__class__.__name__ in redRGUI.qtWidgets:
                     ## we can try to get the settings of this.
                     text += i.getReportText(fileDir)
-                    print i.__class__.__name__
+                    #print i.__class__.__name__
             except Exception as inst:
-                print inst
+                log.log(1, 9, 1, inst)
                 continue
         return text
     def getReportText3(self, fileDir):
@@ -215,7 +215,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         # pp.pprint(arrayOfArray)
         text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
         tableName='Parameters')
-        print text
+        #print text
         return text        
 
     def require_librarys(self, librarys, repository = None):
@@ -223,13 +223,13 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         if not repository and 'CRANrepos' in redREnviron.settings.keys():
             repository = redREnviron.settings['CRANrepos']
         
-        print 'Loading required librarys'
+        #print 'Loading required librarys'
         success = RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()
         return success
     def onDeleteWidget(self):
-        print '|#| onDeleteWidget OWRpy'
+        #print '|#| onDeleteWidget OWRpy'
 
         for k in self.Rvariables:
             #print self.Rvariables[k]

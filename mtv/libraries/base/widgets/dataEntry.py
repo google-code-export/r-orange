@@ -199,7 +199,7 @@ class dataEntry(OWRpy):
                     rname.append(rownames[str(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
-        self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')
+        self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')', wantType = 'NoConversion')
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
         

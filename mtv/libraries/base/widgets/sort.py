@@ -68,7 +68,7 @@ class sort(OWRpy):
             injection.append('na.last = TRUE')
         inj = ','.join(injection)
 
-        self.R(self.Rvariables['sort']+'<-%s[order(%s),]' % (self.RFunctionParam_x, inj))
+        self.R(self.Rvariables['sort']+'<-%s[order(%s),]' % (self.RFunctionParam_x, inj), wantType = 'NoConversion')
         newData = redRRDataFrame(data = self.Rvariables["sort"]) 
         
         self.rSend("id0", newData)

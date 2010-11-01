@@ -68,9 +68,9 @@ def publishReport(name, text):
     elif os.path.splitext(str(name))[1].lower() in [".html"]:# , ".tex"]
         
         output = publish_string(str(text), writer_name='html')
-        print output
-        print type(output)
-        print str(output)
+        #print output
+        #print type(output)
+        #print str(output)
         file = open(name, 'w')
         file.write(output)
         file.close()

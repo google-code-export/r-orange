@@ -62,7 +62,7 @@ class percentileClassifier(OWRpy):
             lineText = str(self.percentile_lineEdit.text())
             lineText.replace(' ', '')
             percentile = lineText.split(',')
-        self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data)
+        self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data, wantType = 'NoConversion')
         self.outputWindow.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>')
         for percent in percentile:
             for item in items:
@@ -70,7 +70,7 @@ class percentileClassifier(OWRpy):
                 column = str(item.text())
                 length = self.R('length(na.omit('+self.data+'[,\''+column+'\']))')
                 
-                self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+str(percent).strip(' ')+'/100*'+str(length)+']')
+                self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+str(percent).strip(' ')+'/100*'+str(length)+']', wantType = 'NoConversion')
                 self.outputWindow.insertHtml('<tr><td width="50%">' + column+'_'+str(percent)+'percentile</td><td width="50%">'+str(self.R('sum(as.numeric('+self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile))'))+'</td></tr>')
         self.outputWindow.insertHtml('</table>')
         newData = self.dataParent.copy()

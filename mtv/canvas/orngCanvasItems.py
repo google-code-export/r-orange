@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager
-import signals, redREnviron, redRObjects
+import signals, redREnviron, redRObjects, log
 ERROR = 0
 WARNING = 1
 
@@ -121,7 +121,7 @@ class CanvasLine(QGraphicsLineItem):
             if inWidgetInstance == self.inWidget.instance:
                 
                 signals.append((outName, inName))
-        print 'Signals collected, ', signals
+        #print 'Signals collected, ', signals
         return signals
 
     def paint(self, painter, option, widget = None):
@@ -316,15 +316,15 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                     try:
                         self.instance().saveGlobalSettings()
                     except:
-                        print "Unable to successfully save settings for %s widget" % (self.instance().captionTitle)
+                        log.log(1, 9, 1, "Unable to successfully save settings for %s widget" % (self.instance().captionTitle))
                         type, val, traceback = sys.exc_info()
                         sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
                 self.instance().close()
                 self.instance().linksOut.clear()      # this helps python to more quickly delete the unused objects
                 self.instance().linksIn.clear()
                 self.instance().onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
-                for x in self.instance().findChildren(QAbstractTableModel):
-                    print 'in canvasItems', x
+                # for x in self.instance().findChildren(QAbstractTableModel):
+                    # print 'in canvasItems', x
                 # print 'delete instance' 
                 # sip.delete(self.instance())
                 # for x in self.canvasDlg.findChildren(QAbstractTableModel):
@@ -337,7 +337,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
             except: 
                 import redRExceptionHandling
-                print redRExceptionHandling.formatException()
+                log.log(1, 9, 1, redRExceptionHandling.formatException())
 
     def savePosition(self):
         self.oldPos = self.pos()
@@ -451,7 +451,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
        
         signalManager = orngSignalManager.SignalManager()
         canConnect = inWidget.instance().inputs.matchConnections(outWidget.instance().outputs) #signalManager.canConnect(outWidget, inWidget)
-        print 'can connect in orngCanvasItems'
+        
         if outWidget == self:
             self.shownRightEdge = canConnect and self.imageRightEdgeG or self.imageRightEdgeR
         else:
@@ -539,7 +539,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         elif line in self.outLines:
             self.outLines.remove(line)
         else:
-            print "Orange Canvas: Erorr. Unable to remove line"
+            log.log(1, 9, 1, "Red-R Canvas: Erorr. Unable to remove line")
 
         self.updateTooltip()
 

@@ -1,7 +1,7 @@
 # Author: Miha Stajdohar (miha.stajdohar@fri.uni-lj.si), modifications by Kyle R Covington
 # This module 
 
-import os, sys, time, smtplib
+import os, sys, time, smtplib, log
 import redREnviron
 #from orngSignalManager import OutputSignal
 
@@ -29,7 +29,7 @@ def getLastSchemaID():
                 if ID > schemaID:
                     schemaID = ID
     except:
-        print "%s: %s" % sys.exc_info()[:2]
+        log.log(1, 9, 1, "%s: %s" % sys.exc_info()[:2])
     finally:
         if fn != None: fn.close()
         
@@ -48,7 +48,7 @@ def logAppend(schemaID, command, params=""):
         if params == "": fn.write(str(time.localtime()) + ";" + str(schemaID) + ";" + command + ";\n")
         else: fn.write(str(time.localtime()) + ";" + str(schemaID) + ";" + command + ";" + params + ";\n")
     except:
-        print "%s: %s" % sys.exc_info()[:2]
+        log.log(1, 9,1, "%s: %s" % sys.exc_info()[:2])
     finally:
         if fn != None: fn.close()
 
@@ -89,8 +89,8 @@ def logAddLink(schemaID, outWidget, inWidget, outSignalName):
                     signalType = str(output.type.__name__)
                 break
             except Exception as inst:
-                print str(output.type)
-                print str(inst)
+                
+                log.log(1, 9, 1,str(inst))
                 signalType = 'Ambiguous Signal Type'
     
     logAppend(schemaID, "ADDLINK", str(id(outWidget)) + ";" + str(id(inWidget)) + ";" + str(signalType))

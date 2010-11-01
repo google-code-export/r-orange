@@ -239,7 +239,7 @@ class SignalDialog(QDialog):
         links = outWidget.instance().outputs.getSignalLinks(inWidget.instance)
         for (outName, inName) in links:
             self.addLink(outName, inName)
-        print 'Output Handler Returned the following links', links
+        #print 'Output Handler Returned the following links', links
 
     def countCompatibleConnections(self, outputs, inputs, outInstance, inInstance, outType, inType):
         count = 0
@@ -263,9 +263,9 @@ class SignalDialog(QDialog):
 
     def addLink(self, outName, inName):
         if (outName, inName) in self._links: 
-            print 'signal already in the links'
+            #print 'signal already in the links'
             return 1
-        print outName, inName, 'Names'
+        #print outName, inName, 'Names'
         # check if correct types
         outType = self.outWidget.instance().outputs.getSignal(outName)['signalClass']
         inType = self.inWidget.instance().inputs.getSignal(inName)['signalClass']
@@ -281,7 +281,7 @@ class SignalDialog(QDialog):
 
         # if inName is a single signal and connection already exists -> delete it
         for (outN, inN) in self._links:
-            print inSignal, inN, inName, self.inWidget.instance().inputs.getSignal(inSignal)['multiple']
+            #print inSignal, inN, inName, self.inWidget.instance().inputs.getSignal(inSignal)['multiple']
             if inSignal and inN == inName and not self.inWidget.instance().inputs.getSignal(inSignal)['multiple']:
                 self.removeLink(outN, inN)
 
@@ -477,14 +477,14 @@ class SignalCanvasView(QGraphicsView):
 
 
     def addLink(self, outName, inName):  ## makes the line that goes from one widget to the other on the canvas, outName and inName are the id's for the links
-        print 'Adding link in the canvas', outName, inName
+        #print 'Adding link in the canvas', outName, inName
         outBox = None; inBox = None
         for (name, box, id) in self.outBoxes:
             if id == outName: outBox = box
         for (name, box, id) in self.inBoxes:
             if id == inName : inBox  = box
         if outBox == None or inBox == None:
-            print "error adding link. Data = ", outName, inName
+            #print "error adding link. Data = ", outName, inName
             return
         line = QGraphicsLineItem(None, self.dlg.canvas)
         outRect = outBox.rect()
