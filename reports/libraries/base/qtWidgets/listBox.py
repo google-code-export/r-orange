@@ -1,21 +1,28 @@
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class listBox(QListWidget,widgetState):
-    def __init__(self, widget, value=None, label=None,orientation='vertical', enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, callback=None, toolTip = None, items = None, *args):
-        self.widget = widget
+    def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, orientation='vertical', 
+    enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, 
+    callback=None, toolTip = None, items = None, *args):
+        
+        
+        widgetState.__init__(self,label)
         QListWidget.__init__(self, *args)
         self.label = label
-        if label:
-            self.hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(self.hb, label)
-            self.hb.layout().addWidget(self)
+        self.widget = widget
+        if displayLabel:
+            self.hb = groupBox(widget,label=label,orientation=orientation)
+            
         else:
-            widget.layout().addWidget(self)
+            self.hb = widgetBox(widget,orientation=orientation)
+            
+        self.hb.layout().addWidget(self)
         self.ogValue = value
         self.ogLabels = label
         self.enableDragDrop = enableDragDrop
@@ -37,14 +44,14 @@ class listBox(QListWidget,widgetState):
             self.setToolTip(toolTip)
         if callback:
             QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
-        self.label = label
+        
     def sizeHint(self):
         return self.defaultSizeHint
     def hide(self):
-        if self.hb:
-            self.hb.hide()
-        else:
-            QListWidget.hide(self)
+        self.hb.hide()
+    def show(self):
+        self.hb.show()
+        
     def startDrag(self, supportedActions):
         if not self.enableDragDrop: return
 
@@ -207,16 +214,6 @@ class listBox(QListWidget,widgetState):
                 index.append(lwi)
         for i in index:
             i.setSelected(True)
-    def hide(self):
-        if self.label:
-            self.hb.hide()
-        else:
-            QListWidget.hide(self)
-    def show(self):
-        if self.label:
-            self.hb.show()
-        else:
-            QListWidget.show(self)
     def getReportText(self, fileDir):
         items = self.getItems()
         selected = self.getCurrentSelection()

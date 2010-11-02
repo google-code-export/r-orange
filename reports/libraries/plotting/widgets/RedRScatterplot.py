@@ -59,25 +59,27 @@ class RedRScatterplot(OWRpy):
         buttonBox = widgetBox(options,orientation='vertical')
         box1 = widgetBox(options,orientation='horizontal')
         box1.layout().setAlignment(Qt.AlignRight)
-        self.plotOnInput = checkBox(box1, buttons = ['Plot on Change'],
+        self.plotOnInput = checkBox(box1, label='commit', displayLabel=False,
+        buttons = ['Plot on Change'],
         toolTips = ['Whenever X, Y or color data source changes plot the results.'])
         button(box1, label = "Plot", callback = self.plot, toolTip = 'Plot the data.')
         
         box2 = widgetBox(options,orientation='horizontal')  
         box2.layout().setAlignment(Qt.AlignRight)
         
-        self.commitOnInput = checkBox(box2, buttons = ['Commit on Selection'],
+        self.commitOnInput = checkBox(box2, label='commit', displayLabel=False,
+        buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'])
         button(box2, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.')
 
         separator(options,height=8)
         self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
-        self.paintLegend = textEdit(options)
+        self.paintLegend = textEdit(options,label='Legend')
         
-        self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))')
-        data = redRRDataFrame(data = 'data', parent = None) 
+        # self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))')
+        # data = redRRDataFrame(data = 'data', parent = None) 
         # self.graph.resize(350, 350)
-        self.gotX(data)
+        # self.gotX(data)
         
         
     def showSelected(self):

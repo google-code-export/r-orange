@@ -5,6 +5,7 @@ from PyQt4.QtGui import *
 
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
+        
         QTabWidget.__init__(self,widget)
         if widget.layout():
             widget.layout().addWidget(self)

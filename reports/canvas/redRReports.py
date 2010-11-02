@@ -74,7 +74,7 @@ class reports(QDialog):
         topWidgetBox = redRWidgetBox(mainWidgetBox)
         redRwidgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
         
-        self.widgetList = redRlistBox(topWidgetBox)
+        self.widgetList = redRlistBox(topWidgetBox,label='Widget List', displayLabel=False)
         self.widgetList.setSelectionMode(QAbstractItemView.MultiSelection)
         buttonWidgetBox = redRWidgetBox(mainWidgetBox,orientation='horizontal')
         

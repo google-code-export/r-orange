@@ -17,10 +17,8 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.textEdit import textEdit
 
-
-
 class setOperations(OWRpy): 
-    globalSettingsList = ['commitOnInput']
+    globalSettingsList = ['commit']
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
@@ -41,12 +39,13 @@ class setOperations(OWRpy):
         #pickB = groupBox(dataSetBox, "Dataset B:")
         self.colB = listBox(dataSetBox, label = 'Dataset B:', callback = self.onSelect)
 
-        self.resultInfo = textEdit(box,editable=False)
+        self.resultInfo = textEdit(box,label='Results', displayLabel=False,includeInReports=False,
+        editable=False, alignment=Qt.AlignHCenter)
         self.resultInfo.setMaximumWidth(170)
         self.resultInfo.setMaximumHeight(25)
         self.resultInfo.setMinimumWidth(170)
         self.resultInfo.setMinimumHeight(25)
-        box.layout().setAlignment(self.resultInfo,Qt.AlignHCenter)
+        #box.layout().setAlignment(self.resultInfo,Qt.AlignHCenter)
         self.resultInfo.hide()
         self.type = radioButtons(self.bottomAreaLeft,  label = "Perform", 
         buttons = ['Intersect', 'Union', 'Set Difference', 'Set Equal'],setChecked='Intersect',
@@ -54,12 +53,11 @@ class setOperations(OWRpy):
         
         commitBox = widgetBox(self.bottomAreaRight,orientation = 'horizontal')
         self.bottomAreaRight.layout().setAlignment(commitBox, Qt.AlignBottom)
-        self.commitOnInput = redRCheckBox(commitBox, buttons = ['Commit on Selection'],
-        toolTips = ['Whenever this selection changes, send data forward.'])
-        redRCommitButton(commitBox, "Commit", callback = self.commitFunction)
+
+        self.commit = redRCommitButton(commitBox, "Commit", callback = self.commitFunction, processOnChange=True, processOnInput=True)
     
     def onSelect(self):
-        if 'Commit on Selection' in self.commitOnInput.getChecked():
+        if self.commit.processOnChange():
             self.commitFunction()
     def onTypeSelect(self):
         self.resultInfo.setPlainText('')
@@ -68,7 +66,7 @@ class setOperations(OWRpy):
         else:
             self.resultInfo.hide()
         
-        if 'Commit on Selection' in self.commitOnInput.getChecked():
+        if self.commit.processOnChange():
             self.commitFunction()
             
     def processA(self, data):
@@ -81,7 +79,7 @@ class setOperations(OWRpy):
         colsA = self.R('names('+self.dataA+')',wantType='list')
         self.colA.update(colsA)
         
-        if 'Commit on Selection' in self.commitOnInput.getChecked():
+        if self.commit.processOnInput():
             self.commitFunction()
     def processB(self, data):
         if not data:
@@ -92,7 +90,7 @@ class setOperations(OWRpy):
 
         self.colB.update(colsB)
 
-        if 'Commit on Selection' in self.commitOnInput.getChecked():
+        if self.commit.processOnInput():
             self.commitFunction()
     def commitFunction(self):
         if self.dataA and self.dataB:

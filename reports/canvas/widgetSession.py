@@ -332,6 +332,7 @@ class widgetSession():
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
         #print '%s' % str(settings)
+
         if settings:
             #settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()

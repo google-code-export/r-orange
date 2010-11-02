@@ -7,10 +7,14 @@ from PyQt4.QtGui import *
 
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='', label=None, id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
+    def __init__(self,widget,text='', label=None, displayLabel=True, includeInReports=True,
+    id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
+
+        widgetState.__init__(self,label)
         QLineEdit.__init__(self,widget)
+        
         if widget:
-            if label:
+            if displayLabel:
                 self.hb = widgetBox(widget,orientation=orientation, spacing=2)
                 if sp == 'shrinking':
                     self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -23,7 +27,8 @@ class lineEdit(QLineEdit,widgetState):
             else:
                 widget.layout().addWidget(self)
                 self.hasLabel = False
-        if toolTip and label: 
+        
+        if toolTip and displayLabel: 
             self.hb.setToolTip(toolTip)
         elif toolTip:
             self.setToolTip(toolTip)
@@ -42,7 +47,6 @@ class lineEdit(QLineEdit,widgetState):
         # self.setText('asdf')
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
-        self.label = label
     
     def text(self):
         return str(QLineEdit.text(self).toAscii())

@@ -1,5 +1,6 @@
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.button import button
 
@@ -8,19 +9,23 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class textEdit(QTextEdit,widgetState):
-    def __init__(self,widget,html='',label=None, orientation='vertical', editable=True,printable=False):
+    def __init__(self,widget,html='',label=None, displayLabel=True,includeInReports=True, 
+    orientation='vertical', alignment=None, editable=True, printable=False,**args):
+
+        widgetState.__init__(self, label, **args)
+
         QTextEdit.__init__(self,widget)
         self.label = label
-        if label:
-            self.hb = widgetBox(widget,orientation=orientation)
-            widgetLabel(self.hb, label)
-            self.hb.layout().addWidget(self)
-            if printable:
-                button(self.hb, "Print", self.printMe)
+        if displayLabel:
+            self.hb = groupBox(widget,label=label,orientation=orientation)
         else:
-            widget.layout().addWidget(self)
-            if printable:
-                button(widget, "Print", self.printMe)
+            self.hb = widgetBox(widget,orientation=orientation)
+
+        self.hb.layout().addWidget(self)
+        if alignment:
+            widget.layout().setAlignment(self.hb,alignment)
+        if printable:
+            button(self.hb, "Print", self.printMe)
             
         if not editable:
             self.setReadOnly(True)
@@ -28,10 +33,10 @@ class textEdit(QTextEdit,widgetState):
         
 
     def hide(self):
-        if self.hb:
-            self.hb.hide()
-        else:
-            QTextEdit.hide(self)
+        self.hb.hide()
+    def show(self):
+        self.hb.show()
+            
     def sizeHint(self):
         return QSize(10,10)
     def setCursorToEnd(self):
@@ -47,18 +52,8 @@ class textEdit(QTextEdit,widgetState):
         self.clear()
         self.insertHtml(data['text'])
         # self.setEnabled(data['enabled'])
-    def hide(self):
-        if self.label:
-            self.hb.hide()
-        else:
-            QTextEdit.hide(self)
     def toPlainText(self):
         return str(QTextEdit.toPlainText(self).toAscii())
-    def show(self):
-        if self.label:
-            self.hb.show()
-        else:
-            QTextEdit.show(self)
     def getReportText(self,fileDir):
         if not self.label:
             label = "TextBox with No Label"

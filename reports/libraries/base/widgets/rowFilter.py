@@ -43,7 +43,8 @@ class rowFilter(OWRpy):
         self.table = filterTable(self.controlArea, sortable=True,
         filterable=True,selectionMode = QAbstractItemView.NoSelection,onFilterCallback=self.onFilter)
         
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Filter'],
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, label='commit', displayLabel=False,
+        buttons = ['Commit on Filter'],
         toolTips = ['On filter send data forward.'])
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitSubset)
         

@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit
 import libraries.base.signalClasses as signals
 
 class RedRtable(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["table", "propTable"])
@@ -20,13 +20,15 @@ class RedRtable(OWRpy):
         self.inputs.addInput("data", "Data Table", signals.RDataFrame.RDataFrame, self.processdata)
         self.outputs.addOutput("table Output","Table Output", signals.RDataFrame.RDataFrame)
         self.outputs.addOutput("propTable", "Prob Table Output", signals.RDataFrame.RDataFrame)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
+        
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data.getData()
-            #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):

@@ -5,6 +5,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit 
 from libraries.base.qtWidgets.button import button
@@ -12,10 +13,17 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent, name = '', data = None):
+    def __init__(self, parent,label=None,displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
+        widgetState.__init__(self,label)
+        
         QGraphicsView.__init__(self, parent)
-        self.controlArea = widgetBox(parent)
+        if displayLabel:
+            self.controlArea = groupBox(parent,label=label, orientation='vertical')
+        else:
+            self.controlArea = widgetBox(parent,orientation='vertical')
+        
+        #self.controlArea = widgetBox(parent)
         self.topArea = widgetBox(self.controlArea)
         self.middleArea = widgetBox(self.controlArea)
         self.bottomArea = widgetBox(self.controlArea)

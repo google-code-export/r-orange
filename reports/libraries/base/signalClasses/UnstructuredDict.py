@@ -1,6 +1,6 @@
 ### Python Dictionary Class.  Contains python dictionary objects and can be the parent class of other classes, even R classes.
 
-from canvas.signals import BaseRedRVariable
+from signals import BaseRedRVariable
 
 class UnstructuredDict(BaseRedRVariable):
     convertToList = [BaseRedRVariable]

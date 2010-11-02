@@ -1,4 +1,4 @@
-## plitter Widget.  This widget provides a way to resize widgets within a main area.  To keep things working we won't allow widgets to be added to the splitter but will instead return areas into which widgets can be added using the conventional methods.
+## splitter Widget.  This widget provides a way to resize widgets within a main area.  To keep things working we won't allow widgets to be added to the splitter but will instead return areas into which widgets can be added using the conventional methods.
 
 from redRGUI import widgetState
 from PyQt4.QtCore import *

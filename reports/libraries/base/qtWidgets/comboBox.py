@@ -5,12 +5,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class comboBox(QComboBox,widgetState):
-    def __init__(self,widget,label=None, items=None, itemIds=None,editable=False,
+    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
+    items=None, itemIds=None,editable=False,
     orientation='horizontal',callback = None, callback2 = None, **args):
         
+        widgetState.__init__(self,label)
         QComboBox.__init__(self,widget)
         if widget:
-            if label:
+            if displayLabel:
                 self.hb = widgetBox(widget,orientation=orientation)
                 widgetLabel(self.hb, label)
                 self.hb.layout().addWidget(self)

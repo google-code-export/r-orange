@@ -6,13 +6,15 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class checkBox(widgetBox,widgetState):
-    def __init__(self,widget,label=None,buttons = None,toolTips = None, setChecked=None,
+    def __init__(self,widget,label = None, displayLabel= True, includeInReports=True,
+    buttons = None,toolTips = None, setChecked=None,
     orientation='vertical',callback = None, **args):
         
+        widgetState.__init__(self,label)
         widgetBox.__init__(self,widget,orientation=orientation)
         
 
-        if label:
+        if displayLabel:
             self.box = groupBox(self,label=label,orientation=orientation)
             self.layout().addWidget(self.box)
         else:

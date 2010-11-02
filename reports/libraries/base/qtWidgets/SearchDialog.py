@@ -22,7 +22,7 @@ class SearchDialog(QDialog):
         except:
             self.setLayout(QVBoxLayout())
         self.thisLayout = self.layout()
-        self.webView = webViewBox(self)
+        self.webView = webViewBox(self,label='Search Dialog', displayLabel=False)
         self.setMinimumSize(600, 400)
         if url and url != '':
             self.webView.load(QUrl(url))

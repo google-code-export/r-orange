@@ -6,10 +6,20 @@ from PyQt4.QtGui import *
 import numpy,sip
 
 class Rtable(widgetState,QTableView):
-    def __init__(self,widget,Rdata=None, editable=False, rows=None, columns=None,
+    def __init__(self,widget, label=None, displayLabel=True,includeInReports=True, 
+    Rdata=None, editable=False, rows=None, columns=None,
     sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
+        
+        widgetState.__init__(self,label)
+        if displayLabel:
+            mainBox = groupBox(widget,label=label, orientation='vertical')
+        else:
+            mainBox = widgetBox(widget,orientation='vertical')
+        
         QTableView.__init__(self,widget)
+        mainBox.layout().addWidget(self)
 
+        
         self.R = Rcommand
         self.sortIndex = None
         self.oldSortingIndex = None

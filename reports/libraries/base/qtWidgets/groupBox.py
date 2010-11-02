@@ -5,9 +5,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class groupBox(QGroupBox,widgetState):
-    def __init__(self,widget, label = None, orientation='vertical', addSpace=False, 
+    def __init__(self,widget, label = None, displayLabel=True, orientation='vertical', addSpace=False, 
     sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop):
+        
         if label:
+            widgetState.__init__(self,label)
+        else:
+            widgetState.__init__(self,'Group Box')
+        if displayLabel:
             QGroupBox.__init__(self,label)
         else:
             QGroupBox.__init__(self)

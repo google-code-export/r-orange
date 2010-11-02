@@ -64,11 +64,12 @@ class RDataTable(OWRpy):
 
         #links:
         linksTab = groupBox(self.advancedOptions, 'Links to Websites')        
-        self.linkListBox = listBox(linksTab)
+        self.linkListBox = listBox(linksTab,label='Links to Websites', displayLabel=False,includeInReports=False)
         self.linkListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.customLink = lineEdit(linksTab, label = 'Add Link:')
+        self.customLink = lineEdit(linksTab, label = 'Add Link:', includeInReports=False)
         b = button(linksTab, label = 'Add', toolTip = 'Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.', callback=self.addCustomLink)
-        button(linksTab, label = 'Clear Links', toolTip = 'Clears the links from the links section', callback = self.clearLinks)
+        button(linksTab, label = 'Clear Links', toolTip = 'Clears the links from the links section', 
+        callback = self.clearLinks)
         linksTab.layout().setAlignment(b,Qt.AlignRight)
         widgetLabel(linksTab,label ="""
 Creating new links:

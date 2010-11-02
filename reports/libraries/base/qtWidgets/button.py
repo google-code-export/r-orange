@@ -4,18 +4,21 @@ from PyQt4.QtGui import *
 
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
-    toolTip=None, width = None, height = None,align='left', toggleButton = False, addToLayout = 1):
+    toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False):
+        if icon and (not label or label == ''):
+            import os.path
+            widgetState.__init__(self,os.path.basename(icon))
+        else:
+            widgetState.__init__(self,label)
+            
         if icon:
             QPushButton.__init__(self,QIcon(icon), label,widget)
         else:
             QPushButton.__init__(self,label,widget)
 
-        if addToLayout and widget.layout():
-            widget.layout().addWidget(self)
-            if align=='left':
-                widget.layout().setAlignment(self, Qt.AlignLeft)
-            elif align=='right':
-                widget.layout().setAlignment(self, Qt.AlignRight)
+        widget.layout().addWidget(self)
+        if alignment:
+            widget.layout().setAlignment(self, alignment)
         
         if icon or width == -1:
             pass

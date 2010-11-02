@@ -1,10 +1,25 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 
 class table(widgetState,QTableWidget):
-    def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
+    data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
+        
+        
+        widgetState.__init__(self,label)
+        
+        if displayLabel:
+            mainBox = groupBox(widget,label=label, orientation='vertical')
+        else:
+            mainBox = widgetBox(widget,orientation='vertical')
+        
         QTableWidget.__init__(self,rows,columns,widget)
+        mainBox.layout().addWidget(self)
+
+        
         self.sortIndex = None
         self.oldSortingIndex = None
         self.data = None
@@ -99,6 +114,6 @@ class table(widgetState,QTableWidget):
         # if self.label:
             # label = self.label
         # else:
-            label='Data Table';
+        label='Data Table';
         
         return {'label': label, 'text': text}

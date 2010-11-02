@@ -7,6 +7,7 @@ import redRGUI
 from libraries.base.signalClasses.REnvironment import REnvironment as redRREnvironment
 
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
@@ -19,7 +20,7 @@ class RLoader(OWRpy):
         OWRpy.__init__(self)
         self.outputs.addOutput('id0', 'R Session', redRREnvironment)
 
-        print os.path.abspath('/')
+        # print os.path.abspath('/')
         self.path = os.path.abspath('/')
         self.setRvariableNames(['sessionEnviron'])
         
@@ -27,12 +28,14 @@ class RLoader(OWRpy):
         gbox = groupBox(self.controlArea,orientation='vertical',label='Select R session')
         
         box = widgetBox(gbox,orientation='horizontal')
-        self.filecombo = fileNamesComboBox(box, orientation='vertical')
+        self.filecombo = fileNamesComboBox(box,label='Session File', displayLabel=False,
+        orientation='vertical')
         self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Maximum)
 
         button(box, label='Browse', callback = self.browseFile)
-        loadButton = button(gbox, label='Load Session', callback = self.loadSession)
-        gbox.layout().setAlignment(loadButton,Qt.AlignRight)
+        self.commit = commitButton(gbox, label='Load Session', callback = self.loadSession,
+        alignment=Qt.AlignRight)
+        #gbox.layout().setAlignment(self.commit,Qt.AlignRight)
         
         self.infoa = widgetLabel(self.controlArea, '')
         self.varBox = listBox(self.controlArea, label = 'Variables')

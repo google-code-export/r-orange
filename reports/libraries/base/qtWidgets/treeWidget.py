@@ -4,14 +4,20 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 
 
 class treeWidget(QTreeWidget, widgetState):
-    def __init__(self, widget, label = None, toolTip = None, callback = None):
+    def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, 
+    orientation='vertical', toolTip = None, callback = None):
+        
+        widgetState.__init__(self,label)
+
         QTreeWidget.__init__(self, widget)
         
         if widget:
-            if label:
+            if displayLabel:
                 self.hb = widgetBox(widget,orientation=orientation)
                 widgetLabel(self.hb, label)
                 if width != -1:

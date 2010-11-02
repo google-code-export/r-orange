@@ -7,10 +7,14 @@ from PyQt4.QtGui import *
 from PyQt4 import QtWebKit
 
 class webViewBox(QtWebKit.QWebView,widgetState):
-    def __init__(self,widget,label=None,url=None,orientation='vertical', followHere = False):
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
+    url=None,orientation='vertical', followHere = False):
+        
+        widgetState.__init__(self,label)
         QtWebKit.QWebView.__init__(self,widget)
+        
         if widget:
-            if label:
+            if displayLabel:
                 hb = widgetBox(widget,orientation=orientation)
                 widgetLabel(hb, label)
                 hb.layout().addWidget(self)

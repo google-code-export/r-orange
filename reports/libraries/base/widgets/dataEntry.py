@@ -53,7 +53,8 @@ class dataEntry(OWRpy):
         #self.splitCanvas.addWidget(box)
         
 
-        self.dataTable = table(box, data = None, rows = self.rowCount+1, columns = self.colCount)
+        self.dataTable = table(box,label='Data Entry',displayLabel=False,
+        data = None, rows = self.rowCount+1, columns = self.colCount)
         if self.dataTable.columnCount() < 1:
             self.dataTable.setColumnCount(1)
             self.dataTable.setHorizontalHeaderLabels(['Rownames'])

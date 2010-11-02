@@ -13,8 +13,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class RFormulaEntry(groupBox, widgetState):
-    def __init__(self, parent, label = 'Formula Entry'):
+    def __init__(self, parent, label = 'Formula Entry', displayLabel=True, includeInReports=True):
         # make a widgetBox to hold everything
+        widgetState.__init__(self,label)
         groupBox.__init__(self,parent,label=label)
         
         #box = groupBox(self, label = label)

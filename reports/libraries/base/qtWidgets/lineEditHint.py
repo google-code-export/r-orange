@@ -5,8 +5,14 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 
 
 class lineEditHint(lineEdit):        
-    def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = 0, callback = None, **args):
-        lineEdit.__init__(self, widget = widget, label = label, orientation = orientation, toolTip = toolTip, width = width, **args)
+    def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', items = [], 
+    toolTip = None,  width = 0, callback = None, **args):
+        
+        
+
+        lineEdit.__init__(self, widget = widget, label = label, displayLabel=displayLabel,
+        orientation = orientation, toolTip = toolTip, width = width, **args)
+        
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
         self.enteredText = ""
         self.itemList = []

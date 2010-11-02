@@ -7,11 +7,16 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class fileNamesComboBox(comboBox):
-    def __init__(self,widget,label=None, files=None, orientation='horizontal',callback = None, callback2 = None, **args):
-        
-        comboBox.__init__(self,widget,label=label,items=None, orientation=orientation,
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, 
+    orientation='horizontal',callback = None, callback2 = None, **args):
+
+       
+        comboBox.__init__(self,widget,label=label,displayLabel=displayLabel,
+        items=None, orientation=orientation,
         callback=callback,callback2=callback2, **args)
+        
         self.label = label
+        
         if files:
             self.files = files
         else:

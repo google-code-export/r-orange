@@ -11,8 +11,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class t(OWRpy): 
-    globalSettingsList = ['commitOnInput']
-
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["t"])
@@ -24,16 +23,13 @@ class t(OWRpy):
 
         self.outputs.addOutput('id0', 'Transposed Data Table', redRRDataFrame)
 
-        
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
-        toolTips = ['Whenever this selection changes, send data forward.'], setChecked='Commit on Selection')
-
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
             self.data = data
-            if 'Commit on Selection' in self.commitOnInput.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
     def commitFunction(self):
         if self.x == '': return

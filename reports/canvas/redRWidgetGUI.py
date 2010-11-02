@@ -121,7 +121,8 @@ class redRWidgetGUI(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
         
         
-        self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
+        self.rightDockArea = redRgroupBox(self.rightDock,label='Right Dock', displayLabel=False,
+        orientation=QVBoxLayout())
         self.rightDockArea.setMinimumWidth(minWidth)
         self.rightDockArea.setMinimumHeight(150)
         self.rightDockArea.layout().setMargin(4)
@@ -178,7 +179,7 @@ class redRWidgetGUI(QMainWindow):
         redRwidgetLabel(self.notesBox, label="Notes:", 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'))
 
-        self.notes = redRtextEdit(self.notesBox)
+        self.notes = redRtextEdit(self.notesBox,label='Notes', displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
@@ -189,7 +190,7 @@ class redRWidgetGUI(QMainWindow):
         redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'))
 
-        self.ROutput = redRtextEdit(self.ROutputBox)
+        self.ROutput = redRtextEdit(self.ROutputBox, label='R code', displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)

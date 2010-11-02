@@ -27,7 +27,9 @@ class nameProtector(OWRpy):
         
         ### The data frame GUI
         self.dfbox = widgetBox(self.controlArea)
-        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 'Use make.names to protect the names in the columns.'])
+        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', 
+        buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 
+        'Use make.names to protect the names in the columns.'])
         self.namesProtectDFcomboBox = comboBox(self.dfbox, label = 'Column names to protect:')
         self.commitDFbutton = button(self.dfbox, "Commit", callback = self.dfCommit)
         

@@ -60,7 +60,7 @@ class readFile(OWRpy):
         self.browseBox = groupBox(options, label="Load File", 
         addSpace = True, orientation='vertical')
         box = widgetBox(self.browseBox,orientation='horizontal')
-        self.filecombo = fileNamesComboBox(box, 
+        self.filecombo = fileNamesComboBox(box, label='Files', displayLabel=False,
         orientation='horizontal',callback=self.scanNewFile)
         
         button(box, label = 'Browse', callback = self.browseFile)
@@ -74,13 +74,16 @@ class readFile(OWRpy):
         self.delimiter = radioButtons(options, label='Column Seperator',
         buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab',callback=self.scanNewFile,
         orientation='horizontal')
-        self.otherSepText = lineEdit(self.delimiter.box,text=';',width=20,orientation='horizontal')
+        self.otherSepText = lineEdit(self.delimiter.box,label='Seperator', displayLabel=False,
+        text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
         
         self.headersBox = groupBox(options, label="Row and Column Names", 
         addSpace = True, orientation ='horizontal')
 
-        self.hasHeader = checkBox(self.headersBox, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
+        self.hasHeader = checkBox(self.headersBox,label='Column Header', displayLabel=False, 
+        buttons = ['Column Headers'],setChecked=['Column Headers'],
+        toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
         self.rowNamesCombo = comboBox(self.headersBox,label='Select Row Names', items=[],
@@ -93,7 +96,8 @@ class readFile(OWRpy):
         split = widgetBox(self.otherOptionsBox,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.otherOptions = checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
+        self.otherOptions = checkBox(split,label='Options', displayLabel=False,
+        buttons=['fill','strip.white','blank.lines.skip',
         'allowEscapes','stringsAsFactors'],
         setChecked = ['blank.lines.skip'],
         toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
@@ -139,7 +143,7 @@ class readFile(OWRpy):
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
-        self.scanarea = textEdit(self.tableArea)
+        self.scanarea = textEdit(self.tableArea,label='File Preview',includeInReports=False)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
         self.scroll = scrollArea(self.tableArea);

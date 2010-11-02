@@ -15,6 +15,7 @@ from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
 class rownames(OWRpy): 
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["rownames"])
@@ -43,7 +44,8 @@ class rownames(OWRpy):
         buttons=['TRUE','FALSE'],setChecked='TRUE', orientation='horizontal')
         buttonBox = widgetBox(box,orientation='horizontal')
         redRCommitButton(buttonBox, "Commit", callback = self.commitFunction)
-        self.autoCommit = checkBox(buttonBox,buttons=['Commit on Input'],setChecked=['Commit on Input'])
+        self.autoCommit = checkBox(buttonBox,label='commit', displayLabel=False,
+        buttons=['Commit on Input'],setChecked=['Commit on Input'])
         
     def processx(self, data):
         if data:

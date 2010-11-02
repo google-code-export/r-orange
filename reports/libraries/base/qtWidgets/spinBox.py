@@ -7,11 +7,15 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class spinBox(QSpinBox,widgetState):
-    def __init__(self, widget, value=None, label=None,orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
+    def __init__(self, widget, label=None, displayLabel=True, includeInReports=True, value=None, 
+    orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
+        
         self.widget = widget
+        
+        widgetState.__init__(self,label)
         QSpinBox.__init__(self)
         self.label = label
-        if label:
+        if displayLabel:
             self.hb = widgetBox(widget,orientation=orientation)
             widgetLabel(self.hb, label)
             self.hb.layout().addWidget(self)

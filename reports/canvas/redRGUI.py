@@ -7,6 +7,19 @@ import os.path
 import imp
         
 class widgetState:
+    def __init__(self,widgetName,**args):
+        #print args
+        # if 'alignment' in args.keys():
+            # parent.layout().setAlignment(self,args['alignment'])
+        if not widgetName:
+            print '#########widget Name is required############'
+            
+            # try:
+            raise RuntimeError('#########widget Name is required############')
+            # except:
+                # print redRExceptionHandling.formatException()
+
+        self.widgetName = widgetName
     def getDefaultState(self):
         r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
         return r

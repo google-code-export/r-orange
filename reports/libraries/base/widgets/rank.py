@@ -5,12 +5,14 @@
 from OWRpy import * 
 import OWGUI 
 import redRGUI 
+from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.tabWidget import tabWidget
+from libraries.base.qtWidgets.listBox import listBox
 class rank(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["rank"])
@@ -18,37 +20,57 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+        self.inputs.addInput('id0', 'x', redRRList, self.processx)
 
         self.outputs.addOutput('id0', 'rank Output', redRRMatrix)
-
+        
+        
         
         #self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
-        box = tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamties_method_comboBox = comboBox(self.standardTab, label = "ties_method:", items = ['average', 'first', 'random', 'max', 'min'])
-        #self.RFunctionParamna_last_lineEdit =  lineEdit(self.advancedTab, label = "na_last:")
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamties_method_comboBox = comboBox(self.controlArea, label = "ties_method:", 
+        items = ['average', 'first', 'random', 'max', 'min'])
+        
+        self.columns = listBox(self.controlArea, label = 'Dataset A:', callback = self.onSelect)
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True, processOnChange=True)
     def processx(self, data):
-        if data:
-            self.RFunctionParam_x=data.getData()
-            self.commitFunction()
-        else:
+        if not data:
             self.RFunctionParam_x = ''
+            self.columns.clear()
+            return
+            
+        self.RFunctionParam_x=data.getData()
+        columns = self.R('names('+self.RFunctionParam_x+')',wantType='list')
+        print columns
+        self.columns.update(columns)
+
+        if self.commit.processOnInput():
+            self.commitFunction()
+            
+    def onSelect(self):
+        if self.commit.processOnChange():
+            self.commitFunction()
+
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': 
+        if self.columns.selectedItems():
+            col = self.columns.selectedItems()[0].text()
+        else:
+            col = None
+
+        if self.RFunctionParam_x == '' and not col: 
             self.status.setText('No data')
             return
+        
         injection = []
-        if str(self.RFunctionParamties_method_comboBox.currentText()) != '':
+        if self.RFunctionParamties_method_comboBox.currentText() != '':
             string = 'ties.method="'+str(self.RFunctionParamties_method_comboBox.currentText())+'"'
             injection.append(string)
-        # if str(self.RFunctionParamna_last_lineEdit.text()) != '':
-            # string = 'na.last='+str(self.RFunctionParamna_last_lineEdit.text())
-            # injection.append(string)
+        
+        
         inj = ','.join(injection)
-        self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
+        self.R(self.Rvariables['rank']+'<-rank(x=%s[["%s"]],%s, na.last = TRUE)' % (self.RFunctionParam_x,col,inj))
+        
         newData = redRRMatrix(data = 'as.matrix('+self.Rvariables['rank']+')')
         self.rSend("id0", newData)
         
