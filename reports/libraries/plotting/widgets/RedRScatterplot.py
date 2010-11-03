@@ -8,10 +8,11 @@ from OWRpy import *
 import OWGUI
 import redRGUI 
 import re
-import textwrap, numpy
+import textwrap
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+
 from PyQt4.QtGui import *
-### currently depricated until fixed
+
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.plotting.qtWidgets.redRGraph import redRGraph
 from libraries.base.qtWidgets.comboBox import comboBox
@@ -21,6 +22,7 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.zoomSelectToolbar import zoomSelectToolbar
+
 class RedRScatterplot(OWRpy):
     globalSettingsList = ['commitOnInput', 'plotOnInput']
     def __init__(self, parent=None, signalManager=None):

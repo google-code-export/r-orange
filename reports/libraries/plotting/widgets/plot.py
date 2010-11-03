@@ -1,23 +1,21 @@
 """
 <name>Generic Plot</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Generic plot is the basis of most RedR plotting.  This accepts fits, data tables, or other RedR outputs and attempts to plot them.  However, there is no guarantee that your data will plot correctly.</description>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
-<inputWidgets></inputWidgets>
-<outputWidgets></outputWidgets>
-
 """
 from OWRpy import * 
-import OWGUI 
 import redRGUI
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
 from libraries.base.qtWidgets.SearchDialog import SearchDialog
+
 class plot(OWRpy): 
+    globalSettingsList= ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.data = None
@@ -26,11 +24,10 @@ class plot(OWRpy):
         self.saveSettingsList = ['plotArea', 'data', 'RFunctionParam_x', 'plotAttributes']
         self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
 
-        
-        box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
-        self.plotArea = redRGraphicsView(self.controlArea)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParam_main = lineEdit(self.controlArea, label = 'Main Title:')
+        self.plotArea = redRGraphicsView(self.controlArea,label='Plot', displayLabel=False)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
         # button(self.bottomAreaRight, 'Inspect Plot', callback = self.InspectPlot)
     # def InspectPlot(self):
         # fn = QFileDialog.getOpenFileName(self, "Open File", '~',
@@ -42,7 +39,8 @@ class plot(OWRpy):
         if data:
             self.data = data
             self.RFunctionParam_x=data.getData()
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.clearPlots()
     def commitFunction(self):

@@ -86,7 +86,7 @@ class graphicsView(QGraphicsView, widgetState):
         ll.addAction('Set to top right', lambda x = 'topleft': self._setLegendLocation(x))
         ll.addAction('Set to top left', lambda x = 'topright': self._setLegendLocation(x))
         fontComboAction = QWidgetAction(font)
-        self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono'], 
+        self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono'], label='fonts', displayLabel=False,
             #'HersheySerif', 'HersheySans', 'HersheyScript',
             #'HersheyGothicEnglish', 'HersheyGothicGerman', 'HersheyGothicItalian', 'HersheySymbol', 'HersheySansSymbol'], 
             callback = self.setFontFamily)

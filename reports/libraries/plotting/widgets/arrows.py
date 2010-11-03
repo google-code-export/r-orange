@@ -1,7 +1,5 @@
 """
 <name>Arrow</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>graphics:arrows</RFunctions>
 <tags>Plot Attributes</tags>
 <icon>plot.png</icon>
 """
@@ -11,7 +9,7 @@ from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as re
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 class arrows(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["arrows"])
@@ -25,7 +23,7 @@ class arrows(OWRpy):
         self.RFunctionParamx1_lineEdit =  lineEdit(self.standardTab,  label = "x1:", text = '')
         self.RFunctionParamy1_lineEdit =  lineEdit(self.standardTab,  label = "y1:", text = '')
         self.RFunctionParamcode_lineEdit =  lineEdit(self.standardTab,  label = "code:", text = '1')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def commitFunction(self):
         if str(self.RFunctionParamx0_lineEdit.text()) == '':
             self.status.setText('No x0 specified')

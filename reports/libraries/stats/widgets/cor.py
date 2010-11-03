@@ -1,11 +1,7 @@
 """
 <name>Correlation/Variance</name>
-<author>Anup Parikh anup@red-r.org</author>
-<RFunctions>stats:cor, stats:var, stats:cov</RFunctions>
 <tags>Stats</tags>
 <icon>correlation.png</icon>
-<inputWidgets>base_readFile</inputWidgets>
-<outputWidgets>base_RDataTable</outputWidgets>
 """
 #OWRpy is the parent of all widgets. 
 #Contains all the functionality for connecting the widget to the underlying R session.
@@ -23,18 +19,20 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 # our first widget. Must be a child of OWRpy class
 # The wiget class name must be the same as the file name
-import libraries.base.signalClasses.RVariable as rvar
+
 
 from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class cor(OWRpy):
     
     # a list of all the variables that need to be saved in the widget state file.
     # these varibles values will be shared between widgets
-    globalSettingsList = ['sendOnSelect']
+    globalSettingsList = ['commit']
 
     # Python init statement is the class constructor 
     # Here you put all the code that will run as soon as the widget is put on the canvas
@@ -76,9 +74,9 @@ class cor(OWRpy):
         buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
 
-        redRCommitButton(options, "Commit", toolTip='Calculate values', callback = self.commitFunction)
-        self.sendOnSelect = checkBox(options,buttons=['Calculate on data Input'], 
-        toolTips=['Calculate variance on data input.'])
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+        
 
         self.RoutputWindow = redRfilterTable(area,sortable=True,filterable=False)
     
@@ -89,7 +87,7 @@ class cor(OWRpy):
             #if the signal exists get the data from it
             self.RFunctionParam_x=signal.getData()
             # if the checkbox is checked, immediately process the data
-            if 'Calculate on data Input' in self.sendOnSelect.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
                 
     # execute this function when data in the Y channel is received
@@ -97,7 +95,7 @@ class cor(OWRpy):
     def processy(self, signal):
         if signal:
             self.RFunctionParam_y=signal.getData()
-            if 'Calculate on data Input' in self.sendOnSelect.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
             
     # this function actually does the work in R 

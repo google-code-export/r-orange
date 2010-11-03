@@ -1,7 +1,5 @@
 """
 <name>Inspect Model Fit</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>asuR:inspect</RFunctions>
 <tags>Plotting, Stats</tags>
 <icon>plot.png</icon>
 """
@@ -11,19 +9,19 @@ from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class inspectR(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_mymodel = ''
         self.inputs.addInput('id0', 'mymodel', redRRModelFit, self.processmymodel)
 
         
-        box = tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamwhich_lineEdit =  lineEdit(self.standardTab,  label = "which:", text = 'all')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamwhich_lineEdit =  lineEdit(self.controlArea,  label = "which:", text = 'all')
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processmymodel(self, data):
         if not self.require_librarys(["asuR"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -31,7 +29,8 @@ class inspectR(OWRpy):
         if data:
             self.RFunctionParam_mymodel=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_mymodel=''
     def commitFunction(self):

@@ -1,13 +1,10 @@
 """
 <name>Linear Model</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Makes a linear model given a data table and a formula.  The data table should be in a 'melted' form (Melt DF should help with this).  This model can viewed using ANOVA-LM</description>
 <tags>Parametric</tags>
 <icon>stats.png</icon>
-<RFunctions>stats:lm</RFunctions>
 """
 from OWRpy import * 
-import redRGUI, redRGUI
+import redRGUI
 from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.stats.signalClasses.RLMFit import RLMFit as redRRLMFit
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
@@ -16,8 +13,10 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class lm(OWRpy): 
-    settingsList = ['RFunctionParam_data', 'RFunctionParam_formula', 'modelFormula', 'sentItems']
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, wantGUIDialog = 1)
         self.setRvariableNames(["lm"])
@@ -52,10 +51,11 @@ class lm(OWRpy):
         #start formula entry section
 
         buttonsBox = widgetBox(formulaBox, "Commands")
-        self.formulEntry = RFormulaEntry(buttonsBox)
+        self.formulEntry = RFormulaEntry(buttonsBox,label='Formula',displayLabel=False)
         
         
-        self.processButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
         #self.processButton.setEnabled(False)
         self.status.setText('Data Not Connected Yet')
     def processdata(self, data):
@@ -64,6 +64,9 @@ class lm(OWRpy):
             names = self.R('colnames('+self.RFunctionParam_data+')')
             self.formulEntry.update(names)
             self.status.setText('Data Connected')
+            if self.commit.processOnInput():
+                self.commitFunction()
+
         else:
             self.formulEntry.clear()
             self.RFunctionParam_data = ''

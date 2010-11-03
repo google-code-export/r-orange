@@ -1,10 +1,7 @@
 """
 <name>Principal Component</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>This widget performs principal component analysis on a data table containing numeric data.  The entire data fit is returned in the prcomp Output channel and the fit to the principal components is returned from the Scaled Data channel.  To view the prinicpal components graphically you may want to select the desired principal components and pass that on to a plotting widget.</description>
 <icon>stats.png</icon>
 <tags>Parametric</tags>
-<RFunctions>stats:prcomp</RFunctions>
 """
 from OWRpy import * 
 import OWGUI 
@@ -15,8 +12,10 @@ from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class prcomp(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["prcomp"])
@@ -28,12 +27,13 @@ class prcomp(OWRpy):
         self.outputs.addOutput('id1', 'Scaled Data', redRRMatrix)
         self.options = checkBox(self.controlArea, label = 'Options:', buttons = ['Center', 'Scale'])
         self.options.setChecked(['Center', 'Scale'])
-        self.commitOnConnect = checkBox(self.controlArea, buttons = ['Commit On Connection'], setChecked = 'Commit On Connection')
-        redRCommitButton(self.controlArea, "Commit", callback = self.commitFunction)
+
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            if 'Commit On Connection' in self.commitOnConnect.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_x = ''

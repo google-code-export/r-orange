@@ -160,7 +160,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         else:
             if 'plottingArea' not in dir(self):
                 self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, name = self.captionTitle)
+            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea,label=self.captionTitle,
+            displayLabel=False, name = self.captionTitle)
             self.device[str(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
             
         return

@@ -39,7 +39,7 @@ class RFormulaEntry(groupBox, widgetState):
         self.extrasBox = widgetBox(self.modelBox)
         self.outcomeVariable = comboBox(self.modelBox, label = 'Outcome (f(x)):')
         widgetLabel(self.modelBox, ' = ')
-        self.modelLineEdit = lineEdit(self.modelBox, label = None)
+        self.modelLineEdit = lineEdit(self.modelBox, label = 'model', displayLabel=False)
         self.label = label
     def clear(self):
         self.elementsListBox.clear()

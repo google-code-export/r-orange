@@ -1,7 +1,5 @@
 """
 <name>image</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>graphics:image</RFunctions>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
 """
@@ -12,14 +10,14 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class image(OWRpy): 
-    globalSettingsList = ['commitOnInput']
+    globalSettingsList = ['commitButton']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
-        toolTips = ['Whenever this selection changes, send data forward.'])
-        self.commitButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+
+        self.commitButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -31,7 +29,7 @@ class image(OWRpy):
                 self.status.setText('')
                 self.commitButton.setEnabled(True)
                 
-            if 'Commit on Selection' in self.commitOnInput.getChecked():
+            if self.commitButton.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_x=''

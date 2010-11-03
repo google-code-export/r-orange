@@ -1,14 +1,10 @@
 """
 <name>Heatmap</name>
-<description>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.  Thought heatmap was designed to work with the Bioconductor package it is able to show any numeric data as a heatmap.  You may use the identify functions to create a collection of subclasses of your data.  This function uses the R identify function and will send two signals; one is the list generated from the selections, the second is a vector of class labels matching the columns of the data.  Clustering is done by columns as this is common in expression data.</description>
 <tags>Plotting</tags>
-<RFunctions>stats:heatmap</RFunctions>
 <icon>heatmap.png</icon>
-<priority>2040</priority>
 """
 
 from OWRpy import *
-import OWGUI
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RList import RList as redRRList
 import libraries.base.signalClasses.RModelFit as rmf
@@ -21,8 +17,10 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.graphicsView import graphicsView
 from libraries.base.qtWidgets.radioButtons import radioButtons
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class Heatmap(OWRpy):
-    #This widget has no settings list
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         
@@ -43,24 +41,32 @@ class Heatmap(OWRpy):
         
         #GUI
         infobox = groupBox(self.controlArea, label = "Options")
-        button(self.bottomAreaRight, label = "Replot", callback=self.makePlot, width=200)
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, label = "Replot", 
+        callback=self.makePlot, width=200, processOnInput=True)
+        
         button(infobox, label = 'Identify', callback = self.identify, width=200)
         self.groupOrHeight = radioButtons(infobox, label = 'Identify by:', buttons = ['Groups' , 'Height'], setChecked = 'Groups', orientation = 'horizontal')
         self.groupOrHeightSpin = spinBox(infobox, label = 'Identify Value:', min = 1, value = 5)
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', 
+        items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
         #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
-        self.rowDendrogram = checkBox(infobox, buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
-        self.plotOnConnect = checkBox(infobox, buttons=['Plot on Connect'])
-        self.showClasses = checkBox(infobox, buttons = ['Show Classes'])
+        
+        self.rowDendrogram = checkBox(infobox, label='Dendrogram Options', displayLabel=False,
+        buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], 
+        setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
+        
+        self.showClasses = checkBox(infobox, label='Show Classes', displayLabel=False,
+        buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
-        self.gview1 = graphicsView(self.controlArea)
+        self.gview1 = graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
         self.gview1.image = 'heatmap1_'+self.widgetID
-        self.gview2 = graphicsView(self.controlArea)
+        self.gview2 = graphicsView(self.controlArea,label='Legend', displayLabel=False)
         self.gview2.image = 'heatmap2_'+self.widgetID
         
     def onLoadSavedSession(self):
@@ -81,7 +87,7 @@ class Heatmap(OWRpy):
             if not self.R('is.numeric('+self.plotdata+')'):
                 self.status.setText('Data connected was not numeric')
                 self.plotdata = ''
-            if 'Plot on Connect'  in self.plotOnConnect.getChecked():
+            if self.commit.processOnInput():
                 self.makePlot()
         else: 
             self.plotdata = ''
