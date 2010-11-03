@@ -8,7 +8,8 @@ from PyQt4.QtGui import *
 
 class lineEdit(QLineEdit,widgetState):
     def __init__(self,widget,text='', label=None, displayLabel=True, includeInReports=True,
-    id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
+    id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, textChangedCallBack=None,
+    sp='shrinking', **args):
 
         widgetState.__init__(self,label)
         QLineEdit.__init__(self,widget)
@@ -47,6 +48,9 @@ class lineEdit(QLineEdit,widgetState):
         # self.setText('asdf')
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
+        
+        if textChangedCallBack:
+            QObject.connect(self, SIGNAL('textEdited(QString)'), textChangedCallBack)
     
     def text(self):
         return str(QLineEdit.text(self).toAscii())

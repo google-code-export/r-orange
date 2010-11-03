@@ -7,7 +7,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class listBox(QListWidget,widgetState):
-    def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, orientation='vertical', 
+    def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, 
+    orientation='vertical', 
     enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, 
     callback=None, toolTip = None, items = None, *args):
         
@@ -38,8 +39,9 @@ class listBox(QListWidget,widgetState):
             self.setDropIndicatorShown(1)
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             self.dragStartPosition = 0
-        if items and type(items) == type([]):
-            self.addItems(items)
+        if items and type(items) is list:
+            for x in items:
+                self.addItem(x)
         if toolTip:
             self.setToolTip(toolTip)
         if callback:
@@ -162,7 +164,8 @@ class listBox(QListWidget,widgetState):
             print 'loading list box'
             # print data
             self.clear()
-            self.addItems(data['items'])
+            for x in data['items']:
+                self.addItem(x)
             
             for i in data['selected']:
                 self.setItemSelected(self.item(i), True)
@@ -199,11 +202,6 @@ class listBox(QListWidget,widgetState):
             items.append(str(self.item(i).text().toAscii()))
         return items
         
-    def addRItems(self, items):
-        if type(items) == type([]):
-            self.addItems(items)
-        else:
-            self.addItems([items])
     def update(self, items):
         current = [str(item.text().toAscii()) for item in self.selectedItems()]
         self.clear()

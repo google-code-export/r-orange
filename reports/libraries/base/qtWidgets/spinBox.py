@@ -27,11 +27,11 @@ class spinBox(QSpinBox,widgetState):
             self.setMinimum(int(min))
         if toolTip:
             self.setToolTip(str(toolTip))
-        if callback:
-            QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
         self.setWrapping(True) # we always allow the spin box to wrap around
         if value:
             self.setValue(value)
+        if callback:
+            QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
         
     def hide(self):
         if self.hb:

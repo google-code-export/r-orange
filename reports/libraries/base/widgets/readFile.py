@@ -274,7 +274,7 @@ class readFile(OWRpy):
         
         
         if self.rowNamesCombo.currentIndex() not in [0,-1]:
-            self.rownames = str(self.rowNamesCombo.currentText())
+            self.rownames = self.rowNamesCombo.currentText()
             param_name = '"' + self.rownames + '"'
         else:
             param_name = 'NULL' 
