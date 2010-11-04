@@ -293,6 +293,7 @@ class graphicsView2(QGraphicsView, widgetState):
         self.menu.addAction('Zoom In')
         self.menu.addAction('Undock')
         self.menu.addAction('Redock')
+        
         self.dialog = QDialog()
         self.dialog.setWindowTitle('Red-R Graphics View' + name)
         self.dialog.setLayout(QHBoxLayout())
@@ -579,7 +580,9 @@ class graphicsView2(QGraphicsView, widgetState):
             print 'loading scene'
             scene = QGraphicsScene()
             self.setScene(scene)
-        
+    def dialogClosed(self, int):
+        self.backToParent()
+
     def toClipboard(self):
         QApplication.clipboard().setImage(self.returnImage())
     def saveAsPDF(self):

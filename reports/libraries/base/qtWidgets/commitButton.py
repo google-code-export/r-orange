@@ -68,9 +68,9 @@ class commitButton(button,widgetState):
         return r
     
     def loadSettings(self,data):
-        if data['processOnChange']:
+        if 'processOnChange' in data.keys() and data['processOnChange']:
             self.processOnChangeState.checkAll()
-        if data['processOnInput']:
+        if 'processOnInput' in data.keys() and data['processOnInput']:
             self.processOnInputState.checkAll()
         
     
