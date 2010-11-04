@@ -16,11 +16,16 @@
     
 import SQLiteSession, redREnviron, os
 from datetime import tzinfo, timedelta, datetime, time
-_logDB = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "log.db")
+_logDB = redREnviron.directoryNames['logDB']
 handler = SQLiteSession.SQLiteHandler(defaultDB = _logDB)
 _tables = []
 _sessionID = redREnviron.settings['id']
 _outputManager = None
+
+PYTHON = 1
+R = 2
+GENERAL =3
+
 
 def setOutputManager(om):
     global _outputManager

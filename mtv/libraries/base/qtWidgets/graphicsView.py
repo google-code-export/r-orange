@@ -11,9 +11,12 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
+
 class graphicsView(QGraphicsView, widgetState):
     def __init__(self, parent, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
+        self.R = RSession.Rcommand
+        self.require_librarys = RSession.require_librarys
         QGraphicsView.__init__(self, parent)
         self.controlArea = widgetBox(parent)
         self.topArea = widgetBox(self.controlArea)
@@ -249,11 +252,9 @@ class graphicsView(QGraphicsView, widgetState):
     #########################
     ## R session functions ##
     #########################
-    def R(self, query):
-        return RSession.Rcommand(query = query)
-    def require_librarys(self, libraries):
-        return RSession.require_librarys(libraries)
-        
+
+
+    
     ##########################
     ## Interaction Functions #
     ##########################

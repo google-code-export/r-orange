@@ -75,10 +75,10 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     if wantType == 'NoConversion': 
         mutex.unlock()
         return output
-    elif wantType == 'list':
-        co.setWantType(1)
-    elif wantType == 'dict':
-        co.setWantType(2)
+    # elif wantType == 'list':
+        # co.setWantType(1)
+    # elif wantType == 'dict':
+        # co.setWantType(2)
     ##print output.getrclass()
     output = convertToPy(output)
     if type(output) == list and len(output) == 1 and wantType != 'list':

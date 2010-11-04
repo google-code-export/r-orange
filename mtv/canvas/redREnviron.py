@@ -51,7 +51,8 @@ def __getDirectoryNames():
     tempDirHolder = os.path.join(canvasSettingsDir, 'temp')
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
     downloadsDir = os.path.join(settingsDir, "downloads")
-
+    logDB = os.path.join(canvasSettingsDir, "log.db")
+    
     if sys.platform=="win32":
         objShell = win32com.client.Dispatch("WScript.Shell")
         documentsDir = os.path.join(objShell.SpecialFolders("MyDocuments"),'Red-R')
@@ -72,7 +73,7 @@ def __getDirectoryNames():
     #tempDir = setTempDir(tempDirHolder)
     # print tempDir
         
-    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir",'logDB', "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -206,14 +207,17 @@ def addOrangeDirectoriesToPath(directoryNames):
             sys.path.insert(0,path)
 
 # try:        
-    # if version:
-        # pass
+    # print 'name', __name__
+    # print 'main', __main__
+
 # except:
     # print 'do the import'
-# print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', str(time.time())
-directoryNames = __getDirectoryNames()
-addOrangeDirectoriesToPath(directoryNames)
-version = getVersion()
-settings = loadSettings()
+
+if __name__ =='redREnviron':
+    #print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', str(time.time())
+    directoryNames = __getDirectoryNames()
+    addOrangeDirectoriesToPath(directoryNames)
+    version = getVersion()
+    settings = loadSettings()
 
 
