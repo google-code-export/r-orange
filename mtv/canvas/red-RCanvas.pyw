@@ -395,7 +395,7 @@ class OrangeCanvasDlg(QMainWindow):
         #redRObjects.readCategories()
         
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
-        p
+        
         self.createWidgetsToolbar()
         
         signals.registerRedRSignals()

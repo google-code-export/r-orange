@@ -903,7 +903,7 @@ class SchemaDoc(QWidget):
         if str(name) == '': return False
         if os.path.splitext(str(name))[0] == '': return False
         if os.path.splitext(str(name))[1].lower() != ".rrts": name = name + '.rrts'
-        return self.save(str(name),template=True)
+        return self.makeTemplate(str(name),copy=False)
   
     def toZip(self, file, filename):
         zip_file = zipfile.ZipFile(filename, 'w')
@@ -962,7 +962,11 @@ class SchemaDoc(QWidget):
             tempDialog = TemplateDialog(self)
             if tempDialog.exec_() == QDialog.Rejected:
                 return
-        
+        progressBar = self.startProgressBar(
+        'Saving '+str(os.path.basename(filename)),
+        'Saving '+str(os.path.basename(filename)),
+        len(self.widgets())+len(self.lines())+3)
+        progress = 0
         # create xml document
         doc = Document()
         schema = doc.createElement("schema")
@@ -989,17 +993,20 @@ class SchemaDoc(QWidget):
         header.setAttribute('version', redREnviron.version['REDRVERSION'])
         
         # save the widgets
-        tempWidgets = [i.instance() for i in self.activeTab().getSelectedWidgets()]
+        tempWidgets = {}
+        for w in self.activeTab().getSelectedWidgets():
+            tempWidgets[w.instanceID] = w.instance()
         (widgets, settingsDict, requireRedRLibraries) = redRSaveLoad.saveInstances(tempWidgets, widgets, doc, progressBar)
         
         # save the icons and the lines
         sw = self.activeTab().getSelectedWidgets()
+        log.log(1, 9, 3, 'orngDoc makeTemplate; selected widgets: %s' % sw)
         temp = doc.createElement('tab')
-        temp.setAttribute('name', t)
+        temp.setAttribute('name', 'template')
         ## set all of the widget icons on the tab
         widgetIcons = doc.createElement('widgetIcons')
         for wi in sw:  ## extract only the list for this tab thus the [t] syntax
-           
+            log.log(1, 9, 3, 'orngDoc makeTemplate; saving widget %s' % wi)
             witemp = doc.createElement('widgetIcon')
             witemp.setAttribute('name', str(wi.getWidgetInfo().fileName))             # save icon name
             witemp.setAttribute('instance', str(wi.instanceID))        # save instance ID
@@ -1009,9 +1016,13 @@ class SchemaDoc(QWidget):
             widgetIcons.appendChild(witemp)
             
         tabLines = doc.createElement('tabLines')
-        for line in self.widgetLines(self.activeTab())[self.activeTab()]:
-            if line.inWidget not in sw or line.outWidget not in sw: continue
-            
+        log.log(1, 9, 3, 'orngDoc makeTemplate: canvas %s lines are %s' % (self.activeTabName(), redRObjects.getLinesByTab()[self.activeTabName()]))
+        for line in redRObjects.getLinesByTab()[self.activeTabName()]:
+            log.log(1, 9, 3, 'orngDoc makeTemplate; checking line %s, inWidget %s, outWidget %s' % (line, line.inWidget, line.outWidget))
+            if (line.inWidget not in sw) or (line.outWidget not in sw): 
+                log.log(1, 9, 3, 'orngDoc makeTemplate; skipping line %s' % line)
+                continue
+            log.log(1, 9, 3, 'orngDoc makeTemplate; saving line %s' % line)
             chtemp = doc.createElement("channel")
             chtemp.setAttribute("outWidgetCaption", line.outWidget.caption)
             chtemp.setAttribute('outWidgetIndex', line.outWidget.instance().widgetID)
@@ -1042,6 +1053,8 @@ class SchemaDoc(QWidget):
         
         # print '\n\n', lines, 'lines\n\n'
         if not copy:
+            # tempDialog = TemplateDialog()
+            # if tempDialog.exec_() == QDialog.Rejected(): return
             taglist = str(tempDialog.tagsList.text())
             tempDescription = str(tempDialog.descriptionEdit.toPlainText())
             saveTagsList.setAttribute("tagsList", taglist)
@@ -1270,15 +1283,6 @@ class SchemaDoc(QWidget):
         loadingProgressBar = self.startProgressBar('Loading '+str(os.path.basename(filename)),
         'Loading '+str(filename), 2)
         
-        ## What is the purpose of this???
-        if not os.path.exists(filename):
-            if os.path.splitext(filename)[1].lower() != ".tmp":
-                QMessageBox.critical(self, 'Red-R Canvas', 
-                'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
-            return
-            loadingProgressBar.hide()
-            loadingProgressBar.close()
-        ###
             
         # set cursor
         qApp.setOverrideCursor(Qt.WaitCursor)
@@ -1345,7 +1349,7 @@ class SchemaDoc(QWidget):
         ## LOAD tabs
         #####  move through all of the tabs and load them.
         (loadedOkT, tempFailureTextT) = self.loadTabs(tabs = tabs, loadingProgressBar = loadingProgressBar, tmp = tmp)
-        
+
         qApp.restoreOverrideCursor() 
         qApp.restoreOverrideCursor()
         qApp.restoreOverrideCursor()
@@ -1448,9 +1452,10 @@ class SchemaDoc(QWidget):
         
         loadedOK = True
         for t in tabs.getElementsByTagName('tab'):
-            log.log(1, 5, 3, 'Loading tab %s' % t)
-            self.makeSchemaTab(t.getAttribute('name'))
-            self.setTabActive(t.getAttribute('name'))
+            if not tmp:
+                log.log(1, 5, 3, 'Loading tab %s' % t)
+                self.makeSchemaTab(t.getAttribute('name'))
+                self.setTabActive(t.getAttribute('name'))
             addY = self.minimumY()
             for witemp in t.getElementsByTagName('widgetIcons')[0].getElementsByTagName('widgetIcon'):
                 name = witemp.getAttribute('name')             # save icon name
@@ -1480,7 +1485,10 @@ class SchemaDoc(QWidget):
                     self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False)
                 lines = redRObjects.getLinesByWidgetInstanceID(outIconID, inIconID)
                 for l in lines:
-                    l.setNoData(noData)
+                    if not tmp:
+                        l.setNoData(noData)
+                    else:
+                        l.setNoData(True)
                 
         return (True, '')
     def loadLines(self, lineList, loadingProgressBar, freeze, tmp):
@@ -1568,7 +1576,6 @@ class SchemaDoc(QWidget):
         lpb = 0
         loadedOk = 1
         failureText = ''
-        addY = self.minimumY()
         for widget in widgets.getElementsByTagName("widget"):
             try:
                 name = widget.getAttribute("widgetName")
@@ -1579,7 +1586,10 @@ class SchemaDoc(QWidget):
                 inputs = cPickle.loads(self.loadedSettingsDict[widgetID]['inputs'])
                 outputs = cPickle.loads(self.loadedSettingsDict[widgetID]['outputs'])
                 #print 'adding instance', widgetID, inputs, outputs
-                self.addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
+                newwidget = self.addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
+                if newwidget and tmp:
+                    ## send None through all of the widget ouptuts if this is a template
+                    redRObjects.getWidgetInstanceByID(newwidget).outputs.propogateNone()
                 #print 'Settings', settings
                 lpb += 1
                 loadingProgressBar.setValue(lpb)
