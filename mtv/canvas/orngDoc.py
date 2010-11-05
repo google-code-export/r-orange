@@ -40,9 +40,9 @@ class SchemaDoc(QWidget):
         left.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
         right = self.splitter.widgetArea()
-        rightSplitter = redRSplitter(right, orientation = 'vertical')
-        rightTop = rightSplitter.widgetArea(margin = 8)
-        rightBottom = rightSplitter.widgetArea(margin = 8)
+        self.rightSplitter = redRSplitter(right, orientation = 'vertical')
+        rightTop = self.rightSplitter.widgetArea(margin = 8)
+        rightBottom = self.rightSplitter.widgetArea(margin = 8)
         self.notes = redRTextEdit(rightTop, label = 'Notes')
         self.printOutput = redRTextEdit(rightBottom, label = 'Output')
         
@@ -57,6 +57,13 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
+        log.setOutputManager(self)
+    def saveSchemaLayout(self):
+        r = {'main': self.splitter.sizes(), 'right':self.rightSplitter.sizes()}
+        return r
+    def setSchemaLayout(self, r):
+        self.splitter.setSizes(r['main'])
+        self.rightSplitter.setSizes(r['right'])
     def catchOutput(self, catch):
         if catch:    sys.stdout = self
         else:         sys.stdout = self.defaultSysOutHandler
@@ -68,6 +75,7 @@ class SchemaDoc(QWidget):
             return unicode(obj).encode('unicode_escape')
     def write(self, text):
         #sys.stdout.write(text)
+        if not redREnviron.settings['debug']: return
         import re
         text = self.safe_str(text)
         cursor = QTextCursor(self.printOutput.textCursor())                

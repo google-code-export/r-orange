@@ -81,11 +81,12 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # co.setWantType(2)
     ##print output.getrclass()
     output = convertToPy(output)
-    if type(output) == list and len(output) == 1 and wantType != 'list':
-        output = output[0]
     if wantType == None:
         mutex.unlock()
         raise Exception('WantType not specified')
+    if type(output) == list and len(output) == 1 and wantType != 'list':
+        output = output[0]
+    
     elif wantType == 'list':
         if type(output) is list:
             pass

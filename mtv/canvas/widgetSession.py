@@ -149,9 +149,9 @@ class widgetSession():
     def setSettings(self,settings, globalSettings = False):
         log.log(1, 5, 3, 'Loading settings')
         #settings = self.sqlite.setObject(settingsID)
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(settings)
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings)
         for k,v in settings.iteritems():
             try:
                 #print k

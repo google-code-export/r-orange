@@ -45,12 +45,12 @@ class OutputWindow(QDialog):
         tw = redRTabWidget(wb)
         self.outputExplorer = tw.createTabPage('General Outputs')
         self.topWB = redRwidgetBox(self.outputExplorer, orientation = 'horizontal')
-        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = ['All_Output, table'], callback = self.processTable)
-        self.tableCombo.update(self.errorHandler.getTableNames())
+        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = ['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')], callback = self.processTable)
+        #self.tableCombo.update(self.errorHandler.getTableNames())
         self.minSeverity = redRComboBox(self.topWB, label = 'Minimum Severity:', items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], callback = self.processTable)
         self.maxRecords = redRLineEdit(self.topWB, label = 'Maximum Records:', text = '100')
         self.typeCombo = redRComboBox(self.topWB, label = 'Output Type:', items = ['No Filter', 'Error', 'Comment', 'Message', 'Warning'], callback = self.processTable)
-        #redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
+        redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
         self.sessionID = redRradiobuttons(self.topWB, buttons = ['Current Session Only', 'All Sessions'], setChecked = 'Current Session Only', callback = self.processTable)
         redRbutton(self, label = 'Update View', callback = self.processTable)
         redRbutton(self.topWB, label = 'Clear DB', callback = self.clearDataBase)
@@ -77,23 +77,22 @@ class OutputWindow(QDialog):
         self.resize(w, h)
         self.lastTime = ti.time()
         self.hide()
-        log.setOutputManager(self)
+        log.setExceptionManager(self)
     def refresh(self):
-        self.tableCombo.update(self.errorHandler.getTableNames())
+        self.tableCombo.update(['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')])
         #print self.errorHandler.getTableNames()
         
     def processTable(self):
+        inj = []
         if str(self.typeCombo.currentText()) != 'No Filter':
-            if str(self.sessionID.getChecked()) == 'Current Session Only':
-                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Session == \"%s\" AND Severity >= %s AND ErrorType == \"%s\" ORDER BY k DESC LIMIT %s" % (str(self.tableCombo.currentText()).split(',')[0], log.getSessionID(), str(self.minSeverity.currentText()), str(self.typeCombo.currentText()), self.maxRecords.text()))
-            else:
-                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity >= %s AND ErrorType == \"%s\" ORDER BY k DESC LIMIT %s" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText()), str(self.typeCombo.currentText()), self.maxRecords.text()))
-        else:
-            if str(self.sessionID.getChecked()) == 'Current Session Only':
-                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Session == \"%s\" AND Severity >= %s ORDER BY k DESC LIMIT %s" % (str(self.tableCombo.currentText()).split(',')[0], log.getSessionID(), str(self.minSeverity.currentText()), self.maxRecords.text()))
-            else:
-                
-                response = self.errorHandler.execute(query = "SELECT * FROM %s WHERE Severity >= %s ORDER BY k DESC LIMIT %s" % (str(self.tableCombo.currentText()).split(',')[0], str(self.minSeverity.currentText()), self.maxRecords.text()))
+            inj.append('ErrorType == \"%s\"' % self.typeCombo.currentText())
+        if str(self.tableCombo.currentText()) != 'All':
+            inj.append('OutputDomain == \"%s\"' % self.tableCombo.currentText())
+        inj.append('Severity >= %s' % str(self.minSeverity.currentText()))
+        query = "SELECT * FROM All_Output WHERE "+" AND ".join(inj)+" ORDER BY k DESC LIMIT %s" % (self.maxRecords.text())
+        response = self.errorHandler.execute(query = query)
+        #print query
+
             
         self.showTable(response)
     def clearDataBase(self):
@@ -107,7 +106,7 @@ class OutputWindow(QDialog):
         s = '<h2>%s</h2>' % self.tableCombo.currentText()
         s+= '<table border="1" cellpadding="3">'
         s+= '  <tr><td><b>'
-        s+= '    </b></td><td><b>'.join(['Log ID', 'Time Stamp', 'Session ID', 'Severity', 'Error Type', 'Message'])
+        s+= '    </b></td><td><b>'.join(['Log ID', 'Output Category', 'Time Stamp', 'Session ID', 'Severity', 'Message Type', 'Message'])
         s+= '  </b></td></tr>'
         
         for row in response:

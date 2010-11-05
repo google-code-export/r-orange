@@ -851,7 +851,7 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
         return
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
-    log.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
+    #log.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
     widgets = None
     #print str(canvasDlg.widgetRegistry['templates'])
     try:

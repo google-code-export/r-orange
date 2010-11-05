@@ -13,15 +13,23 @@
 
     # You should have received a copy of the GNU General Public License
     # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 import SQLiteSession, redREnviron, os
 from datetime import tzinfo, timedelta, datetime, time
 _logDB = redREnviron.directoryNames['logDB']
 handler = SQLiteSession.SQLiteHandler(defaultDB = _logDB)
-_tables = []
+#_tables = []
 _sessionID = redREnviron.settings['id']
 _outputManager = None
-
+_exceptionManager = None
+if 'minSeverity' not in redREnviron.settings.keys():
+    redREnviron.settings['minSeverity'] = 5
+if 'debug' not in redREnviron.settings.keys():
+    redREnviron.settings['debug'] = False
+def setExceptionManager(em):
+    global _exceptionManager
+    _exceptionManager = em
 PYTHON = 1
 R = 2
 GENERAL =3
@@ -52,25 +60,34 @@ def log(table, severity, errorType = 2, comment = ""):
             errorType = 'Message'
         elif errorType == 4:
             errorType = 'Warning'
-    if table not in _tables:
-        handler.setTable(table = table, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")")
-        _tables.append(table)
-        
-    handler.execute(query = "INSERT INTO %s (TimeStamp, Session, Severity, ErrorType, Comment) VALUES (\"%s\", \"%s\", %s, \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment))
-    handler.execute(query = "INSERT INTO %s (TimeStamp, Session, Severity, ErrorType, Comment) VALUES (\"%s\", \"%s\", %s, \"%s\", \"%s\")" % ('All_Output', datetime.today().isoformat(' '), _sessionID, severity, errorType, comment))
+
+    handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment))
+    
+    if severity >= redREnviron.settings['minSeverity']:
+        logOutput('%s level %s: %s' % (errorType, severity, comment))
     
 def logException(string):
+    global _exceptionManager
+    if _exceptionManager:
+        cursor = QTextCursor( _exceptionManager.exceptionText.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        _exceptionManager.exceptionText.setTextCursor(cursor)                             
+        
+        _exceptionManager.exceptionText.insertPlainText(string + '\n')                              
+def logOutput(string):
     global _outputManager
     if _outputManager:
-        _outputManager.exceptionText.insertPlainText(string)
+        cursor = QTextCursor( _outputManager.printOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        _outputManager.printOutput.setTextCursor(cursor)                             
+        
+        _outputManager.printOutput.insertPlainText(string + '\n')  
 def logDB():
     return _logDB
 def clearDB():
-    for t in ['All_Output', 'General', 'R', 'Python']:
-        handler.setTable(table = t, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")", force = True)
+    handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")", force = True)
 def initializeTables():
-    for t in ['All_Output', 'General', 'R', 'Python']:
-        handler.setTable(table = t, colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")")
-        _tables.append(t)
-        
+    handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")")
+
+
 initializeTables()
