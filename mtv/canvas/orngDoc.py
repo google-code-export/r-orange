@@ -944,50 +944,131 @@ class SchemaDoc(QWidget):
     
     def saveInstances(self, instances, widgets, doc, progressBar):
         return redRSaveLoad.saveInstances(instances, widgets, doc, progressBar)
-        """
-            settingsDict = {}
-            requireRedRLibraries = {}
-            progress = 0
-            for k, widget in instances.items():
-                temp = doc.createElement("widget")
-                
-                temp.setAttribute("widgetName", widget.widgetInfo.fileName)
-                temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
-                temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
-                temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
-                temp.setAttribute('widgetID', widget.widgetID)
-                print 'save in orngDoc ' + str(widget.captionTitle)
-                progress += 1
-                progressBar.setValue(progress)
-                
-                s = widget.getSettings()
-                i = widget.getInputs()
-                o = widget.getOutputs()
-                
-                #map(requiredRLibraries.__setitem__, s['requiredRLibraries']['pythonObject'], []) 
-                #requiredRLibraries.extend()
-                #del s['requiredRLibraries']
-                settingsDict[widget.widgetID] = {}
-                settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
-                settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
-                settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
-                
-                if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
-                    requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
-            
-                widgets.appendChild(temp)
-            return (widgets, settingsDict, requireRedRLibraries)
-            """
+        
     
-    
-    # save the file
-    
-    def save(self, filename = None, template = False, copy = False):
-
-        if template:
+    def makeTemplate(self, filename = None, copy = False):
+        ## this is different from saving.  We want to make a special file that only has the selected widgets, their connections, and settings.  No R data or tabs are saved.
+        if not copy:
+            if not filename:
+                log.log(1, 3, 3, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
             tempDialog = TemplateDialog(self)
             if tempDialog.exec_() == QDialog.Rejected:
                 return
+        
+        # create xml document
+        doc = Document()
+        schema = doc.createElement("schema")
+        header = doc.createElement('header')
+        widgets = doc.createElement("widgets")
+        lines = doc.createElement("channels")
+        settings = doc.createElement("settings")
+        required = doc.createElement("required")
+        tabs = doc.createElement("tabs") # the tab names are saved here.
+        saveTagsList = doc.createElement("TagsList")
+        saveDescription = doc.createElement("saveDescription")
+        doc.appendChild(schema)
+        schema.appendChild(widgets)
+        #schema.appendChild(lines)
+        schema.appendChild(settings)
+        schema.appendChild(required)
+        schema.appendChild(saveTagsList)
+        schema.appendChild(saveDescription)
+        schema.appendChild(tabs)
+        schema.appendChild(header)
+        requiredRLibraries = {}
+        
+        # make the header
+        header.setAttribute('version', redREnviron.version['REDRVERSION'])
+        
+        # save the widgets
+        tempWidgets = [i.instance() for i in self.activeTab().getSelectedWidgets()]
+        (widgets, settingsDict, requireRedRLibraries) = redRSaveLoad.saveInstances(tempWidgets, widgets, doc, progressBar)
+        
+        # save the icons and the lines
+        sw = self.activeTab().getSelectedWidgets()
+        temp = doc.createElement('tab')
+        temp.setAttribute('name', t)
+        ## set all of the widget icons on the tab
+        widgetIcons = doc.createElement('widgetIcons')
+        for wi in sw:  ## extract only the list for this tab thus the [t] syntax
+           
+            witemp = doc.createElement('widgetIcon')
+            witemp.setAttribute('name', str(wi.getWidgetInfo().fileName))             # save icon name
+            witemp.setAttribute('instance', str(wi.instanceID))        # save instance ID
+            witemp.setAttribute("xPos", str(int(wi.x())) )      # save the xPos
+            witemp.setAttribute("yPos", str(int(wi.y())) )      # same the yPos
+            witemp.setAttribute("caption", wi.caption)          # save the caption
+            widgetIcons.appendChild(witemp)
+            
+        tabLines = doc.createElement('tabLines')
+        for line in self.widgetLines(self.activeTab())[self.activeTab()]:
+            if line.inWidget not in sw or line.outWidget not in sw: continue
+            
+            chtemp = doc.createElement("channel")
+            chtemp.setAttribute("outWidgetCaption", line.outWidget.caption)
+            chtemp.setAttribute('outWidgetIndex', line.outWidget.instance().widgetID)
+            chtemp.setAttribute("inWidgetCaption", line.inWidget.caption)
+            chtemp.setAttribute('inWidgetIndex', line.inWidget.instance().widgetID)
+            chtemp.setAttribute("enabled", str(line.getEnabled()))
+            chtemp.setAttribute('noData', str(line.getNoData()))
+            chtemp.setAttribute("signals", str(line.outWidget.instance().outputs.getLinkPairs(line.inWidget.instance())))
+            tabLines.appendChild(chtemp)
+            
+            
+        temp.appendChild(widgetIcons)       ## append the widgetIcons XML to the global XML
+        temp.appendChild(tabLines)          ## append the tabLines XML to the global XML
+        tabs.appendChild(temp)
+
+        
+        ## save the global settings ##
+        settingsDict['_globalData'] = cPickle.dumps(globalData.globalData,2)
+        settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),'RedR': requireRedRLibraries},2)
+        #print requireRedRLibraries
+        file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
+        file.write(str(settingsDict))
+        file.close()
+
+        #settings.setAttribute("settingsDictionary", str(settingsDict))
+        #required.setAttribute("requiredPackages", str({'r':r}))
+        
+        
+        # print '\n\n', lines, 'lines\n\n'
+        if not copy:
+            taglist = str(tempDialog.tagsList.text())
+            tempDescription = str(tempDialog.descriptionEdit.toPlainText())
+            saveTagsList.setAttribute("tagsList", taglist)
+            saveDescription.setAttribute("tempDescription", tempDescription)
+            
+        xmlText = doc.toprettyxml()
+        progress += 1
+        progressBar.setValue(progress)
+        
+        
+        tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
+        file = open(tempschema, "wt")
+        file.write(xmlText)
+        file.close()
+        zout = zipfile.ZipFile(filename, "w")
+        zout.write(tempschema,"tempSchema.tmp")
+        zout.write(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'),'settings.pickle')
+        zout.close()
+        doc.unlink()
+        if copy:
+            self.loadTemplate(filename)
+            
+        
+        progress += 1
+        progressBar.setValue(progress)
+        progressBar.close()
+        log.log(1, 9, 3, 'Template saved successfully')
+        return True
+    # save the file
+    
+    
+    
+    def save(self, filename = None, template = False, copy = False):
+
+        
         
         if filename == None and not copy:
             filename = os.path.join(self.schemaPath, self.schemaName)
@@ -1035,7 +1116,7 @@ class SchemaDoc(QWidget):
         (widgets, settingsDict, requireRedRLibraries) = self.saveInstances(tempWidgets, widgets, doc, progressBar)
         
         
-        # save tabs and the icons
+        # save tabs and the icons and the channels
         if not copy or template:
             #tabs.setAttribute('tabNames', str(self.canvasTabs.keys()))
             for t in redRObjects.tabNames():
