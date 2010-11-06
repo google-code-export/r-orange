@@ -314,6 +314,7 @@ def addLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName, do
                 line = getLine(o, i)
                 if not line:
                     line = addCanvasLine(o, i, doc, enabled = enabled)
+                    line.refreshToolTip()
         doc.setTabActive(ot)
         return 1
 def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName):

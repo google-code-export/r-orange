@@ -286,7 +286,7 @@ class SchemaDoc(QWidget):
                     redRObjects.removeLine(l['parent'], inWidget.instance(), l['sid'], inSignalName)
         
         
-        lines = redRObjects.addLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName, doc = self, enabled = enabled, process = False, loading = loading)
+        redRObjects.addLine(outWidget.instance(), inWidget.instance(), outSignalName, inSignalName, doc = self, enabled = enabled, process = False, loading = loading)
         
         
         ok = outWidget.instance().outputs.connectSignal(inWidget.instance().inputs.getSignal(inSignalName), outSignalName, process = process)#    self.signalManager.addLink(outWidget, inWidget, outSignalName, inSignalName, enabled)
@@ -860,8 +860,9 @@ class SchemaDoc(QWidget):
         line = self.getLine(ow, iw)
         if line:
             line.noData = none
-            log.log(1, 9, 3, 'Setting line %s noData slot to %s' % (line, noData))
-        
+            line.refreshToolTip()
+            log.log(1, 3, 3, 'Setting line %s noData slot to %s' % (line, noData))
+            
         self.canvas.update()
     # ###########################################
     # SAVING, LOADING, ....

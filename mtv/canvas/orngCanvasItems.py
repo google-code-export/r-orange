@@ -98,12 +98,27 @@ class CanvasLine(QGraphicsLineItem):
         self.view = view
         self.setZValue(-10)
         self.caption = ""
-        self.updateTooltip()
+        #self.updateTooltip()
+        self.refreshToolTip()
 
         # this might seem unnecessary, but the pen size 20 is used for collision detection, when we want to see whether to to show the line menu or not 
         self.setPen(QPen(self.canvasDlg.lineColor, 20, Qt.SolidLine))        
     def setNoData(self, noData):
         self.noData = noData
+    def refreshToolTip(self):
+        #  first we need to get the signals that are sent through the line, there might be more than one so we do it here.
+        outinstance = self.outWidget.instance()
+        #log.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; outWidget %s, outinstance %s, inInstance %s, signals %s' % (self.outWidget, outinstance, self.inWidget.instance(), outinstance.outputs.outputSignals))
+        outSignalIDs = [i[0] for i in outinstance.outputs.getLinkPairs(self.inWidget.instance())]
+        #log.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; outSignalIDs' % outSignalIDs)
+        tip = 'Signal Data Summary:\n'
+        for id in outSignalIDs:
+            #log.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; setting tooltip from %s' % id)
+            s = outinstance.outputs.getSignal(id)
+            #if s:
+            tip += s['value'].summary()+'\n'
+        log.log(1, 2, 3, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
+        self.setToolTip(tip)
     def getNoData(self):
         return self.noData
     def remove(self):
@@ -143,19 +158,8 @@ class CanvasLine(QGraphicsLineItem):
             painter.drawText(mid.x(), mid.y(), 200, 50, Qt.AlignTop | Qt.AlignHCenter, self.caption)
 
     def updateTooltip(self):
-        status = self.getEnabled() == 0 and " (Disabled)" or ""
-        string = "<nobr><b>" + self.outWidget.caption + "</b> --> <b>" + self.inWidget.caption + "</b>" + status + "</nobr><hr>Signals:<br>"
-        for (outSignal, inSignal) in self.getSignals():
-            string += "<nobr> &nbsp; &nbsp; - " + outSignal + " --> " + inSignal + "</nobr><br>"
-        string = string[:-4]
-        self.setToolTip(string)
-
-        # print the text with the signals
-        self.caption = "\n".join([outSignal for (outSignal, inSignal) in self.getSignals()])
-#        l = self.line()
-#        self.update(min(l.x1(), l.x2())-40, min(l.y1(),l.y2())-40, abs(l.x1()-l.x2())+80, abs(l.y1()-l.y2())+80)
-
-
+        self.refreshToolTip()
+        
 # #######################################
 # # CANVAS WIDGET
 # #######################################

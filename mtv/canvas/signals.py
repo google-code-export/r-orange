@@ -61,6 +61,8 @@ class BaseRedRVariable:
         string = 'Class: '+str(self.__class__)+'; Data: '+str(self.data)
         
         return string
+    def summary(self):
+        return self.__str__()
     def convertToClass(self, varClass):
         return self.copy()
     def keys(self):

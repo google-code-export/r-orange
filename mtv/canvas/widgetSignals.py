@@ -10,7 +10,7 @@ from string import *
 from orngSignalManager import *
 import canvas.signals as signals
 from redRSignalManager import *
-import orngDoc, log
+import orngDoc, log, redRObjects
 
 
 class widgetSignals():
@@ -47,9 +47,15 @@ class widgetSignals():
             raise Exception('Signal name mismatch')
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
+        self.refreshToolTips()
         self.ROutput.setCursorToEnd()
         self.ROutput.append('\n## '+ 'Data sent through the '+str(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.
-
+    def refreshToolTips(self):
+        lines = redRObjects.lines()
+        for l in lines.values():
+            #log.log(1, 9, 3, 'setting tooltip for %s' % l)
+            if l.outWidget.instance() == self:
+                l.refreshToolTip()
     def callSignalDelete(self, name):
         if self.linksOut.has_key(name):
         

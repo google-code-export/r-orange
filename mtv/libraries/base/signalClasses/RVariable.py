@@ -27,6 +27,8 @@ class RVariable(BaseRedRVariable):
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'
         return text
+    def summary(self):
+        return '\n'.join(self.R('capture.output(summary('+self.data+'))', wantType = 'list'))
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
         text += 'R Data Variable Value: '+self.R('paste(capture.output('+self.data+subsetting+'), collapse = "\n")')+'\n\n'
