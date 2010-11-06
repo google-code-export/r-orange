@@ -647,7 +647,7 @@ class SchemaDoc(QWidget):
                 # caption = caption + " (" + str(i) + ")"
                 # print 'caption now set to ', caption
             # newwidget.updateText(caption)
-        newwidget.instance().setWindowTitle(caption)
+        newwidget.instance().setWindowTitle(newwidget.caption)
         
 
         
