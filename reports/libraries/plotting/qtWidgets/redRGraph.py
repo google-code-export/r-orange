@@ -24,9 +24,11 @@ SELECT = 5
 #       a set of panning or moving bars at the side and bottom so that one can move to other regions of the data
 
 class redRGraph(QwtPlot,widgetState):
-    def __init__(self, parent = None, name = "None", showLegend=1, onSelectionCallback=None):
-        "Constructs the graph"
-        QwtPlot.__init__(self, parent)
+    def __init__(self, widget, label,displayLabel=True,includeInReports=True,
+    name = "None", showLegend=1, onSelectionCallback=None):
+               
+        widgetState.__init__(self,label,includeInReports)
+        QwtPlot.__init__(self, widget)
         self.parentName = name
         #self.setWindowFlags(Qt.WResizeNoErase) #this works like magic.. no flicker during repaint!
         self.setAutoReplot(False)

@@ -23,7 +23,7 @@ class RedRdata(OWRpy):
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True)
         
         
-        self.table = filterTable(self.controlArea, label='R Datasets', 
+        self.table = filterTable(self.controlArea, label='R Datasets', includeInReports=False,
         Rdata = self.Rvariables['datasets'], sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.selectDataSet)
 

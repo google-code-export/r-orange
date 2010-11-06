@@ -10,7 +10,7 @@ class checkBox(widgetBox,widgetState):
     buttons = None,toolTips = None, setChecked=None,
     orientation='vertical',callback = None, **args):
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         widgetBox.__init__(self,widget,orientation=orientation)
         
 

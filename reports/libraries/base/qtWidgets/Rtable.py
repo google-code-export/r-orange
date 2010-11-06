@@ -10,7 +10,7 @@ class Rtable(widgetState,QTableView):
     Rdata=None, editable=False, rows=None, columns=None,
     sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         if displayLabel:
             mainBox = groupBox(widget,label=label, orientation='vertical')
         else:

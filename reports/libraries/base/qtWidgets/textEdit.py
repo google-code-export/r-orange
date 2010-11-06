@@ -12,7 +12,7 @@ class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None, displayLabel=True,includeInReports=True, 
     orientation='vertical', alignment=None, editable=True, printable=False,**args):
 
-        widgetState.__init__(self, label, **args)
+        widgetState.__init__(self, label,includeInReports)
 
         QTextEdit.__init__(self,widget)
         self.label = label

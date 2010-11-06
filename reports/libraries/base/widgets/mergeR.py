@@ -11,6 +11,7 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.radioButtons import radioButtons
@@ -40,24 +41,10 @@ class mergeR(OWRpy):
         self.setRvariableNames(['merged'])
                 
         #GUI
-        
-        infoBox = groupBox(self.controlArea, "Info")
-        self.infoa = widgetLabel(infoBox, "No Data Loaded")
-        infoBox.hide()
-        layk = QWidget(self)
-        self.controlArea.layout().addWidget(layk)
-        grid = QGridLayout()
-        grid.setMargin(0)
-        layk.setLayout(grid)
-        
-        pickA = groupBox(self.controlArea, "Select Columns to Merge From A")
-        grid.addWidget(pickA, 0,0)
-        self.colA = listBox(pickA, label='Dataset A columns', displayLabel=False,  callback = self.setcolA)
-        
-        
-        pickB = groupBox(self.controlArea, "Select Columns to Merge From B")
-        grid.addWidget(pickB, 0,1)
-        self.colB = listBox(pickB, label='Dataset B columns', displayLabel=False, callback = self.setcolB)
+        box = widgetBox(self.controlArea,orientation='horizontal')
+    
+        self.colA = listBox(box, label='Columns to Merge From A', callback = self.setcolA)
+        self.colB = listBox(box, label='Columns to Merge From B',  callback = self.setcolB)
         
 
         self.sortOption = checkBox(self.bottomAreaLeft, label='Sort by Selected Column', displayLabel=False, 

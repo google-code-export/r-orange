@@ -16,13 +16,15 @@ from PyQt4.QtGui import *
 import sip
 
 class filterTable(widgetState, QTableView):
-    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, editable=False, sortable=True, filterable=False,
+    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
+    editable=False, sortable=True, filterable=False,
     selectionBehavior=QAbstractItemView.SelectRows, 
     selectionMode = QAbstractItemView.NoSelection, 
     showResizeButtons = True,
     onFilterCallback = None,
     callback=None):
         
+        widgetState.__init__(self,label,includeInReports)
         
         if displayLabel:
             mainBox = groupBox(widget,label=label, orientation='vertical')

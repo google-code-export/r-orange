@@ -12,7 +12,7 @@ class treeWidget(QTreeWidget, widgetState):
     def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, 
     orientation='vertical', toolTip = None, callback = None):
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
 
         QTreeWidget.__init__(self, widget)
         

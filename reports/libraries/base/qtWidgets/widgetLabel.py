@@ -6,6 +6,7 @@ from PyQt4.QtGui import *
 
 class widgetLabel(QLabel,widgetState):
     def __init__(self,widget,label = '', icon=None, wordWrap=False):
+        widgetState.__init__(self, 'widgetLabel',includeInReports=False)
         QLabel.__init__(self,widget)
         # if icon:
             # icon = QIcon(icon)

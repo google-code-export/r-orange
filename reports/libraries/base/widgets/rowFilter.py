@@ -40,7 +40,7 @@ class rowFilter(OWRpy):
         ######## GUI ############
         
         self.tableArea = widgetBox(self.controlArea)
-        self.table = filterTable(self.controlArea, sortable=True,
+        self.table = filterTable(self.controlArea, sortable=True,label='Data Table',displayLabel=False,
         filterable=True,selectionMode = QAbstractItemView.NoSelection,onFilterCallback=self.onFilter)
         
         self.commitOnInput = redRCheckBox(self.bottomAreaRight, label='commit', displayLabel=False,

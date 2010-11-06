@@ -4,9 +4,10 @@ from PyQt4.QtGui import *
 
         
 class widgetBox(QWidget,widgetState):
-    def __init__(self,widget, orientation='vertical', addSpace=False, 
+    def __init__(self,widget, orientation='vertical', addSpace=False, includeInReports=True,
     sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop):
 
+        widgetState.__init__(self, 'WidgetBox',includeInReports)
         QWidget.__init__(self,widget)
             
         if margin == -1: margin = 0
@@ -45,6 +46,7 @@ class widgetBox(QWidget,widgetState):
                 separator(widget, 0, addSpace)
             elif addSpace:
                 separator(widget)
+    
     def delete(self):
         # itemRange = self.layout().count()
         # for i in range(0, itemRange):
@@ -56,13 +58,3 @@ class widgetBox(QWidget,widgetState):
             # sip.delete(item)
         sip.delete(self)
   
-    # def getReportText(self,fileDir):
-    
-        # children = self.children()
-        # reportData = []
-        # for i in children:
-            # if isinstance(i, widgetState):
-                # d = i.getReportText(fileDir)
-                # if d:
-                    # reportData.append(d)
-        # return reportData

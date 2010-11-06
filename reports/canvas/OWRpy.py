@@ -191,18 +191,24 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         ## move through all of the qtWidgets in self and show their report outputs, 
         ## should be implimented by each widget.
         from redRGUI import widgetState
-        children = self.controlArea.findChildren(QWidget)
-        # print children
+        children = self.controlArea.children() + self.bottomAreaRight.children() + self.bottomAreaCenter.children() + self.bottomAreaLeft.children()
+        print 'OWRpy= ',children
         #import re
         reportData = []
         for i in children:
-            #print i.__class__.__name__
-            if isinstance(i, widgetState):
+            
+            if isinstance(i, widgetState) and i.includeInReports:
                 d = i.getReportText(fileDir)
-                if d:
+                if type(d) is list:
+                    reportData = reportData + d
+                elif d:
                     reportData.append(d)
         
-
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(reportData)
+        # raise Exception
+        
         arrayOfArray = []
         for d in reportData:
             if type(d) is dict:

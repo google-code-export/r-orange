@@ -52,7 +52,8 @@ class RedRScatterplot(OWRpy):
         plotarea = groupBox(area, label = "Graph")
         plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.graph = redRGraph(plotarea,onSelectionCallback=self.onSelectionCallback)
+        self.graph = redRGraph(plotarea,label='Scatter Plot', displayLabel=False,
+        onSelectionCallback=self.onSelectionCallback)
 
         plotarea.layout().addWidget(self.graph)
         #self.zoomSelectToolbarBox = groupBox(self.GUIDialog, label = "Plot Tool Bar")

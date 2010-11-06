@@ -11,7 +11,7 @@ class lineEdit(QLineEdit,widgetState):
     id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, textChangedCallBack=None,
     sp='shrinking', **args):
 
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         QLineEdit.__init__(self,widget)
         
         if widget:

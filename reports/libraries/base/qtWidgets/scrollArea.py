@@ -7,6 +7,7 @@ class scrollArea(QScrollArea,widgetState):
     def __init__(self,widget, orientation=QVBoxLayout(), addSpace=False, 
     sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1):
 
+        widgetState.__init__(self, 'scrollArea',includeInReports=True)
         QScrollArea.__init__(self,widget)
             
         if margin == -1: margin = 0

@@ -13,7 +13,7 @@ class listBox(QListWidget,widgetState):
     callback=None, toolTip = None, items = None, *args):
         
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         QListWidget.__init__(self, *args)
         self.label = label
         self.widget = widget
@@ -223,9 +223,9 @@ class listBox(QListWidget,widgetState):
             else:
                 new.append(['Not Selected',x])
         #print new
-        text = redRReports.createTable(new)
-        if text != '':
-            text += '\nSelected text has * in front'
+        text = redRReports.createTable(new,columnNames=['Selection','Option'])
+        # if text != '':
+            # text += '\nSelected text has * in front'
         
         if not self.label:
             label = "ListBox with No Label"

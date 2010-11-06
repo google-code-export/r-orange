@@ -7,8 +7,9 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class SearchDialog(QDialog):
+class SearchDialog(QDialog,widgetState):
     def __init__(self, caption = 'Search Dialog', url = '', icon = None, orientation = 'horizontal'):
+        widgetState.__init__(self, 'SearchDialog',includeInReports=False)
         QDialog.__init__(self)
         
         self.setWindowTitle(caption)

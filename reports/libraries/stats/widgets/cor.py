@@ -78,7 +78,8 @@ class cor(OWRpy):
         processOnInput=True)
         
 
-        self.RoutputWindow = redRfilterTable(area,sortable=True,filterable=False)
+        self.RoutputWindow = redRfilterTable(area,label='Cor/Var', displayLabel=False,
+        sortable=True,filterable=False)
     
     # execute this function when data in the X channel is received
     # The function will be passed the data

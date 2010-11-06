@@ -16,7 +16,7 @@ from libraries.base.qtWidgets.dialog import dialog as redRdialog
 
 def createTable(arrayOfArray,tableName='', columnNames=None):
     # print len(arrayOfArray), len(arrayOfArray[0]), arrayOfArray
-    if len(arrayOfArray) == 0 or len(arrayOfArray[0]) == 0:
+    if not arrayOfArray  or len(arrayOfArray) == 0 or len(arrayOfArray[0]) == 0:
         return '';
     if columnNames:
         headers = '  :header: "' + '","'.join(columnNames) + '"'
@@ -30,13 +30,14 @@ def createTable(arrayOfArray,tableName='', columnNames=None):
         for cell in row:
             if type(cell) is not str:
                 cell = str(cell)
-                print cell
+            # cant have any double quotes inside cell text
             if re.search('.. csv-table::|.. image::|::', cell):
                 toAppend.append([row[0],cell])
                 formatted.append('See Below')
             else:
+                cell = cell.replace('"','""')
                 formatted.append(cell)
-        
+
         body += '  "' + '","'.join(formatted) + '"\n'
 
     body += '\n\n'
@@ -104,13 +105,15 @@ class reports(QDialog):
                 self.widgetList.setItemSelected(item, True)
 
     def createReportsMenu(self):
-        qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
-        redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", 
-        "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
-        if qname.isEmpty(): return
-        qname = str(qname.toAscii())
+        # qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
+        # redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", 
+        # "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
+        # if qname.isEmpty(): return
+        # qname = str(qname.toAscii())
         
-        name = str(qname) # this is the file name of the Report
+        # name = str(qname) # this is the file name of the Report
+        name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
+        
         if os.path.splitext(name)[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
         fileDir = os.path.split(name)[0]
         try:
@@ -138,9 +141,10 @@ class reports(QDialog):
         ## get the report info for the included widgets.
 
         self.updateWidgetList(self.schema.widgets)
-        if self.exec_() == QDialog.Rejected:
-            return
+        # if self.exec_() == QDialog.Rejected:
+            # return
 
+        
         self.createReport(fileDir2,name)
         
         if os.name =='nt':
@@ -167,14 +171,12 @@ class reports(QDialog):
         for widget in toInclude:
             reportText += self.getWidgetReport(fileDir, self.widgetNames[widget]['widget'])
         
-        
-        # file = open(str(os.path.join(fileDir, 'content.rst')).replace('\\','/'), "wt")
-        # file.write(reportText)
-        # file.close()
-        
-        # print '############################\n'*5
-        # print reportText
-        # print '############################\n'*5
+        print '############################\n'*5
+        print reportText
+        print '############################\n'*5
+        f = open(os.path.join(redREnviron.directoryNames['redRDir'],'restr.txt'),'w')
+        f.write(reportText)
+        f.close()
         
         if os.path.splitext(str(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
@@ -183,7 +185,7 @@ class reports(QDialog):
             file = open(reportName, 'wb')
             file.write(output)
             file.close()
-            shutil.rmtree(fileDir)
+            #shutil.rmtree(fileDir)
 
             
             
@@ -231,11 +233,11 @@ Schema
 """ % (datetime.date.today(), imageFile)
 
 
-        # text = '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
-        # text += 'Schema Image\n\n'
-        # text += '.. image:: %s\n  :scale: 50%%\n' % (imageFile)
-        # text += ''
-        # text += '\n\n\n--------------------\n\n\n'
+        text = '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
+        text += 'Schema Image\n\n'
+        text += '.. image:: %s\n  :scale: 50%%\n' % (imageFile)
+        text += ''
+        text += '\n\n\n--------------------\n\n\n'
 
         return text;
 

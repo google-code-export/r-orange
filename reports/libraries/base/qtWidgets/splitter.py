@@ -7,6 +7,7 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 
 class splitter(QSplitter, widgetState):
     def __init__(self, widget = None, orientation = 'horizontal'):
+        widgetState.__init__(self, 'splitter',includeInReports=False)
         QSplitter.__init__(self, widget)
         
         if widget:

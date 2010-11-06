@@ -7,10 +7,11 @@ import os.path
 import imp
         
 class widgetState:
-    def __init__(self,widgetName,**args):
+    def __init__(self,widgetName,includeInReports,**args):
         #print args
         # if 'alignment' in args.keys():
             # parent.layout().setAlignment(self,args['alignment'])
+        self.includeInReports=includeInReports
         if not widgetName:
             print '#########widget Name is required############'
             
@@ -20,6 +21,25 @@ class widgetState:
                 # print redRExceptionHandling.formatException()
 
         self.widgetName = widgetName
+    
+    def getReportText(self,fileDir):
+        print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+        print 'self', self, self.widgetName
+        children = self.children()
+        print children
+        
+        reportData = []
+        for i in children:
+            if isinstance(i, widgetState) and i.includeInReports:
+                print i, i.includeInReports    
+                d = i.getReportText(fileDir)
+                if type(d) is list:
+                    reportData = reportData + d
+                elif d:
+                    reportData.append(d)
+        
+        return reportData
+
     def getDefaultState(self):
         r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
         return r
@@ -27,8 +47,6 @@ class widgetState:
         # print ' in wdiget state'
         self.setEnabled(data['enabled'])
         self.setHidden(data['hidden'])
-    def getReportText(self,fileDir):
-        return False
     def getSettings(self):
         pass
     def loadSettings(self,data):

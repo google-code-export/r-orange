@@ -1,4 +1,5 @@
 from redRGUI import widgetState
+import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -9,7 +10,7 @@ class table(widgetState,QTableWidget):
     data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
         
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         
         if displayLabel:
             mainBox = groupBox(widget,label=label, orientation='vertical')

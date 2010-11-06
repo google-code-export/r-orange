@@ -105,7 +105,7 @@ import RSession, redREnviron, datetime, os, time
 class graphicsView2(QGraphicsView, widgetState):
     def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         
         QGraphicsView.__init__(self, parent)
         if displayLabel:

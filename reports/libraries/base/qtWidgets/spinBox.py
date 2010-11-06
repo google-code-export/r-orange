@@ -12,7 +12,7 @@ class spinBox(QSpinBox,widgetState):
         
         self.widget = widget
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         QSpinBox.__init__(self)
         self.label = label
         if displayLabel:

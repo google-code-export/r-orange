@@ -403,21 +403,22 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocumentAsApp(asTabs = 1)
 
     def menuItemPrinter(self):
-        try:
-            printer = QPrinter()
-            printDialog = QPrintDialog(printer)
-            if printDialog.exec_() == QDialog.Rejected: 
-                print 'Printing Rejected'
-                return
-            painter = QPainter(printer)
-            self.schema.canvas.render(painter)
-            painter.end()
-            for widget in self.schema.widgets:
-                try:
-                    widget.instance.printWidget(printer)                
-                except: pass
-        except:
-            print "Error in printing the schema"
+        self.reports.createReportsMenu()
+        # try:
+            # printer = QPrinter()
+            # printDialog = QPrintDialog(printer)
+            # if printDialog.exec_() == QDialog.Rejected: 
+                # print 'Printing Rejected'
+                # return
+            # painter = QPainter(printer)
+            # self.schema.canvas.render(painter)
+            # painter.end()
+            # for widget in self.schema.widgets:
+                # try:
+                    # widget.instance.printWidget(printer)                
+                # except: pass
+        # except:
+            # print "Error in printing the schema"
         
 
     def readRecentFiles(self):

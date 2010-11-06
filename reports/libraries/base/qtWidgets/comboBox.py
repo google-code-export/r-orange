@@ -9,7 +9,7 @@ class comboBox(QComboBox,widgetState):
     items=None, itemIds=None,editable=False,
     orientation='horizontal',callback = None, callback2 = None, **args):
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         QComboBox.__init__(self,widget)
         if widget:
             if displayLabel:

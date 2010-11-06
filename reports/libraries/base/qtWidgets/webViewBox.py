@@ -10,7 +10,7 @@ class webViewBox(QtWebKit.QWebView,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
     url=None,orientation='vertical', followHere = False):
         
-        widgetState.__init__(self,label)
+        widgetState.__init__(self,label,includeInReports)
         QtWebKit.QWebView.__init__(self,widget)
         
         if widget:
