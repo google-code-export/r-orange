@@ -576,25 +576,35 @@ class SchemaDoc(QWidget):
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
 
         ### add lines to widgets on the current active tab if there is a link from the widget in question to one of the other widgets on the canvas.
-        print 'Adding lines'
-        tabWidgets = redRObjects.getIconsByTab(redRObjects.activeTabName())[redRObjects.activeTabName()]
-        for tw in tabWidgets: ## tw is a list of icons on the current tab (the only one we care about)
-            
-            lw = tw.instance().outputs.linkingWidgets()  ## lw is a list of instances that are linked to the instance of the tw icon.  
-            
-            if tw == newwidget: ## found the widget so we need to look at the connections made by this widget to others.
-                for tw2 in tabWidgets:
-                    
-                    if tw2.instance() in lw: ## there is a link so we make a line.
-                        line = redRObjects.getLine(tw, tw2)
-                        line2 = redRObjects.addCanvasLine(tw, tw2, self, line.getEnabled())
-                        line2.setNoData(line.noData)
-            else:
-                
-                if newwidget.instance() in lw:
-                    line = redRObjects.getLine(tw, newwidget)
-                    line2 = redRObjects.addCanvasLine(tw, newwidget, self, line.getEnabled())
-                    line2.setNoData(line.noData)
+        #print 'Adding lines'
+        tabWidgets = redRObjects.getIconsByTab(self.activeTabName())[self.activeTabName()]
+        tabWidgetInstances = [i.instance() for i in tabWidgets]
+        lines = redRObjects.lines()
+        
+        for l in lines.values(): # move across all of the lines, l is each line
+            if (l.outWidget.instance() == newwidget.instance() or l.inWidget.instance() == newwidget.instance()) and (l.outWidget.instance() in tabWidgetInstances) and (l.inWidget.instance() in tabWidgetInstances): ## this line contains widgets that are on the active canvas and involves the newwidget.  If this line doesn't exist on this tab then we need to make it.
+                line = None
+                if l.outWidget.instance() == newwidget.instance():
+                    if redRObjects.getLine(newwidget, l.inWidget) != None:  # the line already exists
+                        continue  
+                    else:
+                        for w in tabWidgets:
+                            if w.instance() == l.inWidget.instance():
+                                ow = w
+                                break
+                        line = redRObjects.addCanvasLine(newwidget, w, self)
+                elif l.inWidget.instance() == newwidget.instance():
+                    if redRObjects.getLine(l.outWidget, newwidget) != None: continue # the line already exists
+                    else:
+                        for w in tabWidgets:
+                            if w.instance() == l.outWidget.instance():
+                                iw = w
+                                break
+                        line = redRObjects.addCanvasLine(w, newwidget, self)
+                if line:
+                    line.setNoData(l.noData)
+                        
+        
         qApp.restoreOverrideCursor()
         return newwidget
  

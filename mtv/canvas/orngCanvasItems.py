@@ -115,8 +115,8 @@ class CanvasLine(QGraphicsLineItem):
         for id in outSignalIDs:
             #log.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; setting tooltip from %s' % id)
             s = outinstance.outputs.getSignal(id)
-            #if s:
-            tip += s['value'].summary()+'\n'
+            if s and s['value'] != None:
+                tip += s['value'].summary()+'\n'
         log.log(1, 2, 3, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
         self.setToolTip(tip)
     def getNoData(self):
