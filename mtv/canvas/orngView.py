@@ -192,6 +192,7 @@ class SchemaView(QGraphicsView):
         if ev.key() == Qt.Key_Control:
             self.controlHeld = False
     def mousePressEvent(self, ev):
+        self.scene().update()
         self.mouseDownPosition = self.mapToScene(ev.pos())
         
         if self.widgetSelectionRect:

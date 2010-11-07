@@ -220,8 +220,14 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     instance.setWidgetWindowIcon(info.icon)
     #instance.canvasWidget = self
     instance.widgetInfo = info
+    
     if id == None:
-        id = instance.widgetID
+        if instance.widgetID in _widgetInstances.keys(): ## this shouldn't happen but we will catch it, it actually occurs on widget duplication.
+        
+            instance.widgetID = time.time()
+            id = instance.widgetID
+        else:
+            id = instance.widgetID
     else:
         instance.widgetID = id
     _widgetInstances[id] = instance

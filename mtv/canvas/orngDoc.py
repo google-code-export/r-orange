@@ -622,13 +622,16 @@ class SchemaDoc(QWidget):
  
     #def addWidgetInstance(self, name, inputs = None, outputs = None, widgetID = None):
     def addWidgetIcon(self, widgetInfo, instanceID):
+        ## handle the caption here so we don't run into conflicts in the future
+        caption = widgetInfo.name
+        if self.getWidgetByCaption(caption):
+            i = 1
+            while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
+            caption = caption + " (" + str(i) + ")"
+            
         newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
-        #if self.getWidgetByCaption(newwidget.caption):
-        caption = newwidget.caption
-        i = 1
-        while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
-        caption = caption + " (" + str(i) + ")"
-        log.log(1, 2, 2, 'Set widget caption to %s' % caption)
+        newwidget.caption = caption
+        #log.log(1, 2, 2, 'Set widget caption to %s' % caption)
         newwidget.updateText(caption)
         ##self.widgets.append(newwidget)
         return newwidget
@@ -648,23 +651,8 @@ class SchemaDoc(QWidget):
 
         self.resolveCollisions(newwidget, x, y)
             
-        #self.canvasView.ensureVisible(newwidget)
-        # print 'setting widget caption', caption
-        # if caption == "": 
-            # caption = newwidget.caption
-            # print 'caption now set to ', caption
-            # if self.getWidgetByCaption(caption):
-                # i = 2
-                # while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
-                # caption = caption + " (" + str(i) + ")"
-                # print 'caption now set to ', caption
-            # newwidget.updateText(caption)
         newwidget.instance().setWindowTitle(newwidget.caption)
         
-
-        
-        # if saveTempDoc:
-            # self.saveTempDoc()
         self.activeCanvas().update()
 
         # show the widget and activate the settings
@@ -811,7 +799,7 @@ class SchemaDoc(QWidget):
         self.activeCanvas().update()
 
     # return a new widget instance of a widget with filename "widgetName"
-    def addWidgetByFileName(self, widgetFileName, x, y, caption, widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
+    def addWidgetByFileName(self, widgetFileName, x, y, caption = '', widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
         try:
             if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
             widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
@@ -826,14 +814,7 @@ class SchemaDoc(QWidget):
         widget = redRObjects.widgetRegistry()['widgets'][name]
         newwidget = self.addWidgetIcon(widget, instance)
         self.resolveCollisions(newwidget, x, y)
-        if caption == "": 
-            caption = newwidget.caption
-            if self.getWidgetByCaption(caption):
-                i = 2
-                while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
-                caption = caption + " (" + str(i) + ")"
-            newwidget.updateText(caption)
-        else:
+        if caption != "": 
             newwidget.updateText(caption)
     def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None, id = None):
         try:
@@ -971,7 +952,7 @@ class SchemaDoc(QWidget):
     
     def copy(self):
         ## copy the selected files and reload them as templates in the schema
-        self.save(copy=True)
+        self.makeTemplate(copy=True)
     
     def saveInstances(self, instances, widgets, doc, progressBar):
         return redRSaveLoad.saveInstances(instances, widgets, doc, progressBar)
@@ -982,9 +963,12 @@ class SchemaDoc(QWidget):
         if not copy:
             if not filename:
                 log.log(1, 3, 3, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
+                return
             tempDialog = TemplateDialog(self)
             if tempDialog.exec_() == QDialog.Rejected:
                 return
+        else:
+            filename = redREnviron.directoryNames['tempDir']+'/copy.rrts'
         progressBar = self.startProgressBar(
         'Saving '+str(os.path.basename(filename)),
         'Saving '+str(os.path.basename(filename)),
@@ -1020,7 +1004,6 @@ class SchemaDoc(QWidget):
         for w in self.activeTab().getSelectedWidgets():
             tempWidgets[w.instanceID] = w.instance()
         (widgets, settingsDict, requireRedRLibraries) = redRSaveLoad.saveInstances(tempWidgets, widgets, doc, progressBar)
-        
         # save the icons and the lines
         sw = self.activeTab().getSelectedWidgets()
         log.log(1, 9, 3, 'orngDoc makeTemplate; selected widgets: %s' % sw)
@@ -1367,8 +1350,9 @@ class SchemaDoc(QWidget):
         loadingProgressBar.setLabelText('Loading Widgets')
         loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
         loadingProgressBar.setValue(0)
-        globalData.globalData = cPickle.loads(self.loadedSettingsDict['_globalData'])
-        (loadedOkW, tempFailureTextW) = self.loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, tmp = tmp)
+        if not tmp:
+            globalData.globalData = cPickle.loads(self.loadedSettingsDict['_globalData'])
+            (loadedOkW, tempFailureTextW) = self.loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, tmp = tmp)
         ## LOAD tabs
         #####  move through all of the tabs and load them.
         (loadedOkT, tempFailureTextT) = self.loadTabs(tabs = tabs, loadingProgressBar = loadingProgressBar, tmp = tmp)
@@ -1483,12 +1467,19 @@ class SchemaDoc(QWidget):
             for witemp in t.getElementsByTagName('widgetIcons')[0].getElementsByTagName('widgetIcon'):
                 name = witemp.getAttribute('name')             # save icon name
                 instance = witemp.getAttribute('instance')        # save instance ID
+                
                 xPos = int(witemp.getAttribute("xPos"))      # save the xPos
                 yPos = int(witemp.getAttribute("yPos"))      # same the yPos
-                caption = witemp.getAttribute("caption")          # save the caption
+                if not tmp:
+                    caption = witemp.getAttribute("caption")          # save the caption
+                else:
+                    caption = ""
+                    settings = cPickle.loads(self.loadedSettingsDict[instance]['settings'])
                 log.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
-                self.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
-                
+                if not tmp:
+                    self.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
+                else:
+                    self.addWidgetByFileName(name, x = xPos, y = yPos + addY, widgetSettings = settings)
             for litemp in t.getElementsByTagName('tabLines')[0].getElementsByTagName('channel'):
                 outIconID = litemp.getAttribute('outWidgetIndex')
                 inIconID = litemp.getAttribute('inWidgetIndex')
