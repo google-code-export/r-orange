@@ -152,11 +152,12 @@ class OrangeCanvasDlg(QMainWindow):
 
 
         if 'windowState' in redREnviron.settings.keys():
+            print redREnviron.settings['windowState']
             self.restoreState(redREnviron.settings['windowState'])
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
-        if 'layout' in redREnviron.settings.keys():
-            self.schema.setSchemaLayout(redREnviron.settings['layout'])
+        # if 'layout' in redREnviron.settings.keys():
+            # self.schema.setSchemaLayout(redREnviron.settings['layout'])
         if 'debug' not in redREnviron.settings.keys():
             redREnviron.settings['debug'] = False
         if 'minSeverity' not in redREnviron.settings.keys():
@@ -649,8 +650,8 @@ class OrangeCanvasDlg(QMainWindow):
         text = text.replace("<br>", ""); text = text.replace("&nbsp", "")
         self.statusBar().showMessage("Last event: " + str(text), 5000)
 
-    def saveLayout(self):
-        return self.schema.saveSchemaLayout()
+    # def saveLayout(self):
+        # return self.schema.saveSchemaLayout()
 
     def closeEvent(self, ce):
         #print '|#| redRCanvas closeEvent'
@@ -661,10 +662,13 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["showToolbar"] = self.toolbar.isVisible()
         
         redREnviron.settings["geometry"] = self.saveGeometry()
-        redREnviron.settings["layout"] = self.saveLayout()
+        # redREnviron.settings["layout"] = self.saveLayout()
         redREnviron.settings["windowState"] = self.saveState()
         redREnviron.settings['pos'] = self.pos()
         redREnviron.settings['size'] = self.size()
+
+        
+        
         redREnviron.saveSettings()
         # closed = self.schema.close()
         if redREnviron.settings['dontAskBeforeClose']:

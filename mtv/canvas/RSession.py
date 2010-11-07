@@ -43,7 +43,11 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     
     unlocked = mutex.tryLock()
     if not unlocked:
-        mb = QMessageBox("R Session Locked", "The R Session is currently locked, please wait for the prior execution to finish.", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default,qApp.canvasDlg)
+        mb = QMessageBox("R Session Locked", "The R Session is currently locked, please wait for the prior execution to finish.", QMessageBox.Information, 
+        QMessageBox.Ok | QMessageBox.Default,
+        QMessageBox.NoButton, 
+        QMessageBox.NoButton, 
+        qApp.canvasDlg)
         mb.exec_()
         return
         

@@ -109,24 +109,71 @@ class redRWidgetGUI(QMainWindow):
         #self.statusBar.setStyleSheet("QStatusBar { border-top: 2px solid gray; } ")
         # self.statusBar.setStyleSheet("QLabel { border-top: 2px solid red; } ")
 
-        ### Right Dock ###
+        ################
+        # Notes Dock ###
+        ################
         minWidth = 200
-        self.rightDock=QDockWidget('Documentation')
-        self.rightDock.setObjectName('rightDock')
-        QObject.connect(self.rightDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
-        self.rightDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
-        self.rightDock.setMinimumWidth(minWidth)
-        self.rightDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
-        self.rightDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
+        self.notesDock=QDockWidget('Notes')
+        self.notesDock.setObjectName('widgetNotes')
+        
+        QObject.connect(self.notesDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
+        
+        self.notesDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.notesDock.setMinimumWidth(minWidth)
+        self.notesDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
+        self.notesDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.addDockWidget(Qt.RightDockWidgetArea,self.notesDock)
+
+        self.notesBox = redRwidgetBox(None,orientation=QVBoxLayout())
+        self.notesDock.setWidget(self.notesBox)
+        
+        self.notesBox.setMinimumWidth(minWidth)
+        self.notesBox.setMinimumHeight(50)
+        self.notesBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+
+        redRwidgetLabel(self.notesBox, label="Notes:", 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'))
+
+        self.notes = redRtextEdit(self.notesBox)
+        self.notes.setMinimumWidth(minWidth)
+        self.notes.setMinimumHeight(50)
+        self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+
         
         
-        self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
-        self.rightDockArea.setMinimumWidth(minWidth)
-        self.rightDockArea.setMinimumHeight(150)
-        self.rightDockArea.layout().setMargin(4)
-        self.rightDockArea.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        self.rightDock.setWidget(self.rightDockArea)
+        ################
+        # R output ###
+        ################
+        self.RoutputDock=QDockWidget('R Output')
+        self.RoutputDock.setObjectName('RoutputDock')
+        
+        QObject.connect(self.RoutputDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
+        
+        self.RoutputDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.RoutputDock.setMinimumWidth(minWidth)
+        self.RoutputDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
+        self.RoutputDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.addDockWidget(Qt.RightDockWidgetArea,self.RoutputDock)
+
+        self.ROutputBox = redRwidgetBox(None,orientation=QVBoxLayout())
+        self.RoutputDock.setWidget(self.ROutputBox)
+
+        self.ROutputBox.setMinimumHeight(50)
+        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'))
+
+        self.ROutput = redRtextEdit(self.ROutputBox)
+        self.ROutput.setMinimumWidth(minWidth)
+        self.ROutput.setMinimumHeight(50)
+        self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        
+        
+        # self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
+        # self.rightDockArea.setMinimumWidth(minWidth)
+        # self.rightDockArea.setMinimumHeight(150)
+        # self.rightDockArea.layout().setMargin(4)
+        # self.rightDockArea.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        # self.rightDock.setWidget(self.rightDockArea)
 
 
             
@@ -170,30 +217,10 @@ class redRWidgetGUI(QMainWindow):
                 
         
         
-        ### notes ####
-        self.notesBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        self.notesBox.setMinimumWidth(minWidth)
-        self.notesBox.setMinimumHeight(50)
-        self.notesBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        redRwidgetLabel(self.notesBox, label="Notes:", 
-        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'))
-
-        self.notes = redRtextEdit(self.notesBox)
-        self.notes.setMinimumWidth(minWidth)
-        self.notes.setMinimumHeight(50)
-        self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-
-        ### R output ####        
-        self.ROutputBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        self.ROutputBox.setMinimumHeight(50)
-        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
-        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'))
-
-        self.ROutput = redRtextEdit(self.ROutputBox)
-        self.ROutput.setMinimumWidth(minWidth)
-        self.ROutput.setMinimumHeight(50)
-        self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         
+        ################
+        # Status Bar ###
+        ################
         
         self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
         
@@ -291,10 +318,16 @@ class redRWidgetGUI(QMainWindow):
 
     def updateDock(self,ev):
         #print self.windowTitle()
-        if self.rightDock.isFloating():
-            self.rightDock.setWindowTitle(self.windowTitle() + ' Documentation')
+        if self.notesDock.isFloating():
+            self.notesDock.setWindowTitle(self.windowTitle() + ' Notes')
         else:
-            self.rightDock.setWindowTitle('Documentation')
+            self.notesDock.setWindowTitle('Notes')
+            
+        if self.RoutputDock.isFloating():
+            self.RoutputDock.setWindowTitle(self.windowTitle() + ' R Output')
+        else:
+            self.RoutputDock.setWindowTitle('R Output')
+            
         if hasattr(self, "leftDock"): 
             if self.leftDock.isFloating():
                 self.leftDock.setWindowTitle(self.windowTitle() + ' Advanced Options')
@@ -312,42 +345,41 @@ class redRWidgetGUI(QMainWindow):
             self.leftDock.hide()
             self.windowState['leftDockState'] = False
 
+    def updateNotesDock(self):
+        if self.showNotesButton.isChecked():
+            self.notesDock.show()
+        else:
+            self.notesDock.hide()
+    def updateRoutputDock(self):
+        if self.showROutputButton.isChecked():
+            self.RoutputDock.show()
+        else:
+            self.RoutputDock.hide()
+            
     def updateDocumentationDock(self):
         #print 'in updatedock right'
         if 'documentationState' not in self.windowState.keys():
             self.windowState['documentationState'] = {}
         
         
-        # if self.showHelpButton.isChecked():
-            # self.helpBox.show()
-            # self.windowState['documentationState']['helpBox'] = True
-        # else:
-            # self.helpBox.hide()
-            # self.windowState['documentationState']['helpBox'] = False
-        
         if self.showNotesButton.isChecked():
-            self.notesBox.show()
+            self.notesDock.show()
             self.windowState['documentationState']['notesBox'] = True
         else:
-            self.notesBox.hide()
+            self.notesDock.hide()
             self.windowState['documentationState']['notesBox'] = False
 
         if self.showROutputButton.isChecked():
-            self.ROutputBox.show()
+            self.RoutputDock.show()
             self.windowState['documentationState']['ROutputBox'] = True
         else:
-            self.ROutputBox.hide()
+            self.RoutputDock.hide()
             self.windowState['documentationState']['ROutputBox'] = False
         
-        #print self.windowState['documentationState'].values()
-        if True in self.windowState['documentationState'].values():
-            self.rightDock.show()
-            # print 'resize t'
-            # self.resize(10,10)
-            # self.updateGeometry()
-        else:
-            # print 'hide'
-            self.rightDock.hide()
+        # if True in self.windowState['documentationState'].values():
+            # self.rightDock.show()
+        # else:
+            # self.rightDock.hide()
         
 
     def saveWidgetWindowState(self):
@@ -358,13 +390,17 @@ class redRWidgetGUI(QMainWindow):
         
     def closeEvent(self, event):
         #print 'in owrpy closeEvent'
-        if self.rightDock.isFloating():
-            self.rightDock.hide()
+        if self.notesDock.isFloating():
+            self.notesDock.hide()
+        if self.RoutputDock.isFloating():
+            self.RoutputDock.hide()
+            
         if hasattr(self, "leftDock") and self.leftDock.isFloating():
             self.leftDock.hide()
         
         for i in self.findChildren(QDialog):
             i.setHidden(True)
+        
         if self.hasBeenShown and not self.isHidden():
             self.saveWidgetWindowState()
         self.saveGlobalSettings()
@@ -418,7 +454,6 @@ class redRWidgetGUI(QMainWindow):
                 self.hasAdvancedOptions = False
         
         if 'documentationState' in self.windowState.keys():
-            #self.showHelpButton.setChecked(self.windowState['documentationState']['helpBox'])
             self.showNotesButton.setChecked(self.windowState['documentationState']['notesBox'])
             self.showROutputButton.setChecked(self.windowState['documentationState']['ROutputBox'])
         self.updateDocumentationDock()

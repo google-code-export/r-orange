@@ -33,20 +33,31 @@ class SchemaDoc(QWidget):
         
         self.loadedSettingsDict = {}
         self.setLayout(QHBoxLayout())
-        self.splitter = redRSplitter(self)
-        left = self.splitter.widgetArea()
+        # self.splitter = redRSplitter(self)
+        # left = self.splitter.widgetArea()
         self.tabsWidget = QTabWidget()
         QObject.connect(self.tabsWidget, SIGNAL('currentChanged(int)'), self.resetActiveTab)
-        left.layout().addWidget(self.tabsWidget)
+        self.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
-        right = self.splitter.widgetArea()
-        self.rightSplitter = redRSplitter(right, orientation = 'vertical')
-        rightTop = self.rightSplitter.widgetArea(margin = 8)
-        rightBottom = self.rightSplitter.widgetArea(margin = 8)
-        self.notes = redRTextEdit(rightTop, label = 'Notes')
-        self.printOutput = redRTextEdit(rightBottom, label = 'Output')
         
-        sys.stdout.write('test')
+        
+        # right = self.splitter.widgetArea()
+        # self.rightSplitter = redRSplitter(right, orientation = 'vertical')
+        # rightTop = self.rightSplitter.widgetArea(margin = 8)
+        # rightBottom = self.rightSplitter.widgetArea(margin = 8)
+        
+        notes = QDockWidget('Notes')
+        notes.setObjectName('CanvasNotes')
+        self.notes = redRTextEdit(None, label = 'Notes')
+        notes.setWidget(self.notes)
+        self.canvasDlg.addDockWidget(Qt.RightDockWidgetArea, notes)
+        
+        output = QDockWidget('Output')
+        output.setObjectName('CanvasOutput')
+        self.printOutput = redRTextEdit(None, label = 'Output')
+        output.setWidget(self.printOutput)
+        self.canvasDlg.addDockWidget(Qt.RightDockWidgetArea, output)
+        
         self.defaultSysOutHandler = sys.stdout
         self.catchOutput(1)
         
@@ -58,12 +69,13 @@ class SchemaDoc(QWidget):
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
         log.setOutputManager(self)
-    def saveSchemaLayout(self):
-        r = {'main': self.splitter.sizes(), 'right':self.rightSplitter.sizes()}
-        return r
-    def setSchemaLayout(self, r):
-        self.splitter.setSizes(r['main'])
-        self.rightSplitter.setSizes(r['right'])
+    # def saveSchemaLayout(self):
+        # r = {'main': self.splitter.sizes(), 'right':self.rightSplitter.sizes()}
+        # return r
+    # def setSchemaLayout(self, r):
+        # self.splitter.setSizes(r['main'])
+        # self.rightSplitter.setSizes(r['right'])
+    
     def catchOutput(self, catch):
         if catch:    sys.stdout = self
         else:         sys.stdout = self.defaultSysOutHandler
@@ -75,7 +87,7 @@ class SchemaDoc(QWidget):
             return unicode(obj).encode('unicode_escape')
     def write(self, text):
         #sys.stdout.write(text)
-        if not redREnviron.settings['debug']: return
+        if not redREnviron.settings['debugMode']: return
         import re
         text = self.safe_str(text)
         cursor = QTextCursor(self.printOutput.textCursor())                
