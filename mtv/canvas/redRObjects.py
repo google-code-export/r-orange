@@ -224,15 +224,15 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     if id == None:
         if instance.widgetID in _widgetInstances.keys(): ## this shouldn't happen but we will catch it, it actually occurs on widget duplication.
         
-            instance.widgetID = time.time()
-            id = instance.widgetID
+            id = str(time.time())
+            instance.resetRvariableNames(id)
         else:
             id = instance.widgetID
     else:
-        instance.widgetID = id
+        instance.resetRvariableNames(id)
     _widgetInstances[id] = instance
     
-    return instance.widgetID
+    return id
 def getWidgetInstanceByID(id):
     global _widgetInstances
     return _widgetInstances[id]

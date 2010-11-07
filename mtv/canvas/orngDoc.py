@@ -626,10 +626,10 @@ class SchemaDoc(QWidget):
         newwidget.updateText(caption)
         ##self.widgets.append(newwidget)
         return newwidget
-    def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
+    def addWidget(self, widgetInfo, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            instanceID = self.addInstance(self.signalManager, widgetInfo, widgetSettings, forceInSignals, forceOutSignals)
+            instanceID = self.addInstance(self.signalManager, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
             newwidget = self.addWidgetIcon(widgetInfo, instanceID)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
             log.log(1, 9, 3, 'New Widget Created %s' % newwidget)
@@ -655,7 +655,7 @@ class SchemaDoc(QWidget):
             # if redREnviron.settings["saveWidgetsPosition"]:
                 # newwidget.instance().restoreWidgetPosition()
             newwidget.setProcessing(0)
-            orngHistory.logAddWidget(self.schemaID, id(newwidget), (newwidget.widgetInfo.packageName, newwidget.widgetInfo.name), newwidget.x(), newwidget.y())
+            #orngHistory.logAddWidget(self.schemaID, id(newwidget), (newwidget.widgetInfo.packageName, newwidget.widgetInfo.name), newwidget.x(), newwidget.y())
         except:
             type, val, traceback = sys.exc_info()
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
@@ -666,45 +666,7 @@ class SchemaDoc(QWidget):
         return newwidget
     def addInstance(self, signalManager, widgetInfo, widgetSettings = None, forceInSignals = None, forceOutSignals = None, id = None):
         return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals, id = id)
-        """
-            print 'adding instance'
-            m = __import__(widgetInfo.fileName)
-            #m = __import__('libraries.' + widgetInfo.packageName + '.widgets.' + widgetInfo.widgetName)
-            
-            instance = m.__dict__[widgetInfo.widgetName].__new__(m.__dict__[widgetInfo.widgetName],
-            _owInfo = redREnviron.settings["owInfo"],
-            _owWarning = redREnviron.settings["owWarning"],
-            _owError = redREnviron.settings["owError"],
-            _owShowStatus = redREnviron.settings["owShow"],
-            _packageName = widgetInfo.packageName)
-            instance.__dict__['_widgetInfo'] = widgetInfo
-            
-            if widgetInfo.name == 'Dummy': 
-                print 'Loading dummy step 3'
-                instance.__init__(signalManager = signalManager,
-                forceInSignals = forceInSignals, forceOutSignals = forceOutSignals)
-            else: instance.__init__(signalManager = signalManager)
-            
-            instance.loadGlobalSettings()
-            if widgetSettings:
-                instance.setSettings(widgetSettings)
-                if '_customSettings' in widgetSettings.keys():
-                    instance.loadCustomSettings(widgetSettings['_customSettings'])
-                else:
-                    instance.loadCustomSettings(widgetSettings)
-
-            instance.setProgressBarHandler(self.activeTab().progressBarHandler)   # set progress bar event handler
-            instance.setProcessingHandler(self.activeTab().processingHandler)
-            #instance.setWidgetStateHandler(self.updateWidgetState)
-            instance.setEventHandler(self.canvasDlg.output.widgetEvents)
-            instance.setWidgetWindowIcon(widgetInfo.icon)
-            instance.canvasWidget = self
-            instance.widgetInfo = widgetInfo
-            print 'adding instance'
-            self.instances[instance.widgetID] = instance
-            
-            return instance.widgetID
-            """
+        
     def returnInstance(self, id):
         return redRObjects.getWidgetInstanceByID(id)
     def resolveCollisions(self, newwidget, x, y):
@@ -790,11 +752,11 @@ class SchemaDoc(QWidget):
         self.activeCanvas().update()
 
     # return a new widget instance of a widget with filename "widgetName"
-    def addWidgetByFileName(self, widgetFileName, x, y, caption = '', widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None):
+    def addWidgetByFileName(self, widgetFileName, x, y, caption = '', widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
         try:
             if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
             widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
-            return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals)
+            return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals, id = id)
         except Exception as inst:
             log.log(1, 9, 1, 'Loading exception occured for widget '+widgetFileName)
             
@@ -1470,7 +1432,8 @@ class SchemaDoc(QWidget):
                 if not tmp:
                     self.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
                 else:
-                    self.addWidgetByFileName(name, x = xPos, y = yPos + addY, widgetSettings = settings)
+                    import time
+                    self.addWidgetByFileName(name, x = xPos, y = yPos + addY, widgetSettings = settings, id = str(time.time()))
             for litemp in t.getElementsByTagName('tabLines')[0].getElementsByTagName('channel'):
                 outIconID = litemp.getAttribute('outWidgetIndex')
                 inIconID = litemp.getAttribute('inWidgetIndex')
@@ -1521,9 +1484,9 @@ class SchemaDoc(QWidget):
                 #print inIndex, outIndex, 'Settings template ID to these values'
             inWidget = self.getWidgetByID(inIndex)
             outWidget = self.getWidgetByID(outIndex)
-            
+            log.log(1, 9, 3, 'debug; inWidget %s, outWidget %s, inIndex %s, outIndex %s' % (inWidget, outWidget, inIndex, outIndex))
             #print inWidget, outWidget, '#########$$$$$#########$$$$$$#######'
-            if inWidget == None or outWidget == None:
+            if inWidget == None or outWidget == None or len(inWidget) == 0 or len(outWidget) == 0:
                 #print 'Expected ID\'s', inIndex, outIndex
                 #print '\n\nAvailable indicies are listed here.\'\''
                 # for widget in self.widgets():
@@ -1535,9 +1498,9 @@ class SchemaDoc(QWidget):
             ## add a link for each of the signals.
             for (outName, inName) in signals:
                 ## try to add using the new settings
-                if not self.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
+                if not self.addLink(outWidget[0], inWidget[0], outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
                     ## try to add using the old settings
-                    self.addLink175(outWidget, inWidget, outName, inName, enabled)
+                    self.addLink175(outWidget[0], inWidget[0], outName, inName, enabled)
             lineInstance = self.getLine(outWidget, inWidget)
             try: ## protection for update.
                 lineInstance.dirty = eval(str(line.getAttribute("dirty")))

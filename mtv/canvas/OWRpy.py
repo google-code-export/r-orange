@@ -61,7 +61,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
 
 
-    def resetRvariableNames(self):
+    def resetRvariableNames(self, id = None):
+        if id:
+            self.widgetID = id
+            self.variable_suffix = '_' + self.widgetID
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix
     def setRvariableNames(self,names):
