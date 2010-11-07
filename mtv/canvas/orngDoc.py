@@ -46,17 +46,7 @@ class SchemaDoc(QWidget):
         # rightTop = self.rightSplitter.widgetArea(margin = 8)
         # rightBottom = self.rightSplitter.widgetArea(margin = 8)
         
-        notes = QDockWidget('Notes')
-        notes.setObjectName('CanvasNotes')
-        self.notes = redRTextEdit(None, label = 'Notes')
-        notes.setWidget(self.notes)
-        self.canvasDlg.addDockWidget(Qt.RightDockWidgetArea, notes)
-        
-        output = QDockWidget('Output')
-        output.setObjectName('CanvasOutput')
-        self.printOutput = redRTextEdit(None, label = 'Output')
-        output.setWidget(self.printOutput)
-        self.canvasDlg.addDockWidget(Qt.RightDockWidgetArea, output)
+
         
         self.defaultSysOutHandler = sys.stdout
         self.catchOutput(1)
@@ -69,6 +59,7 @@ class SchemaDoc(QWidget):
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
         log.setOutputManager(self)
+        self.printOutput = canvasDlg.printOutput
     # def saveSchemaLayout(self):
         # r = {'main': self.splitter.sizes(), 'right':self.rightSplitter.sizes()}
         # return r

@@ -12,12 +12,17 @@ sys.path.append(mypath)
 # redREnviron.getVersion()
 # redREnviron.loadSettings()
 import redREnviron
+import RSession
 import redRExceptionHandling
 import orngRegistry, OWGUI
 import redROutput
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
 import redRReports, redRObjects
+
+from libraries.base.qtWidgets.button import button as redRbutton
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 
 class OrangeCanvasDlg(QMainWindow):
     
@@ -97,7 +102,55 @@ class OrangeCanvasDlg(QMainWindow):
             self.widgetIcons = None
             log.log(1, 9, 1,  "Unable to load all necessary icons. Please reinstall Red-R.")
 
-        self.setStatusBar(MyStatusBar(self))
+        
+        ###############################
+        #####Notes and output Docks####
+        ###############################
+        
+        self.notesDock = QDockWidget('Notes')
+        self.notesDock.setObjectName('CanvasNotes')
+        self.notes = redRTextEdit(None, label = 'Notes')
+        self.notesDock.setWidget(self.notes)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.notesDock)
+        self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
+        
+        self.outputDock = QDockWidget('Output')
+        self.outputDock.setObjectName('CanvasOutput')
+        self.printOutput = redRTextEdit(None, label = 'Output',editable=False)
+        self.outputDock.setWidget(self.printOutput)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.outputDock)
+        self.connect(self.outputDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
+        
+        ###################
+        #####Status Bar####
+        ###################
+        
+        self.statusBar = QStatusBar()
+        self.statusBar.setLayout(QHBoxLayout())
+        self.statusBar.setSizeGripEnabled(False)
+        self.setStatusBar(self.statusBar)
+        
+        docBox = redRwidgetBox(None,orientation='horizontal')
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
+        toolTip='Notes',
+        callback = self.updateDockState)
+        
+        self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'CanvasIcon.png'),
+        toolTip='Log',
+        callback = self.updateDockState)   
+        
+        self.statusBar.addPermanentWidget(docBox)
+        if 'dockState' in redREnviron.settings.keys() and 'notesBox' in redREnviron.settings['dockState'].keys():
+            self.showNotesButton.setChecked(redREnviron.settings['dockState']['notesBox'])
+            self.showROutputButton.setChecked(redREnviron.settings['dockState']['outputBox'])
+        
+        
+        ###################
+        #Package Manager###
+        ###################
+        
         self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
 
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
@@ -199,7 +252,40 @@ class OrangeCanvasDlg(QMainWindow):
             pass
         qApp.processEvents()
 
+    def updateDock(self,ev):
+        if self.notesDock.isHidden():
+            self.showNotesButton.setChecked(False)
+        else:
+            self.showNotesButton.setChecked(True)
+        if self.outputDock.isHidden():
+            self.showROutputButton.setChecked(False)
+        else:
+            self.showROutputButton.setChecked(True)
+    def updateDockState(self):
+        #print 'in updatedock right'
+        if 'dockState' not in redREnviron.settings.keys():
+            redREnviron.settings['dockState'] = {'notesBox':True, outputBox:True}
+        
+        
+        if self.showNotesButton.isChecked():
+            self.notesDock.show()
+            redREnviron.settings['dockState']['notesBox'] = True
+        else:
+            self.notesDock.hide()
+            redREnviron.settings['dockState']['notesBox'] = False
 
+        if self.showROutputButton.isChecked():
+            self.outputDock.show()
+            redREnviron.settings['dockState']['outputBox'] = True
+        else:
+            self.outputDock.hide()
+            redREnviron.settings['dockState']['outputBox'] = False
+        
+        # if True in self.windowState['documentationState'].values():
+            # self.rightDock.show()
+        # else:
+            # self.rightDock.hide()
+    
     def startSetupWizard(self):
         setupWizard = redRInitWizard.RedRInitWizard()
         if setupWizard.exec_() == QDialog.Accepted:
@@ -640,7 +726,7 @@ class OrangeCanvasDlg(QMainWindow):
     def setStatusBarEvent(self, text):
         
         if text == "" or text == None:
-            self.statusBar().showMessage("")
+            self.statusBar.showMessage("")
             return
         elif text == "\n": return
         text = str(text)
@@ -648,7 +734,7 @@ class OrangeCanvasDlg(QMainWindow):
         text = text.replace("<b>", ""); text = text.replace("</b>", "")
         text = text.replace("<i>", ""); text = text.replace("</i>", "")
         text = text.replace("<br>", ""); text = text.replace("&nbsp", "")
-        self.statusBar().showMessage("Last event: " + str(text), 5000)
+        self.statusBar.showMessage("Last event: " + str(text), 5000)
 
     # def saveLayout(self):
         # return self.schema.saveSchemaLayout()
@@ -720,12 +806,25 @@ class OrangeCanvasDlg(QMainWindow):
         # self.iconNameToIcon[widgetInfo.icon] = icon
         return icon
         
-
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox 
 class MyStatusBar(QStatusBar):
     def __init__(self, parent):
         QStatusBar.__init__(self, parent)
         self.parentWidget = parent
-
+        
+        docBox = redRwidgetBox(self.controlArea,orientation='horizontal')
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
+        toolTip='Notes',
+        callback = self.updateDocumentationDock)
+        
+        self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
+        toolTip='R Code',
+        callback = self.updateDocumentationDock)   
+        
+        self.statusBar.addPermanentWidget(docBox)
+        
     def mouseDoubleClickEvent(self, ev):
         self.parentWidget.menuItemShowOutputWindow()
         

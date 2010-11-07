@@ -344,17 +344,6 @@ class redRWidgetGUI(QMainWindow):
         else:
             self.leftDock.hide()
             self.windowState['leftDockState'] = False
-
-    def updateNotesDock(self):
-        if self.showNotesButton.isChecked():
-            self.notesDock.show()
-        else:
-            self.notesDock.hide()
-    def updateRoutputDock(self):
-        if self.showROutputButton.isChecked():
-            self.RoutputDock.show()
-        else:
-            self.RoutputDock.hide()
             
     def updateDocumentationDock(self):
         #print 'in updatedock right'

@@ -131,7 +131,7 @@ def loadSettings():
     
     settings.setdefault("canvasWidth", 700)
     settings.setdefault("canvasHeight", 600)
-
+    settings.setdefault('dockState', {'notesBox':True, 'outputBox':True})
         
     settings.setdefault("useDefaultPalette", 0)
 
