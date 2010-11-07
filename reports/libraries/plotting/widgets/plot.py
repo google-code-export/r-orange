@@ -115,9 +115,9 @@ class graphicsView2(QGraphicsView, widgetState):
         
         #self.controlArea = widgetBox(parent)
         self.topArea = widgetBox(self.controlArea,
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Maximum))
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Maximum),includeInReports=False)
         self.middleArea = widgetBox(self.controlArea)
-        self.bottomArea = widgetBox(self.controlArea)
+        self.bottomArea = widgetBox(self.controlArea,includeInReports=False)
         
         self.middleArea.layout().addWidget(self)  # place the widget into the parent widget
         scene = QGraphicsScene()
@@ -723,6 +723,7 @@ class graphicsView2(QGraphicsView, widgetState):
         self.extrasLineEdit.loadSettings(data['addSettings'])
         self.addImage(data['image'])
     def getReportText(self, fileDir):
+        
         image = self.returnImage()
         image = image.scaled(1000,1000, Qt.KeepAspectRatio)
         imageFile = os.path.join(fileDir, self.image + '.png').replace('\\', '/')

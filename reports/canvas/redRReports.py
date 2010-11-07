@@ -220,6 +220,7 @@ class reports(QDialog):
 ===========================================
  Red-R Report
 ===========================================
+
 :Date: %s
 
 .. contents::
@@ -233,7 +234,7 @@ Schema
 """ % (datetime.date.today(), imageFile)
 
 
-        text = '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
+        text += '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
         text += 'Schema Image\n\n'
         text += '.. image:: %s\n  :scale: 50%%\n' % (imageFile)
         text += ''
