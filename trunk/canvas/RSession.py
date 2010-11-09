@@ -23,7 +23,10 @@
 
 import sys, os, redREnviron, numpy
 
+# os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
 os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+# os.environ['R_HOME'] = 'C:/Revolution/Revo-3.1.1/RevoEnt32/R-2.9.2'
+# os.environ['R_HOME'] = 'C:/Revolution/Revo-3.2/Revo32/R-2.10.1'
     
 import rpy3.robjects as rpy
 from PyQt4.QtCore import *

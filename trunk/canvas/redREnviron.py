@@ -15,6 +15,7 @@ def __getDirectoryNames():
     canvasDir = os.path.join(redRDir, "canvas")
     canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
     rpyDir = os.path.join(redRDir, "canvas",'rpy')
+    #RDir = os.path.join(os.path.split(redRDir)[0], "R", 'Revo32','R-2.10.1')
     RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.9.2')
     widgetDir = os.path.join(redRDir, "libraries")
     libraryDir = os.path.join(redRDir, "libraries")
@@ -135,7 +136,7 @@ def loadSettings():
 
     settings.setdefault('CRANrepos','http://cran.r-project.org')
     settings.setdefault('red-RPackagesUpdated',0)
-    
+    settings.setdefault('checkedForUpdates',0)
     
     settings.setdefault("writeLogFile", 1)
     settings.setdefault("dontAskBeforeClose", 0)

@@ -1,11 +1,7 @@
 """
 <name>Correlation/Variance</name>
-<author>Anup Parikh anup@red-r.org</author>
-<RFunctions>stats:cor, stats:var, stats:cov</RFunctions>
 <tags>Stats</tags>
 <icon>correlation.png</icon>
-<inputWidgets>base_readFile</inputWidgets>
-<outputWidgets>base_RDataTable</outputWidgets>
 """
 #OWRpy is the parent of all widgets. 
 #Contains all the functionality for connecting the widget to the underlying R session.

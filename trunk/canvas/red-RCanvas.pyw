@@ -14,7 +14,7 @@ sys.path.append(mypath)
 import redREnviron
 import redRExceptionHandling
 import orngRegistry, OWGUI
-import redROutput
+import redROutput, redRUpdateManager
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
 import redRReports
@@ -51,6 +51,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.closeAll_pic = os.path.join(canvasPicsDir, "downgreenarrow.png")
         self.text_icon = os.path.join(canvasPicsDir, "text.png")
         self.file_print= os.path.join(canvasPicsDir, "print.png")
+        #self.update= os.path.join(canvasPicsDir, "update.png")
         self.file_exit = os.path.join(canvasPicsDir, "exit.png")
         canvasIconName = os.path.join(canvasPicsDir, "CanvasIcon.png")
         if os.path.exists(canvasIconName):
@@ -98,8 +99,6 @@ class OrangeCanvasDlg(QMainWindow):
             print "Unable to load all necessary icons. Please reinstall Red-R."
 
         self.setStatusBar(MyStatusBar(self))
-        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
-
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         redRGUI.registerQTWidgets()
         
@@ -119,6 +118,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.setCentralWidget(self.schema)
         self.schema.setFocus()
 
+        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
+        self.updateManager = redRUpdateManager.updateManager(self)
         
 
         # create menu
@@ -127,20 +128,32 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
-        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
-        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", self.schema.showAllWidgets)
-        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", self.schema.closeAllWidgets)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
         self.toolbar.addSeparator()
+        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", 
+        self.schema.showAllWidgets)
+        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", 
+        self.schema.closeAllWidgets)
+        
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(QIcon(self.file_print), "Generate Report", self.menuItemReport)
+        
+        self.toolbar.addSeparator()
+        self.toolbar.addAction(QIcon(os.path.join(canvasPicsDir, "update.png")), 
+        "Check for Updates", self.menuCheckForUpdates)
+        
+        self.toolbar.addSeparator()
+        self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), 
+        "Reload Widgets", self.reloadWidgets)
 
-        w = QWidget()
-        w.setLayout(QHBoxLayout())
-        items = ["%d x %d" % (v,v) for v in self.toolbarIconSizeList]
-        redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
-        OWGUI.comboBoxWithCaption(w, redREnviron.settings, "toolbarIconSize", "Icon size:", items = items, tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", callback = self.createWidgetsToolbar, debuggingEnabled = 0)
-        self.toolbar.addWidget(w)
+        #self.toolbar.addSeparator()
+
+        # w = QWidget()
+        # w.setLayout(QHBoxLayout())
+        # items = ["%d x %d" % (v,v) for v in self.toolbarIconSizeList]
+        # redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
+        # OWGUI.comboBoxWithCaption(w, redREnviron.settings, "toolbarIconSize", "Icon size:", items = items, tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", callback = self.createWidgetsToolbar, debuggingEnabled = 0)
+        # self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
         self.createWidgetsToolbar() # also creates the categories popup
@@ -191,7 +204,13 @@ class OrangeCanvasDlg(QMainWindow):
                 self.startSetupWizard()
         except:
             pass
+
+
+        self.updateManager.showUpdateDialog(auto=True)
+                
         qApp.processEvents()
+        
+        
 
 
     def startSetupWizard(self):
@@ -401,7 +420,7 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveAsAppTabs(self):
         return ## depricated
         self.schema.saveDocumentAsApp(asTabs = 1)
-
+        
     def menuItemPrinter(self):
         try:
             printer = QPrinter()
@@ -542,7 +561,10 @@ class OrangeCanvasDlg(QMainWindow):
 
     def menuOpenPackageManager(self):
         self.packageManagerGUI.exec_()
-        
+ 
+    def menuCheckForUpdates(self):
+        self.updateManager.showUpdateDialog(auto=False)
+       
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
         webbrowser.open("file:///" + os.path.join(redREnviron.directoryNames['redRDir'], "doc/catalog/index.html"))
@@ -568,7 +590,7 @@ class OrangeCanvasDlg(QMainWindow):
         #webbrowser.open("http://www.ailab.si/orange/orangeCanvas") # to be added on the web
         webbrowser.open("http://www.red-r.org")
 
-    def menuCheckForUpdates(self):
+    # def menuCheckForUpdates(self):
         # import updateOrange
         # self.updateDlg = updateOrange.updateOrangeDlg(None, "", Qt.WDestructiveClose)
         #redREnviron.settings['svnSettings'], redREnviron.settings['versionNumber'] = updateRedR.start(redREnviron.settings['svnSettings'], redREnviron.settings['versionNumber'], silent = False)
@@ -638,7 +660,7 @@ class OrangeCanvasDlg(QMainWindow):
 
 
 
-    def closeEvent(self, ce):
+    def closeEvent(self, ce, postCloseFun=None):
         print '|#| redRCanvas closeEvent'
         # save the current width of the toolbox, if we are using it
         if isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
@@ -668,6 +690,9 @@ class OrangeCanvasDlg(QMainWindow):
 
         
         if closed:
+            if postCloseFun:
+                postCloseFun()
+
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             self.schema.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
@@ -680,6 +705,7 @@ class OrangeCanvasDlg(QMainWindow):
             import redRHistory
             redRHistory.saveConnectionHistory()
             ce.accept()
+            
             QMainWindow.closeEvent(self,ce)
         else:
             ce.ignore()

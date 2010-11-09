@@ -404,7 +404,7 @@ class AboutDlg(QDialog):
         self.about.setMinimumHeight(150)
         self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
-        '; Build Time: ' + info['DATE'] + '; Copy Number:' + str(redREnviron.settings['id']) + '' +
+        '; Build Time: ' + info['DATE'] + 
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
         self.licenceButton = redRbutton(self, 'Licence', callback = self.showLicence)
         b = QDialogButtonBox(self)
