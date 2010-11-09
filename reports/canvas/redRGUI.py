@@ -23,20 +23,28 @@ class widgetState:
         self.widgetName = widgetName
     
     def getReportText(self,fileDir):
-        print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-        print 'self', self, self.widgetName
+        # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+        # print 'self', self, self.widgetName
         children = self.children()
-        print children
-        
-        reportData = []
+        # print children
+        if len(children) ==0:
+            return False
+            
+        reportData = {}
         for i in children:
-            if isinstance(i, widgetState) and i.includeInReports:
-                print i, i.includeInReports    
+            if isinstance(i, widgetState):
                 d = i.getReportText(fileDir)
-                if type(d) is list:
-                    reportData = reportData + d
-                elif d:
-                    reportData.append(d)
+                if type(d) is dict:
+                    reportData.update(d)
+                # dd = []
+                # if type(d) is dict:
+                    # for x in d.items():
+                        # x['includeInReports'] = i.includeInReports
+                        # dd.append(x)
+                    # reportData = reportData + dd
+                # elif d:
+                    # d['includeInReports'] = i.includeInReports
+                    # reportData.append(d)
         
         return reportData
 

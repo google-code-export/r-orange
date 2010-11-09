@@ -227,11 +227,6 @@ class listBox(QListWidget,widgetState):
         # if text != '':
             # text += '\nSelected text has * in front'
         
-        if not self.label:
-            label = "ListBox with No Label"
-        else:
-            label = self.label
-
-        r = {'label': label, 'text': text}
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
 
         return r

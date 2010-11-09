@@ -112,9 +112,5 @@ class table(widgetState,QTableWidget):
     def getReportText(self, fileDir):
         
         text = redRReports.createTable(self.data)
-        # if self.label:
-            # label = self.label
-        # else:
-        label='Data Table';
         
-        return {'label': label, 'text': text}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}

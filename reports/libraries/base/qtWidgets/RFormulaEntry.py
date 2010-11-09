@@ -109,5 +109,5 @@ class RFormulaEntry(groupBox, widgetState):
             
     def getReportText(self, fileDir):
         (a,b) = self.Formula()
-        return {'label': self.label, 'text':a + ' = ' + b}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text':a + ' = ' + b}}
         

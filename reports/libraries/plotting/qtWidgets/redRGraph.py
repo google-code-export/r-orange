@@ -1064,4 +1064,4 @@ class redRGraph(QwtPlot,widgetState):
 
         text = '.. image:: '+fileDir+'/scatterplot.png\n    :scale: 50%%\n\n'
         
-        return {'label':'Scatter Plot','text':text}
+        return {self.widgetName:{'includeInReports':self.includeInReports,'text':text}}

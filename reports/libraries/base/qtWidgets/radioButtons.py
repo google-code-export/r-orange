@@ -6,11 +6,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class radioButtons(widgetBox,widgetState):
-    def __init__(self,widget,label=None, displayLabel=True, 
+    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
     buttons=None,toolTips = None, setChecked = None,
     orientation='vertical',callback = None, **args):
         
         widgetBox.__init__(self,widget,orientation=orientation,margin=0,spacing=0)
+        widgetState.__init__(self,label,includeInReports)
         self.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.label = label
         if displayLabel:
@@ -70,13 +71,7 @@ class radioButtons(widgetBox,widgetState):
         self.setChecked(data['checked'])
         
     def getReportText(self, fileDir):
-        if not self.label:
-            label = "RadioButton with No Label"
-        else:
-            label = self.label
-        r = {'label': label, 'text': self.getChecked()}
-
-        #text = '%s with the following element selected:\n\n' % (self.label, self.getChecked())
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getChecked()}}
         return r
 
 

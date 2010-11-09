@@ -428,12 +428,8 @@ class filterTable(widgetState, QTableView):
         else:
             text = ''
             
-        if self.label:
-            label = self.label
-        else:
-            label='Data Table';
         
-        return {'label': label, 'text': text}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
 
 
 class MyTableModel(QAbstractTableModel): 

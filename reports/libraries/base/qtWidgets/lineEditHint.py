@@ -191,3 +191,6 @@ class lineEditHint(lineEdit,widgetState):
         except:
             print 'Loading of lineEditHint encountered an error.'
             
+    def getReportText(self, fileDir):
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.text()}}
+        return r

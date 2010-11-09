@@ -91,11 +91,7 @@ class fileNamesComboBox(comboBox,widgetState):
         return self.files[self.currentIndex()].replace('\\', '/')
         
     def getReportText(self, fileDir):
-        if not self.label:
-            label = "File Select"
-        else:
-            label = self.label
         
-        r = {'label': label, 'text': self.getCurrentFile()}
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getCurrentFile()}}
         #return '%s set to %s' % (self.label, self.currentText())
         return r

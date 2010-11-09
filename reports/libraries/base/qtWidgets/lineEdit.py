@@ -84,9 +84,5 @@ class lineEdit(QLineEdit,widgetState):
             print 'Loading of lineEdit encountered an error.'
             
     def getReportText(self, fileDir):
-        if self.label:
-            r = {'label': self.label, 'text': self.text()}
-        else:
-            r = {'label': 'Line Edit', 'text': self.text()}
-        
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.text()}}
         return r

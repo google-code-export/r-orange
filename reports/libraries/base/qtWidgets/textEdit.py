@@ -55,11 +55,8 @@ class textEdit(QTextEdit,widgetState):
     def toPlainText(self):
         return str(QTextEdit.toPlainText(self).toAscii())
     def getReportText(self,fileDir):
-        if not self.label:
-            label = "TextBox with No Label"
-        else:
-            label = self.label
-        return {'label': label, 'text': redRReports.createLitralBlock(self.toPlainText())}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 
+        'text': redRReports.createLitralBlock(self.toPlainText())}}
         
     def printMe(self):
         printer = QPrinter()

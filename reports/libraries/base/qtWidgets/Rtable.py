@@ -107,15 +107,14 @@ class Rtable(widgetState,QTableView):
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):
-        # import os
-        # fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
-        # fname = fname.replace('\\', '/')
-        # print fname
-        #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
-        # self.R('txt<-capture.output(summary('+self.Rdata+'))')
-        # tmp = self.R('paste(txt, collapse ="\n      ")')
-        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.\n\n'
-        return text
+        if self.Rdata:
+            data = self.R('as.matrix(%s)'% self.Rdata)
+            colNames = self.R('colnames(%s)' % self.Rdata)
+            text = redRReports.createTable(data, columnNames = colNames)
+        else:
+            text = ''
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
+
 
 class MyTableModel(QAbstractTableModel): 
     def __init__(self, Rdata, parent,editable=False): 

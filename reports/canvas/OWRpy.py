@@ -194,36 +194,23 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         children = self.controlArea.children() + self.bottomAreaRight.children() + self.bottomAreaCenter.children() + self.bottomAreaLeft.children()
         print 'OWRpy= ',children
         #import re
-        reportData = []
+        reportData = {}
         for i in children:
-            
-            if isinstance(i, widgetState) and i.includeInReports:
+            if isinstance(i, widgetState):
                 d = i.getReportText(fileDir)
-                if type(d) is list:
-                    reportData = reportData + d
-                elif d:
-                    reportData.append(d)
+                if type(d) is dict:
+                    reportData.update(d)
+                # dd = []
+                # if type(d) is list:
+                    # for x in d:
+                        # x['includeInReports'] = i.includeInReports
+                        # dd.append(x)
+                    # reportData = reportData + dd
+                # elif d:
+                    # d['includeInReports'] = i.includeInReports
+                    # reportData.append(d)
         
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(reportData)
-        # raise Exception
-        
-        arrayOfArray = []
-        for d in reportData:
-            if type(d) is dict:
-                arrayOfArray.append([d['label'], d['text']])
-            elif type(d) is list:
-                for x in d:
-                    arrayOfArray.append([x['label'], x['text']])
-                    
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(arrayOfArray)
-        text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
-        tableName='Parameters')
-        print text
-        return text        
+        return reportData
 
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)

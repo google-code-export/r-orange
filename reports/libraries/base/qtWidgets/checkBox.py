@@ -10,9 +10,9 @@ class checkBox(widgetBox,widgetState):
     buttons = None,toolTips = None, setChecked=None,
     orientation='vertical',callback = None, **args):
         
-        widgetState.__init__(self,label,includeInReports)
-        widgetBox.__init__(self,widget,orientation=orientation)
         
+        widgetBox.__init__(self,widget,orientation=orientation)
+        widgetState.__init__(self,label,includeInReports)
 
         if displayLabel:
             self.box = groupBox(self,label=label,orientation=orientation)
@@ -69,17 +69,13 @@ class checkBox(widgetBox,widgetState):
         
     def getReportText(self, fileDir):
         selected = self.getChecked()
-        if self.label:
-            if len(selected):
-                text='Checked: ' + ', '.join(selected)
-            else:
-                text= 'Nothing Checked'
-            r = {'label': self.label, 'text': text}
+
+        if len(selected):
+            text='Checked: ' + ', '.join(selected)
         else:
-            r = []
-            for c in self.getChecked():
-                r.append({'label': c, 'text': 'Checked'})
-            
+            text= 'Nothing Checked'
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
+        print '@@@@@@@@@@@@@@@@@@@@@@@', r
         #t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
         return r
 

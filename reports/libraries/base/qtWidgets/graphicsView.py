@@ -426,7 +426,7 @@ class graphicsView(QGraphicsView, widgetState):
         
         text = '.. image:: %s\n    :scale: 50%%\n\n' % imageFile
         
-        return {'label':self.image,'text':text}        
+        return {self.widgetName:{'includeInReports':self.includeInReports,'text':text}}        
         
     def saveAs(self, fileName, imageType):
         if self.query == '': return

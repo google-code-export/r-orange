@@ -38,19 +38,16 @@ class tabWidget(QTabWidget,widgetState):
         self.setCurrentIndex(data['currentIndex'])
         
     def getReportText(self,fileDir):
-        reportData = []
+        reportData = {}
         for name, tab in self.tabs.items():
             children = tab.children()
             for i in children:
-                if isinstance(i, widgetState) and i.includeInReports:
+                if isinstance(i, widgetState):
                     d = i.getReportText(fileDir)
-                    if type(d) is list:
-                        for k in range(len(d)):
+                    if type(d) is dict:
+                        for k,v in d.items():
                             d[k]['container'] = name
-                        reportData = reportData + d
-                    elif d:
-                        d['container'] = name
-                        reportData.append(d)
+                        reportData.update(d)
             
         
         return reportData
