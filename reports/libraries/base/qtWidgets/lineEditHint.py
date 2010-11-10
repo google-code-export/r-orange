@@ -1,17 +1,15 @@
-from redRGUI import widgetState
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, re, string, numpy
 from libraries.base.qtWidgets.lineEdit import lineEdit
 
 
-class lineEditHint(lineEdit,widgetState):        
+class lineEditHint(lineEdit):        
     def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', items = [], 
     toolTip = None,  width = 0, callback = None, **args):
         
         
-        widgetState.__init__(self,label,includeInReports)
+        #widgetState.__init__(self,label,includeInReports)
         lineEdit.__init__(self, widget = widget, label = label, displayLabel=displayLabel,
         orientation = orientation, toolTip = toolTip, width = width, **args)
         

@@ -12,18 +12,18 @@ class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None, displayLabel=True,includeInReports=True, 
     orientation='vertical', alignment=None, editable=True, printable=False,**args):
 
-        widgetState.__init__(self, label,includeInReports)
+        widgetState.__init__(self,widget, label,includeInReports)
 
-        QTextEdit.__init__(self,widget)
+        QTextEdit.__init__(self,self.controlArea)
         self.label = label
         if displayLabel:
-            self.hb = groupBox(widget,label=label,orientation=orientation)
+            self.hb = groupBox(self.controlArea,label=label,orientation=orientation)
         else:
-            self.hb = widgetBox(widget,orientation=orientation)
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
 
         self.hb.layout().addWidget(self)
         if alignment:
-            widget.layout().setAlignment(self.hb,alignment)
+            self.controlArea.layout().setAlignment(self.hb,alignment)
         if printable:
             button(self.hb, "Print", self.printMe)
             
@@ -31,12 +31,6 @@ class textEdit(QTextEdit,widgetState):
             self.setReadOnly(True)
         self.insertHtml(html)
         
-
-    def hide(self):
-        self.hb.hide()
-    def show(self):
-        self.hb.show()
-            
     def sizeHint(self):
         return QSize(10,10)
     def setCursorToEnd(self):

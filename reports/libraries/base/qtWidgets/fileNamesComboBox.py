@@ -1,4 +1,4 @@
-from redRGUI import widgetState
+#from redRGUI import widgetState
 
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
@@ -8,11 +8,12 @@ import os.path
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class fileNamesComboBox(comboBox,widgetState):
+class fileNamesComboBox(comboBox):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, 
     orientation='horizontal',callback = None, callback2 = None, **args):
 
-        widgetState.__init__(self, label, includeInReports)
+        #widgetState.__init__(self, widget, label, includeInReports)
+        
         comboBox.__init__(self,widget,label=label,displayLabel=displayLabel,
         items=None, orientation=orientation,
         callback=callback,callback2=callback2, **args)

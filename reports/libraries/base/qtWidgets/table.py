@@ -10,12 +10,12 @@ class table(widgetState,QTableWidget):
     data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
         
         
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,widget,label,includeInReports)
         
         if displayLabel:
-            mainBox = groupBox(widget,label=label, orientation='vertical')
+            mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
-            mainBox = widgetBox(widget,orientation='vertical')
+            mainBox = widgetBox(self.controlArea,orientation='vertical')
         
         QTableWidget.__init__(self,rows,columns,widget)
         mainBox.layout().addWidget(self)
@@ -24,15 +24,7 @@ class table(widgetState,QTableWidget):
         self.sortIndex = None
         self.oldSortingIndex = None
         self.data = None
-       ### should turn this into a function as all widgets use it to some degree
-        if widget and addToLayout and widget.layout():
-            widget.layout().addWidget(self)
-        elif widget and addToLayout:
-            try:
-                widget.addWidget(self)
-            except: # there seems to be no way to add this widget
-                pass
-                
+
         ###
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)

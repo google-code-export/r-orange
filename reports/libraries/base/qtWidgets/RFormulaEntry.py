@@ -12,16 +12,14 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class RFormulaEntry(groupBox, widgetState):
-    def __init__(self, parent, label = 'Formula Entry', displayLabel=True, includeInReports=True):
+class RFormulaEntry(widgetState):
+    def __init__(self, widget, label = 'Formula Entry', displayLabel=True, includeInReports=True):
         # make a widgetBox to hold everything
-        widgetState.__init__(self,label,includeInReports)
-        groupBox.__init__(self,parent,label=label)
+        widgetState.__init__(self,widget,label,includeInReports)
         
-        #box = groupBox(self, label = label)
-        box = self
+        box = groupBox(self.controlArea,label=label)
+
         ## add the elements to the box
-        
         #place the command keys
         self.buttonsBox = groupBox(box, label = "Formula Commands")
         self.plusButton = button(self.buttonsBox, "And (+)", callback = self.plusButtonClicked)

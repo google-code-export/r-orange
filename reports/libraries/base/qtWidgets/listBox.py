@@ -13,15 +13,15 @@ class listBox(QListWidget,widgetState):
     callback=None, toolTip = None, items = None, *args):
         
         
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,widget,label,includeInReports)
         QListWidget.__init__(self, *args)
         self.label = label
-        self.widget = widget
+        self.widget = self.controlArea
         if displayLabel:
-            self.hb = groupBox(widget,label=label,orientation=orientation)
+            self.hb = groupBox(self.controlArea,label=label,orientation=orientation)
             
         else:
-            self.hb = widgetBox(widget,orientation=orientation)
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
             
         self.hb.layout().addWidget(self)
         self.ogValue = value
@@ -49,11 +49,6 @@ class listBox(QListWidget,widgetState):
         
     def sizeHint(self):
         return self.defaultSizeHint
-    def hide(self):
-        self.hb.hide()
-    def show(self):
-        self.hb.show()
-        
     def startDrag(self, supportedActions):
         if not self.enableDragDrop: return
 

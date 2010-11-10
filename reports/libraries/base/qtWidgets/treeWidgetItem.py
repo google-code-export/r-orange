@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 
 class treeWidgetItem(QTreeWidgetItem, widgetState):
     def __init__(self, widget = None, stringList = None, toolTip = None, flags=None):
-        widgetState.__init__(self, 'treeWidgetItem',includeInReports=False)
+        widgetState.__init__(self,widget, 'treeWidgetItem',includeInReports=False)
         if stringList:
             QTreeWidgetItem.__init__(self, stringList)
         else:

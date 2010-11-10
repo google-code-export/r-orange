@@ -31,7 +31,7 @@ class rownames(OWRpy):
         self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
         widgetLabel(box,'Get row or column names from input object.')
         separator(box,height=10)
-        self.function =  radioButtons(box, 
+        self.function =  radioButtons(box, label='Row/Column',displayLabel=False,
         buttons=['Row Names','Column Names'],setChecked='Row Names', orientation='horizontal')
         separator(box,height=10)
 

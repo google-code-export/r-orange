@@ -11,23 +11,20 @@ class lineEdit(QLineEdit,widgetState):
     id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, textChangedCallBack=None,
     sp='shrinking', **args):
 
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,widget,label,includeInReports)
         QLineEdit.__init__(self,widget)
         
-        if widget:
-            if displayLabel:
-                self.hb = widgetBox(widget,orientation=orientation, spacing=2)
-                if sp == 'shrinking':
-                    self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-                widgetLabel(self.hb, label)
-                if width != -1:
-                    sb = widgetBox(self.hb)
-                    sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-                self.hb.layout().addWidget(self)
-                self.hasLabel = True
-            else:
-                widget.layout().addWidget(self)
-                self.hasLabel = False
+        if displayLabel:
+            self.hb = widgetBox(self.controlArea,orientation=orientation, spacing=2)
+            if sp == 'shrinking':
+                self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+            widgetLabel(self.hb, label)
+            if width != -1:
+                sb = widgetBox(self.hb)
+                sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            self.hb.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
         
         if toolTip and displayLabel: 
             self.hb.setToolTip(toolTip)
@@ -54,16 +51,6 @@ class lineEdit(QLineEdit,widgetState):
     
     def text(self):
         return str(QLineEdit.text(self).toAscii())
-    def hide(self):
-        if self.hasLabel:
-            self.hb.hide()
-        else:
-            QLineEdit.hide(self)
-    def show(self):
-        if self.hasLabel:
-            self.hb.show()
-        else:
-            QLineEdit.show(self)
     def widgetId(self):
         return self.id
     def widgetLabel(self):

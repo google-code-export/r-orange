@@ -12,15 +12,16 @@ class spinBox(QSpinBox,widgetState):
         
         self.widget = widget
         
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,widget,label,includeInReports)
         QSpinBox.__init__(self)
         self.label = label
         if displayLabel:
-            self.hb = widgetBox(widget,orientation=orientation)
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
             widgetLabel(self.hb, label)
             self.hb.layout().addWidget(self)
-        elif widget:
-            widget.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
+        
         if max:
             self.setMaximum(int(max))
         if min:
@@ -33,11 +34,6 @@ class spinBox(QSpinBox,widgetState):
         if callback:
             QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
         
-    def hide(self):
-        if self.hb:
-            self.hb.hide()
-        else:
-            QSpinBox.hide(self)
     def getSettings(self):
         value = self.value()
         prefix = self.prefix()
@@ -67,17 +63,6 @@ class spinBox(QSpinBox,widgetState):
         self.setMinimum(min)
         if value >= min and value <= max:
             self.setValue(value)
-    def hide(self):
-        if self.label:
-            self.hb.hide()
-        else:
-            QSpinBox.hide(self)
-    def show(self):
-        if self.label:
-            self.hb.show()
-        else:
-            QSpinBox.show(self)
-            
     def getReportText(self, fileDir):
         return {self.widgetName:{'includeInReports': self.includeInReports, 'text': str(self.value())}}
         

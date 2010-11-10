@@ -6,10 +6,10 @@ from PyQt4.QtGui import *
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
         
-        widgetState.__init__(self, 'tabWidget',includeInReports=True)
-        QTabWidget.__init__(self,widget)
-        if widget.layout():
-            widget.layout().addWidget(self)
+        widgetState.__init__(self,widget, 'tabWidget',includeInReports=True)
+        QTabWidget.__init__(self,self.controlArea)
+        self.controlArea.layout().addWidget(self)
+        
         self.tabs = {}
         
     def createTabPage(self, name, widgetToAdd = None, canScroll = False):

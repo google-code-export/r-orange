@@ -12,10 +12,10 @@ class commitButton(button,widgetState):
     disabled=0, icon=None, orientation='horizontal',
     toolTip=None, width = None, height = None, alignment=Qt.AlignLeft, toggleButton = False):
 
-        widgetState.__init__(self,label,includeInReports=False)
+        widgetState.__init__(self,widget,label,includeInReports=False)
         icon = str(redREnviron.directoryNames['libraryDir']+'/base/icons/fork.png').replace('\\', '/')
 
-        box = widgetBox(widget,orientation=orientation,includeInReports=False)
+        box = widgetBox(self.controlArea,orientation=orientation,includeInReports=False)
         
         box2 = widgetBox(box,orientation='vertical',margin=0,spacing=0)
         if processOnChange is dict:

@@ -7,11 +7,11 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 
 class splitter(QSplitter, widgetState):
     def __init__(self, widget = None, orientation = 'horizontal'):
-        widgetState.__init__(self, 'splitter',includeInReports=False)
+        widgetState.__init__(self,widget, 'splitter',includeInReports=False)
         QSplitter.__init__(self, widget)
         
-        if widget:
-            widget.layout().addWidget(self)
+        self.controlArea.layout().addWidget(self)
+        
         if orientation == 'horizontal':
             self.setOrientation(Qt.Horizontal)
         else:

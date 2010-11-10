@@ -47,14 +47,14 @@ class readFile(OWRpy):
         #signals
         self.outputs.addOutput('od1', 'Output Data', rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
-        area = widgetBox(self.controlArea,orientation='horizontal')       
+        area = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         #area.layout().setAlignment(Qt.AlignTop)
         options = widgetBox(area,orientation='vertical')
         options.setMaximumWidth(300)
         # options.setMinimumWidth(300)
         options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-        area.layout().setAlignment(options,Qt.AlignTop)
+        #area.layout().setAlignment(options,Qt.AlignTop)
         
         
         self.browseBox = groupBox(options, label="Load File", 
@@ -62,7 +62,6 @@ class readFile(OWRpy):
         box = widgetBox(self.browseBox,orientation='horizontal')
         self.filecombo = fileNamesComboBox(box, label='Files', displayLabel=False,
         orientation='horizontal',callback=self.scanNewFile)
-        
         button(box, label = 'Browse', callback = self.browseFile)
         
         self.fileType = radioButtons(options, label='File Type',
@@ -138,7 +137,7 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(True)
         
         
-        self.tableArea = groupBox(area)
+        self.tableArea = widgetBox(area)
         self.tableArea.setMinimumWidth(500)
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
@@ -171,7 +170,8 @@ class readFile(OWRpy):
         if not self.filecombo.getCurrentFile():
             widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
         for i in range(len(self.myColClasses)):
-            s = radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
+            s = radioButtons(self.columnTypes,label=self.colNames[i],displayLabel=False,
+            buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
             s.setChecked(self.myColClasses[i])
             if not self.filecombo.getCurrentFile():
@@ -358,7 +358,8 @@ class readFile(OWRpy):
                 self.dataTypes = []
                 
                 for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                    s = radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                    s = radioButtons(self.columnTypes,label=i,displayLabel=False,
+                    buttons=types,orientation='horizontal',callback=self.updateColClasses)
                     
                     # print k,i,str(v)
                     if str(v) in types:

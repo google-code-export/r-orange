@@ -27,8 +27,12 @@ class redRGraph(QwtPlot,widgetState):
     def __init__(self, widget, label,displayLabel=True,includeInReports=True,
     name = "None", showLegend=1, onSelectionCallback=None):
                
-        widgetState.__init__(self,label,includeInReports)
-        QwtPlot.__init__(self, widget)
+        widgetState.__init__(self,widget,label,includeInReports)
+        QwtPlot.__init__(self, self.controlArea)
+        #self.controlArea.setSizePolicy(QSizePolicy(QSizePolicy.Expanding ,QSizePolicy.Expanding))
+        self.controlArea.layout().addWidget(self)
+        
+        
         self.parentName = name
         #self.setWindowFlags(Qt.WResizeNoErase) #this works like magic.. no flicker during repaint!
         self.setAutoReplot(False)

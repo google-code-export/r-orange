@@ -24,15 +24,15 @@ class filterTable(widgetState, QTableView):
     onFilterCallback = None,
     callback=None):
         
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,widget,label,includeInReports)
         
         if displayLabel:
-            mainBox = groupBox(widget,label=label, orientation='vertical')
+            mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
-            mainBox = widgetBox(widget,orientation='vertical')
+            mainBox = widgetBox(self.controlArea,orientation='vertical')
         self.label = label
         
-        QTableView.__init__(self,widget)
+        QTableView.__init__(self,self.controlArea)
         mainBox.layout().addWidget(self)
         box = widgetBox(mainBox,orientation='horizontal')
         leftBox = widgetBox(box,orientation='horizontal')

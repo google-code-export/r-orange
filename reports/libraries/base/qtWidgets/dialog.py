@@ -7,8 +7,9 @@ from PyQt4.QtGui import *
 class dialog(QDialog,widgetState):
     def __init__(self, parent = None, 
     layout = 'vertical',title=None, callback = None):
-        widgetState.__init__(self, 'dialog',includeInReports=True)
         QDialog.__init__(self,parent)
+        widgetState.__init__(self, self, 'dialog',includeInReports=True)
+        
         
         if title:
             self.setWindowTitle(title)

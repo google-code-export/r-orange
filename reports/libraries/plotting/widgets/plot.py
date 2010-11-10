@@ -28,12 +28,19 @@ class plot(OWRpy):
         self.R('data <- data.frame(a=c(1,2,3,4),b=c(3,4,5,6))')
         self.RFunctionParam_x = 'data'
         
-
         self.plotArea = graphicsView2(self.controlArea,label='Plot', displayLabel=False)
         self.plotArea.plot(query = 'data', data = 'data')
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
+        # b = widgetBox(self.controlArea)
+        # widgetLabel(b,label='asdfasdf')
+        # childern = self.controlArea.children()
+        # for x in childern:
+           # if isinstance(x, widgetState):
+               # print x, x.__class__
+               # print 'aaaa', x.__dict__
+               # print x.getReportText('a')
         
     def processx(self, data):
         if data:
@@ -100,18 +107,18 @@ from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.checkBox import checkBox
 import RSession, redREnviron, datetime, os, time
-
+    
 
 class graphicsView2(QGraphicsView, widgetState):
     def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,parent,label,includeInReports)
         
-        QGraphicsView.__init__(self, parent)
-        if displayLabel:
-            self.controlArea = groupBox(parent,label=label, orientation='vertical')
-        else:
-            self.controlArea = widgetBox(parent,orientation='vertical')
+        QGraphicsView.__init__(self, self.controlArea)
+        # if displayLabel:
+            # self.controlArea = groupBox(parent,label=label, orientation='vertical')
+        # else:
+            # self.controlArea = widgetBox(parent,orientation='vertical')
         
         #self.controlArea = widgetBox(parent)
         self.topArea = widgetBox(self.controlArea,

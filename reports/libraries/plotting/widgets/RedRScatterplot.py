@@ -38,36 +38,38 @@ class RedRScatterplot(OWRpy):
         
         # GUI
         area = widgetBox(self.controlArea,orientation='horizontal')
-        options= groupBox(area,orientation='vertical')
+        
+        options= widgetBox(area,orientation='vertical')
         options.setMaximumWidth(250)
-        options.setMinimumWidth(250)
-        self.xColumnSelector = comboBox(options, label = 'X data', items=[],callback=self.onSourceChange)
-        self.yColumnSelector = comboBox(options, label = 'Y data', items=[],callback=self.onSourceChange)
-        self.paintCMSelector = comboBox(options, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
-        # self.replotCheckbox = checkBox(options, buttons = ['Reset Zoom On Selection'], 
-        # toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
-        # self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
+        # options.setMinimumWidth(250)
+        options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+        dataSelection = groupBox(options,orientation='vertical')
+        self.xColumnSelector = comboBox(dataSelection, label = 'X data', items=[],callback=self.onSourceChange)
+        self.yColumnSelector = comboBox(dataSelection, label = 'Y data', items=[],callback=self.onSourceChange)
+        self.paintCMSelector = comboBox(dataSelection, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
         
         # plot area
         plotarea = groupBox(area, label = "Graph")
-        plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        plotarea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
+        #plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
         self.graph = redRGraph(plotarea,label='Scatter Plot', displayLabel=False,
         onSelectionCallback=self.onSelectionCallback)
 
-        plotarea.layout().addWidget(self.graph)
+        #plotarea.layout().addWidget(self.graph)
         #self.zoomSelectToolbarBox = groupBox(self.GUIDialog, label = "Plot Tool Bar")
         
         separator(options,height=8)
-        buttonBox = widgetBox(options,orientation='vertical')
-        box1 = widgetBox(options,orientation='horizontal')
+        buttonBox = groupBox(options,orientation='vertical')
+        
+        box1 = widgetBox(buttonBox,orientation='horizontal')
         box1.layout().setAlignment(Qt.AlignRight)
         self.plotOnInput = checkBox(box1, label='commit', displayLabel=False,
         buttons = ['Plot on Change'],
         toolTips = ['Whenever X, Y or color data source changes plot the results.'])
         button(box1, label = "Plot", callback = self.plot, toolTip = 'Plot the data.')
         
-        box2 = widgetBox(options,orientation='horizontal')  
+        box2 = widgetBox(buttonBox,orientation='horizontal')  
         box2.layout().setAlignment(Qt.AlignRight)
         
         self.commitOnInput = checkBox(box2, label='commit', displayLabel=False,

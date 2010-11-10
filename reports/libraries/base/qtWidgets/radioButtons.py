@@ -5,20 +5,21 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class radioButtons(widgetBox,widgetState):
+class radioButtons(widgetState):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
     buttons=None,toolTips = None, setChecked = None,
     orientation='vertical',callback = None, **args):
         
-        widgetBox.__init__(self,widget,orientation=orientation,margin=0,spacing=0)
-        widgetState.__init__(self,label,includeInReports)
-        self.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        #widgetBox.__init__(self,widget,orientation=orientation,margin=0,spacing=0)
+        widgetState.__init__(self,widget,label,includeInReports,**args)
+        
+        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.label = label
         if displayLabel:
-            self.box = groupBox(self,label=label,orientation=orientation)
-            self.layout().addWidget(self.box)
+            self.box = groupBox(self.controlArea,label=label,orientation=orientation)
+            self.controlArea.layout().addWidget(self.box)
         else:
-            self.box = self
+            self.box = widgetBox(self.controlArea,orientation=orientation)
             
         self.buttons = QButtonGroup(self.box)
         for i,b in zip(range(len(buttons)),buttons):
@@ -56,12 +57,6 @@ class radioButtons(widgetBox,widgetState):
     def enable(self,buttons):
         for i in self.buttons.buttons():
             if i.text() in buttons: i.setEnabled(True)
-
-    def hide(self):
-        self.box.hide()
-    def show(self):
-        self.box.show()
-        
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}

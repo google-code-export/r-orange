@@ -10,17 +10,16 @@ class webViewBox(QtWebKit.QWebView,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
     url=None,orientation='vertical', followHere = False):
         
-        widgetState.__init__(self,label,includeInReports)
-        QtWebKit.QWebView.__init__(self,widget)
+        widgetState.__init__(self,widget,label,includeInReports)
+        QtWebKit.QWebView.__init__(self,self.controlArea)
         
-        if widget:
-            if displayLabel:
-                hb = widgetBox(widget,orientation=orientation)
-                widgetLabel(hb, label)
-                hb.layout().addWidget(self)
-            else:
-                widget.layout().addWidget(self)
-        
+        if displayLabel:
+            hb = widgetBox(self.controlArea,orientation=orientation)
+            widgetLabel(hb, label)
+            hb.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
+    
         self.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         if not followHere:
             self.connect(self, SIGNAL('linkClicked(QUrl)'), self.followLink)

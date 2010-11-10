@@ -50,13 +50,14 @@ class mergeR(OWRpy):
         self.sortOption = checkBox(self.bottomAreaLeft, label='Sort by Selected Column', displayLabel=False, 
         buttons = ['Sort by Selected Column'], 
         toolTips = ['logical. Should the results be sorted on the by columns?'])
-        self.bottomAreaLeft.layout().setAlignment(self.sortOption, Qt.AlignLeft)
+        self.sortOption.layout().setAlignment(Qt.AlignLeft)
+        
         self.mergeOptions = radioButtons(self.bottomAreaCenter,label='Type of merge', displayLabel=False,
         buttons=['A+B','B+A','AB'],setChecked='A+B',
         orientation='horizontal')
         
-        self.bottomAreaCenter.layout().setAlignment(self.mergeOptions, Qt.AlignCenter)
-
+        self.mergeOptions.layout().setAlignment(Qt.AlignCenter) 
+        
         self.commit = redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.run, 
         processOnChange=True,processOnInput=True)
         

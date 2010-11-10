@@ -17,13 +17,13 @@ import RSession, redREnviron, datetime, os, time
 class graphicsView(QGraphicsView, widgetState):
     def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
-        widgetState.__init__(self,label,includeInReports)
+        widgetState.__init__(self,parent,label,includeInReports)
         
-        QGraphicsView.__init__(self, parent)
+        QGraphicsView.__init__(self, self.controlArea)
         if displayLabel:
-            self.controlArea = groupBox(parent,label=label, orientation='vertical')
+            self.controlArea = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
-            self.controlArea = widgetBox(parent,orientation='vertical')
+            self.controlArea = widgetBox(self.controlArea,orientation='vertical')
         
         #self.controlArea = widgetBox(parent)
         self.topArea = widgetBox(self.controlArea)
@@ -32,7 +32,7 @@ class graphicsView(QGraphicsView, widgetState):
         self.middleArea.layout().addWidget(self)  # place the widget into the parent widget
         scene = QGraphicsScene()
         self.setScene(scene)
-        self.parent = parent
+        self.parent = self.controlArea
         self.widgetSelectionRect = None
         self.mainItem = None
         self.query = ''

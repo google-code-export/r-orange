@@ -7,19 +7,21 @@ from PyQt4.QtGui import *
 class groupBox(QGroupBox,widgetState):
     def __init__(self,widget, label = None, displayLabel=True, includeInReports=True,
     orientation='vertical', addSpace=False, 
-    sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop):
-        
+    sizePolicy = None, margin = -1, spacing = -1, flat = 0,alignment=Qt.AlignTop):        
         if label:
-            widgetState.__init__(self,label,includeInReports)
+            widgetState.__init__(self,widget,label,includeInReports)
         else:
-            widgetState.__init__(self,'Group Box',includeInReports)
+            widgetState.__init__(self,widget,'Group Box',includeInReports)
+        
         if displayLabel:
             QGroupBox.__init__(self,label)
         else:
             QGroupBox.__init__(self)
        
         
-        widget.layout().addWidget(self)
+        self.controlArea.layout().addWidget(self)
+        
+        self.controlArea.layout().setAlignment(alignment)            
 
         try:
             if isinstance(orientation, QLayout):
@@ -41,14 +43,14 @@ class groupBox(QGroupBox,widgetState):
         else:
             self.layout().setMargin(4)
         if addSpace and isinstance(addSpace, int):
-            separator(widget, 0, addSpace)
+            separator(self.controlArea, 0, addSpace)
         elif addSpace:
-            separator(widget)
+            separator(self.controlArea)
         
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
 
-        self.layout().setAlignment(alignment)
+        # self.layout().setAlignment(alignment)
 
     def delete(self):
         

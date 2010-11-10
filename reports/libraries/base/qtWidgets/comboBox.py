@@ -9,17 +9,17 @@ class comboBox(QComboBox,widgetState):
     items=None, itemIds=None,editable=False,
     orientation='horizontal',callback = None, callback2 = None, **args):
         
-        widgetState.__init__(self,label,includeInReports)
-        QComboBox.__init__(self,widget)
-        if widget:
-            if displayLabel:
-                self.hb = widgetBox(widget,orientation=orientation)
-                widgetLabel(self.hb, label)
-                self.hb.layout().addWidget(self)
-                self.hasLabel = True
-            else:
-                widget.layout().addWidget(self)
-                self.hasLabel = False
+        widgetState.__init__(self,widget,label,includeInReports)
+        QComboBox.__init__(self,self.controlArea)
+        
+        if displayLabel:
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
+            widgetLabel(self.hb, label)
+            self.hb.layout().addWidget(self)
+            self.hasLabel = True
+        else:
+            self.controlArea.layout().addWidget(self)
+            self.hasLabel = False
         self.label = label
 
         self.ids = [] 
@@ -35,16 +35,6 @@ class comboBox(QComboBox,widgetState):
         if callback2: # more overload for other functions
             QObject.connect(self, SIGNAL('activated(int)'), callback2)
 
-    def hide(self):
-        if self.hasLabel:
-            self.hb.hide()
-        else:
-            QComboBox.hide(self)
-    def show(self):
-        if self.hasLabel:
-            self.hb.show()
-        else:
-            QComboBox.show(self)
     def getSettings(self):
         items = []
         # print 'in comboBox get'
