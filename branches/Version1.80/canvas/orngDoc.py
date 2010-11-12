@@ -587,13 +587,6 @@ class SchemaDoc(QWidget):
         if os.path.splitext(str(name))[1].lower() != ".rrts": name = name + '.rrts'
         return self.save(str(name),template=True)
   
-    def toZip(self, file, filename):
-        zip_file = zipfile.ZipFile(filename, 'w')
-        if os.path.isfile(file):
-            zip_file.write(file)
-        else:
-            self.addFolderToZip(zip_file, file)
-        zip_file.close()
 
     def addFolderToZip(self, zip_file, folder): 
         for file in os.listdir(folder):
@@ -604,21 +597,13 @@ class SchemaDoc(QWidget):
             elif os.path.isdir(full_path):
                 print 'Entering folder: ' + str(full_path)
                 self.addFolderToZip(zip_file, full_path)  
-    def addFolderToZip(self,myZipFile,folder):
-        import glob
-        folder = folder.encode('ascii') #convert path to ascii for ZipFile Method
-        for file in glob.glob(folder+"/*"):
-                if os.path.isfile(file):
-                    print file
-                    myZipFile.write(file, os.path.basename(file), zipfile.ZIP_DEFLATED)
-                elif os.path.isdir(file):
-                    addFolderToZip(myZipFile,file)
+   
 
     def createZipFile(self,zipFilename,files,folders):
         
         myZipFile = zipfile.ZipFile( zipFilename, "w" ) # Open the zip file for writing 
         for file in files:
-            file = file.encode('ascii') #convert path to ascii for ZipFile Method
+            #file = file.encode('ascii') #convert path to ascii for ZipFile Method
             if os.path.isfile(file):
                 (filepath, filename) = os.path.split(file)
                 myZipFile.write( file, filename, zipfile.ZIP_DEFLATED )
