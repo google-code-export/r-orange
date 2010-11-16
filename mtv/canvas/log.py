@@ -15,7 +15,7 @@
     # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import SQLiteSession, redREnviron, os
+import SQLiteSession, redREnviron, os, traceback, sys
 from datetime import tzinfo, timedelta, datetime, time
 _logDB = redREnviron.directoryNames['logDB']
 handler = SQLiteSession.SQLiteHandler(defaultDB = _logDB)
@@ -60,11 +60,11 @@ def log(table, severity, errorType = 2, comment = ""):
             errorType = 'Message'
         elif errorType == 4:
             errorType = 'Warning'
-
-    handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment))
+    tb = repr(traceback.format_stack())
+    handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, ''.join(tb)))
     
     if severity >= redREnviron.settings['minSeverity']:
-        logOutput('%s level %s: %s' % (errorType, severity, comment))
+        logOutput('%s level %s: %s %s' % (errorType, severity, tb[-1], comment))
     
 def logException(string):
     global _exceptionManager
@@ -85,9 +85,34 @@ def logOutput(string):
 def logDB():
     return _logDB
 def clearDB():
-    handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")", force = True)
+    handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\", \"Trackback\")", force = True)
 def initializeTables():
-    handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\")")
+    handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\", \"Trackback\")")
 
+class LogHandler():
+    def __init__(self):
+        self.defaultSysOutHandler = sys.stdout
+        self.catchOutput(1)
+    def catchOutput(self, catch):
+        if catch:    sys.stdout = self
+        else:         sys.stdout = self.defaultSysOutHandler
+    
+    def safe_str(self,obj):
+        try:
+            return str(obj)
+        except UnicodeEncodeError:
+            # obj is unicode
+            return unicode(obj).encode('unicode_escape')
+    
+    def write(self, text):
+        #sys.stdout.write(text)
+        if not redREnviron.settings['debugMode']: return
+        import re, log
+        m = re.search('^(\|(#+)\|\s?)(.*)',text)
 
+        if m:
+            log.log(3, len(m.group(2)), 2, text)
+        else:
+            log.log(3, 1, 2, text)
+lh = LogHandler()
 initializeTables()

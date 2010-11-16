@@ -194,58 +194,59 @@ class OutputWindow(QDialog):
             self.checked = False
         
     def uploadException(self,err):
-        import httplib,urllib
-        import sys,pickle,os, re
-        #print redREnviron.settings['askToUploadError'], 'askToUploadError'
-        #print redREnviron.settings['uploadError'], 'uploadError'
-        if not redREnviron.settings['askToUploadError']:
-            res = redREnviron.settings['uploadError']
-        else:
-            self.msg = redRdialog(parent=self,title='Red-R Error')
-            
-            error = redRwidgetBox(self.msg,orientation='vertical')
-            redRwidgetLabel(error, label='Do you wish to report the Error Log?')
-            buttons = redRwidgetBox(error,orientation='horizontal')
+        try:
+            import httplib,urllib
+            import sys,pickle,os, re
+            #print redREnviron.settings['askToUploadError'], 'askToUploadError'
+            #print redREnviron.settings['uploadError'], 'uploadError'
+            if not redREnviron.settings['askToUploadError']:
+                res = redREnviron.settings['uploadError']
+            else:
+                self.msg = redRdialog(parent=self,title='Red-R Error')
+                
+                error = redRwidgetBox(self.msg,orientation='vertical')
+                redRwidgetLabel(error, label='Do you wish to report the Error Log?')
+                buttons = redRwidgetBox(error,orientation='horizontal')
 
-            redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
-            redRbutton(buttons, label = 'No', callback = self.uploadNo)
-            self.checked = False
-            self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
-            res = self.msg.exec_()
-            redREnviron.settings['uploadError'] = res
-        #print res
-        if res == 1:
-            #print 'in res'
-            err['version'] = redREnviron.version['SVNVERSION']
-            err['type'] = redREnviron.version['TYPE']
-            err['redRversion'] = redREnviron.version['REDRVERSION']
-            #print err['traceback']
-            
-            
-            ##err['output'] = self.allOutput
-            if os.name == 'nt':
-                err['os'] = 'Windows'
-            # else:
-                # err['os'] = 'Not Specified'
-            if redREnviron.settings['canContact']:
-                err['email'] = redREnviron.settings['email']
-            # else:
-                # err['email'] = 'None; no contact'
-            #err['id'] = redREnviron.settings['id']
-            #print err, 'Error'
-            params = urllib.urlencode(err)
-            headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = httplib.HTTPConnection("localhost",80)
-            conn.request("POST", "/errorReport.php", params,headers)
-            #print err
-            # response = conn.getresponse()
-            # print response.status, response.reason
-            # data = response.read()
-            # print data
-            # conn.close()
-        else:
-            return
-        
+                redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
+                redRbutton(buttons, label = 'No', callback = self.uploadNo)
+                self.checked = False
+                self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
+                res = self.msg.exec_()
+                redREnviron.settings['uploadError'] = res
+            #print res
+            if res == 1:
+                #print 'in res'
+                err['version'] = redREnviron.version['SVNVERSION']
+                err['type'] = redREnviron.version['TYPE']
+                err['redRversion'] = redREnviron.version['REDRVERSION']
+                #print err['traceback']
+                
+                
+                ##err['output'] = self.allOutput
+                if os.name == 'nt':
+                    err['os'] = 'Windows'
+                # else:
+                    # err['os'] = 'Not Specified'
+                if redREnviron.settings['canContact']:
+                    err['email'] = redREnviron.settings['email']
+                # else:
+                    # err['email'] = 'None; no contact'
+                #err['id'] = redREnviron.settings['id']
+                #print err, 'Error'
+                params = urllib.urlencode(err)
+                headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+                conn = httplib.HTTPConnection("localhost",80)
+                conn.request("POST", "/errorReport.php", params,headers)
+                #print err
+                # response = conn.getresponse()
+                # print response.status, response.reason
+                # data = response.read()
+                # print data
+                # conn.close()
+            else:
+                return
+        except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         print 'Exception Occured, please see the output for more details.\n'
         if redREnviron.settings["focusOnCatchException"]:

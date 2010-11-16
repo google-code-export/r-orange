@@ -15,7 +15,7 @@ import redREnviron
 import RSession
 import redRExceptionHandling
 import orngRegistry, OWGUI
-import redROutput
+import redROutput, redRSaveLoad
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
 import redRReports, redRObjects
@@ -181,8 +181,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
-        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", self.schema.showAllWidgets)
-        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", self.schema.closeAllWidgets)
+        self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", redRObjects.showAllWidgets)
+        self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", redRObjects.closeAllWidgets)
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
@@ -250,6 +250,7 @@ class OrangeCanvasDlg(QMainWindow):
                 self.startSetupWizard()
         except:
             pass
+        redRSaveLoad.setCanvasDlg(self)
         qApp.processEvents()
 
     def updateDock(self,ev):
@@ -420,7 +421,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetPopup.addSeparator()
         rename = self.widgetPopup.addAction( "&Rename", self.schema.activeTab().renameActiveWidget, Qt.Key_F2)
         delete = self.widgetPopup.addAction("Remove", self.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
-        copy = self.widgetPopup.addAction("&Copy", self.schema.copy, Qt.CTRL+Qt.Key_C)
+        copy = self.widgetPopup.addAction("&Copy", redRSaveLoad.copy, Qt.CTRL+Qt.Key_C)
         cloneToTab = self.widgetPopup.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_V)
         
         self.widgetPopup.setEnabled(0)
@@ -453,7 +454,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
         self.schema.clear()
-        self.schema.loadDocument(str(name), freeze = 0, importing = False)
+        redRSaveLoad.loadDocument(str(name), freeze = 0, importing = False)
         self.addToRecentMenu(str(name))
 
 
@@ -474,8 +475,7 @@ class OrangeCanvasDlg(QMainWindow):
             self.schema.loadDocument(fullName)
 
     def menuItemSave(self):
-        
-        self.schema.saveDocument()
+        redRSaveLoad.saveDocumentAs()
     def reloadWidgets(self): # should have a way to set the desired tab location 
         
         self.widgetRegistry = orngRegistry.readCategories()
@@ -490,10 +490,10 @@ class OrangeCanvasDlg(QMainWindow):
         redRGUI.registerQTWidgets()
         
     def menuItemSaveAs(self):
-        self.schema.saveDocumentAs()
+        redRSaveLoad.saveDocumentAs()
 
     def menuItemSaveTemplate(self):
-        self.schema.saveTemplate()
+        redRSaveLoad.saveTemplate()
     def menuItemSaveAsAppButtons(self):
         return ## depricated
         self.schema.saveDocumentAsApp(asTabs = 0)
@@ -541,7 +541,7 @@ class OrangeCanvasDlg(QMainWindow):
     def openRecentFile(self, index):
         if len(redREnviron.settings["RecentFiles"]) >= index:
             self.schema.clear()
-            self.schema.loadDocument(redREnviron.settings["RecentFiles"][index-1])
+            redRSaveLoad.loadDocument(redREnviron.settings["RecentFiles"][index-1])
             self.addToRecentMenu(redREnviron.settings["RecentFiles"][index-1])
 
     def addToRecentMenu(self, name):
@@ -774,7 +774,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         if closed:
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
-            self.schema.closeAllWidgets() # close all the widget first so their global data is saved
+            redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
             #self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.

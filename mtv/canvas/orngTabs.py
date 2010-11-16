@@ -8,7 +8,7 @@ import os.path, sys
 from string import strip, count, replace
 import orngDoc, redRExceptionHandling, orngRegistry, redRObjects
 #from orngSignalManager import InputSignal, OutputSignal
-import OWGUIEx
+import OWGUIEx, redRSaveLoad
 import redREnviron, log
 import xml.dom.minidom
 from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
@@ -575,7 +575,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         if '.rrts' in text: ## this is a template, we should load this and not add the widget
             for action in self.templateActions:
                 if action.templateInfo.name == text:
-                    self.canvasDlg.schema.loadTemplate(action.templateInfo.file)
+                    redRSaveLoad.loadTemplate(action.templateInfo.file)
                     return
         else: ## if there isn't a .rrts in the filename then we should proceed as normal
             for action in self.actions: # move through all of the actions in the actions list

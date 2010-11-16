@@ -58,6 +58,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.packagesLoaded = 0
         self.widgetRHistory = []
         self.reportOrder = None
+        self.tempID = None
         
 
 

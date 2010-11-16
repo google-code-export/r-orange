@@ -15,20 +15,21 @@ class OutputHandler:
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
             if id not in self.outputSignals.keys():
+                log.log(1, 9, 3, 'Signal Manager connectSignal: id not in output keys')
                 return False
             if not signal or signal == None:
+                log.log(1, 9, 3, 'Signal Manager connectSignal: no signal or signal is None')
                 return False
             self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
             # now send data through
             signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
+            redRObjects.addLine(self.parent, signal['parent'])
             if process:
                 #print 'processing signal'
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
-            
-            #else:
-                #print '\n\n#######################\n\nprocessing supressed\n\n###########################\n\n'
             return True
-        except:
+        except Exception as inst:
+            log.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % str(inst))
             return False
     def outputIDs(self):
         return self.outputSignals.keys()
@@ -268,7 +269,7 @@ class OutputHandler:
                 
             
         return data
-    def setOutputs(self, data):
+    def setOutputs(self, data, tmp = False):
         for (key, value) in data.items():
             if key not in self.outputSignals.keys():
                 #print 'Signal does not exist'
@@ -276,13 +277,14 @@ class OutputHandler:
             ## find the signal from the widget and connect it
             for (vKey, vValue) in value['connections'].items():
                 ### find the widget
-                for widget in self.parent.signalManager.widgets():
-                    if widget.widgetID == vValue['parentID']:
-                        widget = widget
-                        break
-                        
+                if not tmp:
+                    widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])
+                elif tmp:
+                    widget = redRObjects.getWidgetInstanceByTempID(vValue['parentID'])
                 inputSignal = widget.inputs.getSignal(vValue['id'])
                 self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
+                if tmp:
+                    self.propogateNone(ask = False)
     def linkingWidgets(self):
         widgets = []
         for (i, s) in self.outputSignals.items():
@@ -292,7 +294,7 @@ class OutputHandler:
         return widgets
     def propogateNone(self, ask = True):    
         ## send None through all of my output channels
-        
+        log.log(1, 6, 3, 'Propagating None through signal')
         for id in self.outputIDs():
             #print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
             self.parent.send(id, None)

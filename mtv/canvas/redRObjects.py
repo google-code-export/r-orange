@@ -27,7 +27,14 @@ _canvasTabs = {}
 _canvasView = {}
 _canvasScene = {}
 _activeTab = ''
-
+schemaDoc = None
+canvasDlg = None
+def setSchemaDoc(doc):
+    global schemaDoc
+    schemaDoc = doc
+def setCanvasDlg(dlg):
+    global canvasDlg
+    canvasDlg = dlg
 def readCategories():
     global _widgetRegistry
     _widgetRegistry = orngRegistry.readCategories()
@@ -186,7 +193,7 @@ def closeAllWidgets():
     for k, i in _widgetInstances.items():
         i.close()
         
-def addInstance(sm, info, settings, insig, outsig, id = None):
+def addInstance(sm, info, settings, insig, outsig):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
@@ -221,26 +228,32 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     #instance.canvasWidget = self
     instance.widgetInfo = info
     
-    if id == None:
-        if instance.widgetID in _widgetInstances.keys(): ## this shouldn't happen but we will catch it, it actually occurs on widget duplication.
-        
-            id = str(time.time())
-            instance.resetRvariableNames(id)
-        else:
-            id = instance.widgetID
-    else:
-        instance.resetRvariableNames(id)
+    id = instance.widgetID
+    if id in _widgetInstances.keys():
+        ## this is interesting since we aren't supposed to have this, just in case, we throw a warning
+        log.log(1, 7, 3, 'Warning: widget id already in the keys, setting new widget instance')
+        id = str(time.time())
+        instance.widgetID = id
+        instance.variable_suffix = '_' + instance.widgetID
+        instance.resetRvariableNames()
     _widgetInstances[id] = instance
     
     return id
 def getWidgetInstanceByID(id):
     global _widgetInstances
-    return _widgetInstances[id]
-
+    try:
+        return _widgetInstances[id]
+    except Exception as inst:
+        log.log(1, 9, 1, 'Error in locating widget %s, available widget ID\'s are %s, %s' % (id, _widgetInstances.keys(), str(inst)))
+def getWidgetInstanceByTempID(id):
+    global _widgetInstances
+    for w in _widgetInstances.values():
+        if w.tempID == id:
+            return w
 def instances(wantType = 'list'):
     global _widgetInstances
     if wantType == 'list':## return all of the instances in a list
-        return [w for (k, w) in _widgetInstances.items()]
+        return _widgetInstances.values()
     else:
         return _widgetInstances
 def removeWidgetInstanceByID(id):
@@ -285,8 +298,10 @@ def getLine(outIcon, inIcon):  ## lines are defined by an in icon and an out ico
         if (ll[1] == outIcon) and (ll[2] == inIcon):
             return ll[0]
     return None
-def addCanvasLine(outWidget, inWidget, doc, enabled = -1):
-    line = orngCanvasItems.CanvasLine(doc.signalManager, doc.canvasDlg, doc.activeTab(), outWidget, inWidget, doc.activeCanvas(), activeTabName())
+def addCanvasLine(outWidget, inWidget, enabled = -1):
+    global schemaDoc
+    log.log(1, 6, 3, 'Adding canvas line')
+    line = orngCanvasItems.CanvasLine(schemaDoc.signalManager, schemaDoc.canvasDlg, schemaDoc.activeTab(), outWidget, inWidget, schemaDoc.activeCanvas(), activeTabName())
     _lines[str(time.time())] = line
     if enabled:
         line.setEnabled(1)
@@ -298,30 +313,34 @@ def addCanvasLine(outWidget, inWidget, doc, enabled = -1):
     inWidget.addInLine(line)
     inWidget.updateTooltip()
     return line
-def addLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName, doc, enabled = 1, process = True, loading = False):
+def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
+        global schemaDoc
+        log.log(1, 6, 3, 'Adding line outWidget %s, inWidget %s' % (outWidgetInstance.widgetID, inWidgetInstance.widgetID))
         ## given an out and in instance connect a line to all of the icons with those instances.
         tabIconStructure = getIconsByTab()
         ot = activeTabName()
         owi = outWidgetInstance
         iwi = inWidgetInstance
         for tname, icons in tabIconStructure.items():
-            doc.setTabActive(tname)
+            schemaDoc.setTabActive(tname)
             o = None
             i = None
+            log.log(1, 6, 3, 'Available icons are %s' % icons)
             for ic in icons:
                 if ic.instance() == iwi:
                     i = ic
+                    log.log(1, 6, 3, 'found in widget %s' % ic)
                 if ic.instance() == owi:
                     o = ic
-                    
+                    log.log(1, 6, 3, 'found out widget %s' % ic)
             if i!= None and o != None:  # this means that there are the widget icons in question in the canvas so we should add a line between them.
-                
-        
                 line = getLine(o, i)
+                log.log(1, 6, 3, 'the matching line is %s' % line)
                 if not line:
-                    line = addCanvasLine(o, i, doc, enabled = enabled)
+                    line = addCanvasLine(o, i, enabled = enabled)
                     line.refreshToolTip()
-        doc.setTabActive(ot)
+            
+        schemaDoc.setTabActive(ot)
         return 1
 def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName):
         tabIconStructure = getIconsByTab()
