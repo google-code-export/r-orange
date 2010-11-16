@@ -84,11 +84,11 @@ class OutputWindow(QDialog):
         
     def processTable(self):
         inj = []
-        if str(self.typeCombo.currentText()) != 'No Filter':
+        if unicode(self.typeCombo.currentText()) != 'No Filter':
             inj.append('ErrorType == \"%s\"' % self.typeCombo.currentText())
-        if str(self.tableCombo.currentText()) != 'All':
+        if unicode(self.tableCombo.currentText()) != 'All':
             inj.append('OutputDomain == \"%s\"' % self.tableCombo.currentText())
-        inj.append('Severity >= %s' % str(self.minSeverity.currentText()))
+        inj.append('Severity >= %s' % unicode(self.minSeverity.currentText()))
         query = "SELECT * FROM All_Output WHERE "+" AND ".join(inj)+" ORDER BY k DESC LIMIT %s" % (self.maxRecords.text())
         response = self.errorHandler.execute(query = query)
         #print query
@@ -106,12 +106,12 @@ class OutputWindow(QDialog):
         s = '<h2>%s</h2>' % self.tableCombo.currentText()
         s+= '<table border="1" cellpadding="3">'
         s+= '  <tr><td><b>'
-        s+= '    </b></td><td><b>'.join(['Log ID', 'Output Category', 'Time Stamp', 'Session ID', 'Severity', 'Message Type', 'Message'])
+        s+= '    </b></td><td><b>'.join(['Log ID', 'Output Category', 'Time Stamp', 'Session ID', 'Severity', 'Message Type', 'Message', 'Traceback'])
         s+= '  </b></td></tr>'
         
         for row in response:
             s+= '  <tr><td>'
-            s+= '    </td><td>'.join([str(i) for i in row])
+            s+= '    </td><td>'.join([unicode(i) for i in row])
             s+= '  </td></tr>'
         s+= '</table>'
         return s
@@ -160,13 +160,13 @@ class OutputWindow(QDialog):
     def widgetEvents(self, text, eventVerbosity = 1):
         if redREnviron.settings["outputVerbosity"] >= eventVerbosity:
             if text != None:
-                self.write(str(text))
+                self.write(unicode(text))
             self.canvasDlg.setStatusBarEvent(QString(text))
 
     # simple printing of text called by print calls
-    def safe_str(self,obj):
+    def safe_unicode(self,obj):
         try:
-            return str(obj)
+            return unicode(obj)
         except UnicodeEncodeError:
             # obj is unicode
             return unicode(obj).encode('unicode_escape')
@@ -178,7 +178,7 @@ class OutputWindow(QDialog):
         pass
     
     def getSafeString(self, s):
-        return str(s).replace("<", "&lt;").replace(">", "&gt;")
+        return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
     def uploadYes(self):
         self.msg.done(1)
@@ -263,7 +263,7 @@ class OutputWindow(QDialog):
         toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]
         
         if redREnviron.settings["printExceptionInStatusBar"]:
-            self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
+            self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( unicode(type) , t))
 
         
         cursor = QTextCursor(self.exceptionText.textCursor())                # clear the current text selection so that
@@ -275,7 +275,7 @@ class OutputWindow(QDialog):
         self.exceptionText.setTextCursor(cursor)
         
         if redREnviron.settings["writeLogFile"]:
-            self.logFile.write(str(text) + "<br>\n")
+            self.logFile.write(unicode(text) + "<br>\n")
         
         self.uploadException(toUpload)
 

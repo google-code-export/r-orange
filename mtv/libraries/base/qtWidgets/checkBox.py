@@ -35,7 +35,7 @@ class checkBox(widgetBox,widgetState):
             
     def setChecked(self,ids):
         for i in self.buttons.buttons():
-            if str(i.text().toAscii()) in ids: i.setChecked(True)
+            if unicode(i.text().toAscii()) in ids: i.setChecked(True)
             else: i.setChecked(False)
     def checkAll(self):
         for i in self.buttons.buttons():
@@ -47,10 +47,10 @@ class checkBox(widgetBox,widgetState):
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
-            if i.isChecked(): checked.append(str(i.text().toAscii()))
+            if i.isChecked(): checked.append(unicode(i.text().toAscii()))
         return checked
     def buttonAt(self,ind):
-        return str(self.buttons.button(ind).text().toAscii())
+        return unicode(self.buttons.button(ind).text().toAscii())
         
     def hide(self):
         self.box.hide()

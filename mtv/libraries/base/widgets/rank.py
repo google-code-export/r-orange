@@ -37,18 +37,18 @@ class rank(OWRpy):
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': 
+        if unicode(self.RFunctionParam_x) == '': 
             self.status.setText('No data')
             return
         injection = []
-        if str(self.RFunctionParamties_method_comboBox.currentText()) != '':
-            string = 'ties.method="'+str(self.RFunctionParamties_method_comboBox.currentText())+'"'
+        if unicode(self.RFunctionParamties_method_comboBox.currentText()) != '':
+            string = 'ties.method="'+unicode(self.RFunctionParamties_method_comboBox.currentText())+'"'
             injection.append(string)
-        # if str(self.RFunctionParamna_last_lineEdit.text()) != '':
-            # string = 'na.last='+str(self.RFunctionParamna_last_lineEdit.text())
+        # if unicode(self.RFunctionParamna_last_lineEdit.text()) != '':
+            # string = 'na.last='+unicode(self.RFunctionParamna_last_lineEdit.text())
             # injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['rank']+'<-rank(x='+str(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
+        self.R(self.Rvariables['rank']+'<-rank(x='+unicode(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
         newData = redRRMatrix(data = 'as.matrix('+self.Rvariables['rank']+')')
         self.rSend("id0", newData)
         

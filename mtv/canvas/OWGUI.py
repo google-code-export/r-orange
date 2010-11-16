@@ -127,7 +127,7 @@ class SpinBoxWFocusOut(QSpinBox):
             self.enterButton.hide()
             self.placeHolder.show()
             if self.cback:
-                self.cback(int(str(self.text())))
+                self.cback(int(unicode(self.text())))
             if self.cfunc:
                 self.cfunc()
 
@@ -230,7 +230,7 @@ class DoubleSpinBoxWFocusOut(QDoubleSpinBox):
             self.enterButton.hide()
             self.placeHolder.show()
             if self.cback:
-                self.cback(float(str(self.text()).replace(",", ".")))
+                self.cback(float(unicode(self.text()).replace(",", ".")))
             if self.cfunc:
                 self.cfunc()
 
@@ -766,7 +766,7 @@ class OrangeListBox(QListWidget):
         else:
             selectedItems = getdeepattr(self.widget, self.ogValue, default = [])
 
-        mime.setText(str(selectedItems))
+        mime.setText(unicode(selectedItems))
         mime.source = self
         drag.setMimeData(mime)
         drag.start(Qt.MoveAction)
@@ -801,7 +801,7 @@ class OrangeListBox(QListWidget):
                 index = self.count()
 
             source = ev.mimeData().source
-            selectedItemIndices = eval(str(ev.mimeData().text()))
+            selectedItemIndices = eval(unicode(ev.mimeData().text()))
 
             if self.ogLabels != None and self.ogValue != None:
                 allSourceItems = getdeepattr(source.widget, source.ogLabels, default = [])
@@ -989,7 +989,7 @@ class Searcher:
         gs = self.master.mapToGlobal(QPoint(0, 0))
         gl = self.control.mapToGlobal(QPoint(0, 0))
         t.move(gl.x()-gs.x(), gl.y()-gs.y())
-        self.allItems = [str(self.control.text(i)) for i in range(self.control.count())]
+        self.allItems = [unicode(self.control.text(i)) for i in range(self.control.count())]
         le = SearchLineEdit(t, self)
         self.lb = QListBox(t)
         for i in self.allItems:
@@ -1003,7 +1003,7 @@ class Searcher:
         QObject.connect(self.lb, SIGNAL("clicked(QListBoxItem *)"), self.mouseClicked)
 
     def textChanged(self, s):
-        s = str(s)
+        s = unicode(s)
         self.lb.clear()
         for i in self.allItems:
             if s.lower() in i.lower():
@@ -1019,7 +1019,7 @@ class Searcher:
         self.conclude(item.text())
 
     def conclude(self, valueQStr):
-        value = str(valueQStr)
+        value = unicode(valueQStr)
         index = self.allItems.index(value)
         self.control.setCurrentItem(index)
         if self.control.cback:
@@ -1474,12 +1474,12 @@ class CallFrontComboBox(ControlledCallFront):
             value = self.attribute2controlDict.get(value, value)
             if self.valType:
                 for i in range(self.control.count()):
-                    if self.valType(str(self.control.itemText(i))) == value:
+                    if self.valType(unicode(self.control.itemText(i))) == value:
                         self.control.setCurrentIndex(i)
                         return
                 values = ""
                 for i in range(self.control.count()):
-                    values += str(self.control.itemText(i)) + (i < self.control.count()-1 and ", " or ".")
+                    values += unicode(self.control.itemText(i)) + (i < self.control.count()-1 and ", " or ".")
                 log.log(1, 9, 1, "unable to set %s to value '%s'. Possible values are %s" % (self.control, value, values))
                 #import traceback
                 #traceback.print_stack()

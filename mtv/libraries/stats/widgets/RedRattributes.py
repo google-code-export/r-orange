@@ -37,10 +37,10 @@ class RedRattributes(OWRpy):
 		else:
 			self.RFunctionParam_obj=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_obj) == '': return
+		if unicode(self.RFunctionParam_obj) == '': return
 		injection = []
 		inj = ','.join(injection)
-		self.R(self.Rvariables['attributes']+'<-attributes(obj='+str(self.RFunctionParam_obj)+','+inj+')')
+		self.R(self.Rvariables['attributes']+'<-attributes(obj='+unicode(self.RFunctionParam_obj)+','+inj+')')
 		self.R('txt<-capture.output('+self.Rvariables['attributes']+')')
 		self.RoutputWindow.clear()
 		tmp = self.R('paste(txt, collapse ="\n")')

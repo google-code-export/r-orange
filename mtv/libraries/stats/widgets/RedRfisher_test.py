@@ -45,27 +45,27 @@ class RedRfisher_test(OWRpy):
 		else:
 			self.RFunctionParam_x=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_x) == '': return
+		if unicode(self.RFunctionParam_x) == '': return
 		injection = []
-		# if str(self.RFunctionParamcontrol_lineEdit.text()) != '':
-			# string = 'control='+str(self.RFunctionParamcontrol_lineEdit.text())+''
+		# if unicode(self.RFunctionParamcontrol_lineEdit.text()) != '':
+			# string = 'control='+unicode(self.RFunctionParamcontrol_lineEdit.text())+''
 			# injection.append(string)
-		if str(self.RFunctionParamB_lineEdit.text()) != '':
-			string = 'B='+str(self.RFunctionParamB_lineEdit.text())+''
+		if unicode(self.RFunctionParamB_lineEdit.text()) != '':
+			string = 'B='+unicode(self.RFunctionParamB_lineEdit.text())+''
 			injection.append(string)
-		injection.append('hybrid ='+ str(self.RFunctionParamhybrid_checkBox.getChecked()))
-		injection.append('simulate.p.value='+str(self.RFunctionParamsimulate_p_value_lineEdit.getChecked()))
-		if str(self.RFunctionParamconf_level_lineEdit.text()) != '':
-			string = 'conf.level='+str(self.RFunctionParamconf_level_lineEdit.text())+''
+		injection.append('hybrid ='+ unicode(self.RFunctionParamhybrid_checkBox.getChecked()))
+		injection.append('simulate.p.value='+unicode(self.RFunctionParamsimulate_p_value_lineEdit.getChecked()))
+		if unicode(self.RFunctionParamconf_level_lineEdit.text()) != '':
+			string = 'conf.level='+unicode(self.RFunctionParamconf_level_lineEdit.text())+''
 			injection.append(string)
-		injection.append('conf.int='+str(self.RFunctionParamconf_int_lineEdit.text()))
-		string = 'alternative='+str(self.RFunctionParamalternative_comboBox.currentText())+''
+		injection.append('conf.int='+unicode(self.RFunctionParamconf_int_lineEdit.text()))
+		string = 'alternative='+unicode(self.RFunctionParamalternative_comboBox.currentText())+''
 		injection.append(string)
-		if str(self.RFunctionParamor_lineEdit.text()) != '':
-			string = 'or='+str(self.RFunctionParamor_lineEdit.text())+''
+		if unicode(self.RFunctionParamor_lineEdit.text()) != '':
+			string = 'or='+unicode(self.RFunctionParamor_lineEdit.text())+''
 			injection.append(string)
 		inj = ','.join(injection)
-		self.R(self.Rvariables['fisher.test']+'<-fisher.test(x='+str(self.RFunctionParam_x)+','+inj+')')
+		self.R(self.Rvariables['fisher.test']+'<-fisher.test(x='+unicode(self.RFunctionParam_x)+','+inj+')')
 		self.R('txt<-capture.output('+self.Rvariables['fisher.test']+')')
 		self.RoutputWindow.clear()
 		tmp = self.R('paste(txt, collapse ="\n")')

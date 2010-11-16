@@ -121,24 +121,24 @@ class cor(OWRpy):
             test = 'cov'
             
         if self.useButtons.getChecked():
-            string = 'use=\''+str(self.useButtons.getChecked())+'\''
+            string = 'use=\''+unicode(self.useButtons.getChecked())+'\''
             injection.append(string)
         elif self.type.getChecked() == 'Variance':
             string = 'na.rm=TRUE'
             injection.append(string)
         
         if self.methodButtons.getChecked():
-            string = 'method=\''+str(self.methodButtons.getChecked())+'\''
+            string = 'method=\''+unicode(self.methodButtons.getChecked())+'\''
             injection.append(string)
             
         if self.RFunctionParam_y:
-            injection.append('y='+str(self.RFunctionParam_y))
+            injection.append('y='+unicode(self.RFunctionParam_y))
 
         # combine all the parameters in the a string    
         inj = ','.join(injection)
         
         # make the R call. The results will be saved in the 'cor' variable we declared earlier
-        self.R(self.Rvariables['cor']+'<-'+test+'(x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R(self.Rvariables['cor']+'<-'+test+'(x='+unicode(self.RFunctionParam_x)+','+inj+')')
         
         # visualize the data in a table
         self.RoutputWindow.clear()
@@ -171,10 +171,10 @@ class cor(OWRpy):
         text = 'Correlation Variance widget calculates pairwise correlation or variance against two matricies or data frames.\n\n'
         text += '**Parameters:**\n\n'
         text += 'Type: '+self.type.getChecked()+'\n\n'
-        text += 'Values to use:  '+str(self.useButtons.getChecked())+'\n\n'
-        text += 'Method:  '+str(self.methodButtons.getChecked())+'\n\n'
-        self.R('write.csv('+self.RoutputWindow.Rdata+', file = "'+fileDir+'/table'+str(self.widgetID)+'.csv")')
-        text += '.. csv-table:: Correlation-Variance Table\n  :file: '+fileDir+'/table'+str(self.widgetID)+'.csv\n\n'
+        text += 'Values to use:  '+unicode(self.useButtons.getChecked())+'\n\n'
+        text += 'Method:  '+unicode(self.methodButtons.getChecked())+'\n\n'
+        self.R('write.csv('+self.RoutputWindow.Rdata+', file = "'+fileDir+'/table'+unicode(self.widgetID)+'.csv")')
+        text += '.. csv-table:: Correlation-Variance Table\n  :file: '+fileDir+'/table'+unicode(self.widgetID)+'.csv\n\n'
         
         return text
         

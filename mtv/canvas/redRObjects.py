@@ -137,7 +137,7 @@ def getWidgetByInstance(instance):
     
 def newIcon(sm, canvas, tab, info, pic, dlg, instanceID, tabName):
     newwidget = orngCanvasItems.CanvasWidget(sm, canvas, tab, info, pic, dlg, instanceID = instanceID, tabName = tabName)
-    _widgetIcons[str(time.time())] = newwidget # put a new widget into the stack with a timestamp.
+    _widgetIcons[unicode(time.time())] = newwidget # put a new widget into the stack with a timestamp.
     return newwidget
     
 def getIconIDByIcon(icon):
@@ -169,7 +169,12 @@ def getIconByIconInstanceID(id):
         if i.instanceID == id:
             icons.append(i)
     return icons
-    
+def instanceOnTab(inst, tabName):
+    global _widgetIcons
+    for i in _widgetIcons.values():
+        if i.instance() == inst and i.tab == tabName:
+            return True
+    return False
 def getWidgetByIDActiveTabOnly(widgetID):
     for k, widget in _widgetIcons.items():
         #print widget.instanceID
@@ -197,7 +202,7 @@ def addInstance(sm, info, settings, insig, outsig):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
-    log.log(1, 5, 3, 'adding instance')
+    log.log(1, 5, 3, 'adding instance %s' % info.name)
     m = __import__(info.fileName)
     instance = m.__dict__[info.widgetName].__new__(m.__dict__[info.widgetName],
     _owInfo = redREnviron.settings["owInfo"],
@@ -214,11 +219,15 @@ def addInstance(sm, info, settings, insig, outsig):
     
     instance.loadGlobalSettings()
     if settings:
-        instance.setSettings(settings)
-        if '_customSettings' in settings.keys():
-            instance.loadCustomSettings(settings['_customSettings'])
-        else:
-            instance.loadCustomSettings(settings)
+        try:
+            instance.setSettings(settings)
+            if '_customSettings' in settings.keys():
+                instance.loadCustomSettings(settings['_customSettings'])
+            else:
+                instance.loadCustomSettings(settings)
+        except Exception as inst:
+            log.log(1, 9, 1, 'redRObjects addInstance; error in setting settings or custom settings %s' % inst)
+            
 
     instance.setProgressBarHandler(activeTab().progressBarHandler)   # set progress bar event handler
     instance.setProcessingHandler(activeTab().processingHandler)
@@ -232,7 +241,7 @@ def addInstance(sm, info, settings, insig, outsig):
     if id in _widgetInstances.keys():
         ## this is interesting since we aren't supposed to have this, just in case, we throw a warning
         log.log(1, 7, 3, 'Warning: widget id already in the keys, setting new widget instance')
-        id = str(time.time())
+        id = unicode(time.time())
         instance.widgetID = id
         instance.variable_suffix = '_' + instance.widgetID
         instance.resetRvariableNames()
@@ -244,7 +253,7 @@ def getWidgetInstanceByID(id):
     try:
         return _widgetInstances[id]
     except Exception as inst:
-        log.log(1, 9, 1, 'Error in locating widget %s, available widget ID\'s are %s, %s' % (id, _widgetInstances.keys(), str(inst)))
+        log.log(1, 9, 1, 'Error in locating widget %s, available widget ID\'s are %s, %s' % (id, _widgetInstances.keys(), unicode(inst)))
 def getWidgetInstanceByTempID(id):
     global _widgetInstances
     for w in _widgetInstances.values():
@@ -302,7 +311,7 @@ def addCanvasLine(outWidget, inWidget, enabled = -1):
     global schemaDoc
     log.log(1, 6, 3, 'Adding canvas line')
     line = orngCanvasItems.CanvasLine(schemaDoc.signalManager, schemaDoc.canvasDlg, schemaDoc.activeTab(), outWidget, inWidget, schemaDoc.activeCanvas(), activeTabName())
-    _lines[str(time.time())] = line
+    _lines[unicode(time.time())] = line
     if enabled:
         line.setEnabled(1)
     else:

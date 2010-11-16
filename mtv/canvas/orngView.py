@@ -42,19 +42,19 @@ class SchemaView(QGraphicsView):
         return name.lower().endswith(".rrs")
 
     def dragEnterEvent(self, ev):
-        if self.containsOWSFile(str(ev.mimeData().data("FileName"))):
+        if self.containsOWSFile(unicode(ev.mimeData().data("FileName"))):
             ev.accept()
         else: ev.ignore()
                 
     def dragMoveEvent(self, ev):
-        if self.containsOWSFile(str(ev.mimeData().data("FileName"))):
+        if self.containsOWSFile(unicode(ev.mimeData().data("FileName"))):
             ev.setDropAction(Qt.MoveAction)
             ev.accept()
         else:
             ev.ignore()
 
     def dropEvent(self, ev):
-        name = str(ev.mimeData().data("FileName"))
+        name = unicode(ev.mimeData().data("FileName"))
         if self.containsOWSFile(name):
             name = name.strip("\x00")
             self.doc.loadDocument(name)
@@ -84,9 +84,9 @@ class SchemaView(QGraphicsView):
         if len(widgets) != 1: return
         widget = widgets[0]
 
-        exName = str(widget.caption)
+        exName = unicode(widget.caption)
         (newName, ok) = QInputDialog.getText(self, "Rename Widget", "Enter new name for the '" + exName + "' widget:", QLineEdit.Normal, exName)
-        newName = str(newName)
+        newName = unicode(newName)
         if ok and newName != exName:
             for w in self.doc.widgets():
                 if w != widget and w.caption == newName:
@@ -320,8 +320,8 @@ class SchemaView(QGraphicsView):
             for widget in self.doc.widgets():
               widget.resetLeftRightEdges()      
             
-            start = self.tempLine.startWidget or self.tempLine.widget
-            end = self.tempLine.endWidget or self.tempLine.widget
+            start = self.tempLine.startWidget or self.tempLine.widget  ## marks the starting of the tempLine
+            end = self.tempLine.endWidget or self.tempLine.widget       ## marks the ending of the tempLine
             self.tempLine.hide()
             self.tempLine = None
 
@@ -342,10 +342,11 @@ class SchemaView(QGraphicsView):
                     xOff = -48 * bool(end)
                     newWidget = self.doc.addWidget(action.widgetInfo, point.x()+xOff, point.y()-24)
                     if newWidget != None:
+                        nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
                         if self.doc.signalManager.signalProcessingInProgress:
                             QMessageBox.information( self, "Red-R Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
                         else:
-                            self.doc.addLine(start or newWidget, end or newWidget)
+                            self.doc.addLine(start or nw, end or nw)
 
         elif ev.button() == Qt.RightButton:
             activeItem = self.scene().itemAt(point)

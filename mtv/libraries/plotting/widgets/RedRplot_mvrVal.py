@@ -34,11 +34,11 @@ class RedRplot_mvrVal(OWRpy):
 		else:
 			self.RFunctionParam_x=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_x) == '': return
+		if unicode(self.RFunctionParam_x) == '': return
 		injection = []
-		string = 'type='+str(self.RFunctionParamtype_comboBox.currentText()).split(',')[0]+''
+		string = 'type='+unicode(self.RFunctionParamtype_comboBox.currentText()).split(',')[0]+''
 		injection.append(string)
-		string = 'legendpos='+str(self.RFunctionParamlegendpos_comboBox.currentText())+''
+		string = 'legendpos='+unicode(self.RFunctionParamlegendpos_comboBox.currentText())+''
 		injection.append(string)
 		inj = ','.join(injection)
-		self.Rplot('plot.mvrVal(x='+str(self.RFunctionParam_x)+','+inj+')')
+		self.Rplot('plot.mvrVal(x='+unicode(self.RFunctionParam_x)+','+inj+')')

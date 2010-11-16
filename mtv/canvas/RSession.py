@@ -64,7 +64,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # print showException
         #self.status.setText('Error occured!!')
         # mutex.unlock()
-        # raise qApp.rpy.RPyRException(str(y))
+        # raise qApp.rpy.RPyRException(unicode(y))
         
         # return None # now processes can catch potential errors
     #####################Forked verions of R##############################
@@ -74,7 +74,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     except Exception as inst:
         log.log(2, 8, 1, "Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s." % (query, inst))
         mutex.unlock()
-        raise RuntimeError(str(inst) + '  Orriginal Query was:  ' + str(query))
+        raise RuntimeError(unicode(inst) + '  Orriginal Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
     if wantType == 'NoConversion': 
         mutex.unlock()
@@ -105,7 +105,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         elif type(output) is numpy.ndarray:
             output = output.tolist()
         else:
-            print 'Warning, conversion was not of a known type;', str(type(output))
+            print 'Warning, conversion was not of a known type;', unicode(type(output))
     
     mutex.unlock()
     return output
@@ -117,7 +117,7 @@ def convertToPy(inobject):
             return inobject
         return co.convert(inobject)
     except Exception as e:
-        log.log(1, 9, 1, str(e))
+        log.log(1, 9, 1, unicode(e))
         return None
 def getInstalledLibraries():
     if sys.platform=="win32":
@@ -128,7 +128,7 @@ def getInstalledLibraries():
         return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
 loadedLibraries = []
 def setLibPaths(libLoc):
-    Rcommand('.libPaths(\''+str(libLoc)+'\')', wantType = 'NoConversion') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
+    Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
     
 if sys.platform=="win32":
     libPath = os.path.join(os.environ['R_HOME'], 'library').replace('\\','/')
@@ -165,7 +165,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 loadedLibraries.append(library)
             elif library:
                 if redREnviron.checkInternetConnection():
-                    mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+str(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+                    mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+unicode(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
                             log.log(2, 8, 3, 'Installing library %s.' % library)

@@ -41,63 +41,63 @@ class RedRstrsplit(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': 
+        if unicode(self.RFunctionParam_x) == '': 
             self.status.setText('No Data to Split')
             return
-        if str(self.RFunctionParamsplit_lineEdit.text()) == '':
+        if unicode(self.RFunctionParamsplit_lineEdit.text()) == '':
             self.status.setText('No string to split on')
             return
         injection = []
-        if str(self.RFunctionParamfixed_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamfixed_radioButtons.getChecked()) == 'Yes':
             string = 'fixed=TRUE'
             injection.append(string)
         else:
             string = 'fixed=FALSE'
             injection.append(string)
-        if str(self.RFunctionParamextended_radiButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamextended_radiButtons.getChecked()) == 'Yes':
             string = 'extended=TRUE'
             injection.append(string)
         else:
             string = 'extended=FALSE'
             injection.append(string)
-        if str(self.RFunctionParamsplit_lineEdit.text()) != '':
-            string = 'split='+str(self.RFunctionParamsplit_lineEdit.text())+''
+        if unicode(self.RFunctionParamsplit_lineEdit.text()) != '':
+            string = 'split='+unicode(self.RFunctionParamsplit_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamperl_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamperl_radioButtons.getChecked()) == 'Yes':
             string = 'perl=TRUE'
             injection.append(string)
         else:
             string = 'perl=FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+str(self.RFunctionParam_x)+') ,'+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+unicode(self.RFunctionParam_x)+') ,'+inj+')', wantType = 'NoConversion')
         newData = redRRList(data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
-        if str(self.RFunctionParamunlist_radioButtons.getChecked()) == 'Send list and vector':
+        if unicode(self.RFunctionParamunlist_radioButtons.getChecked()) == 'Send list and vector':
             newData = redRRVector(data = 'unlist('+self.Rvariables['strsplit']+')')
             self.rSend("id1", newData)
             
     def getReportText(self, fileDir):
         text = 'Split the incomming strings (words) into fragments based on the following criteria:\n\n'
         injection = []
-        if str(self.RFunctionParamfixed_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamfixed_radioButtons.getChecked()) == 'Yes':
             string = 'fixed=TRUE'
             injection.append(string)
         else:
             string = 'fixed=FALSE'
             injection.append(string)
-        if str(self.RFunctionParamextended_radiButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamextended_radiButtons.getChecked()) == 'Yes':
             string = 'extended=TRUE'
             injection.append(string)
         else:
             string = 'extended=FALSE'
             injection.append(string)
-        if str(self.RFunctionParamsplit_lineEdit.text()) != '':
-            string = 'split='+str(self.RFunctionParamsplit_lineEdit.text())+''
+        if unicode(self.RFunctionParamsplit_lineEdit.text()) != '':
+            string = 'split='+unicode(self.RFunctionParamsplit_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamperl_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamperl_radioButtons.getChecked()) == 'Yes':
             string = 'perl=TRUE'
             injection.append(string)
         else:

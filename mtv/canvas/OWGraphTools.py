@@ -431,7 +431,7 @@ class DiscreteAxisScaleDraw(QwtScaleDraw):
         index = int(round(value))
         if index != value: return QwtText("")    # if value not an integer value return ""
         if index >= len(self.labels) or index < 0: return QwtText("")
-        return QwtText(str(self.labels[index]))
+        return QwtText(unicode(self.labels[index]))
 
 # ####################################################################
 # use this class if you want to hide labels on the axis

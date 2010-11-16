@@ -34,27 +34,27 @@ class RedRscale(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParamscale_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamscale_radioButtons.getChecked()) == 'Yes':
             string = 'scale = TRUE'
             injection.append(string)
         else:
             string = 'scale = FALSE'
             injection.append(string)
-        if str(self.RFunctionParamcenter_radioButtons.getChecked()) != 'Yes':
+        if unicode(self.RFunctionParamcenter_radioButtons.getChecked()) != 'Yes':
             string = 'center = TRUE'
             injection.append(string)
         else:
             string = 'center = FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['scale']+'<-scale(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['scale']+'<-scale(x='+unicode(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         self.R('row.names('+self.Rvariables['scale']+')<-row.names('+self.RFunctionParam_x+')', wantType = 'NoConversion')
         newData = redRRMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
     def getReportText(self, fileDir):
-        text = 'Data was centered: %s \n\n' % (str(self.RFunctionParamcenter_radioButtons.getChecked()))
-        text += 'Data was scaled: %s \n\n' % (str(self.RFunctionParamscale_radioButtons.getChecked()))
+        text = 'Data was centered: %s \n\n' % (unicode(self.RFunctionParamcenter_radioButtons.getChecked()))
+        text += 'Data was scaled: %s \n\n' % (unicode(self.RFunctionParamscale_radioButtons.getChecked()))
         return text

@@ -15,7 +15,7 @@ class RDataFrame(RList, StructuredDict):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
-        self.newDataID = str(time.time()).replace('.', '_')
+        self.newDataID = unicode(time.time()).replace('.', '_')
         self.RListSignal = None
         self.structuredDict = None
         self.matrix = None
@@ -69,10 +69,10 @@ class RDataFrame(RList, StructuredDict):
         text = self._simpleOutput()+'\n\n'
         text += 'R Data Variable Value: '+self.getAttrOutput_data('data', subsetting)+'\n\n'
         dims = self.getDims_data()
-        text += 'R Data Variable Size: '+str(dims[0])+' Rows and '+str(dims[1])+' Columns\n\n'
+        text += 'R Data Variable Size: '+unicode(dims[0])+' Rows and '+unicode(dims[1])+' Columns\n\n'
         text += 'R Parent Variable Name: '+self.parent+'\n\n'
         text += 'R Parent Variable Value: '+self.getAttrOutput_data('parent', subsetting)+'\n\n'
-        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        text += 'Class Dictionary: '+unicode(self.dictAttrs)+'\n\n'
         return text
     def getRownames_call(self):
         return 'rownames('+self.data+')'
@@ -81,17 +81,17 @@ class RDataFrame(RList, StructuredDict):
     def getItem_call(self, item):
         if type(item) in [int, float, long]:
             item = int(item)
-            return self.data+'[,'+str(item)+']'
+            return self.data+'[,'+unicode(item)+']'
         elif type(item) in [str]:
-            return self.data+'[,\''+str(item)+'\']'
+            return self.data+'[,\''+unicode(item)+'\']'
         elif type(item) in [list]:
             newItemList = []
             for i in item:
                 if type(i) in [int, float, long]:
-                    newItemList.append(str(int(i)))
+                    newItemList.append(unicode(int(i)))
                 elif type(i) in [str]:
-                    newItemList.append('\"'+str(i)+'\"')
-            return self.data+'[,c('+str(newItemList)[1:-1]+')]'
+                    newItemList.append('\"'+unicode(i)+'\"')
+            return self.data+'[,c('+unicode(newItemList)[1:-1]+')]'
         else:
             return self.data #just return all of the data and hope the widget picks up from there
     def getItem_data(self, item, wantType = 'dict'): # native functionality is to return a dict (this is what lists do)
@@ -115,28 +115,28 @@ class RDataFrame(RList, StructuredDict):
         if rowRange == None and colRange == None:
             return self.data
         if rowRange:
-            rr = str(rowRange)
+            rr = unicode(rowRange)
         else:
             rr = ''
         if colRange:
-            cr = str(colRange)
+            cr = unicode(colRange)
         else:
             cr = ''
         return self.data+'['+rr+','+cr+']'
     def getRowData_call(self, item):
         if type(item) in [int, float, long]:
             item = int(item)
-            return self.data+'['+str(item)+',]'
+            return self.data+'['+unicode(item)+',]'
         elif type(item) in [str]:
-            return self.data+'[\''+str(item)+'\',]'
+            return self.data+'[\''+unicode(item)+'\',]'
         elif type(item) in [list]:
             newItemList = []
             for i in item:
                 if type(i) in [int, float, long]:
-                    newItemList.append(str(int(i)))
+                    newItemList.append(unicode(int(i)))
                 elif type(i) in [str]:
-                    newItemList.append('\"'+str(i)+'\"')
-            return self.data+'[c('+str(newItemList)[1:-1]+'),]'
+                    newItemList.append('\"'+unicode(i)+'\"')
+            return self.data+'[c('+unicode(newItemList)[1:-1]+'),]'
         else:
             return self.data #just return all of the data and hope the widget picks up from there
     def getRowData_data(self, item):

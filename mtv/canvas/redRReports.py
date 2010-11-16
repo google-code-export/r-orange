@@ -28,7 +28,7 @@ def createTable(arrayOfArray,tableName='', columnNames=None):
         formatted = []
         for cell in row:
             if type(cell) is not str:
-                cell = str(cell)
+                cell = unicode(cell)
             if re.search('.. csv-table::|.. image::|::', cell):
                 toAppend.append([row[0],cell])
                 formatted.append('See Below')
@@ -82,7 +82,7 @@ class reports(QDialog):
 
         
     def widgetListItemClicked(self, item):
-        itemText = str(item.text())
+        itemText = unicode(item.text())
         self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
         
     def updateWidgetList(self,widgets):
@@ -98,17 +98,17 @@ class reports(QDialog):
         
         for i in range(count):
             item = self.widgetList.item(i)
-            if self.widgetNames[str(item.text())]['inReport']:
+            if self.widgetNames[unicode(item.text())]['inReport']:
                 self.widgetList.setItemSelected(item, True)
 
     def createReportsMenu(self):
         qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
-        redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", 
+        redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
         if qname.isEmpty(): return
-        qname = str(qname.toAscii())
+        qname = unicode(qname.toAscii())
         
-        name = str(qname) # this is the file name of the Report
+        name = unicode(qname) # this is the file name of the Report
         if os.path.splitext(name)[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
         fileDir = os.path.split(name)[0]
         try:
@@ -166,7 +166,7 @@ class reports(QDialog):
             reportText += self.getWidgetReport(fileDir, self.widgetNames[widget]['widget'])
         
         
-        # file = open(str(os.path.join(fileDir, 'content.rst')).replace('\\','/'), "wt")
+        # file = open(unicode(os.path.join(fileDir, 'content.rst')).replace('\\','/'), "wt")
         # file.write(reportText)
         # file.close()
         
@@ -174,7 +174,7 @@ class reports(QDialog):
         # print reportText
         # print '############################\n'*5
         
-        if os.path.splitext(str(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
+        if os.path.splitext(unicode(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
             writer = Writer()
             output = publish_string(reportText, reader = reader, writer = writer)
@@ -185,16 +185,16 @@ class reports(QDialog):
 
             
             
-        elif os.path.splitext(str(reportName))[1].lower() in [".tex"]:# , ".tex"]
+        elif os.path.splitext(unicode(reportName))[1].lower() in [".tex"]:# , ".tex"]
             output = publish_string(reportText, writer_name='latex')#, writer = writer, reader = reader)
             file = open(reportName, 'w')
             file.write(output)
             file.close()
-        elif os.path.splitext(str(reportName))[1].lower() in [".html"]:# , ".tex"]
+        elif os.path.splitext(unicode(reportName))[1].lower() in [".html"]:# , ".tex"]
             output = publish_string(reportText, writer_name='html')
             # print output
             # print type(output)
-            # print str(output)
+            # print unicode(output)
             file = open(reportName, 'w')
             file.write(output)
             file.close()
@@ -227,7 +227,7 @@ Schema
 """ % (datetime.date.today(), imageFile)
 
 
-        # text = '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
+        # text = '**Red-R Report compiled on '+unicode(datetime.date.today())+'**\n\n'
         # text += 'Schema Image\n\n'
         # text += '.. image:: %s\n  :scale: 50%%\n' % (imageFile)
         # text += ''
@@ -267,8 +267,8 @@ Widget Output
             # tt += widget.instance.getReportText(fileDir)
             # tt += '\n\n\n--------------------\n\n\n'
             # tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
-            # if str(widget.instance.notes.toPlainText()) != '':
-                # tt += str(r'\n'+widget.instance.notes.toPlainText()).replace(r'\n', r'\n\t')+'\n\n'
+            # if unicode(widget.instance.notes.toPlainText()) != '':
+                # tt += unicode(r'\n'+widget.instance.notes.toPlainText()).replace(r'\n', r'\n\t')+'\n\n'
             # else:
                 # tt += 'No notes were entered in the widget face.\n\n'
             # tt += '\n\n\n--------------------\n\n\n'
@@ -290,7 +290,7 @@ Widget Output
                 # pass
         # except Exception as inst:
             # print '##########################'
-            # print str(inst)
+            # print unicode(inst)
             # print '##########################'
             # tt += 'Error occured in report generation for this widget'
         # tt += '\n\n'

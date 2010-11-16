@@ -79,7 +79,7 @@ class MappingTestCase(unittest.TestCase):
         self.assertTrue(isinstance(rob, robjects.RVector))
         self.assertEquals(rinterface.LGLSXP, rob.typeof)
 
-    def testMapperPy2R_str(self):        
+    def testMapperPy2R_unicode(self):        
         py = 'houba'
         rob = robjects.default_py2ro(py)
         self.assertTrue(isinstance(rob, robjects.RVector))

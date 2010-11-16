@@ -51,7 +51,7 @@ class textEdit(QTextEdit,widgetState):
         else:
             QTextEdit.hide(self)
     def toPlainText(self):
-        return str(QTextEdit.toPlainText(self).toAscii())
+        return unicode(QTextEdit.toPlainText(self).toAscii())
     def show(self):
         if self.label:
             self.hb.show()

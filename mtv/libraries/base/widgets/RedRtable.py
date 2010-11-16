@@ -30,8 +30,8 @@ class RedRtable(OWRpy):
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': return
-        self.R(self.Rvariables['table']+'<-table(data='+str(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        if unicode(self.RFunctionParam_data) == '': return
+        self.R(self.Rvariables['table']+'<-table(data='+unicode(self.RFunctionParam_data)+')', wantType = 'NoConversion')
         self.R('txt<-capture.output('+self.Rvariables['table']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')

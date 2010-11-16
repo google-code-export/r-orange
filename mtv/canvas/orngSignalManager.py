@@ -347,12 +347,12 @@ class SignalCanvasView(QGraphicsView):
         maxLeft = 0
         for i in inputs.keys():
             maxLeft = max(maxLeft, self.getTextWidth("("+inputs[i]['name']+")", 1))
-            maxLeft = max(maxLeft, self.getTextWidth(str([str(a).split('.')[-1] for a in inputs[i]['signalClass']])))
+            maxLeft = max(maxLeft, self.getTextWidth(unicode([unicode(a).split('.')[-1] for a in inputs[i]['signalClass']])))
 
         maxRight = 0
         for i in outputs.keys():
             maxRight = max(maxRight, self.getTextWidth("("+outputs[i]['name']+")", 1))
-            maxRight = max(maxRight, self.getTextWidth(str(outputs[i]['signalClass']).split('.')[-1]))
+            maxRight = max(maxRight, self.getTextWidth(unicode(outputs[i]['signalClass']).split('.')[-1]))
 
         width = max(maxLeft, maxRight) + 70 # we add 70 to show icons beside signal names
 
@@ -397,7 +397,7 @@ class SignalCanvasView(QGraphicsView):
             self.outBoxes.append((outputs[i]['name'], box, i))
 
             self.texts.append(MyCanvasText(self.dlg.canvas, outputs[i]['name'], xWidgetOff + width - 5, y - 7, Qt.AlignRight | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, str(outputs[i]['signalClass']).split('.')[-1], xWidgetOff + width - 5, y + 7, Qt.AlignRight | Qt.AlignVCenter, bold =0, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, unicode(outputs[i]['signalClass']).split('.')[-1], xWidgetOff + width - 5, y + 7, Qt.AlignRight | Qt.AlignVCenter, bold =0, show=1))
             j += 1
         j = 0
         for i in inputs.keys():
@@ -408,7 +408,7 @@ class SignalCanvasView(QGraphicsView):
             self.inBoxes.append((inputs[i]['name'], box, i))
 
             self.texts.append(MyCanvasText(self.dlg.canvas, inputs[i]['name'], xWidgetOff + width + xSpaceBetweenWidgets + 5, y - 7, Qt.AlignLeft | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, str([str(a).split('.')[-1] for a in inputs[i]['signalClass']]), xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, unicode([unicode(a).split('.')[-1] for a in inputs[i]['signalClass']]), xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
             j += 1
         self.texts.append(MyCanvasText(self.dlg.canvas, outWidget.caption, xWidgetOff + width/2.0, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
         self.texts.append(MyCanvasText(self.dlg.canvas, inWidget.caption, xWidgetOff + width* 1.5 + xSpaceBetweenWidgets, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))

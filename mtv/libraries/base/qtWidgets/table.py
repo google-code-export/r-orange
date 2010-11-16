@@ -32,7 +32,7 @@ class table(widgetState,QTableWidget):
         if data==None:
             return
         if not keys and type(data) == dict:
-            keys = [str(key) for key in data.keys()]
+            keys = [unicode(key) for key in data.keys()]
         elif not keys:
             keys = range(len(data))
             
@@ -49,13 +49,13 @@ class table(widgetState,QTableWidget):
         print 'Set Labels'
         self.setHorizontalHeaderLabels(keys)
         if 'row_names' in self.data.keys(): ## special case if the keyword row_names is present we want to populate the rownames of the table
-            self.setVerticalHeaderLabels([str(item) for item in self.data['row_names']])
+            self.setVerticalHeaderLabels([unicode(item) for item in self.data['row_names']])
         print 'Set Items'
         n = 0
         for key in keys:
             m = 0
             for item in data[key]:
-                newitem = QTableWidgetItem(str(item))
+                newitem = QTableWidgetItem(unicode(item))
                 self.setItem(m, n, newitem)
                 m += 1
             n += 1

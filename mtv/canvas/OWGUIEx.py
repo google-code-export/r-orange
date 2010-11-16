@@ -55,9 +55,9 @@ class LineEditFilter(QLineEdit):
         QLineEdit.setText(self, text)
         
     def getText(self):
-        if str(self.text()) == self.emptyText:
+        if unicode(self.text()) == self.emptyText:
             return ""
-        else: return str(self.text())
+        else: return unicode(self.text())
         
     def setAllListItems(self, items = None):
         if not items:
@@ -66,7 +66,7 @@ class LineEditFilter(QLineEdit):
         if type(items[0]) == str:           # if items contain strings
             self.listboxItems = [(item, QListWidgetItem(item)) for item in items]
         else:                               # if items contain QListWidgetItems
-            self.listboxItems = [(str(item.text()), QListWidgetItem(item)) for item in items]
+            self.listboxItems = [(unicode(item.text()), QListWidgetItem(item)) for item in items]
         
     def textChanged(self):
         self.updateListBoxItems()
@@ -140,15 +140,15 @@ class LineEditHint(QLineEdit):
             items = list(items) # need to correct for the case that we get a numpy object
         
         elif type(items) in [str, numpy.string_, numpy.float64]:
-            items = [str(items)]
+            items = [unicode(items)]
         
         if items:
             self.itemsAsItems = items
             if (type(items[0]) == str) or (type(items[0]) == numpy.string_):                   self.itemsAsStrings = items
             elif type(items[0]) in [numpy.float64]:
-                self.itemsAsStrings = [str(item) for item in items]
-            elif type(items[0]) == QListWidgetItem:     self.itemsAsStrings = [str(item.text()) for item in items]
-            else:                                       print "SuggestLineEdit error: unsupported type for the items: "+str(type(items[0]))
+                self.itemsAsStrings = [unicode(item) for item in items]
+            elif type(items[0]) == QListWidgetItem:     self.itemsAsStrings = [unicode(item.text()) for item in items]
+            else:                                       print "SuggestLineEdit error: unsupported type for the items: "+unicode(type(items[0]))
         else:
             self.itemsAsItems = []
             self.itemsAsStrings = [] 
@@ -186,10 +186,10 @@ class LineEditHint(QLineEdit):
         
     def doneCompletion(self, *args):
         if self.listWidget.isVisible():
-            if len(args) == 1:  itemText = str(args[0].text())
-            else:               itemText = str(self.listWidget.currentItem().text())
+            if len(args) == 1:  itemText = unicode(args[0].text())
+            else:               itemText = unicode(self.listWidget.currentItem().text())
             last = self.getLastTextItem()
-            self.setText(str(self.text()).rstrip(last) + itemText)
+            self.setText(unicode(self.text()).rstrip(last) + itemText)
             self.listWidget.hide()
             self.setFocus()
         if self.callbackOnComplete:
@@ -199,15 +199,15 @@ class LineEditHint(QLineEdit):
     
     def textEdited(self):
         # if we haven't typed anything yet we hide the list widget
-        if self.getLastTextItem() == "" or len(str(self.text())) < self.minTextLength:
+        if self.getLastTextItem() == "" or len(unicode(self.text())) < self.minTextLength:
             self.listWidget.hide()
         else:
             self.updateSuggestedItems()
     
     def getLastTextItem(self):
-        text = str(self.text())
+        text = unicode(self.text())
         if len(text) == 0: return ""
-        if not self.delimiters: return str(self.text())     # if no delimiters, return full text
+        if not self.delimiters: return unicode(self.text())     # if no delimiters, return full text
         if text[-1] in self.delimiters: return ""
         return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
     
@@ -248,8 +248,8 @@ class LineEditHint(QLineEdit):
             self.listWidget.move(self.mapToGlobal(QPoint(0, self.height())))
             self.listWidget.show()
 ##            if not self.delimiters and items and not self.matchAnywhere:
-##                self.setText(last + str(items[0].text())[len(last):])
-##                self.setSelection(len(str(self.text())), -(len(str(self.text()))-len(last)))            
+##                self.setText(last + unicode(items[0].text())[len(last):])
+##                self.setSelection(len(unicode(self.text())), -(len(unicode(self.text()))-len(last)))            
 ##            self.setFocus()
         else:
             self.listWidget.hide()

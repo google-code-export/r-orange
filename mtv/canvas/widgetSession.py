@@ -23,7 +23,7 @@ class widgetSession():
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
-        log.log(1, 7, 3, 'moving to save'+str(self.captionTitle))
+        log.log(1, 7, 3, 'moving to save'+unicode(self.captionTitle))
         import re
         settings = {}
         if self.saveSettingsList:  ## if there is a saveSettingsList then we just append the required elements to it.
@@ -66,8 +66,8 @@ class widgetSession():
     def isPickleable(self,d):  # check to see if the object can be included in the pickle file
         import re
         #if isinstance(d,QObject):
-        # print str(type(d))
-        if re.search('PyQt4|OWGUIEx|OWToolbars',str(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
+        # print unicode(type(d))
+        if re.search('PyQt4|OWGUIEx|OWToolbars',unicode(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
             #print 'QT object NOT Pickleable'
             return False
         elif type(d) in [list, dict, tuple]:
@@ -90,7 +90,7 @@ class widgetSession():
             return True
         else: 
             
-            log.log(1, 5, 1, 'Type ' + str(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
+            log.log(1, 5, 1, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
             return False
         
             
@@ -154,12 +154,12 @@ class widgetSession():
         # pp.pprint(settings)
         for k,v in settings.iteritems():
             try:
-                #print k
+                #log.log(1, 9, 3, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue
                 if v == None:
                     continue
                 elif 'pythonObject' in v.keys():
-                    #print '|#| Setting pythonObject %s to %s' % (k,str(v['pythonObject']))
+                    #print '|#| Setting pythonObject %s to %s' % (k,unicode(v['pythonObject']))
                     self.__setattr__(k, v['pythonObject'])
                 elif 'signalsObject' in v.keys():
                     #print '|#| Setting signalsObject'
@@ -170,7 +170,7 @@ class widgetSession():
                     # print v['sentItemsList']
                     #self.setSentItemsList(v['sentItemsList'])        
                     for (sentItemName, sentItemDict) in v['sentItemsList']:
-                        #print '|#| setting sent items %s to %s' % (sentItemName, str(sentItemDict))
+                        #print '|#| setting sent items %s to %s' % (sentItemName, unicode(sentItemDict))
                         #for kk,vv in sentItemDict.items():
                         var = self.setSignalClass(sentItemDict)
                         ## add compatibility layer for the case that the sent item name is not longer in existance or has changed
@@ -188,7 +188,7 @@ class widgetSession():
                                 from libraries.base.qtWidgets.widgetLabel import widgetLabel
                                 from libraries.base.qtWidgets.listBox import listBox
                                 from libraries.base.qtWidgets.button import button
-                                widgetLabel(tempDialog, 'Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.' % (sentItemName, str(var)))
+                                widgetLabel(tempDialog, 'Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.' % (sentItemName, unicode(var)))
                                 
                                 #print self.outputs.outputSignals
                                 itemListBox = listBox(tempDialog, items = signalItemNames)
@@ -196,7 +196,7 @@ class widgetSession():
                                 button(tempDialog, label = 'Cancel', callback = tempDialog.reject)
                                 res = tempDialog.exec_()
                                 if res != QDialog.rejected:
-                                    signalName = str(itemListBox.selectedItems()[0].text())
+                                    signalName = unicode(itemListBox.selectedItems()[0].text())
                                     signalID = self.outputs.getSignalByName(signalName)
                                     self.send(signalID, var)
     #############################################
@@ -225,7 +225,7 @@ class widgetSession():
         
         
     def setSignalClass(self, d):
-        #print '|##| setSentRvarClass' #% str(d)
+        #print '|##| setSentRvarClass' #% unicode(d)
         
         # print d
         # print 'setting ', className
@@ -330,7 +330,7 @@ class widgetSession():
                 settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
             except:
                 print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
-        #print '%s' % str(settings)
+        #print '%s' % unicode(settings)
         if settings:
             #settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()

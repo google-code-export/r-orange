@@ -98,7 +98,7 @@ class Rtable(widgetState,QTableView):
         sip.delete(self)
     def getReportText(self, fileDir):
         # import os
-        # fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
+        # fname = unicode(os.path.join(fileDir, self.Rdata+'.txt'))
         # fname = fname.replace('\\', '/')
         # print fname
         #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
@@ -209,10 +209,10 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.rownames)+1
             # print self.rownames
             # print size
-            headers = [str(i) for i in range(size,size+count)]
+            headers = [unicode(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
+        self.R('t = matrix("",nrow='+unicode(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
         self.R('colnames(t) = colnames('+self.Rdata+')', wantType = 'NoConversion')
         self.R('rownames(t) = rownames("%s")' % '","'.join(headers), wantType = 'NoConversion')
         self.R(self.Rdata+'=rbind('+self.Rdata+',t)', wantType = 'NoConversion')
@@ -235,7 +235,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.colnames)+1
             # print self.colnames
             # print size
-            headers = ['V'  +str(i) for i in range(size,size+count)]
+            headers = ['V'  +unicode(i) for i in range(size,size+count)]
             # print headers
             self.colnames.extend(headers)
         
@@ -373,10 +373,10 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.rownames)+1
             # print self.rownames
             # print size
-            headers = [str(i) for i in range(size,size+count)]
+            headers = [unicode(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))')
+        self.R('t = matrix("",nrow='+unicode(count)+',ncol=ncol('+self.Rdata+'))')
         self.R('colnames(t) = colnames('+self.Rdata+')')
         self.R('rownames(t) = rownames("%s")' % '","'.join(headers))
         self.R(self.Rdata+'=rbind('+self.Rdata+',t)')
@@ -399,7 +399,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.colnames)+1
             # print self.colnames
             # print size
-            headers = ['V'  +str(i) for i in range(size,size+count)]
+            headers = ['V'  +unicode(i) for i in range(size,size+count)]
             # print headers
             self.colnames.extend(headers)
         

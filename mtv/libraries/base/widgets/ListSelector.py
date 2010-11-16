@@ -53,7 +53,7 @@ class ListSelector(OWRpy):
         if data:
             self.data = data.getData()
             names = self.R('names('+self.data+')')
-            print str(names)
+            print unicode(names)
             if names == None:
                 names = range(1, self.R('length('+self.data+')')+1)
                 print names
@@ -69,7 +69,7 @@ class ListSelector(OWRpy):
         
     def sendSelection(self):
         #print self.names.selectedItems()[0]
-        name = str(self.names.row(self.names.currentItem())+1)
+        name = unicode(self.names.row(self.names.currentItem())+1)
         self.Rvariables['listelement'] = self.data+'[['+name+']]'
         # use signals converter in OWWidget to convert to the signals class
         myclass = self.R('class('+self.Rvariables['listelement']+')')

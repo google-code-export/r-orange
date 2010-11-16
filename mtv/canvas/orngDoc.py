@@ -64,7 +64,7 @@ class SchemaDoc(QWidget):
         redRSaveLoad.setSchemaDoc(self)
 
     def resetActiveTab(self, int):
-        self.setActiveTab(str(self.tabsWidget.tabText(int)))
+        self.setActiveTab(unicode(self.tabsWidget.tabText(int)))
     def setActiveTab(self, tabname):
         redRObjects.setActiveTab(tabname)
     def widgets(self):
@@ -86,12 +86,12 @@ class SchemaDoc(QWidget):
     def activeTab(self): # part of the view
         return redRObjects.activeTab()
     def activeTabName(self):    # part of the view
-        return str(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))
+        return unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))
     def activeCanvas(self):     # part of the view
-        return redRObjects.activeCanvas() # self.canvas[str(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))]
+        return redRObjects.activeCanvas() # self.canvas[unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex()))]
     def setTabActive(self, name):   # part of the view
         for i in range(self.tabsWidget.count()):
-            if str(self.tabsWidget.tabText(i)) == name:
+            if unicode(self.tabsWidget.tabText(i)) == name:
                 self.tabsWidget.setCurrentIndex(i)
                 break
         
@@ -304,17 +304,17 @@ class SchemaDoc(QWidget):
     def newTab(self): # part of the view
         td = NewTabDialog(self.canvasDlg)
         if td.exec_() != QDialog.Rejected:
-            if str(td.tabName.text()) == "": return
-            self.makeSchemaTab(str(td.tabName.text()))
-            self.setTabActive(str(td.tabName.text()))
+            if unicode(td.tabName.text()) == "": return
+            self.makeSchemaTab(unicode(td.tabName.text()))
+            self.setTabActive(unicode(td.tabName.text()))
     def cloneToTab(self):   # part of the view
         tempWidgets = self.activeTab().getSelectedWidgets()
         td = CloneTabDialog(self.canvasDlg)
         if td.exec_() == QDialog.Rejected: return ## nothing interesting to do
         try:
-            tabName = str(td.tabList.selectedItems()[0].text())
+            tabName = unicode(td.tabList.selectedItems()[0].text())
         except: return 
-        if tabName == str(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
+        if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
             log.log(1, 2, 3, 'Creating clone widget %s in tab %s' % ( w.caption + ' (Clone)', tabName))
             self.cloneWidget(w, tabName, caption = w.caption + ' (Clone)')
@@ -322,28 +322,22 @@ class SchemaDoc(QWidget):
     def cloneWidget(self, widget, viewID = None, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True):
         ## we want to clone the widget.  This involves moving to the correct view and placing the icon on the canvas but setting the instance to be the same as the widget instance on the other widget.
         self.setTabActive(viewID)
+        if redRObjects.instanceOnTab(widget.instance(), viewID): return 1      ## the widget must already be on the tab so we can't add it again.
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
             newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
-            #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
-            #print newwidget
         except:
             type, val, traceback = sys.exc_info()
-            log.log(1, 9, 1, str(traceback))
+            log.log(1, 9, 1, unicode(traceback))
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
             qApp.restoreOverrideCursor()
             return None
 
         self.resolveCollisions(newwidget, x, y)
-            
-        #self.canvasView.ensureVisible(newwidget)
 
         if caption == "":
             caption = widget.caption + ' (Clone)'
         newwidget.updateText(caption)
-        ##self.widgets.append(newwidget)
-        # if saveTempDoc:
-            # self.saveTempDoc()
         self.activeCanvas().update()
 
         ### add lines to widgets on the current active tab if there is a link from the widget in question to one of the other widgets on the canvas.
@@ -385,8 +379,8 @@ class SchemaDoc(QWidget):
         caption = widgetInfo.name
         if self.getWidgetByCaption(caption):
             i = 1
-            while self.getWidgetByCaption(caption + " (" + str(i) + ")"): i+=1
-            caption = caption + " (" + str(i) + ")"
+            while self.getWidgetByCaption(caption + " (" + unicode(i) + ")"): i+=1
+            caption = caption + " (" + unicode(i) + ")"
             
         newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
         newwidget.caption = caption
@@ -403,7 +397,7 @@ class SchemaDoc(QWidget):
             log.log(1, 9, 3, 'New Widget Created %s' % newwidget)
         except:
             type, val, traceback = sys.exc_info()
-            log.log(1, 9, 1, str(traceback))
+            log.log(1, 9, 1, unicode(traceback))
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
             qApp.restoreOverrideCursor()
             return None
@@ -526,7 +520,7 @@ class SchemaDoc(QWidget):
             widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
             return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals, id = id)
         except Exception as inst:
-            log.log(1, 9, 1, 'Loading exception occured for widget '+widgetFileName)
+            log.log(1, 9, 1, 'Loading exception occured for widget '+widgetFileName+' '+unicode(inst))
             
             return None
     # addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) 
@@ -538,14 +532,14 @@ class SchemaDoc(QWidget):
         if caption != "": 
             newwidget.updateText(caption)
     def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None, id = None):
-        try:
+        #try:
             #if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
-            widget = redRObjects.widgetRegistry()['widgets'][name]
-            return self.addInstance(self.signalManager, widget, settings, inputs, outputs, id = id)
-        except Exception as inst:
-            log.log(1, 9, 1,  'Loading exception occured for widget '+name)
+        widget = redRObjects.widgetRegistry()['widgets'][name]
+        return self.addInstance(self.signalManager, widget, settings, inputs, outputs, id = id)
+        # except Exception as inst:
+            # log.log(1, 9, 1,  'Loading exception occured for widget '+name+' '+unicode(inst))
             
-            return None
+            # return None
     # return the widget icon that has caption "widgetName"
     def getWidgetByCaption(self, widgetName):
         return redRObjects.getIconByIconCaption(widgetName)

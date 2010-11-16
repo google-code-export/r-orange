@@ -62,9 +62,9 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowIcon(QIcon(canvasIconName))
         
         if not redREnviron.settings.has_key("style"):
-            items = [str(n) for n in QStyleFactory.keys()]
-            lowerItems = [str(n).lower() for n in QStyleFactory.keys()]
-            currStyle = str(qApp.style().objectName()).lower()
+            items = [unicode(n) for n in QStyleFactory.keys()]
+            lowerItems = [unicode(n).lower() for n in QStyleFactory.keys()]
+            currStyle = unicode(qApp.style().objectName()).lower()
             redREnviron.settings.setdefault("style", items[lowerItems.index(currStyle)])
 
         self.menuSaveSettingsID = -1
@@ -241,7 +241,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         if splashWindow:
             splashWindow.hide()
-        redREnviron.settings['id'] = str(time.time())
+        redREnviron.settings['id'] = unicode(time.time())
         redREnviron.setTempDir('temp_'+redREnviron.settings['id'])
         try:
             if 'firstLoad' not in redREnviron.settings.keys():
@@ -290,8 +290,8 @@ class OrangeCanvasDlg(QMainWindow):
     def startSetupWizard(self):
         setupWizard = redRInitWizard.RedRInitWizard()
         if setupWizard.exec_() == QDialog.Accepted:
-            redREnviron.settings['email'] = str(setupWizard.email.text())
-            redREnviron.settings['canContact'] = str(setupWizard.allowContact.getChecked()) == 'Yes'
+            redREnviron.settings['email'] = unicode(setupWizard.email.text())
+            redREnviron.settings['canContact'] = unicode(setupWizard.allowContact.getChecked()) == 'Yes'
             try:
                 redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
             except:
@@ -437,36 +437,36 @@ class OrangeCanvasDlg(QMainWindow):
     def importSchema(self):
         name = QFileDialog.getOpenFileName(self, "Import File", redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
-        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
-        self.schema.loadDocument(str(name), freeze = 0, importing = True)
-        self.addToRecentMenu(str(name))
+        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
+        self.schema.loadDocument(unicode(name), freeze = 0, importing = True)
+        self.addToRecentMenu(unicode(name))
         
     def menuItemOpen(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
-        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
         self.schema.clear()
-        redRSaveLoad.loadDocument(str(name), freeze = 0, importing = False)
-        self.addToRecentMenu(str(name))
+        redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
+        self.addToRecentMenu(unicode(name))
 
 
     def menuItemOpenFreeze(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
         self.schema.clear()
-        self.schema.loadDocument(str(name), freeze = 1)
-        self.addToRecentMenu(str(name))
+        self.schema.loadDocument(unicode(name), freeze = 1)
+        self.addToRecentMenu(unicode(name))
 
 
     def menuItemOpenLastSchema(self):
@@ -534,7 +534,7 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["RecentFiles"] = recentDocs
         #print recentDocs, 'Recent Docs'
         for i in range(len(recentDocs)):
-            shortName = "&" + str(i+1) + " " + os.path.basename(recentDocs[i])
+            shortName = "&" + unicode(i+1) + " " + os.path.basename(recentDocs[i])
             self.menuRecent.addAction(shortName, lambda k = i+1: self.openRecentFile(k))
             #print 'Added doc ', shortName, ' to position ', i
 
@@ -604,9 +604,9 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveOutputWindow(self):
         qname = QFileDialog.getSaveFileName(self, "Save Output To File", redREnviron.directoryNames['canvasSettingsDir'] + "/Output.html", "HTML Document (*.html)")
         if qname.isEmpty(): return
-        qname = str(qname.toAscii())
+        qname = unicode(qname.toAscii())
 
-        text = str(self.output.textOutput.toHtml())
+        text = unicode(self.output.textOutput.toHtml())
         #text = text.replace("</nobr>", "</nobr><br>")
 
         file = open(name, "wt")
@@ -654,10 +654,10 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Install Package", 
         redREnviron.settings["saveSchemaDir"], "Package (*.zip)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
-        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        name = unicode(name.toAscii())
+        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
         self.packageManagerGUI.show()
-        self.packageManagerGUI.installPackageFromFile(str(name))
+        self.packageManagerGUI.installPackageFromFile(unicode(name))
 
     def menuOpenOnlineOrangeHelp(self):
         import webbrowser
@@ -729,12 +729,12 @@ class OrangeCanvasDlg(QMainWindow):
             self.statusBar.showMessage("")
             return
         elif text == "\n": return
-        text = str(text)
+        text = unicode(text)
         text = text.replace("<nobr>", ""); text = text.replace("</nobr>", "")
         text = text.replace("<b>", ""); text = text.replace("</b>", "")
         text = text.replace("<i>", ""); text = text.replace("</i>", "")
         text = text.replace("<br>", ""); text = text.replace("&nbsp", "")
-        self.statusBar.showMessage("Last event: " + str(text), 5000)
+        self.statusBar.showMessage("Last event: " + unicode(text), 5000)
 
     # def saveLayout(self):
         # return self.schema.saveSchemaLayout()
@@ -857,7 +857,7 @@ class RedRQApplication(QApplication):
             # return out
         # except rpy.RPyRException as inst:
             # print inst
-            # raise Exception('R Error', str(inst)) 
+            # raise Exception('R Error', unicode(inst)) 
 
 
 # class MyManager(BaseManager):

@@ -83,9 +83,9 @@ class packageManager:
             progressBar.setValue(i)
             progressBar.setLabelText('Installing: ' + package)
             try:
-                packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
-                url = str(self.repository+'/'+package+'/'+packageName)
-                path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
+                packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
+                url = unicode(self.repository+'/'+package+'/'+packageName)
+                path = os.path.join(redREnviron.directoryNames['downloadsDir'], unicode(packageName))
                 #print url
                 self.urlOpener.retrieve(url, path)
                 #print path
@@ -93,9 +93,9 @@ class packageManager:
                 log.log(1, 7, 3, 'Installing package %s from URL %s into path %s' % (packageName, url, path))
             except:
                 try:
-                    packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
-                    url = str(self.repository+'/'+package+'/'+packageName)
-                    path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
+                    packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
+                    url = unicode(self.repository+'/'+package+'/'+packageName)
+                    path = os.path.join(redREnviron.directoryNames['downloadsDir'], unicode(packageName))
                     #print url
                     self.urlOpener.retrieve(url, path)
                     #print path
@@ -133,7 +133,7 @@ class packageManager:
             if node.nodeType == node.TEXT_NODE:
                 rc = rc + node.data
                 
-        rc = str(rc).strip()
+        rc = unicode(rc).strip()
         return rc
     # takes a xml file name and returns an xml object
     def readXML(self, fileName):
@@ -309,13 +309,13 @@ class packageManagerDialog(redRdialog):
         redRbutton(buttonArea2, label = 'Done', callback = self.accept)
     def installItemClicked(self, item1, item2):
         if item1:
-            self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])
+            self.infoViewInstalled.setHtml(self.localPackages[unicode(item1.text(0))]['Description'])
     def updateItemClicked(self, item1, item2):
         if item1:
-            self.infoViewUpdates.setHtml(self.availablePackages[str(item1.text(0))]['Description'])
+            self.infoViewUpdates.setHtml(self.availablePackages[unicode(item1.text(0))]['Description'])
     def availableItemClicked(self, item1, item2):
         if item1:
-            self.infoViewAvailable.setHtml(self.availablePackages[str(item1.text(0))]['Description'])
+            self.infoViewAvailable.setHtml(self.availablePackages[unicode(item1.text(0))]['Description'])
     #### get the pakcages that are on Red-R.org  we ask before we do this and record the xml so we only have to get it once.
     def loadPackagesLists(self,force=True):
         if force:
@@ -393,8 +393,8 @@ class packageManagerDialog(redRdialog):
         ### make the download list
         downloadList = {}
         for item in selectedItems:  
-            name = str(item.text(0))
-            downloadList[name] = {'Version':str(item.text(5)), 'installed':False}
+            name = unicode(item.text(0))
+            downloadList[name] = {'Version':unicode(item.text(5)), 'installed':False}
         # print downloadList
         self.askToInstall(downloadList,"Are you sure that you want to update these packages?")
                 
@@ -405,7 +405,7 @@ class packageManagerDialog(redRdialog):
 
         uninstallList = []
         for item in selectedItems:
-            name = str(item.text(0))
+            name = unicode(item.text(0))
             if name == 'base':  ## special case of trying to delete base.
                 QMessageBox.information(self, "Deleting Base", "You are not allowed to delete base.", QMessageBox.Ok)
                 continue
@@ -464,8 +464,8 @@ class packageManagerDialog(redRdialog):
         if len(selectedItems) ==0: return
         downloadList = {}
         for item in selectedItems:  
-            name = str(item.text(0))
-            downloadList[name] = {'Version':str(item.text(3)), 'installed':False}
+            name = unicode(item.text(0))
+            downloadList[name] = {'Version':unicode(item.text(3)), 'installed':False}
 
         self.askToInstall(downloadList,"Are you sure that you want to install these packages?")
 
@@ -485,7 +485,7 @@ class packageManagerDialog(redRdialog):
 
                 
             downloadList = {}
-            downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+            downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
             deps = self.packageManager.getDependencies(downloadList)
             #print deps
             notFound = []
@@ -521,9 +521,9 @@ class packageManagerDialog(redRdialog):
             self.tabsArea.setCurrentIndex(1)
         except Exception as inst:
             mb = QMessageBox.warning(self,"Install Package", 
-                'The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n'+str(inst),
+                'The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n'+unicode(inst),
                 QMessageBox.Ok)
-            raise Exception, str(inst)
+            raise Exception, unicode(inst)
             
 
 packageManager = packageManager()

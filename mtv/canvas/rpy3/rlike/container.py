@@ -61,7 +61,7 @@ class ArgsDict(dict):
     def __repr__(self):
         s = 'o{'
         for k,v in self.iteritems():
-            s += "'" + str(k) + "': " + str(v) + ", "
+            s += "'" + unicode(k) + "': " + unicode(v) + ", "
         s += '}'
         return s
 

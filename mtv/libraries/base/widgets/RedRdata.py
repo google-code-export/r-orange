@@ -35,8 +35,8 @@ class RedRdata(OWRpy):
         text = '', callback = self.commitFunction)
         redRCommitButton(box, "Commit", callback = self.commitFunction)
     def loadPackage(self):
-        if str(self.package.text()) != '':
-            self.require_librarys([str(self.package.text())])
+        if unicode(self.package.text()) != '':
+            self.require_librarys([unicode(self.package.text())])
         
     
     def selectDataSet(self,ind):
@@ -56,17 +56,17 @@ class RedRdata(OWRpy):
         
     def commitFunction(self):
         package = self.package.text()
-        dataset = str(self.RFunctionParamdataName_lineEdit.text())
+        dataset = unicode(self.RFunctionParamdataName_lineEdit.text())
         if package == '' or dataset == '':
             return
         # the package does not need to be loaded to get its datasets
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package), wantType = 'NoConversion')
         try:
-            newData = redRRDataFrame(data = 'as.data.frame(' + str(self.RFunctionParamdataName_lineEdit.text() + ')'))
+            newData = redRRDataFrame(data = 'as.data.frame(' + unicode(self.RFunctionParamdataName_lineEdit.text() + ')'))
             self.rSend("id0", newData)            
         except RuntimeError as inst:
-            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
+            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ unicode(inst),  
             QMessageBox.Ok + QMessageBox.Default)
 
         

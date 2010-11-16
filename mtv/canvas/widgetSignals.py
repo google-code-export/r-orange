@@ -49,7 +49,7 @@ class widgetSignals():
         self.outputs.processData(signalName)
         self.refreshToolTips()
         self.ROutput.setCursorToEnd()
-        self.ROutput.append('\n## '+ 'Data sent through the '+str(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.
+        self.ROutput.append('\n## '+ 'Data sent through the '+unicode(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.
     def refreshToolTips(self):
         lines = redRObjects.lines()
         for l in lines.values():
@@ -63,7 +63,7 @@ class widgetSignals():
                 try:
                     self.linksOut[name][id].deleteSignal()
                 except Exception as inst:
-                    log.log(1, 9, 1, str(inst))
+                    log.log(1, 9, 1, unicode(inst))
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         #print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
@@ -174,10 +174,10 @@ class widgetSignals():
 
     # return widget, that is already connected to this singlelink signal. If this widget exists, the connection will be deleted (since this is only single connection link)
     def removeExistingSingleLink(self, signal):
-        #print str(self.inputs)
-        #print str(self.outputs)
+        #print unicode(self.inputs)
+        #print unicode(self.outputs)
         for i in self.inputs:
-            #print str(*i) + ' input owbasewidget'
+            #print unicode(*i) + ' input owbasewidget'
             input = InputSignal(*i)
             if input.name == signal and not input.single: return None
 
@@ -201,11 +201,11 @@ class widgetSignals():
         self.loadSavedSession = state
 
     def processSignals(self, convert = False): ## not called inside of this class 
-        #print '|#| processSignals %s' % str(self.windowTitle())
+        #print '|#| processSignals %s' % unicode(self.windowTitle())
         if self.closing == True:
             return
         
-        #print '|#| loadSavedSessionState %s' % str(self.loadSavedSession)
+        #print '|#| loadSavedSessionState %s' % unicode(self.loadSavedSession)
         if self.loadSavedSession:
             self.needProcessing = 0
             return
@@ -223,7 +223,7 @@ class widgetSignals():
                 for i in range(len(self.linksIn[key])):
                     (dirty, widgetFrom, handler, signalData) = self.linksIn[key][i]
                     #print dirty,widgetFrom,handler, signalData
-                    # print 'data being passed: ' + str(signalData)
+                    # print 'data being passed: ' + unicode(signalData)
                      
                     if not (handler and dirty): continue
                     # print 'do the work'

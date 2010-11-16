@@ -96,9 +96,9 @@ class CanvasOptionsDlg(QDialog):
         self.heightSlider = OWGUI.qwtHSlider(canvasDlgSettings, self.settings, "canvasHeight", minValue = 300, maxValue = 1200, label = "Canvas height:  ", step = 50, precision = " %.0f px", debuggingEnabled = 0)
         OWGUI.separator(canvasDlgSettings)
         
-        items = [str(n) for n in QStyleFactory.keys()]
+        items = [unicode(n) for n in QStyleFactory.keys()]
         ind = items.index(self.settings.get("style", "WindowsXP"))
-        OWGUI.comboBox(canvasDlgSettings, self.settings, "style", label = "Window style:", orientation = "horizontal", items = [str(n) for n in QStyleFactory.keys()], sendSelectedValue = 1, debuggingEnabled = 0)
+        OWGUI.comboBox(canvasDlgSettings, self.settings, "style", label = "Window style:", orientation = "horizontal", items = [unicode(n) for n in QStyleFactory.keys()], sendSelectedValue = 1, debuggingEnabled = 0)
         OWGUI.checkBox(canvasDlgSettings, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
         
         if canvasDlg:
@@ -221,10 +221,10 @@ class CanvasOptionsDlg(QDialog):
     def setMirror(self):
         # print 'setMirror'
         item = self.libListBox.currentRow()
-        self.settings['CRANrepos'] = str(self.libs['URL'][item])
-        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')
+        self.settings['CRANrepos'] = unicode(self.libs['URL'][item])
+        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + unicode(self.libs['URL'][item]) + '"; options(repos=r)})')
         #print self.settings['CRANrepos']
-        self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
+        self.libInfo.setText('Repository URL changed to: '+unicode(self.libs['URL'][item]))
     def accept(self):
         self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()
         self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()
@@ -254,13 +254,13 @@ class CanvasOptionsDlg(QDialog):
     def enableDisableButtons(self, itemIndex):
         self.upButton.setEnabled(itemIndex > 0)
         self.downButton.setEnabled(itemIndex < self.tabOrderList.count()-1)
-        catName = str(self.tabOrderList.currentItem().text())
+        catName = unicode(self.tabOrderList.currentItem().text())
         if not self.canvasDlg.widgetRegistry.has_key(catName): return
         self.removeButton.setEnabled(os.path.normpath(redREnviron.directoryNames['widgetDir']) not in os.path.normpath(self.canvasDlg.widgetRegistry[catName].directory))
         #self.removeButton.setEnabled(1)
 
     def addCategory(self):
-        dir = str(QFileDialog.getExistingDirectory(self, "Select the folder that contains the add-on:"))
+        dir = unicode(QFileDialog.getExistingDirectory(self, "Select the folder that contains the add-on:"))
         if dir != "":
             if os.path.split(dir)[1] == "widgets":     # register a dir above the dir that contains the widget folder
                 dir = os.path.split(dir)[0]
@@ -274,7 +274,7 @@ class CanvasOptionsDlg(QDialog):
             
         
     def removeCategory(self):
-        curCat = str(self.tabOrderList.item(self.tabOrderList.currentRow()).text())
+        curCat = unicode(self.tabOrderList.item(self.tabOrderList.currentRow()).text())
         if QMessageBox.warning(self,'Orange Canvas', "Unregister widget category '%s' from Orange canvas?\nThis will not remove any files." % curCat, QMessageBox.Ok , QMessageBox.Cancel | QMessageBox.Default | QMessageBox.Escape) == QMessageBox.Ok:
             self.toRemove.append((curCat, self.canvasDlg.widgetRegistry[curCat].directory))
             item = self.tabOrderList.takeItem(self.tabOrderList.row(self.tabOrderList.currentItem()))
@@ -404,7 +404,7 @@ class AboutDlg(QDialog):
         self.about.setMinimumHeight(150)
         self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
         'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
-        '; Build Time: ' + info['DATE'] + '; Copy Number:' + str(redREnviron.settings['id']) + '' +
+        '; Build Time: ' + info['DATE'] + '; Copy Number:' + unicode(redREnviron.settings['id']) + '' +
         '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
         self.licenceButton = redRbutton(self, 'Licence', callback = self.showLicence)
         b = QDialogButtonBox(self)

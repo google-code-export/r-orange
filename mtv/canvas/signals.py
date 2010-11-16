@@ -22,7 +22,7 @@ class BaseRedRVariable:
         return self.parent
         
     def saveSettings(self):
-        return {'class':str(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
+        return {'class':unicode(self.__class__), 'data':self.data, 'parent':self.parent, 'dictAttrs':self.dictAttrs}
         
     def loadSettings(self, settings):
         self.data = settings['data']
@@ -58,7 +58,7 @@ class BaseRedRVariable:
             return False
     def __str__(self):
         ## print output for the class
-        string = 'Class: '+str(self.__class__)+'; Data: '+str(self.data)
+        string = 'Class: '+unicode(self.__class__)+'; Data: '+unicode(self.data)
         
         return string
     def summary(self):

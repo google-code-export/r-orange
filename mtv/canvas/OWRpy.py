@@ -46,9 +46,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
         self.saveSettingsList = []  # a list of lists or strings that we will save.
         OWRpy.uniqueWidgetNumber += 1
-        ctime = str(time.time())
+        ctime = unicode(time.time())
         self.sessionID = 0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
-        self.widgetID = str(OWRpy.uniqueWidgetNumber) + '_' + ctime
+        self.widgetID = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
         self.variable_suffix = '_' + self.widgetID
         self.Rvariables = {}
         self.RvariablesNames = []
@@ -99,10 +99,10 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             qApp.restoreOverrideCursor()
             self.setRIndicator(False)
             if showException:
-                QMessageBox.information(self, 'Red-R Canvas','R Error: '+ str(inst),  
+                QMessageBox.information(self, 'Red-R Canvas','R Error: '+ unicode(inst),  
                 QMessageBox.Ok + QMessageBox.Default)
             
-            raise RuntimeError(str(inst))
+            raise RuntimeError(unicode(inst))
             return None # now processes can catch potential errors
         
         #except: 
@@ -131,7 +131,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             QMessageBox.Ok + QMessageBox.Default)
             raise Exception, 'Object was not assigned correctly in R, please tell package manager.'
         else:
-            histquery = 'Assign '+str(name)+' to '+str(object)
+            histquery = 'Assign '+unicode(name)+' to '+unicode(object)
             OWRpy.globalRHistory.append(histquery)
             self.widgetRHistory.append(histquery)
 
@@ -139,33 +139,33 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.ROutput.append('> '+ histquery)
 
     def savePDF(self, query, dwidth= 7, dheight = 7, file = None):
-        #print str(redREnviron.settings)
+        #print unicode(redREnviron.settings)
         if file == None and ('HomeFolder' not in redREnviron.settings.keys()):
             file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['saveSchemaDir']), "PDF (*.PDF)")
         elif file == None: 
             file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['HomeFolder']), "PDF (*.PDF)")
         if file.isEmpty(): return
-        file = str(file.toAscii())
+        file = unicode(file.toAscii())
 
         if file: redREnviron.settings['HomeFolder'] = os.path.split(file)[0]
-        self.R('pdf(file = "'+file+'", width = '+str(dwidth)+', height = '+str(dheight)+')')
+        self.R('pdf(file = "'+file+'", width = '+unicode(dwidth)+', height = '+unicode(dheight)+')')
         self.R(query, 'setRData')
         self.R('dev.off()')
         self.status.setText('File saved as \"'+file+'\"')
         self.notes.setCursorToEnd()
-        self.notes.insertHtml('<br> Image saved to: '+str(file)+'<br>')
+        self.notes.insertHtml('<br> Image saved to: '+unicode(file)+'<br>')
     
     def Rplot(self, command, dwidth=6, dheight=6, devNumber = 0, imageType = 'svg'):
         ## reformat the query for plotting, separate the function from the parameters.
         function = command[:command.find('(')]
         query = command[command.find('(')+1:command.rfind(')')]
-        if str(devNumber) in self.device:
-            self.device[str(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
+        if unicode(devNumber) in self.device:
+            self.device[unicode(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
         else:
             if 'plottingArea' not in dir(self):
                 self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, name = self.captionTitle)
-            self.device[str(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
+            self.device[unicode(devNumber)] = redRgraphicsView(self.plottingArea, name = self.captionTitle)
+            self.device[unicode(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
             
         return
         
@@ -182,7 +182,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
                     c = i.children()
                     for c1 in c:
                         text += c1.getReportText(fileDir)
-                elif re.search('PyQt4|OWGUIEx|OWToolbars',str(type(i))) or i.__class__.__name__ in redRGUI.qtWidgets:
+                elif re.search('PyQt4|OWGUIEx|OWToolbars',unicode(type(i))) or i.__class__.__name__ in redRGUI.qtWidgets:
                     ## we can try to get the settings of this.
                     text += i.getReportText(fileDir)
                     #print i.__class__.__name__

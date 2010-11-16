@@ -26,25 +26,25 @@ class RedRsave(OWRpy):
         else:
             self.RFunctionParam_list[id]=''
     def commitFunction(self):
-        if str(self.RFunctionParam_list) == {}: return
-        if str(self.RFunctionParamfile_lineEdit.text()) == '':
+        if unicode(self.RFunctionParam_list) == {}: return
+        if unicode(self.RFunctionParamfile_lineEdit.text()) == '':
             import redREnviron
             res = QFileDialog.getSaveFileName(self, 'Save File Name', redREnviron.directoryNames['documentsDir'], 'R Data File (.RData)')
             if res.isEmpty(): return
-            name = str(name.toAscii())
-            self.RFunctionParamfile_lineEdit.setText(str(res))
+            name = unicode(name.toAscii())
+            self.RFunctionParamfile_lineEdit.setText(unicode(res))
         injection = []
-        #if str(self.RFunctionParamfile_lineEdit.text()) != '':
-        string = 'file="'+str(self.RFunctionParamfile_lineEdit.text())+'"'
+        #if unicode(self.RFunctionParamfile_lineEdit.text()) != '':
+        string = 'file="'+unicode(self.RFunctionParamfile_lineEdit.text())+'"'
         injection.append(string)
         inj = ','.join(injection)
         index = 0
         items = []
-        for i in [str(a) for (k, a) in self.RFunctionParam_list.items()]:
-            self.R('temp%s<-%s' % (str(index), (i)), wantType = 'NoConversion')
+        for i in [unicode(a) for (k, a) in self.RFunctionParam_list.items()]:
+            self.R('temp%s<-%s' % (unicode(index), (i)), wantType = 'NoConversion')
             
-            items.append('temp%s' % str(index))
+            items.append('temp%s' % unicode(index))
             index += 1
-        self.R('save('+str(','.join(items))+','+inj+')', wantType = 'NoConversion')
+        self.R('save('+unicode(','.join(items))+','+inj+')', wantType = 'NoConversion')
         for i in items:
             self.R('rm(%s)' % i, wantType = 'NoConversion')

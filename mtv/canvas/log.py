@@ -60,12 +60,17 @@ def log(table, severity, errorType = 2, comment = ""):
             errorType = 'Message'
         elif errorType == 4:
             errorType = 'Warning'
-    tb = repr(traceback.format_stack())
-    handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, ''.join(tb)))
-    
-    if severity >= redREnviron.settings['minSeverity']:
-        logOutput('%s level %s: %s %s' % (errorType, severity, tb[-1], comment))
-    
+    tb = traceback.format_stack()
+    if table != 0 and table != 10:
+        
+        handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, unicode('</br>'.join(tb)).replace('\"', '')))
+        
+        if severity >= redREnviron.settings['minSeverity']:
+            logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
+    elif table == 0:
+        logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
+    elif table == 10 and redREnviron.settings['debugMode']:
+        logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
 def logException(string):
     global _exceptionManager
     if _exceptionManager:
@@ -97,9 +102,9 @@ class LogHandler():
         if catch:    sys.stdout = self
         else:         sys.stdout = self.defaultSysOutHandler
     
-    def safe_str(self,obj):
+    def safe_unicode(self,obj):
         try:
-            return str(obj)
+            return unicode(obj)
         except UnicodeEncodeError:
             # obj is unicode
             return unicode(obj).encode('unicode_escape')

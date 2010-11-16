@@ -27,6 +27,6 @@ class SandBox(OWRpy):
             t1 = time.time()
             self.R('rnorm(100000)', wantType = 'list')
             t2 = time.time()
-            self.textEdit.insertPlainText(str(t2-t1) + '\n')
+            self.textEdit.insertPlainText(unicode(t2-t1) + '\n')
         
         

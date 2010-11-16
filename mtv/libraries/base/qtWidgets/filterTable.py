@@ -301,12 +301,12 @@ class filterTable(widgetState, QTableView):
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
                         # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": 'Numeric ' + str(label.text()), "value": str(value.text())}
+                        self.criteriaList[col] = {'column':col, "method": 'Numeric ' + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['character']:
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
                         # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": 'String ' + str(label.text()), "value": str(value.text())}
+                        self.criteriaList[col] = {'column':col, "method": 'String ' + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['factor','logical']:
                 checks = menu.findChildren(checkBox)[0].getChecked()
                 if 'Check All' in checks:
@@ -360,8 +360,8 @@ class filterTable(widgetState, QTableView):
             
             
             elif criteria['method'] in ['logical','factor']:
-                f= '","'.join([str(x) for x in criteria['value']])
-                filters.append(self.Rdata+'[,'+str(col)+'] %in% as.factor(c("'+f+'"))')
+                f= '","'.join([unicode(x) for x in criteria['value']])
+                filters.append(self.Rdata+'[,'+unicode(col)+'] %in% as.factor(c("'+f+'"))')
             #elif 'logical' == critera['method']:
             
        # print 'filters:', filters
@@ -705,10 +705,10 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.rownames)+1
             # print self.rownames
             # print size
-            headers = [str(i) for i in range(size,size+count)]
+            headers = [unicode(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
+        self.R('t = matrix("",nrow='+unicode(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
         self.R('colnames(t) = colnames('+self.Rdata+')', wantType = 'NoConversion')
         self.R('rownames(t) = rownames("%s")' % '","'.join(headers), wantType = 'NoConversion')
         self.R(self.Rdata+'=rbind('+self.Rdata+',t)', wantType = 'NoConversion')
@@ -731,7 +731,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.colnames)+1
             # print self.colnames
             # print size
-            headers = ['V'  +str(i) for i in range(size,size+count)]
+            headers = ['V'  +unicode(i) for i in range(size,size+count)]
             # print headers
             self.colnames.extend(headers)
         

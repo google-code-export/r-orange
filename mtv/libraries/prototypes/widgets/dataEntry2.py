@@ -82,7 +82,7 @@ class dataEntry2(OWRpy):
         for i in range(self.colCount):
             item = self.dataTable.horizontalHeaderItem(i)
             labels.append(item.text())
-        labels.append(str(self.columnNameLineEdit.text()))
+        labels.append(unicode(self.columnNameLineEdit.text()))
         self.dataTable.setColumnCount(self.colCount+1)
         self.dataTable.setHorizontalHeaderLabels(labels)
         self.colCount += 1
@@ -100,7 +100,7 @@ class dataEntry2(OWRpy):
         self.colCount = dims[1]+1
         self.rowCount = dims[0]
     def cellClicked(self, row, col):
-        print str(row), str(col)
+        print unicode(row), unicode(col)
         pass
 
     def onCellFocus(self, currentRow, currentCol, tb):
@@ -124,12 +124,12 @@ class dataEntry2(OWRpy):
             cb = QComboBox()
             item = self.dataTable.item(0, j)
             if item == None:
-                newitem = QTableWidgetItem(str('NA'))
+                newitem = QTableWidgetItem(unicode('NA'))
             else:
-                newitem = QTableWidgetItem(str(item.text()))
+                newitem = QTableWidgetItem(unicode(item.text()))
             cb.addItems(['Default', 'Factor', 'Numeric', 'Character'])
             self.classTable.setCellWidget(j-1, 1, cb)
-            newitem.setToolTip(str('Set the data type for column '+str(newitem.text())))
+            newitem.setToolTip(unicode('Set the data type for column '+unicode(newitem.text())))
             self.classTable.setItem(j-1, 0, newitem)
             
         button(self.window, 'Set Classes', callback = self.setClasses)
@@ -187,11 +187,11 @@ class dataEntry2(OWRpy):
                 item = self.dataTable.item(i, coli[0])
                 if item != None:
                     thisText = item.text()
-                else: thisText = str(i)
+                else: thisText = unicode(i)
                 if thisText == None or thisText == '':
-                    thisText = str(i)
+                    thisText = unicode(i)
                     
-                rownames[str(i)] = (str(thisText))
+                rownames[unicode(i)] = (unicode(thisText))
             coli = coli[1:] #index up the cols
 
         if 'Use Column Headers' in self.rowHeaders.getChecked():
@@ -199,18 +199,18 @@ class dataEntry2(OWRpy):
                 item = self.dataTable.horizontalHeaderItem(j)
                 if item != None:
                     thisText = item.text()
-                else: thisText = '"'+str(j)+'"'
+                else: thisText = '"'+unicode(j)+'"'
                 if thisText == None or thisText == '':
-                    thisText = '"'+str(j)+'"'
+                    thisText = '"'+unicode(j)+'"'
                 thisText = thisText.split(' ')[0]
-                colnames[str(j)] = (str(thisText))
+                colnames[unicode(j)] = (unicode(thisText))
 
         rinsertion = []
         
         for j in coli:
             element = ''
             if colnames:
-                element += colnames[str(j)]+'='
+                element += colnames[unicode(j)]+'='
             if self.classes:
                 element += self.classes[j-1][0]
             element += 'c('
@@ -223,17 +223,17 @@ class dataEntry2(OWRpy):
                 else:
                     try: #catch if the element can be coerced to numeric in the table
                         float(tableItem.text()) #will fail if can't be coerced to int 
-                        inserts.append(str(tableItem.text()))
+                        inserts.append(unicode(tableItem.text()))
                     except:
                         if tableItem.text() == 'NA': 
-                            inserts.append(str(tableItem.text()))
+                            inserts.append(unicode(tableItem.text()))
                             print 'set NA'
                         elif tableItem.text() == '1.#QNAN': 
                             inserts.append('NA') #if we read in some data
                             print 'set QNAN to NA'
                         else: 
-                            inserts.append('"'+str(tableItem.text())+'"')
-                            print str(tableItem.text())+' set as text'
+                            inserts.append('"'+unicode(tableItem.text())+'"')
+                            print unicode(tableItem.text())+' set as text'
 
             insert = ','.join(inserts)
             element += insert+')'
@@ -246,10 +246,10 @@ class dataEntry2(OWRpy):
         if len(rownames) > 0:
             rname = []
             for i in rowi:
-                if rownames[str(i)] in rname:
-                    rname.append(rownames[str(i)]+'_at_'+str(i))
+                if rownames[unicode(i)] in rname:
+                    rname.append(rownames[unicode(i)]+'_at_'+unicode(i))
                 else:
-                    rname.append(rownames[str(i)])
+                    rname.append(rownames[unicode(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')')

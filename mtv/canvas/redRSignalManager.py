@@ -29,7 +29,7 @@ class OutputHandler:
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
             return True
         except Exception as inst:
-            log.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % str(inst))
+            log.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % unicode(inst))
             return False
     def outputIDs(self):
         return self.outputSignals.keys()
@@ -239,7 +239,7 @@ class OutputHandler:
         except:
             import redRExceptionHandling
             error = redRExceptionHandling.formatException(errorMsg="Error occured in processing signal in this widget.\nPlease check the widgets.\n\n",plainText=True)
-            parentWidget.setWarning(id = 'signalHandlerWarning', text = str(error))
+            parentWidget.setWarning(id = 'signalHandlerWarning', text = unicode(error))
             #print error
             log.log(1, 9, 1, error)
             parentWidget.status.setText('Error in processing signal')
@@ -259,7 +259,7 @@ class OutputHandler:
         data = {}
         for (key, value) in self.outputSignals.items():
             
-            data[key] = {'name':value['name'], 'signalClass':str(value['signalClass']), 'connections':{}}
+            data[key] = {'name':value['name'], 'signalClass':unicode(value['signalClass']), 'connections':{}}
             if value['value']:
                 data[key]['value'] = value['value'].saveSettings()
             else:
@@ -330,7 +330,7 @@ class InputHandler:
             'handler':handler,
             'multiple':multiple,
             'sid':id, 
-            'id':str(id)+'_'+self.parent.widgetID, 
+            'id':unicode(id)+'_'+self.parent.widgetID, 
             'parent':self.parent,
             'dirty':False,
             'none': False}
@@ -374,8 +374,8 @@ class InputHandler:
                         # print OSignalClass
                         # print ISignalClass
                         
-                        # print str(OSignalClass.convertToList)
-                        # print str(ISignalClass.convertFromList)
+                        # print unicode(OSignalClass.convertToList)
+                        # print unicode(ISignalClass.convertFromList)
         return False
         
     def getPossibleConnections(self, outputHandler):

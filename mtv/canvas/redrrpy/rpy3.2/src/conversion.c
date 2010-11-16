@@ -1,6 +1,6 @@
 /* conversion package for rpy3.  This will take a SEXP obect and convert to a python object of the expected class as would be seen in rpy1
-
-This module is derived from the functions that appeared in rpy1 with some changes by Kyle R Covington (KRC).  The orriginal licence block is reproduced below.*/
+Modifications made on or before 12 November 2010.
+This module is derived from the functions that appeared in rpy1 with changes by Kyle R Covington (KRC).  The orriginal licence block is reproduced below.*/
 
 /*
  * $Id: rpymodule.c 510 2008-05-09 21:16:59Z warnes $
@@ -26,7 +26,7 @@ This module is derived from the functions that appeared in rpy1 with some change
  * Portions created by the Initial Developer are Copyright (C) 2002
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): Note that this section has been changed from the original.
  *    Kyle R Covington <kyle@red-r.org> (Maintainer)// orriginally Gregory R. Warnes <greg@warnes.net> (Maintainer)
  *
  * Alternatively, the contents of this file may be used under the terms of

@@ -12,7 +12,7 @@ class RArbitraryList(RVariable, UnstructuredDict):
         RVariable.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
-        self.newDataID = str(time.time()).replace('.', '_')
+        self.newDataID = unicode(time.time()).replace('.', '_')
         
     def convertFromClass(self, signal):
         if isinstance(signal, UnstructuredDict):

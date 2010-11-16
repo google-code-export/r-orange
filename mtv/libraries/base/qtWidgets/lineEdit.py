@@ -45,7 +45,7 @@ class lineEdit(QLineEdit,widgetState):
         self.label = label
     
     def text(self):
-        return str(QLineEdit.text(self).toAscii())
+        return unicode(QLineEdit.text(self).toAscii())
     def hide(self):
         if self.hasLabel:
             self.hb.hide()
@@ -67,7 +67,7 @@ class lineEdit(QLineEdit,widgetState):
         return r
     def loadSettings(self,data):
         try:
-            #print 'called load' + str(value)     
+            #print 'called load' + unicode(value)     
             self.setText(data['text'])
             if 'id' in data.keys():
                 self.id = data['id']

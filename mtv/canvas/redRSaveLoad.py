@@ -53,10 +53,10 @@ def minimumY():
 def saveIcon(widgetIconsXML, wi, doc):
     log.log(1, 9, 3, 'orngDoc makeTemplate; saving widget %s' % wi)
     witemp = doc.createElement('widgetIcon')
-    witemp.setAttribute('name', str(wi.getWidgetInfo().fileName))             # save icon name
-    witemp.setAttribute('instance', str(wi.instanceID))        # save instance ID
-    witemp.setAttribute("xPos", str(int(wi.x())) )      # save the xPos
-    witemp.setAttribute("yPos", str(int(wi.y())) )      # same the yPos
+    witemp.setAttribute('name', unicode(wi.getWidgetInfo().fileName))             # save icon name
+    witemp.setAttribute('instance', unicode(wi.instanceID))        # save instance ID
+    witemp.setAttribute("xPos", unicode(int(wi.x())) )      # save the xPos
+    witemp.setAttribute("yPos", unicode(int(wi.y())) )      # same the yPos
     witemp.setAttribute("caption", wi.caption)          # save the caption
     widgetIconsXML.appendChild(witemp)
 
@@ -74,7 +74,7 @@ def saveInstances(instances, widgets, doc, progressBar):
         temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
         temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
         temp.setAttribute('widgetID', widget.widgetID)
-        print 'save in orngDoc ' + str(widget.captionTitle)
+        print 'save in orngDoc ' + unicode(widget.captionTitle)
         progress += 1
         progressBar.setValue(progress)
         
@@ -107,8 +107,8 @@ def makeTemplate(filename = None, copy = False):
     else:
         filename = redREnviron.directoryNames['tempDir']+'/copy.rrts'
     progressBar = startProgressBar(
-    'Saving '+str(os.path.basename(filename)),
-    'Saving '+str(os.path.basename(filename)),
+    'Saving '+unicode(os.path.basename(filename)),
+    'Saving '+unicode(os.path.basename(filename)),
     len(redRObjects.instances(wantType = 'list'))+len(redRObjects.lines().values())+3)
     progress = 0
     # create xml document
@@ -148,12 +148,12 @@ def makeTemplate(filename = None, copy = False):
     settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),'RedR': requireRedRLibraries},2)
     #print requireRedRLibraries
     file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
-    file.write(str(settingsDict))
+    file.write(unicode(settingsDict))
     file.close()
     
     if not copy:
-        taglist = str(tempDialog.tagsList.text())
-        tempDescription = str(tempDialog.descriptionEdit.toPlainText())
+        taglist = unicode(tempDialog.tagsList.text())
+        tempDescription = unicode(tempDialog.descriptionEdit.toPlainText())
         saveTagsList.setAttribute("tagsList", taglist)
         saveDescription.setAttribute("tempDescription", tempDescription)
         
@@ -202,8 +202,8 @@ def save(filename = None, template = False, copy = False):
         filename = os.path.join(redREnviron.directoryNames['tempDir'], 'copy.rrts')
     log.log(1, 9, 3, 'Saveing file as name %s' % filename)
     progressBar = startProgressBar(
-    'Saving '+str(os.path.basename(filename)),
-    'Saving '+str(os.path.basename(filename)),
+    'Saving '+unicode(os.path.basename(filename)),
+    'Saving '+unicode(os.path.basename(filename)),
     len(redRObjects.instances())+len(redRObjects.lines())+3)
     progress = 0
 
@@ -219,7 +219,7 @@ def save(filename = None, template = False, copy = False):
     
     # save tabs and the icons and the channels
     if not copy or template:
-        #tabs.setAttribute('tabNames', str(self.canvasTabs.keys()))
+        #tabs.setAttribute('tabNames', unicode(self.canvasTabs.keys()))
         for t in redRObjects.tabNames():
             temp = doc.createElement('tab')
             temp.setAttribute('name', t)
@@ -241,11 +241,11 @@ def save(filename = None, template = False, copy = False):
     settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),'RedR': requireRedRLibraries},2)
     #print requireRedRLibraries
     file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
-    file.write(str(settingsDict))
+    file.write(unicode(settingsDict))
     file.close()
     if template:
-        taglist = str(tempDialog.tagsList.text())
-        tempDescription = str(tempDialog.descriptionEdit.toPlainText())
+        taglist = unicode(tempDialog.tagsList.text())
+        tempDescription = unicode(tempDialog.descriptionEdit.toPlainText())
         saveTagsList.setAttribute("tagsList", taglist)
         saveDescription.setAttribute("tempDescription", tempDescription)
         
@@ -326,7 +326,7 @@ def loadRequiredPackages(required, loadingProgressBar):
             #print package
             if not (package['Name'] in installedPackages.keys() 
             and package['Version']['Number'] == installedPackages[package['Name']]['Version']['Number']):
-                downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+                downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
 
         if len(downloadList.keys()) > 0:
             pm = redRPackageManager.packageManagerDialog()
@@ -349,12 +349,12 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         tmp=False
     else:
         QMessageBox.information(None, 'Red-R Error', 
-        'Cannot load file with extension ' + str(filename.split('.')[-1]),  
+        'Cannot load file with extension ' + unicode(filename.split('.')[-1]),  
         QMessageBox.Ok + QMessageBox.Default)
         return
     
-    loadingProgressBar = startProgressBar('Loading '+str(os.path.basename(filename)),
-    'Loading '+str(filename), 2)
+    loadingProgressBar = startProgressBar('Loading '+unicode(os.path.basename(filename)),
+    'Loading '+unicode(filename), 2)
     
         
     # set cursor
@@ -370,7 +370,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
 
     ### unzip the file ###
     
-    zfile = zipfile.ZipFile( str(filename), "r" )
+    zfile = zipfile.ZipFile( unicode(filename), "r" )
     for name in zfile.namelist():
         file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
     doc = parse(os.path.join(redREnviron.directoryNames['tempDir'],'tempSchema.tmp')) # load the doc data for the data in the temp dir.
@@ -397,7 +397,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     tabs = schema.getElementsByTagName("tabs")[0]
     #settings = schema.getElementsByTagName("settings")
     f = open(os.path.join(redREnviron.directoryNames['tempDir'],'settings.pickle'))
-    settingsDict = eval(str(f.read()))
+    settingsDict = eval(unicode(f.read()))
     f.close()
     
     ## load the required packages
@@ -445,12 +445,12 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
         tmp=False
     else:
         QMessageBox.information(self, 'Red-R Error', 
-        'Cannot load file with extension ' + str(filename.split('.')[-1]),  
+        'Cannot load file with extension ' + unicode(filename.split('.')[-1]),  
         QMessageBox.Ok + QMessageBox.Default)
         return
     
-    loadingProgressBar = startProgressBar('Loading '+str(os.path.basename(filename)),
-    'Loading '+str(filename), 2)
+    loadingProgressBar = startProgressBar('Loading '+unicode(os.path.basename(filename)),
+    'Loading '+unicode(filename), 2)
     
     ## What is the purpose of this???
     if not os.path.exists(filename):
@@ -475,7 +475,7 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
 
     ### unzip the file ###
     
-    zfile = zipfile.ZipFile( str(filename), "r" )
+    zfile = zipfile.ZipFile( unicode(filename), "r" )
     for name in zfile.namelist():
         file(os.path.join(redREnviron.directoryNames['tempDir'],os.path.basename(name)), 'wb').write(zfile.read(name)) ## put the data into the tempdir for this session for each file that was in the temp dir for the last schema when saved.
     doc = parse(os.path.join(redREnviron.directoryNames['tempDir'],'tempSchema.tmp')) # load the doc data for the data in the temp dir.
@@ -485,10 +485,10 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     widgets = schema.getElementsByTagName("widgets")[0]
     lines = schema.getElementsByTagName('channels')[0]
     f = open(os.path.join(redREnviron.directoryNames['tempDir'],'settings.pickle'))
-    settingsDict = eval(str(f.read()))
+    settingsDict = eval(unicode(f.read()))
     f.close()
     
-    #settingsDict = eval(str(settings[0].getAttribute("settingsDictionary")))
+    #settingsDict = eval(unicode(settings[0].getAttribute("settingsDictionary")))
     loadedSettingsDict = settingsDict
     
     loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
@@ -549,13 +549,13 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
             if not tmp:
                 caption = witemp.getAttribute("caption")          # save the caption
                 log.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
-                schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = str(instance)) ##  add the widget icon 
+                schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = unicode(instance)) ##  add the widget icon 
             else:
                 caption = ""
                 settings = cPickle.loads(loadedSettingsDict[instance]['settings'])
             
                 import time
-                loadingInstanceID = str(time.time())
+                loadingInstanceID = unicode(time.time())
                 newwidget = schemaDoc.addWidgetByFileName(name, x = xPos, y = yPos + addY, widgetSettings = settings, id = loadingInstanceID)
                 nw = redRObjects.getWidgetInstanceByID(newwidget)
                 ## if tmp we need to set the tempID
@@ -589,7 +589,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 nw = redRObjects.getWidgetInstanceByID(newwidget)
                 ## if tmp we need to set the tempID
                 nw.tempID = widgetID
-                nw.widgetID = str(time.time())
+                nw.widgetID = unicode(time.time())
                 nw.variable_suffix = '_' + widgetID
                 nw.resetRvariableNames()
                 ## send None through all of the widget ouptuts if this is a template
@@ -599,7 +599,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
-            log.log(1, 9, 1, str(inst))
+            log.log(1, 9, 1, unicode(inst))
     ## now the widgets are loaded so we can move on to setting the connections
     
     return (loadedOk, failureText)
@@ -623,7 +623,7 @@ def loadWidgets180(widgets, loadingProgressBar, tmp):
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
             xPos = int(widget.getAttribute('xPos'))
             yPos = int(widget.getAttribute('yPos'))
-            caption = str(widget.getAttribute('caption'))
+            caption = unicode(widget.getAttribute('caption'))
             ## for backward compatibility we need to make both the widgets and the instances.
             #addWidgetInstanceByFileName(name, settings, inputs, outputs)
             widgetInfo =  redRObjects.widgetRegistry()['widgets'][name]
@@ -632,7 +632,7 @@ def loadWidgets180(widgets, loadingProgressBar, tmp):
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
-            print str(inst), 'Widget load failure 180'
+            print unicode(inst), 'Widget load failure 180'
     return (loadedOk, failureText)
 def getXMLText(nodelist):
     rc = ''
@@ -678,10 +678,10 @@ def toZip(file, filename):
 def saveDocumentAs():
     name = QFileDialog.getSaveFileName(None, "Save File", os.path.join(schemaPath, _schemaName), "Red-R Widget Schema (*.rrs)")
     if not name or name == None: return False
-    name = str(name.toAscii())
-    if str(name) == '': return False
-    if os.path.splitext(str(name))[0] == "": return False
-    if os.path.splitext(str(name))[1].lower() != ".rrs": name = name + ".rrs"
+    name = unicode(name.toAscii())
+    if unicode(name) == '': return False
+    if os.path.splitext(unicode(name))[0] == "": return False
+    if os.path.splitext(unicode(name))[1].lower() != ".rrs": name = name + ".rrs"
     log.log(1, 9, 3, 'saveDocument: name is %s' % name)
     return save(name,template=False)
 def checkWidgetDuplication(widgets):
@@ -696,11 +696,11 @@ def checkWidgetDuplication(widgets):
 def saveTemplate():
     name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     if not name or name == None: return False
-    name = str(name.toAscii())
-    if str(name) == '': return False
-    if os.path.splitext(str(name))[0] == '': return False
-    if os.path.splitext(str(name))[1].lower() != ".rrts": name = name + '.rrts'
-    return makeTemplate(str(name),copy=False)
+    name = unicode(name.toAscii())
+    if unicode(name) == '': return False
+    if os.path.splitext(unicode(name))[0] == '': return False
+    if os.path.splitext(unicode(name))[1].lower() != ".rrts": name = name + '.rrts'
+    return makeTemplate(unicode(name),copy=False)
 
 def makeXMLDoc():
     doc = Document() ## generates the main document type.

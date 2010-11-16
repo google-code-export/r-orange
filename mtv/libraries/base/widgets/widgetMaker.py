@@ -69,7 +69,7 @@ class widgetMaker(OWRpy):
             # except: pass
         return dir(signals)
     def setArgsLineEdit(self, string):
-        myargs = str(self.argsLineEdit.text()).split(' ')
+        myargs = unicode(self.argsLineEdit.text()).split(' ')
         for thisArg in myargs:
             if thisArg not in self.args.keys():
                 self.args[thisArg] = ''
@@ -79,12 +79,12 @@ class widgetMaker(OWRpy):
         import redREnviron, orngRegistry, os
         widgetDirName = redREnviron.directoryNames["widgetDir"]
         #print 'dir:' + widgetDirName
-        path = os.path.join(widgetDirName, "blank", "widgets", "RedR" + str(self.functionName.text()).replace('.', '_') + ".py")
+        path = os.path.join(widgetDirName, "blank", "widgets", "RedR" + unicode(self.functionName.text()).replace('.', '_') + ".py")
         #print 'path:' + path
         if not os.path.exists(os.path.split(path)[0]):
             os.makedirs(os.path.split(path)[0])
         file = open(os.path.abspath(path), "wt")
-        tmpCode = str(self.codeArea.toPlainText())
+        tmpCode = unicode(self.codeArea.toPlainText())
         tmpCode = tmpCode.replace('<pre>', '')
         tmpCode = tmpCode.replace('</pre>', '')
         tmpCode = tmpCode.replace('&lt;', '<')
@@ -100,20 +100,20 @@ class widgetMaker(OWRpy):
         
     def loadRPackage(self):
         
-        if not self.require_librarys([str(self.packageName.text())]):
+        if not self.require_librarys([unicode(self.packageName.text())]):
             self.status.setText('R Libraries Not Loaded.')
         
     def parseFunction(self):
         self.args = {}
         try:
-            self.R('help('+str(self.functionName.text())+')', wantType = 'NoConversion') # show the help for the user to see the args.
-            holder = self.R('capture.output(args('+str(self.functionName.text())+'))')
+            self.R('help('+unicode(self.functionName.text())+')', wantType = 'NoConversion') # show the help for the user to see the args.
+            holder = self.R('capture.output(args('+unicode(self.functionName.text())+'))')
             s = ''
             functionParams = s.join(holder)
-            print str(self.functionName.text())
+            print unicode(self.functionName.text())
             self.infoa.setText("Function called successfully.")
             print 'function called successfully'
-            print str(self.functionParams)
+            print unicode(self.functionParams)
         except:
             self.infoa.setText("Error with calling function.")
             return
@@ -151,14 +151,14 @@ class widgetMaker(OWRpy):
         
     def updateInputs(self):
         self.inputArea.clear()
-        self.inputArea.setRowCount(int(len(str(self.argsLineEdit.text()).split(' '))))
+        self.inputArea.setRowCount(int(len(unicode(self.argsLineEdit.text()).split(' '))))
 
         self.inputArea.show()
         self.inputArea.setHorizontalHeaderLabels(['Name', 'Input Type', 'Required', 'Signal Class', 'Input class', 'Default', 'Options'])
         n=0
-        for arg in str(self.argsLineEdit.text()).split(' '):
+        for arg in unicode(self.argsLineEdit.text()).split(' '):
             arg = arg.replace('.', '_') # python uses points for class refference
-            itemname = QTableWidgetItem(str(arg))
+            itemname = QTableWidgetItem(unicode(arg))
             #itemClass = QTableWidgetItem
             self.inputArea.setItem(n,0,itemname)
             cw = QComboBox()
@@ -174,7 +174,7 @@ class widgetMaker(OWRpy):
             ipt.addItems(['lineEdit', 'radioButtons', 'comboBox', 'checkBox'])
             self.inputArea.setCellWidget(n, 4, ipt)
             dt = QLineEdit()
-            dt.setText(str(self.args[arg]))
+            dt.setText(unicode(self.args[arg]))
             self.inputArea.setCellWidget(n, 5, dt)
             opt = QLineEdit()
             self.inputArea.setCellWidget(n, 6, opt)
@@ -183,18 +183,18 @@ class widgetMaker(OWRpy):
         
     def acceptInputs(self): #accept the criteria in the input Area
         for i in xrange(self.inputArea.rowCount()):
-            #print 'i:'+str(i)
+            #print 'i:'+unicode(i)
             combo = self.inputArea.cellWidget(i, 1)
             #print combo
             if combo.currentText() == 'Widget Input':
                 recombo = self.inputArea.cellWidget(i, 2)
-                #print str(self.inputArea.item(i ,0).text())
+                #print unicode(self.inputArea.item(i ,0).text())
                 dt = self.inputArea.cellWidget(i, 5)
-                self.fieldList[str(self.inputArea.item(i, 0).text())] = {'default':str(dt.text()), 'required':recombo.currentText(), 'opt':str(self.inputArea.cellWidget(i, 6).text()), 'ipt':str(self.inputArea.cellWidget(i, 4).currentText())}
+                self.fieldList[unicode(self.inputArea.item(i, 0).text())] = {'default':unicode(dt.text()), 'required':recombo.currentText(), 'opt':unicode(self.inputArea.cellWidget(i, 6).text()), 'ipt':unicode(self.inputArea.cellWidget(i, 4).currentText())}
                 
             else:
                 ic = self.inputArea.cellWidget(i, 3)
-                self.functionInputs[str(self.inputArea.item(i,0).text())] = str(ic.currentText())
+                self.functionInputs[unicode(self.inputArea.item(i,0).text())] = unicode(ic.currentText())
             
     def inputcellClicked(self, item):
         self.inputArea.editItem(item)
@@ -241,7 +241,7 @@ class widgetMaker(OWRpy):
             for element in self.functionInputs.keys():
                 self.initCode += '\t\tself.inputs.addInput("'+element+'", "'+element+'", signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+')\n'
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output","'+self.functionName.text()+' Output", signals.'+str(self.outputsCombobox.currentText())+'.'+str(self.outputsCombobox.currentText())+')\n'
+            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output","'+self.functionName.text()+' Output", signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+')\n'
         self.initCode += '\t\t\n'
         
     def makeGUI(self):
@@ -251,7 +251,7 @@ class widgetMaker(OWRpy):
             if element == '___':
                 continue
             else:
-                self.guiCode += '\t\tself.RFunctionParam'+element+'_'+str(self.fieldList[element]['ipt'])+' = redR'+str(self.fieldList[element]['ipt'])+'(self.controlArea, label = "'+element+':"'
+                self.guiCode += '\t\tself.RFunctionParam'+element+'_'+unicode(self.fieldList[element]['ipt'])+' = redR'+unicode(self.fieldList[element]['ipt'])+'(self.controlArea, label = "'+element+':"'
                 ## ipt types ['lineEdit', 'radioBox', 'comboBox', 'checkBox']
                 
                 if self.fieldList[element]['ipt'] == 'lineEdit':
@@ -273,8 +273,8 @@ class widgetMaker(OWRpy):
         self.processSignals = ''
         for inputName in self.functionInputs.keys():
             self.processSignals += '\tdef process'+inputName+'(self, data):\n'
-            if str(self.packageName.text()) != '':
-                self.processSignals += '\t\tif not self.require_librarys(["'+str(self.packageName.text())+'"]):\n'
+            if unicode(self.packageName.text()) != '':
+                self.processSignals += '\t\tif not self.require_librarys(["'+unicode(self.packageName.text())+'"]):\n'
                 self.processSignals += '\t\t\tself.status.setText(\'R Libraries Not Loaded.\')\n\t\t\treturn\n'
             self.processSignals += '\t\tif data:\n'
             self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data.getData()\n'
@@ -288,19 +288,19 @@ class widgetMaker(OWRpy):
         self.commitFunction = ''
         self.commitFunction += '\tdef commitFunction(self):\n'
         for inputName in self.functionInputs.keys():
-            self.commitFunction += "\t\tif str(self.RFunctionParam_"+inputName+") == '': return\n"
+            self.commitFunction += "\t\tif unicode(self.RFunctionParam_"+inputName+") == '': return\n"
         for element in self.fieldList.keys():
             if self.fieldList[element]['required'] == 'Required' and self.fieldList[element]['ipt'] == 'lineEdit':
-                self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) == '': return\n"
+                self.commitFunction += "\t\tif unicode(self.RFunctionParam"+ element +"_lineEdit.text()) == '': return\n"
         self.commitFunction += "\t\tinjection = []\n"
         for element in self.fieldList.keys():
             relement = element.replace('_', '.')
             if self.fieldList[element]['ipt'] == 'lineEdit':
-                self.commitFunction += "\t\tif str(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
-                self.commitFunction += "\t\t\tstring = '"+relement+"='+str(self.RFunctionParam"+ element +"_lineEdit.text())+''\n"
+                self.commitFunction += "\t\tif unicode(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
+                self.commitFunction += "\t\t\tstring = '"+relement+"='+unicode(self.RFunctionParam"+ element +"_lineEdit.text())+''\n"
                 self.commitFunction += "\t\t\tinjection.append(string)\n"
             elif self.fieldList[element]['ipt'] == 'comboBox':
-                self.commitFunction += "\t\tstring = ',"+relement+"='+str(self.RFunctionParam"+element+"_comboBox.currentText())+''\n"
+                self.commitFunction += "\t\tstring = ',"+relement+"='+unicode(self.RFunctionParam"+element+"_comboBox.currentText())+''\n"
                 self.commitFunction += "\t\tinjection.append(string)\n"
             else:
                 self.commitFunction += "\t\t## make commit function for self.RFunctionParam"+element+"_"+self.fieldList[element]['ipt']+"\n\n"
@@ -314,13 +314,13 @@ class widgetMaker(OWRpy):
         for element in self.functionInputs.keys():
             if element != '___':
                 relement = element.replace('_', '.')
-                self.commitFunction += relement+"='+str(self.RFunctionParam_"+element+")+',"
+                self.commitFunction += relement+"='+unicode(self.RFunctionParam_"+element+")+',"
         #self.commitFunction = self.commitFunction[:-2] #remove the last element
         # for element in self.fieldList.keys():
             # if element == '...':
                 # pass
             # else:
-                # self.commitFunction += element+"='+str(self.RFunctionParam_"+element+")+',"
+                # self.commitFunction += element+"='+unicode(self.RFunctionParam_"+element+")+',"
         # self.commitFunction = self.commitFunction[:-1]
         self.commitFunction += "'+inj+'"
         self.commitFunction += ")')\n"
@@ -336,7 +336,7 @@ class widgetMaker(OWRpy):
         
         
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.commitFunction += '\t\tnewData = signals.'+str(self.outputsCombobox.currentText())+'.'+str(self.outputsCombobox.currentText())+'(data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
+            self.commitFunction += '\t\tnewData = signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+'(data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
             self.commitFunction += '\t\t#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.\n'
             self.commitFunction += '\t\tself.rSend("'+self.functionName.text()+' Output", newData)\n'
 

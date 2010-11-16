@@ -33,9 +33,9 @@ class RedRcorrplot(OWRpy):
 		else:
 			self.RFunctionParam_object=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_object) == '': return
+		if unicode(self.RFunctionParam_object) == '': return
 		injection = []
-		string = 'type='+str(self.RFunctionParamtype_comboBox.currentText()).split(';')[0]+''
+		string = 'type='+unicode(self.RFunctionParamtype_comboBox.currentText()).split(';')[0]+''
 		injection.append(string)
 		inj = ','.join(injection)
-		self.Rplot('corrplot(object='+str(self.RFunctionParam_object)+','+inj+')')
+		self.Rplot('corrplot(object='+unicode(self.RFunctionParam_object)+','+inj+')')

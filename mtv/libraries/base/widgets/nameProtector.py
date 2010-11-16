@@ -68,14 +68,14 @@ class nameProtector(OWRpy):
     def dfCommit(self):
         if self.data == '': return
 
-        if len(self.nameProtectDFcheckBox.getChecked()) == 0 and str(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
+        if len(self.nameProtectDFcheckBox.getChecked()) == 0 and unicode(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
         newData = self.parentData.copy()
         newData.data = self.Rvariables['newDataFromNameProtector']
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
             self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))', wantType = 'NoConversion')
             
-        if str(self.namesProtectDFcomboBox.currentText()) != '':
-            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+str(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
+        if unicode(self.namesProtectDFcomboBox.currentText()) != '':
+            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+unicode(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
         

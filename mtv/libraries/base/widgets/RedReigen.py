@@ -38,28 +38,28 @@ class RedReigen(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParamsymmetric_radioButtons.text()) == 'Yes':
+        if unicode(self.RFunctionParamsymmetric_radioButtons.text()) == 'Yes':
             string = 'symmetric=TRUE'
             injection.append(string)
         else:
             string = 'symmetric=FALSE'
             injection.append(string)
-        if str(self.RFunctionParamonly_values_radioButtons.text()) == 'Yes':
+        if unicode(self.RFunctionParamonly_values_radioButtons.text()) == 'Yes':
             string = 'only.values=TRUE'
             injection.append(string)
         else:
             string = 'only.values=FALSE'
             injection.append(string)
-        if str(self.RFunctionParamEISPACK_radioButtons.text()) == 'Yes':
+        if unicode(self.RFunctionParamEISPACK_radioButtons.text()) == 'Yes':
             string = 'EISPACK=TRUE'
             injection.append(string)
         else:
             string = 'EISPACK=FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['eigen']+'<-eigen(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['eigen']+'<-eigen(x='+unicode(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         newData = signals.redRRList(data = self.Rvariables["eigen"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

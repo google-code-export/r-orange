@@ -49,23 +49,23 @@ class sizeplot(OWRpy):
 		else:
 			self.RFunctionParam_x=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_y) == '': return
-		if str(self.RFunctionParam_x) == '': return
+		if unicode(self.RFunctionParam_y) == '': return
+		if unicode(self.RFunctionParam_x) == '': return
 		injection = []
-		if str(self.RFunctionParamy_lineEdit.text()) != '':
-			string = 'y='+str(self.RFunctionParamy_lineEdit.text())+''
+		if unicode(self.RFunctionParamy_lineEdit.text()) != '':
+			string = 'y='+unicode(self.RFunctionParamy_lineEdit.text())+''
 			injection.append(string)
-		if str(self.RFunctionParamx_lineEdit.text()) != '':
-			string = 'x='+str(self.RFunctionParamx_lineEdit.text())+''
+		if unicode(self.RFunctionParamx_lineEdit.text()) != '':
+			string = 'x='+unicode(self.RFunctionParamx_lineEdit.text())+''
 			injection.append(string)
-		if str(self.RFunctionParamscale_lineEdit.text()) != '':
-			string = 'scale='+str(self.RFunctionParamscale_lineEdit.text())+''
+		if unicode(self.RFunctionParamscale_lineEdit.text()) != '':
+			string = 'scale='+unicode(self.RFunctionParamscale_lineEdit.text())+''
 			injection.append(string)
-		if str(self.RFunctionParamsize_lineEdit.text()) != '':
-			string = 'size='+str(self.RFunctionParamsize_lineEdit.text())+''
+		if unicode(self.RFunctionParamsize_lineEdit.text()) != '':
+			string = 'size='+unicode(self.RFunctionParamsize_lineEdit.text())+''
 			injection.append(string)
-		if str(self.RFunctionParampow_lineEdit.text()) != '':
-			string = 'pow='+str(self.RFunctionParampow_lineEdit.text())+''
+		if unicode(self.RFunctionParampow_lineEdit.text()) != '':
+			string = 'pow='+unicode(self.RFunctionParampow_lineEdit.text())+''
 			injection.append(string)
 		inj = ','.join(injection)
-		self.R('sizeplot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+		self.R('sizeplot(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')

@@ -84,15 +84,15 @@ def checkInternetConnection():
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(temp):
-    # print 'setting temp dir' + str(time.time())
+    # print 'setting temp dir' + unicode(time.time())
     
     tempDir = os.path.join(directoryNames['tempDirHolder'], temp) 
     os.mkdir(tempDir)
     directoryNames['tempDir'] = tempDir
     return tempDir
     # if not os.path.isdir():
-        # os.mkdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
-        # return os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
+        # os.mkdir(os.path.join(canvasSettingsDir, 'temp', unicode('temp'+unicode(dirNumber))))
+        # return os.path.join(canvasSettingsDir, 'temp', unicode('temp'+unicode(dirNumber)))
     # else:
         # return setTempDir(canvasSettingsDir, int(dirNumber + 1))
 
@@ -214,7 +214,7 @@ def addOrangeDirectoriesToPath(directoryNames):
     # print 'do the import'
 
 if __name__ =='redREnviron':
-    #print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', str(time.time())
+    #print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()

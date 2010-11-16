@@ -303,12 +303,12 @@ class WidgetListBase:
         favTabs = xml.dom.minidom.parse(f)
         f.close()
         treeXML = favTabs.childNodes[0] # everything is contained within the Favorites
-        #print 'Favorites' + str(treeXML.childNodes)
+        #print 'Favorites' + unicode(treeXML.childNodes)
             
         #loop to make the catagories
         for node in treeXML.childNodes: # put the child nodes into the widgets
             if node.nodeName == 'group':
-                tab = self.insertFavoriteWidgetTab(str(node.getAttribute('name')), 1)
+                tab = self.insertFavoriteWidgetTab(unicode(node.getAttribute('name')), 1)
                 self.insertFavoriteChildTabs(node, tab, widgetRegistry)
                 
                 self.insertFavoriteWidgets(node, tab, widgetRegistry)
@@ -323,7 +323,7 @@ class WidgetListBase:
             
             for child in subTabs:
                 if child.nodeName == 'group': # we found another group
-                    childTab = WidgetTreeFolder(tab, str(child.getAttribute('name')))
+                    childTab = WidgetTreeFolder(tab, unicode(child.getAttribute('name')))
                     childTab.widgets = []
                     childTab.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
                     self.insertFavoriteChildTabs(child, childTab, widgetRegistry)
@@ -334,7 +334,7 @@ class WidgetListBase:
             
     def insertFavoriteWidgets(self, node, tab, widgetRegistry):
         widgets = None
-        #print str(widgetRegistry.keys())
+        #print unicode(widgetRegistry.keys())
         
         for (tabName, show) in [(name, 1) for name in widgetRegistry.keys()]:
             #print widgetRegistry[tabName].keys()
@@ -347,22 +347,22 @@ class WidgetListBase:
                         for subNode2 in subNode.childNodes:
                             if subNode2.nodeType == node.TEXT_NODE:
                                 subNodeAtt = subNodeAtt + subNode2.data
-                        subNodeAtt = str(subNodeAtt)
+                        subNodeAtt = unicode(subNodeAtt)
                         subNodeAtt = subNodeAtt.replace(' ', '')
                         #print subNodeAtt.strip()
                         widgetNames = subNodeAtt.split(',')
-                        #print str(widgetNames)
+                        #print unicode(widgetNames)
                         if wName.replace(' ', '') in widgetNames: # add the widget
                             if tabName not in awidgets.keys(): awidgets[tabName] = {}
                             awidgets[tabName][wName] = widgetRegistry[tabName][wName]
                             #print 'made it past the awidgets stage'
-                            #print str(awidgets[tabName].items())
+                            #print unicode(awidgets[tabName].items())
                             (name, widgetInfo) = awidgets[tabName].items()[0]
                             (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
-                            #print str((priority, name, widgetInfo)) + 'made it to 7894'
-                            #print str(widgetInfo)
+                            #print unicode((priority, name, widgetInfo)) + 'made it to 7894'
+                            #print unicode(widgetInfo)
                             if isinstance(self, WidgetTree):
-                                #print str(tab)
+                                #print unicode(tab)
                                 button = WidgetTreeItem(tab, name, widgetInfo, self, self.canvasDlg)
                                 
                             else:
@@ -376,7 +376,7 @@ class WidgetListBase:
                             self.allWidgets.append(button)
                         
     def createWidgetTabs(self, widgetTabList, widgetRegistry, widgetDir, picsDir, defaultPic):
-        #print str(widgetRegistry) + ' widget registry'
+        #print unicode(widgetRegistry) + ' widget registry'
         self.widgetDir = widgetDir
         self.picsDir = picsDir
         self.defaultPic = defaultPic
@@ -388,7 +388,7 @@ class WidgetListBase:
         
         # tfile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/tags.xml')
         # f = open(tfile, 'r')
-        #print str(f)
+        #print unicode(f)
         
         #mainTabs = xml.dom.minidom.parse(f)
         mainTabs = widgetRegistry['tags']
@@ -399,9 +399,9 @@ class WidgetListBase:
         for itab in treeXML.childNodes:
             if itab.nodeName == 'group': #picked a group element
                 
-                tab = self.insertWidgetTab(str(itab.getAttribute('name')), 1) # a QTreeWidgetItem
+                tab = self.insertWidgetTab(unicode(itab.getAttribute('name')), 1) # a QTreeWidgetItem
                 
-                #print 'inserted tab '+str(itab.getAttribute('name'))
+                #print 'inserted tab '+unicode(itab.getAttribute('name'))
                 self.insertChildTabs(itab, tab, widgetRegistry)
                 
                 self.insertWidgets(itab.getAttribute('name'), tab, widgetRegistry)
@@ -421,7 +421,7 @@ class WidgetListBase:
             
             for child in subTabs:
                 if child.nodeName == 'group': # we found another group
-                    childTab = WidgetTreeFolder(tab, str(child.getAttribute('name')))
+                    childTab = WidgetTreeFolder(tab, unicode(child.getAttribute('name')))
                     
                     childTab.widgets = []
                     childTab.setChildIndicatorPolicy(QTreeWidgetItem.DontShowIndicatorWhenChildless)
@@ -433,13 +433,13 @@ class WidgetListBase:
             return
                 
     def insertWidgets(self, itab, tab, widgetRegistry):
-        #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
+        #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
         widgets = None
         try:
             for wName in widgetRegistry['widgets'].keys():
                 widgetInfo = widgetRegistry['widgets'][wName]
                 try:
-                    if str(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
+                    if unicode(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
                         button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
                         if button not in tab.widgets:
                             tab.widgets.append(button)
@@ -571,7 +571,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
 
         return item
     def callback(self):
-        text = str(self.widgetSuggestEdit.text())
+        text = unicode(self.widgetSuggestEdit.text())
         if '.rrts' in text: ## this is a template, we should load this and not add the widget
             for action in self.templateActions:
                 if action.templateInfo.name == text:
@@ -675,7 +675,7 @@ class CanvasWidgetAction(QWidgetAction):
         self.setDefaultWidget(self.widgetSuggestEdit)
         
     def callback(self):
-        text = str(self.widgetSuggestEdit.text())
+        text = unicode(self.widgetSuggestEdit.text())
         for action in self.actions:
             if action.widgetInfo.name == text:
                 self.widgetInfo = action.widgetInfo
@@ -798,10 +798,10 @@ def constructCategoriesPopup(canvasDlg):
     
     for itab in treeXML.childNodes:
         if itab.nodeName == 'group': #picked a group element
-            catmenu = categoriesPopup.addMenu(str(itab.getAttribute('name')))
+            catmenu = categoriesPopup.addMenu(unicode(itab.getAttribute('name')))
             categoriesPopup.catActions.append(catmenu) # put the catmenu in the categoriespopup
             insertChildActions(canvasDlg, catmenu, categoriesPopup, itab)
-            insertWidgets(canvasDlg, catmenu, categoriesPopup, str(itab.getAttribute('name'))) 
+            insertWidgets(canvasDlg, catmenu, categoriesPopup, unicode(itab.getAttribute('name'))) 
     # print redREnviron.settings["WidgetTabs"]
     try:
         for category, show in redREnviron.settings["WidgetTabs"]:
@@ -842,23 +842,23 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
         
         for child in subTabs:
             if child.nodeName == 'group': # we found another group
-                childTab = catmenu.addMenu(str(child.getAttribute('name')))
+                childTab = catmenu.addMenu(unicode(child.getAttribute('name')))
                 categoriesPopup.catActions.append(childTab)
                 insertChildActions(canvasDlg, childTab, categoriesPopup, child)
-                insertWidgets(canvasDlg, childTab, categoriesPopup, str(child.getAttribute('name')))
+                insertWidgets(canvasDlg, childTab, categoriesPopup, unicode(child.getAttribute('name')))
                 
     except: #subtabs don't exist
         return
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
-    #print 'Widget Registry is \n\n' + str(widgetRegistry) + '\n\n'
+    #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
     #log.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
     widgets = None
-    #print str(canvasDlg.widgetRegistry['templates'])
+    #print unicode(canvasDlg.widgetRegistry['templates'])
     try:
         for wName in redRObjects.widgetRegistry()['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
             widgetInfo = redRObjects.widgetRegistry()['widgets'][wName]
             try:
-                if str(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
+                if unicode(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
                     icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
                     act = catmenu.addAction(icon, widgetInfo.name)
                     
@@ -906,11 +906,11 @@ class SearchBox(redRlineEditHint):
         except: return 0
         
     def searchDialog(self):
-        if str(self.text()) in self.itemsAsStrings:
+        if unicode(self.text()) in self.itemsAsStrings:
             return
             
         else:
-            itemText = str(self.text())
+            itemText = unicode(self.text())
             #print 'Searching '+itemText+' on Red-R.org'
             self.searchBox.show()
             url = 'http://www.red-r.org/?s='+itemText

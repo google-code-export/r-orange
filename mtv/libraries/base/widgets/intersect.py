@@ -41,18 +41,18 @@ class intersect(OWRpy):
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': 
+        if unicode(self.RFunctionParam_y) == '': 
             self.status.setText('No Y data exists')
             return
-        if str(self.RFunctionParam_x) == '': 
+        if unicode(self.RFunctionParam_x) == '': 
             self.status.setText('No X data exists')
             return
-        self.R(self.Rvariables['intersect']+'<-intersect(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['intersect']+'<-intersect(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+')', wantType = 'NoConversion')
         self.R('txt<-capture.output('+self.Rvariables['intersect']+')', wantType = 'NoConversion')
         
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse =" \n")')
-        self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+str(tmp)+'</pre>')        
+        self.RoutputWindow.insertHtml('<br><br><pre>Shared elements between your inputs:\n'+unicode(tmp)+'</pre>')        
         newData = redRRVector(data = self.Rvariables["intersect"])
         
         self.rSend("id0", newData)

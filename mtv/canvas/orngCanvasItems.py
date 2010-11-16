@@ -335,8 +335,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                     # print x
                 # import gc
                 # gc.collect()
-                # print 'Remaining references to '+str(gc.get_referrers(self.instance()))
-                # print 'Remaining references from '+str(gc.get_referents(self.instance()))
+                # print 'Remaining references to '+unicode(gc.get_referrers(self.instance()))
+                # print 'Remaining references from '+unicode(gc.get_referents(self.instance()))
 
 
             except: 
@@ -350,7 +350,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.setPos(self.oldPos)
 
     def updateText(self, text):
-        self.caption = str(text)
+        self.caption = unicode(text)
         self.updateTooltip()
 
     def updateWidgetState(self):
@@ -394,7 +394,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.canvasDlg.tabs.suggestButtonsList.show()
                 self.canvasDlg.tabs.suggestButtonsList.addTopLevelItems(newActions)
                 self.canvasDlg.tabs.suggestButtonsList.suggestingWidget = self
-                self.canvasDlg.tabs.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+str(self.widgetInfo.name)])
+                self.canvasDlg.tabs.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+unicode(self.widgetInfo.name)])
             else:
                 self.canvasDlg.tabs.suggestButtonsList.hide()
             

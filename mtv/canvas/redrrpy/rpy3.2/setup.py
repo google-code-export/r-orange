@@ -1,6 +1,8 @@
+## setup file for the conversion module Kyle R. Covington Copywrite 2010
+
 from distutils.core import setup, Extension
 import os
-RHOME = 'C:/Program Files/R/R-2.9.2/'
+RHOME = 'C:/Program Files/R/R-2.9.2/'  # this must be changed if the location of the R installation is different from the default or if the user wishes to use versions of R other than 2.9.2
 include_dirs = [ os.path.join(RHOME.strip(), 'include'),
                          'src' ]
 libraries= ['R']
