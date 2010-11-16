@@ -31,6 +31,7 @@ class OutputHandler:
         except Exception as inst:
             log.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % unicode(inst))
             return False
+        redRObjects.updateLines()
     def outputIDs(self):
         return self.outputSignals.keys()
     def outputNames(self):
@@ -204,14 +205,6 @@ class OutputHandler:
         #self._handleDirty(parent, id, dirty = True)
     def _handleDirty(self, parentWidget, id, dirty):
         return
-        # parentWidget.inputs.markDirty(id, dirty)
-        # get all connections from the out to the in widget, we need to check if any of these are dirty
-        # links = self.getWidgetConnections(parentWidget)
-        # for l in links:
-            # if parentWidget.inputs.getSignal(l['signal']['sid'])['dirty']:
-                # self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, True)
-                # return
-        # self.parent.canvasWidget.canvasDlg.schema.handleDirty(self.parent, parentWidget, False)
     def _handleNone(self, parentWidget, id, none):
         parentWidget.inputs.markNone(id, none)
         links = self.getWidgetConnections(parentWidget)
@@ -222,12 +215,10 @@ class OutputHandler:
                 if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
                     line.setNoData(True)
                     redRObjects.activeCanvas().update()
-                    #self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, True)
-                    # return
+                    return
                 else:
                     line.setNoData(False)
                     redRObjects.activeCanvas().update()
-        # self.parent.canvasWidget.canvasDlg.schema.handleNone(self.parent, parentWidget, False)
     def _handleSignal(self, value, handler, multiple, parentWidget):
         try:
             if multiple:

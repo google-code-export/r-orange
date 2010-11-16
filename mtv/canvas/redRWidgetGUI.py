@@ -166,38 +166,8 @@ class redRWidgetGUI(QMainWindow):
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        redRbutton(self.ROutputBox, label = 'Run Selected Code', callback = self._runSelectedRCode, toolTip = 'You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.')
         
-        
-        # self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
-        # self.rightDockArea.setMinimumWidth(minWidth)
-        # self.rightDockArea.setMinimumHeight(150)
-        # self.rightDockArea.layout().setMargin(4)
-        # self.rightDockArea.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        # self.rightDock.setWidget(self.rightDockArea)
-
-
-            
-        ### help ####
-        # self.helpBox = redRwidgetBox(self.rightDockArea,orientation=QVBoxLayout())
-        # self.helpBox.setMinimumHeight(50)
-        # self.helpBox.setMinimumWidth(minWidth)
-        # self.helpBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-        # if hasattr(self,'_widgetInfo'):
-            
-            # (file,ext) = os.path.basename(self._widgetInfo.fullName).split('.')
-            # path = os.path.join(redREnviron.directoryNames['libraryDir'],
-            # self._widgetInfo.package['Name'],'help',file+'.html')
-            # if os.path.exists(path):
-                # f = open(path)
-                # html = f.read()
-                # f.close()
-            # else:
-                # html = 'No local help file. Please visit <a href="http://www.red-r.org/"> Red-R</a> for more help.'
-            #self.help = redRwebViewBox(self.helpBox)
-            
-            # self.help.setHtml(html)
-            # self.help.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
-
         ### help ####
         self.helpFile = None
         
@@ -279,7 +249,9 @@ class redRWidgetGUI(QMainWindow):
             print unicode(self.windowTitle()), eventDict[e.type()]
         return QMainWindow.event(self, e)
     """
-
+    def _runSelectedRCode(self):
+        code = unicode(self.ROutput.textCursor().selectedText())
+        self.R(code, wantType = 'NoConversion')
     def setRIndicator(self,isActive):
         
         if isActive:

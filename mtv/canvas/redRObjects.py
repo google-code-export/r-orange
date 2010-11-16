@@ -350,6 +350,7 @@ def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
                     line.refreshToolTip()
             
         schemaDoc.setTabActive(ot)
+        updateLines()
         return 1
 def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName):
         tabIconStructure = getIconsByTab()
@@ -386,7 +387,10 @@ def removeLineInstance(line):
     line.remove()
 def lines():
     return _lines
-    
+def updateLines():
+    global _lines
+    for l in _lines.values():
+        l.updateStatus()
 def getLinesByWidgetInstanceID(outID, inID):  # must return a list of lines that match the outID and inID.
     global _lines
     tempLines = []

@@ -54,7 +54,7 @@ def saveIcon(widgetIconsXML, wi, doc):
     log.log(1, 9, 3, 'orngDoc makeTemplate; saving widget %s' % wi)
     witemp = doc.createElement('widgetIcon')
     witemp.setAttribute('name', unicode(wi.getWidgetInfo().fileName))             # save icon name
-    witemp.setAttribute('instance', unicode(wi.instanceID))        # save instance ID
+    witemp.setAttribute('instance', unicode(wi.instance().widgetID))        # save instance ID
     witemp.setAttribute("xPos", unicode(int(wi.x())) )      # save the xPos
     witemp.setAttribute("yPos", unicode(int(wi.y())) )      # same the yPos
     witemp.setAttribute("caption", wi.caption)          # save the caption
@@ -437,6 +437,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     qApp.restoreOverrideCursor()
     loadingProgressBar.hide()
     loadingProgressBar.close()
+    redRObjects.updateLines()
 def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
@@ -551,6 +552,7 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
                 log.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
                 schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = unicode(instance)) ##  add the widget icon 
             else:
+                log.log(0, 5, 3, 'loadedSettingsDict %s' % loadedSettingsDict.keys())
                 caption = ""
                 settings = cPickle.loads(loadedSettingsDict[instance]['settings'])
             
