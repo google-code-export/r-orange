@@ -196,6 +196,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.widgetState = {}
         self.caption = widgetInfo.name
         self.selected = False
+        self.potentialConnection = False
         self.inLines = []               # list of connected lines on input
         self.outLines = []              # list of connected lines on output
         self.ghostWidgets = []          # list of ghost widgets that this widget could connect to
@@ -347,6 +348,15 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             else:
                 self.canvasDlg.tabs.suggestButtonsList.hide()
             
+            ## highlight the compatible wigets for this widget.
+            for i in redRObjects.getIconsByTab(self.tab)[self.tab]:
+                if i.instance().inputs.matchConnections(self.instance().outputs):
+                    i.setPossibleConnection(1)
+                else:
+                    i.setPossibleConnection(0)
+    def setPossibleConnection(self, canConnect):
+        self.potentialConnection = canConnect
+    
         
     # set coordinates of the widget
     def setCoords(self, x, y):
@@ -444,15 +454,15 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     def paint(self, painter, option, widget = None):
         if self.isProcessing:
             color = self.canvasDlg.widgetActiveColor
-        # elif self.needsProcessing == True:
-            # color = Qt.red
+        elif self.potentialConnection == True:
+            color = Qt.blue
         elif self.selected:
             if (self.view.findItemTypeCount(self.canvas.collidingItems(self), CanvasWidget) > 0):       # the position is invalid if it is already occupied by a widget 
                 color = Qt.red
             else:                    color = self.canvasDlg.widgetSelectedColor
         
 
-        if self.isProcessing or self.selected:
+        if self.isProcessing or self.selected or self.potentialConnection:
             painter.setPen(QPen(color))
             painter.drawRect(-3, -3, self.widgetSize.width()+6, self.widgetSize.height()+6)
 

@@ -184,7 +184,15 @@ def makeTemplate(filename = None, copy = False):
 def copy():
     ## copy the selected files and reload them as templates in the schema
     makeTemplate(copy=True)
-    
+def savePipeline():
+    log.log(1, 9, 3, 'Saving Pipeline')
+    name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
+    if not name or name == None: return False
+    name = unicode(name.toAscii())
+    if unicode(name) == '': return False
+    if os.path.splitext(unicode(name))[0] == '': return False
+    if os.path.splitext(unicode(name))[1].lower() != ".rrpipe": name = name + '.rrpipe'
+    return save(filename = name, template = False, copy = False, pipe = True)
 def saveDocument():
     log.log(1, 9, 3, 'Saving Document')
     #return
@@ -192,7 +200,7 @@ def saveDocument():
         return saveDocumentAs()
     else:
         return save(None,False)
-def save(filename = None, template = False, copy = False):
+def save(filename = None, template = False, copy = False, pipe = False):
     global _schemaName
     global schemaPath
     log.log(1, 9, 3, '%s' % filename)
@@ -253,7 +261,7 @@ def save(filename = None, template = False, copy = False):
     progress += 1
     progressBar.setValue(progress)
 
-    if not template and not copy:
+    if not template and not copy and not pipe:
         tempschema = os.path.join(redREnviron.directoryNames['tempDir'], "tempSchema.tmp")
         tempR = os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/')
         file = open(tempschema, "wt")
@@ -345,8 +353,13 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
         tmp=True
+        pipe = False
     elif filename.split('.')[-1] in ['rrs']:
         tmp=False
+        pipe = False
+    elif filename.split('.')[-1] in ['rrpipe']:         ## pipeline, no data but everything else there.
+        pipe = True
+        tmp = False
     else:
         QMessageBox.information(None, 'Red-R Error', 
         'Cannot load file with extension ' + unicode(filename.split('.')[-1]),  
@@ -404,7 +417,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     loadRequiredPackages(settingsDict['_requiredPackages'], loadingProgressBar = loadingProgressBar)
     
     ## make sure that there are no duplicate widgets.
-    if not tmp:
+    if not tmp and not pipe:
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         if not checkWidgetDuplication(widgets = widgets):
             QMessageBox.information(canvasDlg, 'Schema Loading Failed', 'Duplicated widgets were detected between this schema and the active one.  Loading is not possible.',  QMessageBox.Ok + QMessageBox.Default)
@@ -430,6 +443,9 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         for widget in redRObjects.instances():
             if widget.tempID and widget.tempID in settingsDict.keys():
                 widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.tempID]['connections']), tmp)
+    if pipe:        ## send none through all of the data.
+        for w in redRObjects.instances():
+            w.outputs.propogateNone(ask = False)
     for widget in redRObjects.instances():
         widget.tempID = None  ## we set the temp ID to none so that there won't be a conflict with other temp loading.
     qApp.restoreOverrideCursor() 

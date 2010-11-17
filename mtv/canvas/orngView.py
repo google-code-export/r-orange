@@ -228,7 +228,9 @@ class SchemaView(QGraphicsView):
             self.widgetSelectionRect.setZValue(-100)
             self.widgetSelectionRect.show()
             self.unselectAllWidgets()
-
+            for k, v in redRObjects.getIconsByTab().items():
+                for i in v:
+                    i.setPossibleConnection(False)
         # we clicked on a widget or on a line
         else:
             if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget          
