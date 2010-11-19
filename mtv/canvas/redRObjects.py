@@ -21,7 +21,7 @@ import orngCanvasItems, redREnviron, orngView, time, orngRegistry, log
 defaultTabName = 'General'
 _widgetRegistry = {}
 _lines = {}
-_widgetIcons = {}
+_widgetIcons = {defaultTabName:[]}
 _widgetInstances = {}
 _canvasTabs = {}
 _canvasView = {}
@@ -59,6 +59,7 @@ def makeTabView(tabname, parent):
     _canvasView[tabname] = orngView.SchemaView(parent, _canvasScene[tabname], w)
     w.layout().addWidget(_canvasView[tabname])
     _activeTab = tabname
+    _widgetIcons[tabname] = []
     return w
     
 # def removeTabView(tabname, parent):
@@ -90,6 +91,7 @@ def makeSchemaTab(tabname):
     #_canvas[tabname] = QGraphicsScene()
     _canvasView[tabname] = orngView.SchemaView(self, _canvas[tabname], _canvasTabs[tabname])
     _canvasTabs[tabname].layout().addWidget(self.canvasView[tabname])
+    _widgetIcons[tabName] = []
     setActiveTab(tabname)
 def setActiveTab(tabname):
     global _activeTab
@@ -102,6 +104,7 @@ def removeSchemaTab(tabname):
     global _canvasScene
     del _canvasView[tabname]
     del _canvasScene[tabname]
+    del _widgetIcons[tabname]
     #del _canvas[tabname]
     #del _canvasTabs[tabname]
     
@@ -119,25 +122,22 @@ def getIconsByTab(tabs = None):  # returns a dict of lists of icons for a specif
     #print tabs, 'Tabs'
     tabIconsList = {}
     for t in tabs:
-        #print t
-        icons = []
-        for k, wi in _widgetIcons.items():
-            #print wi
-            if wi.tab == t:
-                icons.append(wi)
-        tabIconsList[t] = icons
+        tabIconsList[t] = _widgetIcons[t]
     return tabIconsList
 
 def getWidgetByInstance(instance):
     global _widgetIcons
-    for k, widget in _widgetIcons.items():
-        if widget.instance() == instance:
-            return widget
-    return None
+    for t in _widgetIcons.values():
+        for widget in t:
+            if widget.instance() == instance:
+                return widget
+    else:
+        raise Exception('Widget %s not found in %s' % (instance, _widgetIcons))
     
-def newIcon(sm, canvas, tab, info, pic, dlg, instanceID, tabName):
-    newwidget = orngCanvasItems.CanvasWidget(sm, canvas, tab, info, pic, dlg, instanceID = instanceID, tabName = tabName)
-    _widgetIcons[unicode(time.time())] = newwidget # put a new widget into the stack with a timestamp.
+def newIcon(canvas, tab, info, pic, dlg, instanceID, tabName):
+    newwidget = orngCanvasItems.CanvasWidget(canvas, tab, info, pic, dlg, instanceID = instanceID, tabName = tabName)
+    
+    _widgetIcons[tabName].append(newwidget) # put a new widget into the stack with a timestamp.
     return newwidget
     
 def getIconIDByIcon(icon):
@@ -151,42 +151,48 @@ def getIconByIconID(id):
     
 def getIconByIconCaption(caption):
     icons = []
-    for k, i in _widgetIcons.items():
-        if i.caption == caption:
-            icons.append(i)
+    for t in _widgetIcons.values():
+        for i in t:
+            if i.caption == caption:
+                icons.append(i)
     return icons
     
 def getIconByIconInstanceRef(instance):
     icons = []
-    for k, i in _widgetIcons.items():
-        if i.instanceID == instance.widgetID:
-            icons.append(i)
+    for t in _widgetIcons.values():
+        for i in t:
+            if i.instanceID == instance.widgetID:
+                icons.append(i)
     return icons
     
 def getIconByIconInstanceID(id):
     icons = []
-    for k, i in _widgetIcons.items():
-        if i.instanceID == id:
-            icons.append(i)
+    for t in _widgetIcons.values():
+        for i in t:
+            if i.instanceID == id:
+                icons.append(i)
     return icons
 def instanceOnTab(inst, tabName):
     global _widgetIcons
-    for i in _widgetIcons.values():
-        if i.instance() == inst and i.tab == tabName:
-            return True
+    for t in _widgetIcons.values():
+        for i in t:
+            if i.instance() == inst and i.tab == tabName:
+                return True
     return False
 def getWidgetByIDActiveTabOnly(widgetID):
-    for k, widget in _widgetIcons.items():
+    for t in _widgetIcons.values():
         #print widget.instanceID
-        if (widget.instanceID == widgetID) and (widget.tab == activeTabName()):
-            return widget
+        for widget in t:
+            if (widget.instanceID == widgetID) and (widget.tab == activeTabName()):
+                return widget
     return None
     
 def removeWidgetIcon(icon):
     global _widgetIcons
-    for k, i in _widgetIcons.items():
-        if i == icon:
-            del _widgetIcons[k]
+    for t in _widgetIcons.values():
+        for i in range(len(t)):
+            if t[i] == icon:
+                del t[i]
 ###########################
 ######  instances       ###
 ###########################
@@ -198,11 +204,11 @@ def closeAllWidgets():
     for k, i in _widgetInstances.items():
         i.close()
         
-def addInstance(sm, info, settings, insig, outsig):
+def addInstance(sm, info, settings, insig, outsig, id = None):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
-    log.log(1, 5, 3, 'adding instance %s' % info.name)
+    log.log(1, 5, 3, 'adding instance number %s name %s' % (id, info.name))
     m = __import__(info.fileName)
     instance = m.__dict__[info.widgetName].__new__(m.__dict__[info.widgetName],
     _owInfo = redREnviron.settings["owInfo"],
@@ -216,7 +222,10 @@ def addInstance(sm, info, settings, insig, outsig):
         instance.__init__(signalManager = sm,
         forceInSignals = insig, forceOutSignals = outsig)
     else: instance.__init__(signalManager = sm)
-    
+    if id:
+        instance.widgetID = id
+        instance.variable_suffix = '_' + instance.widgetID
+        instance.resetRvariableNames()
     instance.loadGlobalSettings()
     if settings:
         try:
@@ -238,18 +247,23 @@ def addInstance(sm, info, settings, insig, outsig):
     instance.widgetInfo = info
     
     id = instance.widgetID
+    log.log(10, 5, 3, 'instance ID is %s' % instance.widgetID)
     if id in _widgetInstances.keys():
+        log.log(10, 5, 2, 'id was found in the keys, placing as new ID')
         ## this is interesting since we aren't supposed to have this, just in case, we throw a warning
         log.log(1, 7, 3, 'Warning: widget id already in the keys, setting new widget instance')
         id = unicode(time.time())
         instance.widgetID = id
         instance.variable_suffix = '_' + instance.widgetID
         instance.resetRvariableNames()
+    if not instance:
+        raise Exception('Error in loading widget %s' % id)
     _widgetInstances[id] = instance
     
     return id
 def getWidgetInstanceByID(id):
     global _widgetInstances
+    #log.log(10, 5, 3, 'Loading widget %s keys are %s' % (id, _widgetInstances.keys()))
     try:
         return _widgetInstances[id]
     except Exception as inst:

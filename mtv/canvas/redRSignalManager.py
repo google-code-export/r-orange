@@ -71,7 +71,10 @@ class OutputHandler:
                     # print 'Deletion rejected'
                     # return
                 #print 'propogating None in widgets'
-                signal['parent'].outputs.propogateNone()
+                try:
+                    signal['parent'].outputs.propogateNone()
+                except:
+                    pass
     def setOutputData(self, signalName, value):
         self.outputSignals[signalName]['value'] = value
         
@@ -273,6 +276,10 @@ class OutputHandler:
                     widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])
                 elif tmp:
                     widget = redRObjects.getWidgetInstanceByTempID(vValue['parentID'])
+                log.log(10, 5, 3, 'Widget is %s' % widget)
+                if not widget:
+                    log.log(10, 9, 1, 'Failed to find widget %s' % vValue['parentID'])
+                    return
                 inputSignal = widget.inputs.getSignal(vValue['id'])
                 self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
                 if tmp:

@@ -5,7 +5,7 @@
 import orngCanvasItems
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngHistory, orngTabs, redRObjects
+import orngHistory, orngTabs, redRObjects, log
 
         
 class SchemaView(QGraphicsView):
@@ -160,7 +160,8 @@ class SchemaView(QGraphicsView):
             self.selectedLine.updateTooltip()
 
     def unselectAllWidgets(self):
-        #print 'unselecting widgets'
+        log.log(10, 3, 3, 'Unselecting widgets')
+        log.log(10, 3, 3, 'Available icons are %s' % redRObjects.getIconsByTab())
         for k, items in redRObjects.getIconsByTab().items():
             #print k
             for item in items:
@@ -233,7 +234,8 @@ class SchemaView(QGraphicsView):
                     i.setPossibleConnection(False)
         # we clicked on a widget or on a line
         else:
-            if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget          
+            log.log(10, 9, 3, 'Active item %s' % activeItem)
+            if type(activeItem) in [orngCanvasItems.CanvasWidget]:# if we clicked on a widget          
                 #print activeItem, 'An item was clicked'
                 self.tempWidget = activeItem
 

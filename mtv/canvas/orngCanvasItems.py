@@ -178,9 +178,9 @@ class CanvasLine(QGraphicsPathItem):
 # # CANVAS WIDGET
 # #######################################
 class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a graphical representation of it
-    def __init__(self, signalManager, canvas, view, widgetInfo, defaultPic, canvasDlg, instanceID, tabName):        
+    def __init__(self, canvas, view, widgetInfo, defaultPic, canvasDlg, instanceID, tabName):        
         # print widgetSettings
-        self.signalManager = signalManager
+        #self.signalManager = signalManager
         self.widgetInfo = widgetInfo
         self.tab = tabName
         
@@ -412,7 +412,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     def canConnect(self, outWidget, inWidget):  ## returns a list of what can and can't connect, this should be handled by signal manager.
         if outWidget == inWidget: return
        
-        signalManager = orngSignalManager.SignalManager()
+        #signalManager = orngSignalManager.SignalManager()
         canConnect = inWidget.instance().inputs.matchConnections(outWidget.instance().outputs) #signalManager.canConnect(outWidget, inWidget)
         
         if outWidget == self:

@@ -566,7 +566,7 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
             if not tmp:
                 caption = witemp.getAttribute("caption")          # save the caption
                 log.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
-                schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = unicode(instance)) ##  add the widget icon 
+                schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
             else:
                 log.log(0, 5, 3, 'loadedSettingsDict %s' % loadedSettingsDict.keys())
                 caption = ""
@@ -601,7 +601,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
             #print 'adding instance', widgetID, inputs, outputs
-            newwidget = addWidgetInstanceByFileName(name, settings, inputs, outputs)
+            newwidget = addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
             if newwidget and tmp:
                 import time
                 nw = redRObjects.getWidgetInstanceByID(newwidget)
@@ -621,9 +621,9 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     ## now the widgets are loaded so we can move on to setting the connections
     
     return (loadedOk, failureText)
-def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None):
+def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None, id = None):
     widget = redRObjects.widgetRegistry()['widgets'][name]
-    return redRObjects.addInstance(signalManager, widget, settings, inputs, outputs)
+    return redRObjects.addInstance(signalManager, widget, settings, inputs, outputs, id)
     
         
 def loadWidgets180(widgets, loadingProgressBar, tmp):

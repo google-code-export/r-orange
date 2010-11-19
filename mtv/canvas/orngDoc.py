@@ -382,7 +382,7 @@ class SchemaDoc(QWidget):
             while self.getWidgetByCaption(caption + " (" + unicode(i) + ")"): i+=1
             caption = caption + " (" + unicode(i) + ")"
             
-        newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
+        newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
         newwidget.caption = caption
         #log.log(1, 2, 2, 'Set widget caption to %s' % caption)
         newwidget.updateText(caption)
