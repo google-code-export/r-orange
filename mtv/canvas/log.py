@@ -61,7 +61,10 @@ def log(table, severity, errorType = 2, comment = ""):
         elif errorType == 4:
             errorType = 'Warning'
     tb = traceback.format_stack()
-    if table != 0 and table != 10:
+    if tb < 3:
+        lh.defaultSysOutHandler.write(comment)
+        return
+    if table != 0 and table < 10:
         
         handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, unicode('</br>'.join(tb)).replace('\"', '')))
         
@@ -71,6 +74,15 @@ def log(table, severity, errorType = 2, comment = ""):
         logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
     elif table == 10 and redREnviron.settings['debugMode']:
         logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
+    elif table == 20:
+        lh.defaultSysOutHandler.write(comment)
+def getHistory(widgetFile):
+    widgets = []
+    result = handler.execute(query = "SELECT * FROM ConnectionHistory WHERE OutWidget == \"%s\"" % widgetFile)
+    for row in result:
+        widgets.append(row[1])
+def logConnection(outWidgetFile, inWidgetFile):
+    handler.execute(query = "INSERT INTO ConnectionHistory (OutWidget, InWidget) VALUES (\"%s\", \"%s\")" % (outWidgetFile, inWidgetFile))
 def logException(string):
     global _exceptionManager
     if _exceptionManager:
@@ -93,6 +105,7 @@ def clearDB():
     handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\", \"Trackback\")", force = True)
 def initializeTables():
     handler.setTable(table = 'All_Output', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutputDomain\", \"TimeStamp\", \"Session\", \"Severity\", \"ErrorType\", \"Comment\", \"Trackback\")")
+    handler.setTable(table = 'ConnectionHistory', colNames = "(\"k\" INTEGER PRIMARY KEY AUTOINCREMENT, \"OutWidget\", \"InWidget\")")
 
 class LogHandler():
     def __init__(self):

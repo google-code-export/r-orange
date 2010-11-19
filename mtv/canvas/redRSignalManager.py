@@ -31,6 +31,7 @@ class OutputHandler:
         except Exception as inst:
             log.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % unicode(inst))
             return False
+        log.logConnection(self.parent.widgetInfo.fileName, signal['parent'].widgetInfo.fileName)
         redRObjects.updateLines()
     def outputIDs(self):
         return self.outputSignals.keys()

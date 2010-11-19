@@ -62,7 +62,13 @@ class WidgetButtonBase():
                 win.addLine(win.widgets[-2], win.widgets[-1])
         
         #return win.widgets[-1]
-
+    def setCompatible(self, widget):
+        ## the goal of this is to set the background to a color (light blue?) if the selected canvas widget has connected to the canvas widget before.
+        connectingWidgets = log.getHistory(widget.widgetInfo.fileName)
+        if self.widgetInfo.fileName in connectingWidgets:
+            self.setBackgroundColor(Qt.blue)
+        else:
+            self.setBackgroundColor(Qt.white)
         
 class WidgetButton(QFrame, WidgetButtonBase):
     def __init__(self, tab, name, widgetInfo, widgetTabs, canvasDlg, buttonType = 2, size=30):

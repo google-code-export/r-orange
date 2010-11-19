@@ -205,7 +205,7 @@ class OrangeCanvasDlg(QMainWindow):
 
 
         if 'windowState' in redREnviron.settings.keys():
-            print redREnviron.settings['windowState']
+            #log.log(20, 0,0, redREnviron.settings['windowState'])
             self.restoreState(redREnviron.settings['windowState'])
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
