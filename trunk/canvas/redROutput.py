@@ -237,7 +237,7 @@ class OutputWindow(QDialog):
         #toUpload['time'] = t
         toUpload['errorType'] = self.getSafeString(type.__name__)
         toUpload['traceback'] = text
-        toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]
+        #toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]
         
         if redREnviron.settings["printExceptionInStatusBar"]:
             self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))

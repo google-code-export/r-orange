@@ -572,17 +572,18 @@ class MyTableModel(QAbstractTableModel):
     def sort(self, Ncol, order):
         if self.editable: return
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
         if order == Qt.DescendingOrder:
             self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol+1)
         else:
             self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol+1)
             
-        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list', silent=True)
-        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list', silent=True)
-        self.nrow = self.R('nrow(%s)' % self.Rdata, silent=True)
-        self.ncol = self.R('ncol(%s)' % self.Rdata, silent=True)
+        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list')#, silent=True)
+        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list')#, silent=True)
+        self.nrow = self.R('nrow(as.matrix(%s))' % self.Rdata)#, silent=True)
+        self.ncol = self.R('ncol(as.matrix(%s))' % self.Rdata)#, silent=True)
         
-        self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
+        self.arraydata = self.R('as.matrix(as.matrix(%s)[%d:%d,%d:%d])' % (self.Rdata,
         self.currentRange['rstart'],
         self.currentRange['rend'],
         self.currentRange['cstart'],
