@@ -322,63 +322,62 @@ class readFile(OWRpy):
             self.commit()
 
     def updateScan(self):
-        try:
-            if self.rowNamesCombo.count() == 0:
-                self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-                self.rowNamesCombo.clear()
-                self.rowNamesCombo.addItem('NULL')
-                self.rowNamesCombo.addItems(self.colNames)
-            self.scanarea.clear()
-            # print self.R(self.Rvariables['dataframe_org'])
+        if self.rowNamesCombo.count() == 0:
+            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+            self.rowNamesCombo.clear()
+            self.rowNamesCombo.addItem('NULL')
+            self.rowNamesCombo.addItems(self.colNames)
+        self.scanarea.clear()
+        # print self.R(self.Rvariables['dataframe_org'])
+        # return
+        
+        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
+        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
+        rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+        #print data
+        txt = self.html_table(data,rownames)
+        # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
+        # try:
+            #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
+        # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
+        
+        self.scanarea.setText(txt)
+        # except:
+            # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+            # QMessageBox.Ok + QMessageBox.Default)
             # return
             
-            data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-            + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
-            rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-            #print data
-            txt = self.html_table(data,rownames)
-            # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
-            # try:
-                #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
-            # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
+        
+        
+        if len(self.colClasses) ==0:
+            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
+            self.myColClasses = self.colClasses
+        if len(self.dataTypes) ==0:
+            types = ['factor','numeric','character','integer','logical']
+            self.dataTypes = []
             
-            self.scanarea.setText(txt)
-            # except:
-                # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
-                # QMessageBox.Ok + QMessageBox.Default)
-                # return
+            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                s = radioButtons(self.columnTypes,label=i,displayLabel=False,
+                buttons=types,orientation='horizontal',callback=self.updateColClasses)
                 
-            
-            
-            if len(self.colClasses) ==0:
-                self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-                self.myColClasses = self.colClasses
-            if len(self.dataTypes) ==0:
-                types = ['factor','numeric','character','integer','logical']
-                self.dataTypes = []
+                # print k,i,str(v)
+                if str(v) in types:
+                    s.setChecked(str(v))
+                else:
+                    s.addButton(str(v))
+                    s.setChecked(str(v))
+                label = widgetLabel(None,label=i)
+                self.columnTypes.layout().addWidget(label,k,0)
+                self.columnTypes.layout().addWidget(s.controlArea,k,1)
                 
-                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                    s = radioButtons(self.columnTypes,label=i,displayLabel=False,
-                    buttons=types,orientation='horizontal',callback=self.updateColClasses)
-                    
-                    # print k,i,str(v)
-                    if str(v) in types:
-                        s.setChecked(str(v))
-                    else:
-                        s.addButton(str(v))
-                        s.setChecked(str(v))
-                    label = widgetLabel(self.columnTypes,label=i)
-                    self.columnTypes.layout().addWidget(label,k,0)
-                    self.columnTypes.layout().addWidget(s,k,1)
-                    
-                    self.dataTypes.append([i,s])
-        except Exception as e:
-            print str(e)
-            # there must not have been any way to update the scan, perhaps one of the file names was wrong
-            import redRExceptionHandling
-            print redRExceptionHandling.formatException()
-            self.scanarea.clear()
-            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
+                self.dataTypes.append([i,s])
+        # except Exception as e:
+            # print str(e)
+            #there must not have been any way to update the scan, perhaps one of the file names was wrong
+            # import redRExceptionHandling
+            # print redRExceptionHandling.formatException()
+            # self.scanarea.clear()
+            # self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
         
         # print self.getReportText('./')
           

@@ -5,12 +5,12 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class radioButtons(widgetState):
+class radioButtons(QWidget, widgetState):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
     buttons=None,toolTips = None, setChecked = None,
     orientation='vertical',callback = None, **args):
         
-        #widgetBox.__init__(self,widget,orientation=orientation,margin=0,spacing=0)
+        QWidget.__init__(self,widget)
         widgetState.__init__(self,widget,label,includeInReports,**args)
         
         self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)

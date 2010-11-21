@@ -211,7 +211,7 @@ class redRWidgetGUI(QMainWindow):
         self.printButton = redRbutton(self.bottomAreaLeft, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
         toolTip='Print',
-        callback = self.printWidget)
+        callback = self.createReport)
         self.includeInReport = redRbutton(self.bottomAreaLeft, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
         toolTip='Include In Report', toggleButton = True)
@@ -272,21 +272,12 @@ class redRWidgetGUI(QMainWindow):
             webbrowser.open_new_tab(self.helpFile)
 
         
-    def printWidget(self, printer = None):
-        ## establish a printer that will print the widget
-        if not printer:
-            printer = QPrinter()
-            printDialog = QPrintDialog(printer)
-            if printDialog.exec_() == QDialog.Rejected: 
-                print 'Printing Rejected'
-                return
-        #painter = QPainter(printer)
-        painter = QPainter(printer)
-        self.render(painter)
-        tempDoc = QTextEdit()
-        tempDoc.setText('R Output:</br>'+self.ROutput.toHtml()+'</br> Notes: </br>'+self.notes.toHtml())
-        tempDoc.render(printer)
-        painter.end()
+    def createReport(self, printer = None):
+        
+        
+        qApp.canvasDlg.reports.createReportsMenu(
+        [canvasWidget(caption=self._widgetInfo.widgetName, instance=self)],schemaImage=False)
+        
         
     
 
@@ -565,6 +556,9 @@ class redRWidgetGUI(QMainWindow):
         
 
 
+class canvasWidget:
+    def __init__(self, **attrs):
+        self.__dict__.update(attrs)
 
 
 # if __name__ == "__main__":

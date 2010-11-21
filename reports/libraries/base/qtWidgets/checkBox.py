@@ -5,11 +5,12 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class checkBox(widgetState):
+class checkBox(QWidget, widgetState):
     def __init__(self,widget,label = None, displayLabel= True, includeInReports=True,
     buttons = None,toolTips = None, setChecked=None,
     orientation='vertical',callback = None, **args):
         
+        QWidget.__init__(self,widget)
         widgetState.__init__(self,widget,label,includeInReports,**args)
 
         if displayLabel:

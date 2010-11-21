@@ -72,8 +72,8 @@ class reports(QWizard):
         self.selectElements = QWizardPage()
         self.selectElements.setLayout(QVBoxLayout())
 
-        self.selectElements.setTitle('Please Register Red-R')
-        self.selectElements.setSubTitle('Registration will help us track errors to make Red-R better.')
+        self.selectElements.setTitle('Create A Report')
+        self.selectElements.setSubTitle('Select the widgets to include in this report.')
         
         #mainWidgetBox = redRWidgetBox(self.selectElements)
 
@@ -97,7 +97,7 @@ class reports(QWizard):
         self.addPage(self.selectElements)
         
         
-    def createReportsMenu(self):
+    def createReportsMenu(self,widgets,schemaImage=True):
         qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
         redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
@@ -135,7 +135,7 @@ class reports(QWizard):
         ## get the report info for the included widgets.
         # reportData = self.getReportData(fileDir2,name)
         
-        done = self.createReport(fileDir2,name)
+        done = self.createReport(fileDir2,name,widgets,schemaImage)
         if not done:
             return
         if os.name =='nt':
@@ -182,7 +182,7 @@ class reports(QWizard):
             flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
             n.pointer = self.reportData[name]['notes']
             
-            if widget['notes']['text'] != '':
+            if widget['notes']['includeInReports']:
                 n.setCheckState(0,Qt.Checked)
             else:
                 n.setCheckState(0,Qt.Unchecked)
@@ -241,12 +241,12 @@ class reports(QWizard):
                 item = item.parent()
         
         
-    def createReport(self,fileDir,reportName):
+    def createReport(self,fileDir,reportName,widgets,schemaImage):
         
         ## very simply we need to loop through the widgets and get some info 
         ## about them and put that into the report.
         self.reportData = {}
-        for widget in self.schema.widgets:
+        for widget in widgets:
             self.reportData[widget.caption] = self.getReportData(fileDir, widget)
 
         # import pprint
@@ -258,23 +258,23 @@ class reports(QWizard):
             return False
         
 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(self.reportData)
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
 
-        reportText = self.buildReportHeader(fileDir)
+        reportText = self.buildReportHeader(fileDir,schemaImage)
         
         for name, widgetReport in self.reportData.items():
             if widgetReport['includeInReports']:
                 reportText+= self.formatWidgetReport(name,widgetReport)
         
         
-        print '############################\n'*5
-        print reportText
-        print '############################\n'*5
-        f = open(os.path.join(redREnviron.directoryNames['redRDir'],'restr.txt'),'w')
-        f.write(reportText)
-        f.close()
+        # print '############################\n'*5
+        # print reportText
+        # print '############################\n'*5
+        # f = open(os.path.join(redREnviron.directoryNames['redRDir'],'restr.txt'),'w')
+        # f.write(reportText)
+        # f.close()
         
         if os.path.splitext(str(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
@@ -306,13 +306,13 @@ class reports(QWizard):
         #widgetReport['notes'] = widget.instance.notes.getReportText(fileDir)
         # print widget.instance._widgetInfo.widgetName
         d = widget.instance.getReportText3(fileDir)
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(d)
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(d)
         
         data = {'main':{}}
         for k,v in d.items():
-            print '@@@@@@@@@@@@@',widget.caption, k , v
+            # print '@@@@@@@@@@@@@',widget.caption, k , v
             if 'container' in v.keys():
                 if v['container'] in data.keys():
                     data[v['container']][k] = v
@@ -325,16 +325,19 @@ class reports(QWizard):
         widgetReport['reportData'] = data
         n = widget.instance.notes.getReportText(fileDir)
         widgetReport['notes'] = n['Notes']
+        if n['Notes']['text'] =='': widgetReport['notes']['includeInReports'] = False
         widgetReport['includeInReports'] = widget.instance.includeInReport.isChecked()
         return widgetReport
         
     def formatWidgetReport(self, widgetName, widgetReport):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(widgetReport)
 
-        if widgetReport['notes']['includeInReports']:
-            if widgetReport['notes']['text'] =='':
-                notes = 'No notes were entered in the widget face.'
-            else:
-                notes = widgetReport['notes']['text']
+        if widgetReport['notes']['text'] =='':
+            notes = 'No notes were entered in the widget face.'
+        else:
+            notes = widgetReport['notes']['text']
         
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
@@ -368,33 +371,27 @@ class reports(QWizard):
         tt = """
 %s
 ================================================
-
+""" % widgetName
+        if widgetReport['notes']['includeInReports']:
+            tt += """
 Notes
 -----
 
 %s
-
+""" % notes
+        tt+="""
 Widget Output
 -------------
 
 %s
 
-""" % (widgetName, notes, text)
+""" %  text
 
         return tt
 
 
-    def buildReportHeader(self,fileDir):
+    def buildReportHeader(self,fileDir,schemaImage):
        ## first take a picture of the canvas and save as png.
-        image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
-        painter = QPainter(image)
-        self.schema.canvasView.scene().render(painter) #
-        painter.end()
-        imageFile = os.path.join(fileDir, 'canvas-image.png').replace('\\', '/')
-        if not image.save(imageFile):
-            print 'Error in saving schema'
-            print image
-            print image.width(), 'width'
 
         text = """
 ===========================================
@@ -405,14 +402,24 @@ Widget Output
 
 .. contents::
 .. sectnum::
-
+""" % datetime.date.today()
+        
+        if schemaImage:
+            image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
+            painter = QPainter(image)
+            self.schema.canvasView.scene().render(painter) #
+            painter.end()
+            imageFile = os.path.join(fileDir, 'canvas-image.png').replace('\\', '/')
+            if not image.save(imageFile):
+                print 'Error in saving schema'
+                print image
+                print image.width(), 'width'
+            text += """
 Schema
 ========
 .. image:: %s
   :scale: 50%% 
 
-""" % (datetime.date.today(), imageFile)
-
-
+""" %  imageFile
 
         return text;

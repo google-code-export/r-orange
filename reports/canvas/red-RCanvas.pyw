@@ -403,7 +403,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocumentAsApp(asTabs = 1)
 
     def menuItemPrinter(self):
-        self.reports.createReportsMenu()
+        
+        self.reports.createReportsMenu(self.schema.widgets)
         # try:
             # printer = QPrinter()
             # printDialog = QPrintDialog(printer)
