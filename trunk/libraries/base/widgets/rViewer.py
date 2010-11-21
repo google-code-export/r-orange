@@ -10,7 +10,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class rViewer(OWRpy): 
-    globalSettingsList = ['commitOnInput','showAll']
+    globalSettingsList = ['commit','showAll']
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
@@ -20,16 +20,14 @@ class rViewer(OWRpy):
         
         self.inputs.addInput('id0', 'R Variable Data', redRRVariable, self.processdata)
 
-        self.RoutputWindow = textEdit(self.controlArea,editable=False)
+        self.RoutputWindow = textEdit(self.controlArea,label='Output', editable=False)
         
-        self.showAll = redRCheckBox(self.bottomAreaLeft, 
+        self.showAll = redRCheckBox(self.bottomAreaLeft, label='showall', displayLabel=False,
         buttons = ['String Representation', 'Show All'],orientation="horizontal", 
         setChecked = 'String Representation')
-        
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
-        toolTips = ['Whenever this widget gets data it should try to commit'])
 
-        redRCommitButton(self.bottomAreaRight, label="Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, label="Commit", callback = self.commitFunction, 
+        processOnInput=True)
         
         #button(self.bottomAreaLeft, label="Print", callback = self.printViewer)
         
@@ -46,7 +44,7 @@ class rViewer(OWRpy):
         if data:
             self.RFunctionParam_data=data.getData()
             self.data = data
-            if 'Commit on Input' in self.commitOnInput.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_data = ''

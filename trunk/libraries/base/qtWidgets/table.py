@@ -1,22 +1,30 @@
 from redRGUI import widgetState
+import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetBox import widgetBox
 
 class table(widgetState,QTableWidget):
-    def __init__(self,widget,data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
+    data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
+        
+        
+        widgetState.__init__(self,widget,label,includeInReports)
+        
+        if displayLabel:
+            mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
+        else:
+            mainBox = widgetBox(self.controlArea,orientation='vertical')
+        
         QTableWidget.__init__(self,rows,columns,widget)
+        mainBox.layout().addWidget(self)
+
+        
         self.sortIndex = None
         self.oldSortingIndex = None
         self.data = None
-       ### should turn this into a function as all widgets use it to some degree
-        if widget and addToLayout and widget.layout():
-            widget.layout().addWidget(self)
-        elif widget and addToLayout:
-            try:
-                widget.addWidget(self)
-            except: # there seems to be no way to add this widget
-                pass
-                
+
         ###
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)
@@ -96,9 +104,5 @@ class table(widgetState,QTableWidget):
     def getReportText(self, fileDir):
         
         text = redRReports.createTable(self.data)
-        # if self.label:
-            # label = self.label
-        # else:
-            label='Data Table';
         
-        return {'label': label, 'text': text}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}

@@ -160,7 +160,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         else:
             if 'plottingArea' not in dir(self):
                 self.plottingArea = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea, name = self.captionTitle)
+            self.device[str(devNumber)] = redRgraphicsView(self.plottingArea,label=self.captionTitle,
+            displayLabel=False, name = self.captionTitle)
             self.device[str(devNumber)].plot(query = query, function = function, dwidth = dwidth, dheight = dheight)
             
         return
@@ -189,34 +190,27 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
     def getReportText3(self, fileDir):
         ## move through all of the qtWidgets in self and show their report outputs, 
         ## should be implimented by each widget.
-        from redRGUI import widgetState
-        children = self.controlArea.findChildren(QWidget)
-        # print children
+        from redRGUI import qtWidgetBox
+        children = self.controlArea.children() + self.bottomAreaRight.children() + self.bottomAreaCenter.children() + self.bottomAreaLeft.children()
+        print 'OWRpy= ',children
         #import re
-        reportData = []
+        reportData = {}
         for i in children:
-            #print i.__class__.__name__
-            if isinstance(i, widgetState):
+            if isinstance(i, qtWidgetBox):
                 d = i.getReportText(fileDir)
-                if d:
-                    reportData.append(d)
+                if type(d) is dict:
+                    reportData.update(d)
+                # dd = []
+                # if type(d) is list:
+                    # for x in d:
+                        # x['includeInReports'] = i.includeInReports
+                        # dd.append(x)
+                    # reportData = reportData + dd
+                # elif d:
+                    # d['includeInReports'] = i.includeInReports
+                    # reportData.append(d)
         
-
-        arrayOfArray = []
-        for d in reportData:
-            if type(d) is dict:
-                arrayOfArray.append([d['label'], d['text']])
-            elif type(d) is list:
-                for x in d:
-                    arrayOfArray.append([x['label'], x['text']])
-                    
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(arrayOfArray)
-        text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
-        tableName='Parameters')
-        print text
-        return text        
+        return reportData
 
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)

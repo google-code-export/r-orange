@@ -1,8 +1,5 @@
 """
 <name>points</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Adds points to an existing plot.  Data should be in the form of two RVector signals representing the X and Y coordinates of the points.</description>
-<RFunctions>graphics:points</RFunctions>
 <tags>Plotting</tags>
 <icon></icon>
 """
@@ -14,8 +11,10 @@ import libraries.plotting.signalClasses as plotsigs
 
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class RedRpoints(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["points"])
@@ -32,7 +31,9 @@ class RedRpoints(OWRpy):
         
         self.RFunctionParampch_lineEdit = lineEdit(self.controlArea, label = "pch:", text = '16')
         self.RFunctionParamcex_lineEdit = lineEdit(self.controlArea, label = "cex:", text = '2')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+        
     def processy(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -40,7 +41,8 @@ class RedRpoints(OWRpy):
         if data:
             self.RFunctionParam_y=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_y=''
     def processx(self, data):

@@ -17,35 +17,36 @@ from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
 class subset(OWRpy): 
+    globalSettingsList= ['commit']
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self) #initialize the widget
         self.dataClass = None
         self.dataParent = None
+        self.dataA = None
+        self.dataB = None
+        self.colBsel = None
+        self.colAsel = None
+        
         self.setRvariableNames(['subset'])
         
         
         self.inputs.addInput('id0', 'Data Table to Subset On', redRRDataFrame, self.processA)
         self.inputs.addInput('id1', 'Optional List of Subsetting Attributes', redRRList, self.processB)
 
-        
         self.outputs.addOutput('id0', 'Subsetted Data Table', redRRDataFrame)
         self.outputs.addOutput('id1', 'Subsetted Data Vector', redRRVector)
 
-        
-                
         #GUI
         box = widgetBox(self.controlArea,orientation = 'horizontal')
-        pickA = groupBox(box, "Subset on:")
-        self.colA = listBox(pickA, callback = self.setcolA)
+        #pickA = groupBox(box, "Subset on:")
+        self.colA = listBox(box,label='Subset On', callback = self.setcolA)
         
+        #pickB = groupBox(box, "Subset by:")
+        self.colB = listBox(box, label='Subset By', callback = self.setcolB)
         
-        pickB = groupBox(box, "Subset by:")
-        self.colB = listBox(pickB, callback = self.setcolB)
-        
-
-        self.mergeLikeThis = checkBox(self.bottomAreaRight, buttons = ['Subset on input'], toolTips = ['Whenever this widget gets data it should try to merge as was done here'])
-        redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.subset)
+        self.commit = redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.subset,
+        processOnInput=True,processOnChange=True)
 
         
     def onSelect(self):
@@ -55,7 +56,8 @@ class subset(OWRpy):
     def processA(self, data):
         #print 'processA'
         if not data:
-            self.colA.update([])
+            self.colA.clear()
+            self.dataA = None
             return 
             
         self.dataA = data.getData()
@@ -64,12 +66,13 @@ class subset(OWRpy):
         colsA.insert(0, 'Rownames')
         self.colA.update(colsA)
 
-        if 'Subset on input' in self.mergeLikeThis.getChecked():
+        if self.commit.processOnInput():
             self.subset()
 
     def processB(self, data):
         if not data:
-            self.colB.update([])
+            self.colB.clear()
+            self.dataB = None
             return 
         self.dataB = data.getData()
         colsB = self.R('names('+self.dataB+')',wantType='list') 
@@ -77,7 +80,7 @@ class subset(OWRpy):
         
         self.colB.update(colsB)
 
-        if 'Subset on input' in self.mergeLikeThis.getChecked():
+        if self.commit.processOnInput():
             self.subset()
 
     def setcolA(self):
@@ -86,18 +89,23 @@ class subset(OWRpy):
             if self.colAsel == '\'Rownames\'':
                 self.colAsel = '0'
         except: return
+        if self.commit.processOnChange():
+            self.subset()
     def setcolB(self):
         try:
             self.colBsel = '\''+str(self.colB.selectedItems()[0].text())+'\''
         except: return
+        if self.commit.processOnChange():
+            self.subset()
 
     def subset(self):
-        if self.dataA != '' and self.dataB != '':
+        if self.dataA and self.dataB :
             h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
         else: 
             return
-        print self.colA.getItems(), self.colAsel
-        print self.colB.getItems(), self.colBsel
+        
+        # print self.colA.getItems(), self.colAsel
+        # print self.colB.getItems(), self.colBsel
         
         if self.colAsel == None and self.colBsel == None and type(h) is str: 
             self.R(self.Rvariables['subset']+'<-'+self.dataA+'['+self.dataA+'[,"' + h +'"]'
@@ -107,7 +115,12 @@ class subset(OWRpy):
             +' %in% '+self.dataB+'[['+self.colBsel+']],]', wantType = 'NoConversion')
         else:
             return
-        newData = redRRDataFrame(data = self.Rvariables['subset'])
+        
+        if self.R('class(%s) == "data.frame"' % self.Rvariables['subset']):
+            newData = redRRDataFrame(data = self.Rvariables['subset'])
+        else:
+            newData = redRRDataFrame(data = 'as.data.frame(%s)' % self.Rvariables['subset'])
+            
         self.rSend('id0', newData)
         
         if self.R('ncol('+self.Rvariables['subset']+')') == 1:

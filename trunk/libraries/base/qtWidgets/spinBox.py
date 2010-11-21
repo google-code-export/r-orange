@@ -7,33 +7,33 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class spinBox(QSpinBox,widgetState):
-    def __init__(self, widget, value=None, label=None,orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
+    def __init__(self, widget, label=None, displayLabel=True, includeInReports=True, value=None, 
+    orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
+        
         self.widget = widget
+        
+        widgetState.__init__(self,widget,label,includeInReports)
         QSpinBox.__init__(self)
         self.label = label
-        if label:
-            self.hb = widgetBox(widget,orientation=orientation)
+        if displayLabel:
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
             widgetLabel(self.hb, label)
             self.hb.layout().addWidget(self)
-        elif widget:
-            widget.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
+        
         if max:
             self.setMaximum(int(max))
         if min:
             self.setMinimum(int(min))
         if toolTip:
             self.setToolTip(str(toolTip))
-        if callback:
-            QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
         self.setWrapping(True) # we always allow the spin box to wrap around
         if value:
             self.setValue(value)
+        if callback:
+            QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
         
-    def hide(self):
-        if self.hb:
-            self.hb.hide()
-        else:
-            QSpinBox.hide(self)
     def getSettings(self):
         value = self.value()
         prefix = self.prefix()
@@ -63,21 +63,7 @@ class spinBox(QSpinBox,widgetState):
         self.setMinimum(min)
         if value >= min and value <= max:
             self.setValue(value)
-    def hide(self):
-        if self.label:
-            self.hb.hide()
-        else:
-            QSpinBox.hide(self)
-    def show(self):
-        if self.label:
-            self.hb.show()
-        else:
-            QSpinBox.show(self)
-            
     def getReportText(self, fileDir):
-        if self.label:
-            label = self.label
-        else:
-            label = "SpinBox with no label"
-        return {'label': label, 'text':str(self.value())}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': str(self.value())}}
+        
         

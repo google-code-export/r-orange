@@ -121,7 +121,8 @@ class redRWidgetGUI(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea,self.rightDock)
         
         
-        self.rightDockArea = redRgroupBox(self.rightDock,orientation=QVBoxLayout())
+        self.rightDockArea = redRgroupBox(self.rightDock,label='Right Dock', displayLabel=False,
+        orientation=QVBoxLayout())
         self.rightDockArea.setMinimumWidth(minWidth)
         self.rightDockArea.setMinimumHeight(150)
         self.rightDockArea.layout().setMargin(4)
@@ -178,7 +179,7 @@ class redRWidgetGUI(QMainWindow):
         redRwidgetLabel(self.notesBox, label="Notes:", 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'))
 
-        self.notes = redRtextEdit(self.notesBox)
+        self.notes = redRtextEdit(self.notesBox,label='Notes', displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
@@ -189,7 +190,7 @@ class redRWidgetGUI(QMainWindow):
         redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'))
 
-        self.ROutput = redRtextEdit(self.ROutputBox)
+        self.ROutput = redRtextEdit(self.ROutputBox, label='R code', displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
@@ -210,7 +211,7 @@ class redRWidgetGUI(QMainWindow):
         self.printButton = redRbutton(self.bottomAreaLeft, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
         toolTip='Print',
-        callback = self.printWidget)
+        callback = self.createReport)
         self.includeInReport = redRbutton(self.bottomAreaLeft, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
         toolTip='Include In Report', toggleButton = True)
@@ -271,21 +272,12 @@ class redRWidgetGUI(QMainWindow):
             webbrowser.open_new_tab(self.helpFile)
 
         
-    def printWidget(self, printer = None):
-        ## establish a printer that will print the widget
-        if not printer:
-            printer = QPrinter()
-            printDialog = QPrintDialog(printer)
-            if printDialog.exec_() == QDialog.Rejected: 
-                print 'Printing Rejected'
-                return
-        #painter = QPainter(printer)
-        painter = QPainter(printer)
-        self.render(painter)
-        tempDoc = QTextEdit()
-        tempDoc.setText('R Output:</br>'+self.ROutput.toHtml()+'</br> Notes: </br>'+self.notes.toHtml())
-        tempDoc.render(printer)
-        painter.end()
+    def createReport(self, printer = None):
+        
+        
+        qApp.canvasDlg.reports.createReportsMenu(
+        [canvasWidget(caption=self._widgetInfo.widgetName, instance=self)],schemaImage=False)
+        
         
     
 
@@ -367,7 +359,9 @@ class redRWidgetGUI(QMainWindow):
             i.setHidden(True)
         if self.hasBeenShown and not self.isHidden():
             self.saveWidgetWindowState()
+        print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'
         self.saveGlobalSettings()
+        print 'bbbbbbbbbbbbbbbbbbbbbbbbbbb'
         self.customCloseEvent()
 
         
@@ -562,6 +556,9 @@ class redRWidgetGUI(QMainWindow):
         
 
 
+class canvasWidget:
+    def __init__(self, **attrs):
+        self.__dict__.update(attrs)
 
 
 # if __name__ == "__main__":

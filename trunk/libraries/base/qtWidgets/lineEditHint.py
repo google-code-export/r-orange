@@ -5,8 +5,14 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 
 
 class lineEditHint(lineEdit):        
-    def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = 0, callback = None, **args):
-        lineEdit.__init__(self, widget = widget, label = label, orientation = orientation, toolTip = toolTip, width = width, **args)
+    def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', items = [], 
+    toolTip = None,  width = 0, callback = None, **args):
+        
+        
+        #widgetState.__init__(self,label,includeInReports)
+        lineEdit.__init__(self, widget = widget, label = label, displayLabel=displayLabel,
+        orientation = orientation, toolTip = toolTip, width = width, **args)
+        
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
         self.enteredText = ""
         self.itemList = []
@@ -183,3 +189,6 @@ class lineEditHint(lineEdit):
         except:
             print 'Loading of lineEditHint encountered an error.'
             
+    def getReportText(self, fileDir):
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.text()}}
+        return r

@@ -15,12 +15,15 @@ from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
 class rowcolPicker(OWRpy): 
+       
+    globalSettingsList = ['subsetButton']
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self) #initialize the widget
@@ -41,14 +44,16 @@ class rowcolPicker(OWRpy):
         area = widgetBox(self.controlArea,orientation='horizontal')       
         options = widgetBox(area, orientation = 'vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
-        self.alwaysSend = checkBox(options, buttons = ['Always send these selections'])
+        
+        # self.alwaysSend = checkBox(options, label='commit', displayLabel=False,
+        # buttons = ['Always send these selections'])
+        
         self.sendSection = checkBox(options, label = "Send Where Selection Is:", buttons = ["True", "False"], setChecked = "True", toolTip = "Select True to send data from the Data slot where the selections that you made are True.\nSelect False to send data from the Not Data slot that are not the selections you made.")
         self.rowcolBox = radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
-        callback=self.rowcolButtonSelected)
+        callback=self.rowcolButtonSelected,orientation='horizontal')
         
         self.invertButton = button(options, "Invert Selection", callback=self.invertSelection)
-
-        self.subsetButton = button(options, "Subset on Selection", callback=self.subset)
+      
         separator(options,height=15)
 
         self.subsetBox = groupBox(options,label='Subset by')
@@ -63,14 +68,17 @@ class rowcolPicker(OWRpy):
         self.infoBox = widgetLabel(info)
         separator(info,height=15)
         self.selectionInfoBox = widgetLabel(info)
-        
-        self.attributes = listBox(area, label='Select',callback=self.onSelect)
+        mainArea = widgetBox(area,orientation='vertical')
+        self.attributes = listBox(mainArea, label='Select',callback=self.onSelect)
         self.attributes.setSelectionMode(QAbstractItemView.ExtendedSelection)
-
+        self.subsetButton = commitButton(mainArea, "Subset on Selection", callback=self.subset,
+        processOnChange=True, processOnInput=True)
+        
     def onSelect(self):
         count = self.attributes.selectionCount()
         self.selectionInfoBox.setText('# ' + self.rowcolBox.getChecked()  + 's selected: ' + str(count))
-        
+        if self.subsetButton.processOnChange():
+            self.subset()
     def setWidget(self, data):
         if data:
             self.data = data.getData()
@@ -78,7 +86,7 @@ class rowcolPicker(OWRpy):
             self.rowcolButtonSelected()
             dims = data.getDims_data()
             self.infoBox.setText('# Rows: ' + str(dims[0]) +'\n# Columns: ' + str(dims[1]))
-            if 'Always send these selections' in self.alwaysSend.getChecked():
+            if self.subsetButton.processOnInput():
                 self.subset()
         else:
             self.data = ''

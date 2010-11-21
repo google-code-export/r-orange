@@ -16,21 +16,23 @@ from PyQt4.QtGui import *
 import sip
 
 class filterTable(widgetState, QTableView):
-    def __init__(self,widget,label=None, Rdata=None, editable=False, sortable=True, filterable=False,
+    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
+    editable=False, sortable=True, filterable=False,
     selectionBehavior=QAbstractItemView.SelectRows, 
     selectionMode = QAbstractItemView.NoSelection, 
     showResizeButtons = True,
     onFilterCallback = None,
     callback=None):
-        #widgetBox.__init__(self,widget,orientation='vertical')
         
-        if label:
-            mainBox = groupBox(widget,label=label, orientation='vertical')
+        widgetState.__init__(self,widget,label,includeInReports)
+        
+        if displayLabel:
+            mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
-            mainBox = widgetBox(widget,orientation='vertical')
+            mainBox = widgetBox(self.controlArea,orientation='vertical')
         self.label = label
         
-        QTableView.__init__(self,widget)
+        QTableView.__init__(self,self.controlArea)
         mainBox.layout().addWidget(self)
         box = widgetBox(mainBox,orientation='horizontal')
         leftBox = widgetBox(box,orientation='horizontal')
@@ -224,10 +226,10 @@ class filterTable(widgetState, QTableView):
                 levels.insert(0,'Check All')
             if len(levels) > 10:
                 scroll = scrollArea(self.optionsBox,spacing=1)
-                c = checkBox(scroll,buttons=levels,setChecked = checked)
+                c = checkBox(scroll,label='Levels',buttons=levels,setChecked = checked)
                 scroll.setWidget(c)
             else:
-                c = checkBox(self.optionsBox,buttons=levels,setChecked = checked)
+                c = checkBox(self.optionsBox,label='Levels',buttons=levels,setChecked = checked)
             
             QObject.connect(c.buttons, SIGNAL('buttonClicked (int)'), lambda val : self.factorCheckBox(val,self.optionsBox))
     
@@ -426,12 +428,8 @@ class filterTable(widgetState, QTableView):
         else:
             text = ''
             
-        if self.label:
-            label = self.label
-        else:
-            label='Data Table';
         
-        return {'label': label, 'text': text}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
 
 
 class MyTableModel(QAbstractTableModel): 

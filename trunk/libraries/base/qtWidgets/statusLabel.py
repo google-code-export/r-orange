@@ -7,7 +7,8 @@ from PyQt4.QtGui import *
 
 class statusLabel(QLabel,widgetState):
     def __init__(self,widget,label = '', wordWrap=True):
-        QLabel.__init__(self,widget)
+        widgetState.__init__(self, widget, 'statusLabel',includeInReports=False)
+        QLabel.__init__(self,self.controlArea)
         # if icon:
             # icon = QIcon(icon)
             # box = redRWidgetBox(widget,orientation='horizontal')
@@ -16,9 +17,9 @@ class statusLabel(QLabel,widgetState):
         # else:
         #widget.layout().addWidget(self)
         
-        box = redRWidgetBox(widget,orientation='horizontal')
+        box = redRWidgetBox(self.controlArea,orientation='horizontal')
         
-        widget.layout().addWidget(box)
+        self.controlArea.layout().addWidget(box)
         box.layout().addWidget(self)
         
         #self.statusIndicator = redRwidgetLabel(box,label='aaaaa  ')

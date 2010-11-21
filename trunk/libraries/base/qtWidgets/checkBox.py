@@ -5,18 +5,19 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class checkBox(widgetBox,widgetState):
-    def __init__(self,widget,label=None,buttons = None,toolTips = None, setChecked=None,
+class checkBox(widgetState, QWidget):
+    def __init__(self,widget,label = None, displayLabel= True, includeInReports=True,
+    buttons = None,toolTips = None, setChecked=None,
     orientation='vertical',callback = None, **args):
         
-        widgetBox.__init__(self,widget,orientation=orientation)
-        
+        QWidget.__init__(self,widget)
+        widgetState.__init__(self,widget,label,includeInReports,**args)
 
-        if label:
-            self.box = groupBox(self,label=label,orientation=orientation)
-            self.layout().addWidget(self.box)
+        if displayLabel:
+            self.box = groupBox(self.controlArea,label=label,orientation=orientation)
         else:
-            self.box = self
+            self.box = widgetBox(self.controlArea,orientation=orientation)
+            
         self.label = label
         self.buttons = QButtonGroup(self.box)
         self.buttons.setExclusive(False)
@@ -52,8 +53,6 @@ class checkBox(widgetBox,widgetState):
     def buttonAt(self,ind):
         return str(self.buttons.button(ind).text().toAscii())
         
-    def hide(self):
-        self.box.hide()
     def getSettings(self):
         # print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}
@@ -67,17 +66,13 @@ class checkBox(widgetBox,widgetState):
         
     def getReportText(self, fileDir):
         selected = self.getChecked()
-        if self.label:
-            if len(selected):
-                text='Checked: ' + ', '.join(selected)
-            else:
-                text= 'Nothing Checked'
-            r = {'label': self.label, 'text': text}
+
+        if len(selected):
+            text='Checked: ' + ', '.join(selected)
         else:
-            r = []
-            for c in self.getChecked():
-                r.append({'label': c, 'text': 'Checked'})
-            
+            text= 'Nothing Checked'
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
+        print '@@@@@@@@@@@@@@@@@@@@@@@', r
         #t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
         return r
 

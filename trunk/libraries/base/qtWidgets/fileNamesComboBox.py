@@ -1,3 +1,5 @@
+#from redRGUI import widgetState
+
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.comboBox import comboBox
@@ -7,11 +9,17 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class fileNamesComboBox(comboBox):
-    def __init__(self,widget,label=None, files=None, orientation='horizontal',callback = None, callback2 = None, **args):
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, 
+    orientation='horizontal',callback = None, callback2 = None, **args):
+
+        #widgetState.__init__(self, widget, label, includeInReports)
         
-        comboBox.__init__(self,widget,label=label,items=None, orientation=orientation,
+        comboBox.__init__(self,widget,label=label,displayLabel=displayLabel,
+        items=None, orientation=orientation,
         callback=callback,callback2=callback2, **args)
+        
         self.label = label
+        
         if files:
             self.files = files
         else:
@@ -84,11 +92,7 @@ class fileNamesComboBox(comboBox):
         return self.files[self.currentIndex()].replace('\\', '/')
         
     def getReportText(self, fileDir):
-        if not self.label:
-            label = "File Select"
-        else:
-            label = self.label
         
-        r = {'label': label, 'text': self.getCurrentFile()}
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getCurrentFile()}}
         #return '%s set to %s' % (self.label, self.currentText())
         return r

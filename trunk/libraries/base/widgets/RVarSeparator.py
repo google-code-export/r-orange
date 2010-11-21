@@ -17,8 +17,9 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+
 class RVarSeparator(OWRpy): 
-    globalSettingsList = ['sendOnSelect']
+    globalSettingsList = ['commitButton']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
        
@@ -41,25 +42,26 @@ class RVarSeparator(OWRpy):
         #self.filecombo.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.controlArea.layout().setAlignment(box,Qt.AlignRight)
         
-        self.sendOnSelect = checkBox(box,buttons=['Send on select'], setChecked = ['Send on select'], 
-        toolTips=['Commit variable on select from the list'])
-        redRCommitButton(box,label='Commit',callback=self.commit)
+        self.commitButton = redRCommitButton(box,label='Commit',callback=self.commit,
+        processOnInput=True,processOnChange=True)
 
-        
-        
-    
     def process(self, data):
         if not data: return
         self.envName = data.getData()
 
         dataList = self.R('local(ls(), '+self.envName+')', wantType = 'list')
-        if type(dataList) == type([]):
-            self.varBox.update(dataList)
-        elif type(dataList) == type(None):
+        
+        if not dataList:
             self.status.setText('No data in the R session')
-            return
+            return 
+        
+        self.varBox.update(dataList)
+        if self.commitButton.processOnInput():
+            self.commit()
+           
+        
     def select(self):
-        if 'Send on select' in self.sendOnSelect.getChecked():
+        if self.commitButton.processOnChange():
             self.commit()
             
     def commit(self):

@@ -12,8 +12,10 @@ from libraries.base.signalClasses.RList import RList as redRList
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class dotchart(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["dotchart"])
@@ -29,7 +31,9 @@ class dotchart(OWRpy):
         self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "X Label:", text = 'NULL')
         self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "Y Label:", text = 'NULL')
         self.labelNames = comboBox(self.standardTab, label = 'Label Data')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -37,7 +41,9 @@ class dotchart(OWRpy):
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
+                
         else:
             self.RFunctionParam_x=''
     def processLabels(self, data):

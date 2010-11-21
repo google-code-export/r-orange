@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 
 class RedRdata(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(['datasets',"data"])
@@ -23,7 +23,8 @@ class RedRdata(OWRpy):
         self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
         
         
-        self.table = filterTable(self.controlArea,Rdata = self.Rvariables['datasets'], sortable=True,
+        self.table = filterTable(self.controlArea, label='R Datasets', includeInReports=False,
+        Rdata = self.Rvariables['datasets'], sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.selectDataSet)
 
 
@@ -33,7 +34,10 @@ class RedRdata(OWRpy):
         self.package = lineEdit(box, label = 'Package:', text = '')#, callback = self.loadPackage)
         self.RFunctionParamdataName_lineEdit = lineEdit(box, label = "Data Name:", 
         text = '', callback = self.commitFunction)
-        redRCommitButton(box, "Commit", callback = self.commitFunction)
+        
+        self.commit = redRCommitButton(box, "Commit", callback = self.commitFunction,
+        processOnChange=True, orientation='vertical')
+    
     def loadPackage(self):
         if str(self.package.text()) != '':
             self.require_librarys([str(self.package.text())])
@@ -53,6 +57,8 @@ class RedRdata(OWRpy):
         
         self.package.setText(package)
         self.RFunctionParamdataName_lineEdit.setText(dataset)
+        if self.commit.processOnChange():
+            self.commitFunction()
         
     def commitFunction(self):
         package = self.package.text()

@@ -4,15 +4,17 @@ from PyQt4.QtGui import *
 
         
 class widgetBox(QWidget,widgetState):
-    def __init__(self,widget, orientation='vertical', addSpace=False, 
+    def __init__(self,widget, orientation='vertical', addSpace=False, includeInReports=True,
     sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop):
 
-        QWidget.__init__(self,widget)
+        widgetState.__init__(self,widget, 'WidgetBox',includeInReports)
+        QWidget.__init__(self,self.controlArea)
             
+        self.controlArea.layout().addWidget(self)
         if margin == -1: margin = 0
         # self.setFlat(flat)
-        if widget and widget.layout():
-            widget.layout().addWidget(self)
+        # if widget and widget.layout():
+            # widget.layout().addWidget(self)
         
         try:
             if isinstance(orientation, QLayout):
@@ -34,7 +36,7 @@ class widgetBox(QWidget,widgetState):
         # else:
             # self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         
-        self.layout().setAlignment(alignment)            
+        self.controlArea.layout().setAlignment(alignment)            
 
         if spacing == -1: spacing = 8
         self.layout().setSpacing(spacing)
@@ -42,9 +44,10 @@ class widgetBox(QWidget,widgetState):
             self.layout().setMargin(margin)
         if widget:
             if addSpace and isinstance(addSpace, int):
-                separator(widget, 0, addSpace)
+                separator(self.controlArea, 0, addSpace)
             elif addSpace:
-                separator(widget)
+                separator(self.controlArea)
+    
     def delete(self):
         # itemRange = self.layout().count()
         # for i in range(0, itemRange):
@@ -56,13 +59,3 @@ class widgetBox(QWidget,widgetState):
             # sip.delete(item)
         sip.delete(self)
   
-    # def getReportText(self,fileDir):
-    
-        # children = self.children()
-        # reportData = []
-        # for i in children:
-            # if isinstance(i, widgetState):
-                # d = i.getReportText(fileDir)
-                # if d:
-                    # reportData.append(d)
-        # return reportData

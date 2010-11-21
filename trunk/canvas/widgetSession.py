@@ -97,7 +97,9 @@ class widgetSession():
             
     def returnSettings(self,var, checkIfPickleable=True): ## parses through objects returning if they can be saved or not and collecting their settings.
         settings = {}
+        # from redRGUI import qtWidgetBox
         from redRGUI import widgetState
+        # from redRGUI import widgetState
         from signals import BaseRedRVariable
         # print 'var class', var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
         if isinstance(var, widgetState):
@@ -325,13 +327,14 @@ class widgetSession():
             self.globalSettingsList.extend(self.defaultGlobalSettingsList)
         else:
             self.globalSettingsList =  self.defaultGlobalSettingsList
-        #print redRGUI.qtWidgets
+        print self.globalSettingsList
         for name in self.globalSettingsList:
-            try:
+            # try:
                 settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
-            except:
-                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
-        #print '%s' % str(settings)
+            # except:
+                # print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
+        print '%s' % str(settings)
+
         if settings:
             #settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()

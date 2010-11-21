@@ -19,8 +19,7 @@ from libraries.base.qtWidgets.button import button as RedRButton
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class ListSelector(OWRpy):
-    globalSettingsList = ['commitOnInput']
-
+    globalSettingsList= ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         
@@ -38,13 +37,14 @@ class ListSelector(OWRpy):
 
         
         #GUI
-        box = groupBox(self.controlArea, "List Data")
-        self.infoa = widgetLabel(self.controlArea, '')
-        self.names = listBox(box, callback = self.selectionChanged)
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Selection'],
-        toolTips = ['Whenever this selection changes, send data forward.'])
+        #box = groupBox(self.controlArea, "List Data")
         
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.sendSelection)
+        self.names = listBox(self.controlArea, label="List of Data", displayLabel=True,
+        callback = self.selectionChanged)
+        self.infoa = widgetLabel(self.controlArea, '')
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.sendSelection,
+        processOnChange=True, processOnInput=True)
 
         
     def process(self, data):
@@ -53,18 +53,20 @@ class ListSelector(OWRpy):
         if data:
             self.data = data.getData()
             names = self.R('names('+self.data+')')
-            print str(names)
+            #print str(names)
             if names == None:
                 names = range(1, self.R('length('+self.data+')')+1)
                 print names
             self.names.update(names)
+            if self.commit.processOnInput():
+                self.sendSelection()
         else:
             self.names.clear()
             for signal in self.outputs.outputIDs():
                 self.rSend(signal, None)
           
     def selectionChanged(self):
-        if 'Commit on Selection' in self.commitOnInput.getChecked():
+        if self.commit.processOnChange():
             self.sendSelection()
         
     def sendSelection(self):

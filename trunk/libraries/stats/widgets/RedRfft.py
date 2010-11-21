@@ -1,8 +1,5 @@
 """
 <name>Fast Discrete Fourier Transform</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Performs the Fast Fourier Transform of an array.  Takes an RMatrix and returns an RMatrix.  The inverse argument can be used to make the inverse of the transformaiton instead.</description>
-<RFunctions>stats:fft</RFunctions>
 <tags>Stats</tags>
 <icon></icon>
 """
@@ -13,9 +10,10 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
 class RedRfft(OWRpy): 
-    globalSettingsList = ['commitOnInput']
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["fft"])
@@ -29,10 +27,10 @@ class RedRfft(OWRpy):
         
         self.RFunctionParaminverse_radioBox = radioButtons(self.controlArea, 
         label = "inverse:", buttons = ["Yes","No"], setChecked = "No")
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
-        toolTips = ['On data input, process and send data forward.'])
         
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+
     def processz(self, data):
         if data:
             self.RFunctionParam_z=data.getData()
@@ -43,7 +41,7 @@ class RedRfft(OWRpy):
             else:
                 self.commitButton.setEnabled(True)
                 self.status.setText('')
-            if 'Commit on Selection' in self.commitOnInput.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_z=''

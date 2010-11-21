@@ -5,19 +5,21 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class comboBox(QComboBox,widgetState):
-    def __init__(self,widget,label=None, items=None, itemIds=None,editable=False,
+    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
+    items=None, itemIds=None,editable=False,
     orientation='horizontal',callback = None, callback2 = None, **args):
         
-        QComboBox.__init__(self,widget)
-        if widget:
-            if label:
-                self.hb = widgetBox(widget,orientation=orientation)
-                widgetLabel(self.hb, label)
-                self.hb.layout().addWidget(self)
-                self.hasLabel = True
-            else:
-                widget.layout().addWidget(self)
-                self.hasLabel = False
+        widgetState.__init__(self,widget,label,includeInReports)
+        QComboBox.__init__(self,self.controlArea)
+        
+        if displayLabel:
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
+            widgetLabel(self.hb, label)
+            self.hb.layout().addWidget(self)
+            self.hasLabel = True
+        else:
+            self.controlArea.layout().addWidget(self)
+            self.hasLabel = False
         self.label = label
 
         self.ids = [] 
@@ -33,16 +35,6 @@ class comboBox(QComboBox,widgetState):
         if callback2: # more overload for other functions
             QObject.connect(self, SIGNAL('activated(int)'), callback2)
 
-    def hide(self):
-        if self.hasLabel:
-            self.hb.hide()
-        else:
-            QComboBox.hide(self)
-    def show(self):
-        if self.hasLabel:
-            self.hb.show()
-        else:
-            QComboBox.show(self)
     def getSettings(self):
         items = []
         # print 'in comboBox get'
@@ -89,6 +81,7 @@ class comboBox(QComboBox,widgetState):
             # self.ids = self.ids + range(self.count(), self.count() + len(items))
     def currentText(self):
         return str(QComboBox.currentText(self).toAscii())
+        
     def addItem(self,item,id=None):
         QComboBox.addItem(self,item)
         if id:
@@ -114,11 +107,7 @@ class comboBox(QComboBox,widgetState):
         if index != -1:
             self.setCurrentIndex(index)
     def getReportText(self, fileDir):
-        if not self.label:
-            label = "ComboBox with No Label"
-        else:
-            label = self.label
 
-        r = {'label': label, 'text': self.currentText()}
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.currentText()}}
         #return '%s set to %s' % (self.label, self.currentText())
         return r

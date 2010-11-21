@@ -4,30 +4,35 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem
+from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
 
 
 class treeWidget(QTreeWidget, widgetState):
-    def __init__(self, widget, label = None, toolTip = None, callback = None):
-        QTreeWidget.__init__(self, widget)
+    def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, 
+    orientation='vertical', toolTip = None, callback = None):
         
-        if widget:
-            if label:
-                self.hb = widgetBox(widget,orientation=orientation)
-                widgetLabel(self.hb, label)
-                if width != -1:
-                    sb = widgetBox(self.hb)
-                    sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                self.hb.layout().addWidget(self)
-                self.hasLabel = True
-            else:
-                widget.layout().addWidget(self)
-                self.hasLabel = False
+        widgetState.__init__(self,widget,label,includeInReports)
+
+        QTreeWidget.__init__(self, self.controlArea)
+        
+        if displayLabel:
+            self.hb = widgetBox(self.controlArea,orientation=orientation)
+            widgetLabel(self.hb, label)
+            if width != -1:
+                sb = widgetBox(self.hb)
+                sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            self.hb.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
+
         if toolTip: self.setToolTip(toolTip)
         if callback:
             QObject.connect(self, SIGNAL('currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)'), callback)
     def setHeaderLabels(self, labels):
         self.labels = labels
         QTreeWidget.setHeaderLabels(self, labels)
+   
     def getSettings(self):
         r = {}
         r['headerLabels'] = self.labels
@@ -38,16 +43,7 @@ class treeWidget(QTreeWidget, widgetState):
             except:
                 continue
         return r
-    def hide(self):
-        if self.hasLabel:
-            self.hb.hide()
-        else:
-            QLineEdit.hide(self)
-    def show(self):
-        if self.hasLabel:
-            self.hb.show()
-        else:
-            QLineEdit.show(self)
+
     def loadSettings(self,data):
         try:
             self.setHeaderLabels(data['headerLabels'])

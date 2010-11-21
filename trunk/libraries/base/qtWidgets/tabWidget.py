@@ -5,10 +5,13 @@ from PyQt4.QtGui import *
 
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
-        QTabWidget.__init__(self,widget)
-        if widget.layout():
-            widget.layout().addWidget(self)
-    
+        
+        widgetState.__init__(self,widget, 'tabWidget',includeInReports=True)
+        QTabWidget.__init__(self,self.controlArea)
+        self.controlArea.layout().addWidget(self)
+        
+        self.tabs = {}
+        
     def createTabPage(self, name, widgetToAdd = None, canScroll = False):
         #print 'start: ' + name
         if widgetToAdd == None:
@@ -24,6 +27,8 @@ class tabWidget(QTabWidget,widgetState):
         else:
             #print 'add'
             self.addTab(widgetToAdd, name)
+        self.tabs[name] = widgetToAdd
+        
         return widgetToAdd 
     def getSettings(self):
         r= {'currentIndex': self.currentIndex()}
@@ -32,4 +37,17 @@ class tabWidget(QTabWidget,widgetState):
         #print 'called load' + str(value)
         self.setCurrentIndex(data['currentIndex'])
         
-
+    def getReportText(self,fileDir):
+        reportData = {}
+        for name, tab in self.tabs.items():
+            children = tab.children()
+            for i in children:
+                if isinstance(i, widgetState):
+                    d = i.getReportText(fileDir)
+                    if type(d) is dict:
+                        for k,v in d.items():
+                            d[k]['container'] = name
+                        reportData.update(d)
+            
+        
+        return reportData

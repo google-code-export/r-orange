@@ -1,7 +1,5 @@
 """
 <name>Rug Plot Attribute</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>graphics:rug</RFunctions>
 <tags>Plot Attributes</tags>
 <icon>plot.png</icon>
 """
@@ -13,7 +11,7 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
 class rug(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["rug"])
@@ -25,15 +23,14 @@ class rug(OWRpy):
 
         
         
-        box = tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamside_lineEdit =  lineEdit(self.standardTab,  label = "side:", text = '1')
-        self.RFunctionParamticksize_lineEdit =  lineEdit(self.standardTab,  label = "ticksize:", text = '0.03')
-        self.RFunctionParamquiet_lineEdit =  lineEdit(self.standardTab,  label = "quiet:", text = 'getOption("warn")<0')
-        self.RFunctionParamlwd_lineEdit =  lineEdit(self.standardTab,  label = "lwd:", text = '0.5')
-        self.RFunctionParamcol_lineEdit =  lineEdit(self.standardTab,  label = "col:", text = 'par("fg")')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamside_lineEdit =  lineEdit(self.controlArea,  label = "side:", text = '1')
+        self.RFunctionParamticksize_lineEdit =  lineEdit(self.controlArea,  label = "ticksize:", text = '0.03')
+        self.RFunctionParamquiet_lineEdit =  lineEdit(self.controlArea,  label = "quiet:", text = 'getOption("warn")<0')
+        self.RFunctionParamlwd_lineEdit =  lineEdit(self.controlArea,  label = "lwd:", text = '0.5')
+        self.RFunctionParamcol_lineEdit =  lineEdit(self.controlArea,  label = "col:", text = 'par("fg")')
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction, 
+        processOnInput=True)
+        
     def processx(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -41,9 +38,11 @@ class rug(OWRpy):
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_x=''
+    
     def commitFunction(self):
         if str(self.RFunctionParam_x) == '': return
         injection = []

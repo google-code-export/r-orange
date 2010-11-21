@@ -1,21 +1,19 @@
 """
 <name>Wilcoxon Test</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Performs one and two sample Wilcoxon tests on vectors of data, the latter is also known as 'Mann-Whitney' test.  This widget accepts 'vectors' which may be created by the Row or Column selectors or the List selector widget.</description>
 <tags>Non Parametric</tags>
 <icon>stats.png</icon>
-<RFunctions>stats:wilcox.test</RFunctions>
 """
 from OWRpy import * 
-import OWGUI 
 import redRGUI
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class wilcox_test(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["wilcox.test"])
@@ -28,17 +26,21 @@ class wilcox_test(OWRpy):
         self.outputs.addOutput('id0', 'wilcox.test Output', redRRVariable)
 
         
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea)
+
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+        self.RoutputWindow = textEdit(self.controlArea,label='R Output', displayLabel=False)
         
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
     def processy(self, data):
         if data:
             self.RFunctionParam_y=data.getData()
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
     def commitFunction(self):
         if self.RFunctionParam_x == '': return
         injection = []

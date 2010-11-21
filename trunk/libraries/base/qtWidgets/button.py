@@ -1,21 +1,26 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import os.path
 
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
-    toolTip=None, width = None, height = None,align='left', toggleButton = False, addToLayout = 1):
-        if icon:
-            QPushButton.__init__(self,QIcon(icon), label,widget)
+    toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False):
+        if icon and (not label or label == ''):
+            
+            
+            widgetState.__init__(self,widget,os.path.basename(icon),includeInReports=False)
         else:
-            QPushButton.__init__(self,label,widget)
+            widgetState.__init__(self,widget,label,includeInReports=False)
+            
+        if icon:
+            QPushButton.__init__(self,QIcon(icon), label,self.controlArea)
+        else:
+            QPushButton.__init__(self,label,self.controlArea)
 
-        if addToLayout and widget.layout():
-            widget.layout().addWidget(self)
-            if align=='left':
-                widget.layout().setAlignment(self, Qt.AlignLeft)
-            elif align=='right':
-                widget.layout().setAlignment(self, Qt.AlignRight)
+        self.controlArea.layout().addWidget(self)
+        if alignment:
+            self.controlArea.layout().setAlignment(self, alignment)
         
         if icon or width == -1:
             pass

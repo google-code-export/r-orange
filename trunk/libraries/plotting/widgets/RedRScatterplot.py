@@ -8,10 +8,11 @@ from OWRpy import *
 import OWGUI
 import redRGUI 
 import re
-import textwrap, numpy
+import textwrap
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+
 from PyQt4.QtGui import *
-### currently depricated until fixed
+
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.plotting.qtWidgets.redRGraph import redRGraph
 from libraries.base.qtWidgets.comboBox import comboBox
@@ -21,6 +22,7 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.zoomSelectToolbar import zoomSelectToolbar
+
 class RedRScatterplot(OWRpy):
     globalSettingsList = ['commitOnInput', 'plotOnInput']
     def __init__(self, parent=None, signalManager=None):
@@ -36,48 +38,53 @@ class RedRScatterplot(OWRpy):
         
         # GUI
         area = widgetBox(self.controlArea,orientation='horizontal')
-        options= groupBox(area,orientation='vertical')
+        
+        options= widgetBox(area,orientation='vertical')
         options.setMaximumWidth(250)
-        options.setMinimumWidth(250)
-        self.xColumnSelector = comboBox(options, label = 'X data', items=[],callback=self.onSourceChange)
-        self.yColumnSelector = comboBox(options, label = 'Y data', items=[],callback=self.onSourceChange)
-        self.paintCMSelector = comboBox(options, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
-        # self.replotCheckbox = checkBox(options, buttons = ['Reset Zoom On Selection'], 
-        # toolTips = ['When checked this plot will readjust it\'s zoom each time a new seleciton is made.']) 
-        # self.replotCheckbox.setChecked(['Reset Zoom On Selection'])
+        # options.setMinimumWidth(250)
+        options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
+        dataSelection = groupBox(options,orientation='vertical')
+        self.xColumnSelector = comboBox(dataSelection, label = 'X data', items=[],callback=self.onSourceChange)
+        self.yColumnSelector = comboBox(dataSelection, label = 'Y data', items=[],callback=self.onSourceChange)
+        self.paintCMSelector = comboBox(dataSelection, label = 'Color Points By:', items = [''],callback=self.onSourceChange)
         
         # plot area
         plotarea = groupBox(area, label = "Graph")
-        plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        plotarea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
+        #plotarea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.graph = redRGraph(plotarea,onSelectionCallback=self.onSelectionCallback)
+        self.graph = redRGraph(plotarea,label='Scatter Plot', displayLabel=False,
+        onSelectionCallback=self.onSelectionCallback)
 
-        plotarea.layout().addWidget(self.graph)
+        #plotarea.layout().addWidget(self.graph)
         #self.zoomSelectToolbarBox = groupBox(self.GUIDialog, label = "Plot Tool Bar")
         
         separator(options,height=8)
-        buttonBox = widgetBox(options,orientation='vertical')
-        box1 = widgetBox(options,orientation='horizontal')
+        buttonBox = groupBox(options,orientation='vertical')
+        
+        box1 = widgetBox(buttonBox,orientation='horizontal')
         box1.layout().setAlignment(Qt.AlignRight)
-        self.plotOnInput = checkBox(box1, buttons = ['Plot on Change'],
+        self.plotOnInput = checkBox(box1, label='commit', displayLabel=False,
+        buttons = ['Plot on Change'],
         toolTips = ['Whenever X, Y or color data source changes plot the results.'])
         button(box1, label = "Plot", callback = self.plot, toolTip = 'Plot the data.')
         
-        box2 = widgetBox(options,orientation='horizontal')  
+        box2 = widgetBox(buttonBox,orientation='horizontal')  
         box2.layout().setAlignment(Qt.AlignRight)
         
-        self.commitOnInput = checkBox(box2, buttons = ['Commit on Selection'],
+        self.commitOnInput = checkBox(box2, label='commit', displayLabel=False,
+        buttons = ['Commit on Selection'],
         toolTips = ['Whenever this selection changes, send data forward.'])
         button(box2, label = "Select", callback = self.sendMe, toolTip = 'Subset the data according to your selection.')
 
         separator(options,height=8)
         self.zoomSelectToolbar = zoomSelectToolbar(self, options, self.graph)
-        self.paintLegend = textEdit(options)
+        self.paintLegend = textEdit(options,label='Legend')
         
-        self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))', wantType = 'NoConversion')
-        data = redRRDataFrame(data = 'data', parent = None) 
+        # self.R('data <- data.frame(a=rnorm(1000),b=rnorm(1000))')
+        # data = redRRDataFrame(data = 'data', parent = None) 
         # self.graph.resize(350, 350)
-        self.gotX(data)
+        # self.gotX(data)
         
         
     def showSelected(self):
@@ -141,7 +148,7 @@ class RedRScatterplot(OWRpy):
         d = self.data
         self.paintLegend.clear()
         if paintClass in self.R('colnames('+self.data+')'): 
-            self.R(self.Rvariables['paint'] + ' <-as.factor('+self.data+'[,\''+paintClass+'\']), wantType = 'NoConversion'')
+            self.R(self.Rvariables['paint'] + ' <-as.factor('+self.data+'[,\''+paintClass+'\'])')
             levels = self.R('levels('+self.Rvariables['paint']+')', wantType = 'list')
             #print vectorClass
             if len(levels) > 50:
@@ -155,7 +162,7 @@ class RedRScatterplot(OWRpy):
                 subset.append(('NA', 'is.na('+self.data+'[,\''+paintClass+'\'])'))
                 levels.append('NA')
         else:
-            self.R(self.Rvariables['paint']+'<-TRUE', wantType = 'NoConversion')
+            self.R(self.Rvariables['paint']+'<-TRUE')
             levels = ['ALL']
             subset.append(('ALL','TRUE'))
             
@@ -235,7 +242,7 @@ class RedRScatterplot(OWRpy):
             else: index.append('F')
             
         index = 'c('+','.join(index) + ')'
-        self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True, wantType = 'NoConversion')
+        self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
         
         data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
         data.copyAllOptionalData(self.dataParent)

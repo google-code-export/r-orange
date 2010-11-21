@@ -1,8 +1,5 @@
 """
 <name>XY Plot</name>
-<author>Generated using Widget Maker written by Kyle R. Covington, modifications by Kyle R. Covington (kyle@red-r.org)</author>
-<description>Generates a plot along an X and Y axis, when numeric data is supplied the plot will result in a scatterplot of X and Y data.  When one of the elements is a factor the plot will result in a boxplot of the data.  Finally, if only factor data is supplied the plot results in a two dimentional plot of the factor levels.</description>
-<RFunctions>graphics:plot</RFunctions>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
 """
@@ -18,8 +15,10 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.graphicsView import graphicsView
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class RedRplot(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_y = ''
@@ -39,8 +38,10 @@ class RedRplot(OWRpy):
         self.namesListX.setEnabled(False)
         self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
         self.namesListY.setEnabled(False)
-        self.graphicsView = graphicsView(self.controlArea, name = self.captionTitle)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.graphicsView = graphicsView(self.controlArea,label='XY Plot',displayLabel=False,
+        name = self.captionTitle)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processy(self, data):
         
         if not self.require_librarys(["graphics"]):
@@ -52,10 +53,9 @@ class RedRplot(OWRpy):
                 self.namesListX.update(self.R('names('+data.getData()+')'))
                 self.namesListY.setEnabled(True)
                 self.namesListY.update(self.R('names('+data.getData()+')'))
-                
                 self.dataFrame = data.getData()
-                
                 self.dataFrameAttached = True
+
             else:
                 self.RFunctionParam_y=data.getData()
                 #self.data = data
@@ -63,6 +63,8 @@ class RedRplot(OWRpy):
                 self.namesListX.setEnabled(False)
                 self.namesListY.setEnabled(False)
                 self.dataFrameAttached = False
+
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.namesListX.setEnabled(False)

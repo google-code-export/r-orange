@@ -7,8 +7,9 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class SearchDialog(QDialog):
+class SearchDialog(QDialog,widgetState):
     def __init__(self, caption = 'Search Dialog', url = '', icon = None, orientation = 'horizontal'):
+        widgetState.__init__(self,None, 'SearchDialog',includeInReports=False)
         QDialog.__init__(self)
         
         self.setWindowTitle(caption)
@@ -22,7 +23,7 @@ class SearchDialog(QDialog):
         except:
             self.setLayout(QVBoxLayout())
         self.thisLayout = self.layout()
-        self.webView = webViewBox(self)
+        self.webView = webViewBox(self,label='Search Dialog', displayLabel=False)
         self.setMinimumSize(600, 400)
         if url and url != '':
             self.webView.load(QUrl(url))

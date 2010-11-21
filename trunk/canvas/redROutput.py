@@ -190,7 +190,7 @@ class OutputWindow(QDialog):
             redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
             redRbutton(buttons, label = 'No', callback = self.uploadNo)
             self.checked = False
-            self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
+            self.remember = redRcheckBox(error, label='Remember Response', buttons=['Remember my Response'],callback=self.rememberResponse)
             res = self.msg.exec_()
             redREnviron.settings['uploadError'] = res
         #print res

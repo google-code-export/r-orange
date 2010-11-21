@@ -5,17 +5,21 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class radioButtons(widgetBox,widgetState):
-    def __init__(self,widget,label=None, buttons=None,toolTips = None, setChecked = None,
+class radioButtons(widgetState,QWidget):
+    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
+    buttons=None,toolTips = None, setChecked = None,
     orientation='vertical',callback = None, **args):
         
-        widgetBox.__init__(self,widget,orientation=orientation)
+        QWidget.__init__(self,widget)
+        widgetState.__init__(self,widget,label,includeInReports,**args)
+        
+        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.label = label
-        if label:
-            self.box = groupBox(self,label=label,orientation=orientation)
-            self.layout().addWidget(self.box)
+        if displayLabel:
+            self.box = groupBox(self.controlArea,label=label,orientation=orientation)
+            self.controlArea.layout().addWidget(self.box)
         else:
-            self.box = self
+            self.box = widgetBox(self.controlArea,orientation=orientation)
             
         self.buttons = QButtonGroup(self.box)
         for i,b in zip(range(len(buttons)),buttons):
@@ -53,12 +57,6 @@ class radioButtons(widgetBox,widgetState):
     def enable(self,buttons):
         for i in self.buttons.buttons():
             if i.text() in buttons: i.setEnabled(True)
-
-    def hide(self):
-        self.box.hide()
-    def show(self):
-        self.box.show()
-        
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
         r = {'checked': self.getChecked()}
@@ -68,13 +66,7 @@ class radioButtons(widgetBox,widgetState):
         self.setChecked(data['checked'])
         
     def getReportText(self, fileDir):
-        if not self.label:
-            label = "RadioButton with No Label"
-        else:
-            label = self.label
-        r = {'label': label, 'text': self.getChecked()}
-
-        #text = '%s with the following element selected:\n\n' % (self.label, self.getChecked())
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getChecked()}}
         return r
 
 

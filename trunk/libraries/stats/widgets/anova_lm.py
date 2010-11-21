@@ -1,20 +1,18 @@
 """
 <name>ANOVA-LM</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Performs ANOVA on a linear model, usually made using the LM widget.  Returns an output of the ANOV comparison.</description>
 <tags>Parametric</tags>
 <icon>stats.png</icon>
-<RFunctions>stats:anova, stats:lm, stats:anova.lm</RFunctions>
 """
 from OWRpy import * 
-import OWGUI 
 import redRGUI
 from libraries.stats.signalClasses.RLMFit import RLMFit as redRRLMFit
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class anova_lm(OWRpy): 
-    settingsList = ['RFunctionParam_object']
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_object = ''
@@ -23,15 +21,18 @@ class anova_lm(OWRpy):
 
         
         box = groupBox(self.controlArea, "Output")
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(box)
-        #box.layout().addWidget(self.RoutputWindow)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+        self.RoutputWindow = textEdit(box,label='R Output', displayLabel=False)
+        
     def onLoadSavedSession(self):
         self.commitFunction()
+        
     def processobject(self, data):
         if data:
             self.RFunctionParam_object=data.getData()
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else: self.RFunctionParam_object = ''
     def commitFunction(self):
         if self.RFunctionParam_object == '': return

@@ -7,16 +7,19 @@ from PyQt4.QtGui import *
 from PyQt4 import QtWebKit
 
 class webViewBox(QtWebKit.QWebView,widgetState):
-    def __init__(self,widget,label=None,url=None,orientation='vertical', followHere = False):
-        QtWebKit.QWebView.__init__(self,widget)
-        if widget:
-            if label:
-                hb = widgetBox(widget,orientation=orientation)
-                widgetLabel(hb, label)
-                hb.layout().addWidget(self)
-            else:
-                widget.layout().addWidget(self)
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
+    url=None,orientation='vertical', followHere = False):
         
+        widgetState.__init__(self,widget,label,includeInReports)
+        QtWebKit.QWebView.__init__(self,self.controlArea)
+        
+        if displayLabel:
+            hb = widgetBox(self.controlArea,orientation=orientation)
+            widgetLabel(hb, label)
+            hb.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
+    
         self.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
         if not followHere:
             self.connect(self, SIGNAL('linkClicked(QUrl)'), self.followLink)

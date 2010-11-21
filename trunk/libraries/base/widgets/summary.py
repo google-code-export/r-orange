@@ -9,7 +9,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.textEdit import textEdit
 class summary(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["summary"])
@@ -17,8 +17,10 @@ class summary(OWRpy):
          
         self.RFunctionParam_object = ''
         self.inputs.addInput('id0', 'R Variable Object', redRRVariable, self.processobject)
-        self.processOnConnect = checkBox(self.controlArea, buttons = ['Process On Connect'], setChecked = 'Process On Connect')
-        redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.commitFunction)
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.commitFunction,
+        processOnInput=True)
+        
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processobject(self, data):
         if not self.require_librarys(["base"]):
@@ -27,8 +29,7 @@ class summary(OWRpy):
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
-            if 'Process On Connect' in self.processOnConnect.getChecked():
-                
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_object=''

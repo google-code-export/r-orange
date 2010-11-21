@@ -422,21 +422,23 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocumentAsApp(asTabs = 1)
         
     def menuItemPrinter(self):
-        try:
-            printer = QPrinter()
-            printDialog = QPrintDialog(printer)
-            if printDialog.exec_() == QDialog.Rejected: 
-                print 'Printing Rejected'
-                return
-            painter = QPainter(printer)
-            self.schema.canvas.render(painter)
-            painter.end()
-            for widget in self.schema.widgets:
-                try:
-                    widget.instance.printWidget(printer)                
-                except: pass
-        except:
-            print "Error in printing the schema"
+        
+        self.reports.createReportsMenu(self.schema.widgets)
+        # try:
+            # printer = QPrinter()
+            # printDialog = QPrintDialog(printer)
+            # if printDialog.exec_() == QDialog.Rejected: 
+                # print 'Printing Rejected'
+                # return
+            # painter = QPainter(printer)
+            # self.schema.canvas.render(painter)
+            # painter.end()
+            # for widget in self.schema.widgets:
+                # try:
+                    # widget.instance.printWidget(printer)                
+                # except: pass
+        # except:
+            # print "Error in printing the schema"
         
 
     def readRecentFiles(self):
@@ -512,7 +514,7 @@ class OrangeCanvasDlg(QMainWindow):
         #self.output.setFocus()
     def menuItemReport(self):
         ## start the report generator, handled in orngDoc (where else)
-        self.reports.createReportsMenu()
+        self.reports.createReportsMenu(self.schema.widgets)
 
         
     def menuItemClearOutputWindow(self):

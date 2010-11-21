@@ -13,10 +13,12 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.listBox import listBox as redRlistBox
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.dialog import dialog as redRdialog
+from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWidgetItem
+from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
 
 def createTable(arrayOfArray,tableName='', columnNames=None):
     # print len(arrayOfArray), len(arrayOfArray[0]), arrayOfArray
-    if len(arrayOfArray) == 0 or len(arrayOfArray[0]) == 0:
+    if not arrayOfArray  or len(arrayOfArray) == 0 or len(arrayOfArray[0]) == 0:
         return '';
     if columnNames:
         headers = '  :header: "' + '","'.join(columnNames) + '"'
@@ -30,13 +32,14 @@ def createTable(arrayOfArray,tableName='', columnNames=None):
         for cell in row:
             if type(cell) is not str:
                 cell = str(cell)
-                print cell
+            # cant have any double quotes inside cell text
             if re.search('.. csv-table::|.. image::|::', cell):
                 toAppend.append([row[0],cell])
                 formatted.append('See Below')
             else:
+                cell = cell.replace('"','""')
                 formatted.append(cell)
-        
+
         body += '  "' + '","'.join(formatted) + '"\n'
 
     body += '\n\n'
@@ -59,51 +62,42 @@ def createLitralBlock(text):
     else:
         return "::\n\n  " + re.sub(r'\n','\n  ', text)
 
-class reports(QDialog):
+class reports(QWizard):
     def __init__(self,parent, schema):
         self.schema = schema
         
-        QDialog.__init__(self, parent)
-        self.setWindowTitle('Report Widget Selector')
-        
-        self.setLayout(QVBoxLayout())
-        layout = self.layout()
-        
-        mainWidgetBox = redRWidgetBox(self)
+        QWizard.__init__(self, parent)
+        self.setWindowTitle('Generate Report')
 
-        topWidgetBox = redRWidgetBox(mainWidgetBox)
-        redRwidgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
-        
-        self.widgetList = redRlistBox(topWidgetBox)
-        self.widgetList.setSelectionMode(QAbstractItemView.MultiSelection)
-        buttonWidgetBox = redRWidgetBox(mainWidgetBox,orientation='horizontal')
-        
-        acceptButton = redRbutton(buttonWidgetBox, 'Compile Report')
-        QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
-        # QObject.connect(self.widgetList, SIGNAL("itemClicked(QListWidgetItem *)"), self.widgetListItemClicked)
+        self.selectElements = QWizardPage()
+        self.selectElements.setLayout(QVBoxLayout())
 
+        self.selectElements.setTitle('Create A Report')
+        self.selectElements.setSubTitle('Select the widgets to include in this report.')
         
-    def widgetListItemClicked(self, item):
-        itemText = str(item.text())
-        self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
-        
-    def updateWidgetList(self,widgets):
-        #topWidgetBox.layout().addWidget(self.widgetList)
-        
-        self.widgetNames = {}
-        for widget in widgets:
-            self.widgetNames[widget.caption] = {'inReport': widget.instance.includeInReport.isChecked(), 'widget':widget}
-        #print self.widgetNames.keys()
-        self.widgetList.clear()
-        self.widgetList.addItems(self.widgetNames.keys())
-        count = int(self.widgetList.count())
-        
-        for i in range(count):
-            item = self.widgetList.item(i)
-            if self.widgetNames[str(item.text())]['inReport']:
-                self.widgetList.setItemSelected(item, True)
+        #mainWidgetBox = redRWidgetBox(self.selectElements)
 
-    def createReportsMenu(self):
+        topWidgetBox = redRWidgetBox(self.selectElements)
+        #redRwidgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
+        
+        self.widgetList = redRtreeWidget(topWidgetBox, label='Widget List', displayLabel=False)
+        self.widgetList.setHeaderLabels(['Include In Reports'])
+
+        self.widgetList.setSelectionMode(QAbstractItemView.NoSelection)
+        # buttonWidgetBox = redRWidgetBox(topWidgetBox,orientation='horizontal')
+        
+        # acceptButton = redRbutton(buttonWidgetBox, 'Compile Report')
+        # QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
+        QObject.connect(self.widgetList, SIGNAL(" itemClicked (QTreeWidgetItem *,int)"), 
+        self.widgetListItemClicked)
+        
+        QObject.connect(self.widgetList, SIGNAL(" itemChanged (QTreeWidgetItem *,int)"), 
+        self.widgetListStateChange)
+        
+        self.addPage(self.selectElements)
+        
+        
+    def createReportsMenu(self,widgets,schemaImage=True):
         qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
         redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
@@ -111,7 +105,10 @@ class reports(QDialog):
         qname = str(qname.toAscii())
         
         name = str(qname) # this is the file name of the Report
+        # name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
+        
         if os.path.splitext(name)[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
+        
         fileDir = os.path.split(name)[0]
         try:
             fileDir2 = os.path.join(fileDir, os.path.splitext("Data-"+os.path.split(name)[1])[0])
@@ -136,13 +133,11 @@ class reports(QDialog):
         
         # show the report list and allow the user to select widgets to include in the report.
         ## get the report info for the included widgets.
-
-        self.updateWidgetList(self.schema.widgets)
-        if self.exec_() == QDialog.Rejected:
-            return
-
-        self.createReport(fileDir2,name)
+        # reportData = self.getReportData(fileDir2,name)
         
+        done = self.createReport(fileDir2,name,widgets,schemaImage)
+        if not done:
+            return
         if os.name =='nt':
             #os.startfile
             doneDialog = redRdialog(self.schema,title="Report Generated")
@@ -153,28 +148,133 @@ class reports(QDialog):
             acceptButton = redRbutton(buttonBox,'Done')
             QObject.connect(acceptButton, SIGNAL("clicked()"), doneDialog.reject)
             if doneDialog.exec_() == QDialog.Accepted:
-                os.startfile(name,'open')
+                try:
+                    os.startfile(name,'open')
+                except:
+                    mb = QMessageBox("Cannot Open File", 
+                    "Red-R cannot open the reports file. Please open the file manually.", 
+                    QMessageBox.Information, 
+                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton, QMessageBox.NoButton,self)
+                    mb.exec_()
+
         else:
             QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", 
             QMessageBox.Ok + QMessageBox.Default )    
-    def createReport(self,fileDir,reportName):
+    
+    def updateWidgetList(self):
+        #topWidgetBox.layout().addWidget(self.widgetList)
         
-        reportText = self.buildReportHeader(fileDir)
+        #print self.widgetNames.keys()
+        self.widgetList.clear()
+        # self.widgetList.addItems(self.widgetNames.keys())
+        # count = int(self.widgetList.count())
+        
+        for name,widget in self.reportData.items():
+            # print widget
+            w = redRtreeWidgetItem(self.widgetList, [name], 
+            flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            w.pointer = self.reportData[name]
+            w.setCheckState(0,Qt.Checked);
+            
+            
+            
+            n  = redRtreeWidgetItem(None, ['Notes'],
+            flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            n.pointer = self.reportData[name]['notes']
+            
+            if widget['notes']['includeInReports']:
+                n.setCheckState(0,Qt.Checked)
+            else:
+                n.setCheckState(0,Qt.Unchecked)
+            w.addChild(n)
+            
+            for container, data in widget['reportData'].items():
+                if container =='main':
+                    parent = w
+                else:
+                    parent  = redRtreeWidgetItem(None, [container],
+                    flags=Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                    #parent.pointer = self.reportData[name]['reportData'][container]
+                    parent.setCheckState(0,Qt.Checked)
+                    w.addChild(parent)
+                for elementName, element in data.items():
+                    e  = redRtreeWidgetItem(None, [elementName],
+                    flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+                    print 
+                    e.pointer = self.reportData[name]['reportData'][container][elementName]
+                        
+                    if 'includeInReports' not in element.keys():
+                        e.setCheckState(0,Qt.Checked);
+                    elif not element['includeInReports']:
+                        e.setCheckState(0,Qt.Unchecked)
+                    else:
+                        e.setCheckState(0,Qt.Checked)
+                    
+                    parent.addChild(e)
+    
+    def widgetListStateChange(self,item,col):
+        try:
+            if item.checkState(0) == Qt.Checked:
+                item.pointer['includeInReports'] = True
+            else:
+                item.pointer['includeInReports'] = False
+            # print item.pointer
+        except:
+            #print 'do nothing'
+            pass
+        
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
+
+    def widgetListItemClicked(self, item,col):
+
+        for x in range(item.childCount()):
+            child = item.child(x)
+            child.setCheckState(0,item.checkState(0))
+            for x in range(child.childCount()):
+                child.child(x).setCheckState(0,child.checkState(0))
+            
+        if item.checkState(0) == Qt.Checked:
+            while item.parent():
+                item.parent().setCheckState(0,Qt.Checked)
+                item = item.parent()
+        
+        
+    def createReport(self,fileDir,reportName,widgets,schemaImage):
         
         ## very simply we need to loop through the widgets and get some info 
         ## about them and put that into the report.
-        toInclude = self.widgetList.getCurrentSelection()
-        for widget in toInclude:
-            reportText += self.getWidgetReport(fileDir, self.widgetNames[widget]['widget'])
+        self.reportData = {}
+        for widget in widgets:
+            self.reportData[widget.caption] = self.getReportData(fileDir, widget)
+
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
+
+        self.updateWidgetList()
+        if self.exec_() == QDialog.Rejected:
+            return False
         
+
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
+
+        reportText = self.buildReportHeader(fileDir,schemaImage)
         
-        # file = open(str(os.path.join(fileDir, 'content.rst')).replace('\\','/'), "wt")
-        # file.write(reportText)
-        # file.close()
+        for name, widgetReport in self.reportData.items():
+            if widgetReport['includeInReports']:
+                reportText+= self.formatWidgetReport(name,widgetReport)
+        
         
         # print '############################\n'*5
         # print reportText
         # print '############################\n'*5
+        # f = open(os.path.join(redREnviron.directoryNames['redRDir'],'restr.txt'),'w')
+        # f.write(reportText)
+        # f.close()
         
         if os.path.splitext(str(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
@@ -183,10 +283,8 @@ class reports(QDialog):
             file = open(reportName, 'wb')
             file.write(output)
             file.close()
-            shutil.rmtree(fileDir)
+            #shutil.rmtree(fileDir)
 
-            
-            
         elif os.path.splitext(str(reportName))[1].lower() in [".tex"]:# , ".tex"]
             output = publish_string(reportText, writer_name='latex')#, writer = writer, reader = reader)
             file = open(reportName, 'w')
@@ -201,102 +299,127 @@ class reports(QDialog):
             file.write(output)
             file.close()
             
+        return True
+    def getReportData(self,fileDir,widget):
+        widgetReport = {}
+        # print '##############################', widget
+        #widgetReport['notes'] = widget.instance.notes.getReportText(fileDir)
+        # print widget.instance._widgetInfo.widgetName
+        d = widget.instance.getReportText3(fileDir)
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(d)
         
-    def buildReportHeader(self,fileDir):
-       ## first take a picture of the canvas and save as png.
-        image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
-        painter = QPainter(image)
-        self.schema.canvasView.scene().render(painter) #
-        painter.end()
-        imageFile = os.path.join(fileDir, 'canvas-image.png').replace('\\', '/')
-        if not image.save(imageFile):
-            print 'Error in saving schema'
-            print image
-            print image.width(), 'width'
+        data = {'main':{}}
+        for k,v in d.items():
+            # print '@@@@@@@@@@@@@',widget.caption, k , v
+            if 'container' in v.keys():
+                if v['container'] in data.keys():
+                    data[v['container']][k] = v
+                else:
+                    data[v['container']] = {}
+                    data[v['container']][k] = v
+            else:
+                data['main'][k] = v
+        
+        widgetReport['reportData'] = data
+        n = widget.instance.notes.getReportText(fileDir)
+        widgetReport['notes'] = n['Notes']
+        if n['Notes']['text'] =='': widgetReport['notes']['includeInReports'] = False
+        widgetReport['includeInReports'] = widget.instance.includeInReport.isChecked()
+        return widgetReport
+        
+    def formatWidgetReport(self, widgetName, widgetReport):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(widgetReport)
 
-        text = """
-===========================================
- Red-R Report
-===========================================
-:Date: %s
-
-.. contents::
-.. sectnum::
-
-Schema
-========
-.. image:: %s
-  :scale: 50%% 
-
-""" % (datetime.date.today(), imageFile)
-
-
-        # text = '**Red-R Report compiled on '+str(datetime.date.today())+'**\n\n'
-        # text += 'Schema Image\n\n'
-        # text += '.. image:: %s\n  :scale: 50%%\n' % (imageFile)
-        # text += ''
-        # text += '\n\n\n--------------------\n\n\n'
-
-        return text;
-
-    def getWidgetReport(self, fileDir, widget):
-
-        notes = widget.instance.notes.getReportText(fileDir)
-        if notes['text'] =='':
+        if widgetReport['notes']['text'] =='':
             notes = 'No notes were entered in the widget face.'
         else:
-            notes = notes['text']
-        # print widget.instance._widgetInfo.widgetName
-        widgetOutput = widget.instance.getReportText3(fileDir)
+            notes = widgetReport['notes']['text']
+        
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(reportData)
+        # raise Exception
+        
+        tables = {}
+        for container,data in  widgetReport['reportData'].items():
+            tables[container] = []
+            for name,data in data.items():
+                print 'data',name, data
+                if data['includeInReports']:
+                    tables[container].append([name, data['text']])
+        
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(tables)
+        
+        text = createTable(tables['main'],columnNames = ['Parameter','Value'],
+        tableName='Main Parameters')
+        
+        for table,data in tables.items():
+            if table == 'main': continue
+            text += '\n\n'
+            text += createTable(data,columnNames = ['Parameter','Value'],
+            tableName=table)
+
+        
+        
+        
         tt = """
 %s
 ================================================
-
+""" % widgetName
+        if widgetReport['notes']['includeInReports']:
+            tt += """
 Notes
 -----
 
 %s
-
+""" % notes
+        tt+="""
 Widget Output
 -------------
 
 %s
 
-""" % (widget.caption, notes, widgetOutput)
+""" %  text
 
         return tt
 
-        # tt = '\n%s\n%s\n'%(widget.caption, '))))))))))))))))))))))))))))))))))))')
-        # try:
-            # tt += widget.instance.getReportText(fileDir)
-            # tt += '\n\n\n--------------------\n\n\n'
-            # tt += '\n\n%s\n%s\n\n'%('Notes', '>>>>>>>>>>>>>>>>>>>>>>>>')
-            # if str(widget.instance.notes.toPlainText()) != '':
-                # tt += str(r'\n'+widget.instance.notes.toPlainText()).replace(r'\n', r'\n\t')+'\n\n'
-            # else:
-                # tt += 'No notes were entered in the widget face.\n\n'
-            # tt += '\n\n\n--------------------\n\n\n'
-            # tt += '\n\n%s\n%s\n\n'%('Signals', '>>>>>>>>>>>>>>>>>>>>>>>>')
-            # try:
-                # if widget.instance.inputs:
-                    
-                    # for input in widget.instance.inputs:
-                        # for iwidget in self.signalManager.getLinkWidgetsIn(widget.instance, input[0]):
-                            # tt += '-The Signal *%s* is linked to widget *%s*\n\n' % (input[0], iwidget.captionTitle)
-            # except: pass
-            # try:
-                # if widget.instance.outputs:
-                    ##tt += '</br><strong>The following widgets are sent from this widget:</strong></br>'
-                    # for output in widget.instance.outputs:
-                        # for owidget in self.signalManager.getLinkWidgetsOut(widget.instance, output[0]):
-                            # tt += '-This widget sends the signal *%s* to widget *%s*\n\n' % (output[0], owidget.captionTitle)
-            # except:
-                # pass
-        # except Exception as inst:
-            # print '##########################'
-            # print str(inst)
-            # print '##########################'
-            # tt += 'Error occured in report generation for this widget'
-        # tt += '\n\n'
+
+    def buildReportHeader(self,fileDir,schemaImage):
+       ## first take a picture of the canvas and save as png.
+
+        text = """
+===========================================
+ Red-R Report
+===========================================
+
+:Date: %s
+
+.. contents::
+.. sectnum::
+""" % datetime.date.today()
         
-        
+        if schemaImage:
+            image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
+            painter = QPainter(image)
+            self.schema.canvasView.scene().render(painter) #
+            painter.end()
+            imageFile = os.path.join(fileDir, 'canvas-image.png').replace('\\', '/')
+            if not image.save(imageFile):
+                print 'Error in saving schema'
+                print image
+                print image.width(), 'width'
+            text += """
+Schema
+========
+.. image:: %s
+  :scale: 50%% 
+
+""" %  imageFile
+
+        return text;

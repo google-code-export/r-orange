@@ -1,7 +1,5 @@
 """
 <name>scatter.smooth</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>stats:scatter.smooth</RFunctions>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
 """
@@ -12,8 +10,10 @@ from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class scatter_smooth(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_y = ''
@@ -22,17 +22,17 @@ class scatter_smooth(OWRpy):
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
 
         
-        box = tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
-        self.advancedTab = box.createTabPage(name = "Advanced")
-        self.RFunctionParamxlab_lineEdit =  lineEdit(self.standardTab,  label = "xlab:", text = 'NULL')
-        self.RFunctionParamspan_lineEdit =  lineEdit(self.standardTab,  label = "span:", text = '2/3')
-        self.RFunctionParamdegree_lineEdit =  lineEdit(self.standardTab,  label = "degree:", text = '1')
-        self.RFunctionParamfamily_comboBox =  comboBox(self.standardTab,  label = "family:", items = ['symmetric', 'gaussian'])
-        self.RFunctionParamylab_lineEdit =  lineEdit(self.standardTab,  label = "ylab:", text = 'NULL')
-        self.RFunctionParamevaluation_lineEdit =  lineEdit(self.standardTab,  label = "evaluation:", text = '50')
-        self.RFunctionParamylim_lineEdit =  lineEdit(self.standardTab,  label = "ylim:", text = '')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.RFunctionParamxlab_lineEdit =  lineEdit(self.controlArea,  label = "xlab:", text = 'NULL')
+        self.RFunctionParamspan_lineEdit =  lineEdit(self.controlArea,  label = "span:", text = '2/3')
+        self.RFunctionParamdegree_lineEdit =  lineEdit(self.controlArea,  label = "degree:", text = '1')
+        self.RFunctionParamfamily_comboBox =  comboBox(self.controlArea,  label = "family:", 
+        items = ['symmetric', 'gaussian'])
+        self.RFunctionParamylab_lineEdit =  lineEdit(self.controlArea,  label = "ylab:", text = 'NULL')
+        self.RFunctionParamevaluation_lineEdit =  lineEdit(self.controlArea,  label = "evaluation:", text = '50')
+        self.RFunctionParamylim_lineEdit =  lineEdit(self.controlArea,  label = "ylim:", text = '')
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+    
     def processy(self, data):
         if not self.require_librarys(["stats"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -40,7 +40,8 @@ class scatter_smooth(OWRpy):
         if data:
             self.RFunctionParam_y=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
@@ -50,7 +51,8 @@ class scatter_smooth(OWRpy):
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):

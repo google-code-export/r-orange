@@ -5,8 +5,139 @@ import redREnviron
 import redRExceptionHandling
 import os.path
 import imp
-        
+
+class qtWidgetBox(QWidget):
+    def __init__(self,widget):
+        QWidget.__init__(self,widget)
+        if widget and widget.layout():
+            widget.layout().addWidget(self)
+        self.setLayout(QVBoxLayout())
+        self.layout().setSpacing(0)
+        self.layout().setMargin(0)
+
+    # def getDefaultState(self):
+        # r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
+        # return r
+    # def setDefaultState(self,data):
+        # self.setEnabled(data['enabled'])
+        # self.setHidden(data['hidden'])
+    # def getSettings(self):
+        # pass
+    # def loadSettings(self,data):
+        # pass
+       
 class widgetState:
+    def __init__(self,widget,widgetName,includeInReports,**args):
+        
+
+        self.controlArea = qtWidgetBox(widget)
+        if hasattr(self,'getReportText'):
+            self.controlArea.getReportText = self.getReportText
+        else:
+            self.controlArea.getReportText = self.getReportTextDefault
+        # if widget and widget.layout(): 
+            # if 'alignment' in args.keys():
+                # widget.layout().setAlignment(self.controlArea,args['alignment'])
+        # if hasattr(self,'getSettings'):
+            # self.controlArea.getSettings = self.getSettings
+        # if hasattr(self,'loadSettings'):
+            # self.controlArea.getSettings = self.loadSettings
+        
+        self.includeInReports=includeInReports
+        
+        if not widgetName:
+            print '#########widget Name is required############'
+            raise RuntimeError('#########widget Name is required############')
+
+        self.widgetName = widgetName
+    
+    def hide(self):
+        self.controlArea.hide()
+    def show(self):
+        self.controlArea.show()
+    
+    def getReportTextDefault(self,fileDir):
+        # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+        # print 'self', self, self.widgetName
+        children = self.children()
+        # print children
+        if len(children) ==0:
+            return False
+            
+        reportData = {}
+        for i in children:
+            if isinstance(i, qtWidgetBox):
+                d = i.getReportText(fileDir)
+                if type(d) is dict:
+                    reportData.update(d)
+                # dd = []
+                # if type(d) is dict:
+                    # for x in d.items():
+                        # x['includeInReports'] = i.includeInReports
+                        # dd.append(x)
+                    # reportData = reportData + dd
+                # elif d:
+                    # d['includeInReports'] = i.includeInReports
+                    # reportData.append(d)
+        
+        return reportData
+    
+    def getDefaultState(self):
+        r = {'enabled': self.controlArea.isEnabled(),'hidden': self.controlArea.isHidden()}
+        return r
+    def setDefaultState(self,data):
+        # print ' in wdiget state'
+        self.controlArea.setEnabled(data['enabled'])
+        self.controlArea.setHidden(data['hidden'])
+    def getSettings(self):
+        pass
+    def loadSettings(self,data):
+        pass
+    
+    def layout(self):
+        return self.controlArea.layout()
+    def setEnabled(self,b):
+        self.controlArea.setEnabled(b)
+class widgetStateOld:
+    def __init__(self,widgetName,includeInReports,**args):
+        
+        self.includeInReports=includeInReports
+        if not widgetName:
+            print '#########widget Name is required############'
+            
+            # try:
+            raise RuntimeError('#########widget Name is required############')
+            # except:
+                # print redRExceptionHandling.formatException()
+
+        self.widgetName = widgetName
+    
+    def getReportText(self,fileDir):
+        # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+        # print 'self', self, self.widgetName
+        children = self.children()
+        # print children
+        if len(children) ==0:
+            return False
+            
+        reportData = {}
+        for i in children:
+            if isinstance(i, widgetState):
+                d = i.getReportText(fileDir)
+                if type(d) is dict:
+                    reportData.update(d)
+                # dd = []
+                # if type(d) is dict:
+                    # for x in d.items():
+                        # x['includeInReports'] = i.includeInReports
+                        # dd.append(x)
+                    # reportData = reportData + dd
+                # elif d:
+                    # d['includeInReports'] = i.includeInReports
+                    # reportData.append(d)
+        
+        return reportData
+
     def getDefaultState(self):
         r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
         return r
@@ -14,8 +145,6 @@ class widgetState:
         # print ' in wdiget state'
         self.setEnabled(data['enabled'])
         self.setHidden(data['hidden'])
-    def getReportText(self,fileDir):
-        return False
     def getSettings(self):
         pass
     def loadSettings(self,data):

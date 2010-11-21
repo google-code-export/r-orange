@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
 class percentileClassifier(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commitButton']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
@@ -23,21 +23,26 @@ class percentileClassifier(OWRpy):
 
         
         ### GUI ###
-        self.colNames_listBox = listBox(self.controlArea, label = 'Column Names:')
+        self.colNames_listBox = listBox(self.controlArea, label = 'Column Names:',callback=self.onChange)
         self.colNames_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.percentile_spinBox = spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100)
+        self.percentile_spinBox = spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100, callback=self.onChange)
         self.percentile_lineEdit = lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
         self.outputWindow = textEdit(self.controlArea, label = 'Output Summary')
         
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commit)
+        self.commitButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commit,
+        processOnInput=True,processOnChange=True)
         
+    def onChange(self):
+        if self.commitButton.processOnChange():
+            self.commit()
     def processData(self, data):
         if data:
             self.data = data.getData()
             self.dataParent = data
             self.colNames_listBox.update(self.R('colnames('+self.data+')'))
             self.outputWindow.clear()
-            self.commit()
+            if self.commitButton.processOnInput():
+                self.commit()
         else:
             self.data = ''
             self.dataParent = {}

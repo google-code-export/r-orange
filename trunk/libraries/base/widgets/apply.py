@@ -20,7 +20,7 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class apply(OWRpy): 
-    globalSettingsList = ['commitOnInput']
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["apply"])
@@ -45,18 +45,17 @@ class apply(OWRpy):
         self.functionText = redRTextEdit(box,label='Function:', orientation='vertical')
         self.parameters = redRLineEdit(box,label='Additional Parameters:', orientation='vertical')
         
-        self.demension =  radioButtons(box,  
-        label = "To:", buttons = ['Rows', 'Columns',''],setChecked='Rows',
-        orientation='horizontal',callback= lambda: self.dimensionChange(1))
-        self.indexSpinBox = RedRSpinBox(self.demension.box,  min = 1, value = 1,
-        callback= lambda: self.dimensionChange(2))
+        self.demension =  radioButtons(box, label = "To:", buttons = ['Rows', 'Columns',''],
+        setChecked='Rows', orientation='horizontal',callback= lambda: self.dimensionChange(1))
+        self.indexSpinBox = RedRSpinBox(self.demension.box, label='Demension', displayLabel=False,
+        min = 1, value = 1, callback= lambda: self.dimensionChange(2))
         buttonBox = widgetBox(box,orientation='horizontal')
-        self.commitOnInput = redRCheckBox(buttonBox, buttons = ['Commit on Input'],
-        toolTips = ['Whenever this selection changes, send data forward.'])
         
-        redRCommitButton(buttonBox, "Commit", align='right', callback = self.commitFunction)
         
-        self.outputTable = redRFilterTable(area,sortable=True)
+        self.commit = redRCommitButton(buttonBox, "Commit", alignment=Qt.AlignLeft, 
+        callback = self.commitFunction, processOnInput=True,processOnChange=True)
+        
+        self.outputTable = redRFilterTable(area,label='Results of Apply', sortable=True)
 
     def dimensionChange(self,type):
         if type == 1:
@@ -77,7 +76,8 @@ class apply(OWRpy):
             self.data=data.getData()
             self.numDims = self.R('length(dim(%s))' % self.data, silent=True)
             self.indexSpinBox.setMaximum(self.numDims)
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.data=None
     def functionSelect(self):
@@ -86,6 +86,8 @@ class apply(OWRpy):
         #print f
         self.functionText.setText(f[0])
         self.parameters.setText(', '.join(f[1:]))
+        if self.commit.processOnChange():
+            self.commitFunction()
     def commitFunction(self):
         func = str(self.functionText.toPlainText())
         paramText = str(self.parameters.text())

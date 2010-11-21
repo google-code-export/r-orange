@@ -1,8 +1,5 @@
 """
 <name>Bar Plot</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description></description>
-<RFunctions>graphics:barplot</RFunctions>
 <tags>Plotting</tags>
 <icon>histogram.png</icon>
 """
@@ -13,10 +10,11 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 import libraries.base.signalClasses as signals
 
 class RedRbarplot(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_height = ''
@@ -25,10 +23,14 @@ class RedRbarplot(OWRpy):
         self.RFunctionParammain_lineEdit = redRlineEdit(self.controlArea, label = "main:", text = '')
         self.RFunctionParamhoriz_lineEdit = redRlineEdit(self.controlArea, label = "horiz:", text = '')
         self.namesBox = redRcomboBox(self.controlArea, label = 'Data Element:', callback = self.commitFunction)
-        self.RFunctionParamspace_lineEdit = redRSpinBox(self.controlArea, label = "Space:", min = 0, max = 99, value = 5)
+        self.RFunctionParamspace_lineEdit = redRSpinBox(self.controlArea, label = "Space:", 
+        min = 0, max = 99, value = 5)
         self.RFunctionParamxlab_lineEdit = redRlineEdit(self.controlArea, label = "xlab:", text = '')
-        self.plotArea = redRgraphicsView(self.controlArea)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.plotArea = redRgraphicsView(self.controlArea,label='Bar Plot', displayLabel=False)
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
+        
     def processheight(self, data):
         if not self.require_librarys(["graphics"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -37,7 +39,8 @@ class RedRbarplot(OWRpy):
             self.RFunctionParam_height=data.getData()
             self.namesBox.update(self.R('names('+self.RFunctionParam_height+')'))
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_height=''
     def commitFunction(self):

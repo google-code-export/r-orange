@@ -50,7 +50,7 @@ class zoomSelectToolbar(QGroupBox,widgetState):
 
     def __init__(self, widget, parent, graph, autoSend = 0, 
     buttons = (1, 4, 5, 0, 6, 7), name = "Zoom / Select", exclusiveList = "__toolbars"):
-        
+        widgetState.__init__(self, widget,'zoomSelectToolbar',includeInReports=False)
         if not hasattr(zoomSelectToolbar, "builtinFunctions"):
             zoomSelectToolbar.builtinFunctions = \
                  (None,

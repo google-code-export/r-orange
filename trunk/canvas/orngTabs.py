@@ -872,8 +872,9 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     except:
         print 'Exception in Tabs with widgetRegistry'#        
 class SearchBox(redRlineEditHint):
-    def __init__(self, widget, label=None,orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
-        redRlineEditHint.__init__(self, widget = widget, label = label, orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
+    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+        redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=False,
+        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
         self.searchBox = redRSearchDialog()
         QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
             

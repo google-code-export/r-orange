@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetBox import widgetBox
 class Melt_DF(OWRpy): 
-    settingsList = ['RFunctionParam_data']
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
@@ -29,7 +29,9 @@ class Melt_DF(OWRpy):
         self.RFunctionParam_id_var = listBox(box, label = "Groupings:", toolTip = 'The columns indicating the groupings of the data.')
         self.RFunctionParam_id_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.RFunctionParam_variable_name = lineEdit(box, label = "New Group Name:", toolTip = 'The name of the new column that the groupings will be put into.')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction, 
+        processOnInput=True)
+    
     def RWidgetReload(self):
         self.commitFunction()
     def processdata(self, data):
@@ -42,8 +44,11 @@ class Melt_DF(OWRpy):
             colnames = self.R('colnames('+self.RFunctionParam_data+')')
             self.RFunctionParam_measure_var.update(colnames)
             self.RFunctionParam_id_var.update(colnames)
-
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
+        else:
+            self.RFunctionParam_measure_var.clear()
+            self.RFunctionParam_id_var.clear()
     def commitFunction(self):
         if not self.require_librarys(['reshape']):
             self.status.setText('R Libraries Not Loaded.')

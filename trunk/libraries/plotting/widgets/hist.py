@@ -1,21 +1,19 @@
 """
 <name>Histogram</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Makes a histogram of data.  This data should be in the form of a single 'vector'.  Use of the Row of Column selectors or perhaps the list selector may be helpful in this.</description>
-<RFunctions>graphics:hist</RFunctions>
 <tags>Plotting</tags>
 <icon>histogram2.png</icon>
 """
 from OWRpy import * 
-import OWGUI 
 from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class hist(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
@@ -30,8 +28,9 @@ class hist(OWRpy):
         self.RFunctionParam_main = lineEdit(box, label = "Main Title")
         self.RFunctionParam_xlab = lineEdit(box, label = "X Label")
         self.bins = lineEdit(box, label = 'Bins:')
-        self.plotArea = redRgraphicsView(self.controlArea)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.plotArea = redRgraphicsView(self.controlArea,label='Histogram',displayLabel=False)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -44,7 +43,8 @@ class hist(OWRpy):
                     
                 self.column.update(colnames)
                 self.needsColumns = 1
-                self.commitFunction()
+                if self.commit.processOnInput():
+                    self.commitFunction()
             
         else:
             self.RFunctionParam_x = ''

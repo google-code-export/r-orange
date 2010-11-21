@@ -7,23 +7,26 @@ from PyQt4.QtGui import *
 
 
 class lineEdit(QLineEdit,widgetState):
-    def __init__(self,widget,text='', label=None, id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, sp='shrinking', **args):
+    def __init__(self,widget,text='', label=None, displayLabel=True, includeInReports=True,
+    id=None, orientation='horizontal', toolTip = None,  width = 0, callback = None, textChangedCallBack=None,
+    sp='shrinking', **args):
+
+        widgetState.__init__(self,widget,label,includeInReports)
         QLineEdit.__init__(self,widget)
-        if widget:
-            if label:
-                self.hb = widgetBox(widget,orientation=orientation, spacing=2)
-                if sp == 'shrinking':
-                    self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-                widgetLabel(self.hb, label)
-                if width != -1:
-                    sb = widgetBox(self.hb)
-                    sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-                self.hb.layout().addWidget(self)
-                self.hasLabel = True
-            else:
-                widget.layout().addWidget(self)
-                self.hasLabel = False
-        if toolTip and label: 
+        
+        if displayLabel:
+            self.hb = widgetBox(self.controlArea,orientation=orientation, spacing=2)
+            if sp == 'shrinking':
+                self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+            widgetLabel(self.hb, label)
+            if width != -1:
+                sb = widgetBox(self.hb)
+                sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            self.hb.layout().addWidget(self)
+        else:
+            self.controlArea.layout().addWidget(self)
+        
+        if toolTip and displayLabel: 
             self.hb.setToolTip(toolTip)
         elif toolTip:
             self.setToolTip(toolTip)
@@ -42,20 +45,12 @@ class lineEdit(QLineEdit,widgetState):
         # self.setText('asdf')
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
-        self.label = label
+        
+        if textChangedCallBack:
+            QObject.connect(self, SIGNAL('textEdited(QString)'), textChangedCallBack)
     
     def text(self):
         return str(QLineEdit.text(self).toAscii())
-    def hide(self):
-        if self.hasLabel:
-            self.hb.hide()
-        else:
-            QLineEdit.hide(self)
-    def show(self):
-        if self.hasLabel:
-            self.hb.show()
-        else:
-            QLineEdit.show(self)
     def widgetId(self):
         return self.id
     def widgetLabel(self):
@@ -76,9 +71,5 @@ class lineEdit(QLineEdit,widgetState):
             print 'Loading of lineEdit encountered an error.'
             
     def getReportText(self, fileDir):
-        if self.label:
-            r = {'label': self.label, 'text': self.text()}
-        else:
-            r = {'label': 'Line Edit', 'text': self.text()}
-        
+        r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.text()}}
         return r

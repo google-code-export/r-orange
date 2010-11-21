@@ -4,7 +4,10 @@
 <icon>dummy.png</icon>
 """
 from OWRpy import * 
-import OWGUI 
+import redRGUI
+from libraries.base.qtWidgets.groupBox import groupBox
+from libraries.base.qtWidgets.widgetLabel import widgetLabel
+ 
 class dummy(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
@@ -23,8 +26,8 @@ class dummy(OWRpy):
         print self.inputs
         print self.outputs
             
-        box = OWGUI.widgetBox(self.controlArea, "Info")
-        self.infoa = OWGUI.widgetLabel(box, "A widget failed to load this was put in it's place.")
-        self.infob = OWGUI.widgetLabel(box, "The variables that were saved with this widget are %s .\n You can use R Executor to retrieve these variables and incorporate them into your schema." % str(self.linksOut))
+        box = groupBox(self.controlArea, label="Info")
+        self.infoa = widgetLabel(box, "A widget failed to load this was put in it's place.")
+        self.infob = widgetLabel(box, "The variables that were saved with this widget are %s .\n You can use R Executor to retrieve these variables and incorporate them into your schema." % str(self.linksOut))
         
     

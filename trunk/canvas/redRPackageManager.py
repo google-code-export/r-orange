@@ -274,29 +274,32 @@ class packageManagerDialog(redRdialog):
         self.availableTab = self.tabsArea.createTabPage(name = 'Available Packages')
         
         #### layout of the tabsArea
-        self.treeViewUpdates = redRtreeWidget(self.updatesTab, callback = self.updateItemClicked)  ## holds the tree view of all of the packages that need updating
+        self.treeViewUpdates = redRtreeWidget(self.updatesTab, label='Update List', displayLabel=False, 
+        callback = self.updateItemClicked)  ## holds the tree view of all of the packages that need updating
         self.treeViewUpdates.setHeaderLabels(['Package', 'Author', 'Summary', 
         'Current Version', 'Current Version Stability', 'New Version', 'New Version Stability'])
 
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewUpdates.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewUpdates = redRtextEdit(self.updatesTab)  ## holds the info for a package
+        self.infoViewUpdates = redRtextEdit(self.updatesTab, label='Update Info', displayLabel=False)  ## holds the info for a package
         redRbutton(self.updatesTab, 'Install Updates', callback = self.installUpdates)
         
-        self.treeViewInstalled = redRtreeWidget(self.installedTab, callback = self.installItemClicked)
+        self.treeViewInstalled = redRtreeWidget(self.installedTab, label='Update List', displayLabel=False, 
+        callback = self.installItemClicked)
         self.treeViewInstalled.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
 
         #self.treeViewInstalled.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewInstalled.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewInstalled = redRtextEdit(self.installedTab)
+        self.infoViewInstalled = redRtextEdit(self.installedTab, label='Install Info', displayLabel=False)
         redRbutton(self.installedTab, 'Remove Packages', callback = self.uninstallPackages)
         
-        self.treeViewAvailable = redRtreeWidget(self.availableTab, callback = self.availableItemClicked)
+        self.treeViewAvailable = redRtreeWidget(self.availableTab, label='Update List', displayLabel=False, 
+        callback = self.availableItemClicked)
         self.treeViewAvailable.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
 
         #self.treeViewAvailable.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewAvailable.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewAvailable = redRtextEdit(self.availableTab)
+        self.infoViewAvailable = redRtextEdit(self.availableTab, label='Avaliable Info', displayLabel=False)
         redRbutton(self.availableTab, 'Install Packages', callback = self.installNewPackage)
         
         #### buttons and the like

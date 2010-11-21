@@ -13,7 +13,7 @@ from libraries.base.qtWidgets.button import button as RedRButton
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 class na_omit(OWRpy): 
-    globalSettingsList = ['commitOnInput']
+    globalSettingsList = ['commit']
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
@@ -28,10 +28,8 @@ class na_omit(OWRpy):
         self.outputs.addOutput('id2', 'R Vector', redRRVector)
         self.outputs.addOutput('id3', 'R.object', redRRVariable)
 
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, buttons = ['Commit on Input'],
-        toolTips = ['Whenever this widget gets data it should try to commit'])
-        
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
         
     def processobject(self, data):
         # if not self.require_librarys(["base"]):
@@ -40,7 +38,7 @@ class na_omit(OWRpy):
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
-            if 'Commit on Input' in self.commitOnInput.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_object=''

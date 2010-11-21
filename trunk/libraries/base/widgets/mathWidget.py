@@ -35,12 +35,17 @@ class mathWidget(OWRpy):
         leftArea = groupBox(mainArea, label = 'Table View')
         rightArea = groupBox(mainArea, label = 'Math Box')
         
-        self.table = redRfilterTable(leftArea,filterable=False,sortable=False)
+        self.table = redRfilterTable(leftArea,label='Data Table', displayLabel=False,
+        filterable=False,sortable=False)
         
-        self.functionLineEdit = lineEdit(rightArea, label = 'Function Search or Run', callback = self.functionDone)
-        QObject.connect(self.functionLineEdit, SIGNAL('textChanged(const QString&)'), lambda s: self.textChanged(s))
+        self.functionLineEdit = lineEdit(rightArea, label = 'Function Search or Run', 
+        callback = self.functionDone)
+        QObject.connect(self.functionLineEdit, SIGNAL('textChanged(const QString&)'), 
+        lambda s: self.textChanged(s))
         
-        self.functionListBox = listBox(rightArea, items = self.functionsList, callback = self.funcionPressed)
+        self.functionListBox = listBox(rightArea, label='List of Functions',displayLabel=False,
+        includeInReports=False,
+        items = self.functionsList, callback = self.funcionPressed)
         
         #self.helpButton = button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
         self.dialog = dialog(self)
@@ -51,8 +56,10 @@ class mathWidget(OWRpy):
         self.dialogLabel = widgetLabel(self.dialog)
         
         self.dialogBottomArea = groupBox(self.dialog, label = 'Right Side')
-        self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = 'Constant', toolTip = 'Must be a number')
-        self.dialogBottomListBox = listBox(self.dialogBottomArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogBottomLineEdit.clear)
+        self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = 'Constant', 
+        toolTip = 'Must be a number')
+        self.dialogBottomListBox = listBox(self.dialogBottomArea, label = 'Columns', 
+        toolTip = 'Select one of the columns', callback = self.dialogBottomLineEdit.clear)
         redRCommitButton(self.dialog, label = 'Done', callback = self.functionCommit)
         self.dialog.hide()
     def gotData(self, data):

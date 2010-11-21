@@ -79,7 +79,7 @@ class rExecutor(OWRpy):
         self.lsList = listBox(self.box, label = 'Available R Items', items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
         button(self.box, 'Refresh List', callback = self.refreshLsList)
 
-        self.thistext = textEdit(rightArea)
+        self.thistext = textEdit(rightArea,label='Output', displayLabel=False)
 
         sendbutton = button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
     def addlsList(self):

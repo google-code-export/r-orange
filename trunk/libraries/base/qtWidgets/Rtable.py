@@ -6,10 +6,20 @@ from PyQt4.QtGui import *
 import numpy,sip
 
 class Rtable(widgetState,QTableView):
-    def __init__(self,widget,Rdata=None, editable=False, rows=None, columns=None,
+    def __init__(self,widget, label=None, displayLabel=True,includeInReports=True, 
+    Rdata=None, editable=False, rows=None, columns=None,
     sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
-        QTableView.__init__(self,widget)
+        
+        widgetState.__init__(self,widget.label,includeInReports)
+        if displayLabel:
+            mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
+        else:
+            mainBox = widgetBox(self.controlArea,orientation='vertical')
+        
+        QTableView.__init__(self,mainBox)
+        mainBox.layout().addWidget(self)
 
+        
         self.R = Rcommand
         self.sortIndex = None
         self.oldSortingIndex = None
@@ -97,15 +107,14 @@ class Rtable(widgetState,QTableView):
     def delete(self):
         sip.delete(self)
     def getReportText(self, fileDir):
-        # import os
-        # fname = str(os.path.join(fileDir, self.Rdata+'.txt'))
-        # fname = fname.replace('\\', '/')
-        # print fname
-        #self.R('write.table('+self.Rdata+', file = "'+fname+'", sep = "\\t")')
-        # self.R('txt<-capture.output(summary('+self.Rdata+'))')
-        # tmp = self.R('paste(txt, collapse ="\n      ")')
-        text = 'Data was viewed in a Data Viewer.  Open the file in Red-R for more information on this data.\n\n'
-        return text
+        if self.Rdata:
+            data = self.R('as.matrix(%s)'% self.Rdata)
+            colNames = self.R('colnames(%s)' % self.Rdata)
+            text = redRReports.createTable(data, columnNames = colNames)
+        else:
+            text = ''
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
+
 
 class MyTableModel(QAbstractTableModel): 
     def __init__(self, Rdata, parent,editable=False): 

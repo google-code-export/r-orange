@@ -7,12 +7,11 @@ class scrollArea(QScrollArea,widgetState):
     def __init__(self,widget, orientation=QVBoxLayout(), addSpace=False, 
     sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1):
 
-        QScrollArea.__init__(self,widget)
+        widgetState.__init__(self,widget, 'scrollArea',includeInReports=True)
+        QScrollArea.__init__(self,self.controlArea)
             
         if margin == -1: margin = 0
-        # self.setFlat(flat)
-        if widget.layout():
-            widget.layout().addWidget(self)
+        self.controlArea.layout().addWidget(self)
         
         try:
             if isinstance(orientation, QLayout):

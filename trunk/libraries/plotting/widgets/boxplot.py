@@ -1,8 +1,5 @@
 """
 <name>Box Plot</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Boxplot shows a boxplot of data either in the form of a data table or a list.  This data should be only numeric, no text.  Boxplot makes a bar and wisker plot of the data with the mean represented as the bar in the center, notches representing confidence intervals, etc.  For data in the form of a table groups are taken to be the column data, if this is not correct please consider using Transpose to 'flip' the data.<description>
-<RFunctions>graphics:boxplot</RFunctions>
 <tags>Plotting</tags>
 <icon>boxplot.png</icon>
 """
@@ -12,19 +9,20 @@ from libraries.base.signalClasses.RList import RList as redRRList
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.checkBox import checkBox
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 class boxplot(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRList, self.processx)
 
-        self.plotOnInput = checkBox(self.controlArea, buttons = ['Plot On Input'], setChecked = 'Plot On Input')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            if 'Plot On Input' in self.plotOnInput.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
     def commitFunction(self):
         if self.x == '': 

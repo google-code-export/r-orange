@@ -1,7 +1,5 @@
 """
 <name>Size Plot</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<RFunctions>plotrix:sizeplot</RFunctions>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
 """
@@ -11,8 +9,10 @@ from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class sizeplot(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_y = ''
@@ -21,14 +21,14 @@ class sizeplot(OWRpy):
         self.inputs.addInput('id1', 'x', redRRVector, self.processx)
 
         
-        box = tabWidget(self.controlArea)
-        self.standardTab = box.createTabPage(name = "Standard")
+        self.standardTab = self.controlArea
         self.RFunctionParamy_lineEdit =  lineEdit(self.standardTab,  label = "y:", text = '')
         self.RFunctionParamx_lineEdit =  lineEdit(self.standardTab,  label = "x:", text = '')
         self.RFunctionParamscale_lineEdit =  lineEdit(self.standardTab,  label = "scale:", text = '1')
         self.RFunctionParamsize_lineEdit =  lineEdit(self.standardTab,  label = "size:", text = 'c(1,4)')
         self.RFunctionParampow_lineEdit =  lineEdit(self.standardTab,  label = "pow:", text = '0.5')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
     def processy(self, data):
         if not self.require_librarys(["plotrix"]):
             self.status.setText('R Libraries Not Loaded.')
@@ -36,7 +36,8 @@ class sizeplot(OWRpy):
         if data:
             self.RFunctionParam_y=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
@@ -46,7 +47,8 @@ class sizeplot(OWRpy):
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):

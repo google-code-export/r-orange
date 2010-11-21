@@ -8,10 +8,11 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
+from libraries.base.qtWidgets.commitButton import commitButton
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
 class nameProtector(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
         OWRpy.__init__(self)
         # the variables
@@ -27,16 +28,18 @@ class nameProtector(OWRpy):
         
         ### The data frame GUI
         self.dfbox = widgetBox(self.controlArea)
-        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 'Use make.names to protect the names in the columns.'])
+        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', 
+        buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 
+        'Use make.names to protect the names in the columns.'])
         self.namesProtectDFcomboBox = comboBox(self.dfbox, label = 'Column names to protect:')
-        self.commitDFbutton = button(self.dfbox, "Commit", callback = self.dfCommit)
+        self.commit =commitButton(self.dfbox, "Commit", callback = self.dfCommit,processOnInput=True)
         
         
         
         ### The Vector GUI
         self.vbox = widgetBox(self.controlArea)
         self.vbox.hide()
-        self.commitVbutton = button(self.vbox, "Commit", callback = self.vCommit)
+        self.commitVbutton = button(self.vbox, "Commit", callback = self.vCommit,alignment=Qt.AlignRight)
         
     def gotDF(self, data):
         if data:
@@ -50,6 +53,8 @@ class nameProtector(OWRpy):
             cols = self.R('colnames('+self.data+')', wantType = 'list')
             cols.insert(0, '') # in case you don't want to protect a column name
             self.namesProtectDFcomboBox.update(cols)
+            if self.commit.processOnInput():
+                self.dfCommit()
         else:
             self.parentData = {}
             self.data = ''
@@ -58,9 +63,12 @@ class nameProtector(OWRpy):
     def gotV(self, data):
         if data:
             self.parentData = data
-            self.data = data.getData()
+            self.data = self.Rvariables['newDataFromNameProtector']
             self.dfbox.hide()
             self.vbox.show()
+            if self.commit.processOnInput():
+                self.vCommit()
+
         else:
             self.parentData = {}
             self.data = ''
@@ -68,14 +76,14 @@ class nameProtector(OWRpy):
     def dfCommit(self):
         if self.data == '': return
 
-        if len(self.nameProtectDFcheckBox.getChecked()) == 0 and str(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
+        if len(self.nameProtectDFcheckBox.getChecked()) == 0 and self.namesProtectDFcomboBox.currentText() == '': return # there is nothing to protect
         newData = self.parentData.copy()
         newData.data = self.Rvariables['newDataFromNameProtector']
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
             self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))', wantType = 'NoConversion')
             
-        if str(self.namesProtectDFcomboBox.currentText()) != '':
-            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+str(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
+        if self.namesProtectDFcomboBox.currentText() != '':
+            self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+self.namesProtectDFcomboBox.currentText()+'\'])')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
         

@@ -1,10 +1,7 @@
 """
 <name>F Test</name>
-<author>Generated using Widget Maker written by Kyle R. Covington</author>
-<description>Perform the F test on two vectors</description>
 <RFunctions>stats:var.test</RFunctions>
 <tags>Stats</tags>
-<icon></icon>
 """
 from OWRpy import * 
 import redRGUI 
@@ -14,8 +11,10 @@ from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+
 class RedRvar_test(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["var.test"])
@@ -29,7 +28,8 @@ class RedRvar_test(OWRpy):
         self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])
         self.RFunctionParamratio_lineEdit = lineEdit(self.controlArea, label = "ratio:", text = '1')
         self.RFunctionParamconf_level_lineEdit = lineEdit(self.controlArea, label = 'Confidence Interval:', text = '0.95')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        processOnInput=True)
         self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
     def processy(self, data):
         if not self.require_librarys(["stats"]):
@@ -37,8 +37,8 @@ class RedRvar_test(OWRpy):
             return
         if data:
             self.RFunctionParam_y=data.getData()
-            #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_y=''
     def processx(self, data):
@@ -47,8 +47,8 @@ class RedRvar_test(OWRpy):
             return
         if data:
             self.RFunctionParam_x=data.getData()
-            #self.data = data
-            self.commitFunction()
+            if self.commit.processOnInput():
+                self.commitFunction()
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):

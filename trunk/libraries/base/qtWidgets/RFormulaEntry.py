@@ -12,15 +12,14 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class RFormulaEntry(groupBox, widgetState):
-    def __init__(self, parent, label = 'Formula Entry'):
+class RFormulaEntry(widgetState):
+    def __init__(self, widget, label = 'Formula Entry', displayLabel=True, includeInReports=True):
         # make a widgetBox to hold everything
-        groupBox.__init__(self,parent,label=label)
+        widgetState.__init__(self,widget,label,includeInReports)
         
-        #box = groupBox(self, label = label)
-        box = self
+        box = groupBox(self.controlArea,label=label)
+
         ## add the elements to the box
-        
         #place the command keys
         self.buttonsBox = groupBox(box, label = "Formula Commands")
         self.plusButton = button(self.buttonsBox, "And (+)", callback = self.plusButtonClicked)
@@ -38,7 +37,7 @@ class RFormulaEntry(groupBox, widgetState):
         self.extrasBox = widgetBox(self.modelBox)
         self.outcomeVariable = comboBox(self.modelBox, label = 'Outcome (f(x)):')
         widgetLabel(self.modelBox, ' = ')
-        self.modelLineEdit = lineEdit(self.modelBox, label = None)
+        self.modelLineEdit = lineEdit(self.modelBox, label = 'model', displayLabel=False)
         self.label = label
     def clear(self):
         self.elementsListBox.clear()
@@ -108,5 +107,5 @@ class RFormulaEntry(groupBox, widgetState):
             
     def getReportText(self, fileDir):
         (a,b) = self.Formula()
-        return {'label': self.label, 'text':a + ' = ' + b}
+        return {self.widgetName:{'includeInReports': self.includeInReports, 'text':a + ' = ' + b}}
         

@@ -47,22 +47,21 @@ class readFile(OWRpy):
         #signals
         self.outputs.addOutput('od1', 'Output Data', rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
-        area = widgetBox(self.controlArea,orientation='horizontal')       
+        area = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
         #area.layout().setAlignment(Qt.AlignTop)
         options = widgetBox(area,orientation='vertical')
         options.setMaximumWidth(300)
         # options.setMinimumWidth(300)
         options.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-        area.layout().setAlignment(options,Qt.AlignTop)
+        #area.layout().setAlignment(options,Qt.AlignTop)
         
         
         self.browseBox = groupBox(options, label="Load File", 
         addSpace = True, orientation='vertical')
         box = widgetBox(self.browseBox,orientation='horizontal')
-        self.filecombo = fileNamesComboBox(box, 
+        self.filecombo = fileNamesComboBox(box, label='Files', displayLabel=False,
         orientation='horizontal',callback=self.scanNewFile)
-        
         button(box, label = 'Browse', callback = self.browseFile)
         
         self.fileType = radioButtons(options, label='File Type',
@@ -74,13 +73,16 @@ class readFile(OWRpy):
         self.delimiter = radioButtons(options, label='Column Seperator',
         buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab',callback=self.scanNewFile,
         orientation='horizontal')
-        self.otherSepText = lineEdit(self.delimiter.box,text=';',width=20,orientation='horizontal')
+        self.otherSepText = lineEdit(self.delimiter.box,label='Seperator', displayLabel=False,
+        text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
         
         self.headersBox = groupBox(options, label="Row and Column Names", 
         addSpace = True, orientation ='horizontal')
 
-        self.hasHeader = checkBox(self.headersBox, buttons = ['Column Headers'],setChecked=['Column Headers'],toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
+        self.hasHeader = checkBox(self.headersBox,label='Column Header', displayLabel=False, 
+        buttons = ['Column Headers'],setChecked=['Column Headers'],
+        toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
         self.rowNamesCombo = comboBox(self.headersBox,label='Select Row Names', items=[],
@@ -93,7 +95,8 @@ class readFile(OWRpy):
         split = widgetBox(self.otherOptionsBox,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.otherOptions = checkBox(split,buttons=['fill','strip.white','blank.lines.skip',
+        self.otherOptions = checkBox(split,label='Options', displayLabel=False,
+        buttons=['fill','strip.white','blank.lines.skip',
         'allowEscapes','stringsAsFactors'],
         setChecked = ['blank.lines.skip'],
         toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
@@ -134,12 +137,12 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(True)
         
         
-        self.tableArea = groupBox(area)
+        self.tableArea = widgetBox(area)
         self.tableArea.setMinimumWidth(500)
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
-        self.scanarea = textEdit(self.tableArea)
+        self.scanarea = textEdit(self.tableArea,label='File Preview',includeInReports=False)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
         self.scroll = scrollArea(self.tableArea);
@@ -167,7 +170,8 @@ class readFile(OWRpy):
         if not self.filecombo.getCurrentFile():
             widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
         for i in range(len(self.myColClasses)):
-            s = radioButtons(self.columnTypes, buttons = ['factor','numeric','character','integer','logical'], 
+            s = radioButtons(self.columnTypes,label=self.colNames[i],displayLabel=False,
+            buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
             s.setChecked(self.myColClasses[i])
             if not self.filecombo.getCurrentFile():
@@ -270,7 +274,7 @@ class readFile(OWRpy):
         
         
         if self.rowNamesCombo.currentIndex() not in [0,-1]:
-            self.rownames = str(self.rowNamesCombo.currentText())
+            self.rownames = self.rowNamesCombo.currentText()
             param_name = '"' + self.rownames + '"'
         else:
             param_name = 'NULL' 
@@ -318,62 +322,62 @@ class readFile(OWRpy):
             self.commit()
 
     def updateScan(self):
-        try:
-            if self.rowNamesCombo.count() == 0:
-                self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-                self.rowNamesCombo.clear()
-                self.rowNamesCombo.addItem('NULL')
-                self.rowNamesCombo.addItems(self.colNames)
-            self.scanarea.clear()
-            # print self.R(self.Rvariables['dataframe_org'])
+        if self.rowNamesCombo.count() == 0:
+            self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+            self.rowNamesCombo.clear()
+            self.rowNamesCombo.addItem('NULL')
+            self.rowNamesCombo.addItems(self.colNames)
+        self.scanarea.clear()
+        # print self.R(self.Rvariables['dataframe_org'])
+        # return
+        
+        data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
+        + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
+        rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
+        #print data
+        txt = self.html_table(data,rownames)
+        # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
+        # try:
+            #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
+        # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
+        
+        self.scanarea.setText(txt)
+        # except:
+            # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+            # QMessageBox.Ok + QMessageBox.Default)
             # return
             
-            data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
-            + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
-            rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-            #print data
-            txt = self.html_table(data,rownames)
-            # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
-            # try:
-                #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
-            # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
+        
+        
+        if len(self.colClasses) ==0:
+            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
+            self.myColClasses = self.colClasses
+        if len(self.dataTypes) ==0:
+            types = ['factor','numeric','character','integer','logical']
+            self.dataTypes = []
             
-            self.scanarea.setText(txt)
-            # except:
-                # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
-                # QMessageBox.Ok + QMessageBox.Default)
-                # return
+            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                s = radioButtons(self.columnTypes,label=i,displayLabel=False,
+                buttons=types,orientation='horizontal',callback=self.updateColClasses)
                 
-            
-            
-            if len(self.colClasses) ==0:
-                self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-                self.myColClasses = self.colClasses
-            if len(self.dataTypes) ==0:
-                types = ['factor','numeric','character','integer','logical']
-                self.dataTypes = []
+                # print k,i,str(v)
+                if str(v) in types:
+                    s.setChecked(str(v))
+                else:
+                    s.addButton(str(v))
+                    s.setChecked(str(v))
+                label = widgetLabel(None,label=i)
+                self.columnTypes.layout().addWidget(label,k,0)
+                self.columnTypes.layout().addWidget(s.controlArea,k,1)
                 
-                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                    s = radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
-                    
-                    # print k,i,str(v)
-                    if str(v) in types:
-                        s.setChecked(str(v))
-                    else:
-                        s.addButton(str(v))
-                        s.setChecked(str(v))
-                    label = widgetLabel(self.columnTypes,label=i)
-                    self.columnTypes.layout().addWidget(label,k,0)
-                    self.columnTypes.layout().addWidget(s,k,1)
-                    
-                    self.dataTypes.append([i,s])
-        except Exception as e:
-            print str(e)
-            # there must not have been any way to update the scan, perhaps one of the file names was wrong
-            import redRExceptionHandling
-            print redRExceptionHandling.formatException()
-            self.scanarea.clear()
-            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
+                self.dataTypes.append([i,s])
+        # except Exception as e:
+            # print str(e)
+            #there must not have been any way to update the scan, perhaps one of the file names was wrong
+            # import redRExceptionHandling
+            # print redRExceptionHandling.formatException()
+            # self.scanarea.clear()
+            # self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
         
         # print self.getReportText('./')
           
