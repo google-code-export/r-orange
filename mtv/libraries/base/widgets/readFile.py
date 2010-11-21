@@ -179,11 +179,15 @@ class readFile(OWRpy):
     
     def browseFile(self): 
         print self.path
-        fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
+        try:
+            fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
+        "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
+        except:
+            fn = QFileDialog.getOpenFileName(self, "Open File", '~',
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
         #print unicode(fn)
         if fn.isEmpty(): return
-        fn = unicode(fn.toAscii())
+        fn = str(fn.toAscii())
         # print type(fn), fn
         
         self.path = os.path.split(fn)[0]
@@ -236,7 +240,8 @@ class readFile(OWRpy):
             print 'No file selected'
             return
         if not scan =='clipboard':
-            self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn), wantType = 'NoConversion') 
+            query = '%s <- "%s"' % (self.Rvariables['filename'] , fn)
+            self.R(query, wantType = 'NoConversion') 
             
             # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
                 # self.delimiter.setChecked('Tab')

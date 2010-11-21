@@ -81,7 +81,7 @@ class fileNamesComboBox(comboBox):
     def getCurrentFile(self):
         if len(self.files) ==0 or self.currentIndex() == 0:
             return False
-        return self.files[self.currentIndex()].replace('\\', '/')
+        return unicode(self.files[self.currentIndex()].replace('\\', '/'), 'Latin-1')
         
     def getReportText(self, fileDir):
         if not self.label:

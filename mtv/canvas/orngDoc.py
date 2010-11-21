@@ -309,14 +309,16 @@ class SchemaDoc(QWidget):
             self.makeSchemaTab(unicode(td.tabName.text()))
             self.setTabActive(unicode(td.tabName.text()))
     def cloneToTab(self):   # part of the view
-        if len(redRSaveLoad._tempWidgets) == 0: return
+        if len(redRSaveLoad._tempWidgets) == 0: 
+            log.log(10, 7, 3, 'No tempWidgets to clone!!!')
+            return
         tempWidgets = redRSaveLoad._tempWidgets
         td = CloneTabDialog(self.canvasDlg)
         if td.exec_() == QDialog.Rejected: return ## nothing interesting to do
         try:
             tabName = unicode(td.tabList.selectedItems()[0].text())
         except: return 
-        if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
+        #if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
             log.log(1, 2, 3, 'Creating clone widget %s in tab %s' % ( w.caption + ' (Clone)', tabName))
             self.cloneWidget(w, tabName, caption = w.caption + ' (Clone)')
@@ -327,7 +329,7 @@ class SchemaDoc(QWidget):
         if redRObjects.instanceOnTab(widget.instance(), viewID): return 1      ## the widget must already be on the tab so we can't add it again.
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            newwidget = redRObjects.newIcon(self.signalManager, self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
+            newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
         except:
             type, val, traceback = sys.exc_info()
             log.log(1, 9, 1, unicode(traceback))

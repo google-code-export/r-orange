@@ -135,6 +135,8 @@ def getWidgetByInstance(instance):
         raise Exception('Widget %s not found in %s' % (instance, _widgetIcons))
     
 def newIcon(canvas, tab, info, pic, dlg, instanceID, tabName):
+    if getWidgetByIDActiveTabOnly(instanceID):
+        return getWidgetByIDActiveTabOnly(instanceID)
     newwidget = orngCanvasItems.CanvasWidget(canvas, tab, info, pic, dlg, instanceID = instanceID, tabName = tabName)
     
     _widgetIcons[tabName].append(newwidget) # put a new widget into the stack with a timestamp.

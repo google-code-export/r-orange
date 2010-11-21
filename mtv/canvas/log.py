@@ -69,11 +69,11 @@ def log(table, severity, errorType = 2, comment = ""):
         handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, unicode('</br>'.join(tb)).replace('\"', '')))
         
         if severity >= redREnviron.settings['minSeverity'] or (errorType == 'Error' and severity >= redREnviron.settings['exceptionLevel']):
-            logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
+            logOutput('<br /><div style="color:#FF0000">%s level %s:</div><br /> %s <br /><strong>%s</strong>' % (errorType, severity, tb[-3], comment))
     elif table == 0:
-        logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
+        logOutput('<br /><div style="color:#0000FF">%s level %s:</div><br /> %s <br /><strong>%s</strong>' % (errorType, severity, tb[-3], comment))
     elif table == 10 and redREnviron.settings['debugMode']:
-        logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
+        logOutput('<br /><div style="color:#2554C7">%s level %s:</div><br /> %s <br /><strong>%s</strong>' % (errorType, severity, tb[-3], comment))
     elif table == 20:
         lh.defaultSysOutHandler.write(comment)
 def getHistory(widgetFile):
@@ -90,7 +90,7 @@ def logException(string):
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         _exceptionManager.exceptionText.setTextCursor(cursor)                             
         
-        _exceptionManager.exceptionText.insertPlainText(string + '\n')                              
+        _exceptionManager.exceptionText.insertHtml(string + '<br />')                              
 def logOutput(string):
     global _outputManager
     if _outputManager:
@@ -98,7 +98,7 @@ def logOutput(string):
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         _outputManager.printOutput.setTextCursor(cursor)                             
         
-        _outputManager.printOutput.insertPlainText(string + '\n')  
+        _outputManager.printOutput.insertHtml(string + '<br/>')  
 def logDB():
     return _logDB
 def clearDB():

@@ -425,9 +425,9 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetPopup.addSeparator()
         rename = self.widgetPopup.addAction( "&Rename", self.schema.activeTab().renameActiveWidget, Qt.Key_F2)
         delete = self.widgetPopup.addAction("Remove", self.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
-        copy = self.widgetPopup.addAction("&Copy", redRSaveLoad.collectIcons, Qt.CTRL+Qt.Key_C)
-        cloneToTab = self.widgetPopup.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_B)
-        duplicateToTab = self.widgetPopup.addAction("Duplicate To Tab", redRSaveLoad.copy, Qt.CTRL+Qt.Key_C)
+        copy = self.menuTabs.addAction("&Copy", redRSaveLoad.collectIcons, Qt.CTRL+Qt.Key_C)
+        cloneToTab = self.menuTabs.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_B)
+        duplicateToTab = self.menuTabs.addAction("Duplicate To Tab", redRSaveLoad.copy, Qt.CTRL+Qt.Key_V)
         
         self.widgetPopup.setEnabled(0)
 

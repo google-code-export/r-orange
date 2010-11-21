@@ -24,7 +24,6 @@ class textEdit(QTextEdit,widgetState):
         self.insertHtml(html)
         button(wb, "Clear", callback = self.clear)
         
-
     def hide(self):
         if self.hb:
             self.hb.hide()

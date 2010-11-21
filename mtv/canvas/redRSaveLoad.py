@@ -188,9 +188,12 @@ def makeTemplate(filename = None, copy = False):
     return True
 def collectIcons():
     global _tempWidgets
+    log.log(10, 6, 3, 'Collecting Icons')
     _tempWidgets = redRObjects.activeTab().getSelectedWidgets()
+    log.log(10, 6, 3, 'Selected widgets are %s' % _tempWidgets)
 def copy():
     ## copy the selected files and reload them as templates in the schema
+    log.log(10, 6, 3, 'Making a copy with widgets %s' % _tempWidgets)
     makeTemplate(copy=True)
 def savePipeline():
     log.log(1, 9, 3, 'Saving Pipeline')
