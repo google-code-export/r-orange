@@ -500,7 +500,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         self.templateActions = categoriesPopup.templateActions
         self.treeWidget = MyTreeWidget(canvasDlg, self)
         self.treeWidget.setFocusPolicy(Qt.ClickFocus)    # this is needed otherwise the document window will sometimes strangely lose focus and the output window will be focused
-        self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetClosable)
 
         
         # must make a widget container to hold the search area and the widget tree
@@ -539,7 +539,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         #print action.widgetInfo
         newwidget = self.canvasDlg.schema.addWidget(action.widgetInfo)
         if self.suggestButtonsList.suggestingWidget:
-            self.canvasDlg.schema.addLine(self.suggestButtonsList.suggestingWidget, newwidget)
+            self.canvasDlg.schema.addLine(self.suggestButtonsList.suggestingWidget, redRObjects.getWidgetByIDActiveTabOnly(newwidget))
     def insertWidgetTab(self, name, show = 1):
         if self.tabDict.has_key(name):
             self.tabDict[name].setHidden(not show)

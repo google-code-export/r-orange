@@ -223,6 +223,7 @@ class SchemaDoc(QWidget):
         outWidget.updateTooltip()
         inWidget.updateTooltip()
 
+
     # add one link (signal) from outWidget to inWidget. if line doesn't exist yet, we create it
     def addLink(self, outWidget, inWidget, outSignalName, inSignalName, enabled = 1, fireSignal = 1, process = True, loading = False):
         ## addLink should move through all of the icons on all canvases and check if there are icons which are clones of the outWidget and inWidget
@@ -308,7 +309,8 @@ class SchemaDoc(QWidget):
             self.makeSchemaTab(unicode(td.tabName.text()))
             self.setTabActive(unicode(td.tabName.text()))
     def cloneToTab(self):   # part of the view
-        tempWidgets = self.activeTab().getSelectedWidgets()
+        if len(redRSaveLoad._tempWidgets) == 0: return
+        tempWidgets = redRSaveLoad._tempWidgets
         td = CloneTabDialog(self.canvasDlg)
         if td.exec_() == QDialog.Rejected: return ## nothing interesting to do
         try:
@@ -427,7 +429,7 @@ class SchemaDoc(QWidget):
         qApp.restoreOverrideCursor()
         return newwidget.instanceID
     def addInstance(self, signalManager, widgetInfo, widgetSettings = None, forceInSignals = None, forceOutSignals = None, id = None):
-        return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals)
+        return redRObjects.addInstance(signalManager, widgetInfo, settings = widgetSettings, insig = forceInSignals, outsig = forceOutSignals, id = id)
         
     def returnInstance(self, id):
         return redRObjects.getWidgetInstanceByID(id)

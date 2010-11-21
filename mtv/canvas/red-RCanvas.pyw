@@ -196,6 +196,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
+        self.toolbar.addSeparator()
+        self.toolbar.addAction("Show Widgets", self.showWidgetToolbar)
         self.createWidgetsToolbar() # also creates the categories popup
         self.readShortcuts()
         self.readRecentFiles()
@@ -323,6 +325,7 @@ class OrangeCanvasDlg(QMainWindow):
 
            
         self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
+        self.toolbar.addWidget(self.widgetsToolBar.widgetSuggestEdit) ## kind of a hack but there you are.
         self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         self.widgetsToolBar.setFloating(float)
@@ -330,7 +333,8 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["WidgetTabs"] = self.tabs.createWidgetTabs(redREnviron.settings["WidgetTabs"], self.widgetRegistry, redREnviron.directoryNames['widgetDir'], redREnviron.directoryNames['picsDir'], self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
         
-
+    def showWidgetToolbar(self):
+        self.widgetsToolBar.show()
     def readShortcuts(self):
         self.widgetShortcuts = {}
         shfn = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "shortcuts.txt")
@@ -421,8 +425,9 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetPopup.addSeparator()
         rename = self.widgetPopup.addAction( "&Rename", self.schema.activeTab().renameActiveWidget, Qt.Key_F2)
         delete = self.widgetPopup.addAction("Remove", self.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
-        copy = self.widgetPopup.addAction("&Copy", redRSaveLoad.copy, Qt.CTRL+Qt.Key_C)
-        cloneToTab = self.widgetPopup.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_V)
+        copy = self.widgetPopup.addAction("&Copy", redRSaveLoad.collectIcons, Qt.CTRL+Qt.Key_C)
+        cloneToTab = self.widgetPopup.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_B)
+        duplicateToTab = self.widgetPopup.addAction("Duplicate To Tab", redRSaveLoad.copy, Qt.CTRL+Qt.Key_C)
         
         self.widgetPopup.setEnabled(0)
 
@@ -591,6 +596,10 @@ class OrangeCanvasDlg(QMainWindow):
         self.output.hide()
         self.output.show()
         #self.output.setFocus()
+    def showOutputException(self):
+        self.output.hide()
+        self.output.show()
+        self.output.showExceptionTab()
     def menuItemReport(self):
         ## start the report generator, handled in orngDoc (where else)
         self.reports.createReportsMenu()

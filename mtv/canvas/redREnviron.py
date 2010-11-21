@@ -114,16 +114,14 @@ def loadSettings():
     settings.setdefault("toolboxWidth", 200)
     settings.setdefault('schemeIconSize', 1)
     settings.setdefault("snapToGrid", 1)
-    
-    
+    settings.setdefault('helpMode', True)
+    settings.setdefault("minSeverity", 5)
     settings.setdefault("saveWidgetsPosition", 1)
     settings.setdefault("widgetSelectedColor", (0, 255, 0))
     settings.setdefault("widgetActiveColor", (0,0,255))
     settings.setdefault("lineColor", (0,255,0))
-    
+    settings.setdefault("exceptionLevel", 5)
     settings.setdefault("WidgetTabs", [])
-
-    
 
     settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
@@ -162,9 +160,6 @@ def loadSettings():
     settings.setdefault("firstLoad", 1)
     settings.setdefault("email", '')
     settings.setdefault('canContact', 1)
-    
-    
-    
     
     return settings
     

@@ -42,8 +42,8 @@ class OutputWindow(QDialog):
         
         self.setLayout(QVBoxLayout())
         wb = redRwidgetBox(self)
-        tw = redRTabWidget(wb)
-        self.outputExplorer = tw.createTabPage('General Outputs')
+        self.tw = redRTabWidget(wb)
+        self.outputExplorer = self.tw.createTabPage('General Outputs')
         self.topWB = redRwidgetBox(self.outputExplorer, orientation = 'horizontal')
         self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = ['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')], callback = self.processTable)
         #self.tableCombo.update(self.errorHandler.getTableNames())
@@ -58,7 +58,7 @@ class OutputWindow(QDialog):
         self.outputExplorer.layout().setMargin(2)
         self.setWindowTitle("Output Window")
         self.setWindowIcon(QIcon(canvasDlg.outputPix))
-        self.exceptionTracker = tw.createTabPage('Exceptions')
+        self.exceptionTracker = self.tw.createTabPage('Exceptions')
         self.exceptionText = redRTextEdit(self.exceptionTracker)
 
         
@@ -78,6 +78,8 @@ class OutputWindow(QDialog):
         self.lastTime = ti.time()
         self.hide()
         log.setExceptionManager(self)
+    def showExceptionTab(self):
+        self.tw.setCurrentIndex(1)
     def refresh(self):
         self.tableCombo.update(['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')])
         #print self.errorHandler.getTableNames()
@@ -238,12 +240,7 @@ class OutputWindow(QDialog):
                 headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
                 conn = httplib.HTTPConnection("localhost",80)
                 conn.request("POST", "/errorReport.php", params,headers)
-                #print err
-                # response = conn.getresponse()
-                # print response.status, response.reason
-                # data = response.read()
-                # print data
-                # conn.close()
+                
             else:
                 return
         except: pass

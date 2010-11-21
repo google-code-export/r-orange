@@ -12,6 +12,8 @@ from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
 from libraries.base.qtWidgets.listBox import listBox as redRlistBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
+from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
+from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 
 class ColorIcon(QToolButton):
@@ -77,6 +79,9 @@ class CanvasOptionsDlg(QDialog):
         # GENERAL TAB
         generalBox = OWGUI.widgetBox(GeneralTab, "General Options")
         self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", debuggingEnabled = 0)
+        self.helpModeSelection = redRCheckBox(generalBox, buttons = ['Show Help Icons'])
+        if redREnviron.settings['helpMode']:
+            self.helpModeSelection.setChecked(['Show Help Icons'])
         self.snapToGridCB = OWGUI.checkBox(generalBox, self.settings, "snapToGrid", "Snap widgets to grid", debuggingEnabled = 0)
         self.writeLogFileCB  = OWGUI.checkBox(generalBox, self.settings, "writeLogFile", "Save content of the Output window to a log file", debuggingEnabled = 0)
         self.showSignalNamesCB = OWGUI.checkBox(generalBox, self.settings, "showSignalNames", "Show signal names between widgets", debuggingEnabled = 0)
@@ -129,8 +134,11 @@ class CanvasOptionsDlg(QDialog):
         
         debug = OWGUI.widgetBox(ExceptionsTab, "Debug")
         self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
+        
         self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", orientation='horizontal', items=["All", "High", "Medium", "Low"])
 
+        self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
+        self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
         
         exceptions = OWGUI.widgetBox(ExceptionsTab, "Exceptions")
         #self.catchExceptionCB = QCheckBox('Catch exceptions', exceptions)
@@ -144,47 +152,7 @@ class CanvasOptionsDlg(QDialog):
         self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
 
-        # hboxExc = OWGUI.widgetBox(ExceptionsTab, orientation="horizontal")
-        # outputCanvas = OWGUI.widgetBox(hboxExc, "Canvas Info Handling")
-        # outputWidgets = OWGUI.widgetBox(hboxExc, "Widget Info Handling")
-        # self.ocShow = OWGUI.checkBox(outputCanvas, self.settings, "ocShow", 'Show icon above widget for...')
-        # self.ocInfo = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocInfo", 'Information')
-        # self.ocWarning = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocWarning", 'Warnings')
-        # self.ocError = OWGUI.checkBox(OWGUI.indentedBox(outputCanvas, 10), self.settings, "ocError", 'Errors')
-
-        # self.rrshow = OWGUI.checkBox(outputWidgets, self.settings, "owShow", 'Show statusbar info for...')
-        # self.owInfo = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owInfo", 'Information')
-        # self.owWarning = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owWarning", 'Warnings')
-        # self.owError = OWGUI.checkBox(OWGUI.indentedBox(outputWidgets, 10), self.settings, "owError", 'Errors')
-
         ExceptionsTab.layout().addStretch(1)
-
-        # #################################################################
-        # TAB ORDER TAB
-        # tabOrderBox = OWGUI.widgetBox(TabOrderTab, "Set Order of Widget Categories", orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum))
-        # self.tabOrderList = QListWidget(tabOrderBox)
-        # self.tabOrderList.setAcceptDrops(True)
-
-        # tabOrderBox.layout().addWidget(self.tabOrderList)
-        # self.tabOrderList.setSelectionMode(QListWidget.SingleSelection)
-        
-        # ind = 0
-        # for (name, show) in self.settings["WidgetTabs"]:
-            # if self.canvasDlg.widgetRegistry.has_key(name):
-                # self.tabOrderList.addItem(name)
-                # self.tabOrderList.item(ind).setCheckState(show and Qt.Checked or Qt.Unchecked)
-                # ind+=1
-
-        # w = OWGUI.widgetBox(tabOrderBox, sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding))
-        # self.upButton = OWGUI.button(w, self, "Up", callback = self.moveUp)
-        # self.downButton = OWGUI.button(w, self, "Down", callback = self.moveDown)
-        # w.layout().addSpacing(20)
-        # self.addButton = OWGUI.button(w, self, "Add", callback = self.addCategory)
-        # self.removeButton = OWGUI.button(w, self, "Remove", callback = self.removeCategory)
-        # self.removeButton.setEnabled(0)
-        # w.layout().addStretch(1)
-
-        
 
         #####################################
         # R Settings Tab
@@ -229,6 +197,10 @@ class CanvasOptionsDlg(QDialog):
         self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()
         self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()
         self.settings["lineColor"]           = self.lineIcon.color.getRgb()
+        self.settings["exceptionLevel"] = int(self.exceptionLevel.value())
+        self.settings["minSeverity"] = int(self.otherLevel.value())
+        self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
+        
         QDialog.accept(self)
         
         

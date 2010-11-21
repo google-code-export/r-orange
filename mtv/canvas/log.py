@@ -64,11 +64,11 @@ def log(table, severity, errorType = 2, comment = ""):
     if tb < 3:
         lh.defaultSysOutHandler.write(comment)
         return
-    if table != 0 and table < 10:
+    if table not in [0, 10]:
         
         handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, unicode('</br>'.join(tb)).replace('\"', '')))
         
-        if severity >= redREnviron.settings['minSeverity']:
+        if severity >= redREnviron.settings['minSeverity'] or (errorType == 'Error' and severity >= redREnviron.settings['exceptionLevel']):
             logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))
     elif table == 0:
         logOutput('%s level %s: %s %s' % (errorType, severity, tb[-3], comment))

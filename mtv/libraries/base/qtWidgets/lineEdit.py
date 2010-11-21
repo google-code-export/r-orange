@@ -1,7 +1,7 @@
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
-
+import redREnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -11,7 +11,10 @@ class lineEdit(QLineEdit,widgetState):
         QLineEdit.__init__(self,widget)
         if widget:
             if label:
-                self.hb = widgetBox(widget,orientation=orientation, spacing=2)
+                if toolTip and redREnviron.settings['helpMode']:
+                    self.hb = widgetBox(widget,orientation=orientation, spacing=2, helpButton = True)
+                else:
+                    self.hb = widgetBox(widget, orientation = orientation, spacing = 2)
                 if sp == 'shrinking':
                     self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
                 widgetLabel(self.hb, label)
@@ -43,7 +46,8 @@ class lineEdit(QLineEdit,widgetState):
         if callback:
             QObject.connect(self, SIGNAL('returnPressed()'), callback)
         self.label = label
-    
+    def showToolTip(self):
+        name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     def text(self):
         return unicode(QLineEdit.text(self).toAscii())
     def hide(self):

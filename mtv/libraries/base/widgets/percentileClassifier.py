@@ -65,6 +65,7 @@ class percentileClassifier(OWRpy):
         self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data, wantType = 'NoConversion')
         self.outputWindow.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>')
         for percent in percentile:
+            if int(percent) == 0 or int(percent) == 100: continue
             for item in items:
                 
                 column = unicode(item.text())

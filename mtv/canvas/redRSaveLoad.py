@@ -25,6 +25,7 @@ _schemaName = ""
 canvasDlg = None
 schemaDoc = None
 signalManager = SignalManager()
+_tempWidgets = []
 def setSchemaDoc(doc):
     global schemaDoc
     schemaDoc = doc
@@ -97,6 +98,7 @@ def saveInstances(instances, widgets, doc, progressBar):
     
 def makeTemplate(filename = None, copy = False):
     ## this is different from saving.  We want to make a special file that only has the selected widgets, their connections, and settings.  No R data or tabs are saved.
+    if copy and len(_tempWidgets) == 0: return 
     if not copy:
         if not filename:
             log.log(1, 3, 3, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
@@ -117,8 +119,12 @@ def makeTemplate(filename = None, copy = False):
     
     # save the widgets
     tempWidgets = {}
-    for w in redRObjects.activeTab().getSelectedWidgets():
-        tempWidgets[w.instanceID] = w.instance()
+    if copy:
+        for w in _tempWidgets:
+            tempWidgets[w.instanceID] = w.instance()
+    else:
+        for w in redRObjects.activeTab().getSelectedWidgets():
+            tempWidgets[w.instanceID] = w.instance()
     (widgets, settingsDict, requireRedRLibraries) = saveInstances(tempWidgets, widgets, doc, progressBar)
     # save the icons and the lines
     sw = redRObjects.activeTab().getSelectedWidgets()
@@ -180,7 +186,9 @@ def makeTemplate(filename = None, copy = False):
     progressBar.close()
     log.log(1, 9, 3, 'Template saved successfully')
     return True
-    
+def collectIcons():
+    global _tempWidgets
+    _tempWidgets = redRObjects.activeTab().getSelectedWidgets()
 def copy():
     ## copy the selected files and reload them as templates in the schema
     makeTemplate(copy=True)
@@ -349,7 +357,7 @@ def loadTemplate(filename, caption = None, freeze = 0):
 
 def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global _schemaName
-    
+    log.log(1, 7, 3, 'Loading Document %s' % filename)
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
         tmp=True
@@ -394,14 +402,15 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         
         version = schema.getElementsByTagName("header")[0].getAttribute('version')
         if not version:
-            ## we should move everything to the earlier versions of orngDoc for loading.
+            log.log(1, 9, 3, 'Version Tag Missing, using Red-R 1.80 loading specifications')            ## we should move everything to the earlier versions of orngDoc for loading.
             loadDocument180(filename, caption = None, freeze = 0, importing = 0)
             loadingProgressBar.hide()
             loadingProgressBar.close()
             return
         else:
             print 'The version is:', version
-    except:
+    except Exception as inst:
+        log.log(1, 6, 1, 'Error in loading the schema %s, reverting to load with 1.80 settings' % inst)
         loadDocument180(filename, caption = None, freeze = 0, importing = 0)
         loadingProgressBar.hide()
         loadingProgressBar.close()
@@ -523,15 +532,15 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
     loadingProgressBar.setValue(0)
     globalData.globalData = cPickle.loads(loadedSettingsDict['_globalData'])
-    (loadedOkW, tempFailureTextW) = loadWidgets180(widgets = widgets, loadingProgressBar = loadingProgressBar, tmp = tmp)
+    (loadedOkW, tempFailureTextW) = loadWidgets180(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = loadedSettingsDict, tmp = tmp)
     
     lineList = lines.getElementsByTagName("channel")
     loadingProgressBar.setLabelText('Loading Lines')
     (loadedOkL, tempFailureTextL) = loadLines(lineList, loadingProgressBar = loadingProgressBar, 
     freeze = freeze, tmp = tmp)
 
-    for widget in redRObjects.instances(): widget.updateTooltip()
-    activeCanvas().update()
+    #for widget in redRObjects.instances(): widget.updateTooltip()
+    #activeCanvas().update()
     #saveTempDoc()
     
     if not loadedOkW and loadedOkL:
@@ -539,7 +548,7 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
         QMessageBox.information(canvasDlg, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
     
     for widget in redRObjects.instances():
-        widget.instance().setLoadingSavedSession(False)
+        widget.setLoadingSavedSession(False)
     qApp.restoreOverrideCursor() 
     qApp.restoreOverrideCursor()
     qApp.restoreOverrideCursor()
@@ -621,12 +630,60 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     ## now the widgets are loaded so we can move on to setting the connections
     
     return (loadedOk, failureText)
+def loadLines(lineList, loadingProgressBar, freeze, tmp):
+    failureText = ""
+    loadedOk = 1
+    for line in lineList:
+        ## collect the indicies of the widgets to connect.
+        inIndex = line.getAttribute("inWidgetIndex")
+        outIndex = line.getAttribute("outWidgetIndex")
+        print inIndex, outIndex, '###################HFJSDADSHFAK#############'
+        
+        if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
+            print inIndex, outIndex 
+            
+            raise Exception
+        if freeze: enabled = 0
+        else:      enabled = line.getAttribute("enabled")
+        #print str(line.getAttribute('signals'))
+        ## collect the signals to be connected between these widgets.
+        signals = eval(str(line.getAttribute("signals")))
+        #print '((((((((((((((((\n\nSignals\n\n', signals, '\n\n'
+        if tmp: ## index up the index to match sessionID
+            inIndex += '_'+str(self.sessionID)
+            outIndex += '_'+str(self.sessionID)
+            print inIndex, outIndex, 'Settings template ID to these values'
+        inWidget = redRObjects.getWidgetInstanceByID(inIndex)
+        outWidget = redRObjects.getWidgetInstanceByID(outIndex)
+        
+        #print inWidget, outWidget, '#########$$$$$#########$$$$$$#######'
+        if inWidget == None or outWidget == None:
+            print 'Expected ID\'s', inIndex, outIndex
+
+            failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
+            loadedOk = 0
+            continue
+            
+        ## add a link for each of the signals.
+        for (outName, inName) in signals:
+            ## try to add using the new settings
+            sig = inWidget.inputs.getSignal(inName)
+            outWidget.outputs.connectSignal(sig, outName, enabled, False)
+            #if not schemaDoc.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
+                ## try to add using the old settings
+            #    schemaDoc.addLink175(outWidget, inWidget, outName, inName, enabled)
+        print '######## enabled ########\n\n', enabled, '\n\n'
+        #self.addLine(outWidget, inWidget, enabled, process = False)
+        #self.signalManager.setFreeze(0)
+        qApp.processEvents()
+        
+    return (loadedOk, failureText)
 def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None, id = None):
     widget = redRObjects.widgetRegistry()['widgets'][name]
     return redRObjects.addInstance(signalManager, widget, settings, inputs, outputs, id)
     
         
-def loadWidgets180(widgets, loadingProgressBar, tmp):
+def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     lpb = 0
     loadedOk = 1
     failureText = ''
@@ -645,7 +702,7 @@ def loadWidgets180(widgets, loadingProgressBar, tmp):
             ## for backward compatibility we need to make both the widgets and the instances.
             #addWidgetInstanceByFileName(name, settings, inputs, outputs)
             widgetInfo =  redRObjects.widgetRegistry()['widgets'][name]
-            addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs)
+            schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
             #print 'Settings', settings
             lpb += 1
             loadingProgressBar.setValue(lpb)
