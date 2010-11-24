@@ -1,10 +1,11 @@
 """
-<name>comp</name>
+<name>Raw to Compositional Data</name>
 <author>By Serge-Etienne Parent, firstly generated using Widget Maker written by Kyle R. Covington</author>
 <description></description>
 <RFunctions>compositions</RFunctions>
-<tags>Prototypes</tags>
-<icon>comp.png</icon>
+<tags>Compositions</tags>
+<icon>raw2comp.png</icon>
+<outputWidgets>plotting_plot, base_rViewer</outputWidgets>
 """
 from OWRpy import * 
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit 
@@ -28,7 +29,7 @@ class RedRcomp(OWRpy):
         self.outputs.addOutput("rcomp Output","rcomp Output", signals.RMatrix.RMatrix)		
         self.outputs.addOutput("rplus Output","rplus Output", signals.RMatrix.RMatrix)
         self.outputs.addOutput("aplus Output","aplus Output", signals.RMatrix.RMatrix)		
-        self.compositionType = redRradioButtons(self.controlArea, label = "Composition Type:", buttons = ['acomp', 'rcomp', 'aplus', 'rplus'], setChecked = "aplus", orientation='horizontal') # choose composition type
+        self.compositionType = redRradioButtons(self.controlArea, label = "Composition Type:", buttons = ['acomp', 'rcomp', 'aplus', 'rplus'], setChecked = "acomp", orientation='horizontal') # choose composition type
         
         self.RFunctionParamparts_lineEdit = redRlineEdit(self.controlArea, label = "parts:", text = '')
         self.RFunctionParamtotal_lineEdit = redRlineEdit(self.controlArea, label = "total:", text = '1')
@@ -59,15 +60,27 @@ class RedRcomp(OWRpy):
             self.R(self.Rvariables['acomp']+'<-acomp(X='+str(self.RFunctionParam_X)+','+inj+')')
             newData = signals.RMatrix.RMatrix(data = self.Rvariables["acomp"], checkVal = False) 
             self.rSend("acomp Output", newData)
+			self.rSend('rcomp Output', None)
+			self.rSend('aplus Output', None)
+			self.rSend('rplus Output', None)
         elif self.compositionType.getChecked() =='rcomp':
             self.R(self.Rvariables['rcomp']+'<-rcomp(X='+str(self.RFunctionParam_X)+','+inj+')')
             newData = signals.RMatrix.RMatrix(data = self.Rvariables["rcomp"], checkVal = False)
             self.rSend("rcomp Output", newData)
+			self.rSend('acomp Output', None)
+			self.rSend('aplus Output', None)
+			self.rSend('rplus Output', None)
         elif self.compositionType.getChecked() =='aplus':
             self.R(self.Rvariables['aplus']+'<-aplus(X='+str(self.RFunctionParam_X)+','+inj+')')
             newData = signals.RMatrix.RMatrix(data = self.Rvariables["aplus"], checkVal = False)
             self.rSend("aplus Output", newData)
+			self.rSend('acomp Output', None)
+			self.rSend('rcomp Output', None)
+			self.rSend('rplus Output', None)
         else:
             self.R(self.Rvariables['rplus']+'<-rplus(X='+str(self.RFunctionParam_X)+','+inj+')')
             newData = signals.RMatrix.RMatrix(data = self.Rvariables["rplus"], checkVal = False)
             self.rSend("rplus Output", newData)		
+			self.rSend('acomp Output', None)
+			self.rSend('rcomp Output', None)
+			self.rSend('aplus Output', None)

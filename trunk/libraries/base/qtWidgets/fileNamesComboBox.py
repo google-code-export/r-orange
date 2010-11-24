@@ -89,7 +89,7 @@ class fileNamesComboBox(comboBox):
     def getCurrentFile(self):
         if len(self.files) ==0 or self.currentIndex() == 0:
             return False
-        return unicode(self.files[self.currentIndex()].replace('\\', '/'))
+        return unicode(self.files[self.currentIndex()])
         
     def getReportText(self, fileDir):
         

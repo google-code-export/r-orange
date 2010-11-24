@@ -73,7 +73,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     #####################Forked verions of R##############################
     try:
         
-        output = rpy.r(query)
+        output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
         log.log(2, 8, 1, "Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s." % (query, inst))
         mutex.unlock()

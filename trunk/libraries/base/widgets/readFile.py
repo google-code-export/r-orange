@@ -182,7 +182,7 @@ class readFile(OWRpy):
         
     
     def browseFile(self): 
-        print self.path
+        #print self.path
         try:
             fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
@@ -191,7 +191,7 @@ class readFile(OWRpy):
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
         #print unicode(fn)
         if fn.isEmpty(): return
-        fn = str(fn.toAscii())
+        fn = unicode(fn)
         # print type(fn), fn
         
         self.path = os.path.split(fn)[0]
