@@ -30,6 +30,7 @@ class textEdit(QTextEdit,widgetState):
         if not editable:
             self.setReadOnly(True)
         self.insertHtml(html)
+        button(wb, "Clear", callback = self.clear)
         
     def sizeHint(self):
         return QSize(10,10)

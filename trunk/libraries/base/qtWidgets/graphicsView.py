@@ -259,11 +259,9 @@ class graphicsView(QGraphicsView, widgetState):
     #########################
     ## R session functions ##
     #########################
-    def R(self, query):
-        return RSession.Rcommand(query = query)
-    def require_librarys(self, libraries):
-        return RSession.require_librarys(libraries)
-        
+
+
+    
     ##########################
     ## Interaction Functions #
     ##########################
