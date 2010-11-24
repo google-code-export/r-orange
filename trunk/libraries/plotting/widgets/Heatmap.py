@@ -29,6 +29,7 @@ class Heatmap(OWRpy):
         self.plotdata = ''
         self.rowvChoice = None
         self.colvChoice = None
+        self.listOfColors = ['"red"', '"white"', '"blue"']
         
         self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
         self.inputs.addInput('id1', 'Classes Data', redRRVector, self.processClasses)
@@ -51,8 +52,7 @@ class Heatmap(OWRpy):
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        self.colorTypeCombo = comboBox(infobox, label = 'Color Type:', 
-        items = ['rainbow', 'heat.colors', 'terrain.colors', 'topo.colors', 'cm.colors'])
+        redRButton(self.controlArea, label = 'Reset Colors', callback = self.resetColors)
         #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         
         self.rowDendrogram = checkBox(infobox, label='Dendrogram Options', displayLabel=False,
@@ -66,9 +66,13 @@ class Heatmap(OWRpy):
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
         self.gview1 = graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
         self.gview1.image = 'heatmap1_'+self.widgetID
-        self.gview2 = graphicsView(self.controlArea,label='Legend', displayLabel=False)
-        self.gview2.image = 'heatmap2_'+self.widgetID
-        
+        #self.gview2 = graphicsView(self.controlArea)
+        #self.gview2.image = 'heatmap2_'+self.widgetID
+    def resetColors(self):
+        cd = colorListDialog(self)
+        if cd.exec_() != QDialog.Accepted:
+            return
+        self.listOfColors = cd.listOfColors
     def onLoadSavedSession(self):
         print 'load heatmap'
         self.processSignals()
@@ -108,14 +112,14 @@ class Heatmap(OWRpy):
             colClasses = ', ColSideColors=' + self.classesData + ''
         else:
             colClasses = ''
-        colorType = str(self.colorTypeCombo.currentText())
-        if colorType == 'rainbow':
-            start = float(float(self.startSaturation.value())/100)
-            end = float(float(self.endSaturation.value())/100)
-            print start, end
-            col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
-        else:
-            col = colorType+'(50)'
+        # colorType = str(self.colorTypeCombo.currentText())
+        # if colorType == 'rainbow':
+            # start = float(float(self.startSaturation.value())/100)
+            # end = float(float(self.endSaturation.value())/100)
+            # print start, end
+            # col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
+        # else:
+            # col = colorType+'(50)'
         if 'Plot Row Dendrogram' in self.rowDendrogram.getChecked():
             self.rowvChoice = 'NULL'
         else:
@@ -124,18 +128,18 @@ class Heatmap(OWRpy):
             self.colvChoice = 'NULL'
         else:
             self.colvChoice = 'NA'
-        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))', wantType = 'NoConversion')
+        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))')
         self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= tempPalette(50)'+ colClasses+'')
         # for making the pie plot
-        if colorType == 'rainbow':
-            start = float(float(self.startSaturation.value())/100)
-            end = float(float(self.endSaturation.value())/100)
-            print start, end
-            col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
-        else:
-            col = colorType+'(10)'
+        # if colorType == 'rainbow':
+            # start = float(float(self.startSaturation.value())/100)
+            # end = float(float(self.endSaturation.value())/100)
+            # print start, end
+            # col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
+        # else:
+            # col = colorType+'(10)'
         #self.R('dev.new()')
-        self.gview2.plot(query = 'rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+'', function = 'pie')
+        # self.gview2.plot(query = 'rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+'', function = 'pie')
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -149,7 +153,7 @@ class Heatmap(OWRpy):
         if self.plotdata == '': return
         ## needs to be rewritten for Red-R 1.85 which uses rpy3.  no interactivity with graphics.
         
-        self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))', wantType = 'NoConversion')
+        self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')
         
         
         ## now there is a plot the user must select the number of groups or the height at which to make the slices.
@@ -158,13 +162,58 @@ class Heatmap(OWRpy):
             inj = 'k = ' + str(self.groupOrHeightSpin.value())
         else:
             inj = 'h = ' + str(self.groupOrHeightSpin.value())
-        self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')', wantType = 'NoConversion')       
+        self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
         self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], self.groupOrHeightSpin.value(), self.groupOrHeightSpin.value())])
         newData = redRRVector(data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         
         
-    
+    def getReportText(self, fileDir):
+        ## print the plot to the fileDir and then send a text for an image of the plot
+        if self.plotdata != '':
+            self.R('png(file="'+fileDir+'/heatmap'+str(self.widgetID)+'.png")')
+            if str(self.classesDropdown.currentText()) != '':
+                self.classes = self.classesData+'$'+str(self.classesDropdown.currentText())
+            if self.classes and ('Show Classes' in self.showClasses.getChecked()):
+                colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
+            else:
+                colClasses = ''
+            colorType = str(self.colorTypeCombo.currentText())
+            if colorType == 'rainbow':
+                start = float(float(self.startSaturation.value())/100)
+                end = float(float(self.endSaturation.value())/100)
+                print start, end
+                col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
+            else:
+                col = colorType+'(50)'
+            self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
+            self.R('dev.off()')
+            # for making the pie plot
+            self.R('png(file="'+fileDir+'/pie'+str(self.widgetID)+'.png")')
+            if colorType == 'rainbow':
+                start = float(float(self.startSaturation.value())/100)
+                end = float(float(self.endSaturation.value())/100)
+                print start, end
+                col = 'rev(rainbow(10, start = '+str(start)+', end = '+str(end)+'))'
+            else:
+                col = colorType+'(10)'
+            self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
+            self.R('dev.off()')
+            self.R('png(file="'+fileDir+'/identify'+str(self.widgetID)+'.png")')
+            self.R('plot(hclust(dist(t('+self.plotdata+'))))')
+            self.R('dev.off()')
+            text = 'The following plot was generated in the Heatmap Widget:\n\n'
+            text += '.. image:: '+fileDir+'/heatmap'+str(self.widgetID)+'.png\n     :scale: 50%%\n\n'
+            #text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
+            text += '.. image:: '+fileDir+'/pie'+str(self.widgetID)+'.png\n     :scale: 30%%\n\n'
+            text += '**Intensity Chart:** Intensity levels are shown in this pie chart from low values to high.\n\n'
+            text += '.. image:: '+fileDir+'/identify'+str(self.widgetID)+'.png\n   :scale: 50%%\n\n\n'
+            text += '**Clustering:** A cluster dendrogram of the column data.\n\n'
+        else:
+            text = 'Nothing to plot from this widget'
+            
+        return text
+        
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):
         QDialog.__init__(self, parent)

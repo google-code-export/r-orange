@@ -17,8 +17,14 @@ class splitter(QSplitter, widgetState):
         else:
             self.setOrientation(Qt.Vertical)
             
-    def widgetArea(self, orientation = 'horizontal'):
-        newWidgetBox = widgetBox(None, orientation = orientation)
+    def widgetArea(self, orientation = 'horizontal', margin = -1):
+        newWidgetBox = widgetBox(None, orientation = orientation, margin = margin)
         self.addWidget(newWidgetBox)
         return newWidgetBox
+    def getSettings(self):
+        r = {'sizes': self.sizes}
+        return r
+        
+    def loadSettings(self, r):
+        self.setSizes(r['sizes'])
         

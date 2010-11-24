@@ -541,7 +541,7 @@ class MyTableModel(QAbstractTableModel):
             self.currentRange['cstart'],
             self.currentRange['cend']
             ),
-            wantType = 'listOfLists',silent=True)
+            wantType = 'list',silent=True)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1

@@ -67,12 +67,12 @@ class bumpchart(OWRpy):
             string = 'lwd='+str(self.RFunctionParamlwd_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('y<-'+str(self.RFunctionParam_y), wantType = 'NoConversion')
-        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')', wantType = 'NoConversion')
+        self.R('y<-'+str(self.RFunctionParam_y))
+        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')')
     def getReportText(self, fileDir):
         if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")', wantType = 'NoConversion')
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
             
         injection = []
         if str(self.RFunctionParammar_lineEdit.text()) != '':
@@ -100,9 +100,9 @@ class bumpchart(OWRpy):
             string = 'lwd='+str(self.RFunctionParamlwd_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('y<-'+str(self.RFunctionParam_y), wantType = 'NoConversion')
-        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')', wantType = 'NoConversion')
-        self.R('dev.off()', wantType = 'NoConversion')
+        self.R('y<-'+str(self.RFunctionParam_y))
+        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')')
+        self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
         #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
         text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 505%\n\n'

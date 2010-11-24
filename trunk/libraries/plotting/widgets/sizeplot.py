@@ -73,3 +73,33 @@ class sizeplot(OWRpy):
         inj = ','.join(injection)
         self.Rplot('sizeplot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
         
+    def getReportText(self, fileDir):
+        if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            
+        injection = []
+        if str(self.RFunctionParamy_lineEdit.text()) != '':
+            string = 'y='+str(self.RFunctionParamy_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamx_lineEdit.text()) != '':
+            string = 'x='+str(self.RFunctionParamx_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamscale_lineEdit.text()) != '':
+            string = 'scale='+str(self.RFunctionParamscale_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParamsize_lineEdit.text()) != '':
+            string = 'size='+str(self.RFunctionParamsize_lineEdit.text())+''
+            injection.append(string)
+        if str(self.RFunctionParampow_lineEdit.text()) != '':
+            string = 'pow='+str(self.RFunctionParampow_lineEdit.text())+''
+            injection.append(string)
+        inj = ','.join(injection)
+        self.R('sizeplot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+            
+        return text

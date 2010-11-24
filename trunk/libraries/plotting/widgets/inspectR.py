@@ -40,6 +40,21 @@ class inspectR(OWRpy):
             string = 'which=\''+str(self.RFunctionParamwhich_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('inspect(mymodel='+str(self.RFunctionParam_mymodel)+')', wantType = 'NoConversion')
+        self.R('inspect(mymodel='+str(self.RFunctionParam_mymodel)+')')
         
-   
+    def getReportText(self, fileDir):
+        ## print the plot to the fileDir and then send a text for an image of the plot
+        if str(self.RFunctionParam_mymodel) == '': return 'Nothing to plot from this widget.\n\n'
+        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        injection = []
+        if str(self.RFunctionParamwhich_lineEdit.text()) != '':
+            string = 'which=\''+str(self.RFunctionParamwhich_lineEdit.text())+'\''
+            injection.append(string)
+        inj = ','.join(injection)
+        self.R('inspect(mymodel='+str(self.RFunctionParam_mymodel)+')')
+        self.R('dev.off()')
+        text = 'The following plot was generated:\n\n'
+        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        
+        return text

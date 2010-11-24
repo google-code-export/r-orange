@@ -76,7 +76,7 @@ def Rcommand(query, silent = False, wantType = None, listOfLists = False):
         mutex.unlock()
         return output
     
-    ##print output.getrclass()
+    print output.getrclass()
     output = convertToPy(output)
     if type(output) == list and len(output) == 1:
         output = output[0]

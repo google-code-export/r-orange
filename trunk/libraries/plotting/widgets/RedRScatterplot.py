@@ -35,6 +35,7 @@ class RedRScatterplot(OWRpy):
 
         self.data = None
         self.parent = None
+        self.dataParent = None
         
         # GUI
         area = widgetBox(self.controlArea,orientation='horizontal')
@@ -243,9 +244,11 @@ class RedRScatterplot(OWRpy):
             
         index = 'c('+','.join(index) + ')'
         self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
-        
-        data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
-        data.copyAllOptionalData(self.dataParent)
+        if self.dataParent:
+            data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
+            data.copyAllOptionalData(self.dataParent)
+        else:
+            data = redRRDataFrame(data = self.Rvariables['selected']) 
         self.rSend("id0", data)
         #self.sendRefresh()
         

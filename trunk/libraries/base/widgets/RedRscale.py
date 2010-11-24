@@ -5,6 +5,7 @@
 from OWRpy import * 
 import redRGUI 
 from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.radioButtons import radioButtons
 class RedRscale(OWRpy): 
@@ -14,9 +15,9 @@ class RedRscale(OWRpy):
         self.setRvariableNames(["scale"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+        self.inputs.addInput('id0', 'x', redRDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', 'scale Output', redRRMatrix)
+        self.outputs.addOutput('id0', 'scale Output', redRDataFrame)
 
         
         
@@ -42,19 +43,17 @@ class RedRscale(OWRpy):
         else:
             string = 'scale = FALSE'
             injection.append(string)
-        if str(self.RFunctionParamcenter_radioButtons.getChecked()) != 'Yes':
+        if str(self.RFunctionParamcenter_radioButtons.getChecked()) == 'Yes':
             string = 'center = TRUE'
             injection.append(string)
         else:
             string = 'center = FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['scale']+'<-scale(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
-        self.R('row.names('+self.Rvariables['scale']+')<-row.names('+self.RFunctionParam_x+')', wantType = 'NoConversion')
-        newData = redRRMatrix(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        self.R(self.Rvariables['scale']+'<-as.data.frame(scale(x=as.matrix('+str(self.RFunctionParam_x)+'),'+inj+'))', wantType = 'NoConversion')
+        self.R('rownames('+self.Rvariables['scale']+')<-rownames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
+        self.R('colnames('+self.Rvariables['scale']+')<-colnames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
+        newData = redRDataFrame(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
-    def getReportText(self, fileDir):
-        text = 'Data was centered: %s \n\n' % (str(self.RFunctionParamcenter_radioButtons.getChecked()))
-        text += 'Data was scaled: %s \n\n' % (str(self.RFunctionParamscale_radioButtons.getChecked()))
-        return text
+
