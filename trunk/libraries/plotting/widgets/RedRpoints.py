@@ -66,18 +66,18 @@ class RedRpoints(OWRpy):
         else:
             self.RFunctionParam_col=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
-        if str(self.RFunctionParam_col) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_col) == '': return
         injection = []
-        if str(self.RFunctionParampch_lineEdit.text()) != '':
-            string = 'pch='+str(self.RFunctionParampch_lineEdit.text())+''
+        if unicode(self.RFunctionParampch_lineEdit.text()) != '':
+            string = 'pch='+unicode(self.RFunctionParampch_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamcex_lineEdit.text()) != '':
-            string = 'cex='+str(self.RFunctionParamcex_lineEdit.text())+''
+        if unicode(self.RFunctionParamcex_lineEdit.text()) != '':
+            string = 'cex='+unicode(self.RFunctionParamcex_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        newData = plotsigs.redRRPlotAttribute(data = 'points(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+',col='+str(self.RFunctionParam_col)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = plotsigs.redRRPlotAttribute(data = 'points(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+',col='+unicode(self.RFunctionParam_col)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
     def getReportText(self, fileDir):

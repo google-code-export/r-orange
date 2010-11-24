@@ -15,6 +15,7 @@ class checkBox(widgetState, QWidget):
 
         if displayLabel:
             self.box = groupBox(self.controlArea,label=label,orientation=orientation)
+            self.layout().addWidget(self.box)
         else:
             self.box = widgetBox(self.controlArea,orientation=orientation)
             
@@ -36,7 +37,7 @@ class checkBox(widgetState, QWidget):
             
     def setChecked(self,ids):
         for i in self.buttons.buttons():
-            if str(i.text().toAscii()) in ids: i.setChecked(True)
+            if unicode(i.text().toAscii()) in ids: i.setChecked(True)
             else: i.setChecked(False)
     def checkAll(self):
         for i in self.buttons.buttons():
@@ -48,10 +49,10 @@ class checkBox(widgetState, QWidget):
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
-            if i.isChecked(): checked.append(str(i.text().toAscii()))
+            if i.isChecked(): checked.append(unicode(i.text().toAscii()))
         return checked
     def buttonAt(self,ind):
-        return str(self.buttons.button(ind).text().toAscii())
+        return unicode(self.buttons.button(ind).text().toAscii())
         
     def getSettings(self):
         # print 'radioButtons getSettings' + self.getChecked()

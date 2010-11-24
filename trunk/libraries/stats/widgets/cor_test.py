@@ -44,16 +44,16 @@ class cor_test(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
         inj = ','.join(injection)
-        self.R(self.Rvariables['cor.test']+'<-cor.test(y=as.numeric(as.character('+str(self.RFunctionParam_y)+')),x=as.numeric(as.character('+str(self.RFunctionParam_x)+')),'+','+inj+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['cor.test']+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['cor.test']+'<-cor.test(y=as.numeric(as.character('+unicode(self.RFunctionParam_y)+')),x=as.numeric(as.character('+unicode(self.RFunctionParam_x)+')),'+','+inj+')')
+        self.R('txt<-capture.output('+self.Rvariables['cor.test']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
     def getReportText(self, fileDir):
         text = 'Correlations were performed on the attached data vectors.  A summary of the results are below:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

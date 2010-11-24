@@ -33,9 +33,9 @@ class RedRplot_mvr(OWRpy):
 		else:
 			self.RFunctionParam_x=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_x) == '': return
+		if unicode(self.RFunctionParam_x) == '': return
 		injection = []
-		string = 'plottype='+str(self.RFunctionParamplottype_comboBox.currentText())+''
+		string = 'plottype='+unicode(self.RFunctionParamplottype_comboBox.currentText())+''
 		injection.append(string)
 		inj = ','.join(injection)
-		self.Rplot('plot.mvr(x='+str(self.RFunctionParam_x)+','+inj+')')
+		self.Rplot('plot.mvr(x='+unicode(self.RFunctionParam_x)+','+inj+')')

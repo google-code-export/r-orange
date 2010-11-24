@@ -183,9 +183,13 @@ class readFile(OWRpy):
     
     def browseFile(self): 
         print self.path
-        fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
+        try:
+            fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
-        #print str(fn)
+        except:
+            fn = QFileDialog.getOpenFileName(self, "Open File", '~',
+        "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
+        #print unicode(fn)
         if fn.isEmpty(): return
         fn = str(fn.toAscii())
         # print type(fn), fn
@@ -224,7 +228,7 @@ class readFile(OWRpy):
 
         self.myColClasses = []
         for i in self.dataTypes:
-            self.myColClasses.append(str(i[1].getChecked()))
+            self.myColClasses.append(unicode(i[1].getChecked()))
         # print 'colClasses' , self.colClasses
         self.loadFile(scan=True)
     def scanFile(self):
@@ -240,7 +244,8 @@ class readFile(OWRpy):
             print 'No file selected'
             return
         if not scan =='clipboard':
-            self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn), wantType = 'NoConversion') 
+            query = '%s <- "%s"' % (self.Rvariables['filename'] , fn)
+            self.R(query, wantType = 'NoConversion') 
             
             # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
                 # self.delimiter.setChecked('Tab')
@@ -254,10 +259,10 @@ class readFile(OWRpy):
             elif self.delimiter.getChecked() == 'Comma':
                 sep = ','
             elif self.delimiter.getChecked() == 'Other':
-                sep = str(self.otherSepText.text())
+                sep = unicode(self.otherSepText.text())
             otherOptions = ''
             for i in self.otherOptions.getChecked():
-                otherOptions += str(i) + '=TRUE,' 
+                otherOptions += unicode(i) + '=TRUE,' 
             
         if 'Column Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
@@ -266,7 +271,7 @@ class readFile(OWRpy):
         
         
         if scan and scan != 'clipboard':
-            nrows = str(self.numLinesScan.text())
+            nrows = unicode(self.numLinesScan.text())
             processing=False
         else:
             nrows = '-1'
@@ -274,7 +279,7 @@ class readFile(OWRpy):
         
         
         if self.rowNamesCombo.currentIndex() not in [0,-1]:
-            self.rownames = self.rowNamesCombo.currentText()
+            self.rownames = unicode(self.rowNamesCombo.currentText())
             param_name = '"' + self.rownames + '"'
         else:
             param_name = 'NULL' 
@@ -306,7 +311,7 @@ class readFile(OWRpy):
                 print 'scan was to clipboard'
                 self.commit()
             else:
-                RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
+                RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + unicode(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+unicode(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+unicode(self.decimal.text())+'\')'
                 print '####################', processing
                 self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
         except:
@@ -355,7 +360,7 @@ class readFile(OWRpy):
         if len(self.dataTypes) ==0:
             types = ['factor','numeric','character','integer','logical']
             self.dataTypes = []
-            
+        try:
             for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
                 s = radioButtons(self.columnTypes,label=i,displayLabel=False,
                 buttons=types,orientation='horizontal',callback=self.updateColClasses)
@@ -370,14 +375,27 @@ class readFile(OWRpy):
                 self.columnTypes.layout().addWidget(label,k,0)
                 self.columnTypes.layout().addWidget(s.controlArea,k,1)
                 
-                self.dataTypes.append([i,s])
-        # except Exception as e:
-            # print str(e)
-            #there must not have been any way to update the scan, perhaps one of the file names was wrong
-            # import redRExceptionHandling
-            # print redRExceptionHandling.formatException()
-            # self.scanarea.clear()
-            # self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
+                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                    s = radioButtons(self.columnTypes,buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                    
+                    # print k,i,unicode(v)
+                    if unicode(v) in types:
+                        s.setChecked(unicode(v))
+                    else:
+                        s.addButton(unicode(v))
+                        s.setChecked(unicode(v))
+                    label = widgetLabel(self.columnTypes,label=i)
+                    self.columnTypes.layout().addWidget(label,k,0)
+                    self.columnTypes.layout().addWidget(s,k,1)
+                    
+                    self.dataTypes.append([i,s])
+        except Exception as e:
+            print unicode(e)
+            # there must not have been any way to update the scan, perhaps one of the file names was wrong
+            import redRExceptionHandling
+            print redRExceptionHandling.formatException()
+            self.scanarea.clear()
+            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
         
         # print self.getReportText('./')
           
@@ -397,7 +415,7 @@ class readFile(OWRpy):
     def updateGUI(self):
         dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', 'getRData')
         self.infob.setText(self.R(self.Rvariables['filename']))
-        self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
+        self.infoc.setText("Rows: " + unicode(dfsummary[0]) + '\nColumns: ' + unicode(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
@@ -408,7 +426,7 @@ class readFile(OWRpy):
         ## custom implementation of the reporting system for read Files.
 
         params = [['File Source',self.filecombo.getCurrentFile()],
-        ['Column Delimiter',str(self.delimiter.getChecked())]
+        ['Column Delimiter',unicode(self.delimiter.getChecked())]
         ]
         text = redRReports.createTable(params,columnNames = ['Parameter','Value'],
         tableName='Parameters')
@@ -425,7 +443,7 @@ class readFile(OWRpy):
         # try:
             # text += 'File Source: '+self.filecombo.currentText()+'\n\n'
             # text += 'Reading Data\n\nData was read into the canvas using the following settings:\n\n'
-            # text += 'Column Seperator: '+str(self.delimiter.getChecked())+'\n\n'
+            # text += 'Column Seperator: '+unicode(self.delimiter.getChecked())+'\n\n'
             # text += 'Use Column Header:'
             # if 'Column Headers' in self.hasHeader.getChecked():
                 # text += ' Yes\n\n'
@@ -434,14 +452,14 @@ class readFile(OWRpy):
             # text += 'The following column in the orriginal data was used as the Rownames for the table: %s\n\n' %(self.rownames)
             # text += 'Other options include the following:\n\n'
             # for i in self.otherOptions.getChecked():
-                # text += str(i) + '=TRUE\n\n'
+                # text += unicode(i) + '=TRUE\n\n'
                 
             # text += '\n\nClasses for the columns are as follows:\n\n'
             # for i in range(len(self.rownames)):
                 # text += '%s set to %s \n\n' % (self.colNames[i], self.colClasses[i])
             # text += '\n\n'
         # except Exception as inst:
-            # print '<strong>', str(inst), '</strong>'
+            # print '<strong>', unicode(inst), '</strong>'
             # pass
         
         

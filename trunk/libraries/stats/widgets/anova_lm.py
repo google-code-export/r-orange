@@ -36,11 +36,11 @@ class anova_lm(OWRpy):
         else: self.RFunctionParam_object = ''
     def commitFunction(self):
         if self.RFunctionParam_object == '': return
-        self.R('txt<-capture.output('+'anova.lm(object='+str(self.RFunctionParam_object)+'))', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+'anova.lm(object='+unicode(self.RFunctionParam_object)+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
     def getReportText(self, fileDir):
         text = 'ANOVA-LM analysis performted.  The following is a summary of the results:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

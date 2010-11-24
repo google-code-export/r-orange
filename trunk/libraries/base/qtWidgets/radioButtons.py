@@ -48,7 +48,7 @@ class radioButtons(widgetState,QWidget):
     def getChecked(self):
         button = self.buttons.checkedButton()
         if button == 0 or button == None or button.isEnabled()==False: return 0
-        else: return str(button.text().toAscii())
+        else: return unicode(button.text().toAscii())
     
     def disable(self,buttons):
         for i in self.buttons.buttons():

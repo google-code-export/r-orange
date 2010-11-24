@@ -60,7 +60,7 @@ class Melt_DF(OWRpy):
         try:
             mvStr = []
             for item in mvItem:
-                mvStr.append(str(item.text()))
+                mvStr.append(unicode(item.text()))
             mvStr = ', measure.var = c(\''+'\',\''.join(mvStr)+'\')'
             if mvStr == ', measure.var = c(\'\')':
                 mvStr = ''
@@ -70,13 +70,13 @@ class Melt_DF(OWRpy):
         try:
             ivStr = []
             for item in ivItem:
-                ivStr.append(str(ivItem.text()))
+                ivStr.append(unicode(ivItem.text()))
             ivStr = ', id.var = c(\''+'\',\''.join(ivStr)+'\')'
             if ivStr == ', id.var = c(\'\')': ivStr = ''
         except:
             ivStr = ''
-        self.R('OldRownames<-rownames('+str(self.RFunctionParam_data)+')', wantType = 'NoConversion')
-        self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+str(self.RFunctionParam_data)+', OldRownames),na.rm='+str(pna)+mvStr+',variable.name="'+str(self.RFunctionParam_variable_name.text())+'"'+ivStr+')', wantType = 'NoConversion')
+        self.R('OldRownames<-rownames('+unicode(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+unicode(self.RFunctionParam_data)+', OldRownames),na.rm='+unicode(pna)+mvStr+',variable.name="'+unicode(self.RFunctionParam_variable_name.text())+'"'+ivStr+')', wantType = 'NoConversion')
         self.R('rm(OldRownames)', wantType = 'NoConversion')
         # copy the signals class and send the newData
         newData = redRRDataFrame(data = self.Rvariables['melt.data.frame'])
@@ -88,10 +88,10 @@ class Melt_DF(OWRpy):
         text += 'Remove NA: '
         if self.RFunctionParam_na_rm == 0: text += 'TRUE'
         else: text += 'FALSE'
-        text += '\n\nVariable Name For Reshaping: %s\n\n' % str(self.RFunctionParam_variable_name.text())
+        text += '\n\nVariable Name For Reshaping: %s\n\n' % unicode(self.RFunctionParam_variable_name.text())
         text += 'ID Variables: '
         for item in ivItem:
-            text += str(ivItem.text())+', '
+            text += unicode(ivItem.text())+', '
         text += '\n\n'
         return text
         

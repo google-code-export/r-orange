@@ -127,12 +127,12 @@ class heatmap2(OWRpy):
         if self.plotdata == '': return
         options = {}
 
-        colorType = str(self.colorTypeCombo.currentText())
+        colorType = unicode(self.colorTypeCombo.currentText())
         if colorType == 'rainbow':
             start = float(float(self.startSaturation.value())/100)
             end = float(float(self.endSaturation.value())/100)
             # print start, end
-            col = 'rev(rainbow(50, start = '+str(start)+', end = '+str(end)+'))'
+            col = 'rev(rainbow(50, start = '+unicode(start)+', end = '+unicode(end)+'))'
         else:
             col = colorType+'(50)'
         

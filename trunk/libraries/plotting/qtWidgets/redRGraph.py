@@ -354,7 +354,7 @@ class redRGraph(QwtPlot,widgetState):
             attr = self.attributeNames[index]
             if attr not in example.domain:  text += "&nbsp;"*4 + "%s = ?<br>" % (attr)
             elif example[attr].isSpecial(): text += "&nbsp;"*4 + "%s = ?<br>" % (attr)
-            else:                           text += "&nbsp;"*4 + "%s = %s<br>" % (attr, str(example[attr]))
+            else:                           text += "&nbsp;"*4 + "%s = %s<br>" % (attr, unicode(example[attr]))
         if len(indices) > maxIndices:
             text += "&nbsp;"*4 + " ... <br>"
 
@@ -362,14 +362,14 @@ class redRGraph(QwtPlot,widgetState):
             text = text[:-4]
             text += "<hr><b>Class:</b><br>"
             if example.getclass().isSpecial(): text += "&nbsp;"*4 + "%s = ?<br>" % (example.domain.classVar.name)
-            else:                              text += "&nbsp;"*4 + "%s = %s<br>" % (example.domain.classVar.name, str(example.getclass()))
+            else:                              text += "&nbsp;"*4 + "%s = %s<br>" % (example.domain.classVar.name, unicode(example.getclass()))
 
         if len(example.domain.getmetas()) != 0:
             text = text[:-4]
             text += "<hr><b>Meta attributes:</b><br>"
             # show values of meta attributes
             for key in example.domain.getmetas():
-                try: text += "&nbsp;"*4 + "%s = %s<br>" % (example.domain[key].name, str(example[key]))
+                try: text += "&nbsp;"*4 + "%s = %s<br>" % (example.domain[key].name, unicode(example[key]))
                 except: pass
         return text[:-4]        # remove the last <br>
 
@@ -969,7 +969,7 @@ class redRGraph(QwtPlot,widgetState):
             # if not isinstance(marker, QwtPlotMarker): continue
             # x = marker.xValue()
             # y = marker.yValue()
-            # text = str(marker.label().text())
+            # text = unicode(marker.label().text())
             # align = marker.labelAlignment()
             # xalign = (align & Qt.AlignLeft and "right") or (align & Qt.AlignHCenter and "center") or (align & Qt.AlignRight and "left")
             # yalign = (align & Qt.AlignBottom and "top") or (align & Qt.AlignTop and "bottom") or (align & Qt.AlignVCenter and "center")
@@ -978,7 +978,7 @@ class redRGraph(QwtPlot,widgetState):
             # labelColor = marker.label().color()
             # color = (labelColor.red()/255., labelColor.green()/255., labelColor.blue()/255.)
             # alpha = labelColor.alpha()/255.
-            # name = str(marker.label().font().family())
+            # name = unicode(marker.label().font().family())
             # weight = marker.label().font().bold() and "bold" or "normal"
             # if marker.__class__ == RotatedMarker: extra = ", rotation = %f" % (marker.rotation)
             # else: extra = ""
@@ -998,7 +998,7 @@ class redRGraph(QwtPlot,widgetState):
                 # labels = self.axisScaleDraw(QwtPlot.xBottom).labels
                 # f.write("xticks(%s, %s)\nlabels = gca().get_xticklabels()\nsetp(labels, rotation=-%.3f) #, weight = 'bold', fontsize=10)\n\n" % (range(len(labels)), labels, self.axisScaleDraw(QwtPlot.xBottom).labelRotation()))
 
-            # f.write("#set axis labels\nxlabel('%s', weight = 'bold')\nylabel('%s', weight = 'bold')\n\n" % (str(self.axisTitle(QwtPlot.xBottom).text()), str(self.axisTitle(QwtPlot.yLeft).text())))
+            # f.write("#set axis labels\nxlabel('%s', weight = 'bold')\nylabel('%s', weight = 'bold')\n\n" % (unicode(self.axisTitle(QwtPlot.xBottom).text()), unicode(self.axisTitle(QwtPlot.yLeft).text())))
             # f.write("\naxis([x1, x2, y1, y2])\ngca().set_position([edgeOffset, edgeOffset, 1 - 2*edgeOffset, 1 - 2*edgeOffset])\n#subplots_adjust(left = 0.08, bottom = 0.11, right = 0.98, top = 0.98)\n")
 
         # f.write("\n# possible settings to change\n#axes().set_frame_on(0) #hide the frame\n#axis('off') #hide the axes and labels on them\n\n")
@@ -1008,7 +1008,7 @@ class redRGraph(QwtPlot,widgetState):
             # legendItems = []
             # for widget in self.legend().legendItems():
                 # item = self.legend().find(widget)
-                # text = str(item.title().text()).replace("<b>", "").replace("</b>", "")
+                # text = unicode(item.title().text()).replace("<b>", "").replace("</b>", "")
                 # if not item.symbol():
                     # legendItems.append((text, None, None, None, None))
                 # else:
@@ -1035,7 +1035,7 @@ class redRGraph(QwtPlot,widgetState):
         # drawSomeLegendItems(x, items[i*itemsPerAxis: min(len(items), (i+1)*itemsPerAxis)], itemsPerAxis)
 
 # items = %s
-# drawLegend(items)\n""" % (str(legendItems)))
+# drawLegend(items)\n""" % (unicode(legendItems)))
 
         # f.write("\nshow()")
 

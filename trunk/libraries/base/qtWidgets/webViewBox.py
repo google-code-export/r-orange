@@ -30,7 +30,7 @@ class webViewBox(QtWebKit.QWebView,widgetState):
     
     def followLink(self, url):
         import webbrowser
-        #print str(url)
+        #print unicode(url)
         #print url.toString()
         webbrowser.open_new_tab(url.toString())
 

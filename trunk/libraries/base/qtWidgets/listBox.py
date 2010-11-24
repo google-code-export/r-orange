@@ -60,7 +60,7 @@ class listBox(QListWidget,widgetState):
         else:
             selectedItems = getdeepattr(self.widget, self.ogValue, default = [])
 
-        mime.setText(str(selectedItems))
+        mime.setText(unicode(selectedItems))
         mime.source = self
         drag.setMimeData(mime)
         drag.start(Qt.MoveAction)
@@ -93,7 +93,7 @@ class listBox(QListWidget,widgetState):
                 index = self.count()
 
             source = ev.mimeData().source
-            selectedItemIndices = eval(str(ev.mimeData().text().toAscii()))
+            selectedItemIndices = eval(unicode(ev.mimeData().text().toAscii()))
 
             if self.ogLabels != None and self.ogValue != None:
                 allSourceItems = getdeepattr(source.widget, source.ogLabels, default = [])
@@ -147,7 +147,7 @@ class listBox(QListWidget,widgetState):
         selected = []
         for i in range(self.count()):
             # print i
-            items.append(str(self.item(i).text().toAscii()))
+            items.append(unicode(self.item(i).text().toAscii()))
             if self.isItemSelected(self.item(i)):
                 selected.append(i)
 
@@ -184,7 +184,7 @@ class listBox(QListWidget,widgetState):
             # if self.isItemSelected(self.item(i)): i = i + 1
         # return i
     def getCurrentSelection(self):
-            return [str(i.text().toAscii()) for i in self.selectedItems()]
+            return [unicode(i.text().toAscii()) for i in self.selectedItems()]
                 
     def items(self):
         items = []
@@ -194,11 +194,11 @@ class listBox(QListWidget,widgetState):
     def getItems(self):
         items = []
         for i in range(0, self.count()):
-            items.append(str(self.item(i).text().toAscii()))
+            items.append(unicode(self.item(i).text().toAscii()))
         return items
         
     def update(self, items):
-        current = [str(item.text().toAscii()) for item in self.selectedItems()]
+        current = [unicode(item.text().toAscii()) for item in self.selectedItems()]
         self.clear()
         self.addRItems(items)
         index = []

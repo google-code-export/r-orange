@@ -18,7 +18,7 @@ class RVariable(BaseRedRVariable):
         self.__package__ = 'base'
     def __str__(self):
         ## print output for the class
-        return '###Signal Class: '+str(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+str(self.dictAttrs)
+        return '###Signal Class: '+unicode(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+unicode(self.dictAttrs)
     def getClass_call(self):
         return 'class('+self.data+')'
         
@@ -27,12 +27,14 @@ class RVariable(BaseRedRVariable):
     def _simpleOutput(self, subsetting = ''):
         text = 'R Data Variable Name: '+self.data+'\n\n'
         return text
+    def summary(self):
+        return '\n'.join(self.R('capture.output(summary('+self.data+'))', wantType = 'list'))
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
         text += 'R Data Variable Value: '+self.R('paste(capture.output('+self.data+subsetting+'), collapse = "\n")')+'\n\n'
         text += 'R Parent Variable Name: '+self.parent+'\n\n'
         text += 'R Parent Variable Value: '+self.R('paste(capture.output('+self.parent+subsetting+'), collapse = "\n")')+'\n\n'
-        text += 'Class Dictionary: '+str(self.dictAttrs)+'\n\n'
+        text += 'Class Dictionary: '+unicode(self.dictAttrs)+'\n\n'
         return text
     # def getAttrOutput_call(self, item, subsetting = ''):
         # print '|#|', item, subsetting

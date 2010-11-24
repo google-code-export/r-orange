@@ -23,7 +23,7 @@ class mathWidget(OWRpy):
         self.setRvariableNames(['math'])
         
         self.counter = 1
-        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR']
+        self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR', 'toDateTime (MDY)', 'toDateTime (DMY)', 'toDateTime (YMD)']
         
         self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotData)
 
@@ -77,11 +77,11 @@ class mathWidget(OWRpy):
         self.functionListBox.scrollToItem(self.functionListBox.findItems(s, Qt.MatchStartsWith)[0])
         
     def functionDone(self):
-        text = str(self.functionLineEdit.text())
+        text = unicode(self.functionLineEdit.text())
         self.executeFunction(text)
         
     def funcionPressed(self):
-        text = str(self.functionListBox.selectedItems()[0].text())
+        text = unicode(self.functionListBox.selectedItems()[0].text())
         self.executeFunction(text)
         
     def executeFunction(self, text):
@@ -94,41 +94,47 @@ class mathWidget(OWRpy):
         self.dialogLabel.setText(text)
     def functionCommit(self):
         try:
-            if str(self.dialogTopLineEdit.text()) != '':
-                topText = str(self.dialogTopLineEdit.text())
+            if unicode(self.dialogTopLineEdit.text()) != '':
+                topText = unicode(self.dialogTopLineEdit.text())
                 try:
                     a = float(topText)
                 except:
                     self.status.setText('Top Text Area Does Not Contain A Number')
                     return 
             else:
-                topText = self.data+'$'+str(self.dialogTopListBox.selectedItems()[0].text())
+                topText = self.data+'$'+unicode(self.dialogTopListBox.selectedItems()[0].text())
                 
             if self.dialogBottomArea.isVisible():
-                if str(self.dialogBottomLineEdit.text()) != '':
-                    bottomText = str(self.dialogBottomLineEdit.text())
+                if unicode(self.dialogBottomLineEdit.text()) != '':
+                    bottomText = unicode(self.dialogBottomLineEdit.text())
                     try:
-                        if str(self.dialogLabel.text()) not in ['match']:
+                        if unicode(self.dialogLabel.text()) not in ['match']:
                             a = float(bottomText)
                     except:
                         self.status.setText('Top Text Area Does Not Contain A Number')
                         return
                 else:
-                    bottomText = self.data+'$'+str(self.dialogBottomListBox.selectedItems()[0].text())
+                    bottomText = self.data+'$'+unicode(self.dialogBottomListBox.selectedItems()[0].text())
                     
-            function = str(self.dialogLabel.text())
+            function = unicode(self.dialogLabel.text())
             
             if function in ['log10', 'log2', 'as.numeric', 'as.character', 'exp']:
                 try:
-                    self.R(self.data+'$'+function+str(self.counter)+'<-'+function+'('+topText+')', wantType = 'NoConversion')
+                    self.R(self.data+'$'+function+unicode(self.counter)+'<-'+function+'('+topText+')', wantType = 'NoConversion')
                     self.table.setRTable(self.data)
                     self.counter += 1
                 except:
                     self.status.setText('An error occured in your function')
-                    
+            elif function in ['toDateTime (MDY)', 'toDateTime(YMD)', 'toDateTime(DMY)']:
+                if function == 'toDateTime (MDY)':
+                    self.R(self.data+'$dateAsMDY'+unicode(self.counter)+'<-strptime('+topText+', "%m/%d/%y")', wantType = 'NoConversion')
+                elif function == 'toDateTime (YMD)':
+                    self.R(self.data+'$dateAsMDY'+unicode(self.counter)+'<-strptime('+topText+', "%y/%m/%d")', wantType = 'NoConversion')
+                elif function == 'toDateTime (DMY)':
+                    self.R(self.data+'$dateAsMDY'+unicode(self.counter)+'<-strptime('+topText+', "%d/%m/%y")', wantType = 'NoConversion')
             elif function in ['match']:
                 try:
-                    self.R(self.data+'$'+function+str(self.counter)+'<-'+function+'('+topText+', '+bottomText+')', wantType = 'NoConversion')
+                    self.R(self.data+'$'+function+unicode(self.counter)+'<-'+function+'('+topText+', '+bottomText+')', wantType = 'NoConversion')
                     self.table.setRTable(self.data)
                     self.counter += 1
                 except:
@@ -136,36 +142,36 @@ class mathWidget(OWRpy):
             else:
                 if function == 'add':
                     try:
-                        self.R(self.data+'$'+'plus_'+str(self.counter)+'<-'+topText+' + '+bottomText, wantType = 'NoConversion')
+                        self.R(self.data+'$'+'plus_'+unicode(self.counter)+'<-'+topText+' + '+bottomText, wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'subtract':
                     try:
-                        self.R(self.data+'$'+'minus_'+str(self.counter)+'<-'+topText+' - '+bottomText, wantType = 'NoConversion')
+                        self.R(self.data+'$'+'minus_'+unicode(self.counter)+'<-'+topText+' - '+bottomText, wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'multiply':
                     try:
-                        self.R(self.data+'$'+'times_'+str(self.counter)+'<-as.numeric('+topText+') * as.numeric('+bottomText+')', wantType = 'NoConversion')
+                        self.R(self.data+'$'+'times_'+unicode(self.counter)+'<-as.numeric('+topText+') * as.numeric('+bottomText+')', wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'divide':
                     try:
-                        self.R(self.data+'$'+'divide_'+str(self.counter)+'<-as.numeric('+topText+') / as.numeric('+bottomText+')', wantType = 'NoConversion')
+                        self.R(self.data+'$'+'divide_'+unicode(self.counter)+'<-as.numeric('+topText+') / as.numeric('+bottomText+')', wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'logicAND':
                     try:
-                        self.R(self.data+'$'+'logic_AND'+str(self.counter)+'<-'+topText+'&'+bottomText, wantType = 'NoConversion')
+                        self.R(self.data+'$'+'logic_AND'+unicode(self.counter)+'<-'+topText+'&'+bottomText, wantType = 'NoConversion')
                     except:
                         self.status.setText('An error occured in your function')
                 elif function == 'logicOR':
                     try:
-                        self.R(self.data+'$'+'logic_OR'+str(self.counter)+'<-'+topText+'|'+bottomText, wantType = 'NoConversion')
+                        self.R(self.data+'$'+'logic_OR'+unicode(self.counter)+'<-'+topText+'|'+bottomText, wantType = 'NoConversion')
                     except:
                         self.status.setText('An error occured in your function')
                 self.counter += 1

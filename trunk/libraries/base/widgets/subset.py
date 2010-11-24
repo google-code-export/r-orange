@@ -51,7 +51,7 @@ class subset(OWRpy):
         
     def onSelect(self):
         count = self.attributes.selectionCount()
-        self.selectionInfoBox.setText('# ' + self.rowcolBox.getChecked()  + 's selected: ' + str(count))
+        self.selectionInfoBox.setText('# ' + self.rowcolBox.getChecked()  + 's selected: ' + unicode(count))
         
     def processA(self, data):
         #print 'processA'
@@ -85,7 +85,7 @@ class subset(OWRpy):
 
     def setcolA(self):
         try:
-            self.colAsel = '\''+str(self.colA.selectedItems()[0].text())+'\''
+            self.colAsel = '\''+unicode(self.colA.selectedItems()[0].text())+'\''
             if self.colAsel == '\'Rownames\'':
                 self.colAsel = '0'
         except: return
@@ -93,7 +93,7 @@ class subset(OWRpy):
             self.subset()
     def setcolB(self):
         try:
-            self.colBsel = '\''+str(self.colB.selectedItems()[0].text())+'\''
+            self.colBsel = '\''+unicode(self.colB.selectedItems()[0].text())+'\''
         except: return
         if self.commit.processOnChange():
             self.subset()
@@ -133,7 +133,7 @@ class subset(OWRpy):
         
         selectedDFItems = []
         for name in self.attributes.selectedItems():
-            selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
+            selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
             self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])', wantType = 'NoConversion')

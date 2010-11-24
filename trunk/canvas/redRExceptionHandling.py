@@ -2,7 +2,7 @@ import sys, traceback,os, re
 from datetime import tzinfo, timedelta, datetime
 
 def getSafeString( s):
-    return str(s).replace("<", "&lt;").replace(">", "&gt;")
+    return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
 def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):
     if not tracebackInfo:

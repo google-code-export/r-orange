@@ -6,7 +6,7 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class spinBox(QSpinBox,widgetState):
+class spinBox(QDoubleSpinBox ,widgetState):
     def __init__(self, widget, label=None, displayLabel=True, includeInReports=True, value=None, 
     orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
         
@@ -27,7 +27,7 @@ class spinBox(QSpinBox,widgetState):
         if min:
             self.setMinimum(int(min))
         if toolTip:
-            self.setToolTip(str(toolTip))
+            self.setToolTip(unicode(toolTip))
         self.setWrapping(True) # we always allow the spin box to wrap around
         if value:
             self.setValue(value)

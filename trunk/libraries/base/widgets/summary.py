@@ -34,12 +34,12 @@ class summary(OWRpy):
         else:
             self.RFunctionParam_object=''
     def commitFunction(self):
-        if str(self.RFunctionParam_object) == '': return
-        self.R('txt<-capture.output(summary(object='+str(self.RFunctionParam_object)+'))', wantType = 'NoConversion')
+        if unicode(self.RFunctionParam_object) == '': return
+        self.R('txt<-capture.output(summary(object='+unicode(self.RFunctionParam_object)+'))', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
     def getReportText(self, fileDir):
         text = 'Summary of attached data:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

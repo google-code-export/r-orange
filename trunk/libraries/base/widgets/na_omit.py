@@ -43,10 +43,10 @@ class na_omit(OWRpy):
         else:
             self.RFunctionParam_object=''
     def commitFunction(self):
-        if str(self.RFunctionParam_object) == '': return
+        if unicode(self.RFunctionParam_object) == '': return
         injection = []
         inj = ','.join(injection)
-        self.R(self.Rvariables['na.omit']+'<-na.omit(object='+str(self.RFunctionParam_object)+','+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['na.omit']+'<-na.omit(object='+unicode(self.RFunctionParam_object)+','+inj+')', wantType = 'NoConversion')
         thisdataclass = self.R('class('+self.Rvariables['na.omit']+')')
         if type(thisdataclass) == list: #this is a special R type so just send as generic
             self.rSend("id3", self.data)

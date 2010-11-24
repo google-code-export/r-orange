@@ -30,7 +30,7 @@ class textEdit(QTextEdit,widgetState):
         if not editable:
             self.setReadOnly(True)
         self.insertHtml(html)
-        button(wb, "Clear", callback = self.clear)
+        button(self.hb, "Clear", callback = self.clear)
         
     def sizeHint(self):
         return QSize(10,10)
@@ -48,7 +48,7 @@ class textEdit(QTextEdit,widgetState):
         self.insertHtml(data['text'])
         # self.setEnabled(data['enabled'])
     def toPlainText(self):
-        return str(QTextEdit.toPlainText(self).toAscii())
+        return unicode(QTextEdit.toPlainText(self).toAscii())
     def getReportText(self,fileDir):
         return {self.widgetName:{'includeInReports': self.includeInReports, 
         'text': redRReports.createLitralBlock(self.toPlainText())}}

@@ -6,36 +6,62 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
 import string
-from datetime import tzinfo, timedelta, datetime
+import time as ti
+from datetime import tzinfo, timedelta, datetime, time
 import traceback, redRExceptionHandling
 import os.path, os
-import redREnviron
+import redREnviron, log, SQLiteSession
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.dialog import dialog as redRdialog
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
-
+from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
+from libraries.base.qtWidgets.radioButtons import radioButtons as redRradiobuttons
+from libraries.base.qtWidgets.tabWidget import tabWidget as redRTabWidget
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
+from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)
         self.canvasDlg = canvasDlg
+        
+        self.defaultExceptionHandler = sys.excepthook
+        self.defaultSysOutHandler = sys.stdout
+
+        self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
+        ### error logging setup ###
+        self.errorDB = log.logDB()
+        self.errorHandler = SQLiteSession.SQLiteHandler(defaultDB = self.errorDB)
+        
         self.textOutput = QTextEdit(self)
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
         self.allOutput = ''
         
         self.setLayout(QVBoxLayout())
-        self.layout().addWidget(self.textOutput)
-        self.layout().setMargin(2)
+        wb = redRwidgetBox(self)
+        self.tw = redRTabWidget(wb)
+        self.outputExplorer = self.tw.createTabPage('General Outputs')
+        self.topWB = redRwidgetBox(self.outputExplorer, orientation = 'horizontal')
+        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = ['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')], callback = self.processTable)
+        #self.tableCombo.update(self.errorHandler.getTableNames())
+        self.minSeverity = redRComboBox(self.topWB, label = 'Minimum Severity:', items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], callback = self.processTable)
+        self.maxRecords = redRLineEdit(self.topWB, label = 'Maximum Records:', text = '100')
+        self.typeCombo = redRComboBox(self.topWB, label = 'Output Type:', items = ['No Filter', 'Error', 'Comment', 'Message', 'Warning'], callback = self.processTable)
+        redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
+        self.sessionID = redRradiobuttons(self.topWB, label = 'Session ID', displayLabel = False, buttons = ['Current Session Only', 'All Sessions'], setChecked = 'Current Session Only', callback = self.processTable)
+        redRbutton(self, label = 'Update View', callback = self.processTable)
+        redRbutton(self.topWB, label = 'Clear DB', callback = self.clearDataBase)
+        self.outputExplorer.layout().addWidget(self.textOutput)
+        self.outputExplorer.layout().setMargin(2)
         self.setWindowTitle("Output Window")
         self.setWindowIcon(QIcon(canvasDlg.outputPix))
+        self.exceptionTracker = self.tw.createTabPage('Exceptions')
+        self.exceptionText = redRTextEdit(self.exceptionTracker, label = 'Exception Text', displayLabel = False)
 
-        self.defaultExceptionHandler = sys.excepthook
-        self.defaultSysOutHandler = sys.stdout
-
-        self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
+        
         self.unfinishedText = ""
         
         w = h = 500
@@ -49,9 +75,48 @@ class OutputWindow(QDialog):
             else: 
                 w = h = 500
         self.resize(w, h)
-            
+        self.lastTime = ti.time()
         self.hide()
+        log.setExceptionManager(self)
+    def showExceptionTab(self):
+        self.tw.setCurrentIndex(1)
+    def refresh(self):
+        self.tableCombo.update(['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')])
+        #print self.errorHandler.getTableNames()
+        
+    def processTable(self):
+        inj = []
+        if unicode(self.typeCombo.currentText()) != 'No Filter':
+            inj.append('ErrorType == \"%s\"' % self.typeCombo.currentText())
+        if unicode(self.tableCombo.currentText()) != 'All':
+            inj.append('OutputDomain == \"%s\"' % self.tableCombo.currentText())
+        inj.append('Severity >= %s' % unicode(self.minSeverity.currentText()))
+        query = "SELECT * FROM All_Output WHERE "+" AND ".join(inj)+" ORDER BY k DESC LIMIT %s" % (self.maxRecords.text())
+        response = self.errorHandler.execute(query = query)
+        #print query
 
+            
+        self.showTable(response)
+    def clearDataBase(self):
+        log.clearDB()
+    def showTable(self, response):
+        htmlText = self.toHTMLTable(response)
+        self.textOutput.clear()
+        self.textOutput.insertHtml(htmlText)
+    def toHTMLTable(self, response):
+        
+        s = '<h2>%s</h2>' % self.tableCombo.currentText()
+        s+= '<table border="1" cellpadding="3">'
+        s+= '  <tr><td><b>'
+        s+= '    </b></td><td><b>'.join(['Log ID', 'Output Category', 'Time Stamp', 'Session ID', 'Severity', 'Message Type', 'Message', 'Traceback'])
+        s+= '  </b></td></tr>'
+        
+        for row in response:
+            s+= '  <tr><td>'
+            s+= '    </td><td>'.join([unicode(i) for i in row])
+            s+= '  </td></tr>'
+        s+= '</table>'
+        return s
     def stopCatching(self):
         self.catchException(0)
         self.catchOutput(0)
@@ -85,80 +150,37 @@ class OutputWindow(QDialog):
         else:     sys.excepthook = self.defaultExceptionHandler
 
     def catchOutput(self, catch):
+        return
         if catch:    sys.stdout = self
         else:         sys.stdout = self.defaultSysOutHandler
 
     def clear(self):
         self.textOutput.clear()
+        self.exceptionText.clear()
 
     # print text produced by warning and error widget calls
     def widgetEvents(self, text, eventVerbosity = 1):
         if redREnviron.settings["outputVerbosity"] >= eventVerbosity:
             if text != None:
-                self.write(str(text))
+                self.write(unicode(text))
             self.canvasDlg.setStatusBarEvent(QString(text))
 
     # simple printing of text called by print calls
-    def safe_str(self,obj):
+    def safe_unicode(self,obj):
         try:
-            return str(obj)
+            return unicode(obj)
         except UnicodeEncodeError:
             # obj is unicode
             return unicode(obj).encode('unicode_escape')
 
     def write(self, text):
-        text = self.safe_str(text)
-        # if text[-1:] == "\n":
-        
-        self.allOutput += text.replace("\n", "<br>\n")
-        # else:
-            # self.allOutput += text + "\n"
-
-        if redREnviron.settings["writeLogFile"]:
-            self.logFile.write(text.replace("\n", "<br>\n"))
-            
-        if not redREnviron.settings['debugMode']: return 
-        
-        import re
-        m = re.search('^(\|(#+)\|\s?)(.*)',text)
-        if redREnviron.settings['outputVerbosity'] ==0:
-            if m:
-                text = str(m.group(3))
-            
-        elif m and len(m.group(2)) >= redREnviron.settings['outputVerbosity']:
-            # text = '\n len:' + str(len(m.group(2))) + '\n outputVerbosity:' + str(redREnviron.settings['outputVerbosity']+1) + '\n output:'+ str(m.group(3)) + "\n print:" + str(len(m.group(2)) >= (redREnviron.settings['outputVerbosity'])+1)
-            text = str(m.group(3)) + "\n"
-        else:
-            return
-
-        
-        if redREnviron.settings["focusOnCatchOutput"]:
-            self.canvasDlg.menuItemShowOutputWindow()
-
-
-        
-        cursor = QTextCursor(self.textOutput.textCursor())                
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        self.textOutput.setTextCursor(cursor)                             
-        if re.search('#'*60 + '<br>',text):
-            self.textOutput.insertHtml(text)                              
-        else:
-            self.textOutput.insertPlainText(text)                              
-        cursor = QTextCursor(self.textOutput.textCursor())                
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        if text[-1:] == "\n":
-            if redREnviron.settings["printOutputInStatusBar"]:
-                self.canvasDlg.setStatusBarEvent(self.unfinishedText + text)
-            self.unfinishedText = ""
-        else:
-            self.unfinishedText += text
-            
+        return
 
     def flush(self):
         pass
     
     def getSafeString(self, s):
-        return str(s).replace("<", "&lt;").replace(">", "&gt;")
+        return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
     def uploadYes(self):
         self.msg.done(1)
@@ -174,63 +196,61 @@ class OutputWindow(QDialog):
             self.checked = False
         
     def uploadException(self,err):
-        import httplib,urllib
-        import sys,pickle,os, re
-        #print redREnviron.settings['askToUploadError'], 'askToUploadError'
-        #print redREnviron.settings['uploadError'], 'uploadError'
-        if not redREnviron.settings['askToUploadError']:
-            res = redREnviron.settings['uploadError']
-        else:
-            self.msg = redRdialog(parent=self,title='Red-R Error')
-            
-            error = redRwidgetBox(self.msg,orientation='vertical')
-            redRwidgetLabel(error, label='Do you wish to report the Error Log?')
-            buttons = redRwidgetBox(error,orientation='horizontal')
+        try:
+            import httplib,urllib
+            import sys,pickle,os, re
+            #print redREnviron.settings['askToUploadError'], 'askToUploadError'
+            #print redREnviron.settings['uploadError'], 'uploadError'
+            if not redREnviron.settings['askToUploadError']:
+                res = redREnviron.settings['uploadError']
+            else:
+                self.msg = redRdialog(parent=self,title='Red-R Error')
+                
+                error = redRwidgetBox(self.msg,orientation='vertical')
+                redRwidgetLabel(error, label='Do you wish to report the Error Log?')
+                buttons = redRwidgetBox(error,orientation='horizontal')
 
-            redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
-            redRbutton(buttons, label = 'No', callback = self.uploadNo)
-            self.checked = False
-            self.remember = redRcheckBox(error, label='Remember Response', buttons=['Remember my Response'],callback=self.rememberResponse)
-            res = self.msg.exec_()
-            redREnviron.settings['uploadError'] = res
-        #print res
-        if res == 1:
-            print 'in res'
-            err['version'] = redREnviron.version['SVNVERSION']
-            err['type'] = redREnviron.version['TYPE']
-            err['redRversion'] = redREnviron.version['REDRVERSION']
-            print err['traceback']
-            
-            
-            ##err['output'] = self.allOutput
-            if os.name == 'nt':
-                err['os'] = 'Windows'
-            # else:
-                # err['os'] = 'Not Specified'
-            if redREnviron.settings['canContact']:
-                err['email'] = redREnviron.settings['email']
-            # else:
-                # err['email'] = 'None; no contact'
-            #err['id'] = redREnviron.settings['id']
-            #print err, 'Error'
-            params = urllib.urlencode(err)
-            headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-            conn = httplib.HTTPConnection("localhost",80)
-            conn.request("POST", "/errorReport.php", params,headers)
-            #print err
-            # response = conn.getresponse()
-            # print response.status, response.reason
-            # data = response.read()
-            # print data
-            # conn.close()
-        else:
-            return
-        
+                redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
+                redRbutton(buttons, label = 'No', callback = self.uploadNo)
+                self.checked = False
+                self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
+                res = self.msg.exec_()
+                redREnviron.settings['uploadError'] = res
+            #print res
+            if res == 1:
+                #print 'in res'
+                err['version'] = redREnviron.version['SVNVERSION']
+                err['type'] = redREnviron.version['TYPE']
+                err['redRversion'] = redREnviron.version['REDRVERSION']
+                #print err['traceback']
+                
+                
+                ##err['output'] = self.allOutput
+                if os.name == 'nt':
+                    err['os'] = 'Windows'
+                # else:
+                    # err['os'] = 'Not Specified'
+                if redREnviron.settings['canContact']:
+                    err['email'] = redREnviron.settings['email']
+                # else:
+                    # err['email'] = 'None; no contact'
+                #err['id'] = redREnviron.settings['id']
+                #print err, 'Error'
+                params = urllib.urlencode(err)
+                headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+                conn = httplib.HTTPConnection("localhost",80)
+                conn.request("POST", "/errorReport.php", params,headers)
+                
+            else:
+                return
+        except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
+        print 'Exception Occured, please see the output for more details.\n'
         if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
         text = redRExceptionHandling.formatException(type,value,tracebackInfo)
+        log.log(3,9,1,text)
         
         t = datetime.today().isoformat(' ')
         toUpload = {}
@@ -240,19 +260,19 @@ class OutputWindow(QDialog):
         #toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]
         
         if redREnviron.settings["printExceptionInStatusBar"]:
-            self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( str(type) , t))
+            self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( unicode(type) , t))
 
         
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        cursor = QTextCursor(self.exceptionText.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)                             # existing text
-        self.textOutput.insertHtml(text)                                  # then append the text
-        cursor = QTextCursor(self.textOutput.textCursor())                # clear the current text selection so that
+        self.exceptionText.setTextCursor(cursor)                             # existing text
+        self.exceptionText.insertHtml(text)                                  # then append the text
+        cursor = QTextCursor(self.exceptionText.textCursor())                # clear the current text selection so that
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      # the text will be appended to the end of the
-        self.textOutput.setTextCursor(cursor)
+        self.exceptionText.setTextCursor(cursor)
         
         if redREnviron.settings["writeLogFile"]:
-            self.logFile.write(str(text) + "<br>\n")
+            self.logFile.write(unicode(text) + "<br>\n")
         
         self.uploadException(toUpload)
 

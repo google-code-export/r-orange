@@ -44,14 +44,16 @@ def __getDirectoryNames():
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
         except:
-            print 'Error occured in setting the settingsDir'
+            import log
+            log.log(1, 9, 1, 'Error occured in setting the settingsDir')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
     tempDirHolder = os.path.join(canvasSettingsDir, 'temp')
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
     downloadsDir = os.path.join(settingsDir, "downloads")
-
+    logDB = os.path.join(canvasSettingsDir, "log.db")
+    
     if sys.platform=="win32":
         objShell = win32com.client.Dispatch("WScript.Shell")
         documentsDir = os.path.join(objShell.SpecialFolders("MyDocuments"),'Red-R')
@@ -72,7 +74,7 @@ def __getDirectoryNames():
     #tempDir = setTempDir(tempDirHolder)
     # print tempDir
         
-    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir", "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir",'logDB', "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -83,15 +85,15 @@ def checkInternetConnection():
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(temp):
-    # print 'setting temp dir' + str(time.time())
+    # print 'setting temp dir' + unicode(time.time())
     
     tempDir = os.path.join(directoryNames['tempDirHolder'], temp) 
     os.mkdir(tempDir)
     directoryNames['tempDir'] = tempDir
     return tempDir
     # if not os.path.isdir():
-        # os.mkdir(os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber))))
-        # return os.path.join(canvasSettingsDir, 'temp', str('temp'+str(dirNumber)))
+        # os.mkdir(os.path.join(canvasSettingsDir, 'temp', unicode('temp'+unicode(dirNumber))))
+        # return os.path.join(canvasSettingsDir, 'temp', unicode('temp'+unicode(dirNumber)))
     # else:
         # return setTempDir(canvasSettingsDir, int(dirNumber + 1))
 
@@ -113,16 +115,14 @@ def loadSettings():
     settings.setdefault("toolboxWidth", 200)
     settings.setdefault('schemeIconSize', 1)
     settings.setdefault("snapToGrid", 1)
-    
-    
+    settings.setdefault('helpMode', True)
+    settings.setdefault("minSeverity", 5)
     settings.setdefault("saveWidgetsPosition", 1)
     settings.setdefault("widgetSelectedColor", (0, 255, 0))
     settings.setdefault("widgetActiveColor", (0,0,255))
     settings.setdefault("lineColor", (0,255,0))
-    
+    settings.setdefault("exceptionLevel", 5)
     settings.setdefault("WidgetTabs", [])
-
-    
 
     settings.setdefault("saveSchemaDir", directoryNames['documentsDir'])
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
@@ -130,7 +130,7 @@ def loadSettings():
     
     settings.setdefault("canvasWidth", 700)
     settings.setdefault("canvasHeight", 600)
-
+    settings.setdefault('dockState', {'notesBox':True, 'outputBox':True})
         
     settings.setdefault("useDefaultPalette", 0)
 
@@ -162,14 +162,11 @@ def loadSettings():
     settings.setdefault("email", '')
     settings.setdefault('canContact', 1)
     
-    
-    
-    
     return settings
     
 # Saves settings to this widget's .ini file
 def saveSettings():
-    print 'red-r canvas saveSettings'
+    #print 'red-r canvas saveSettings'
     filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
     file=open(filename, "wb")
     if settings["widgetListType"] == 1:        # tree view
@@ -206,14 +203,17 @@ def addOrangeDirectoriesToPath(directoryNames):
             sys.path.insert(0,path)
 
 # try:        
-    # if version:
-        # pass
+    # print 'name', __name__
+    # print 'main', __main__
+
 # except:
     # print 'do the import'
-# print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', str(time.time())
-directoryNames = __getDirectoryNames()
-addOrangeDirectoriesToPath(directoryNames)
-version = getVersion()
-settings = loadSettings()
+
+if __name__ =='redREnviron':
+    #print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
+    directoryNames = __getDirectoryNames()
+    addOrangeDirectoriesToPath(directoryNames)
+    version = getVersion()
+    settings = loadSettings()
 
 

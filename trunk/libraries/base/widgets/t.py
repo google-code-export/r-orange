@@ -34,7 +34,7 @@ class t(OWRpy):
     def commitFunction(self):
         if self.x == '': return
         
-        self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+str(self.RFunctionParam_x)+'))', wantType = 'NoConversion')
+        self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+unicode(self.RFunctionParam_x)+'))', wantType = 'NoConversion')
         
         newData = redRRDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()

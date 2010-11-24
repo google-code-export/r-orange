@@ -25,33 +25,33 @@ class arrows(OWRpy):
         self.RFunctionParamcode_lineEdit =  lineEdit(self.standardTab,  label = "code:", text = '1')
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def commitFunction(self):
-        if str(self.RFunctionParamx0_lineEdit.text()) == '':
+        if unicode(self.RFunctionParamx0_lineEdit.text()) == '':
             self.status.setText('No x0 specified')
             return
-        if str(self.RFunctionParamx1_lineEdit.text()) == '':
+        if unicode(self.RFunctionParamx1_lineEdit.text()) == '':
             self.status.setText('No x1 specified')
             return
-        if str(self.RFunctionParamy0_lineEdit.text()) == '':
+        if unicode(self.RFunctionParamy0_lineEdit.text()) == '':
             self.status.setText('No y0 specified')
             return
-        if str(self.RFunctionParamy1_lineEdit.text()) == '':
+        if unicode(self.RFunctionParamy1_lineEdit.text()) == '':
             self.status.setText('No y1 specified')
             return
         injection = []
-        if str(self.RFunctionParamy1_lineEdit.text()) != '':
-            string = 'y1='+str(self.RFunctionParamy1_lineEdit.text())+''
+        if unicode(self.RFunctionParamy1_lineEdit.text()) != '':
+            string = 'y1='+unicode(self.RFunctionParamy1_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamy0_lineEdit.text()) != '':
-            string = 'y0='+str(self.RFunctionParamy0_lineEdit.text())+''
+        if unicode(self.RFunctionParamy0_lineEdit.text()) != '':
+            string = 'y0='+unicode(self.RFunctionParamy0_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamx0_lineEdit.text()) != '':
-            string = 'x0='+str(self.RFunctionParamx0_lineEdit.text())+''
+        if unicode(self.RFunctionParamx0_lineEdit.text()) != '':
+            string = 'x0='+unicode(self.RFunctionParamx0_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamcode_lineEdit.text()) != '':
-            string = 'code='+str(self.RFunctionParamcode_lineEdit.text())+''
+        if unicode(self.RFunctionParamcode_lineEdit.text()) != '':
+            string = 'code='+unicode(self.RFunctionParamcode_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamx1_lineEdit.text()) != '':
-            string = 'x1='+str(self.RFunctionParamx1_lineEdit.text())+''
+        if unicode(self.RFunctionParamx1_lineEdit.text()) != '':
+            string = 'x1='+unicode(self.RFunctionParamx1_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
         

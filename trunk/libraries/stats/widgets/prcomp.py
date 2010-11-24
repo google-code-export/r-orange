@@ -38,7 +38,7 @@ class prcomp(OWRpy):
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
         if 'Center' in self.options.getChecked():
             injection.append('center = TRUE')
@@ -49,7 +49,7 @@ class prcomp(OWRpy):
         else:
             injection.append('scale = FALSE')
         inj = ','.join(injection)
-        self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+str(self.RFunctionParam_x)+'), '+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['prcomp']+'<-prcomp(x=as.matrix('+unicode(self.RFunctionParam_x)+'), '+inj+')')
         
         newPRComp = redRRModelFit(data = self.Rvariables['prcomp'])
         self.rSend("id0", newPRComp)

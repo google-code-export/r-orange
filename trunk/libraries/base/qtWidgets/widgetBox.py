@@ -1,11 +1,12 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+from libraries.base.qtWidgets.button import button as redRButton
+import redREnviron, os
         
 class widgetBox(QWidget,widgetState):
     def __init__(self,widget, orientation='vertical', addSpace=False, includeInReports=True,
-    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop):
+    sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop, helpButton = False):
 
         widgetState.__init__(self,widget, 'WidgetBox',includeInReports)
         QWidget.__init__(self,self.controlArea)
@@ -30,7 +31,11 @@ class widgetBox(QWidget,widgetState):
             
         if self.layout() == 0 or self.layout() == None:
             self.setLayout(QVBoxLayout())
-
+        if helpButton:
+            icon = QPixmap(os.path.join(redREnviron.directoryNames['redRDir'], 'canvas', 'icons', 'information.png'))
+            tlabel = QLabel()
+            tlabel.setPixmap(icon)
+            self.layout().addWidget(tlabel)
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
         # else:
@@ -47,6 +52,7 @@ class widgetBox(QWidget,widgetState):
                 separator(self.controlArea, 0, addSpace)
             elif addSpace:
                 separator(self.controlArea)
+    
     
     def delete(self):
         # itemRange = self.layout().count()

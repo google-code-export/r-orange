@@ -1,7 +1,7 @@
 # Author: Miha Stajdohar (miha.stajdohar@fri.uni-lj.si), modifications by Kyle R Covington
 # This module 
 
-import os, sys, time, smtplib
+import os, sys, time, smtplib, log
 import redREnviron
 #from orngSignalManager import OutputSignal
 
@@ -29,7 +29,7 @@ def getLastSchemaID():
                 if ID > schemaID:
                     schemaID = ID
     except:
-        print "%s: %s" % sys.exc_info()[:2]
+        log.log(1, 9, 1, "%s: %s" % sys.exc_info()[:2])
     finally:
         if fn != None: fn.close()
         
@@ -45,10 +45,10 @@ def logAppend(schemaID, command, params=""):
     fn = None
     try:
         fn = open(logFile, 'a')
-        if params == "": fn.write(str(time.localtime()) + ";" + str(schemaID) + ";" + command + ";\n")
-        else: fn.write(str(time.localtime()) + ";" + str(schemaID) + ";" + command + ";" + params + ";\n")
+        if params == "": fn.write(unicode(time.localtime()) + ";" + unicode(schemaID) + ";" + command + ";\n")
+        else: fn.write(unicode(time.localtime()) + ";" + unicode(schemaID) + ";" + command + ";" + params + ";\n")
     except:
-        print "%s: %s" % sys.exc_info()[:2]
+        log.log(1, 9,1, "%s: %s" % sys.exc_info()[:2])
     finally:
         if fn != None: fn.close()
 
@@ -67,13 +67,13 @@ def logCloseSchema(schemaID):
     logAppend(schemaID, "CLOSESCHEMA")
     
 def logAddWidget(schemaID, widgetID, widgetName, x, y):
-    logAppend(schemaID, "ADDWIDGET", str(widgetID) + ";" + str(widgetName) + ";" + str(x) + ";" + str(y))
+    logAppend(schemaID, "ADDWIDGET", unicode(widgetID) + ";" + unicode(widgetName) + ";" + unicode(x) + ";" + unicode(y))
     
 def logRemoveWidget(schemaID, widgetID, widgetName):
-    logAppend(schemaID, "REMOVEWIDGET",  str(widgetID) + ";" + str(widgetName))
+    logAppend(schemaID, "REMOVEWIDGET",  unicode(widgetID) + ";" + unicode(widgetName))
 
 def logChangeWidgetPosition(schemaID, widgetID, widgetName, x, y):
-    logAppend(schemaID, "MOVEWIDGET", str(widgetID) + ";" + str(widgetName) + ";" + str(x) + ";" + str(y))
+    logAppend(schemaID, "MOVEWIDGET", unicode(widgetID) + ";" + unicode(widgetName) + ";" + unicode(x) + ";" + unicode(y))
     
 def logAddLink(schemaID, outWidget, inWidget, outSignalName):
     """Logs new link to history log file."""
@@ -86,14 +86,14 @@ def logAddLink(schemaID, outWidget, inWidget, outSignalName):
                 if output.type == 'All':
                     signalType = 'All output type'
                 else:
-                    signalType = str(output.type.__name__)
+                    signalType = unicode(output.type.__name__)
                 break
             except Exception as inst:
-                print str(output.type)
-                print str(inst)
+                
+                log.log(1, 9, 1,unicode(inst))
                 signalType = 'Ambiguous Signal Type'
     
-    logAppend(schemaID, "ADDLINK", str(id(outWidget)) + ";" + str(id(inWidget)) + ";" + str(signalType))
+    logAppend(schemaID, "ADDLINK", unicode(id(outWidget)) + ";" + unicode(id(inWidget)) + ";" + unicode(signalType))
 
 def sendHistory(username, password, to, host='fri-postar1.fri1.uni-lj.si'):
     """Sends history file to specified email."""

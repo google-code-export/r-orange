@@ -1,7 +1,7 @@
 # Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington
 #
 
-import os, sys, re, glob, stat
+import os, sys, re, glob, stat, log
 
 #from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
@@ -93,7 +93,7 @@ widgetsWithError = []
 
 def addTagsSystemTag(tags,newTag):
                 
-    name = str(newTag.getAttribute('name'))
+    name = unicode(newTag.getAttribute('name'))
     # move through the group tags in tags, if you find the grouname of tag 
     #then you don't need to add it, rather just add the child tags to that tag.
     #tags = theTags.childNodes[0]
@@ -101,7 +101,7 @@ def addTagsSystemTag(tags,newTag):
     for t in tags.childNodes:
         if t.nodeName == 'group':
             #print t
-            if str(t.getAttribute('name')) == name: ## found the right tag
+            if unicode(t.getAttribute('name')) == name: ## found the right tag
                 #print 'Found the name'
                 #print t.childNodes
                 for tt in newTag.childNodes:
@@ -125,13 +125,13 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     for filename in glob.iglob(os.path.join(directory, "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
-        
-        datetime = str(os.stat(filename)[stat.ST_MTIME])
+        #log.log(1, 5, 3, 'logging widget %s' % filename)
+        datetime = unicode(os.stat(filename)[stat.ST_MTIME])
         cachedDescription = cachedWidgetDescriptions.get(filename, None)
         if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
             widgets.append((cachedDescription.name, cachedDescription))
             continue
-        widgetID = str(package['Name']+'_'+os.path.split(filename)[1].split('.')[0])
+        widgetID = unicode(package['Name']+'_'+os.path.split(filename)[1].split('.')[0])
         data = file(filename).read()
         istart = data.find("<name>")
         iend = data.find("</name>")
@@ -179,7 +179,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          fullName = filename
                          #inputList = inputList, outputList = outputList
                          )
-    
+            #log.log(1, 5, 3, 'logging widget info %s' % widgetInfo)
             for attr, deflt in (
                 #('inputs>', 'None'), ('outputs>', 'None'), 
                 ("contact>", "")
@@ -228,8 +228,9 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s" % (name, widgetInfo.description) #, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))
+            #log.log(1, 5, 3, 'Appending widget %s' % widgetID)
         except Exception, msg:
-            print redRExceptionHandling.formatException(errorMsg='Error in widget %s in package %s' % (package['Name'], widgetName))
+            log.log(1, 9, 1, 'Exception occurred in %s: %s' % (filename, msg))
     return widgets
 
 def readTemplates(directory):
@@ -265,7 +266,7 @@ def readTemplates(directory):
 def loadPackage(package):
     # print package
     downloadList = {}
-    downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+    downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
     deps = redRPackageManager.packageManager.getDependencies(downloadList)
     downloadList.update(deps)
     # print downloadList
@@ -289,7 +290,7 @@ re_tuple = re.compile(r"\(([^)]+)\)")
 def getSignalList(regex, data):
     inmo = regex.search(data)
     if inmo:
-        return str([tuple([y[0] in "'\"" and y[1:-1] or str(y) for y in (x.strip() for x in ttext.group(1).split(","))])
+        return unicode([tuple([y[0] in "'\"" and y[1:-1] or unicode(y) for y in (x.strip() for x in ttext.group(1).split(","))])
                for ttext in re_tuple.finditer(inmo.group("signals"))])
     else:
         return "[]"

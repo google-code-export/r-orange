@@ -72,34 +72,34 @@ class spline(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.ycolumnComboBox.currentText()) == '':
-            if str(self.RFunctionParam_y) == '': return
-            if str(self.RFunctionParam_x) == '': return
+        if unicode(self.ycolumnComboBox.currentText()) == '':
+            if unicode(self.RFunctionParam_y) == '': return
+            if unicode(self.RFunctionParam_x) == '': return
         else:
             data = self.data.getData()
-            self.RFunctionParam_x = data+'$'+str(self.xcolumnComboBox.currentText())
-            self.RFunctionParam_y = data+'$'+str(self.ycolumnComboBox.currentText())
+            self.RFunctionParam_x = data+'$'+unicode(self.xcolumnComboBox.currentText())
+            self.RFunctionParam_y = data+'$'+unicode(self.ycolumnComboBox.currentText())
         injection = []
-        if str(self.RFunctionParamxmin_lineEdit.text()) != '':
-            string = 'xmin='+str(self.RFunctionParamxmin_lineEdit.text())+''
+        if unicode(self.RFunctionParamxmin_lineEdit.text()) != '':
+            string = 'xmin='+unicode(self.RFunctionParamxmin_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamties_lineEdit.text()) != '':
-            string = 'ties='+str(self.RFunctionParamties_lineEdit.text())+''
+        if unicode(self.RFunctionParamties_lineEdit.text()) != '':
+            string = 'ties='+unicode(self.RFunctionParamties_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParammethod_lineEdit.text()) != '':
-            string = 'method='+str(self.RFunctionParammethod_lineEdit.text())+''
+        if unicode(self.RFunctionParammethod_lineEdit.text()) != '':
+            string = 'method='+unicode(self.RFunctionParammethod_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamxmax_lineEdit.text()) != '':
-            string = 'xmax='+str(self.RFunctionParamxmax_lineEdit.text())+''
+        if unicode(self.RFunctionParamxmax_lineEdit.text()) != '':
+            string = 'xmax='+unicode(self.RFunctionParamxmax_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamn_lineEdit.text()) != '':
-            string = 'n='+str(self.RFunctionParamn_lineEdit.text())+''
+        if unicode(self.RFunctionParamn_lineEdit.text()) != '':
+            string = 'n='+unicode(self.RFunctionParamn_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('x <- as.vector('+str(self.RFunctionParam_x)+')', wantType = 'NoConversion')
-        self.R(self.Rvariables['spline']+'<-spline(x = as.vector('+str(self.RFunctionParam_x)+'),y=as.vector('+str(self.RFunctionParam_y)+'),'+','+inj+')', wantType = 'NoConversion')
-        self.R('rm(x)', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['spline']+')', wantType = 'NoConversion')
+        self.R('x <- as.vector('+unicode(self.RFunctionParam_x)+')')
+        self.R(self.Rvariables['spline']+'<-spline(x = as.vector('+unicode(self.RFunctionParam_x)+'),y=as.vector('+unicode(self.RFunctionParam_y)+'),'+','+inj+')')
+        self.R('rm(x)')
+        self.R('txt<-capture.output('+self.Rvariables['spline']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

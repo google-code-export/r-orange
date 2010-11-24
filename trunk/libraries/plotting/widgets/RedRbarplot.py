@@ -44,20 +44,20 @@ class RedRbarplot(OWRpy):
         else:
             self.RFunctionParam_height=''
     def commitFunction(self):
-        if str(self.RFunctionParam_height) == '': return
+        if unicode(self.RFunctionParam_height) == '': return
         
         injection = []
-        if str(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main='+str(self.RFunctionParammain_lineEdit.text())+''
+        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
+            string = 'main='+unicode(self.RFunctionParammain_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamhoriz_lineEdit.text()) != '':
-            string = 'horiz='+str(self.RFunctionParamhoriz_lineEdit.text())+''
+        if unicode(self.RFunctionParamhoriz_lineEdit.text()) != '':
+            string = 'horiz='+unicode(self.RFunctionParamhoriz_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamspace_lineEdit.text()) != '':
-            string = 'space='+str(int(self.RFunctionParamspace_lineEdit.value())/100)+''
+        if unicode(self.RFunctionParamspace_lineEdit.text()) != '':
+            string = 'space='+unicode(int(self.RFunctionParamspace_lineEdit.value())/100)+''
             injection.append(string)
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+str(self.RFunctionParamxlab_lineEdit.text())+''
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab='+unicode(self.RFunctionParamxlab_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.plotArea.plot('height=table('+str(self.RFunctionParam_height)+'$'+str(self.namesBox.currentText())+')[unique('+str(self.RFunctionParam_height)+'$'+str(self.namesBox.currentText())+')],'+inj, function = 'barplot', dwidth = int(self.R('length(names('+self.RFunctionParam_height+'))'))* 20)
+        self.plotArea.plot('height=table('+unicode(self.RFunctionParam_height)+'$'+unicode(self.namesBox.currentText())+')[unique('+unicode(self.RFunctionParam_height)+'$'+unicode(self.namesBox.currentText())+')],'+inj, function = 'barplot', dwidth = int(self.R('length(names('+self.RFunctionParam_height+'))'))* 20)

@@ -93,8 +93,8 @@ class RedRScatterplot(OWRpy):
             self.status.setText('No Data')
             return
             
-        xData = self.data.getData()[str(self.xColumnSelector.currentText())]
-        yData = self.data.getData()[str(self.yColumnSelector.currentText())]
+        xData = self.data.getData()[unicode(self.xColumnSelector.currentText())]
+        yData = self.data.getData()[unicode(self.yColumnSelector.currentText())]
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
         
         ## use the selected and unselected lists to generate the new dict.
@@ -168,8 +168,8 @@ class RedRScatterplot(OWRpy):
             subset.append(('ALL','TRUE'))
             
         pc = 0
-        xDataClass = self.R('class('+self.data+'[,\''+str(xCol)+'\'])', silent = True)
-        yDataClass = self.R('class('+self.data+'[,\''+str(yCol)+'\'])', silent = True)
+        xDataClass = self.R('class('+self.data+'[,\''+unicode(xCol)+'\'])', silent = True)
+        yDataClass = self.R('class('+self.data+'[,\''+unicode(yCol)+'\'])', silent = True)
         self.paintLegend.insertHtml('<h5>Color Legend</h5>')
         self.paintLegend.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="25%">Color</th><th align="left" width="75%">Group Name</th></tr>')
         for (p, subset) in subset:
@@ -184,19 +184,19 @@ class RedRScatterplot(OWRpy):
             self.paintLegend.insertHtml('<tr><td width = "25%" bgcolor="'+lColor+'">&nbsp;</td><td width = "75%">'+p+'</td></tr>')
             # generate the subset
             # check if the column is a factor
-            # print '|#| '+str(self.forceXNumeric.getChecked())
+            # print '|#| '+unicode(self.forceXNumeric.getChecked())
             
             # if xDataClass in ['factor'] and 'Force Numeric' not in self.forceXNumeric.getChecked():
                 # print 'Setting xData as factor'
-                # xData = self.R('match('+self.data+'['+subset+',\''+str(xCol)+'\'], levels('+self.data+'[,\''+str(xCol)+'\']))', wantType = 'list', silent = True)
+                # xData = self.R('match('+self.data+'['+subset+',\''+unicode(xCol)+'\'], levels('+self.data+'[,\''+unicode(xCol)+'\']))', wantType = 'list', silent = True)
             # else:
-            xData = self.R('as.numeric('+self.data+'['+subset+',\''+str(xCol)+'\'])', wantType = 'list')
+            xData = self.R('as.numeric('+self.data+'['+subset+',\''+unicode(xCol)+'\'])', wantType = 'list')
 
             # if yDataClass in ['factor'] and 'Force Numeric' not in self.forceYNumeric.getChecked():
                 # print 'Setting yData as factor'
-                # yData = self.R('match('+self.data+'['+subset+',\''+str(yCol)+'\'], levels('+self.data+'[,\''+str(yCol)+'\']))', wantType = 'list', silent = True)
+                # yData = self.R('match('+self.data+'['+subset+',\''+unicode(yCol)+'\'], levels('+self.data+'[,\''+unicode(yCol)+'\']))', wantType = 'list', silent = True)
             # else:
-            yData = self.R('as.numeric('+self.data+'['+subset+',\''+str(yCol)+'\'])', wantType = 'list')
+            yData = self.R('as.numeric('+self.data+'['+subset+',\''+unicode(yCol)+'\'])', wantType = 'list')
 
             # print xData
             # print yData
@@ -228,11 +228,11 @@ class RedRScatterplot(OWRpy):
             self.sendMe()
    
     def sendMe(self):
-        xCol = str(self.xColumnSelector.currentText())
-        yCol = str(self.yColumnSelector.currentText())
+        xCol = unicode(self.xColumnSelector.currentText())
+        yCol = unicode(self.yColumnSelector.currentText())
 
-        xData = self.R('as.numeric('+self.data+'[,"'+str(xCol)+'"])', wantType = 'list')
-        yData = self.R('as.numeric('+self.data+'[,"'+str(yCol)+'"])', wantType = 'list')
+        xData = self.R('as.numeric('+self.data+'[,"'+unicode(xCol)+'"])', wantType = 'list')
+        yData = self.R('as.numeric('+self.data+'[,"'+unicode(yCol)+'"])', wantType = 'list')
         
         selected, unselected = self.graph.getSelectedPoints(xData = xData, yData = yData)
         # print selected

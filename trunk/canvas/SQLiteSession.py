@@ -3,7 +3,7 @@ import redREnviron, sqlite3, os, time, cPickle
 
 class SQLiteHandler:
     def __init__(self, defaultDB = None):
-        if not defaultDB:
+        if defaultDB:
             self.dataBase = defaultDB
         else:
             self.dataBase = 'local|temp.db'
@@ -18,13 +18,10 @@ class SQLiteHandler:
         return database
         
     def execute(self, query, parameters = None, database = None):
-        if not database:
-            database = self.dataBase
         conn = sqlite3.connect(self.getDatabase(database))
         cursor = conn.cursor()
-        print query
+        response = []
         try:
-            response = []
             if parameters:
                 cursor.execute(query, parameters)
             else:
@@ -32,9 +29,12 @@ class SQLiteHandler:
             for row in cursor:
                 response.append(row)
         except Exception as inst:
-            print inst
-            
+            import log
+            log.logException(inst)
+            #pass
         finally:
+            #import log
+            #log.logException(query)
             conn.commit()
             conn.close()
             return response
@@ -45,7 +45,7 @@ class SQLiteHandler:
         
         colnames = []
         for row in response:
-            colnames.append(str(row[1]))
+            colnames.append(unicode(row[1]))
             
         return colnames
         
@@ -56,21 +56,21 @@ class SQLiteHandler:
             self.execute('DROP TABLE IF EXISTS '+table, database = database)
         try:
             self.execute("CREATE TABLE "+table+" "+colNames, database = database)
-        except:
-            pass
+        except Exception as inst:
+            log.log(1, 9, 1, inst)
     def getTableNames(self, database = None):
-        if not database:
-            database = self.dataBase
+        
         response = self.execute('SELECT * FROM SQLITE_MASTER WHERE type="table" OR type ="view"', database = database)
         info = []
-        for row in cursor:  # collect the info for all of the tables and the views.
-            info.append(str(row[1])+', '+ str(row[0]))
+        for row in response:  # collect the info for all of the tables and the views.
+            info.append(unicode(row[1])+', '+ unicode(row[0]))
+            #print row
         return info
         
     def newTableName(self):
-        return 'AutoTable_'+str(time.time()).replace('.', '_')
+        return 'AutoTable_'+unicode(time.time()).replace('.', '_')
     def newIDName(self):
-        return 'AutoID_'+str(time.time()).replace('.', '_')
+        return 'AutoID_'+unicode(time.time()).replace('.', '_')
     def dictToTable(self, dictionary, tableName = None, database = None):
         if not database:
             database = self.dataBase
@@ -87,7 +87,7 @@ class SQLiteHandler:
         response = self.execute('select * from '+tableName, database = dataBase)
         newDict = {}
         for row in response:
-            newDict[cPickle.loads(str(row[0]))] = cPickle.loads(str(row[1]))
+            newDict[cPickle.loads(unicode(row[0]))] = cPickle.loads(unicode(row[1]))
             
         return newDict
         
@@ -100,10 +100,10 @@ class SQLiteHandler:
         return newID
         
     def setObject(self, oldID):
-        print oldID
+        #print oldID
         tableName = 'SavedObjects'
         dataBase = 'local|SavedObjects.db'
         response = self.execute('select * from SavedObjects where ID = ?', parameters = (oldID,), database = dataBase)
         self.execute('DELETE FROM '+tableName+' WHERE ID = ?', parameters = (oldID, ), database = dataBase) ## delete the ref
-        print str(response) 
-        return cPickle.loads(str(response[0][1]))
+        #print unicode(response) 
+        return cPickle.loads(unicode(response[0][1]))

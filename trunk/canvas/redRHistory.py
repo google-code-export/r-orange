@@ -33,7 +33,7 @@ def getTopConnections(newwidget):
     else: tops = []
     if newwidget.widgetInfo.outputWidgets:
         tops += [val for val in newwidget.widgetInfo.outputWidgets if val not in tops]
-    print tops
+    #print tops
     return tops
     
 def addConnectionHistory(newwidget, connectingWidget):

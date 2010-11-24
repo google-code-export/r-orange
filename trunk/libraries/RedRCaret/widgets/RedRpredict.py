@@ -51,16 +51,16 @@ class RedRpredict(OWRpy):
         else:
             self.RFunctionParam_newData=''
     def commitFunction(self):
-        if str(self.RFunctionParam_object) == '': return
-        if str(self.RFunctionParam_newData) == '': 
-            self.R(self.Rvariables['predict']+'<-predict.train(object='+str(self.RFunctionParam_object)+')', wantType = 'NoConversion')
+        if unicode(self.RFunctionParam_object) == '': return
+        if unicode(self.RFunctionParam_newData) == '': 
+            self.R(self.Rvariables['predict']+'<-predict.train(object='+unicode(self.RFunctionParam_object)+')')
         else:
-            newData = '%s[[\'%s\']]' % (self.RFunctionParam_newData, str(self.testData.currentText()))
-            if str(self.classLabels.currentText()) != '':
-                newData = newData+'[, !names('+newData+') %in% c(\''+str(self.classLabels.currentText())+'\')]'
+            newData = '%s[[\'%s\']]' % (self.RFunctionParam_newData, unicode(self.testData.currentText()))
+            if unicode(self.classLabels.currentText()) != '':
+                newData = newData+'[, !names('+newData+') %in% c(\''+unicode(self.classLabels.currentText())+'\')]'
             
-            self.R(self.Rvariables['predict']+'<-extractPrediction(models=list('+str(self.RFunctionParam_object)+'),testX='+newData+')', wantType = 'NoConversion')
-        self.R('txt<-c(capture.output(summary('+self.Rvariables['predict']+')), capture.output('+self.Rvariables['predict']+'))', wantType = 'NoConversion')
+            self.R(self.Rvariables['predict']+'<-extractPrediction(models=list('+unicode(self.RFunctionParam_object)+'),testX='+newData+')')
+        self.R('txt<-c(capture.output(summary('+self.Rvariables['predict']+')), capture.output('+self.Rvariables['predict']+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

@@ -55,24 +55,24 @@ class RedRt_test(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParammu_lineEdit.text()) != '':
-            string = ',mu='+str(self.RFunctionParammu_lineEdit.text())+''
+        if unicode(self.RFunctionParammu_lineEdit.text()) != '':
+            string = ',mu='+unicode(self.RFunctionParammu_lineEdit.text())+''
             injection.append(string)
         ## make commit function for self.RFunctionParampaired_radioButtons
-        injection.append(',paired = '+str(self.RFunctionParampaired_radioButtons.getChecked()))
+        injection.append(',paired = '+unicode(self.RFunctionParampaired_radioButtons.getChecked()))
         ## make commit function for self.RFunctionParamalternative_checkBox
-        injection.append(',alternative = \"'+str(self.RFunctionParamalternative_checkBox.getChecked())+'\"')
+        injection.append(',alternative = \"'+unicode(self.RFunctionParamalternative_checkBox.getChecked())+'\"')
         ## make commit function for self.RFunctionParamvar_equal_radioButtons
-        injection.append(',var.equal ='+str(self.RFunctionParamvar_equal_radioButtons.getChecked()))
-        if str(self.RFunctionParamconf_level_lineEdit.text()) != '':
-            string = ',conf.level='+str(self.RFunctionParamconf_level_lineEdit.text())+''
+        injection.append(',var.equal ='+unicode(self.RFunctionParamvar_equal_radioButtons.getChecked()))
+        if unicode(self.RFunctionParamconf_level_lineEdit.text()) != '':
+            string = ',conf.level='+unicode(self.RFunctionParamconf_level_lineEdit.text())+''
             injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['t.test']+'<-t.test(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+inj+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['t.test']+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['t.test']+'<-t.test(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+inj+')')
+        self.R('txt<-capture.output('+self.Rvariables['t.test']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

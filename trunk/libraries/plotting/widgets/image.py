@@ -34,16 +34,16 @@ class image(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
-        self.Rplot('image(x='+str(self.RFunctionParam_x)+')')
+        if unicode(self.RFunctionParam_x) == '': return
+        self.Rplot('image(x='+unicode(self.RFunctionParam_x)+')')
 def getReportText(self, fileDir):
-        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
-        self.Rplot('image(x='+str(self.RFunctionParam_x)+')')
+        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
+        self.Rplot('image(x='+unicode(self.RFunctionParam_x)+')')
         self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
             
         return text

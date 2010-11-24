@@ -30,7 +30,7 @@ class RedRfindCorrelation(OWRpy):
         
         self.trainingData = redRComboBox(self.controlArea, label = 'Training Data')
         self.classLabels = redRComboBox(self.controlArea, label = 'Classes')
-        self.nearZero = redRRadioButtons(self.controlArea, label = 'Remove Near Zero Variance Predictors?' buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
+        self.nearZero = redRRadioButtons(self.controlArea, label = 'Remove Near Zero Variance Predictors?', buttons = ['Yes', 'No'], setChecked = 'Yes', callback = self.nzvShowHide)
         
         self.nzvBox = redRWidgetBox(self.controlArea)
         self.freqCut = redRLineEdit(self.nzvBox, label = 'Frequency Cut:', text = '95/5')
@@ -41,7 +41,7 @@ class RedRfindCorrelation(OWRpy):
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
     def nzvShowHide(self):
-        if str(self.nearZero.getChecked()) == 'Yes':
+        if unicode(self.nearZero.getChecked()) == 'Yes':
             self.nzvBox.show()
         else:
             self.nzvBox.hide()
@@ -61,43 +61,43 @@ class RedRfindCorrelation(OWRpy):
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
-        if str(self.RFunctionParam_data) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_data) == '': return
         injection = []
-        #if str(self.RFunctionParamcutoff_spinBox.value()) != '':
-        string = ',cutoff='+str(float(self.RFunctionParamcutoff_spinBox.value())/100)+''
+        #if unicode(self.RFunctionParamcutoff_spinBox.value()) != '':
+        string = ',cutoff='+unicode(float(self.RFunctionParamcutoff_spinBox.value())/100)+''
         injection.append(string)
         inj = ''.join(injection)
         nzvInjection = []
-        nzvInjection.append(',freqCut = '+str(self.freqCut.text()))
-        nzvInjection.append(',uniqueCut = '+str(self.uniqueCut.text()))
+        nzvInjection.append(',freqCut = '+unicode(self.freqCut.text()))
+        nzvInjection.append(',uniqueCut = '+unicode(self.uniqueCut.text()))
         nzvInj = ''.join(nzvInjection)
         if self.dataClass == 'list':
-            if str(self.nearZero.getChecked()) == 'Yes':
-                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]][, -'+str(self.classLabels.currentText())+']', nzvInj), wantType = 'NoConversion')
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]][,-'+self.Rvariables['nearZero']+']', wantType = 'NoConversion')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
+            if unicode(self.nearZero.getChecked()) == 'Yes':
+                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], unicode(self.RFunctionParam_x)+'[[\"'+unicode(self.trainingData.currentText())+'\"]][, -'+unicode(self.classLabels.currentText())+']', nzvInj))
+                self.R('tempCor<-cor(%s)' % unicode(self.RFunctionParam_x)+'[[\"'+unicode(self.trainingData.currentText())+'\"]][,-'+self.Rvariables['nearZero']+']')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
                 remove = 'c(%s, %s)' % (self.Rvariables['findCorrelation'], self.Rvariables['nearZero'])
             else:
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[[\"'+str(self.trainingData.currentText())+'\"]]', wantType = 'NoConversion')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
+                self.R('tempCor<-cor(%s)' % unicode(self.RFunctionParam_x)+'[[\"'+unicode(self.trainingData.currentText())+'\"]]')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
                 remove = self.Rvariables['findCorrelation']
             ## need to remove the findCorrelation from all of the class objects
             self.R(self.Rvariables['findCorrelationOutput']+'<-list()', wantType = 'NoConversion')
             for i in range(self.R('length('+self.RFunctionParam_data+')')):
-                self.R(self.Rvariables['findCorrelationOutput']+'[['+str(i+1)+']]<-'+self.RFunctionParam_data+'[['+str(i + 1)+']][, -'+remove+']', wantType = 'NoConversion')
+                self.R(self.Rvariables['findCorrelationOutput']+'[['+unicode(i+1)+']]<-'+self.RFunctionParam_data+'[['+unicode(i + 1)+']][, -'+remove+']')
             newData = signals.RList.RList(data = self.Rvariables['findCorrelationOutput'])
             self.rSend("findCorrelation Output List", newData)
             self.rSend("findCorrelation Output", None)
         if self.dataClass == 'data.frame':
-            if str(self.nearZero.getChecked()) == 'Yes':
-                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], str(self.RFunctionParam_x), nzvInj), wantType = 'NoConversion')
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x)+'[,-'+self.Rvariables['nearZero']+']', wantType = 'NoConversion')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
+            if unicode(self.nearZero.getChecked()) == 'Yes':
+                self.R('%s<-nearZeroVar(%s, %s)' % (self.Rvariables['nearZero'], unicode(self.RFunctionParam_x), nzvInj))
+                self.R('tempCor<-cor(%s)' % unicode(self.RFunctionParam_x)+'[,-'+self.Rvariables['nearZero']+']')
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
                 remove = 'c(%s, %s)' % (self.Rvariables['findCorrelation'], self.Rvariables['nearZero'])
             else:
-                self.R('tempCor<-cor(%s)' % str(self.RFunctionParam_x), wantType = 'NoConversion')
-                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')', wantType = 'NoConversion')
+                self.R('tempCor<-cor(%s)' % unicode(self.RFunctionParam_x))
+                self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
                 remove = self.Rvariables['findCorrelation']
             self.R(self.Rvariables['findCorrelationOutput']+'<-'+self.RFunctionParam_data+'[, -'+remove+']', wantType = 'NoConversion')
             newData = signals.RDataFrame.RDataFrame(data = self.Rvariables['findCorrelationOutput'], parent = self.Rvariables['findCorrelationOutput'])

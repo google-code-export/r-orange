@@ -45,29 +45,29 @@ class RedRcreateDataPartition(OWRpy):
         else:
             self.RFunctionParam_y=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.ListElementCombo.currentText()) == '': return
-        if self.R('class('+self.RFunctionParam_y+'$'+str(self.ListElementCombo.currentText())+')') not in ['factor', 'numeric', 'character', 'logical']: return
-        if self.R('length('+self.RFunctionParam_y+'$'+str(self.ListElementCombo.currentText())+')') < int(self.RFunctionParamgroups_spinBox.value()): return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.ListElementCombo.currentText()) == '': return
+        if self.R('class('+self.RFunctionParam_y+'$'+unicode(self.ListElementCombo.currentText())+')') not in ['factor', 'numeric', 'character', 'logical']: return
+        if self.R('length('+self.RFunctionParam_y+'$'+unicode(self.ListElementCombo.currentText())+')') < int(self.RFunctionParamgroups_spinBox.value()): return
         injection = []
-        if str(self.functionCombo.currentText()) == 'Partition':
+        if unicode(self.functionCombo.currentText()) == 'Partition':
             function = 'createDataPartition'
-            string = ',p='+str(float(self.RFunctionParamp_spinBox.value())/100)+''
+            string = ',p='+unicode(float(self.RFunctionParamp_spinBox.value())/100)+''
             injection.append(string)
-            string = ',groups='+str(self.RFunctionParamgroups_spinBox.value())+''
+            string = ',groups='+unicode(self.RFunctionParamgroups_spinBox.value())+''
             injection.append(string)
-            string = ',times='+str(self.RFunctionParamtimes_spinBox.value())+''
+            string = ',times='+unicode(self.RFunctionParamtimes_spinBox.value())+''
             injection.append(string)
-        elif str(self.functionCombo.currentText()) == 'Resample':
+        elif unicode(self.functionCombo.currentText()) == 'Resample':
             function = 'createResample'
-            string = ',times='+str(self.RFunctionParamtimes_spinBox.value())+''
+            string = ',times='+unicode(self.RFunctionParamtimes_spinBox.value())+''
             injection.append(string)
-        elif str(self.functionCombo.currentText()) == 'Fold':
+        elif unicode(self.functionCombo.currentText()) == 'Fold':
             function = 'createFolds'
-            injection.append(', k = '+str(self.RFunctionParam_folds_spinBox.value()))
+            injection.append(', k = '+unicode(self.RFunctionParam_folds_spinBox.value()))
         inj = ''.join(injection)
-        self.R(self.Rvariables['createDataPartition']+'<-'+function+'(y='+self.RFunctionParam_y+'$'+str(self.ListElementCombo.currentText())+inj+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['createDataPartition']+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['createDataPartition']+'<-'+function+'(y='+self.RFunctionParam_y+'$'+unicode(self.ListElementCombo.currentText())+inj+')')
+        self.R('txt<-capture.output('+self.Rvariables['createDataPartition']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
@@ -77,11 +77,11 @@ class RedRcreateDataPartition(OWRpy):
         self.R(self.Rvariables['dataOutputList']+'<-list()', wantType = 'NoConversion')
         for i in range(self.R('length('+self.Rvariables['createDataPartition']+')')):
             ## make a new sub data table for each of the partition levels
-            if str(self.functionCombo.currentText()) == 'Partition':
-                self.R('%s$Training_%s<-%s[%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)), wantType = 'NoConversion')
-                self.R('%s$Test_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)), wantType = 'NoConversion')
+            if unicode(self.functionCombo.currentText()) == 'Partition':
+                self.R('%s$Training_%s<-%s[%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
+                self.R('%s$Test_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
             else:
-                self.R('%s$Sample_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], str(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], str(i+1)), wantType = 'NoConversion')
+                self.R('%s$Sample_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
         
         newDataOutputList = signals.RList.RList(data = self.Rvariables['dataOutputList'])
         self.rSend("dataOutputList", newDataOutputList)

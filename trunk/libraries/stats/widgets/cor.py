@@ -120,24 +120,24 @@ class cor(OWRpy):
             test = 'cov'
             
         if self.useButtons.getChecked():
-            string = 'use=\''+str(self.useButtons.getChecked())+'\''
+            string = 'use=\''+unicode(self.useButtons.getChecked())+'\''
             injection.append(string)
         elif self.type.getChecked() == 'Variance':
             string = 'na.rm=TRUE'
             injection.append(string)
         
         if self.methodButtons.getChecked():
-            string = 'method=\''+str(self.methodButtons.getChecked())+'\''
+            string = 'method=\''+unicode(self.methodButtons.getChecked())+'\''
             injection.append(string)
             
         if self.RFunctionParam_y:
-            injection.append('y='+str(self.RFunctionParam_y))
+            injection.append('y='+unicode(self.RFunctionParam_y))
 
         # combine all the parameters in the a string    
         inj = ','.join(injection)
         
         # make the R call. The results will be saved in the 'cor' variable we declared earlier
-        self.R(self.Rvariables['cor']+'<-'+test+'(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['cor']+'<-'+test+'(x='+unicode(self.RFunctionParam_x)+','+inj+')')
         
         # visualize the data in a table
         self.RoutputWindow.clear()

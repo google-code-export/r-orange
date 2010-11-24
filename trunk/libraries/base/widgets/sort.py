@@ -50,7 +50,7 @@ class sort(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         if self.sortingColumn1.currentText() =='':
             return
         injection = []
@@ -77,7 +77,7 @@ class sort(OWRpy):
         self.rSend("id0", newData)
     def getReportText(self, fileDir):
         text = 'Sorted the incomming data in '
-        if str(self.options.text()) != 'FALSE':
+        if unicode(self.options.text()) != 'FALSE':
             text += 'increasing'
         else:
             text += 'decreasing'

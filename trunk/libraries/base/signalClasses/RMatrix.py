@@ -11,7 +11,7 @@ class RMatrix(RDataFrame):
         self.RDataFrameSignal = None
         self.RListSignal = None
         self.StructuredDictSignal = None
-        self.newDataID = str(time.time()).replace('.', '_')
+        self.newDataID = unicode(time.time()).replace('.', '_')
         
         
     def convertFromClass(self, signal):
@@ -50,7 +50,7 @@ class RMatrix(RDataFrame):
             keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
             rownames = self.R('rownames('+self.data+')', wantType = 'list')
             if rownames[0] in [None, 'NULL', 'NA']:
-                rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
+                rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
             data['row_names'] = rownames
             self.StructuredDictSignal = StructuredDict(data = data, parent = self, keys = keys)
             return self.StructuredDictSignal

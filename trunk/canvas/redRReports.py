@@ -5,7 +5,7 @@ from docutils.writers.odf_odt import Writer, Reader
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRExceptionHandling
-import shutil
+import shutil, log
 
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
@@ -31,7 +31,7 @@ def createTable(arrayOfArray,tableName='', columnNames=None):
         formatted = []
         for cell in row:
             if type(cell) is not str:
-                cell = str(cell)
+                cell = unicode(cell)
             # cant have any double quotes inside cell text
             if re.search('.. csv-table::|.. image::|::', cell):
                 toAppend.append([row[0],cell])
@@ -95,16 +95,31 @@ class reports(QWizard):
         self.widgetListStateChange)
         
         self.addPage(self.selectElements)
+    def widgetListItemClicked(self, item):
+        itemText = unicode(item.text())
+        self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
         
         
-    def createReportsMenu(self,widgets,schemaImage=True):
+        self.widgetNames = {}
+        for widget in widgets:
+            self.widgetNames[widget.caption] = {'inReport': widget.instance.includeInReport.isChecked(), 'widget':widget}
+        #print self.widgetNames.keys()
+        self.widgetList.clear()
+        self.widgetList.addItems(self.widgetNames.keys())
+        count = int(self.widgetList.count())
+        
+        for i in range(count):
+            item = self.widgetList.item(i)
+            if self.widgetNames[unicode(item.text())]['inReport']:
+                self.widgetList.setItemSelected(item, True)
+    def createReportsMenu(self,schemaImage=True):
         qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
-        redREnviron.directoryNames['documentsDir'] + "/Report-"+str(datetime.date.today())+".odt", 
+        redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
         if qname.isEmpty(): return
-        qname = str(qname.toAscii())
+        qname = unicode(qname.toAscii())
         
-        name = str(qname) # this is the file name of the Report
+        name = unicode(qname) # this is the file name of the Report
         # name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
         
         if os.path.splitext(name)[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
@@ -128,14 +143,14 @@ class reports(QWizard):
             os.mkdir(fileDir2)  
         
         except Exception as inst:
-            print redRExceptionHandling.formatException()
+            log.log(1, 9, 1, redRExceptionHandling.formatException())
         
         
         # show the report list and allow the user to select widgets to include in the report.
         ## get the report info for the included widgets.
         # reportData = self.getReportData(fileDir2,name)
-        
-        done = self.createReport(fileDir2,name,widgets,schemaImage)
+        import redRObjects
+        done = self.createReport(fileDir2,name,redRObjects.instances(),schemaImage)
         if not done:
             return
         if os.name =='nt':
@@ -247,7 +262,7 @@ class reports(QWizard):
         ## about them and put that into the report.
         self.reportData = {}
         for widget in widgets:
-            self.reportData[widget.caption] = self.getReportData(fileDir, widget)
+            self.reportData[unicode(widget.windowTitle())] = self.getReportData(fileDir, widget)
 
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
@@ -258,10 +273,6 @@ class reports(QWizard):
             return False
         
 
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.reportData)
-
         reportText = self.buildReportHeader(fileDir,schemaImage)
         
         for name, widgetReport in self.reportData.items():
@@ -269,14 +280,7 @@ class reports(QWizard):
                 reportText+= self.formatWidgetReport(name,widgetReport)
         
         
-        # print '############################\n'*5
-        # print reportText
-        # print '############################\n'*5
-        # f = open(os.path.join(redREnviron.directoryNames['redRDir'],'restr.txt'),'w')
-        # f.write(reportText)
-        # f.close()
-        
-        if os.path.splitext(str(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
+        if os.path.splitext(unicode(reportName))[1].lower() in [".odt"]:#, ".html", ".tex"]
             reader = Reader()
             writer = Writer()
             output = publish_string(reportText, reader = reader, writer = writer)
@@ -285,16 +289,16 @@ class reports(QWizard):
             file.close()
             #shutil.rmtree(fileDir)
 
-        elif os.path.splitext(str(reportName))[1].lower() in [".tex"]:# , ".tex"]
+        elif os.path.splitext(unicode(reportName))[1].lower() in [".tex"]:# , ".tex"]
             output = publish_string(reportText, writer_name='latex')#, writer = writer, reader = reader)
             file = open(reportName, 'w')
             file.write(output)
             file.close()
-        elif os.path.splitext(str(reportName))[1].lower() in [".html"]:# , ".tex"]
+        elif os.path.splitext(unicode(reportName))[1].lower() in [".html"]:# , ".tex"]
             output = publish_string(reportText, writer_name='html')
             # print output
             # print type(output)
-            # print str(output)
+            # print unicode(output)
             file = open(reportName, 'w')
             file.write(output)
             file.close()
@@ -305,7 +309,7 @@ class reports(QWizard):
         # print '##############################', widget
         #widgetReport['notes'] = widget.instance.notes.getReportText(fileDir)
         # print widget.instance._widgetInfo.widgetName
-        d = widget.instance.getReportText3(fileDir)
+        d = widget.getReportText3(fileDir)
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(d)
@@ -323,10 +327,10 @@ class reports(QWizard):
                 data['main'][k] = v
         
         widgetReport['reportData'] = data
-        n = widget.instance.notes.getReportText(fileDir)
+        n = widget.notes.getReportText(fileDir)
         widgetReport['notes'] = n['Notes']
         if n['Notes']['text'] =='': widgetReport['notes']['includeInReports'] = False
-        widgetReport['includeInReports'] = widget.instance.includeInReport.isChecked()
+        widgetReport['includeInReports'] = widget.includeInReport.isChecked()
         return widgetReport
         
     def formatWidgetReport(self, widgetName, widgetReport):
@@ -405,21 +409,25 @@ Widget Output
 """ % datetime.date.today()
         
         if schemaImage:
-            image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
-            painter = QPainter(image)
-            self.schema.canvasView.scene().render(painter) #
-            painter.end()
-            imageFile = os.path.join(fileDir, 'canvas-image.png').replace('\\', '/')
-            if not image.save(imageFile):
-                print 'Error in saving schema'
-                print image
-                print image.width(), 'width'
-            text += """
-Schema
-========
+            import redRObjects
+            for v in redRObjects.views():
+                image = QImage(1000, 700, QImage.Format_ARGB32_Premultiplied)
+                painter = QPainter(image)
+                
+                
+                v.scene().render(painter) #
+                painter.end()
+                imageFile = os.path.join(fileDir, 'canvas-image%s.png' % str(v.name)).replace('\\', '/')
+                if not image.save(imageFile):
+                    print 'Error in saving schema'
+                    print image
+                    print image.width(), 'width'
+                text += """
+Schema %s
+===================================================================================================================================
 .. image:: %s
   :scale: 50%% 
 
-""" %  imageFile
+""" %  (v.name, imageFile)
 
         return text;

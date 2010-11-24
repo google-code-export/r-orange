@@ -30,7 +30,7 @@ class RedRpreProcess(OWRpy):
         self.RFunctionParamthresh_spinBox = redRSpinBox(self.controlArea, label = "Threshold (PCA):", value = 95, min = 1, max = 99)
         self.RFunctionParammethod_listBox = redRListBox(self.controlArea, label = "Method:", items = ["center","scale","pca","spatilaSign"], toolTip = 'Select the options to be applied to the data.  If nothing is selected then center and scale will be applied by default')
         for i in range(self.RFunctionParammethod_listBox.count()):
-            if str(self.RFunctionParammethod_listBox.item(i).text()) in ['center', 'scale']:
+            if unicode(self.RFunctionParammethod_listBox.item(i).text()) in ['center', 'scale']:
                 self.RFunctionParammethod_listBox.setItemSelected(self.RFunctionParammethod_listBox.item(i), True)
             
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -43,18 +43,18 @@ class RedRpreProcess(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         
         injection = []
-        #if str(self.RFunctionParamthresh_lineEdit.text()) != '':
-        string = ',thresh='+str(float(self.RFunctionParamthresh_spinBox.value())/100)+''
+        #if unicode(self.RFunctionParamthresh_lineEdit.text()) != '':
+        string = ',thresh='+unicode(float(self.RFunctionParamthresh_spinBox.value())/100)+''
         injection.append(string)
         if len(self.RFunctionParammethod_listBox.selectedItems()) > 0:
-            string = ',method= c("'+'","'.join([str(i.text()) for i in self.RFunctionParammethod_listBox.selectedItems()])+'")'
+            string = ',method= c("'+'","'.join([unicode(i.text()) for i in self.RFunctionParammethod_listBox.selectedItems()])+'")'
             injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['preProcess']+'<-preProcess(x='+str(self.RFunctionParam_x)+'$'+str(self.trainingElement.currentText())+inj+')', wantType = 'NoConversion')
-        self.R(self.Rvariables['preProcess_values']+'<-list()', wantType = 'NoConversion')
+        self.R(self.Rvariables['preProcess']+'<-preProcess(x='+unicode(self.RFunctionParam_x)+'$'+unicode(self.trainingElement.currentText())+inj+')')
+        self.R(self.Rvariables['preProcess_values']+'<-list()')
         names = self.R('names('+self.RFunctionParam_x+')')
         for i in names:
             self.R('%s$processed_%s<-predict(%s, %s$%s)' % (self.Rvariables['preProcess_values'], i, self.Rvariables['preProcess'], self.RFunctionParam_x, i), wantType = 'NoConversion')

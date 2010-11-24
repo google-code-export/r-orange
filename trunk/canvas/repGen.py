@@ -2,7 +2,7 @@
 
 def setImage(fileDir, imageFile):
     text = 'The following plot was generated:\n\n'
-    text += '.. image:: '+fileDir+'/'+str(imageFile)+'\n    :scale: 50%%\n\n'
+    text += '.. image:: '+fileDir+'/'+unicode(imageFile)+'\n    :scale: 50%%\n\n'
     
     return text
     
@@ -26,13 +26,13 @@ def setBreak():
     
 def setTable(file, title = 'Table'):
     nt = '\n\n'
-    nt += '.. csv-table:: '+str(title)+'\n  :file: '+str(file)+'\n\n'
+    nt += '.. csv-table:: '+unicode(title)+'\n  :file: '+unicode(file)+'\n\n'
     
     return nt
     
 def setBullet(text):
     nt = '\n\n'
-    nt += '-'+str(text)
+    nt += '-'+unicode(text)
     nt += '\n\n'
     
     return nt
@@ -43,34 +43,34 @@ def generateList(someList):
         
     nt = '\n\n'
     for i in someList:
-        nt += '-'+str(i)+'\n\n'
+        nt += '-'+unicode(i)+'\n\n'
         
     return nt
     
 def publishReport(name, text):
     from docutils.core import publish_string
     import os
-    if os.path.splitext(str(name))[1].lower() in [".odt"]:#, ".html", ".tex"]
+    if os.path.splitext(unicode(name))[1].lower() in [".odt"]:#, ".html", ".tex"]
         from docutils.writers.odf_odt import Writer, Reader
         reader = Reader()
         writer = Writer()
-        output = publish_string(str(text), reader = reader, writer = writer)
+        output = publish_string(unicode(text), reader = reader, writer = writer)
         file = open(name, 'wb')
         file.write(output)
         file.close()
-    elif os.path.splitext(str(name))[1].lower() in [".tex"]:# , ".tex"]
-        output = publish_string(str(text), writer_name='latex')#, writer = writer, reader = reader)
+    elif os.path.splitext(unicode(name))[1].lower() in [".tex"]:# , ".tex"]
+        output = publish_string(unicode(text), writer_name='latex')#, writer = writer, reader = reader)
 
         file = open(name, 'w')
         file.write(output)
         file.close()
 
-    elif os.path.splitext(str(name))[1].lower() in [".html"]:# , ".tex"]
+    elif os.path.splitext(unicode(name))[1].lower() in [".html"]:# , ".tex"]
         
-        output = publish_string(str(text), writer_name='html')
-        print output
-        print type(output)
-        print str(output)
+        output = publish_string(unicode(text), writer_name='html')
+        #print output
+        #print type(output)
+        #print unicode(output)
         file = open(name, 'w')
         file.write(output)
         file.close()

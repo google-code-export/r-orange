@@ -236,10 +236,10 @@ class SignalDialog(QDialog):
         self.resize(width+50, height+80)
         
         ## process the signals so that active connections are show.
-        links = outWidget.instance.outputs.getSignalLinks(inWidget.instance)
+        links = outWidget.instance().outputs.getSignalLinks(inWidget.instance())
         for (outName, inName) in links:
             self.addLink(outName, inName)
-        print 'Output Handler Returned the following links', links
+        #print 'Output Handler Returned the following links', links
 
     def countCompatibleConnections(self, outputs, inputs, outInstance, inInstance, outType, inType):
         count = 0
@@ -263,26 +263,26 @@ class SignalDialog(QDialog):
 
     def addLink(self, outName, inName):
         if (outName, inName) in self._links: 
-            print 'signal already in the links'
+            #print 'signal already in the links'
             return 1
-        print outName, inName, 'Names'
+        #print outName, inName, 'Names'
         # check if correct types
-        outType = self.outWidget.instance.outputs.getSignal(outName)['signalClass']
-        inType = self.inWidget.instance.inputs.getSignal(inName)['signalClass']
+        outType = self.outWidget.instance().outputs.getSignal(outName)['signalClass']
+        inType = self.inWidget.instance().inputs.getSignal(inName)['signalClass']
         if not outType or not inType:
             raise Exception, 'None sent as signal type'
             
             
-        if not self.inWidget.instance.inputs.doesSignalMatch(inName, outType): return 0
+        if not self.inWidget.instance().inputs.doesSignalMatch(inName, outType): return 0
         inSignal = None
-        inputs = self.inWidget.instance.inputs.getAllInputs()
+        inputs = self.inWidget.instance().inputs.getAllInputs()
         for id, signal in inputs.items():
             if id == inName: inSignal = id
 
         # if inName is a single signal and connection already exists -> delete it
         for (outN, inN) in self._links:
-            print inSignal, inN, inName, self.inWidget.instance.inputs.getSignal(inSignal)['multiple']
-            if inSignal and inN == inName and not self.inWidget.instance.inputs.getSignal(inSignal)['multiple']:
+            #print inSignal, inN, inName, self.inWidget.instance().inputs.getSignal(inSignal)['multiple']
+            if inSignal and inN == inName and not self.inWidget.instance().inputs.getSignal(inSignal)['multiple']:
                 self.removeLink(outN, inN)
 
         self._links.append((outName, inName))
@@ -323,7 +323,7 @@ class SignalCanvasView(QGraphicsView):
 
     def addSignalList(self, outWidget, inWidget):
         self.scene().clear()
-        outputs, inputs = outWidget.instance.outputs.getAllOutputs(), inWidget.instance.inputs.getAllInputs()
+        outputs, inputs = outWidget.instance().outputs.getAllOutputs(), inWidget.instance().inputs.getAllInputs()
         outIcon, inIcon = self.canvasDlg.getWidgetIcon(outWidget.widgetInfo), self.canvasDlg.getWidgetIcon(inWidget.widgetInfo)
         self.lines = []
         self.outBoxes = []
@@ -347,12 +347,12 @@ class SignalCanvasView(QGraphicsView):
         maxLeft = 0
         for i in inputs.keys():
             maxLeft = max(maxLeft, self.getTextWidth("("+inputs[i]['name']+")", 1))
-            maxLeft = max(maxLeft, self.getTextWidth(str([str(a).split('.')[-1] for a in inputs[i]['signalClass']])))
+            maxLeft = max(maxLeft, self.getTextWidth(unicode([unicode(a).split('.')[-1] for a in inputs[i]['signalClass']])))
 
         maxRight = 0
         for i in outputs.keys():
             maxRight = max(maxRight, self.getTextWidth("("+outputs[i]['name']+")", 1))
-            maxRight = max(maxRight, self.getTextWidth(str(outputs[i]['signalClass']).split('.')[-1]))
+            maxRight = max(maxRight, self.getTextWidth(unicode(outputs[i]['signalClass']).split('.')[-1]))
 
         width = max(maxLeft, maxRight) + 70 # we add 70 to show icons beside signal names
 
@@ -397,7 +397,7 @@ class SignalCanvasView(QGraphicsView):
             self.outBoxes.append((outputs[i]['name'], box, i))
 
             self.texts.append(MyCanvasText(self.dlg.canvas, outputs[i]['name'], xWidgetOff + width - 5, y - 7, Qt.AlignRight | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, str(outputs[i]['signalClass']).split('.')[-1], xWidgetOff + width - 5, y + 7, Qt.AlignRight | Qt.AlignVCenter, bold =0, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, unicode(outputs[i]['signalClass']).split('.')[-1], xWidgetOff + width - 5, y + 7, Qt.AlignRight | Qt.AlignVCenter, bold =0, show=1))
             j += 1
         j = 0
         for i in inputs.keys():
@@ -408,7 +408,7 @@ class SignalCanvasView(QGraphicsView):
             self.inBoxes.append((inputs[i]['name'], box, i))
 
             self.texts.append(MyCanvasText(self.dlg.canvas, inputs[i]['name'], xWidgetOff + width + xSpaceBetweenWidgets + 5, y - 7, Qt.AlignLeft | Qt.AlignVCenter, bold =1, show=1))
-            self.texts.append(MyCanvasText(self.dlg.canvas, str([str(a).split('.')[-1] for a in inputs[i]['signalClass']]), xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
+            self.texts.append(MyCanvasText(self.dlg.canvas, unicode([unicode(a).split('.')[-1] for a in inputs[i]['signalClass']]), xWidgetOff + width + xSpaceBetweenWidgets + 5, y + 7, Qt.AlignLeft | Qt.AlignVCenter, bold =0, show=1))
             j += 1
         self.texts.append(MyCanvasText(self.dlg.canvas, outWidget.caption, xWidgetOff + width/2.0, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
         self.texts.append(MyCanvasText(self.dlg.canvas, inWidget.caption, xWidgetOff + width* 1.5 + xSpaceBetweenWidgets, yWidgetOffTop + height + 5, Qt.AlignHCenter | Qt.AlignTop, bold =1, show=1))
@@ -477,14 +477,14 @@ class SignalCanvasView(QGraphicsView):
 
 
     def addLink(self, outName, inName):  ## makes the line that goes from one widget to the other on the canvas, outName and inName are the id's for the links
-        print 'Adding link in the canvas', outName, inName
+        #print 'Adding link in the canvas', outName, inName
         outBox = None; inBox = None
         for (name, box, id) in self.outBoxes:
             if id == outName: outBox = box
         for (name, box, id) in self.inBoxes:
             if id == inName : inBox  = box
         if outBox == None or inBox == None:
-            print "error adding link. Data = ", outName, inName
+            #print "error adding link. Data = ", outName, inName
             return
         line = QGraphicsLineItem(None, self.dlg.canvas)
         outRect = outBox.rect()

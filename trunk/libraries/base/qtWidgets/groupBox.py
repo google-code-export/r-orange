@@ -18,7 +18,7 @@ class groupBox(QGroupBox,widgetState):
         else:
             QGroupBox.__init__(self)
        
-        
+        self.label = label
         self.controlArea.layout().addWidget(self)
         
         self.controlArea.layout().setAlignment(alignment)            

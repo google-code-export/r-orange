@@ -7,7 +7,7 @@ from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 ## package manager class redRPackageManager.  Contains a dlg for the package manager which reads xml from the red-r.org website and compares it with a local package system on the computer
 
-import os, sys, redREnviron, urllib, zipfile, traceback
+import os, sys, redREnviron, urllib, zipfile, traceback, log
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import xml.dom.minidom
@@ -32,7 +32,7 @@ class packageManager:
     def installRRP(self,packageName,filename):
 
         installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
-        print 'installDir', installDir
+        #print 'installDir', installDir
         import shutil
         import compileall
         shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying
@@ -83,24 +83,25 @@ class packageManager:
             progressBar.setValue(i)
             progressBar.setLabelText('Installing: ' + package)
             try:
-                packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
-                url = str(self.repository+'/'+package+'/'+packageName)
-                path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
-                print url
+                packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
+                url = unicode(self.repository+'/'+package+'/'+packageName)
+                path = os.path.join(redREnviron.directoryNames['downloadsDir'], unicode(packageName))
+                #print url
                 self.urlOpener.retrieve(url, path)
-                print path
+                #print path
                 self.installRRP(package,path)
+                log.log(1, 7, 3, 'Installing package %s from URL %s into path %s' % (packageName, url, path))
             except:
                 try:
-                    packageName = str(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
-                    url = str(self.repository+'/'+package+'/'+packageName)
-                    path = os.path.join(redREnviron.directoryNames['downloadsDir'], str(packageName))
-                    print url
+                    packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
+                    url = unicode(self.repository+'/'+package+'/'+packageName)
+                    path = os.path.join(redREnviron.directoryNames['downloadsDir'], unicode(packageName))
+                    #print url
                     self.urlOpener.retrieve(url, path)
-                    print path
+                    #print path
                     self.installRRP(package,path)
                 except:
-                    print redRExceptionHandling.formatException()
+                    log.log(1, 9, 1, redRExceptionHandling.formatException())
                     OK=False
         qApp.canvasDlg.reloadWidgets()
         progressBar.hide()
@@ -132,7 +133,7 @@ class packageManager:
             if node.nodeType == node.TEXT_NODE:
                 rc = rc + node.data
                 
-        rc = str(rc).strip()
+        rc = unicode(rc).strip()
         return rc
     # takes a xml file name and returns an xml object
     def readXML(self, fileName):
@@ -188,12 +189,13 @@ class packageManager:
     # downloads the packages.xml file from repository
     # The file is stored in the canvasSettingsDir/red-RPackages.xml
     def updatePackagesFromRepository(self):
-        print '|#| updatePackagesFromRepository'
+        #print '|#| updatePackagesFromRepository'
+        log.log(1, 7, 3, 'Updating packages from repository')
         url = self.repository + '/packages.xml'
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         from datetime import date
         redREnviron.settings['red-RPackagesUpdated'] = today = date.today()
-        print url, file
+        #print url, file
         self.urlOpener.retrieve(url, file)
     
     # runs through all the installed packages and creates red-RPackages.xml file
@@ -310,13 +312,13 @@ class packageManagerDialog(redRdialog):
         redRbutton(buttonArea2, label = 'Done', callback = self.accept)
     def installItemClicked(self, item1, item2):
         if item1:
-            self.infoViewInstalled.setHtml(self.localPackages[str(item1.text(0))]['Description'])
+            self.infoViewInstalled.setHtml(self.localPackages[unicode(item1.text(0))]['Description'])
     def updateItemClicked(self, item1, item2):
         if item1:
-            self.infoViewUpdates.setHtml(self.availablePackages[str(item1.text(0))]['Description'])
+            self.infoViewUpdates.setHtml(self.availablePackages[unicode(item1.text(0))]['Description'])
     def availableItemClicked(self, item1, item2):
         if item1:
-            self.infoViewAvailable.setHtml(self.availablePackages[str(item1.text(0))]['Description'])
+            self.infoViewAvailable.setHtml(self.availablePackages[unicode(item1.text(0))]['Description'])
     #### get the pakcages that are on Red-R.org  we ask before we do this and record the xml so we only have to get it once.
     def loadPackagesLists(self,force=True):
         if force:
@@ -394,8 +396,8 @@ class packageManagerDialog(redRdialog):
         ### make the download list
         downloadList = {}
         for item in selectedItems:  
-            name = str(item.text(0))
-            downloadList[name] = {'Version':str(item.text(5)), 'installed':False}
+            name = unicode(item.text(0))
+            downloadList[name] = {'Version':unicode(item.text(5)), 'installed':False}
         # print downloadList
         self.askToInstall(downloadList,"Are you sure that you want to update these packages?")
                 
@@ -406,7 +408,7 @@ class packageManagerDialog(redRdialog):
 
         uninstallList = []
         for item in selectedItems:
-            name = str(item.text(0))
+            name = unicode(item.text(0))
             if name == 'base':  ## special case of trying to delete base.
                 QMessageBox.information(self, "Deleting Base", "You are not allowed to delete base.", QMessageBox.Ok)
                 continue
@@ -454,7 +456,7 @@ class packageManagerDialog(redRdialog):
 
         ## resolve the packages
         packages.update(deps)
-        print packages
+        #print packages
         results = self.packageManager.downloadPackages(packages,window=self)
         self.loadPackagesLists()
         self.tabsArea.setCurrentIndex(1)
@@ -465,8 +467,8 @@ class packageManagerDialog(redRdialog):
         if len(selectedItems) ==0: return
         downloadList = {}
         for item in selectedItems:  
-            name = str(item.text(0))
-            downloadList[name] = {'Version':str(item.text(3)), 'installed':False}
+            name = unicode(item.text(0))
+            downloadList[name] = {'Version':unicode(item.text(3)), 'installed':False}
 
         self.askToInstall(downloadList,"Are you sure that you want to install these packages?")
 
@@ -486,9 +488,9 @@ class packageManagerDialog(redRdialog):
 
                 
             downloadList = {}
-            downloadList[package['Name']] = {'Version':str(package['Version']['Number']), 'installed':False}
+            downloadList[package['Name']] = {'Version':unicode(package['Version']['Number']), 'installed':False}
             deps = self.packageManager.getDependencies(downloadList)
-            print deps
+            #print deps
             notFound = []
             download = {}
             for name,version in deps.items():
@@ -512,7 +514,7 @@ class packageManagerDialog(redRdialog):
                 QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
                 if mb.exec_() != QMessageBox.Ok:
                     return
-            print filename
+            #print filename
             self.packageManager.installRRP(package['Name'], filename)
             if len(download.keys()) > 0:
                 results = self.packageManager.downloadPackages(download,window=self)
@@ -522,9 +524,9 @@ class packageManagerDialog(redRdialog):
             self.tabsArea.setCurrentIndex(1)
         except Exception as inst:
             mb = QMessageBox.warning(self,"Install Package", 
-                'The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n'+str(inst),
+                'The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n'+unicode(inst),
                 QMessageBox.Ok)
-            raise Exception, str(inst)
+            raise Exception, unicode(inst)
             
 
 packageManager = packageManager()

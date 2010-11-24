@@ -40,7 +40,7 @@ class kruskal_test(OWRpy):
             self.RFunctionParam_data = ''
             self.RFunctionParamformula.clear()
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': 
+        if unicode(self.RFunctionParam_data) == '': 
             self.status.setText('No data')
             return
         formulaOutput = self.RFunctionParamformula.Formula()
@@ -52,12 +52,12 @@ class kruskal_test(OWRpy):
         injection.append(string)
 
         inj = ','.join(injection)
-        self.R('txt<-capture.output(kruskal.test('+inj+', data='+str(self.RFunctionParam_data)+'))', wantType = 'NoConversion')
+        self.R('txt<-capture.output(kruskal.test('+inj+', data='+unicode(self.RFunctionParam_data)+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
         self.status.setText('Data sent')
     def getReportText(self, fileDir):
         text = 'Perform a kruskal test of the attached data.  A summary of the output is below:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

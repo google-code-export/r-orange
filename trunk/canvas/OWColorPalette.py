@@ -135,9 +135,9 @@ class ColorPaletteDlg(OWBaseWidget):
 
         box = OWGUI.widgetBox(buttBox, "Pass-through colors", orientation = "horizontal")
         for i, (color, check) in enumerate(extendedPassThroughColors):
-            self.__dict__["exCont"+paletteName+"passThroughColor"+str(i)] = check
-            self.__dict__["exCont"+paletteName+"passThroughColor"+str(i)+"Checkbox"] = OWGUI.checkBox(box, self, "exCont"+paletteName+"passThroughColor"+str(i), "", tooltip="Use color", callback = self.colorSchemaChange)
-            self.__dict__["exCont"+paletteName+"color"+str(i)] = ColorButton(self, box, color = QColor(color))
+            self.__dict__["exCont"+paletteName+"passThroughColor"+unicode(i)] = check
+            self.__dict__["exCont"+paletteName+"passThroughColor"+unicode(i)+"Checkbox"] = OWGUI.checkBox(box, self, "exCont"+paletteName+"passThroughColor"+unicode(i), "", tooltip="Use color", callback = self.colorSchemaChange)
+            self.__dict__["exCont"+paletteName+"color"+unicode(i)] = ColorButton(self, box, color = QColor(color))
         self.__dict__["exCont"+paletteName+"colorCount"] = len(extendedPassThroughColors)
         self.exContPaletteNames.append(paletteName)            
         
@@ -199,9 +199,9 @@ class ColorPaletteDlg(OWBaseWidget):
         c2 = self.__dict__["exCont"+paletteName+"Right"].getColor()
         colors = self.__dict__["exCont"+paletteName+"passThroughColors"]
         if colors:
-            colors = [self.__dict__["exCont"+paletteName+"color"+str(i)].getColor()
+            colors = [self.__dict__["exCont"+paletteName+"color"+unicode(i)].getColor()
                       for i in range(self.__dict__["exCont"+paletteName+"colorCount"])
-                      if self.__dict__["exCont"+paletteName+"passThroughColor"+str(i)]]
+                      if self.__dict__["exCont"+paletteName+"passThroughColor"+unicode(i)]]
         return ExtendedContinuousPaletteGenerator(c1, c2, colors or [])
 
     def getDiscretePalette(self, paletteName):
@@ -215,7 +215,7 @@ class ColorPaletteDlg(OWBaseWidget):
         l2 = [(name, (self.qRgbFromQColor(self.__dict__["cont"+name+"Left"].getColor()), self.qRgbFromQColor(self.__dict__["cont"+name+"Right"].getColor()), self.__dict__["cont"+name+"passThroughBlack"])) for name in self.contPaletteNames]
         l3 = [(name, self.__dict__["disc"+name+"View"].rgbColors) for name in self.discPaletteNames]
         l4 = [(name, (self.qRgbFromQColor(self.__dict__["exCont"+name+"Left"].getColor()), self.qRgbFromQColor(self.__dict__["exCont"+name+"Right"].getColor()), self.__dict__["exCont"+name+"passThroughColors"],
-                      [(self.qRgbFromQColor(self.__dict__["exCont"+name+"color"+str(i)].getColor()), self.__dict__["exCont"+name+"passThroughColor"+str(i)])
+                      [(self.qRgbFromQColor(self.__dict__["exCont"+name+"color"+unicode(i)].getColor()), self.__dict__["exCont"+name+"passThroughColor"+unicode(i)])
                        for i in range(self.__dict__["exCont"+name+"colorCount"])]))
                        for name in self.exContPaletteNames]
         return [l1, l2, l3, l4]
@@ -260,9 +260,9 @@ class ColorPaletteDlg(OWBaseWidget):
 
             colorsList = []
             for i, (color, check) in enumerate(colors):
-                self.__dict__["exCont"+name+"passThroughColor"+str(i)] = check
-                self.__dict__["exCont"+name+"passThroughColor"+str(i)+"Checkbox"].setChecked(check)
-                self.__dict__["exCont"+name+"color"+str(i)].setColor(self.rgbToQColor(color))
+                self.__dict__["exCont"+name+"passThroughColor"+unicode(i)] = check
+                self.__dict__["exCont"+name+"passThroughColor"+unicode(i)+"Checkbox"].setChecked(check)
+                self.__dict__["exCont"+name+"color"+unicode(i)].setColor(self.rgbToQColor(color))
                 if check and chk:
                     colorsList.append(self.rgbToQColor(color))
             self.__dict__["exCont"+name+"colorCount"] = self.__dict__.get("exCont"+name+"colorCount", len(colors))
@@ -278,8 +278,8 @@ class ColorPaletteDlg(OWBaseWidget):
             while not ok:
                 text, ok = QInputDialog.getText(self, "Name Your Color Settings", message)
                 if (ok):
-                    newName = str(text)
-                    oldNames = [str(self.schemaCombo.itemText(i)).lower() for i in range(self.schemaCombo.count()-1)]
+                    newName = unicode(text)
+                    oldNames = [unicode(self.schemaCombo.itemText(i)).lower() for i in range(self.schemaCombo.count()-1)]
                     if newName.lower() == "default":
                         ok = FALSE
                         message = "The 'Default' settings cannot be changed. Please enter a different name:"

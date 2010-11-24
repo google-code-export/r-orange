@@ -1,7 +1,7 @@
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
-
+import redREnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -48,9 +48,10 @@ class lineEdit(QLineEdit,widgetState):
         
         if textChangedCallBack:
             QObject.connect(self, SIGNAL('textEdited(QString)'), textChangedCallBack)
-    
+    def showToolTip(self):
+        name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     def text(self):
-        return str(QLineEdit.text(self).toAscii())
+        return unicode(QLineEdit.text(self).toAscii())
     def widgetId(self):
         return self.id
     def widgetLabel(self):
@@ -62,7 +63,7 @@ class lineEdit(QLineEdit,widgetState):
         return r
     def loadSettings(self,data):
         try:
-            #print 'called load' + str(value)     
+            #print 'called load' + unicode(value)     
             self.setText(data['text'])
             if 'id' in data.keys():
                 self.id = data['id']

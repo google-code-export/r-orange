@@ -46,14 +46,14 @@ class RedRfft(OWRpy):
         else:
             self.RFunctionParam_z=''
     def commitFunction(self):
-        if str(self.RFunctionParam_z) == '': return
+        if unicode(self.RFunctionParam_z) == '': return
         injection = []
-        if str(self.RFunctionParaminverse_radioBox.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParaminverse_radioBox.getChecked()) == 'Yes':
             injection.append('inverse = TRUE')
         else:
             injection.append('inverse = FALSE')
         inj = ','.join(injection)
-        self.R(self.Rvariables['fft']+'<-fft(z='+str(self.RFunctionParam_z)+','+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['fft']+'<-fft(z='+unicode(self.RFunctionParam_z)+','+inj+')')
         newData = redRRMatrix(data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

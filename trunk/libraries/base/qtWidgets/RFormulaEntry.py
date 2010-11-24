@@ -63,27 +63,27 @@ class RFormulaEntry(widgetState):
         self.colonButton.setEnabled(not pos)
         self.starButton.setEnabled(not pos)
     def FormulaEntryElementSelected(self):
-        self.modelLineEdit.setText(str(self.modelLineEdit.text()) + str(self.elementsListBox.currentItem().text()))
+        self.modelLineEdit.setText(unicode(self.modelLineEdit.text()) + unicode(self.elementsListBox.currentItem().text()))
         self.updateEnabled(0)
         
     def plusButtonClicked(self):
-        self.modelLineEdit.setText(str(self.modelLineEdit.text()) + ' + ')
+        self.modelLineEdit.setText(unicode(self.modelLineEdit.text()) + ' + ')
         self.updateEnabled(1)
         
     def colonButtonClicked(self):
-        self.modelLineEdit.setText(str(self.modelLineEdit.text()) + ' : ')
+        self.modelLineEdit.setText(unicode(self.modelLineEdit.text()) + ' : ')
         self.updateEnabled(1)
         
     def starButtonClicked(self):
-        self.modelLineEdit.setText(str(self.modelLineEdit.text()) + ' * ')
+        self.modelLineEdit.setText(unicode(self.modelLineEdit.text()) + ' * ')
         self.updateEnabled(1)
         
     def Formula(self):
-        return (str(self.outcomeVariable.currentText()), str(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
+        return (unicode(self.outcomeVariable.currentText()), unicode(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
     def getSettings(self):
         itemsText = []
         for item in self.elementsListBox.items():
-           itemsText.append(str(item.text()))
+           itemsText.append(unicode(item.text()))
                 
         r = {'current':self.outcomeVariable.currentIndex(), 
         'buttonState': self.elementsListBox.isEnabled(), 'listBoxItems':itemsText}

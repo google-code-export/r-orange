@@ -4,13 +4,13 @@ from RSession import require_librarys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy,sip
-
+from libraries.base.qtWidgets.groupBox import groupBox
 class Rtable(widgetState,QTableView):
     def __init__(self,widget, label=None, displayLabel=True,includeInReports=True, 
     Rdata=None, editable=False, rows=None, columns=None,
     sortable=False, selectionMode = -1, addToLayout = 1,callback=None):
         
-        widgetState.__init__(self,widget.label,includeInReports)
+        widgetState.__init__(self,widget, widget.label,includeInReports)
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
@@ -218,7 +218,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.rownames)+1
             # print self.rownames
             # print size
-            headers = [str(i) for i in range(size,size+count)]
+            headers = [unicode(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
         self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
@@ -244,7 +244,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.colnames)+1
             # print self.colnames
             # print size
-            headers = ['V'  +str(i) for i in range(size,size+count)]
+            headers = ['V'  +unicode(i) for i in range(size,size+count)]
             # print headers
             self.colnames.extend(headers)
         
@@ -382,10 +382,10 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.rownames)+1
             # print self.rownames
             # print size
-            headers = [str(i) for i in range(size,size+count)]
+            headers = [unicode(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))')
+        self.R('t = matrix("",nrow='+unicode(count)+',ncol=ncol('+self.Rdata+'))')
         self.R('colnames(t) = colnames('+self.Rdata+')')
         self.R('rownames(t) = rownames("%s")' % '","'.join(headers))
         self.R(self.Rdata+'=rbind('+self.Rdata+',t)')
@@ -408,7 +408,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.colnames)+1
             # print self.colnames
             # print size
-            headers = ['V'  +str(i) for i in range(size,size+count)]
+            headers = ['V'  +unicode(i) for i in range(size,size+count)]
             # print headers
             self.colnames.extend(headers)
         

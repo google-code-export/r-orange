@@ -21,10 +21,10 @@ class WrapperSexpVectorTestCase(unittest.TestCase):
         ok = isNumeric(sexp)[0]
         self.assertTrue(ok)
 
-    def testStr(self):
+    def testunicode(self):
         sexp = ri.StrSexpVector(["a", ])
         isStr = ri.globalEnv.get("is.character")
-        ok = isStr(sexp)[0]
+        ok = isunicode(sexp)[0]
         self.assertTrue(ok)
 
     def testBool(self):

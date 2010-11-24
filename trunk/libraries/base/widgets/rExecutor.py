@@ -83,36 +83,36 @@ class rExecutor(OWRpy):
 
         sendbutton = button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
     def addlsList(self):
-        self.command.insertPlainText(str(self.lsList.selectedItems()[0].text()))
+        self.command.insertPlainText(unicode(self.lsList.selectedItems()[0].text()))
     def refreshLsList(self):
         self.lsList.update(self.R('ls()', wantType = 'list'))
     def clearOutput(self):
         self.thistext.clear()
     def putrecieved(self):
-        self.command.insert(str(self.data))
+        self.command.insert(unicode(self.data))
     def sendThis(self):
-        if str(self.command.textCursor().selectedText()) != '':
-                text = str(self.command.textCursor().selectedText())
+        if unicode(self.command.textCursor().selectedText()) != '':
+                text = unicode(self.command.textCursor().selectedText())
         else:
                 self.sendStatus.setText('No object Selected')
                 return
-        thisdataclass = self.R('class('+str(text)+')')
-        thisdata = str(text)
+        thisdataclass = self.R('class('+unicode(text)+')')
+        thisdata = unicode(text)
         # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
-            newData = redRRVariable(data = str(text))
+            newData = redRRVariable(data = unicode(text))
             self.rSend("id3", newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
-                newData = redRRVector(data = str(text))
+                newData = redRRVector(data = unicode(text))
                 self.rSend("id2", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Vector channel')
             elif thisdataclass in ['data.frame']:
-                newData = redRRDataFrame(data = str(text))
+                newData = redRRDataFrame(data = unicode(text))
                 self.rSend("id0", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
             elif thisdataclass in ['matrix']:
-                newData = redRRMatrix(data = str(text))
+                newData = redRRMatrix(data = unicode(text))
                 self.rSend("id4", newData)
                 self.sendStatus.setText(thisdata+' sent through the Matrix channel')
             elif thisdataclass == 'list': # the object is a list
@@ -122,30 +122,30 @@ class rExecutor(OWRpy):
                         self.status.setText('Data sent through the R Arbitrary List channel')
                         self.rSend('ral', newData)
                         return
-                newData = redRRList(data = str(text))
+                newData = redRRList(data = unicode(text))
                 self.rSend("id1", newData)
                 self.sendStatus.setText(thisdata+' sent through the R List channel')
             else:    # the data is of a non-normal type send anyway as generic
-                newData = redRRVariable(data = str(text))
+                newData = redRRVariable(data = unicode(text))
                 self.rSend("id3", newData)
                 self.sendStatus.setText(thisdata+' sent through the R Object channel')
         else:
-            newData = redRRVariable(data = str(text))
+            newData = redRRVariable(data = unicode(text))
             self.rSend("id3", newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):
         #self.R('txt<-"R error occured" #Benign error in case a real error occurs')
         try:
-            if str(self.command.textCursor().selectedText()) != '':
-                text = str(self.command.textCursor().selectedText())
+            if unicode(self.command.textCursor().selectedText()) != '':
+                text = unicode(self.command.textCursor().selectedText())
             else:
-                text = str(self.command.toPlainText())
-            output = self.R('capture.output(eval(parse(text = \"'+str(text).replace('\"', '\\\"')+'\")))', wantType = 'list')
+                text = unicode(self.command.toPlainText())
+            output = self.R('capture.output(eval(parse(text = \"'+unicode(text).replace('\"', '\\\"')+'\")))', wantType = 'list')
 
             #pasted = self.R('paste(txt, collapse = " \n")')
             # if type(pasted) != type(''):
                 # pasted = 'Error occured with evaluation, please chech output for error.'
-            #self.thistext.insertPlainText('>>>'+str(text)+'##Done')
+            #self.thistext.insertPlainText('>>>'+unicode(text)+'##Done')
             self.thistext.insertPlainText('\n'+'\n'.join(output)+'\n')
             self.thistext.setAlignment(Qt.AlignBottom)
         except Exception as inst:
@@ -158,7 +158,7 @@ class rExecutor(OWRpy):
             self.rSend(output, None, 0)
         self.data = ''
         if data:
-            self.data = str(data.getData())
+            self.data = unicode(data.getData())
             self.olddata = data
             
             self.infob.setText(self.data)
@@ -196,11 +196,11 @@ class rExecutor(OWRpy):
         else: return
     
     def isNumeric(self):
-        self.mystatus.setText("Numeric Vector Connected of length %s" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("Numeric Vector Connected of length %s" % unicode(self.R('length('+self.data+')')))
     def isCharacter(self):
-        self.mystatus.setText("Character Vector Connected of length %s" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("Character Vector Connected of length %s" % unicode(self.R('length('+self.data+')')))
     def isDataFrame(self):
-        self.mystatus.setText("Data Frame Connected with %s columns" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("Data Frame Connected with %s columns" % unicode(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
             self.dfselected = listBox(self.dataBox, self)
@@ -211,7 +211,7 @@ class rExecutor(OWRpy):
             for e in colnames:
                 self.dfselected.addItem(e)
     def isMatrix(self):
-        self.mystatus.setText("Matrix connected with %s elements and %s columns" % (str(self.R('length('+self.data+')')), str(self.R('length('+self.data+'[1,])'))))
+        self.mystatus.setText("Matrix connected with %s elements and %s columns" % (unicode(self.R('length('+self.data+')')), unicode(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = listBox(self.dataBox, self)
@@ -221,13 +221,13 @@ class rExecutor(OWRpy):
             except:
                 print 'Error with colnames, may not exist.'
     def isList(self):
-        self.mystatus.setText("List object connected with %s elements" % str(self.R('length('+self.data+')')))
+        self.mystatus.setText("List object connected with %s elements" % unicode(self.R('length('+self.data+')')))
         
     def getReportText(self, fileDir):
         ## report for this entry
         text = ''
         text += 'The following is entered into the R Executor:</br>'
-        text += '<pre>'+str(self.thistext.toPlainText())+'</pre>'
+        text += '<pre>'+unicode(self.thistext.toPlainText())+'</pre>'
         
         return text
         

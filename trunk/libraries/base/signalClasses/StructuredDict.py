@@ -18,10 +18,10 @@ class StructuredDict(UnstructuredDict):
             
             for key in data.keys():
                 if type(data[key]) not in [list]:
-                    raise Exception, 'Data in '+str(key)+' not of list type'
+                    raise Exception, 'Data in '+unicode(key)+' not of list type'
                 if len(data[key]) != self.length:
                     print data
-                    raise Exception, 'Data in '+str(key)+' not of same length as data in first key.'
+                    raise Exception, 'Data in '+unicode(key)+' not of same length as data in first key.'
                         
             if keys and len(keys) != len(self.data.keys()):
                 print 'WARNING! Key length not same as keys.  Ignoring keys.'
@@ -46,8 +46,8 @@ class StructuredDict(UnstructuredDict):
                 newKeys.append(name)
         else:
             for i in range(len(self.data[self.data.keys()[0]])):
-                newDict[str(i+1)] = []
-                newKeys.append(str(i+1))
+                newDict[unicode(i+1)] = []
+                newKeys.append(unicode(i+1))
         if not self.keys or self.keys == None:
             keys = self.data.keys()
         else:

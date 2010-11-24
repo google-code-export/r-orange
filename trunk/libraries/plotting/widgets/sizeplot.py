@@ -52,54 +52,54 @@ class sizeplot(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParamy_lineEdit.text()) != '':
-            string = 'y='+str(self.RFunctionParamy_lineEdit.text())+''
+        if unicode(self.RFunctionParamy_lineEdit.text()) != '':
+            string = 'y='+unicode(self.RFunctionParamy_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamx_lineEdit.text()) != '':
-            string = 'x='+str(self.RFunctionParamx_lineEdit.text())+''
+        if unicode(self.RFunctionParamx_lineEdit.text()) != '':
+            string = 'x='+unicode(self.RFunctionParamx_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamscale_lineEdit.text()) != '':
-            string = 'scale='+str(self.RFunctionParamscale_lineEdit.text())+''
+        if unicode(self.RFunctionParamscale_lineEdit.text()) != '':
+            string = 'scale='+unicode(self.RFunctionParamscale_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamsize_lineEdit.text()) != '':
-            string = 'size='+str(self.RFunctionParamsize_lineEdit.text())+''
+        if unicode(self.RFunctionParamsize_lineEdit.text()) != '':
+            string = 'size='+unicode(self.RFunctionParamsize_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParampow_lineEdit.text()) != '':
-            string = 'pow='+str(self.RFunctionParampow_lineEdit.text())+''
+        if unicode(self.RFunctionParampow_lineEdit.text()) != '':
+            string = 'pow='+unicode(self.RFunctionParampow_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.Rplot('sizeplot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.Rplot('sizeplot(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
         
     def getReportText(self, fileDir):
-        if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
-        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
             
         injection = []
-        if str(self.RFunctionParamy_lineEdit.text()) != '':
-            string = 'y='+str(self.RFunctionParamy_lineEdit.text())+''
+        if unicode(self.RFunctionParamy_lineEdit.text()) != '':
+            string = 'y='+unicode(self.RFunctionParamy_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamx_lineEdit.text()) != '':
-            string = 'x='+str(self.RFunctionParamx_lineEdit.text())+''
+        if unicode(self.RFunctionParamx_lineEdit.text()) != '':
+            string = 'x='+unicode(self.RFunctionParamx_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamscale_lineEdit.text()) != '':
-            string = 'scale='+str(self.RFunctionParamscale_lineEdit.text())+''
+        if unicode(self.RFunctionParamscale_lineEdit.text()) != '':
+            string = 'scale='+unicode(self.RFunctionParamscale_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamsize_lineEdit.text()) != '':
-            string = 'size='+str(self.RFunctionParamsize_lineEdit.text())+''
+        if unicode(self.RFunctionParamsize_lineEdit.text()) != '':
+            string = 'size='+unicode(self.RFunctionParamsize_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParampow_lineEdit.text()) != '':
-            string = 'pow='+str(self.RFunctionParampow_lineEdit.text())+''
+        if unicode(self.RFunctionParampow_lineEdit.text()) != '':
+            string = 'pow='+unicode(self.RFunctionParampow_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('sizeplot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('sizeplot(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
         self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
             
         return text

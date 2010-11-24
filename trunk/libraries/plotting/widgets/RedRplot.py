@@ -94,50 +94,50 @@ class RedRplot(OWRpy):
             self.RFunctionParam_plotatt=''
     def commitFunction(self):
         if not self.dataFrameAttached:
-            if str(self.RFunctionParam_y) == '': return
-            if str(self.RFunctionParam_x) == '': return
+            if unicode(self.RFunctionParam_y) == '': return
+            if unicode(self.RFunctionParam_x) == '': return
         else:
             if self.dataFrame == '': return
-            self.RFunctionParam_x = self.dataFrame + '$' + str(self.namesListX.currentText())
-            self.RFunctionParam_y = self.dataFrame + '$' + str(self.namesListY.currentText())
+            self.RFunctionParam_x = self.dataFrame + '$' + unicode(self.namesListX.currentText())
+            self.RFunctionParam_y = self.dataFrame + '$' + unicode(self.namesListY.currentText())
         injection = []
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab=\''+str(self.RFunctionParamxlab_lineEdit.text())+'\''
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab=\''+unicode(self.RFunctionParamxlab_lineEdit.text())+'\''
             injection.append(string)
-        if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab=\''+str(self.RFunctionParamylab_lineEdit.text())+'\''
+        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = 'ylab=\''+unicode(self.RFunctionParamylab_lineEdit.text())+'\''
             injection.append(string)
-        if str(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main=\''+str(self.RFunctionParammain_lineEdit.text())+'\''
+        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
+            string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.graphicsView.plotMultiple('y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj, layers = [a for (k, a) in self.plotAttributes.items()])
+        self.graphicsView.plotMultiple('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj, layers = [a for (k, a) in self.plotAttributes.items()])
     
     def getReportText(self, fileDir):
         if not self.dataFrameAttached:
-            if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
-            if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+            if unicode(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+            if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
         else:
             if self.dataFrame == '': return 'Nothing to plot from this widget'
-            self.RFunctionParam_x = self.dataFrame + '$' + str(self.namesListX.currentText())
-            self.RFunctionParam_y = self.dataFrame + '$' + str(self.namesListY.currentText())
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+            self.RFunctionParam_x = self.dataFrame + '$' + unicode(self.namesListX.currentText())
+            self.RFunctionParam_y = self.dataFrame + '$' + unicode(self.namesListY.currentText())
+        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
             
         injection = []
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab=\''+str(self.RFunctionParamxlab_lineEdit.text())+'\''
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab=\''+unicode(self.RFunctionParamxlab_lineEdit.text())+'\''
             injection.append(string)
-        if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab=\''+str(self.RFunctionParamylab_lineEdit.text())+'\''
+        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = 'ylab=\''+unicode(self.RFunctionParamylab_lineEdit.text())+'\''
             injection.append(string)
-        if str(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main=\''+str(self.RFunctionParammain_lineEdit.text())+'\''
+        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
+            string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('plot(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('plot(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
         self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
             
         return text

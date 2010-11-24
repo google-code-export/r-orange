@@ -33,14 +33,14 @@ class redRSavePoint(OWRpy):
             self.inputObject=data
         else: self.inputObject = None
         
-        self.RoutputWindow.setText(str(self.inputObject))
+        self.RoutputWindow.setText(unicode(self.inputObject))
     def commitFunction(self):
         self.outputObject = self.inputObject.copy()
-        self.RoutputWindow2.setText(str(self.outputObject))
+        self.RoutputWindow2.setText(unicode(self.outputObject))
         self.rSend('id0', self.outputObject)    
     def getReportText(self, fileDir):
         text = 'ANOVA-LM analysis performted.  The following is a summary of the results:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text
         
 class SavepointOutputHandler(OutputHandler):

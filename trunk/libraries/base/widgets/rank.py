@@ -69,8 +69,7 @@ class rank(OWRpy):
         
         
         inj = ','.join(injection)
-        self.R(self.Rvariables['rank']+'<-rank(x=%s[["%s"]],%s, na.last = TRUE)' % (self.RFunctionParam_x,col,inj))
-        
+        self.R(self.Rvariables['rank']+'<-rank(x='+unicode(self.RFunctionParam_x)+','+inj+', na.last = TRUE)')
         newData = redRRMatrix(data = 'as.matrix('+self.Rvariables['rank']+')')
         self.rSend("id0", newData)
         

@@ -48,7 +48,7 @@ class aov(OWRpy):
             self.RFunctionParam_data=''
             self.RFunctionParamformula_formulaEntry.clear()
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': 
+        if unicode(self.RFunctionParam_data) == '': 
             self.setWarning(id = 'NoData', text = 'No Data connected or data is blank')
             return
         formula = self.RFunctionParamformula_formulaEntry.Formula()
@@ -58,18 +58,18 @@ class aov(OWRpy):
         injection = []
         string = 'formula='+formula[0]+ ' ~ '+formula[1]
         injection.append(string)
-        if str(self.RFunctionParamcontrasts_lineEdit.text()) != '':
-            string = 'contrasts='+str(self.RFunctionParamcontrasts_lineEdit.text())+''
+        if unicode(self.RFunctionParamcontrasts_lineEdit.text()) != '':
+            string = 'contrasts='+unicode(self.RFunctionParamcontrasts_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamqr_lineEdit.text()) != '':
-            string = 'qr='+str(self.RFunctionParamqr_lineEdit.text())+''
+        if unicode(self.RFunctionParamqr_lineEdit.text()) != '':
+            string = 'qr='+unicode(self.RFunctionParamqr_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamprojections_lineEdit.text()) != '':
-            string = 'projections='+str(self.RFunctionParamprojections_lineEdit.text())+''
+        if unicode(self.RFunctionParamprojections_lineEdit.text()) != '':
+            string = 'projections='+unicode(self.RFunctionParamprojections_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['aov']+'<-aov(data='+str(self.RFunctionParam_data)+','+inj+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output(summary('+self.Rvariables['aov']+'))', wantType = 'NoConversion')
+        self.R(self.Rvariables['aov']+'<-aov(data='+unicode(self.RFunctionParam_data)+','+inj+')')
+        self.R('txt<-capture.output(summary('+self.Rvariables['aov']+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
@@ -84,17 +84,17 @@ class aov(OWRpy):
         injection = []
         string = 'formula='+formula[0]+ ' ~ '+formula[1]
         injection.append(string)
-        if str(self.RFunctionParamcontrasts_lineEdit.text()) != '':
-            string = 'contrasts='+str(self.RFunctionParamcontrasts_lineEdit.text())+''
+        if unicode(self.RFunctionParamcontrasts_lineEdit.text()) != '':
+            string = 'contrasts='+unicode(self.RFunctionParamcontrasts_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamqr_lineEdit.text()) != '':
-            string = 'qr='+str(self.RFunctionParamqr_lineEdit.text())+''
+        if unicode(self.RFunctionParamqr_lineEdit.text()) != '':
+            string = 'qr='+unicode(self.RFunctionParamqr_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamprojections_lineEdit.text()) != '':
-            string = 'projections='+str(self.RFunctionParamprojections_lineEdit.text())+''
+        if unicode(self.RFunctionParamprojections_lineEdit.text()) != '':
+            string = 'projections='+unicode(self.RFunctionParamprojections_lineEdit.text())+''
             injection.append(string)
         inj = '\n\n'.join(injection)
         text += inj
         text += '\n\nThe following is a summary of the output:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

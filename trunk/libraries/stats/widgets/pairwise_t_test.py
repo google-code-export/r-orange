@@ -58,7 +58,7 @@ class pairwise_t_test(OWRpy):
         if self.indata == '': return
         if self.RFunctionParam_x.currentText() == self.RFunctionParam_g.currentText(): return
         #self.R('attach('+self.indata+')')
-        self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+self.indata+'[,\''+str(self.RFunctionParam_x.currentText())+'\'],pool_sd='+str(self.RFunctionParam_pool_sd.currentText())+',g='+self.indata+'[,\''+str(self.RFunctionParam_g.currentText())+'\'],p.adjust.method=\''+str(self.RFunctionParam_p_adjust_method.currentText())+'\', alternative = \''+str(self.alternative.currentText())+'\')', wantType = 'NoConversion')
+        self.R(self.Rvariables['pairwise.t.test']+'<-pairwise.t.test(x='+self.indata+'[,\''+unicode(self.RFunctionParam_x.currentText())+'\'],pool_sd='+unicode(self.RFunctionParam_pool_sd.currentText())+',g='+self.indata+'[,\''+unicode(self.RFunctionParam_g.currentText())+'\'],p.adjust.method=\''+unicode(self.RFunctionParam_p_adjust_method.currentText())+'\', alternative = \''+unicode(self.alternative.currentText())+'\')')
         # self.R('detach()')
         self.R('txt<-capture.output('+self.Rvariables['pairwise.t.test']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()

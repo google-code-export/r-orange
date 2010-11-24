@@ -173,7 +173,8 @@ def registerQTWidgets():
                 guiClass = os.path.basename(filename).split('.')[0]
                 qtWidgets.append(guiClass)
         except:
-           print redRExceptionHandling.formatException()
+           import log
+           log.log(1, 9, 1, redRExceptionHandling.formatException())
 
 
 # def separator(widget, width=8, height=8):

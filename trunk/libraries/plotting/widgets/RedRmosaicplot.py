@@ -34,16 +34,16 @@ class RedRmosaicplot(OWRpy):
 		else:
 			self.RFunctionParam_x=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_x) == '': return
+		if unicode(self.RFunctionParam_x) == '': return
 		injection = []
-		if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-			string = 'xlab=\''+str(self.RFunctionParamxlab_lineEdit.text())+'\''
+		if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+			string = 'xlab=\''+unicode(self.RFunctionParamxlab_lineEdit.text())+'\''
 			injection.append(string)
-		if str(self.RFunctionParamylab_lineEdit.text()) != '':
-			string = 'ylab=\''+str(self.RFunctionParamylab_lineEdit.text())+'\''
+		if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+			string = 'ylab=\''+unicode(self.RFunctionParamylab_lineEdit.text())+'\''
 			injection.append(string)
-		if str(self.RFunctionParammain_lineEdit.text()) != '':
-			string = 'main=\''+str(self.RFunctionParammain_lineEdit.text())+'\''
+		if unicode(self.RFunctionParammain_lineEdit.text()) != '':
+			string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
 			injection.append(string)
 		inj = ','.join(injection)
-		self.plotArea.plot('x=table('+str(self.RFunctionParam_x)+'),'+inj, function = 'mosaicplot')
+		self.plotArea.plot('x=table('+unicode(self.RFunctionParam_x)+'),'+inj, function = 'mosaicplot')

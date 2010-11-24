@@ -24,7 +24,7 @@ class RObjectTestCase(unittest.TestCase):
         self.assertTrue(s.startswith('3.14'))
 
 
-    def testStr(self):
+    def testunicode(self):
         prt = robjects.baseNameSpaceEnv["pi"]
         s = prt.__str__()
         self.assertTrue(s.startswith('[1] 3.14'))

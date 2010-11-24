@@ -9,7 +9,7 @@
 
 import redRGUI
 from OWRpy import *
-
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -29,14 +29,14 @@ class dataEntry2(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs = [('Data Table', redRRDataFrame, self.processDF)]
-        self.outputs = [('Data Table', redRRDataFrame)] # trace problem with outputs
+        self.inputs.addInput('Data Table', 'Data Table', redRRDataFrame, self.processDF)
+        self.outputs.addOutput('Data Table', 'Data Table', redRRDataFrame) # trace problem with outputs
         #GUI.
         
         
         box = groupBox(self.GUIDialog, label = "Options")
         redRCommitButton(self.bottomAreaRight, 'Commit', self.commitTable)
-        self.rowHeaders = checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
+        self.rowHeaders = checkBox(box, label= 'Table Annotations', buttons=['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders = checkBox(box, label=None, buttons=['Use Column Headers'])
         self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
         #self.colHeaders.setChecked(['Use Column Headers'])
@@ -55,8 +55,8 @@ class dataEntry2(OWRpy):
         #self.splitCanvas.addWidget(box)
         
 
-        self.R(self.Rvariables['table'] + '<- matrix("",nrow=10,ncol=10)',, wantType = 'NoConversion')
-        self.dataTable = Rtable(box, Rdata = self.Rvariables['table'], editable=True,sortable=True)
+        #self.R(self.Rvariables['table'] + '<- matrix("",nrow=10,ncol=10)', wantType = 'NoConversion')
+        self.dataTable = table(box, label = 'Data Table', rows = 10, columns = 10)
         # if self.dataTable.columnCount() < 1:
             # self.dataTable.setColumnCount(1)
             # self.dataTable.setHorizontalHeaderLabels(['Rownames'])
@@ -68,7 +68,7 @@ class dataEntry2(OWRpy):
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
         self.window = QDialog(self)
         self.window.setLayout(QVBoxLayout())
-        self.classTable = table(self.window, rows = self.maxCol, columns = 2)
+        self.classTable = table(self.window, label = 'Data Table', rows = self.maxCol, columns = 2)
         self.resize(700,500)
         self.move(300, 25)
     
@@ -82,7 +82,7 @@ class dataEntry2(OWRpy):
         for i in range(self.colCount):
             item = self.dataTable.horizontalHeaderItem(i)
             labels.append(item.text())
-        labels.append(str(self.columnNameLineEdit.text()))
+        labels.append(unicode(self.columnNameLineEdit.text()))
         self.dataTable.setColumnCount(self.colCount+1)
         self.dataTable.setHorizontalHeaderLabels(labels)
         self.colCount += 1
@@ -100,7 +100,7 @@ class dataEntry2(OWRpy):
         self.colCount = dims[1]+1
         self.rowCount = dims[0]
     def cellClicked(self, row, col):
-        print str(row), str(col)
+        print unicode(row), unicode(col)
         pass
 
     def onCellFocus(self, currentRow, currentCol, tb):
@@ -124,12 +124,12 @@ class dataEntry2(OWRpy):
             cb = QComboBox()
             item = self.dataTable.item(0, j)
             if item == None:
-                newitem = QTableWidgetItem(str('NA'))
+                newitem = QTableWidgetItem(unicode('NA'))
             else:
-                newitem = QTableWidgetItem(str(item.text()))
+                newitem = QTableWidgetItem(unicode(item.text()))
             cb.addItems(['Default', 'Factor', 'Numeric', 'Character'])
             self.classTable.setCellWidget(j-1, 1, cb)
-            newitem.setToolTip(str('Set the data type for column '+str(newitem.text())))
+            newitem.setToolTip(unicode('Set the data type for column '+unicode(newitem.text())))
             self.classTable.setItem(j-1, 0, newitem)
             
         button(self.window, 'Set Classes', callback = self.setClasses)
@@ -164,76 +164,80 @@ class dataEntry2(OWRpy):
     def commitTable(self):
         #run through the table and make the output
         
-        self.dataTable.getData()
+        #self.dataTable.getData()
         
         trange = self.dataTable.selectedRanges()[0]
+        
+        #log.log(10, 9, 3, ','.join([str(a) for a in trange.leftColumn(), trange.rightColumn(), trange.topRow(), trange.bottomRow()]))
         if trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow():
             rowi = range(0, self.maxRow+1)
             coli = range(0, self.maxCol+1)
         else:
 
-            rowi = range(trange.topRow(), trange.bottomRow())
+            rowi = range(trange.topRow(), trange.bottomRow()+1)
             coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
         if self.dataTable.item(rowi[0], coli[0]) == None: 
-
-            self.rowHeaders.setChecked(['Use Row Headers'])
-            self.rowHeaders.setChecked(['Use Column Headers'])
-        rownames = {}  
-        colnames = {}        
+            #log.log(10, 9, 3, 'Setting row and col headers to true')
+            self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
+            #self.rowHeaders.setChecked(['Use Column Headers'])
+        rownames = {}
+        colnames = {}
         if 'Use Row Headers' in self.rowHeaders.getChecked():
-            
+            #log.log(10, 9, 3, 'Using Row headers')
             for i in rowi:
                 item = self.dataTable.item(i, coli[0])
                 if item != None:
                     thisText = item.text()
-                else: thisText = str(i)
+                else: thisText = unicode(i)
                 if thisText == None or thisText == '':
-                    thisText = str(i)
+                    thisText = unicode(i)
                     
-                rownames[str(i)] = (str(thisText))
+                rownames[unicode(i)] = unicode(thisText)
             coli = coli[1:] #index up the cols
 
         if 'Use Column Headers' in self.rowHeaders.getChecked():
+            #log.log(10, 9, 3, 'Using col headers')
             for j in coli:
-                item = self.dataTable.horizontalHeaderItem(j)
+                item = self.dataTable.item(rowi[0], j)
                 if item != None:
                     thisText = item.text()
-                else: thisText = '"'+str(j)+'"'
+                else: thisText = '"'+unicode(j)+'"'
                 if thisText == None or thisText == '':
-                    thisText = '"'+str(j)+'"'
+                    thisText = '"'+unicode(j)+'"'
                 thisText = thisText.split(' ')[0]
-                colnames[str(j)] = (str(thisText))
-
+                colnames[unicode(j)] = (unicode(thisText))
+            #log.log(10, 9, 3, unicode(colnames))
+            rowi = rowi[1:]
         rinsertion = []
         
         for j in coli:
             element = ''
             if colnames:
-                element += colnames[str(j)]+'='
+                element += colnames[unicode(j)]+'='
             if self.classes:
                 element += self.classes[j-1][0]
             element += 'c('
             inserts = []
             for i in rowi:
-
+                #log.log(10, 9, 3, 'inserting data in cell i %s, j %s' % (i, j))
                 tableItem = self.dataTable.item(i,j)
                 if tableItem == None:
                     inserts.append('NA')
                 else:
                     try: #catch if the element can be coerced to numeric in the table
                         float(tableItem.text()) #will fail if can't be coerced to int 
-                        inserts.append(str(tableItem.text()))
+                        inserts.append(unicode(tableItem.text()))
                     except:
                         if tableItem.text() == 'NA': 
-                            inserts.append(str(tableItem.text()))
+                            inserts.append(unicode(tableItem.text()))
                             print 'set NA'
                         elif tableItem.text() == '1.#QNAN': 
                             inserts.append('NA') #if we read in some data
                             print 'set QNAN to NA'
                         else: 
-                            inserts.append('"'+str(tableItem.text())+'"')
-                            print str(tableItem.text())+' set as text'
+                            inserts.append('"'+unicode(tableItem.text())+'"')
+                            print unicode(tableItem.text())+' set as text'
 
             insert = ','.join(inserts)
             element += insert+')'
@@ -246,10 +250,10 @@ class dataEntry2(OWRpy):
         if len(rownames) > 0:
             rname = []
             for i in rowi:
-                if rownames[str(i)] in rname:
-                    rname.append(rownames[str(i)]+'_at_'+str(i))
+                if rownames[unicode(i)] in rname:
+                    rname.append(rownames[unicode(i)]+'_at_'+unicode(i))
                 else:
-                    rname.append(rownames[str(i)])
+                    rname.append(rownames[unicode(i)])
             rnf = '","'.join(rname)
             rinsert += ', row.names =c("'+rnf+'")' 
         self.R(self.Rvariables['table']+'<-data.frame('+rinsert+')', wantType = 'NoConversion')

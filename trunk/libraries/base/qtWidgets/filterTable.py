@@ -1,5 +1,5 @@
 from redRGUI import widgetState
-import os.path
+import os.path, log
 import redREnviron, redRReports
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -303,12 +303,12 @@ class filterTable(widgetState, QTableView):
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
                         # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": 'Numeric ' + str(label.text()), "value": str(value.text())}
+                        self.criteriaList[col] = {'column':col, "method": 'Numeric ' + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['character']:
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
                         # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": 'String ' + str(label.text()), "value": str(value.text())}
+                        self.criteriaList[col] = {'column':col, "method": 'String ' + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['factor','logical']:
                 checks = menu.findChildren(checkBox)[0].getChecked()
                 if 'Check All' in checks:
@@ -362,8 +362,8 @@ class filterTable(widgetState, QTableView):
             
             
             elif criteria['method'] in ['logical','factor']:
-                f= '","'.join([str(x) for x in criteria['value']])
-                filters.append(self.Rdata+'[,'+str(col)+'] %in% as.factor(c("'+f+'"))')
+                f= '","'.join([unicode(x) for x in criteria['value']])
+                filters.append(self.Rdata+'[,'+unicode(col)+'] %in% as.factor(c("'+f+'"))')
             #elif 'logical' == critera['method']:
             
        # print 'filters:', filters
@@ -522,7 +522,8 @@ class MyTableModel(QAbstractTableModel):
             return QVariant() 
         elif role != Qt.DisplayRole: 
             return QVariant() 
-        
+        elif not self.Rdata or self.Rdata == None:
+            return QVariant()
         # print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
         
         if (
@@ -542,6 +543,9 @@ class MyTableModel(QAbstractTableModel):
             self.currentRange['cend']
             ),
             wantType = 'list',silent=True)
+        if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
+            return QVariant()
+        #log.log(10, 5, 3, 'Filter table R data is %s' % self.Rdata)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
@@ -704,7 +708,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.rownames)+1
             # print self.rownames
             # print size
-            headers = [str(i) for i in range(size,size+count)]
+            headers = [unicode(i) for i in range(size,size+count)]
             # print headers
             self.rownames.extend(headers)
         self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
@@ -730,7 +734,7 @@ class MyTableModel(QAbstractTableModel):
             size = len(self.colnames)+1
             # print self.colnames
             # print size
-            headers = ['V'  +str(i) for i in range(size,size+count)]
+            headers = ['V'  +unicode(i) for i in range(size,size+count)]
             # print headers
             self.colnames.extend(headers)
         

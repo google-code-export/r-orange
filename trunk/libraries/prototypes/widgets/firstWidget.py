@@ -31,7 +31,7 @@ class firstWidget(OWRpy):
     # on click submit call this function
     def process(self):
         # get the user typed command
-        userEnteredRcmd = str(self.lineEdit.text())
+        userEnteredRcmd = unicode(self.lineEdit.text())
         # add the R code to capture the output to txt variable
         captureCmd  = 'txt<-capture.output(' + userEnteredRcmd +')'
         # execute the R code in the underlying R session. 

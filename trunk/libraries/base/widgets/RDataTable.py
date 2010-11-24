@@ -109,7 +109,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         
         #self.currentData = dataset.getData()
         dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
-        self.rowColCount.setText('# Row: ' + str(dim[0]) + "\n# Columns: " + str(dim[1]))
+        self.rowColCount.setText('# Row: ' + unicode(dim[0]) + "\n# Columns: " + unicode(dim[1]))
         self.infoBox.setHidden(False)
         self.table.setRTable(self.data)
 
@@ -122,18 +122,18 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         
         for item in self.linkListBox.selectedItems():
             #print item.text()
-            #print str(self.currentLinks)
-            url = self.currentLinks[str(item.text())]
+            #print unicode(self.currentLinks)
+            url = self.currentLinks[unicode(item.text())]
             col = url[url.find('{')+1:url.find('}')]
             print 'col', col, type(col)
             if col == 0 or col == 'row': #special cases for looking into rownames
                 #cellVal = self.data.getData()['row_names'][val.row()]  
-                cellVal = self.R('rownames('+self.data+')['+str(RclickedRow)+']')
+                cellVal = self.R('rownames('+self.data+')['+unicode(RclickedRow)+']')
             else:
                 
                 #cellVal = self.data.getData()[col][val.row()]  
-                cellVal = self.R(self.data+'['+str(RclickedRow)+',"'+col+'"]')
-            url = url.replace('{'+col+'}', str(cellVal))
+                cellVal = self.R(self.data+'['+unicode(RclickedRow)+',"'+col+'"]')
+            url = url.replace('{'+col+'}', unicode(cellVal))
             #print url
             import webbrowser
             webbrowser.open_new_tab(url)
@@ -141,7 +141,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.linkListBox.clear()
         self.currentLinks = {}
     def addCustomLink(self):
-        url = str(self.customLink.text())
+        url = unicode(self.customLink.text())
         self.linkListBox.addItem(url)
         self.currentLinks[url] = url
         self.customLink.clear()
@@ -155,7 +155,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         name = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath('/'),
         "Text file (*.csv *.tab *.txt );; All Files (*.*)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         if self.separator.currentText() == 'Tab': #'tab'
             sep = '\t'
         elif self.separator.currentText() == 'Space':
@@ -164,19 +164,19 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             sep = ','
         #use the R function if the parent of the dict is an R object.
         if type(self.data) == str:
-            self.R('write.table('+self.data+',file="'+str(name)+'", quote = FALSE, sep="'+sep+'")')
+            self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
             if self.dataParent:
                 string = ''
                 for key in self.dataParent.getData().keys():
-                    string += str(key)+sep
+                    string += unicode(key)+sep
                 string += '\n'
                 for i in range(self.dataParent.getItem('length')):
                     for key in self.dataParent.getData().keys():
                         string += self.dataParent.getData()[key][i]+sep
                     string += '\n'
                 
-                f = open(str(name), 'w')
+                f = open(unicode(name), 'w')
                 f.write(string)
                 f.close()
             else:

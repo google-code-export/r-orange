@@ -35,15 +35,15 @@ class RedRscale(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParamscale_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamscale_radioButtons.getChecked()) == 'Yes':
             string = 'scale = TRUE'
             injection.append(string)
         else:
             string = 'scale = FALSE'
             injection.append(string)
-        if str(self.RFunctionParamcenter_radioButtons.getChecked()) == 'Yes':
+        if unicode(self.RFunctionParamcenter_radioButtons.getChecked()) != 'Yes':
             string = 'center = TRUE'
             injection.append(string)
         else:

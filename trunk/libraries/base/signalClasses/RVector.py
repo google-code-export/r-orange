@@ -12,7 +12,7 @@ class RVector(RMatrix):
     def __init__(self, data, parent = None, checkVal = True):
         RMatrix.__init__(self, data = data, parent = parent, checkVal = False)
         if checkVal:
-            if self.R('class('+self.data+')') not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer']:
+            if self.R('class('+self.data+')', wantType = 'list')[0] not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer', 'POSIXt', 'POSIXct']:
                 raise Exception, 'Not vector data'
         self.StructuredDictSignal = None
         self.RDataFrameSignal = None
@@ -43,9 +43,9 @@ class RVector(RMatrix):
             rownames = self.R('rownames('+self.data+')', wantType = 'list')
             try:
                 if rownames in [None, 'NULL', 'NA']:
-                    rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
+                    rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
             except:
-                rownames = [str(i+1) for i in range(len(data[data.keys()[0]]))]
+                rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
             data['row_names'] = rownames
             self.StructuredDictSignal = StructuredDict(data = data, parent = self, keys = keys)
             return self.StructuredDictSignal
@@ -94,6 +94,6 @@ class RVector(RMatrix):
 
     def getRange_call(self, rowRange = None, colRange = None):
         if rowRange == None: return self.data
-        else: return self.data+'['+str(rowRange)+']'
+        else: return self.data+'['+unicode(rowRange)+']'
         
         

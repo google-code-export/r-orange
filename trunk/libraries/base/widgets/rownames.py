@@ -57,7 +57,7 @@ class rownames(OWRpy):
     def commitFunction(self,userClick=True):
         if not userClick and 'Commit on Input' not in self.autoCommit.getChecked():
             return
-        if str(self.RFunctionParam_x) == '': 
+        if unicode(self.RFunctionParam_x) == '': 
             self.status.setText('No data')
             return
             
@@ -67,18 +67,18 @@ class rownames(OWRpy):
         else:
             function = 'colnames'
 
-        if str(self.RFunctionParamprefix_lineEdit.text()) != '':
-            string = 'prefix="'+str(self.RFunctionParamprefix_lineEdit.text())+'"'
+        if unicode(self.RFunctionParamprefix_lineEdit.text()) != '':
+            string = 'prefix="'+unicode(self.RFunctionParamprefix_lineEdit.text())+'"'
             injection.append(string)
-        if str(self.doNullButton.getChecked()):
-            string = 'do.NULL='+str(self.doNullButton.getChecked())
+        if unicode(self.doNullButton.getChecked()):
+            string = 'do.NULL='+unicode(self.doNullButton.getChecked())
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['rownames']+'<-'+function+'(x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['rownames']+'<-'+function+'(x='+unicode(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         
         newData = redRRVector(data = self.Rvariables["rownames"])
 
         self.rSend("id0", newData)
     def getReportText(self, fileDir):
-        text = str(self.function.getChecked())+' were sent from this widget.\n\n'
+        text = unicode(self.function.getChecked())+' were sent from this widget.\n\n'
         return text

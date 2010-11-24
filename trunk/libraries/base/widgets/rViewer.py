@@ -57,14 +57,14 @@ class rViewer(OWRpy):
         self.RoutputWindow.clear()
         text = ''
         if 'String Representation' in self.showAll.getChecked():
-            text += self.R('paste(capture.output(str('+str(self.data.getData())+')), collapse = \'\\n\')')
+            text += self.R('paste(capture.output(str('+unicode(self.data.getData())+')), collapse = \'\\n\')')
             text += '\n'
         text += '\n'
         if 'Show All' in self.showAll.getChecked():
-            text += self.R('paste(capture.output('+str(self.data.getData())+'), collapse = \'\\n\')')
+            text += self.R('paste(capture.output('+unicode(self.data.getData())+'), collapse = \'\\n\')')
         #text = text.replace(' ', "\t")
-        self.RoutputWindow.setPlainText(str(text))
+        self.RoutputWindow.setPlainText(unicode(text))
     def getReportText(self, fileDir):
         text = 'The following was displayed in the rViewer widget:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

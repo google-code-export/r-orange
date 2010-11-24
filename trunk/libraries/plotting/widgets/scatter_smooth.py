@@ -56,65 +56,65 @@ class scatter_smooth(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+str(self.RFunctionParamxlab_lineEdit.text())+''
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab='+unicode(self.RFunctionParamxlab_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamspan_lineEdit.text()) != '':
-            string = 'span='+str(self.RFunctionParamspan_lineEdit.text())+''
+        if unicode(self.RFunctionParamspan_lineEdit.text()) != '':
+            string = 'span='+unicode(self.RFunctionParamspan_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamdegree_lineEdit.text()) != '':
-            string = 'degree='+str(self.RFunctionParamdegree_lineEdit.text())+''
+        if unicode(self.RFunctionParamdegree_lineEdit.text()) != '':
+            string = 'degree='+unicode(self.RFunctionParamdegree_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamfamily_comboBox.currentText()) != '':
-            string = 'family=\''+str(self.RFunctionParamfamily_comboBox.currentText())+'\''
+        if unicode(self.RFunctionParamfamily_comboBox.currentText()) != '':
+            string = 'family=\''+unicode(self.RFunctionParamfamily_comboBox.currentText())+'\''
             injection.append(string)
-        if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab='+str(self.RFunctionParamylab_lineEdit.text())+''
+        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = 'ylab='+unicode(self.RFunctionParamylab_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamevaluation_lineEdit.text()) != '':
-            string = 'evaluation='+str(self.RFunctionParamevaluation_lineEdit.text())+''
+        if unicode(self.RFunctionParamevaluation_lineEdit.text()) != '':
+            string = 'evaluation='+unicode(self.RFunctionParamevaluation_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamylim_lineEdit.text()) != '':
-            string = 'ylim='+str(self.RFunctionParamylim_lineEdit.text())+''
+        if unicode(self.RFunctionParamylim_lineEdit.text()) != '':
+            string = 'ylim='+unicode(self.RFunctionParamylim_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.Rplot('scatter.smooth(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.Rplot('scatter.smooth(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
     def getReportText(self, fileDir):
-        if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
-        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
             
         injection = []
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+str(self.RFunctionParamxlab_lineEdit.text())+''
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab='+unicode(self.RFunctionParamxlab_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamspan_lineEdit.text()) != '':
-            string = 'span='+str(self.RFunctionParamspan_lineEdit.text())+''
+        if unicode(self.RFunctionParamspan_lineEdit.text()) != '':
+            string = 'span='+unicode(self.RFunctionParamspan_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamdegree_lineEdit.text()) != '':
-            string = 'degree='+str(self.RFunctionParamdegree_lineEdit.text())+''
+        if unicode(self.RFunctionParamdegree_lineEdit.text()) != '':
+            string = 'degree='+unicode(self.RFunctionParamdegree_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamfamily_comboBox.currentText()) != '':
-            string = 'family=\''+str(self.RFunctionParamfamily_comboBox.currentText())+'\''
+        if unicode(self.RFunctionParamfamily_comboBox.currentText()) != '':
+            string = 'family=\''+unicode(self.RFunctionParamfamily_comboBox.currentText())+'\''
             injection.append(string)
-        if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab='+str(self.RFunctionParamylab_lineEdit.text())+''
+        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = 'ylab='+unicode(self.RFunctionParamylab_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamevaluation_lineEdit.text()) != '':
-            string = 'evaluation='+str(self.RFunctionParamevaluation_lineEdit.text())+''
+        if unicode(self.RFunctionParamevaluation_lineEdit.text()) != '':
+            string = 'evaluation='+unicode(self.RFunctionParamevaluation_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamylim_lineEdit.text()) != '':
-            string = 'ylim='+str(self.RFunctionParamylim_lineEdit.text())+''
+        if unicode(self.RFunctionParamylim_lineEdit.text()) != '':
+            string = 'ylim='+unicode(self.RFunctionParamylim_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('scatter.smooth(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('scatter.smooth(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
         self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
             
         return text

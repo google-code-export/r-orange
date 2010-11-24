@@ -89,9 +89,9 @@ class apply(OWRpy):
         if self.commit.processOnChange():
             self.commitFunction()
     def commitFunction(self):
-        func = str(self.functionText.toPlainText())
-        paramText = str(self.parameters.text())
-        if str(self.data) == None or func =='': return
+        func = unicode(self.functionText.toPlainText())
+        paramText = unicode(self.parameters.text())
+        if unicode(self.data) == None or func =='': return
         
         params = []
         for x in paramText.split(','):
@@ -107,10 +107,10 @@ class apply(OWRpy):
             self.saveGlobalSettings()
 
         injection = []
-        string = 'MARGIN = %s' % str(self.indexSpinBox.value())
+        string = 'MARGIN = %s' % unicode(self.indexSpinBox.value())
         injection.append(string)
             
-        string = 'FUN='+str(self.functionText.toPlainText())
+        string = 'FUN='+unicode(self.functionText.toPlainText())
         injection.append(string)
         
         injection.extend(params)
@@ -118,7 +118,7 @@ class apply(OWRpy):
         inj = ','.join(injection)
         
         # try:
-        self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+str(self.data)+','+inj+'))', wantType = 'NoConversion')
+        self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+unicode(self.data)+','+inj+'))', wantType = 'NoConversion')
         self.outputTable.setRTable(self.Rvariables['apply'])
         newData = redRRDataFrame(data = self.Rvariables['apply'])
         self.rSend("id0", newData)
@@ -129,4 +129,4 @@ class apply(OWRpy):
         
         
     def getReportText(self, fileDir):
-        return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (str(self.functionText.toPlainText()), self.demension.getChecked())
+        return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (unicode(self.functionText.toPlainText()), self.demension.getChecked())

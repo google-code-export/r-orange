@@ -55,48 +55,48 @@ class dotchart(OWRpy):
             self.labels = ''
             self.labelNames.clear()
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
-        if not self.R('is.numeric('+str(self.RFunctionParam_x)+')'):
+        if unicode(self.RFunctionParam_x) == '': return
+        if not self.R('is.numeric('+unicode(self.RFunctionParam_x)+')'):
             self.status.setText('Data is not a numberic matrix, please remove text columns and process again')
             return
         injection = []
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = ',xlab=\"'+str(self.RFunctionParamxlab_lineEdit.text())+'\"'
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = ',xlab=\"'+unicode(self.RFunctionParamxlab_lineEdit.text())+'\"'
             injection.append(string)
         if self.labels != '':
-            injection.append('labels = '+self.labels + '$' + str(self.labelNames.currentText()))
-        if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = ',ylab=\"'+str(self.RFunctionParamylab_lineEdit.text())+'\"'
+            injection.append('labels = '+self.labels + '$' + unicode(self.labelNames.currentText()))
+        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = ',ylab=\"'+unicode(self.RFunctionParamylab_lineEdit.text())+'\"'
             injection.append(string)
-        if str(self.RFunctionParammain_lineEdit.text()) != '':
-            string = ',main=\"'+str(self.RFunctionParammain_lineEdit.text())+'\"'
+        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
+            string = ',main=\"'+unicode(self.RFunctionParammain_lineEdit.text())+'\"'
             injection.append(string)
         inj = ''.join(injection)
-        self.Rplot('dotchart(x='+str(self.RFunctionParam_x)+inj+')')
+        self.Rplot('dotchart(x='+unicode(self.RFunctionParam_x)+inj+')')
         
     def getReportText(self, fileDir):
-        if str(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
             
         injection = []
-        if str(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+str(self.RFunctionParamxlab_lineEdit.text())+''
+        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
+            string = 'xlab='+unicode(self.RFunctionParamxlab_lineEdit.text())+''
             injection.append(string)
-        if str(self.labels) != '':
-            string = 'labels='+self.labels+ '$' + str(self.labelNames.currentText())
+        if unicode(self.labels) != '':
+            string = 'labels='+self.labels+ '$' + unicode(self.labelNames.currentText())
             injection.append(string)
-        if str(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab='+str(self.RFunctionParamylab_lineEdit.text())+''
+        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
+            string = 'ylab='+unicode(self.RFunctionParamylab_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main='+str(self.RFunctionParammain_lineEdit.text())+''
+        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
+            string = 'main='+unicode(self.RFunctionParammain_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('dotchart(x='+str(self.RFunctionParam_x)+','+inj+')')
+        self.R('dotchart(x='+unicode(self.RFunctionParam_x)+','+inj+')')
         self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 50%%\n\n'
+        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
             
         return text

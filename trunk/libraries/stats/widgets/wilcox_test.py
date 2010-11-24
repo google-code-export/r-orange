@@ -45,14 +45,14 @@ class wilcox_test(OWRpy):
         if self.RFunctionParam_x == '': return
         injection = []
         if self.RFunctionParam_y != '':
-            injection.append(str('y='+str(self.RFunctionParam_y)))
+            injection.append(unicode('y='+unicode(self.RFunctionParam_y)))
         inj = ','.join(injection)
-        self.R('txt<-capture.output('+self.Rvariables['wilcox.test']+'<-wilcox.test(x='+str(self.RFunctionParam_x)+','+inj+'))', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['wilcox.test']+'<-wilcox.test(x='+unicode(self.RFunctionParam_x)+','+inj+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
         self.rSend("id0", {"data":self.Rvariables["wilcox.test"]})
     def getReportText(self, fileDir):
         text = 'The wilkox test was performed on the incoming data X and Y.  A summary of the results is listed below:\n\n'
-        text += str(self.RoutputWindow.toPlainText())+'\n\n'
+        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
         return text

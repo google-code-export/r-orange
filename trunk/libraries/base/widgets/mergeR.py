@@ -66,7 +66,7 @@ class mergeR(OWRpy):
         if not data:
             self.colA.clear()
             return 
-        self.dataA = str(data.getData())
+        self.dataA = unicode(data.getData())
         self.dataParentA = data
         colsA = self.R('colnames('+self.dataA+')') #collect the sample names to make the differential matrix
         
@@ -83,7 +83,7 @@ class mergeR(OWRpy):
         if not data:
             self.colB.clear()
             return 
-        self.dataB = str(data.getData())
+        self.dataB = unicode(data.getData())
         self.dataParentB = data
         colsB = self.R('colnames('+self.dataB+')') #collect the sample names to make the differential matrix
         if type(colsB) is str:
@@ -140,7 +140,7 @@ class mergeR(OWRpy):
     
     def setcolA(self):
         try:
-            self.colAsel = '\''+str(self.colA.selectedItems()[0].text())+'\''
+            self.colAsel = '\''+unicode(self.colA.selectedItems()[0].text())+'\''
             if self.colAsel == '\'Rownames\'':
                 self.colAsel = '0'
         except: return
@@ -148,7 +148,7 @@ class mergeR(OWRpy):
             self.run()
     def setcolB(self):
         try:
-            self.colBsel = '\''+str(self.colB.selectedItems()[0].text())+'\''
+            self.colBsel = '\''+unicode(self.colB.selectedItems()[0].text())+'\''
             if self.colBsel == '\'Rownames\'':
                 self.colBsel = '0'
         except: return

@@ -16,7 +16,7 @@ class RLMFit(RModelFit):
         elif varClass == RLMFit:
             return self
         else:
-            raise Exception, '%s Not A Known Type' % str(varClass)
+            raise Exception, '%s Not A Known Type' % unicode(varClass)
     def _convertToModelFit(self):
         return self
     def _convertToList(self):

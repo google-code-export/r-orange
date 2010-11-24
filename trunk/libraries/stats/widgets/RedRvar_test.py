@@ -52,24 +52,24 @@ class RedRvar_test(OWRpy):
         else:
             self.RFunctionParam_x=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        string = 'alternative='+str(self.RFunctionParamalternative_comboBox.currentText())+''
+        string = 'alternative='+unicode(self.RFunctionParamalternative_comboBox.currentText())+''
         injection.append(string)
-        if str(self.RFunctionParamratio_lineEdit.text()) != '':
-            string = 'ratio='+str(self.RFunctionParamratio_lineEdit.text())+''
+        if unicode(self.RFunctionParamratio_lineEdit.text()) != '':
+            string = 'ratio='+unicode(self.RFunctionParamratio_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamconf_level_lineEdit.text()) != '':
+        if unicode(self.RFunctionParamconf_level_lineEdit.text()) != '':
             try:
                 float(self.RFunctionParamconf_level_lineEdit.text())
-                string = 'conf.level = '+str(self.RFunctionParamconf_level_lineEdit.text())
+                string = 'conf.level = '+unicode(self.RFunctionParamconf_level_lineEdit.text())
                 injection.append(string)
             except:
                 self.status.setText('Confidence Interval not a number')
         inj = ','.join(injection)
-        self.R(self.Rvariables['var.test']+'<-var.test(y='+str(self.RFunctionParam_y)+',x='+str(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['var.test']+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['var.test']+'<-var.test(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
+        self.R('txt<-capture.output('+self.Rvariables['var.test']+')')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')

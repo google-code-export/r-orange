@@ -40,14 +40,14 @@ class RedRhclust(OWRpy):
         else:
             self.RFunctionParam_d=''
     def commitFunction(self):
-        if str(self.RFunctionParam_d) == '': 
+        if unicode(self.RFunctionParam_d) == '': 
             self.status.setText('No data to process')
             return
         injection = []
-        string = 'method=\''+str(self.RFunctionParammethod_comboBox.currentText())+'\''
+        string = 'method=\''+unicode(self.RFunctionParammethod_comboBox.currentText())+'\''
         injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['hclust']+'<-hclust(d=dist(x='+str(self.RFunctionParam_d)+', method = \''+str(self.RFunctionParamdistmethod_comboBox.currentText())+'\'),'+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['hclust']+'<-hclust(d=dist(x='+unicode(self.RFunctionParam_d)+', method = \''+unicode(self.RFunctionParamdistmethod_comboBox.currentText())+'\'),'+inj+')')
         newData = redRRList(data = self.Rvariables["hclust"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

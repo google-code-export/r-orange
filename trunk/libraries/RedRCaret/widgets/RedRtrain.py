@@ -51,27 +51,27 @@ class RedRtrain(OWRpy):
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': return
+        if unicode(self.RFunctionParam_data) == '': return
         injection = []
-        if str(self.RFunctionParamcustomArgs_lineEdit.text()) != '':
-            string =','+str(self.RFunctionParamcustomArgs_lineEdit.text())
+        if unicode(self.RFunctionParamcustomArgs_lineEdit.text()) != '':
+            string =','+unicode(self.RFunctionParamcustomArgs_lineEdit.text())
             injection.append(string)
-        #if str(self.RFunctionParamtrControl_lineEdit.text()) != '':
-        string = ',trControl= trainControl(verbose = FALSE, returnResamp = "all")'#+str(self.RFunctionParamtrControl_lineEdit.text())+''
+        #if unicode(self.RFunctionParamtrControl_lineEdit.text()) != '':
+        string = ',trControl= trainControl(verbose = FALSE, returnResamp = "all")'#+unicode(self.RFunctionParamtrControl_lineEdit.text())+''
         injection.append(string)
         
         # formula = self.formula.Formula()
         # if formula[0] != '':
-            # string = ',form='+formula[0]+' ~ '  ##str(self.RFunctionParamform_lineEdit.text())+''
+            # string = ',form='+formula[0]+' ~ '  ##unicode(self.RFunctionParamform_lineEdit.text())+''
             # if formula[1] != '':
                 # string += formula[1]
             # else:
                 # string += '.'
             # injection.append(string)
-        string = ',method=\"'+str(self.RFunctionParammethod_comboBox.currentText())+'\"'
+        string = ',method=\"'+unicode(self.RFunctionParammethod_comboBox.currentText())+'\"'
         injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['train']+'<-train(x='+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']][,!names('+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']]) %in% c(\''+str(self.resultVariable.currentText())+'\')], y = '+str(self.RFunctionParam_data)+'[[\''+str(self.trainingData.currentText())+'\']][,c(\''+str(self.resultVariable.currentText())+'\')]'+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['train']+'<-train(x='+unicode(self.RFunctionParam_data)+'[[\''+unicode(self.trainingData.currentText())+'\']][,!names('+unicode(self.RFunctionParam_data)+'[[\''+unicode(self.trainingData.currentText())+'\']]) %in% c(\''+unicode(self.resultVariable.currentText())+'\')], y = '+unicode(self.RFunctionParam_data)+'[[\''+unicode(self.trainingData.currentText())+'\']][,c(\''+unicode(self.resultVariable.currentText())+'\')]'+inj+')')
         newData = signals.RModelFit.RModelFit(data = self.Rvariables["train"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("train Output", newData)

@@ -45,8 +45,8 @@ class RLoader(OWRpy):
     def browseFile(self): 
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path, "R save file (*.RData *.rda);; All Files (*.*)")
         if fn.isEmpty(): return
-        fn = str(fn.toAscii())
-        self.path = os.path.split(str(fn))[0]
+        fn = unicode(fn.toAscii())
+        self.path = os.path.split(unicode(fn))[0]
         self.filecombo.addFile(fn)
         self.saveGlobalSettings()
         
@@ -59,7 +59,7 @@ class RLoader(OWRpy):
         self.R('load(\''+file+'\', '+self.Rvariables['sessionEnviron']+')', wantType = 'NoConversion') #load the saved session into a protective environment
         
         
-        self.infoa.setText('Data loaded from '+str(file))
+        self.infoa.setText('Data loaded from '+unicode(file))
         self.varBox.show()
         dataList = self.R('local(ls(), '+self.Rvariables['sessionEnviron']+')', wantType = 'list')
         self.varBox.update(dataList)
@@ -72,5 +72,5 @@ class RLoader(OWRpy):
         self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { local(rm(ls()), envir = ' + self.Rvariables['sessionEnviron'] + ')}', wantType = 'NoConversion')
         
     def getReportText(self, fileDir):
-        text = 'Data loaded from '+str(self.infoa.text()).replace('\\', '/')+'.\n\n'
+        text = 'Data loaded from '+unicode(self.infoa.text()).replace('\\', '/')+'.\n\n'
         return text

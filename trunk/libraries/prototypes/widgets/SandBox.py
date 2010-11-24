@@ -6,7 +6,7 @@
 """
 
 from OWRpy import *
-import OWGUI,glob,imp
+import OWGUI,glob,imp, time
 import redRGUI
 import signals
 
@@ -18,18 +18,15 @@ class SandBox(OWRpy):
         self.lineEditText = ''
         
         ### GUI ###
-        
-        self.lineEdit = redRGUI.lineEdit(self.controlArea, label = 'Line Edit')
-        
+        self.textEdit = redRTextEdit(self.controlArea, label = 'output')
+        redRCommitButton(self.controlArea, label = 'Commit', callback = self.runBench)
         self.R('a <- list(b = c(1,2,3), d = c(6,7,8))', wantType = 'NoConversion')
         
-        try:
-            self.lineEdit.setText(str(signals.conversion.RArray)+' '+str(RArray))
-        except:
-            try:
-                self.lineEdit.setText(str(RArray))
-            except:
-                try:
-                    self.lineEdit.setText(str(signals.conversion.RArray))
-                except:
-                    self.lineEdit.setText('Not loaded')
+    def runBench(self):
+        for i in range(20):
+            t1 = time.time()
+            self.R('rnorm(100000)', wantType = 'list')
+            t2 = time.time()
+            self.textEdit.insertPlainText(unicode(t2-t1) + '\n')
+        
+        

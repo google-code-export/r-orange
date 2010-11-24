@@ -62,21 +62,22 @@ class percentileClassifier(OWRpy):
         if len(items) == 0: 
             self.outputWindow.insertHtml('No items selected in the Column Names box')
             return
-        percentile = [str(self.percentile_spinBox.value())]
-        if str(self.percentile_lineEdit.text()) not in ['', ' ']:
-            lineText = str(self.percentile_lineEdit.text())
+        percentile = [unicode(self.percentile_spinBox.value())]
+        if unicode(self.percentile_lineEdit.text()) not in ['', ' ']:
+            lineText = unicode(self.percentile_lineEdit.text())
             lineText.replace(' ', '')
             percentile = lineText.split(',')
         self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data, wantType = 'NoConversion')
         self.outputWindow.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>')
         for percent in percentile:
+            if int(percent) == 0 or int(percent) == 100: continue
             for item in items:
                 
-                column = str(item.text())
+                column = unicode(item.text())
                 length = self.R('length(na.omit('+self.data+'[,\''+column+'\']))')
                 
-                self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+str(percent).strip(' ')+'/100*'+str(length)+']', wantType = 'NoConversion')
-                self.outputWindow.insertHtml('<tr><td width="50%">' + column+'_'+str(percent)+'percentile</td><td width="50%">'+str(self.R('sum(as.numeric('+self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+str(percent).strip(' ')+'percentile))'))+'</td></tr>')
+                self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+unicode(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+unicode(percent).strip(' ')+'/100*'+unicode(length)+']', wantType = 'NoConversion')
+                self.outputWindow.insertHtml('<tr><td width="50%">' + column+'_'+unicode(percent)+'percentile</td><td width="50%">'+unicode(self.R('sum(as.numeric('+self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+unicode(percent).strip(' ')+'percentile))'))+'</td></tr>')
         self.outputWindow.insertHtml('</table>')
         newData = self.dataParent.copy()
         newData.data = self.Rvariables['percentileClassifier_df']
@@ -84,5 +85,5 @@ class percentileClassifier(OWRpy):
         
     def getReportText(self, fileDir):
         text = 'Data classified as being greater than a specified percentile of the data.  To see the data please open the Red-R .rrs file or an output of the data.  A summary of the operations are here:\n\n'
-        text += str(self.outputWindow.toPlainText())+'\n\n'
+        text += unicode(self.outputWindow.toPlainText())+'\n\n'
         return text

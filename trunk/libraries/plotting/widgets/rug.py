@@ -44,26 +44,26 @@ class rug(OWRpy):
             self.RFunctionParam_x=''
     
     def commitFunction(self):
-        if str(self.RFunctionParam_x) == '': return
+        if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if str(self.RFunctionParamside_lineEdit.text()) != '':
-            string = 'side='+str(self.RFunctionParamside_lineEdit.text())+''
+        if unicode(self.RFunctionParamside_lineEdit.text()) != '':
+            string = 'side='+unicode(self.RFunctionParamside_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamticksize_lineEdit.text()) != '':
-            string = 'ticksize='+str(self.RFunctionParamticksize_lineEdit.text())+''
+        if unicode(self.RFunctionParamticksize_lineEdit.text()) != '':
+            string = 'ticksize='+unicode(self.RFunctionParamticksize_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamquiet_lineEdit.text()) != '':
-            string = 'quiet='+str(self.RFunctionParamquiet_lineEdit.text())+''
+        if unicode(self.RFunctionParamquiet_lineEdit.text()) != '':
+            string = 'quiet='+unicode(self.RFunctionParamquiet_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlwd_lineEdit.text()) != '':
-            string = 'lwd='+str(self.RFunctionParamlwd_lineEdit.text())+''
+        if unicode(self.RFunctionParamlwd_lineEdit.text()) != '':
+            string = 'lwd='+unicode(self.RFunctionParamlwd_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamcol_lineEdit.text()) != '':
-            string = 'col='+str(self.RFunctionParamcol_lineEdit.text())+''
+        if unicode(self.RFunctionParamcol_lineEdit.text()) != '':
+            string = 'col='+unicode(self.RFunctionParamcol_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
         
-        newData = redRRPlotAttribute(data = 'rug(x='+str(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRPlotAttribute(data = 'rug(x='+unicode(self.RFunctionParam_x)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
     def getReportText(self, fileDir):

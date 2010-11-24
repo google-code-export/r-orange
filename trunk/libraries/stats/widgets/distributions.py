@@ -135,7 +135,7 @@ class distributions(OWRpy):
     # or when data is received, if the checkbox is checked.
     def collectParameters(self):
         self.injection = []
-        dist = str(self.methodButtons.currentId())
+        dist = unicode(self.methodButtons.currentId())
         if dist =='rnorm':
             self.injection.append('%s=%s' % (self.normMean.widgetId(), self.normMean.text()))
             self.injection.append('%s=%s' % (self.normSD.widgetId(), self.normSD.text()))
@@ -167,7 +167,7 @@ class distributions(OWRpy):
         
     def commitFunction(self):        
         # START COLLECTION THE R PARAMETERS THAT WILL CREATE THE R CODE TO EXECUTE
-        dist = str(self.methodButtons.currentId())
+        dist = unicode(self.methodButtons.currentId())
         self.injection = self.collectParameters()
         
 
@@ -186,8 +186,8 @@ class distributions(OWRpy):
     def getReportText(self, fileDir):
         text = 'Generate data from a given distribution.\n\n'
         text += '**Parameters:**\n\n'
-        text += 'Distribution:  '+str(self.methodButtons.currentText())+'\n\n'
-        text += 'Number of observations generated:  '+str(self.count.value())+'\n\n'
+        text += 'Distribution:  '+unicode(self.methodButtons.currentText())+'\n\n'
+        text += 'Number of observations generated:  '+unicode(self.count.value())+'\n\n'
         text += 'Distribution parameters:\n\n'
         
         self.injection = self.collectParameters()

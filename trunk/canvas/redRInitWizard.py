@@ -78,7 +78,7 @@ class RedRInitWizard(QWizard):
     def setMirror(self):
         if len(self.libs) == 0: return
         item = self.libListBox.currentRow()
-        self.settings['CRANrepos'] = str(self.libs['URL'][item])
-        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + str(self.libs['URL'][item]) + '"; options(repos=r)})')
+        self.settings['CRANrepos'] = unicode(self.libs['URL'][item])
+        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + unicode(self.libs['URL'][item]) + '"; options(repos=r)})')
         #print self.settings['CRANrepos']
-        self.libInfo.setText('Repository URL changed to: '+str(self.libs['URL'][item]))
+        self.libInfo.setText('Repository URL changed to: '+unicode(self.libs['URL'][item]))

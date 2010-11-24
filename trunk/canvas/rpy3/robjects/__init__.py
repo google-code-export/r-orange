@@ -268,7 +268,7 @@ class RVector(RObjectMixin, rinterface.SexpVector):
             indices = i.indices(len(self))
             r = []
             for x in range(*indices):
-                print x
+                #print x
                 res = super(RVector, self).__getitem__(x)
                 if isinstance(res, rinterface.Sexp):
                     r.append(conversion.ri2py(res))

@@ -40,71 +40,71 @@ class bumpchart(OWRpy):
         else:
             self.RFunctionParam_y=''
     def commitFunction(self):
-        if str(self.RFunctionParam_y) == '': return
+        if unicode(self.RFunctionParam_y) == '': return
         injection = []
-        if str(self.RFunctionParammar_lineEdit.text()) != '':
-            string = 'mar='+str(self.RFunctionParammar_lineEdit.text())+''
+        if unicode(self.RFunctionParammar_lineEdit.text()) != '':
+            string = 'mar='+unicode(self.RFunctionParammar_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlty_lineEdit.text()) != '':
-            string = 'lty='+str(self.RFunctionParamlty_lineEdit.text())+''
+        if unicode(self.RFunctionParamlty_lineEdit.text()) != '':
+            string = 'lty='+unicode(self.RFunctionParamlty_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlabels_lineEdit.text()) != '':
-            string = 'labels='+str(self.RFunctionParamlabels_lineEdit.text())+''
+        if unicode(self.RFunctionParamlabels_lineEdit.text()) != '':
+            string = 'labels='+unicode(self.RFunctionParamlabels_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamrank_lineEdit.text()) != '':
-            string = 'rank='+str(self.RFunctionParamrank_lineEdit.text())+''
+        if unicode(self.RFunctionParamrank_lineEdit.text()) != '':
+            string = 'rank='+unicode(self.RFunctionParamrank_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParampch_lineEdit.text()) != '':
-            string = 'pch='+str(self.RFunctionParampch_lineEdit.text())+''
+        if unicode(self.RFunctionParampch_lineEdit.text()) != '':
+            string = 'pch='+unicode(self.RFunctionParampch_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamtop_labels_lineEdit.text()) != '':
-            string = 'top.labels='+str(self.RFunctionParamtop_labels_lineEdit.text())+''
+        if unicode(self.RFunctionParamtop_labels_lineEdit.text()) != '':
+            string = 'top.labels='+unicode(self.RFunctionParamtop_labels_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamcol_lineEdit.text()) != '':
-            string = 'col='+str(self.RFunctionParamcol_lineEdit.text())+''
+        if unicode(self.RFunctionParamcol_lineEdit.text()) != '':
+            string = 'col='+unicode(self.RFunctionParamcol_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlwd_lineEdit.text()) != '':
-            string = 'lwd='+str(self.RFunctionParamlwd_lineEdit.text())+''
+        if unicode(self.RFunctionParamlwd_lineEdit.text()) != '':
+            string = 'lwd='+unicode(self.RFunctionParamlwd_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('y<-'+str(self.RFunctionParam_y))
-        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')')
+        self.R('y<-'+unicode(self.RFunctionParam_y))
+        self.R('bumpchart(y='+unicode(self.RFunctionParam_y)+','+inj+')')
     def getReportText(self, fileDir):
-        if str(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
+        if unicode(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
         
-        self.R('png(file="'+fileDir+'/plot'+str(self.widgetID)+'.png")')
+        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
             
         injection = []
-        if str(self.RFunctionParammar_lineEdit.text()) != '':
-            string = 'mar='+str(self.RFunctionParammar_lineEdit.text())+''
+        if unicode(self.RFunctionParammar_lineEdit.text()) != '':
+            string = 'mar='+unicode(self.RFunctionParammar_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlty_lineEdit.text()) != '':
-            string = 'lty='+str(self.RFunctionParamlty_lineEdit.text())+''
+        if unicode(self.RFunctionParamlty_lineEdit.text()) != '':
+            string = 'lty='+unicode(self.RFunctionParamlty_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlabels_lineEdit.text()) != '':
-            string = 'labels='+str(self.RFunctionParamlabels_lineEdit.text())+''
+        if unicode(self.RFunctionParamlabels_lineEdit.text()) != '':
+            string = 'labels='+unicode(self.RFunctionParamlabels_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamrank_lineEdit.text()) != '':
-            string = 'rank='+str(self.RFunctionParamrank_lineEdit.text())+''
+        if unicode(self.RFunctionParamrank_lineEdit.text()) != '':
+            string = 'rank='+unicode(self.RFunctionParamrank_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParampch_lineEdit.text()) != '':
-            string = 'pch='+str(self.RFunctionParampch_lineEdit.text())+''
+        if unicode(self.RFunctionParampch_lineEdit.text()) != '':
+            string = 'pch='+unicode(self.RFunctionParampch_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamtop_labels_lineEdit.text()) != '':
-            string = 'top.labels='+str(self.RFunctionParamtop_labels_lineEdit.text())+''
+        if unicode(self.RFunctionParamtop_labels_lineEdit.text()) != '':
+            string = 'top.labels='+unicode(self.RFunctionParamtop_labels_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamcol_lineEdit.text()) != '':
-            string = 'col='+str(self.RFunctionParamcol_lineEdit.text())+''
+        if unicode(self.RFunctionParamcol_lineEdit.text()) != '':
+            string = 'col='+unicode(self.RFunctionParamcol_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamlwd_lineEdit.text()) != '':
-            string = 'lwd='+str(self.RFunctionParamlwd_lineEdit.text())+''
+        if unicode(self.RFunctionParamlwd_lineEdit.text()) != '':
+            string = 'lwd='+unicode(self.RFunctionParamlwd_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('y<-'+str(self.RFunctionParam_y))
-        self.R('bumpchart(y='+str(self.RFunctionParam_y)+','+inj+')')
+        self.R('y<-'+unicode(self.RFunctionParam_y))
+        self.R('bumpchart(y='+unicode(self.RFunctionParam_y)+','+inj+')')
         self.R('dev.off()')
         text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+str(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+str(self.widgetID)+'.png\n    :scale: 505%\n\n'
+        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
+        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 505%\n\n'
             
         return text

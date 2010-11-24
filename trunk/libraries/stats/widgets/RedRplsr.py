@@ -43,29 +43,29 @@ class RedRplsr(OWRpy):
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if str(self.RFunctionParam_data) == '': return
-        if str(self.RFunctionParamformula_lineEdit.text()) == '':
+        if unicode(self.RFunctionParam_data) == '': return
+        if unicode(self.RFunctionParamformula_lineEdit.text()) == '':
             self.status.setText('No Formula')
             return
         injection = []
-        if str(self.RFunctionParamformula_lineEdit.text()) != '':
-            string = 'formula='+str(self.RFunctionParamformula_lineEdit.text())+''
+        if unicode(self.RFunctionParamformula_lineEdit.text()) != '':
+            string = 'formula='+unicode(self.RFunctionParamformula_lineEdit.text())+''
             injection.append(string)
         ## make commit function for self.RFunctionParamscale_checkBox
-        if str(self.RFunctionParamscale_radioButtons.getChecked()) == 'TRUE':
+        if unicode(self.RFunctionParamscale_radioButtons.getChecked()) == 'TRUE':
             injection.append('scale = TRUE')
         else:
             injection.append('scale = FALSE')
-        if str(self.RFunctionParammethod_lineEdit.text()) != '':
-            string = 'method='+str(self.RFunctionParammethod_lineEdit.text())+''
+        if unicode(self.RFunctionParammethod_lineEdit.text()) != '':
+            string = 'method='+unicode(self.RFunctionParammethod_lineEdit.text())+''
             injection.append(string)
-        if str(self.RFunctionParamncomp_lineEdit.text()) != '':
-            string = 'ncomp='+str(self.RFunctionParamncomp_lineEdit.text())+''
+        if unicode(self.RFunctionParamncomp_lineEdit.text()) != '':
+            string = 'ncomp='+unicode(self.RFunctionParamncomp_lineEdit.text())+''
             injection.append(string)
-        string = 'validation=\''+str(self.RFunctionParamvalidation_comboBox.currentText())+'\''
+        string = 'validation=\''+unicode(self.RFunctionParamvalidation_comboBox.currentText())+'\''
         injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['plsr']+'<-plsr(data='+str(self.RFunctionParam_data)+',model = TRUE, x = TRUE, y = TRUE,'+inj+')', wantType = 'NoConversion')
+        self.R(self.Rvariables['plsr']+'<-plsr(data='+unicode(self.RFunctionParam_data)+',model = TRUE, x = TRUE, y = TRUE,'+inj+')')
         newData = signals.redRRModelFit(data = self.Rvariables["plsr"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

@@ -4,7 +4,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import sys, os, cPickle, time
+import sys, os, cPickle, time, log
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 # redREnviron.__getDirectoryNames()
@@ -12,12 +12,17 @@ sys.path.append(mypath)
 # redREnviron.getVersion()
 # redREnviron.loadSettings()
 import redREnviron
+import RSession
 import redRExceptionHandling
 import orngRegistry, OWGUI
-import redROutput, redRUpdateManager
+import redROutput, redRSaveLoad
 import orngTabs, orngDoc, orngDlgs
 import redRPackageManager, redRGUI,signals, redRInitWizard
-import redRReports
+import redRReports, redRObjects, redRUpdateManager
+
+from libraries.base.qtWidgets.button import button as redRbutton
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
+from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 
 class OrangeCanvasDlg(QMainWindow):
     
@@ -58,9 +63,9 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowIcon(QIcon(canvasIconName))
         
         if not redREnviron.settings.has_key("style"):
-            items = [str(n) for n in QStyleFactory.keys()]
-            lowerItems = [str(n).lower() for n in QStyleFactory.keys()]
-            currStyle = str(qApp.style().objectName()).lower()
+            items = [unicode(n) for n in QStyleFactory.keys()]
+            lowerItems = [unicode(n).lower() for n in QStyleFactory.keys()]
+            currStyle = unicode(qApp.style().objectName()).lower()
             redREnviron.settings.setdefault("style", items[lowerItems.index(currStyle)])
 
         self.menuSaveSettingsID = -1
@@ -96,9 +101,57 @@ class OrangeCanvasDlg(QMainWindow):
             self.warningIcon = None
             self.informationIcon = None
             self.widgetIcons = None
-            print "Unable to load all necessary icons. Please reinstall Red-R."
+            log.log(1, 9, 1,  "Unable to load all necessary icons. Please reinstall Red-R.")
 
-        self.setStatusBar(MyStatusBar(self))
+        
+        ###############################
+        #####Notes and output Docks####
+        ###############################
+        
+        self.notesDock = QDockWidget('Notes')
+        self.notesDock.setObjectName('CanvasNotes')
+        self.notes = redRTextEdit(None, label = 'Notes')
+        self.notesDock.setWidget(self.notes)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.notesDock)
+        self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
+        
+        self.outputDock = QDockWidget('Output')
+        self.outputDock.setObjectName('CanvasOutput')
+        self.printOutput = redRTextEdit(None, label = 'Output',editable=False)
+        self.outputDock.setWidget(self.printOutput)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.outputDock)
+        self.connect(self.outputDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
+        
+        ###################
+        #####Status Bar####
+        ###################
+        
+        self.statusBar = QStatusBar()
+        self.statusBar.setLayout(QHBoxLayout())
+        self.statusBar.setSizeGripEnabled(False)
+        self.setStatusBar(self.statusBar)
+        
+        docBox = redRwidgetBox(None,orientation='horizontal')
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
+        toolTip='Notes',
+        callback = self.updateDockState)
+        
+        self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'CanvasIcon.png'),
+        toolTip='Log',
+        callback = self.updateDockState)   
+        
+        self.statusBar.addPermanentWidget(docBox)
+        if 'dockState' in redREnviron.settings.keys() and 'notesBox' in redREnviron.settings['dockState'].keys():
+            self.showNotesButton.setChecked(redREnviron.settings['dockState']['notesBox'])
+            self.showROutputButton.setChecked(redREnviron.settings['dockState']['outputBox'])
+        
+        
+        ###################
+        #Package Manager###
+        ###################
+        
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         redRGUI.registerQTWidgets()
         
@@ -128,12 +181,17 @@ class OrangeCanvasDlg(QMainWindow):
 
         self.toolbar.addAction(QIcon(self.file_open), "Open schema", self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(self.file_save), "Save schema", self.menuItemSave)
+        #self.toolReloadWidgets = self.toolbar.addAction(QIcon(self.reload_pic), "Reload Widgets", self.reloadWidgets)
+        # self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", redRObjects.showAllWidgets)
+        # self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", redRObjects.closeAllWidgets)
+        # self.toolbar.addSeparator()
+        # self.toolbar.addAction(QIcon(self.file_print), "Print", self.menuItemPrinter)
 
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.showAll_pic), "Show All Widget Windows", 
-        self.schema.showAllWidgets)
+        redRObjects.showAllWidgets)
         self.toolbar.addAction(QIcon(self.closeAll_pic), "Close All Widget Windows", 
-        self.schema.closeAllWidgets)
+        redRObjects.closeAllWidgets)
         
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(self.file_print), "Generate Report", self.menuItemReport)
@@ -156,7 +214,10 @@ class OrangeCanvasDlg(QMainWindow):
         # self.toolbar.addWidget(w)
         
         self.addToolBarBreak()
+        self.toolbar.addSeparator()
+        self.toolbar.addAction("Show Widgets", self.showWidgetToolbar)
         self.createWidgetsToolbar() # also creates the categories popup
+        self.toolbar.addWidget(self.widgetsToolBar.widgetSuggestEdit) ## kind of a hack but there you are.
         self.readShortcuts()
         self.readRecentFiles()
 
@@ -165,10 +226,16 @@ class OrangeCanvasDlg(QMainWindow):
 
 
         if 'windowState' in redREnviron.settings.keys():
+            #log.log(20, 0,0, redREnviron.settings['windowState'])
             self.restoreState(redREnviron.settings['windowState'])
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
-       
+        # if 'layout' in redREnviron.settings.keys():
+            # self.schema.setSchemaLayout(redREnviron.settings['layout'])
+        if 'debug' not in redREnviron.settings.keys():
+            redREnviron.settings['debug'] = False
+        if 'minSeverity' not in redREnviron.settings.keys():
+            redREnviron.settings['minSeverity'] = 5
         if 'size' in redREnviron.settings.keys():
             self.resize(redREnviron.settings['size'])
         else:
@@ -195,7 +262,7 @@ class OrangeCanvasDlg(QMainWindow):
 
         if splashWindow:
             splashWindow.hide()
-        redREnviron.settings['id'] = str(time.time())
+        redREnviron.settings['id'] = unicode(time.time())
         redREnviron.setTempDir('temp_'+redREnviron.settings['id'])
         try:
             if 'firstLoad' not in redREnviron.settings.keys():
@@ -204,20 +271,50 @@ class OrangeCanvasDlg(QMainWindow):
                 self.startSetupWizard()
         except:
             pass
-
-
-        self.updateManager.showUpdateDialog(auto=True)
-                
+        redRSaveLoad.setCanvasDlg(self)
         qApp.processEvents()
         
         
 
+    def updateDock(self,ev):
+        if self.notesDock.isHidden():
+            self.showNotesButton.setChecked(False)
+        else:
+            self.showNotesButton.setChecked(True)
+        if self.outputDock.isHidden():
+            self.showROutputButton.setChecked(False)
+        else:
+            self.showROutputButton.setChecked(True)
+    def updateDockState(self):
+        #print 'in updatedock right'
+        if 'dockState' not in redREnviron.settings.keys():
+            redREnviron.settings['dockState'] = {'notesBox':True, outputBox:True}
+        
+        
+        if self.showNotesButton.isChecked():
+            self.notesDock.show()
+            redREnviron.settings['dockState']['notesBox'] = True
+        else:
+            self.notesDock.hide()
+            redREnviron.settings['dockState']['notesBox'] = False
 
+        if self.showROutputButton.isChecked():
+            self.outputDock.show()
+            redREnviron.settings['dockState']['outputBox'] = True
+        else:
+            self.outputDock.hide()
+            redREnviron.settings['dockState']['outputBox'] = False
+        
+        # if True in self.windowState['documentationState'].values():
+            # self.rightDock.show()
+        # else:
+            # self.rightDock.hide()
+    
     def startSetupWizard(self):
         setupWizard = redRInitWizard.RedRInitWizard()
         if setupWizard.exec_() == QDialog.Accepted:
-            redREnviron.settings['email'] = str(setupWizard.email.text())
-            redREnviron.settings['canContact'] = str(setupWizard.allowContact.getChecked()) == 'Yes'
+            redREnviron.settings['email'] = unicode(setupWizard.email.text())
+            redREnviron.settings['canContact'] = unicode(setupWizard.allowContact.getChecked()) == 'Yes'
             try:
                 redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
             except:
@@ -237,7 +334,7 @@ class OrangeCanvasDlg(QMainWindow):
         
     def createWidgetsToolbar(self):
         orngTabs.constructCategoriesPopup(self)
-        print 'Step 3a'
+       
         float = False
         if self.widgetsToolBar:
             if self.widgetsToolBar.isFloating():
@@ -247,16 +344,18 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
             self.removeDockWidget(self.widgetsToolBar)
 
-        print 'Step 3b'    
+           
         self.tabs = self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
+        
         self.widgetsToolBar.setWindowTitle('Widget Toolbar')
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
         self.widgetsToolBar.setFloating(float)
-        print 'Step 3c'
+        
         redREnviron.settings["WidgetTabs"] = self.tabs.createWidgetTabs(redREnviron.settings["WidgetTabs"], self.widgetRegistry, redREnviron.directoryNames['widgetDir'], redREnviron.directoryNames['picsDir'], self.defaultPic)
         self.widgetsToolBar.treeWidget.collapseAll()
-        print 'Step 3d'
-
+        
+    def showWidgetToolbar(self):
+        self.widgetsToolBar.show()
     def readShortcuts(self):
         self.widgetShortcuts = {}
         shfn = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "shortcuts.txt")
@@ -299,11 +398,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.menuOptions.addAction( "Enable All Links",  self.menuItemEnableAll, Qt.CTRL+Qt.Key_E)
         self.menuOptions.addAction( "Disable All Links",  self.menuItemDisableAll, Qt.CTRL+Qt.Key_D)
         self.menuOptions.addAction( "Select All Widgets", self.selectAllWidgets, Qt.CTRL+Qt.Key_A)
+        #self.menuOptions.addAction("New Tab", self.schema.newTab)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
         self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
         self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
 
+        self.menuTabs = QMenu("&Tabs", self)
+        self.menuTabs.addAction("Add New Tab", self.schema.newTab)
+        self.menuTabs.addAction("Remove Current Tab", self.schema.removeCurrentTab)
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
         #self.menuOptions.addAction("Dump widget variables", self.dumpVariables)
@@ -339,16 +442,20 @@ class OrangeCanvasDlg(QMainWindow):
 
         # widget popup menu
         self.widgetPopup = QMenu("Widget", self)
-        self.widgetPopup.addAction( "Open",  self.schema.canvasView.openActiveWidget)
+        self.widgetPopup.addAction("Open",  self.schema.activeTab().openActiveWidget)
         self.widgetPopup.addSeparator()
-        rename = self.widgetPopup.addAction( "&Rename", self.schema.canvasView.renameActiveWidget, Qt.Key_F2)
-        delete = self.widgetPopup.addAction("Remove", self.schema.canvasView.removeActiveWidget, Qt.Key_Delete)
-        copy = self.widgetPopup.addAction("&Copy", self.schema.copy, Qt.Key_F12)
+        rename = self.widgetPopup.addAction( "&Rename", self.schema.activeTab().renameActiveWidget, Qt.Key_F2)
+        delete = self.widgetPopup.addAction("Remove", self.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
+        copy = self.menuTabs.addAction("&Copy", redRSaveLoad.collectIcons, Qt.CTRL+Qt.Key_C)
+        cloneToTab = self.menuTabs.addAction("Clone To Tab", self.schema.cloneToTab, Qt.CTRL+Qt.Key_B)
+        duplicateToTab = self.menuTabs.addAction("Duplicate To Tab", redRSaveLoad.copy, Qt.CTRL+Qt.Key_V)
+        
         self.widgetPopup.setEnabled(0)
 
         self.menuBar = QMenuBar(self)
         self.menuBar.addMenu(self.menuFile)
         self.menuBar.addMenu(self.menuOptions)
+        self.menuBar.addMenu(self.menuTabs)
         self.menuBar.addMenu(self.widgetPopup)
         self.menuBar.addMenu(self.packageMenu)
         self.menuBar.addMenu(self.menuHelp)
@@ -356,36 +463,36 @@ class OrangeCanvasDlg(QMainWindow):
     def importSchema(self):
         name = QFileDialog.getOpenFileName(self, "Import File", redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
-        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
-        self.schema.loadDocument(str(name), freeze = 0, importing = True)
-        self.addToRecentMenu(str(name))
+        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
+        self.schema.loadDocument(unicode(name), freeze = 0, importing = True)
+        self.addToRecentMenu(unicode(name))
         
     def menuItemOpen(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
-        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
         self.schema.clear()
-        self.schema.loadDocument(str(name), freeze = 0, importing = False)
-        self.addToRecentMenu(str(name))
+        redRSaveLoad.loadDocument(unicode(name), freeze = 0, importing = False)
+        self.addToRecentMenu(unicode(name))
 
 
     def menuItemOpenFreeze(self):
         name = QFileDialog.getOpenFileName(self, "Open File", 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
+        name = unicode(name.toAscii())
         
         self.schema.clear()
-        self.schema.loadDocument(str(name), freeze = 1)
-        self.addToRecentMenu(str(name))
+        self.schema.loadDocument(unicode(name), freeze = 1)
+        self.addToRecentMenu(unicode(name))
 
 
     def menuItemOpenLastSchema(self):
@@ -394,25 +501,24 @@ class OrangeCanvasDlg(QMainWindow):
             self.schema.loadDocument(fullName)
 
     def menuItemSave(self):
-        print 'click save'
-        self.schema.saveDocument()
+        redRSaveLoad.saveDocumentAs()
     def reloadWidgets(self): # should have a way to set the desired tab location 
-        print 'step 1'
+        
         self.widgetRegistry = orngRegistry.readCategories()
-        print 'step 2'
+        
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
-        print 'step 3'
+        
         self.createWidgetsToolbar()
-        print 'step 4'
+        
         signals.registerRedRSignals()
-        print 'step 5'
+        
         redRGUI.registerQTWidgets()
         
     def menuItemSaveAs(self):
-        self.schema.saveDocumentAs()
+        redRSaveLoad.saveDocumentAs()
 
     def menuItemSaveTemplate(self):
-        self.schema.saveTemplate()
+        redRSaveLoad.saveTemplate()
     def menuItemSaveAsAppButtons(self):
         return ## depricated
         self.schema.saveDocumentAsApp(asTabs = 0)
@@ -422,6 +528,21 @@ class OrangeCanvasDlg(QMainWindow):
         self.schema.saveDocumentAsApp(asTabs = 1)
         
     def menuItemPrinter(self):
+        try:
+            printer = QPrinter()
+            printDialog = QPrintDialog(printer)
+            if printDialog.exec_() == QDialog.Rejected: 
+                
+                return
+            painter = QPainter(printer)
+            self.schema.canvas.render(painter)
+            painter.end()
+            for widget in self.schema.widgets:
+                try:
+                    widget.instance.printWidget(printer)                
+                except: pass
+        except:
+            log.log(1, 9, 1, "Error in printing the schema")
         
         self.reports.createReportsMenu(self.schema.widgets)
         # try:
@@ -455,14 +576,14 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["RecentFiles"] = recentDocs
         #print recentDocs, 'Recent Docs'
         for i in range(len(recentDocs)):
-            shortName = "&" + str(i+1) + " " + os.path.basename(recentDocs[i])
+            shortName = "&" + unicode(i+1) + " " + os.path.basename(recentDocs[i])
             self.menuRecent.addAction(shortName, lambda k = i+1: self.openRecentFile(k))
             #print 'Added doc ', shortName, ' to position ', i
 
     def openRecentFile(self, index):
         if len(redREnviron.settings["RecentFiles"]) >= index:
             self.schema.clear()
-            self.schema.loadDocument(redREnviron.settings["RecentFiles"][index-1])
+            redRSaveLoad.loadDocument(redREnviron.settings["RecentFiles"][index-1])
             self.addToRecentMenu(redREnviron.settings["RecentFiles"][index-1])
 
     def addToRecentMenu(self, name):
@@ -512,9 +633,13 @@ class OrangeCanvasDlg(QMainWindow):
         self.output.hide()
         self.output.show()
         #self.output.setFocus()
+    def showOutputException(self):
+        self.output.hide()
+        self.output.show()
+        self.output.showExceptionTab()
     def menuItemReport(self):
         ## start the report generator, handled in orngDoc (where else)
-        self.reports.createReportsMenu(self.schema.widgets)
+        self.reports.createReportsMenu()
 
         
     def menuItemClearOutputWindow(self):
@@ -525,9 +650,9 @@ class OrangeCanvasDlg(QMainWindow):
     def menuItemSaveOutputWindow(self):
         qname = QFileDialog.getSaveFileName(self, "Save Output To File", redREnviron.directoryNames['canvasSettingsDir'] + "/Output.html", "HTML Document (*.html)")
         if qname.isEmpty(): return
-        qname = str(qname.toAscii())
+        qname = unicode(qname.toAscii())
 
-        text = str(self.output.textOutput.toHtml())
+        text = unicode(self.output.textOutput.toHtml())
         #text = text.replace("</nobr>", "</nobr><br>")
 
         file = open(name, "wt")
@@ -578,10 +703,10 @@ class OrangeCanvasDlg(QMainWindow):
         name = QFileDialog.getOpenFileName(self, "Install Package", 
         redREnviron.settings["saveSchemaDir"], "Package (*.zip)")
         if name.isEmpty(): return
-        name = str(name.toAscii())
-        redREnviron.settings['saveSchemaDir'] = os.path.split(str(name))[0]
+        name = unicode(name.toAscii())
+        redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
         self.packageManagerGUI.show()
-        self.packageManagerGUI.installPackageFromFile(str(name))
+        self.packageManagerGUI.installPackageFromFile(unicode(name))
 
     def menuOpenOnlineOrangeHelp(self):
         import webbrowser
@@ -618,23 +743,23 @@ class OrangeCanvasDlg(QMainWindow):
             self.lineColor           = dlg.lineIcon.color
             
             # update settings in widgets in current documents
-            for widget in self.schema.widgets:
-                widget.instance._owInfo      = redREnviron.settings["owInfo"]
-                widget.instance._owWarning   = redREnviron.settings["owWarning"]
-                widget.instance._owError     = redREnviron.settings["owError"]
-                widget.instance._owShowStatus= redREnviron.settings["owShow"]
+            for widget in self.schema.widgets():
+                widget.instance()._owInfo      = redREnviron.settings["owInfo"]
+                widget.instance()._owWarning   = redREnviron.settings["owWarning"]
+                widget.instance()._owError     = redREnviron.settings["owError"]
+                widget.instance()._owShowStatus= redREnviron.settings["owShow"]
                 # widget.instance.updateStatusBarState()
                 widget.resetWidgetSize()
                 widget.updateWidgetState()
                 
             # update tooltips for lines in all documents
-            for line in self.schema.lines:
+            for line in self.schema.lines():
                 line.showSignalNames = redREnviron.settings["showSignalNames"]
                 line.updateTooltip()
             
-            self.schema.canvasView.repaint()
-            if dlg.toAdd != [] or dlg.toRemove != []:
-                self.widgetRegistry = orngRegistry.readCategories()
+            redRObjects.activeTab().repaint()
+            # if dlg.toAdd != [] or dlg.toRemove != []:
+                # self.widgetRegistry = orngRegistry.readCategories()
 
 
     def updateStyle(self):
@@ -650,20 +775,21 @@ class OrangeCanvasDlg(QMainWindow):
     def setStatusBarEvent(self, text):
         
         if text == "" or text == None:
-            self.statusBar().showMessage("")
+            self.statusBar.showMessage("")
             return
         elif text == "\n": return
-        text = str(text)
+        text = unicode(text)
         text = text.replace("<nobr>", ""); text = text.replace("</nobr>", "")
         text = text.replace("<b>", ""); text = text.replace("</b>", "")
         text = text.replace("<i>", ""); text = text.replace("</i>", "")
         text = text.replace("<br>", ""); text = text.replace("&nbsp", "")
-        self.statusBar().showMessage("Last event: " + str(text), 5000)
+        self.statusBar.showMessage("Last event: " + unicode(text), 5000)
 
-
+    # def saveLayout(self):
+        # return self.schema.saveSchemaLayout()
 
     def closeEvent(self, ce, postCloseFun=None):
-        print '|#| redRCanvas closeEvent'
+        #print '|#| redRCanvas closeEvent'
         # save the current width of the toolbox, if we are using it
         if isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
             redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
@@ -671,9 +797,13 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["showToolbar"] = self.toolbar.isVisible()
         
         redREnviron.settings["geometry"] = self.saveGeometry()
+        # redREnviron.settings["layout"] = self.saveLayout()
         redREnviron.settings["windowState"] = self.saveState()
         redREnviron.settings['pos'] = self.pos()
         redREnviron.settings['size'] = self.size()
+
+        
+        
         redREnviron.saveSettings()
         # closed = self.schema.close()
         if redREnviron.settings['dontAskBeforeClose']:
@@ -696,7 +826,7 @@ class OrangeCanvasDlg(QMainWindow):
                 postCloseFun()
 
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
-            self.schema.closeAllWidgets() # close all the widget first so their global data is saved
+            redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
             #self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
@@ -729,12 +859,25 @@ class OrangeCanvasDlg(QMainWindow):
         # self.iconNameToIcon[widgetInfo.icon] = icon
         return icon
         
-
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox 
 class MyStatusBar(QStatusBar):
     def __init__(self, parent):
         QStatusBar.__init__(self, parent)
         self.parentWidget = parent
-
+        
+        docBox = redRwidgetBox(self.controlArea,orientation='horizontal')
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
+        toolTip='Notes',
+        callback = self.updateDocumentationDock)
+        
+        self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
+        toolTip='R Code',
+        callback = self.updateDocumentationDock)   
+        
+        self.statusBar.addPermanentWidget(docBox)
+        
     def mouseDoubleClickEvent(self, ev):
         self.parentWidget.menuItemShowOutputWindow()
         
@@ -767,7 +910,7 @@ class RedRQApplication(QApplication):
             # return out
         # except rpy.RPyRException as inst:
             # print inst
-            # raise Exception('R Error', str(inst)) 
+            # raise Exception('R Error', unicode(inst)) 
 
 
 # class MyManager(BaseManager):

@@ -80,7 +80,8 @@ class comboBox(QComboBox,widgetState):
         # else:
             # self.ids = self.ids + range(self.count(), self.count() + len(items))
     def currentText(self):
-        return str(QComboBox.currentText(self).toAscii())
+        return unicode(QComboBox.currentText(self).toAscii())
+        
         
     def addItem(self,item,id=None):
         QComboBox.addItem(self,item)
@@ -96,7 +97,7 @@ class comboBox(QComboBox,widgetState):
             elif type(items) == type([]):
                 self.addItems(items)
         else:
-            print str(items)
+            print unicode(items)
             print 'Items failed to add'
     def update(self, items):
         print 'Updating comboBox with the following items', items

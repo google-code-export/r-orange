@@ -38,16 +38,16 @@ class RedRnearZeroVar(OWRpy):
 		else:
 			self.RFunctionParam_x=''
 	def commitFunction(self):
-		if str(self.RFunctionParam_x) == '': return
+		if unicode(self.RFunctionParam_x) == '': return
 		injection = []
-		if str(self.RFunctionParamfreqCut_lineEdit.text()) != '':
-			string = 'freqCut='+str(self.RFunctionParamfreqCut_lineEdit.text())+''
+		if unicode(self.RFunctionParamfreqCut_lineEdit.text()) != '':
+			string = 'freqCut='+unicode(self.RFunctionParamfreqCut_lineEdit.text())+''
 			injection.append(string)
-		if str(self.RFunctionParamuniqueCut_lineEdit.text()) != '':
-			string = 'uniqueCut='+str(self.RFunctionParamuniqueCut_lineEdit.text())+''
+		if unicode(self.RFunctionParamuniqueCut_lineEdit.text()) != '':
+			string = 'uniqueCut='+unicode(self.RFunctionParamuniqueCut_lineEdit.text())+''
 			injection.append(string)
 		inj = ''.join(injection)
-		self.R(self.Rvariables['nearZeroVar']+'<-nearZeroVar(x='+str(self.RFunctionParam_x)+','+inj+')')
+		self.R(self.Rvariables['nearZeroVar']+'<-nearZeroVar(x='+unicode(self.RFunctionParam_x)+','+inj+')')
 		newData = signals.RArbitraryList.RArbitraryList(data = self.Rvariables["nearZeroVar"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("nearZeroVar Output", newData)

@@ -34,11 +34,11 @@ class RedRrbind(OWRpy):
     def commitFunction(self):
         if len(self.data) < 2: return
         injection = []
-        if str(self.RFunctionParamdeparse_level_lineEdit.text()) != '':
-            string = 'deparse.level='+str(self.RFunctionParamdeparse_level_lineEdit.text())+''
+        if unicode(self.RFunctionParamdeparse_level_lineEdit.text()) != '':
+            string = 'deparse.level='+unicode(self.RFunctionParamdeparse_level_lineEdit.text())+''
             injection.append(string)
         inj = ''.join(injection)
-        if str(self.bindingMode.getChecked()) == 'Row':
+        if unicode(self.bindingMode.getChecked()) == 'Row':
             function = 'rbind'
         else:
             function = 'cbind'

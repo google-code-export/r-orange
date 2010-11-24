@@ -76,7 +76,7 @@ class rowcolPicker(OWRpy):
         
     def onSelect(self):
         count = self.attributes.selectionCount()
-        self.selectionInfoBox.setText('# ' + self.rowcolBox.getChecked()  + 's selected: ' + str(count))
+        self.selectionInfoBox.setText('# ' + self.rowcolBox.getChecked()  + 's selected: ' + unicode(count))
         if self.subsetButton.processOnChange():
             self.subset()
     def setWidget(self, data):
@@ -85,7 +85,7 @@ class rowcolPicker(OWRpy):
             self.dataParent = data
             self.rowcolButtonSelected()
             dims = data.getDims_data()
-            self.infoBox.setText('# Rows: ' + str(dims[0]) +'\n# Columns: ' + str(dims[1]))
+            self.infoBox.setText('# Rows: ' + unicode(dims[0]) +'\n# Columns: ' + unicode(dims[1]))
             if self.subsetButton.processOnInput():
                 self.subset()
         else:
@@ -129,26 +129,26 @@ class rowcolPicker(OWRpy):
     def subOnAttached(self):
         if self.data == None or self.data == '': return
                 
-        col=str(self.subsetColumn.currentText())
+        col=unicode(self.subsetColumn.currentText())
         
         if self.rowcolBox.getChecked() == 'Row':
             if "True" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],])', wantType = 'NoConversion')
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],,drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],])', wantType = 'NoConversion')
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],,drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[[\''+col+'\']]])', wantType = 'NoConversion')
+            ' %in% '+self.ssv+'[[\''+col+'\']],drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+
-            ' %in% '+self.ssv+'[[\''+col+'\']]])', wantType = 'NoConversion')
+            ' %in% '+self.ssv+'[[\''+col+'\']],drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         self.SubsetByAttached = 1
@@ -159,38 +159,38 @@ class rowcolPicker(OWRpy):
         
         selectedDFItems = []
         for name in self.attributes.selectedItems():
-            selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
+            selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
             if "True" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])', wantType = 'NoConversion')
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',,drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),])', wantType = 'NoConversion')
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),,drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
             if "True" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+'])', wantType = 'NoConversion')
+                self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if "False" in self.sendSection.getChecked():
-                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')])', wantType = 'NoConversion')
+                self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+'),drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         self.SubsetByAttached = 0
     # def getReportText(self, fileDir):
         # if self.SubsetByAttached:
-            # text = 'Data was subset by '+str(self.rowcolBox.getChecked())+' '+str(self.subsetColumn.currentText())+'\n\n'
+            # text = 'Data was subset by '+unicode(self.rowcolBox.getChecked())+' '+unicode(self.subsetColumn.currentText())+'\n\n'
         # else:
             # text = 'Data was subset by the following selections:\n\n'
             # selectedDFItems = []
             # for name in self.attributes.selectedItems():
-                # selectedDFItems.append('"'+str(name.text())+'"') # get the text of the selected items
+                # selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
                 
             # for name in selectedDFItems:
-                # text += '-'+str(name)+'\n\n'
+                # text += '-'+unicode(name)+'\n\n'
                 
         # text += '\n\n'
         # return text
