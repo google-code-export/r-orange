@@ -94,7 +94,7 @@ class SchemaView(QGraphicsView):
                     QMessageBox.information(self, 'Red-R Canvas', 'Unable to rename widget. An instance with that name already exists.')
                     return
             widget.updateText(newName)
-            widget.instance.setWindowTitle(newName)
+            widget.instance().setWindowTitle(newName)
 
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
@@ -344,7 +344,7 @@ class SchemaView(QGraphicsView):
                     self.doc.addLine(start, end)
             else:
                 state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
-                predictedWidgets = orngHistory.predictWidgets(state, 20)
+                #predictedWidgets = orngHistory.predictWidgets(state, 20)
 
                 newCoords = QPoint(ev.globalPos())
                 orngTabs.categoriesPopup.updateMenu()
@@ -366,8 +366,8 @@ class SchemaView(QGraphicsView):
                 newCoords = QPoint(ev.globalPos())
                 orngTabs.categoriesPopup.showAllWidgets()
                 state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
-                predictedWidgets = orngHistory.predictWidgets(state, 20)
-                orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'inputClasses')
+                #predictedWidgets = orngHistory.predictWidgets(state, 20)
+                #orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'inputClasses')
                 orngTabs.categoriesPopup.updateMenu()
                 height = sum([orngTabs.categoriesPopup.actionGeometry(action).height() for action in orngTabs.categoriesPopup.actions()])
                 action = orngTabs.categoriesPopup.exec_(newCoords - QPoint(0, orngTabs.categoriesPopup.categoriesYOffset))
@@ -390,7 +390,7 @@ class SchemaView(QGraphicsView):
             if self.doc.signalManager.signalProcessingInProgress:
                 QMessageBox.information( self, "Orange Canvas", "Please wait until Orange finishes processing signals.")
                 return
-            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance.outputs.isSignalEnabled(activeItem.inWidget.instance))
+            self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance().outputs.isSignalEnabled(activeItem.inWidget.instance()))
             activeItem.inWidget.updateTooltip()
             activeItem.outWidget.updateTooltip()
             activeItem.updateTooltip()
@@ -401,14 +401,14 @@ class SchemaView(QGraphicsView):
 
     def progressBarHandler(self, widgetInstance, value):
         for widget in self.doc.widgets():
-            if widget.instance == widgetInstance:
+            if widget.instance() == widgetInstance:
                 widget.setProgressBarValue(value)
                 qApp.processEvents()        # allow processing of other events
                 return
 
     def processingHandler(self, widgetInstance, value):
         for widget in self.doc.widgets():
-            if widget.instance == widgetInstance:
+            if widget.instance() == widgetInstance:
                 widget.setProcessing(value)
                 self.repaint()
                 widget.update()

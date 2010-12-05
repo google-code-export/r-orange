@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class radioButtons(widgetState,QWidget):
-    def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
+    def __init__(self,widget,label='Radio Button', displayLabel=True, includeInReports=True,
     buttons=None,toolTips = None, setChecked = None,
     orientation='vertical',callback = None, **args):
         

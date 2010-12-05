@@ -8,6 +8,7 @@ import redRGUI
 from OWRpy import *
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.table import table
+from libraries.base.qtWidgets.pyDataTable import pyDataTable as pyDataTable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
@@ -27,19 +28,10 @@ class dataEntry(OWRpy):
         self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processDF)
 
         self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
- # trace problem with outputs
         #GUI.
         
-        
-        # box = groupBox(self.GUIDialog, label = "Options")
         redRCommitButton(self.bottomAreaRight, 'Commit', self.commitTable)
-        # self.rowHeaders = checkBox(box, label=None, buttons=['Use Row Headers', 'Use Column Headers'])
-        #self.colHeaders = checkBox(box, label=None, buttons=['Use Column Headers'])
-        #self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
-        #self.colHeaders.setChecked(['Use Column Headers'])
-        # self.customClasses = button(box, 'Use Custom Column Classes', callback = self.setCustomClasses)
-        # button(box, 'Clear Classes', callback = self.clearClasses)
-        
+
         self.columnDialog = QDialog(self)
         self.columnDialog.setLayout(QVBoxLayout())
         self.columnDialog.hide()
@@ -47,28 +39,61 @@ class dataEntry(OWRpy):
         button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
         button(self.bottomAreaRight, "Add Column", callback = self.columnDialog.show)
         
-        
         box = groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         
 
-        self.dataTable = table(box,label='Data Entry',displayLabel=False,
-        data = None, rows = self.rowCount+1, columns = self.colCount)
-        if self.dataTable.columnCount() < 1:
-            self.dataTable.setColumnCount(1)
-            self.dataTable.setHorizontalHeaderLabels(['Rownames'])
-        if self.dataTable.rowCount() < 1:
-            self.dataTable.setRowCount(1)
-        self.dataTable.setHorizontalHeaderLabels(['Rownames'])
+        self.dataTable = pyDataTable(box,label='Data Entry',displayLabel=False,
+        data = None)
         
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
-        # self.window = QDialog(self)
-        # self.window.setLayout(QVBoxLayout())
-        # self.classTable = table(self.window, rows = self.maxCol, columns = 2)
+        self.connect(self.dataTable, SIGNAL('sectionClicked (int)'), self.headerClicked)
         self.resize(700,500)
         self.move(300, 25)
+    def headerClicked(self, index):
+        globalPos = QCursor.pos() #self.mapToGlobal(pos)
+        self.menu = QDialog(None,Qt.Popup)
+        self.menu.setLayout(QVBoxLayout())
+        box = widgetBox(self.menu, orientation = 'horizontal')
+        name = lineEdit(box, label = 'New Name (Overrides Current Value)', callback = self.menu.accept)
+        equation = lineEdit(box, label = 'Equation (Overrides Current Values)', callback = self.menu.accept)
+        remove = button(box, label = 'Remove Column', callback = lambda: self.removeColumn(index))
+        done = button(box, label = 'Done', callback = self.menu.accept)
+        res = self.menu.exec_()
+        if res == Qt.Accept:
+            if unicode(equation.text()) != '':
+                self.calculateEquation(current = , equation = unicode(equation.text()))
+            if unicode(name.text()) != '':
+                self.resetName(current = , new = unicode(name.text()))
+            
+    def resetName(self, current, new):
+        self.data.getData()[new] = self.data.getData()[current].copy()
+        del self.data.getData()[current]
+        for i in range(len(self.data.keys)):
+            if self.data.keys[i] == current:
+                self.data.keys.remove(i)
+                self.data.keys.insert(i, new)
+        self.table.setTable(self.data)
+        self.rSend('id0', self.data)
+    def calculateEquation(self, current, equation):
+        self.data.getData()[current] = []
+        ## parse equation  ([Sepal.length] * [Sepal.width])
+        import re
+        import math
+        ekeys = re.findall(r'\[\w+\]', equation)
+        dekeys = [t.replace('[', '').replace(']', '') for t in ekeys]
+        for i in range(max([len(a) for a in self.data.getData().values()])):
+            tempe = e
+            for w in ekeys:
+                tempe = tempe.replace(w, 'self.data.getData()[\'%s\'][%s]' % (w.replace('[', '').replace(']', ''), str(i)))
+            try:
+                self.data.getData()[current].append(eval(tempe))
+            except:
+                self.data.getData()[current].append(None)
+        self.table.setTable(self.data)
+        self.rSend('id0', self.data)
     def commitNewColumn(self):
         labels = []
         for i in range(self.dataTable.columnCount()):
@@ -84,17 +109,15 @@ class dataEntry(OWRpy):
         self.columnDialog.hide()
     def processDF(self, data):
         if data:
-            self.data = data.getData()
-            self.savedData = data
+            self.data = data.copy()
             self.populateTable()
         else:
             return
     def populateTable(self):
-        #pythonData = self.R('cbind(rownames = '+self.savedData.getRownames_call()+','+self.data+')')
-        pythonData = self.savedData._convertToStructuredDict()
-        self.dataTable.setTable(pythonData.getData())
+        self.dataTable.setTable(self.data)
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
         self.connect(self.dataTable, SIGNAL("cellChanged(int, int)"), self.itemChanged)
+        self.connect(self.dataTable, SIGNAL('sectionClicked (int)'), self.headerClicked)
     def cellClicked(self, row, col):
         print unicode(row), unicode(col)
         pass
@@ -111,6 +134,7 @@ class dataEntry(OWRpy):
             self.rowCount += 1
         if row > self.maxRow: self.maxRow = row #update the extremes of the row and cols
         if col > self.maxCol: self.maxCol = col
+        self.data.getData()[self.data.keys[col]][row] = 
         self.dataTable.setCurrentCell(row+1, col)
 
     def commitTable(self):

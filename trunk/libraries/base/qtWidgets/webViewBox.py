@@ -9,7 +9,8 @@ from PyQt4 import QtWebKit
 class webViewBox(QtWebKit.QWebView,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
     url=None,orientation='vertical', followHere = False):
-        
+        if label == None:
+            label = 'Web View'
         widgetState.__init__(self,widget,label,includeInReports)
         QtWebKit.QWebView.__init__(self,self.controlArea)
         

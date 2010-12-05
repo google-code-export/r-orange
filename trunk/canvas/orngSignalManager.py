@@ -293,7 +293,7 @@ class SignalDialog(QDialog):
     def removeLink(self, outName, inName): #removes from the list of instances
         res = QMessageBox.question(self.canvasView, 'Red-R Connections', 'Are you sure you want to remove that signal?\n\nThe downstream widget will recieve empty data.', QMessageBox.Yes | QMessageBox.No)
         if res == QMessageBox.Yes:
-            self.outWidget.instance.outputs.removeSignal(self.inWidget.instance.inputs.getSignal(inName), outName)
+            self.outWidget.instance().outputs.removeSignal(self.inWidget.instance().inputs.getSignal(inName), outName)
             self.canvasView.removeLink(outName, inName)
             self._links.remove((outName, inName))
 

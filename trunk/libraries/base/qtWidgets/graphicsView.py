@@ -14,7 +14,7 @@ from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
 
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None):
+    def __init__(self, parent,label='Graph', displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         self.R = RSession.Rcommand
         self.require_librarys = RSession.require_librarys

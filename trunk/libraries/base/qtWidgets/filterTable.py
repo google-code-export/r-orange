@@ -147,15 +147,7 @@ class filterTable(widgetState, QTableView):
         self.setRTable('matrix("")')
         self.criteriaList = {}
     def headerClicked(self,val):
-        # print '#############################', val.x()
-        # ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
-        # start =0;
-        # pos = val.x()
-        # for x in range(0,ncol):
-            # if pos > start and pos < start + self.horizontalHeader().sectionSize(x):
-                # break
-            # start += self.horizontalHeader().sectionSize(x)
-        # selectedCol = x+1
+        
         selectedCol = val + 1
         self.createMenu(selectedCol)
     
@@ -574,7 +566,7 @@ class MyTableModel(QAbstractTableModel):
     def sort(self, Ncol, order):
         if self.editable: return
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
-        print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
+        #print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
         if order == Qt.DescendingOrder:
             self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol+1)
         else:
