@@ -163,7 +163,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         elif self.separator.currentText() == 'Comma':
             sep = ','
         #use the R function if the parent of the dict is an R object.
-        if type(self.data) == str:
+        if type(self.data) in [str, unicode]:
             self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, sep="'+sep+'")')
         else:  # We write the file ourselves
             if self.dataParent:
