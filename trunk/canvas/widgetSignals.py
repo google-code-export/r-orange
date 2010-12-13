@@ -83,7 +83,7 @@ class widgetSignals():
             traceback.print_exc(file=sys.stdout)
             
             self.status.setStatus(3)
-        self.R('gc()')
+        self.R('gc()', wantType = 'NoConversion')
 
 
     # does widget have a signal with name in inputs

@@ -112,7 +112,7 @@ class readFile(OWRpy):
         self.quote = lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
         self.decimal = lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
         
-        self.numLinesScan = lineEdit(box2,text='10',label='# Lines to Scan:', 
+        self.numLinesScan = lineEdit(box2,text='-1',label='# Lines to Scan:', 
         toolTip='The maximum number of rows to read in while previewing the file. Negative values are ignored.', 
         width=50,orientation='horizontal')
 
@@ -129,6 +129,7 @@ class readFile(OWRpy):
         load = button(holder, label = 'Load File',toolTip="Load the file into Red-R",
         callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
+        self.showColOptions = checkBox(options, label = 'Show Columns', displayLabel = False, buttons = ['Show Column Options'])
 
         self.FileInfoBox = groupBox(options, label = "File Info", addSpace = True)       
         self.infob = widgetLabel(self.FileInfoBox, label='')
@@ -271,10 +272,11 @@ class readFile(OWRpy):
         
         
         if scan and scan != 'clipboard':
-            nrows = unicode(self.numLinesScan.text())
+            
             processing=False
+            nrows = '10'
         else:
-            nrows = '-1'
+            nrows = unicode(self.numLinesScan.text())
             processing=True
         
         
@@ -300,8 +302,6 @@ class readFile(OWRpy):
                 Rstr = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
                 self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']), wantType = 'NoConversion')
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
-                if not scan:
-                    nrows = '0'
                 self.R(RStr,
                 processingNotice=processing, wantType = 'NoConversion')
             elif scan == 'clipboard':
@@ -318,7 +318,7 @@ class readFile(OWRpy):
             print sys.exc_info() 
             print RStr
             self.rowNamesCombo.setCurrentIndex(0)
-            self.updateScan()
+            #self.updateScan()
             return
         
         if scan:
@@ -353,7 +353,8 @@ class readFile(OWRpy):
             # return
             
         
-        if self.useCustomClasses:
+        if 'Show Column Options' in self.showColOptions.getChecked():
+            self.scroll.show()
             if len(self.colClasses) ==0:
                 self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
                 self.myColClasses = self.colClasses

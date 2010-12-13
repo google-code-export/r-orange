@@ -45,9 +45,9 @@ class widgetState:
         
         self.includeInReports=includeInReports
         
-        if not widgetName:
-            print '#########widget Name is required############'
-            raise RuntimeError('#########widget Name is required############')
+        # if not widgetName:
+            # print '#########widget Name is required############'
+            # raise RuntimeError('#########widget Name is required############')
 
         self.widgetName = widgetName
     
