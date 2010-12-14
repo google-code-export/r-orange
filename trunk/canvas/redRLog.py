@@ -40,27 +40,31 @@ def getSessionID():
     global _sessionID
     return _sessionID
 def log(table, severity, errorType = COMMENT, comment = ""):
-    if comment in ['', '\n', '\t']: return
+    #if comment in ['', '\n', '\t']: return
     
-    if table == DEBUG and not redREnviron.settings['debugMode']:
+    if table == DEBUG and redREnviron.settings['debugMode']:
+        logOutput(table,severity, errorType, None, comment)
         return
+    elif table == 20:
+        lh.defaultSysOutHandler.write(comment)
+        return
+            
+    if redREnviron.settings['debugMode']:        
+        tb = traceback.format_stack()
+        if tb < 3:
+            lh.defaultSysOutHandler.write(comment)
+            return
+    else:
+        tb = None
     
-    tb = traceback.format_stack()
-    # if tb < 3:
-        # lh.defaultSysOutHandler.write(comment)
-        # return
     if table not in [0, DEBUG]:
         handler.execute(query = "INSERT INTO All_Output (OutputDomain, TimeStamp, Session, Severity, ErrorType, Comment, Trackback) VALUES (\"%s\", \"%s\", \"%s\", %s, \"%s\", \"%s\", \"%s\")" % (
         table, datetime.today().isoformat(' '), _sessionID, severity, errorType, comment, unicode('</br>'.join(tb)).replace('\"', '')))
         
-        if severity >= redREnviron.settings['minSeverity'] or (errorType == 'Error' and severity >= redREnviron.settings['exceptionLevel']):
+        if severity >= redREnviron.settings['minSeverity'] or (errorType == ERROR and severity >= redREnviron.settings['exceptionLevel']):
             logOutput(table,severity, errorType, tb, comment)
     elif table == 0:
         logOutput(table,severity, errorType, tb, comment)
-    elif table == DEBUG and redREnviron.settings['debugMode']:
-        logOutput(table,severity, errorType, tb, comment)
-    elif table == 20:
-        lh.defaultSysOutHandler.write(comment)
         
 def getHistory(widgetFile):
     widgets = []
@@ -69,16 +73,9 @@ def getHistory(widgetFile):
         widgets.append(row[1])
 def logConnection(outWidgetFile, inWidgetFile):
     handler.execute(query = "INSERT INTO ConnectionHistory (OutWidget, InWidget) VALUES (\"%s\", \"%s\")" % (outWidgetFile, inWidgetFile))
-# def logException(string):
-    # global _exceptionManager
-    # if _exceptionManager:
-        # cursor = QTextCursor( _exceptionManager.exceptionText.textCursor())                
-        # cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        # _exceptionManager.exceptionText.setTextCursor(cursor)                             
-        
-        # _exceptionManager.exceptionText.insertHtml(string + '<br />')                              
 def logOutput(table, severity, errorType, tb, comment):
-    
+    if not tb:
+        tb = ['','','','']
     global _outputManager
     if _outputManager:
         _outputManager(table, severity, errorType, tb, comment)
@@ -109,18 +106,18 @@ class LogHandler():
     def write(self, text):
         
         # tb = traceback.format_stack()
-        # self.defaultSysOutHandler.write(text)
+        # self.defaultSysOutHandler.write('in write' + text + "\n")
         
         # self.defaultSysOutHandler.write('################\n' + '\n'.join(tb))
         # return
         if not redREnviron.settings['debugMode']: return
 
+        # logOutput(DEBUG,1, 2, None, text)
         log(DEBUG, 1, 2, text)
     
     def exceptionHandler(self, type, value, tracebackInfo):        
-        import redRExceptionHandling
-        text = redRExceptionHandling.formatException(type,value,tracebackInfo)
-        log(3,9,1,text)
+        #text = redRExceptionHandling.formatException(type,value,tracebackInfo)
+        log(3,9,1)
     
 
 

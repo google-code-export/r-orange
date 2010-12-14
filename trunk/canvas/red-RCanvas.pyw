@@ -15,7 +15,7 @@ import redREnviron
 import redRLog
 import redRStyle
 import RSession
-import redRExceptionHandling
+
 import orngRegistry, OWGUI
 import redROutput, redRSaveLoad
 import orngDoc, orngDlgs

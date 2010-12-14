@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 import redRGUI 
 import signals 
 # from SQLiteSession import *
-import redRExceptionHandling 
+ 
 
 class widgetSession():
     def __init__(self,dontSaveList):
@@ -43,7 +43,7 @@ class widgetSession():
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
             except:
-                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1)
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
@@ -211,7 +211,7 @@ class widgetSession():
                         getattr(self, k).setDefaultState(v['redRGUIObject'])
                     except Exception as inst:
                         #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
-                        redRLog.log(1, 7, 1, redRExceptionHandling.formatException())
+                        redRLog.log(1, 7, 1)
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     #print 'dict',len(var),len(v['dict'])
@@ -223,7 +223,7 @@ class widgetSession():
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
             except:
-                redRLog.log(1, 5, 1, redRExceptionHandling.formatException(errorMsg='Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'))
+                redRLog.log(1, 5, 1, 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.')
         
         
     def setSignalClass(self, d):
@@ -264,12 +264,12 @@ class widgetSession():
                         fp.close()
             except:
                 #print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1)
                 
                 try:
                     var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                    redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                    redRLog.log(1, 9, 1)
                     #print 'Fatal exception in loading.  Can\'t assign the signal value'
                     var = None
         finally:

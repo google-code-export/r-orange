@@ -858,7 +858,7 @@ class CanvasPopup(QMenu):
                     act.category = catmenu
                     #self.allActions.append(act)
         except Exception as inst:
-            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1)
         
         ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
         for template in redRObjects.widgetRegistry()['templates']:
@@ -868,7 +868,7 @@ class CanvasPopup(QMenu):
                 act.templateInfo = template
                 self.templateActions.append(act)
             except Exception as inst:
-                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1)
         #self.allActions += widgetRegistry['templates']
         ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
     def insertChildActions(self,catmenu, categoriesPopup, itab):
@@ -908,7 +908,7 @@ class CanvasPopup(QMenu):
                             self.allActions.append(act)
                             self.widgetActionNameList.append(widgetInfo.name)
                 except Exception as inst: 
-                    redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                    redRLog.log(1, 9, 1)
                     pass
         except Exception as inst:
             redRLog.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)

@@ -174,11 +174,10 @@ class OutputHandler:
                             connection['signal']['value'] = newVal
                             break
                     except:
-                        import redRExceptionHandling
-                        print redRExceptionHandling.formatException()
+                        redRLog.log(1, 9, 1)
         except:
-            import redRExceptionHandling
-            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1)
+            
     def processData(self, id):
         # collect the signal ID
         signal = self.getSignal(id)
@@ -232,11 +231,11 @@ class OutputHandler:
             parentWidget.status.setText('New Data Received')
             parentWidget.removeWarning(id = 'signalHandlerWarning')
         except:
-            import redRExceptionHandling
-            error = redRExceptionHandling.formatException(errorMsg="Error occured in processing signal in this widget.\nPlease check the widgets.\n\n",plainText=True)
+            
+            error = "Error occured in processing signal in this widget.\nPlease check the widgets.\n"
             parentWidget.setWarning(id = 'signalHandlerWarning', text = unicode(error))
             #print error
-            redRLog.log(1, 9, 1, error)
+            redRLog.log(1, 9, 1)
             parentWidget.status.setText('Error in processing signal')
             
     def hasOutputName(self, name):

@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path, sys
 from string import strip, count, replace
-import orngDoc, redRExceptionHandling, orngRegistry, redRObjects
+import orngDoc, orngRegistry, redRObjects
 #from orngSignalManager import InputSignal, OutputSignal
 import OWGUIEx, redRSaveLoad, redRStyle
 import OWGUIEx, redRSaveLoad
@@ -825,7 +825,7 @@ def constructCategoriesPopup(canvasDlg):
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+        redRLog.log(1, 9, 1)
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in redRObjects.widgetRegistry()['templates']:
@@ -835,7 +835,7 @@ def constructCategoriesPopup(canvasDlg):
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1)
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -875,7 +875,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1)
                 pass
     except Exception as inst:
         redRLog.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)

@@ -4,7 +4,7 @@ import sys
 import string
 import time as ti
 from datetime import tzinfo, timedelta, datetime, time
-import traceback, redRExceptionHandling
+import traceback
 import os.path, os
 import redREnviron, redRLog, SQLiteSession
 from libraries.base.qtWidgets.button import button as redRbutton
@@ -74,22 +74,88 @@ class OutputWindow(QDialog):
         self.resize(w, h)
         self.lastTime = ti.time()
         self.hide()
+
+    def formatException(self,type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):
+        if not tracebackInfo:
+            (type,value, tracebackInfo) =  sys.exc_info()
+        
+        
+        t = datetime.today().isoformat(' ')
+        text =  '<br>'*2 + '#'*60 + '<br>'
+        if errorMsg:
+            text += '<b>' + errorMsg + '</b><br>'
+        text += "Unhandled exception of type %s occured at %s:<br>Traceback:<br>" % ( self.getSafeString(type.__name__), t)
+        list = traceback.extract_tb(tracebackInfo, 10)
+        #print list
+        space = "&nbsp; "
+        totalSpace = space
+        #print range(len(list))
+        for i in range(len(list)):
+            # print list[i]
+            (file, line, funct, code) = list[i]
+            #print 'code', code
+            
+            (dir, filename) = os.path.split(file)
+            text += "" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b><br>" % (self.getSafeString(funct))
+            if code != None:
+                if not plainText:
+                    code = code.replace('<', '&lt;') #convert for html
+                    code = code.replace('>', '&gt;')
+                    code = code.replace("\t", "\x5ct") # convert \t to unicode \t
+                text += "" + totalSpace + "Code: " + code + "<br>"
+            totalSpace += space
+        
+        lines = traceback.format_exception_only(type, value)
+        for line in lines[:-1]:
+            text += "" + totalSpace + self.getSafeString(line) + "<br>"
+        text += "<b>" + totalSpace + self.getSafeString(lines[-1]) + "</b><br>"
+        
+        text +=  '#'*60 + '<br>'*2
+        if plainText:
+            text = re.sub('<br>','\n',text)
+            text = re.sub('&nbsp;','',text)
+            
+            text = re.sub("</?[^\W].{0,10}?>", "", text)
+            return text
+        else:
+            return text
+
     
     def outputManager(self, table, severity, errorType, tb, comment):
-        # if errorType == log.ERROR and redREnviron.settings["focusOnCatchException"]:
-            # qApp.canvasDlg.menuItemShowOutputWindow()
+        if table == redRLog.DEBUG:
+            cursor = QTextCursor(self.exceptionText.textCursor())                
+            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+            self.exceptionText.setTextCursor(cursor)                             
+            self.exceptionText.insertPlainText(comment)                              
+            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+            return
+            
+        if errorType==redRLog.ERROR and severity >8 and redREnviron.settings["focusOnCatchException"] and hasattr(qApp,'canvasDlg'):
+            self.showExceptionTab()
+            
+        if errorType == redRLog.ERROR:
+            comment = self.formatException(errorMsg=comment)
+            cursor = QTextCursor(self.exceptionText.textCursor())                
+            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+            self.exceptionText.setTextCursor(cursor)                             
+            self.exceptionText.insertHtml(comment)                              
+            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        else:
+            comment = '\t<b>%s</b>' % (self.getSafeString(comment)) 
         
         string = '<div style="color:#0000FF">%s:%s:%s: </div>' %  (redRLog.tables[table],redRLog.errorTypes[errorType], severity)
-        if redREnviron.settings['debugMode']:
+        
+        if tb:
             string+='\t%s' % tb[-3]
             
-        string +='\t<b>%s</b>' % (self.getSafeString(comment))
+        string += comment
         
         cursor = QTextCursor( self.canvasDlg.printOutput.textCursor())                
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         self.canvasDlg.printOutput.setTextCursor(cursor)                             
         self.canvasDlg.printOutput.insertHtml('%s<br>' % string)
-    
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)     
+            
     def setStatusBarEvent(self, text):
         
         if text == "" or text == None:
@@ -104,6 +170,8 @@ class OutputWindow(QDialog):
         self.canvasDlg.statusBar.showMessage("Last event: " + unicode(text), 5000)
         
     def showExceptionTab(self):
+        self.hide()
+        self.show()
         self.tw.setCurrentIndex(1)
     def refresh(self):
         self.tableCombo.update(['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')])
@@ -274,7 +342,7 @@ class OutputWindow(QDialog):
         if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
-        text = redRExceptionHandling.formatException(type,value,tracebackInfo)
+        text = self.formatException(type,value,tracebackInfo)
         redRLog.log(3,9,1,text)
         
         t = datetime.today().isoformat(' ')

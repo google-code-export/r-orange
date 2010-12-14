@@ -14,7 +14,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtNetwork import *
 import xml.dom.minidom
-import redRGUI, redRExceptionHandling,re 
+import redRGUI, re , redRLog
 import xml.etree.ElementTree as etree
 from datetime import date
 import win32api, win32process
@@ -192,8 +192,8 @@ class updateManager():
             redREnviron.directoryNames['downloadsDir'],0)
             # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
         except:
-            import redRExceptionHandling
-            print redRExceptionHandling.formatException()
+            
+            redRLog.log(1, 9, 1)
             mb = QMessageBox("Error", "There was an Error in updating Red-R.", 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.NoButton, QMessageBox.NoButton, self.schema)

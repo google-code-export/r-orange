@@ -177,8 +177,8 @@ class readFile(OWRpy):
             if not self.filecombo.getCurrentFile():
                 s.setEnabled(False)
             q = widgetLabel(self.columnTypes,label=self.colNames[i])
-            self.columnTypes.layout().addWidget(s, i, 1)
-            self.columnTypes.layout().addWidget(q, i, 0)
+            self.columnTypes.layout().addWidget(s.controlArea, i, 1)
+            self.columnTypes.layout().addWidget(q.controlArea, i, 0)
         
     
     def browseFile(self): 
@@ -307,11 +307,12 @@ class readFile(OWRpy):
                 self.commit()
             else:
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
-                print '####################', processing
+                #print '####################', processing
                 self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
+                
         except:
-            print sys.exc_info() 
-            print RStr
+            import redRLog
+            redRLog.log(1, 9, 1)
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
@@ -348,36 +349,34 @@ class readFile(OWRpy):
             # return
             
         
-        
-        if len(self.colClasses) ==0:
-            self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
-            self.myColClasses = self.colClasses
-        if len(self.dataTypes) ==0:
-            types = ['factor','numeric','character','integer','logical']
-            self.dataTypes = []
-            
-            for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
-                s = radioButtons(self.columnTypes,label=i,displayLabel=False,
-                buttons=types,orientation='horizontal',callback=self.updateColClasses)
+        try:
+            if len(self.colClasses) ==0:
+                self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
+                self.myColClasses = self.colClasses
+            if len(self.dataTypes) ==0:
+                types = ['factor','numeric','character','integer','logical']
+                self.dataTypes = []
                 
-                # print k,i,str(v)
-                if str(v) in types:
-                    s.setChecked(str(v))
-                else:
-                    s.addButton(str(v))
-                    s.setChecked(str(v))
-                label = widgetLabel(None,label=i)
-                self.columnTypes.layout().addWidget(label,k,0)
-                self.columnTypes.layout().addWidget(s.controlArea,k,1)
-                
-                self.dataTypes.append([i,s])
-        # except Exception as e:
-            # print str(e)
-            #there must not have been any way to update the scan, perhaps one of the file names was wrong
-            # import redRExceptionHandling
-            # print redRExceptionHandling.formatException()
-            # self.scanarea.clear()
-            # self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
+                for k,i,v in zip(range(len(self.colNames)),self.colNames,self.myColClasses):
+                    s = radioButtons(self.columnTypes,label=i,displayLabel=False,
+                    buttons=types,orientation='horizontal',callback=self.updateColClasses)
+                    
+                    # print k,i,str(v)
+                    if str(v) in types:
+                        s.setChecked(str(v))
+                    else:
+                        s.addButton(str(v))
+                        s.setChecked(str(v))
+                    label = widgetLabel(None,label=i)
+                    self.columnTypes.layout().addWidget(label.controlArea,k,0)
+                    self.columnTypes.layout().addWidget(s.controlArea,k,1)
+                    
+                    self.dataTypes.append([i,s])
+        except:
+            import redRLog
+            redRLog.log(1, 9, 1)
+            self.scanarea.clear()
+            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
         
         # print self.getReportText('./')
           
@@ -395,7 +394,7 @@ class readFile(OWRpy):
         return s
         
     def updateGUI(self):
-        dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', 'getRData')
+        dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', wantType='list',silent=True)
         self.infob.setText(self.R(self.Rvariables['filename']))
         self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
@@ -403,50 +402,5 @@ class readFile(OWRpy):
         self.updateGUI()
         sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("od1", sendData)
-    """        
-    def getReportText(self, fileDir):
-        ## custom implementation of the reporting system for read Files.
-
-        params = [['File Source',self.filecombo.getCurrentFile()],
-        ['Column Delimiter',str(self.delimiter.getChecked())]
-        ]
-        text = redRReports.createTable(params,columnNames = ['Parameter','Value'],
-        tableName='Parameters')
-        
-        params = []
-        for i in range(len(self.colNames)):
-            params.append([self.colNames[i], self.colClasses[i]])
-
- 
-        text += redRReports.createTable(params,columnNames = ['Column','Data Type'],
-        tableName='Data Types of Columns')
-        # print text
-        # text = ''
-        # try:
-            # text += 'File Source: '+self.filecombo.currentText()+'\n\n'
-            # text += 'Reading Data\n\nData was read into the canvas using the following settings:\n\n'
-            # text += 'Column Seperator: '+str(self.delimiter.getChecked())+'\n\n'
-            # text += 'Use Column Header:'
-            # if 'Column Headers' in self.hasHeader.getChecked():
-                # text += ' Yes\n\n'
-            # else:
-                # text += ' No\n\n'
-            # text += 'The following column in the orriginal data was used as the Rownames for the table: %s\n\n' %(self.rownames)
-            # text += 'Other options include the following:\n\n'
-            # for i in self.otherOptions.getChecked():
-                # text += str(i) + '=TRUE\n\n'
-                
-            # text += '\n\nClasses for the columns are as follows:\n\n'
-            # for i in range(len(self.rownames)):
-                # text += '%s set to %s \n\n' % (self.colNames[i], self.colClasses[i])
-            # text += '\n\n'
-        # except Exception as inst:
-            # print '<strong>', str(inst), '</strong>'
-            # pass
-        
-        
-        return text
-        
-    """       
     
-        
+  

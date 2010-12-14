@@ -2,7 +2,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, glob 
 import redREnviron
-import redRExceptionHandling
+
 import os.path
 import imp
 
@@ -83,57 +83,6 @@ class widgetState:
     def setEnabled(self,b):
         self.controlArea.setEnabled(b)
         
-class widgetStateOld:
-    def __init__(self,widgetName,includeInReports,**args):
-        
-        self.includeInReports=includeInReports
-        if not widgetName:
-            print '#########widget Name is required############'
-            
-            # try:
-            raise RuntimeError('#########widget Name is required############')
-            # except:
-                # print redRExceptionHandling.formatException()
-
-        self.widgetName = widgetName
-    
-    def getReportText(self,fileDir):
-        # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-        # print 'self', self, self.widgetName
-        children = self.children()
-        # print children
-        if len(children) ==0:
-            return False
-            
-        reportData = {}
-        for i in children:
-            if isinstance(i, widgetState):
-                d = i.getReportText(fileDir)
-                if type(d) is dict:
-                    reportData.update(d)
-                # dd = []
-                # if type(d) is dict:
-                    # for x in d.items():
-                        # x['includeInReports'] = i.includeInReports
-                        # dd.append(x)
-                    # reportData = reportData + dd
-                # elif d:
-                    # d['includeInReports'] = i.includeInReports
-                    # reportData.append(d)
-        
-        return reportData
-
-    def getDefaultState(self):
-        r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
-        return r
-    def setDefaultState(self,data):
-        # print ' in wdiget state'
-        self.setEnabled(data['enabled'])
-        self.setHidden(data['hidden'])
-    def getSettings(self):
-        pass
-    def loadSettings(self,data):
-        pass
 
 
 # def forname(modname, classname):
@@ -159,7 +108,7 @@ def registerQTWidgets():
                 qtWidgets.append(guiClass)
         except:
            import redRLog
-           redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+           redRLog.log(1, 9, 1)
 
 
 # def separator(widget, width=8, height=8):

@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import glob,os.path,redREnviron,redRExceptionHandling
+import glob,os.path,redREnviron
 import imp, sys
 import imp, sys
 
@@ -111,7 +111,7 @@ def registerRedRSignals():
                 setattr(m, signalClass,c)  ## set the object in the empty module named signalClass to c.  This results in the ability to code as module.className to access the class.
             setattr(current_module,package,m)  ## sets the module.package to m (which is the module that contains the signal object  [[ current_module.package = m.Signal ---> current_module.package.Signal]]
         except:
-            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1)
 def setRedRSignalModule(modname, mod): # to be called on init of each signalClass package __init__
 
     ## goal is to eventually run setattr(current_module, --packageName--, --someModule--)

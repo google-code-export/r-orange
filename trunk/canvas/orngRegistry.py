@@ -7,7 +7,7 @@ import os, sys, re, glob, stat, redRLog
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 # print 'Importing orngRegistry.py'
-import redRExceptionHandling, redRPackageManager
+import redRPackageManager
 import signals
 import xml.dom.minidom
 # redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
@@ -260,7 +260,7 @@ def readTemplates(directory):
             templateInfo = TemplateDescription(name = templateName, file = filename) 
             templates.append(templateInfo)
         except Exception, msg:
-            print redRExceptionHandling.formatException()
+            redRLog.log(1, 9, 1)
         
     return templates
 def loadPackage(package):

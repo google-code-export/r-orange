@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path, sys
 from string import strip, count, replace
-import orngDoc, redRExceptionHandling, orngRegistry, redRObjects
+import orngDoc, orngRegistry, redRObjects
 import OWGUIEx, redRSaveLoad, redRStyle
 import redREnviron, redRLog
 import xml.dom.minidom

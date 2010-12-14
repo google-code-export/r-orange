@@ -86,11 +86,14 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # co.setWantType(1)
     # elif wantType == 'dict':
         # co.setWantType(2)
-    print output.getrclass()
+    # print output.getrclass()
+    
     output = convertToPy(output)
+    # print 'converted', type(output)
     if wantType == None:
         mutex.unlock()
         raise Exception('WantType not specified')
+    
     if type(output) == list and len(output) == 1 and wantType != 'list':
         output = output[0]
     
@@ -109,7 +112,27 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
             output = output.tolist()
         else:
             print 'Warning, conversion was not of a known type;', unicode(type(output))
-    
+    elif wantType == 'listOfLists':
+        # print 'Converting to list of lists'
+        
+        if type(output) in [str, int, float, bool]:
+            output =  [[output]]
+        elif type(output) in [dict]:
+            newOutput = []
+            for name in output.keys():
+                nl = output[name]
+                if type(nl) not in [list]:
+                    nl = [nl]
+                newOutput.append(nl)                
+            output = newOutput
+        elif type(output) in [list, numpy.ndarray]:
+            if len(output) == 0:
+                output = [output]
+            elif type(output[0]) not in [list]:
+                output = [output]
+        else:
+            print 'Warning, conversion was not of a known type;', str(type(output))
+                
     mutex.unlock()
     return output
 	

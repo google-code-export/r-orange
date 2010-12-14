@@ -4,7 +4,7 @@ from docutils.core import publish_string
 from docutils.writers.odf_odt import Writer, Reader
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import redRExceptionHandling
+
 import shutil, redRLog
 
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
@@ -143,7 +143,7 @@ class reports(QWizard):
             os.mkdir(fileDir2)  
         
         except Exception as inst:
-            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1)
         
         
         # show the report list and allow the user to select widgets to include in the report.

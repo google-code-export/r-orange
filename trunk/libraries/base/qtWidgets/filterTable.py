@@ -316,14 +316,14 @@ class filterTable(widgetState, QTableView):
                 else:
                     del self.criteriaList[col]
             
-        print 'criteriaList', self.criteriaList
+        #print 'criteriaList', self.criteriaList
         self.menu.hide()
         self.filter()
     
     def filter(self):
         filters  = []
         for col,criteria in self.criteriaList.items():
-            print 'in loop', col,criteria['method']
+            #print 'in loop', col,criteria['method']
             if 'Numeric Equals' == criteria['method']:
                 filters.append('%s[,%s] == %s' % (self.Rdata,col,criteria['value']))
             elif 'Numeric Does Not Equal' == criteria['method']:
@@ -434,7 +434,7 @@ class MyTableModel(QAbstractTableModel):
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
     filterable=False,sortable=False): 
 
-        self.range = 500
+        self.range = 2000
         self.parent =  parent
         self.R = Rcommand
         self.sortable = sortable
@@ -505,7 +505,7 @@ class MyTableModel(QAbstractTableModel):
         if self.arraydata == [[]]:
             toAppend= ['' for i in xrange(self.columnCount(self))]
             self.arraydata = [toAppend]
-        print 'self.arraydata' , self.arraydata
+        # print 'self.arraydata' , self.arraydata
         
     def rowCount(self, parent): 
         return self.nrow
@@ -522,7 +522,7 @@ class MyTableModel(QAbstractTableModel):
             return QVariant() 
         elif not self.Rdata or self.Rdata == None:
             return QVariant()
-        print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
+        #print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
         
         if (
             (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
@@ -530,8 +530,7 @@ class MyTableModel(QAbstractTableModel):
             (self.currentRange['rstart'] + 100 > index.row() and self.currentRange['rstart'] !=1) or 
             (self.currentRange['rend'] - 100 < index.row() and self.currentRange['rend'] != self.nrow)
         ):
-            
-            
+
             self.currentRange = self.getRange(index.row(), index.column())
             
             self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
@@ -547,7 +546,7 @@ class MyTableModel(QAbstractTableModel):
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
-        print rowInd, colInd
+        # print rowInd, colInd
         return QVariant(self.arraydata[rowInd][colInd]) 
 
     def headerData(self, col, orientation, role):
@@ -647,7 +646,7 @@ class MyTableModel(QAbstractTableModel):
         #return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
-        print 'in setData', data.toString(), index.row(),index.column(), role
+        #print 'in setData', data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
         elif role == Qt.EditRole: 
