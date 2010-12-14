@@ -6,45 +6,45 @@
 """
 
 from OWRpy import * 
-import OWGUI 
-import redRGUI
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
-class redRSavePoint(OWRpy): 
-    settingsList = ['RFunctionParam_object']
+from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+class redRSavePoint(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
+        self.setRvariableNames(['saveData'])
         self.inputObject = None
         self.outputObject = None
         self.inputs.addInput('id0', 'Input Object', 'All', self.processobject)
-        self.outputs = SavepointOutputHandler(self)
         self.outputs.addOutput('id0', 'Output Object', 'All')
+        self.outputs.propogateNone = self.newPropNone  ## this is here to stop the propogation of None when a None is received.
         widgetLabel(self.controlArea, 'This widget acts as a save point for analyses so that data is not lost when upstream widgets are removed.  You can use this to help manage memory in your schemas by deleting upstream data (making the schema smaller) yet retaining the analyses.', wordWrap = True)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, label = "Commit", callback = self.commitFunction)
         self.RoutputWindow = textEdit(self.controlArea, label = 'Input Object')
         self.RoutputWindow2 = textEdit(self.controlArea, label = 'Output Object')
         #box.layout().addWidget(self.RoutputWindow)
+    def newPropNone(self, ask = False):
+        pass
     def onLoadSavedSession(self):
         self.commitFunction()
     def processobject(self, data):
         if data:
             self.inputObject=data
         else: self.inputObject = None
-        
         self.RoutputWindow.setText(unicode(self.inputObject))
+        self.commitFunction()
     def commitFunction(self):
+        if self.inputObject == None: 
+            self.status.setText('Input Does not Exist')
+            return
+        print 'Setting output'
+        ## set a new variable in R which is a copy of the old variable.
+        self.R(self.Rvariables['saveData']+'<-'+self.inputObject.getData())
         self.outputObject = self.inputObject.copy()
+        self.outputObject.data = self.Rvariables['saveData']
+        self.outputObject.parent = self.Rvariables['saveData']
         self.RoutputWindow2.setText(unicode(self.outputObject))
         self.rSend('id0', self.outputObject)    
-    def getReportText(self, fileDir):
-        text = 'ANOVA-LM analysis performted.  The following is a summary of the results:\n\n'
-        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
-        return text
-        
-class SavepointOutputHandler(OutputHandler):
-    def __init__(self, parent):
-        OutputHandler.__init__(self, parent)
-    def propogateNone(self, ask = True):
-        pass  # disable the effect of None propogation
+

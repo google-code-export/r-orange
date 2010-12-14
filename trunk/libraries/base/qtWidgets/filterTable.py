@@ -434,7 +434,8 @@ class MyTableModel(QAbstractTableModel):
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
     filterable=False,sortable=False): 
 
-        self.range = 2000
+        self.working = False
+        self.range = 500
         self.parent =  parent
         self.R = Rcommand
         self.sortable = sortable
@@ -445,6 +446,7 @@ class MyTableModel(QAbstractTableModel):
         self.initData(Rdata)
         self.filter_delete = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_delete.gif'))
         self.filter_add = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_add.gif'))
+        
     def flags(self,index):
         if self.editable:
             return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
@@ -516,6 +518,9 @@ class MyTableModel(QAbstractTableModel):
  
     def data(self, index, role): 
         # print 'in data'
+        # if self.working == True:
+            # return QVariant()
+        # self.working = True
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 
@@ -532,21 +537,24 @@ class MyTableModel(QAbstractTableModel):
         ):
 
             self.currentRange = self.getRange(index.row(), index.column())
-            
-            self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
+            if not self.working:
+                self.working = True
+                self.arraydata = self.R('as.matrix(%s[%d:%d,%d:%d])' % (self.Rdata,
             self.currentRange['rstart'],
             self.currentRange['rend'],
             self.currentRange['cstart'],
             self.currentRange['cend']
             ),
             wantType = 'list',silent=True)
+                self.working = False
+            else: self.arraydata = []
         if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
             return QVariant()
         #redRLog.log(10, 5, 3, 'Filter table R data is %s' % self.Rdata)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
-        # print rowInd, colInd
+        # self.working = False
         return QVariant(self.arraydata[rowInd][colInd]) 
 
     def headerData(self, col, orientation, role):

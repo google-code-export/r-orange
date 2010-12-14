@@ -286,8 +286,10 @@ def instances(wantType = 'list'):
     else:
         return _widgetInstances
 def removeWidgetInstanceByID(id):
+    widget = getWidgetInstanceByID(id)
+    widget.onDeleteWidget()
     import sip
-    sip.delete(getWidgetInstanceByID(id))
+    sip.delete(widget)
     del _widgetInstances[id]
 ###########################
 ######  lines           ###
