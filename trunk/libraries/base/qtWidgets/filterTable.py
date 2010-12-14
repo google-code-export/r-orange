@@ -18,8 +18,8 @@ import sip
 class filterTable(widgetState, QTableView):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
     editable=False, sortable=True, filterable=False,
-    selectionBehavior=QAbstractItemView.SelectRows, 
-    selectionMode = QAbstractItemView.NoSelection, 
+    selectionBehavior=QAbstractItemView.SelectColumns, 
+    selectionMode = QAbstractItemView.MultiSelection, 
     showResizeButtons = True,
     onFilterCallback = None,
     callback=None):
@@ -66,7 +66,6 @@ class filterTable(widgetState, QTableView):
         self.filterable=filterable
         self.onFilterCallback = onFilterCallback
         self.setSelectionBehavior(selectionBehavior)
-
         self.setAlternatingRowColors(True)
         
         if selectionMode != -1:

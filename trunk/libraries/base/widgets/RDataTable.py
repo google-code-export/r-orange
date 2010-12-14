@@ -18,6 +18,7 @@ from libraries.base.qtWidgets.filterTable import filterTable
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+from libraries.base.qtWidgets.textEdit import textEdit
 class RDataTable(OWRpy):
     globalSettingsList = ['linkListBox','currentLinks']
     def __init__(self, parent=None, signalManager = None):
@@ -88,7 +89,8 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
 
         self.table = filterTable(self.tableBox,label = 'Data Table', sortable=True,
         filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.itemClicked)
-        
+        self.customSummary = lineEdit(self.advancedOptions, label = 'Custom Summary:', toolTip = 'Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})')
+        self.summaryLabel = textEdit(self.advancedOptions, label = 'Summary')
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
@@ -137,6 +139,25 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             #print url
             import webbrowser
             webbrowser.open_new_tab(url)
+            
+        ## make the summary of the data.
+        type = self.R('class('+self.data+'[,'+str(val.column()+1)+'])', wantType = 'Convert', silent = True)
+        if type in ['integer', 'complex', 'float', 'numeric']:
+            summaryText = '<strong>Mean</strong>: %s<br/> <strong>Median</strong>: %s<br/> <strong>Range</strong>: %s<br/> <strong>Standard Deviation</strong>: %s<br/> <strong>Count</strong>: %s<br/> <strong>Min</strong>: %s<br/> <strong>Max</strong>: %s<br/>' % (
+                str(self.R('mean(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
+                str(self.R('median(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
+                str(self.R('range(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
+                str(self.R('sd(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
+                str(self.R('length(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
+                str(self.R('min(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
+                str(self.R('max(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)))
+            
+        else:
+            summaryText = unicode(self.R('summary('+self.data+'[,'+str(val.column()+1)+'])', wantType = 'Convert', silent = True)).replace('\n', '<br/>')        
+        if unicode(self.customSummary.text()) != '':
+            summaryText += 'Custom: %s' % unicode(self.R(unicode(self.customSummary.text()).replace('{Col}', '%s[,%s]' % (self.data, val.column()+1)), wantType = 'Convert', silent = True))
+        self.summaryLabel.setHtml(unicode(summaryText))
+        print summaryText
     def clearLinks(self):
         self.linkListBox.clear()
         self.currentLinks = {}
