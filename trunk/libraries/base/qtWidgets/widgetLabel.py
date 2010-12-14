@@ -20,7 +20,7 @@ class widgetLabel(QLabel,widgetState):
         self.setText(label)
         self.setWordWrap(wordWrap)
     def text(self):
-        return unicode(QLabel.text(self).toAscii())
+        return unicode(QLabel.text(self))
     def getSettings(self):
         # print 'in widgetLabel getSettings'
         r = {'text':self.text()}

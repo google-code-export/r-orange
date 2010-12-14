@@ -15,11 +15,20 @@ class radioButtons(widgetState,QWidget):
         
         self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.label = label
+        
+
         if displayLabel:
             self.box = groupBox(self.controlArea,label=label,orientation=orientation)
             self.controlArea.layout().addWidget(self.box)
         else:
             self.box = widgetBox(self.controlArea,orientation=orientation)
+
+        # if orientation=='vertical':
+            # self.box.setSizePolicy(QSizePolicy(QSizePolicy.Preferred,
+            # QSizePolicy.MinimumExpanding))
+        # else:
+            # self.box.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,
+            # QSizePolicy.Preferred))
             
         self.buttons = QButtonGroup(self.box)
         for i,b in zip(range(len(buttons)),buttons):
@@ -48,7 +57,7 @@ class radioButtons(widgetState,QWidget):
     def getChecked(self):
         button = self.buttons.checkedButton()
         if button == 0 or button == None or button.isEnabled()==False: return 0
-        else: return unicode(button.text().toAscii())
+        else: return unicode(button.text())
     
     def disable(self,buttons):
         for i in self.buttons.buttons():

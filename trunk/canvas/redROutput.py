@@ -1,7 +1,3 @@
-# Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington and Anup Parikh
-# Description:
-#     print system output and exceptions into a window. Enables copy/paste
-#
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sys
@@ -10,7 +6,7 @@ import time as ti
 from datetime import tzinfo, timedelta, datetime, time
 import traceback, redRExceptionHandling
 import os.path, os
-import redREnviron, log, SQLiteSession
+import redREnviron, redRLog, SQLiteSession
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
@@ -22,6 +18,7 @@ from libraries.base.qtWidgets.tabWidget import tabWidget as redRTabWidget
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 
+
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)
@@ -32,7 +29,7 @@ class OutputWindow(QDialog):
 
         self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
         ### error logging setup ###
-        self.errorDB = log.logDB()
+        self.errorDB = redRLog.logDB()
         self.errorHandler = SQLiteSession.SQLiteHandler(defaultDB = self.errorDB)
         
         self.textOutput = QTextEdit(self)
@@ -57,7 +54,7 @@ class OutputWindow(QDialog):
         self.outputExplorer.layout().addWidget(self.textOutput)
         self.outputExplorer.layout().setMargin(2)
         self.setWindowTitle("Output Window")
-        self.setWindowIcon(QIcon(canvasDlg.outputPix))
+        self.setWindowIcon(QIcon( os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "output.png")))
         self.exceptionTracker = self.tw.createTabPage('Exceptions')
         self.exceptionText = redRTextEdit(self.exceptionTracker, label = 'Exception Text', displayLabel = False)
 
@@ -77,7 +74,35 @@ class OutputWindow(QDialog):
         self.resize(w, h)
         self.lastTime = ti.time()
         self.hide()
-        log.setExceptionManager(self)
+    
+    def outputManager(self, table, severity, errorType, tb, comment):
+        # if errorType == log.ERROR and redREnviron.settings["focusOnCatchException"]:
+            # qApp.canvasDlg.menuItemShowOutputWindow()
+        
+        string = '<div style="color:#0000FF">%s:%s:%s: </div>' %  (redRLog.tables[table],redRLog.errorTypes[errorType], severity)
+        if redREnviron.settings['debugMode']:
+            string+='\t%s' % tb[-3]
+            
+        string +='\t<b>%s</b>' % (self.getSafeString(comment))
+        
+        cursor = QTextCursor( self.canvasDlg.printOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        self.canvasDlg.printOutput.setTextCursor(cursor)                             
+        self.canvasDlg.printOutput.insertHtml('%s<br>' % string)
+    
+    def setStatusBarEvent(self, text):
+        
+        if text == "" or text == None:
+            self.canvasDlg.statusBar.showMessage("")
+            return
+        elif text == "\n": return
+        text = unicode(text)
+        text = text.replace("<nobr>", ""); text = text.replace("</nobr>", "")
+        text = text.replace("<b>", ""); text = text.replace("</b>", "")
+        text = text.replace("<i>", ""); text = text.replace("</i>", "")
+        text = text.replace("<br>", ""); text = text.replace("&nbsp", "")
+        self.canvasDlg.statusBar.showMessage("Last event: " + unicode(text), 5000)
+        
     def showExceptionTab(self):
         self.tw.setCurrentIndex(1)
     def refresh(self):
@@ -98,7 +123,7 @@ class OutputWindow(QDialog):
             
         self.showTable(response)
     def clearDataBase(self):
-        log.clearDB()
+        redRLog.clearDB()
     def showTable(self, response):
         htmlText = self.toHTMLTable(response)
         self.textOutput.clear()
@@ -163,7 +188,7 @@ class OutputWindow(QDialog):
         if redREnviron.settings["outputVerbosity"] >= eventVerbosity:
             if text != None:
                 self.write(unicode(text))
-            self.canvasDlg.setStatusBarEvent(QString(text))
+            self.setStatusBarEvent(QString(text))
 
     # simple printing of text called by print calls
     def safe_unicode(self,obj):
@@ -250,7 +275,7 @@ class OutputWindow(QDialog):
             self.canvasDlg.menuItemShowOutputWindow()
 
         text = redRExceptionHandling.formatException(type,value,tracebackInfo)
-        log.log(3,9,1,text)
+        redRLog.log(3,9,1,text)
         
         t = datetime.today().isoformat(' ')
         toUpload = {}
@@ -260,7 +285,7 @@ class OutputWindow(QDialog):
         #toUpload['file'] = os.path.split(traceback.extract_tb(tracebackInfo, 10)[0][0])[1]
         
         if redREnviron.settings["printExceptionInStatusBar"]:
-            self.canvasDlg.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( unicode(type) , t))
+            self.setStatusBarEvent("Unhandled exception of type %s occured at %s. See output window for details." % ( unicode(type) , t))
 
         
         cursor = QTextCursor(self.exceptionText.textCursor())                # clear the current text selection so that

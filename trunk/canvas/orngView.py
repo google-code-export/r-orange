@@ -5,7 +5,7 @@
 import orngCanvasItems
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngHistory, orngTabs, redRObjects, log
+import orngHistory, orngTabs, redRObjects, redRLog
 
         
 class SchemaView(QGraphicsView):
@@ -161,8 +161,8 @@ class SchemaView(QGraphicsView):
             self.selectedLine.updateTooltip()
 
     def unselectAllWidgets(self):
-        log.log(10, 3, 3, 'Unselecting widgets')
-        log.log(10, 3, 3, 'Available icons are %s' % redRObjects.getIconsByTab())
+        redRLog.log(10, 3, 3, 'Unselecting widgets')
+        redRLog.log(10, 3, 3, 'Available icons are %s' % redRObjects.getIconsByTab())
         for k, items in redRObjects.getIconsByTab().items():
             #print k
             for item in items:
@@ -235,7 +235,7 @@ class SchemaView(QGraphicsView):
                     i.setPossibleConnection(False)
         # we clicked on a widget or on a line
         else:
-            log.log(10, 9, 3, 'Active item %s' % activeItem)
+            redRLog.log(10, 9, 3, 'Active item %s' % activeItem)
             if type(activeItem) in [orngCanvasItems.CanvasWidget]:# if we clicked on a widget          
                 #print activeItem, 'An item was clicked'
                 self.tempWidget = activeItem
@@ -347,8 +347,8 @@ class SchemaView(QGraphicsView):
                 #predictedWidgets = orngHistory.predictWidgets(state, 20)
 
                 newCoords = QPoint(ev.globalPos())
-                orngTabs.categoriesPopup.updateMenu()
-                action = orngTabs.categoriesPopup.exec_(newCoords- QPoint(0, orngTabs.categoriesPopup.categoriesYOffset))
+                self.doc.widgetPopupMenu.updateMenu()
+                action = self.doc.widgetPopupMenu.exec_(newCoords- QPoint(0, self.doc.widgetPopupMenu.categoriesYOffset))
                 if action and hasattr(action, "widgetInfo"):
                     xOff = -48 * bool(end)
                     newWidget = self.doc.addWidget(action.widgetInfo, point.x()+xOff, point.y()-24)
@@ -364,13 +364,13 @@ class SchemaView(QGraphicsView):
             diff = self.mouseDownPosition - point
             if not activeItem and (diff.x()**2 + diff.y()**2) < 25:     # if no active widgets and we pressed and released mouse at approx same position
                 newCoords = QPoint(ev.globalPos())
-                orngTabs.categoriesPopup.showAllWidgets()
+                self.doc.widgetPopupMenu.showAllWidgets()
                 state = [self.doc.widgets()[i].widgetInfo.name for i in range(min(len(self.doc.widgets()), 5))]
                 #predictedWidgets = orngHistory.predictWidgets(state, 20)
-                #orngTabs.categoriesPopup.updatePredictedWidgets(predictedWidgets, 'inputClasses')
-                orngTabs.categoriesPopup.updateMenu()
-                height = sum([orngTabs.categoriesPopup.actionGeometry(action).height() for action in orngTabs.categoriesPopup.actions()])
-                action = orngTabs.categoriesPopup.exec_(newCoords - QPoint(0, orngTabs.categoriesPopup.categoriesYOffset))
+                #self.doc.widgetPopupMenu.updatePredictedWidgets(predictedWidgets, 'inputClasses')
+                self.doc.widgetPopupMenu.updateMenu()
+                height = sum([self.doc.widgetPopupMenu.actionGeometry(action).height() for action in self.doc.widgetPopupMenu.actions()])
+                action = self.doc.widgetPopupMenu.exec_(newCoords - QPoint(0, self.doc.widgetPopupMenu.categoriesYOffset))
                 if action and hasattr(action, "widgetInfo"):
                     newWidget = self.doc.addWidget(action.widgetInfo, point.x(), point.y())
                     

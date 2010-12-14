@@ -40,18 +40,19 @@ class groupBox(QGroupBox,widgetState):
         self.layout().setSpacing(spacing)
         if margin != -1:
             self.layout().setMargin(margin)
-        else:
-            self.layout().setMargin(4)
-        if addSpace and isinstance(addSpace, int):
-            separator(self.controlArea, 0, addSpace)
-        elif addSpace:
-            separator(self.controlArea)
+        if widget:
+            if addSpace and isinstance(addSpace, int):
+                separator(self.controlArea, 0, addSpace)
+            elif addSpace:
+                separator(self.controlArea)
         
         if sizePolicy:
             self.setSizePolicy(sizePolicy)
+        
 
-        # self.layout().setAlignment(alignment)
-
+    def layout(self):
+        return QGroupBox.layout(self)
+    
     def delete(self):
         
         # itemRange = self.layout().count()

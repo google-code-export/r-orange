@@ -14,40 +14,24 @@ class qtWidgetBox(QWidget):
         self.setLayout(QVBoxLayout())
         self.layout().setSpacing(0)
         self.layout().setMargin(0)
+        self.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
-    # def getDefaultState(self):
-        # r = {'enabled': self.isEnabled(),'hidden': self.isHidden()}
-        # return r
-    # def setDefaultState(self,data):
-        # self.setEnabled(data['enabled'])
-        # self.setHidden(data['hidden'])
-    # def getSettings(self):
-        # pass
-    # def loadSettings(self,data):
-        # pass
        
 class widgetState:
     def __init__(self,widget,widgetName,includeInReports,**args):
         
-
         self.controlArea = qtWidgetBox(widget)
+        #print widgetName,self.controlArea
         if hasattr(self,'getReportText'):
             self.controlArea.getReportText = self.getReportText
         else:
             self.controlArea.getReportText = self.getReportTextDefault
-        # if widget and widget.layout(): 
-            # if 'alignment' in args.keys():
-                # widget.layout().setAlignment(self.controlArea,args['alignment'])
-        # if hasattr(self,'getSettings'):
-            # self.controlArea.getSettings = self.getSettings
-        # if hasattr(self,'loadSettings'):
-            # self.controlArea.getSettings = self.loadSettings
         
         self.includeInReports=includeInReports
         
-        # if not widgetName:
+        if not widgetName:
             # print '#########widget Name is required############'
-            # raise RuntimeError('#########widget Name is required############')
+            raise RuntimeError('#########widget Name is required############')
 
         self.widgetName = widgetName
     
@@ -98,6 +82,7 @@ class widgetState:
         return self.controlArea.layout()
     def setEnabled(self,b):
         self.controlArea.setEnabled(b)
+        
 class widgetStateOld:
     def __init__(self,widgetName,includeInReports,**args):
         
@@ -173,8 +158,8 @@ def registerQTWidgets():
                 guiClass = os.path.basename(filename).split('.')[0]
                 qtWidgets.append(guiClass)
         except:
-           import log
-           log.log(1, 9, 1, redRExceptionHandling.formatException())
+           import redRLog
+           redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
 
 
 # def separator(widget, width=8, height=8):

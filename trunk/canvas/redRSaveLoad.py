@@ -16,7 +16,7 @@
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import os, sys, redRObjects, cPickle, redREnviron, log, globalData, RSession, redRPackageManager
+import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager
 import cPickle, math, orngHistory, zipfile, urllib, sip
 from xml.dom.minidom import Document, parse
 from orngSignalManager import SignalManager
@@ -52,7 +52,7 @@ def minimumY():
     
     
 def saveIcon(widgetIconsXML, wi, doc):
-    log.log(1, 9, 3, 'orngDoc makeTemplate; saving widget %s' % wi)
+    redRLog.log(1, 9, 3, 'orngDoc makeTemplate; saving widget %s' % wi)
     witemp = doc.createElement('widgetIcon')
     witemp.setAttribute('name', unicode(wi.getWidgetInfo().fileName))             # save icon name
     witemp.setAttribute('instance', unicode(wi.instance().widgetID))        # save instance ID
@@ -102,7 +102,7 @@ def makeTemplate(filename = None, copy = False):
     if copy and len(_tempWidgets) == 0: return 
     if not copy:
         if not filename:
-            log.log(1, 3, 3, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
+            redRLog.log(1, 3, 3, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
             return
         tempDialog = TemplateDialog()
         if tempDialog.exec_() == QDialog.Rejected:
@@ -129,7 +129,7 @@ def makeTemplate(filename = None, copy = False):
     (widgets, settingsDict, requireRedRLibraries) = saveInstances(tempWidgets, widgets, doc, progressBar)
     # save the icons and the lines
     sw = redRObjects.activeTab().getSelectedWidgets()
-    log.log(1, 9, 3, 'orngDoc makeTemplate; selected widgets: %s' % sw)
+    redRLog.log(1, 9, 3, 'orngDoc makeTemplate; selected widgets: %s' % sw)
     temp = doc.createElement('tab')
     temp.setAttribute('name', 'template')
     
@@ -140,7 +140,7 @@ def makeTemplate(filename = None, copy = False):
         
     # tabLines = doc.createElement('tabLines')
     # for line in redRObjects.getLinesByTab()[redRObjects.activeTabName()]:
-        # log.log(1, 3, 3, 'orngDoc makeTemplate; checking line %s, inWidget %s, outWidget %s' % (line, line.inWidget, line.outWidget))
+        # redRLog.log(1, 3, 3, 'orngDoc makeTemplate; checking line %s, inWidget %s, outWidget %s' % (line, line.inWidget, line.outWidget))
         # if (line.inWidget not in sw) or (line.outWidget not in sw): 
             # continue
         # saveLine(tabLines, line)
@@ -185,28 +185,28 @@ def makeTemplate(filename = None, copy = False):
     progress += 1
     progressBar.setValue(progress)
     progressBar.close()
-    log.log(1, 9, 3, 'Template saved successfully')
+    redRLog.log(1, 9, 3, 'Template saved successfully')
     return True
 def collectIcons():
     global _tempWidgets
-    log.log(10, 6, 3, 'Collecting Icons')
+    redRLog.log(10, 6, 3, 'Collecting Icons')
     _tempWidgets = redRObjects.activeTab().getSelectedWidgets()
-    log.log(10, 6, 3, 'Selected widgets are %s' % _tempWidgets)
+    redRLog.log(10, 6, 3, 'Selected widgets are %s' % _tempWidgets)
 def copy():
     ## copy the selected files and reload them as templates in the schema
-    log.log(10, 6, 3, 'Making a copy with widgets %s' % _tempWidgets)
+    redRLog.log(10, 6, 3, 'Making a copy with widgets %s' % _tempWidgets)
     makeTemplate(copy=True)
 def savePipeline():
-    log.log(1, 9, 3, 'Saving Pipeline')
+    redRLog.log(1, 9, 3, 'Saving Pipeline')
     name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     if not name or name == None: return False
-    name = unicode(name.toAscii())
+    name = unicode(name)
     if unicode(name) == '': return False
     if os.path.splitext(unicode(name))[0] == '': return False
     if os.path.splitext(unicode(name))[1].lower() != ".rrpipe": name = name + '.rrpipe'
     return save(filename = name, template = False, copy = False, pipe = True)
 def saveDocument():
-    log.log(1, 9, 3, 'Saving Document')
+    redRLog.log(1, 9, 3, 'Saving Document')
     #return
     if _schemaName == "":
         return saveDocumentAs()
@@ -215,12 +215,12 @@ def saveDocument():
 def save(filename = None, template = False, copy = False, pipe = False):
     global _schemaName
     global schemaPath
-    log.log(1, 9, 3, '%s' % filename)
+    redRLog.log(1, 9, 3, '%s' % filename)
     if filename == None and not copy:
         filename = os.path.join(schemaPath, _schemaName)
     elif copy:
         filename = os.path.join(redREnviron.directoryNames['tempDir'], 'copy.rrts')
-    log.log(1, 9, 3, 'Saveing file as name %s' % filename)
+    redRLog.log(1, 9, 3, 'Saveing file as name %s' % filename)
     progressBar = startProgressBar(
     'Saving '+unicode(os.path.basename(filename)),
     'Saving '+unicode(os.path.basename(filename)),
@@ -319,7 +319,7 @@ def save(filename = None, template = False, copy = False, pipe = False):
     progress += 1
     progressBar.setValue(progress)
     progressBar.close()
-    log.log(1, 9, 3, 'Document Saved Successfully')
+    redRLog.log(1, 9, 3, 'Document Saved Successfully')
     return True
 # load a scheme with name "filename"
 
@@ -353,7 +353,7 @@ def loadRequiredPackages(required, loadingProgressBar):
             pm.show()
             pm.askToInstall(downloadList, 'The following packages need to be installed before the session can be loaded.')
     except Exception as inst: 
-        log.log(1, 9, 1, 'redRSaveLoad loadRequiredPackages; error loading package %s' % inst)  
+        redRLog.log(1, 9, 1, 'redRSaveLoad loadRequiredPackages; error loading package %s' % inst)  
 
 def loadTemplate(filename, caption = None, freeze = 0):
     
@@ -361,7 +361,7 @@ def loadTemplate(filename, caption = None, freeze = 0):
 
 def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global _schemaName
-    log.log(1, 7, 3, 'Loading Document %s' % filename)
+    redRLog.log(1, 7, 3, 'Loading Document %s' % filename)
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
         tmp=True
@@ -406,7 +406,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         
         version = schema.getElementsByTagName("header")[0].getAttribute('version')
         if not version:
-            log.log(1, 9, 3, 'Version Tag Missing, using Red-R 1.80 loading specifications')            ## we should move everything to the earlier versions of orngDoc for loading.
+            redRLog.log(1, 9, 3, 'Version Tag Missing, using Red-R 1.80 loading specifications')            ## we should move everything to the earlier versions of orngDoc for loading.
             loadDocument180(filename, caption = None, freeze = 0, importing = 0)
             loadingProgressBar.hide()
             loadingProgressBar.close()
@@ -414,7 +414,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         else:
             print 'The version is:', version
     except Exception as inst:
-        log.log(1, 6, 1, 'Error in loading the schema %s, reverting to load with 1.80 settings' % inst)
+        redRLog.log(1, 6, 1, 'Error in loading the schema %s, reverting to load with 1.80 settings' % inst)
         loadDocument180(filename, caption = None, freeze = 0, importing = 0)
         loadingProgressBar.hide()
         loadingProgressBar.close()
@@ -566,7 +566,7 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
     loadedOK = True
     for t in tabs.getElementsByTagName('tab'):
         if not tmp:
-            log.log(1, 5, 3, 'Loading tab %s' % t)
+            redRLog.log(1, 5, 3, 'Loading tab %s' % t)
             schemaDoc.makeSchemaTab(t.getAttribute('name'))
             schemaDoc.setTabActive(t.getAttribute('name'))
         addY = minimumY()
@@ -578,10 +578,10 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
             yPos = int(witemp.getAttribute("yPos"))      # same the yPos
             if not tmp:
                 caption = witemp.getAttribute("caption")          # save the caption
-                log.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
+                redRLog.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
                 schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
             else:
-                log.log(0, 5, 3, 'loadedSettingsDict %s' % loadedSettingsDict.keys())
+                redRLog.log(0, 5, 3, 'loadedSettingsDict %s' % loadedSettingsDict.keys())
                 caption = ""
                 settings = cPickle.loads(loadedSettingsDict[instance]['settings'])
             
@@ -632,7 +632,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
-            log.log(1, 9, 1, unicode(inst))
+            redRLog.log(1, 9, 1, unicode(inst))
     ## now the widgets are loaded so we can move on to setting the connections
     
     return (loadedOk, failureText)
@@ -759,11 +759,11 @@ def toZip(file, filename):
 def saveDocumentAs():
     name = QFileDialog.getSaveFileName(None, "Save File", os.path.join(schemaPath, _schemaName), "Red-R Widget Schema (*.rrs)")
     if not name or name == None: return False
-    name = unicode(name.toAscii())
+    name = unicode(name)
     if unicode(name) == '': return False
     if os.path.splitext(unicode(name))[0] == "": return False
     if os.path.splitext(unicode(name))[1].lower() != ".rrs": name = name + ".rrs"
-    log.log(1, 9, 3, 'saveDocument: name is %s' % name)
+    redRLog.log(1, 9, 3, 'saveDocument: name is %s' % name)
     return save(name,template=False)
 def checkWidgetDuplication(widgets):
     for widget in widgets.getElementsByTagName("widget"):
@@ -777,7 +777,7 @@ def checkWidgetDuplication(widgets):
 def saveTemplate():
     name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     if not name or name == None: return False
-    name = unicode(name.toAscii())
+    name = unicode(name)
     if unicode(name) == '': return False
     if os.path.splitext(unicode(name))[0] == '': return False
     if os.path.splitext(unicode(name))[1].lower() != ".rrts": name = name + '.rrts'

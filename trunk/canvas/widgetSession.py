@@ -1,4 +1,4 @@
-import os, cPickle, numpy, pprint, re, sys, log
+import os, cPickle, numpy, pprint, re, sys, redRLog
 import redREnviron
 import signals
 from PyQt4.QtCore import *
@@ -23,7 +23,7 @@ class widgetSession():
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
-        log.log(1, 7, 3, 'moving to save'+unicode(self.captionTitle))
+        redRLog.log(1, 7, 3, 'moving to save'+unicode(self.captionTitle))
         import re
         settings = {}
         if self.saveSettingsList:  ## if there is a saveSettingsList then we just append the required elements to it.
@@ -43,7 +43,7 @@ class widgetSession():
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
             except:
-                log.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
@@ -90,7 +90,7 @@ class widgetSession():
             return True
         else: 
             
-            log.log(1, 5, 1, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
+            redRLog.log(1, 5, 1, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
             return False
         
             
@@ -103,16 +103,16 @@ class widgetSession():
         # print 'var class', var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
         if isinstance(var, widgetState):
             # print 'getting gui settings\n\n'
-            try:
-                v = {}
-                v = var.getSettings()
-                if v == None:
-                    v = var.getDefaultState()
-                else:
-                    v.update(var.getDefaultState())
-            except: 
+            # try:
+            v = {}
+            v = var.getSettings()
+            if v == None:
                 v = var.getDefaultState()
-                log.log(1, 9, 1, 'Could not save qtWidgets class ' + var.__class__.__name__ + '.')
+            else:
+                v.update(var.getDefaultState())
+            # except: 
+                # v = var.getDefaultState()
+                # redRLog.log(1, 9, 1, 'Could not save qtWidgets class ' + var.__class__.__name__ + '.')
                 #errorMsg='Could not save qtWidgets class ' + var.__class__.__name__ + '.')
 
             settings['redRGUIObject'] = {}
@@ -149,14 +149,14 @@ class widgetSession():
         
         
     def setSettings(self,settings, globalSettings = False):
-        log.log(1, 5, 3, 'Loading settings')
+        redRLog.log(1, 5, 3, 'Loading settings')
         #settings = self.sqlite.setObject(settingsID)
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
             try:
-                #log.log(1, 9, 3, 'Loading %s' % k)
+                #redRLog.log(1, 9, 3, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue
                 if v == None:
                     continue
@@ -211,7 +211,7 @@ class widgetSession():
                         getattr(self, k).setDefaultState(v['redRGUIObject'])
                     except Exception as inst:
                         #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
-                        log.log(1, 7, 1, redRExceptionHandling.formatException())
+                        redRLog.log(1, 7, 1, redRExceptionHandling.formatException())
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     #print 'dict',len(var),len(v['dict'])
@@ -223,7 +223,7 @@ class widgetSession():
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
             except:
-                log.log(1, 5, 1, redRExceptionHandling.formatException(errorMsg='Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'))
+                redRLog.log(1, 5, 1, redRExceptionHandling.formatException(errorMsg='Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'))
         
         
     def setSignalClass(self, d):
@@ -264,12 +264,12 @@ class widgetSession():
                         fp.close()
             except:
                 #print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                log.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
                 
                 try:
                     var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                    log.log(1, 9, 1, redRExceptionHandling.formatException())
+                    redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
                     #print 'Fatal exception in loading.  Can\'t assign the signal value'
                     var = None
         finally:
@@ -328,10 +328,10 @@ class widgetSession():
             self.globalSettingsList =  self.defaultGlobalSettingsList
         print self.globalSettingsList
         for name in self.globalSettingsList:
-            try:
-                settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
-            except:
-                print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
+            #try:
+            settings[name] = self.returnSettings(getattr(self,name),checkIfPickleable=False)
+            #except:
+            #   print "Attribute %s not found in %s widget. Remove it from the settings list." % (name, self._widgetInfo.widgetName)
         #print '%s' % unicode(settings)
         if settings:
             #settingsID = self.sqlite.saveObject(settings)

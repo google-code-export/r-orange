@@ -7,7 +7,8 @@ from PyQt4.QtGui import *
 from orngCanvasItems import MyCanvasText
 import OWGUI, sys, os 
 import RSession
-import redREnviron, re
+import redREnviron, re, redRStyle, redRObjects
+
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
 from libraries.base.qtWidgets.listBox import listBox as redRlistBox
@@ -60,74 +61,109 @@ class CanvasOptionsDlg(QDialog):
             self.setWindowTitle("Canvas Options")
         self.topLayout = QVBoxLayout(self)
         self.topLayout.setSpacing(0)
-        self.resize(300,300)
+        self.resize(350,300)
         self.toAdd = []
         self.toRemove = []
 
         self.tabs = QTabWidget(self)
         GeneralTab = OWGUI.widgetBox(self.tabs, margin = 4)
+        GeneralTab.layout().setAlignment(Qt.AlignTop)
+        # lookandFeel = OWGUI.widgetBox(self.tabs, margin = 4)
+        # lookandFeel.layout().setAlignment(Qt.AlignTop)
         ExceptionsTab = OWGUI.widgetBox(self.tabs, margin = 4)
-        #TabOrderTab = OWGUI.widgetBox(self.tabs, margin = 4)
+        ExceptionsTab.layout().setAlignment(Qt.AlignTop)
         RSettings = OWGUI.widgetBox(self.tabs, margin = 4)
-
+        RSettings.layout().setAlignment(Qt.AlignTop)
+        
         self.tabs.addTab(GeneralTab, "General")
+        # self.tabs.addTab(lookandFeel, "Look and Feel")
         self.tabs.addTab(ExceptionsTab, "Exception handling")
-        #self.tabs.addTab(TabOrderTab, "Widget tab order")
         self.tabs.addTab(RSettings, 'R Settings')
         QObject.connect(self.tabs, SIGNAL('currentChanged(int)'), self.onTabChange)
+        #GeneralTab.layout().addStretch(1)
+        
         # #################################################################
         # GENERAL TAB
-        generalBox = OWGUI.widgetBox(GeneralTab, "General Options")
-        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", debuggingEnabled = 0)
-        self.helpModeSelection = redRCheckBox(generalBox, buttons = ['Show Help Icons'])
-        if redREnviron.settings['helpMode']:
-            self.helpModeSelection.setChecked(['Show Help Icons'])
-        self.snapToGridCB = OWGUI.checkBox(generalBox, self.settings, "snapToGrid", "Snap widgets to grid", debuggingEnabled = 0)
-        self.writeLogFileCB  = OWGUI.checkBox(generalBox, self.settings, "writeLogFile", "Save content of the Output window to a log file", debuggingEnabled = 0)
-        self.showSignalNamesCB = OWGUI.checkBox(generalBox, self.settings, "showSignalNames", "Show signal names between widgets", debuggingEnabled = 0)
-        self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", "Don't ask to save schema before closing", debuggingEnabled = 0)
-        self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", "Save size and position of widgets", debuggingEnabled = 0)
+        generalBox = OWGUI.widgetBox(GeneralTab, 'General Options')
         
-        # self.useContextsCB = OWGUI.checkBox(generalBox, self.settings, "useContexts", "Use context settings")
+        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", orientation = 'horizontal')
+        
+        self.helpModeSelection = OWGUI.checkBox(generalBox,self.settings,'helpMode',
+        'Show help icons')
+
+        
+        self.writeLogFileCB  = OWGUI.checkBox(generalBox, self.settings, "writeLogFile", 
+        "Save content of the Output window to a log file")
+        self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
+        "Don't ask to save schema before closing", debuggingEnabled = 0)
+        self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", 
+        "Save size and position of widgets", debuggingEnabled = 0)
+        
+        
+        # #################################################################
+        # LOOK AND FEEL TAB
+        
         validator = QIntValidator(self)
         validator.setRange(0,10000)
+        lookFeelBox = OWGUI.widgetBox(GeneralTab, "Look and Feel Options")
 
-        hbox1 = OWGUI.widgetBox(GeneralTab, orientation = "horizontal")
-        hbox2 = OWGUI.widgetBox(GeneralTab, orientation = "horizontal")
-        canvasDlgSettings = OWGUI.widgetBox(hbox1, "Canvas Dialog Settings")
-        schemeSettings = OWGUI.widgetBox(hbox1, "Scheme Settings") 
+        self.snapToGridCB = OWGUI.checkBox(lookFeelBox, self.settings, "snapToGrid", 
+        "Snap widgets to grid", debuggingEnabled = 0)
+        self.showSignalNamesCB = OWGUI.checkBox(lookFeelBox, self.settings, "showSignalNames", 
+        "Show signal names between widgets", debuggingEnabled = 0)
+        
+        items = ["%d x %d" % (v,v) for v in redRStyle.iconSizeList]
+        # val = min(len(items)-1, self.settings['schemeIconSize'])
+        self.schemeIconSizeCombo = OWGUI.comboBoxWithCaption(lookFeelBox, self.settings, 'schemeIconSize', 
+        "Scheme icon size:", items = items, tooltip = "Set the size of the widget icons on the scheme", 
+        debuggingEnabled = 0)
+
+        # redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
+        
+        self.toolbarIconSizeCombo = OWGUI.comboBoxWithCaption(lookFeelBox, self.settings, "toolbarIconSize", 
+        "Widget Tree Icon size:", items = items, 
+        tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", 
+        debuggingEnabled = 0)
+
+        # hbox1 = OWGUI.widgetBox(GeneralTab, orientation = "horizontal")
+        
+        # canvasDlgSettings = OWGUI.widgetBox(hbox1, "Canvas Dialog Settings")
+        # schemeSettings = OWGUI.widgetBox(hbox1, "Scheme Settings") 
          
-        self.widthSlider = OWGUI.qwtHSlider(canvasDlgSettings, self.settings, "canvasWidth", minValue = 300, maxValue = 1200, label = "Canvas width:  ", step = 50, precision = " %.0f px", debuggingEnabled = 0)
-        self.heightSlider = OWGUI.qwtHSlider(canvasDlgSettings, self.settings, "canvasHeight", minValue = 300, maxValue = 1200, label = "Canvas height:  ", step = 50, precision = " %.0f px", debuggingEnabled = 0)
-        OWGUI.separator(canvasDlgSettings)
+        # self.widthSlider = OWGUI.qwtHSlider(canvasDlgSettings, self.settings, "canvasWidth", 
+        # minValue = 300, maxValue = 1200, label = "Canvas width:  ", step = 50, precision = " %.0f px", debuggingEnabled = 0)
         
-        items = [unicode(n) for n in QStyleFactory.keys()]
-        ind = items.index(self.settings.get("style", "WindowsXP"))
-        OWGUI.comboBox(canvasDlgSettings, self.settings, "style", label = "Window style:", orientation = "horizontal", items = [unicode(n) for n in QStyleFactory.keys()], sendSelectedValue = 1, debuggingEnabled = 0)
-        OWGUI.checkBox(canvasDlgSettings, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
+        # self.heightSlider = OWGUI.qwtHSlider(canvasDlgSettings, self.settings, "canvasHeight", 
+        # minValue = 300, maxValue = 1200, label = "Canvas height:  ", step = 50, precision = " %.0f px", debuggingEnabled = 0)
         
-        if canvasDlg:
-            selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
-            self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, canvasDlg.widgetSelectedColor)
-            selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
-            selectedWidgetLabel = OWGUI.widgetLabel(selectedWidgetBox, " Selected widget")
+        # OWGUI.separator(canvasDlgSettings)
+        
 
-            activeWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
-            self.activeWidgetIcon = ColorIcon(activeWidgetBox, canvasDlg.widgetActiveColor)
-            activeWidgetBox.layout().addWidget(self.activeWidgetIcon)
-            selectedWidgetLabel = OWGUI.widgetLabel(activeWidgetBox, " Active widget")
-
-            lineBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
-            self.lineIcon = ColorIcon(lineBox, canvasDlg.lineColor)
-            lineBox.layout().addWidget(self.lineIcon)
-            selectedWidgetLabel = OWGUI.widgetLabel(lineBox, " Lines")
-            
-        OWGUI.separator(schemeSettings)
-        items = ["%d x %d" % (v,v) for v in self.canvasDlg.schemeIconSizeList]
-        val = min(len(items)-1, self.settings['schemeIconSize'])
-        self.schemeIconSizeCombo = OWGUI.comboBoxWithCaption(schemeSettings, self.settings, 'schemeIconSize', "Scheme icon size:", items = items, tooltip = "Set the size of the widget icons on the scheme", debuggingEnabled = 0)
+        OWGUI.comboBox(lookFeelBox, self.settings, "style", label = "Window style:", orientation = "horizontal", 
+        items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
+        OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
         
-        GeneralTab.layout().addStretch(1)
+        # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
+        # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
+        # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
+        # selectedWidgetLabel = OWGUI.widgetLabel(selectedWidgetBox, " Selected widget")
+
+        # activeWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
+        # self.activeWidgetIcon = ColorIcon(activeWidgetBox, redRStyle.widgetActiveColor)
+        # activeWidgetBox.layout().addWidget(self.activeWidgetIcon)
+        # selectedWidgetLabel = OWGUI.widgetLabel(activeWidgetBox, " Active widget")
+
+        # activeLineBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
+        # self.activeLineIcon = ColorIcon(activeLineBox, redRStyle.lineColor)
+        # activeLineBox.layout().addWidget(self.activeLineIcon)
+        # selectedWidgetLabel = OWGUI.widgetLabel(activeLineBox, " Active Lines")
+
+        # inactiveLineBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
+        # self.inactiveLineIcon = ColorIcon(inactiveLineBox, redRStyle.lineColor)
+        # inactiveLineBox.layout().addWidget(self.inactiveLineIcon)
+        # selectedWidgetLabel = OWGUI.widgetLabel(inactiveLineBox, " Inactive Lines")
+        
+        
 
         # #################################################################
         # EXCEPTION TAB
@@ -135,7 +171,7 @@ class CanvasOptionsDlg(QDialog):
         debug = OWGUI.widgetBox(ExceptionsTab, "Debug")
         self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
         
-        self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", orientation='horizontal', items=["All", "High", "Medium", "Low"])
+        # self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", orientation='horizontal', items=["All", "High", "Medium", "Low"])
 
         self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
         self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
@@ -194,12 +230,37 @@ class CanvasOptionsDlg(QDialog):
         #print self.settings['CRANrepos']
         self.libInfo.setText('Repository URL changed to: '+unicode(self.libs['URL'][item]))
     def accept(self):
-        self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()
-        self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()
-        self.settings["lineColor"]           = self.lineIcon.color.getRgb()
+        # self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()
+        # self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()
+        # self.settings["lineColor"]           = self.activeLineIcon.color.getRgb()
+        
         self.settings["exceptionLevel"] = int(self.exceptionLevel.value())
         self.settings["minSeverity"] = int(self.otherLevel.value())
-        self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
+        
+        # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
+        
+        redREnviron.settings.update(self.settings)
+        redREnviron.saveSettings()
+        # redRStyle.widgetSelectedColor = self.settings["widgetSelectedColor"]
+        # redRStyle.widgetActiveColor   = self.settings["widgetActiveColor"]  
+        # redRStyle.lineColor           = self.settings["lineColor"]          
+        
+        # update settings in widgets in current documents
+        for widget in self.canvasDlg.schema.widgets():
+            widget.instance()._owInfo      = redREnviron.settings["owInfo"]
+            widget.instance()._owWarning   = redREnviron.settings["owWarning"]
+            widget.instance()._owError     = redREnviron.settings["owError"]
+            widget.instance()._owShowStatus= redREnviron.settings["owShow"]
+            # widget.instance.updateStatusBarState()
+            widget.resetWidgetSize()
+            widget.updateWidgetState()
+          
+        # update tooltips for lines in all documents
+        for line in self.canvasDlg.schema.lines():
+            line.showSignalNames = redREnviron.settings["showSignalNames"]
+            line.updateTooltip()
+
+        redRObjects.activeTab().repaint()
         
         QDialog.accept(self)
         
@@ -293,8 +354,6 @@ class KeyEdit(QLineEdit):
 # widget shortcuts dialog
 class WidgetShortcutDlg(QDialog):
     def __init__(self, canvasDlg, *args):
-        import orngTabs
-
         apply(QDialog.__init__,(self,) + args)
         self.canvasDlg = canvasDlg
         self.setWindowTitle("Widget Shortcuts")
@@ -333,7 +392,7 @@ class WidgetShortcutDlg(QDialog):
                 mainBox.setLayout(hlayout)
                 layout.addWidget(mainBox, y, x, Qt.AlignTop | Qt.AlignLeft)
                 label = QLabel(wtab)
-                label.setPixmap(canvasDlg.getWidgetIcon(widgetInfo).pixmap(40))
+                label.setPixmap(QIcon(widgetInfo.icon).pixmap(40))
                 hlayout.addWidget(label)
 
                 optionsw = QWidget(self)

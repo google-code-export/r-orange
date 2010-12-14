@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 
 class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None, displayLabel=True,includeInReports=True, 
-    orientation='vertical', alignment=None, editable=True, printable=False,**args):
+    orientation='vertical', alignment=None, editable=True, printable=False,clearable=False,**args):
 
         widgetState.__init__(self,widget, label,includeInReports)
 
@@ -26,11 +26,12 @@ class textEdit(QTextEdit,widgetState):
             self.controlArea.layout().setAlignment(self.hb,alignment)
         if printable:
             button(self.hb, "Print", self.printMe)
-            
+        if clearable:
+            button(self.hb, "Clear", callback = self.clear)
         if not editable:
             self.setReadOnly(True)
         self.insertHtml(html)
-        button(self.hb, "Clear", callback = self.clear)
+        
         
     def sizeHint(self):
         return QSize(10,10)
@@ -48,7 +49,7 @@ class textEdit(QTextEdit,widgetState):
         self.insertHtml(data['text'])
         # self.setEnabled(data['enabled'])
     def toPlainText(self):
-        return unicode(QTextEdit.toPlainText(self).toAscii())
+        return unicode(QTextEdit.toPlainText(self))
     def getReportText(self,fileDir):
         return {self.widgetName:{'includeInReports': self.includeInReports, 
         'text': redRReports.createLitralBlock(self.toPlainText())}}

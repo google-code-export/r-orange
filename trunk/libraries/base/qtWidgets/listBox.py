@@ -93,7 +93,7 @@ class listBox(QListWidget,widgetState):
                 index = self.count()
 
             source = ev.mimeData().source
-            selectedItemIndices = eval(unicode(ev.mimeData().text().toAscii()))
+            selectedItemIndices = eval(unicode(ev.mimeData().text()))
 
             if self.ogLabels != None and self.ogValue != None:
                 allSourceItems = getdeepattr(source.widget, source.ogLabels, default = [])
@@ -147,7 +147,7 @@ class listBox(QListWidget,widgetState):
         selected = []
         for i in range(self.count()):
             # print i
-            items.append(unicode(self.item(i).text().toAscii()))
+            items.append(unicode(self.item(i).text()))
             if self.isItemSelected(self.item(i)):
                 selected.append(i)
 
@@ -177,6 +177,7 @@ class listBox(QListWidget,widgetState):
                 self.item(i).setSelected(False)
             else:
                 self.item(i).setSelected(True)
+    
     def selectionCount(self):
         return len(self.selectedIndexes())
         # i = 0
@@ -184,7 +185,7 @@ class listBox(QListWidget,widgetState):
             # if self.isItemSelected(self.item(i)): i = i + 1
         # return i
     def getCurrentSelection(self):
-            return [unicode(i.text().toAscii()) for i in self.selectedItems()]
+            return [unicode(i.text()) for i in self.selectedItems()]
                 
     def items(self):
         items = []
@@ -194,11 +195,11 @@ class listBox(QListWidget,widgetState):
     def getItems(self):
         items = []
         for i in range(0, self.count()):
-            items.append(unicode(self.item(i).text().toAscii()))
+            items.append(unicode(self.item(i).text()))
         return items
         
     def update(self, items):
-        current = [unicode(item.text().toAscii()) for item in self.selectedItems()]
+        current = [unicode(item.text()) for item in self.selectedItems()]
         self.clear()
         self.addItems(items)
         index = []

@@ -1,5 +1,5 @@
 from redRGUI import widgetState
-import os.path, log
+import os.path, redRLog
 import redREnviron, redRReports
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -197,13 +197,21 @@ class filterTable(widgetState, QTableView):
         self.numericLabel.hide()
         self.stringLabel = widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
         self.stringLabel.hide()
-
+        
+        self.factorLabel = widgetLabel(self.menu,label='Select Levels:')
+        self.factorLabel.hide()
+        
+        
         if selectedCol in self.criteriaList.keys():
             clearButton.show()
         
         self.optionsBox = widgetBox(self.menu)
+        self.optionsBox.layout().setAlignment(Qt.AlignTop)
+        
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
+        
         if colClass in ['factor','logical']:
+            self.factorLabel.show()
             
             if selectedCol in self.criteriaList.keys():
                 checked = self.criteriaList[selectedCol]['value']
@@ -216,12 +224,10 @@ class filterTable(widgetState, QTableView):
                 
             if len(levels) > 1:
                 levels.insert(0,'Check All')
-            if len(levels) > 10:
-                scroll = scrollArea(self.optionsBox,spacing=1)
-                c = checkBox(scroll,label='Levels',buttons=levels,setChecked = checked)
-                scroll.setWidget(c)
-            else:
-                c = checkBox(self.optionsBox,label='Levels',buttons=levels,setChecked = checked)
+            scroll = scrollArea(self.optionsBox,spacing=1)
+            
+            c = checkBox(scroll,label='Levels',displayLabel=False, buttons=levels,setChecked = checked)
+            scroll.setWidget(c.controlArea)
             
             QObject.connect(c.buttons, SIGNAL('buttonClicked (int)'), lambda val : self.factorCheckBox(val,self.optionsBox))
     
@@ -499,7 +505,7 @@ class MyTableModel(QAbstractTableModel):
         if self.arraydata == [[]]:
             toAppend= ['' for i in xrange(self.columnCount(self))]
             self.arraydata = [toAppend]
-        # print 'self.arraydata' , self.arraydata
+        print 'self.arraydata' , self.arraydata
         
     def rowCount(self, parent): 
         return self.nrow
@@ -516,7 +522,7 @@ class MyTableModel(QAbstractTableModel):
             return QVariant() 
         elif not self.Rdata or self.Rdata == None:
             return QVariant()
-        # print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
+        print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
         
         if (
             (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
@@ -537,11 +543,11 @@ class MyTableModel(QAbstractTableModel):
             wantType = 'list',silent=True)
         if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
             return QVariant()
-        #log.log(10, 5, 3, 'Filter table R data is %s' % self.Rdata)
+        #redRLog.log(10, 5, 3, 'Filter table R data is %s' % self.Rdata)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
-        
+        print rowInd, colInd
         return QVariant(self.arraydata[rowInd][colInd]) 
 
     def headerData(self, col, orientation, role):

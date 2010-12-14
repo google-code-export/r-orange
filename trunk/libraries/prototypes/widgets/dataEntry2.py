@@ -168,7 +168,7 @@ class dataEntry2(OWRpy):
         
         trange = self.dataTable.selectedRanges()[0]
         
-        #log.log(10, 9, 3, ','.join([str(a) for a in trange.leftColumn(), trange.rightColumn(), trange.topRow(), trange.bottomRow()]))
+        #redRLog.log(10, 9, 3, ','.join([str(a) for a in trange.leftColumn(), trange.rightColumn(), trange.topRow(), trange.bottomRow()]))
         if trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow():
             rowi = range(0, self.maxRow+1)
             coli = range(0, self.maxCol+1)
@@ -178,13 +178,13 @@ class dataEntry2(OWRpy):
             coli = range(trange.leftColumn(), trange.rightColumn()+1)
             
         if self.dataTable.item(rowi[0], coli[0]) == None: 
-            #log.log(10, 9, 3, 'Setting row and col headers to true')
+            #redRLog.log(10, 9, 3, 'Setting row and col headers to true')
             self.rowHeaders.setChecked(['Use Row Headers', 'Use Column Headers'])
             #self.rowHeaders.setChecked(['Use Column Headers'])
         rownames = {}
         colnames = {}
         if 'Use Row Headers' in self.rowHeaders.getChecked():
-            #log.log(10, 9, 3, 'Using Row headers')
+            #redRLog.log(10, 9, 3, 'Using Row headers')
             for i in rowi:
                 item = self.dataTable.item(i, coli[0])
                 if item != None:
@@ -197,7 +197,7 @@ class dataEntry2(OWRpy):
             coli = coli[1:] #index up the cols
 
         if 'Use Column Headers' in self.rowHeaders.getChecked():
-            #log.log(10, 9, 3, 'Using col headers')
+            #redRLog.log(10, 9, 3, 'Using col headers')
             for j in coli:
                 item = self.dataTable.item(rowi[0], j)
                 if item != None:
@@ -207,7 +207,7 @@ class dataEntry2(OWRpy):
                     thisText = '"'+unicode(j)+'"'
                 thisText = thisText.split(' ')[0]
                 colnames[unicode(j)] = (unicode(thisText))
-            #log.log(10, 9, 3, unicode(colnames))
+            #redRLog.log(10, 9, 3, unicode(colnames))
             rowi = rowi[1:]
         rinsertion = []
         
@@ -220,7 +220,7 @@ class dataEntry2(OWRpy):
             element += 'c('
             inserts = []
             for i in rowi:
-                #log.log(10, 9, 3, 'inserting data in cell i %s, j %s' % (i, j))
+                #redRLog.log(10, 9, 3, 'inserting data in cell i %s, j %s' % (i, j))
                 tableItem = self.dataTable.item(i,j)
                 if tableItem == None:
                     inserts.append('NA')

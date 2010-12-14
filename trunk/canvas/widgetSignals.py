@@ -10,7 +10,7 @@ from string import *
 from orngSignalManager import *
 import canvas.signals as signals
 from redRSignalManager import *
-import orngDoc, log, redRObjects
+import orngDoc, redRLog, redRObjects
 
 
 class widgetSignals():
@@ -43,7 +43,7 @@ class widgetSignals():
     def send(self, signalName, value):
         ## make sure that the name is actually in the outputs, if not throw an error.
         if not self.outputs.hasOutputName(signalName):
-            log.log(1, 9, 1, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
+            redRLog.log(1, 9, 1, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
             raise Exception('Signal name mismatch')
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
@@ -55,7 +55,7 @@ class widgetSignals():
     def refreshToolTips(self):
         lines = redRObjects.lines()
         for l in lines.values():
-            #log.log(1, 9, 3, 'setting tooltip for %s' % l)
+            #redRLog.log(1, 9, 3, 'setting tooltip for %s' % l)
             if l.outWidget.instance() == self:
                 l.refreshToolTip()
     def callSignalDelete(self, name):
@@ -65,7 +65,7 @@ class widgetSignals():
                 try:
                     self.linksOut[name][id].deleteSignal()
                 except Exception as inst:
-                    log.log(1, 9, 1, unicode(inst))
+                    redRLog.log(1, 9, 1, unicode(inst))
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         #print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable

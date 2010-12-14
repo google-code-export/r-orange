@@ -65,7 +65,7 @@ class ConSig(OWRpy):
     def changeFileDir(self):
         fn = QFileDialog.getExistingDirectory(self, "Choose Directory")
         if fn.isEmpty(): return
-        fn = unicode(fn.toAscii())
+        fn = unicode(fn)
         self.packageDir = fn
         self.dirLabel.setText('Current Directory is %s' % fn)
         

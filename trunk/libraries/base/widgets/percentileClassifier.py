@@ -39,7 +39,7 @@ class percentileClassifier(OWRpy):
         if data:
             self.data = data.getData()
             self.dataParent = data
-            log.log(10, 5, 3, str(self.R('colnames('+self.data+')', wantType = 'list')))
+            redRLog.log(10, 5, 3, str(self.R('colnames('+self.data+')', wantType = 'list')))
             self.colNames_listBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.outputWindow.clear()
             if self.commitButton.processOnInput():

@@ -145,7 +145,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         elif file == None: 
             file = QFileDialog.getSaveFileName(self, "Save File", os.path.abspath(redREnviron.settings['HomeFolder']), "PDF (*.PDF)")
         if file.isEmpty(): return
-        file = unicode(file.toAscii())
+        file = unicode(file)
 
         if file: redREnviron.settings['HomeFolder'] = os.path.split(file)[0]
         self.R('pdf(file = "'+file+'", width = '+unicode(dwidth)+', height = '+unicode(dheight)+')')
@@ -187,7 +187,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
                     text += i.getReportText(fileDir)
                     #print i.__class__.__name__
             except Exception as inst:
-                log.log(1, 9, 1, inst)
+                redRLog.log(1, 9, 1, inst)
                 continue
         return text
     def getReportText3(self, fileDir):

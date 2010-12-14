@@ -324,7 +324,7 @@ class SignalCanvasView(QGraphicsView):
     def addSignalList(self, outWidget, inWidget):
         self.scene().clear()
         outputs, inputs = outWidget.instance().outputs.getAllOutputs(), inWidget.instance().inputs.getAllInputs()
-        outIcon, inIcon = self.canvasDlg.getWidgetIcon(outWidget.widgetInfo), self.canvasDlg.getWidgetIcon(inWidget.widgetInfo)
+        outIcon, inIcon = QIcon(outWidget.widgetInfo.icon), QIcon(inWidget.widgetInfo.icon)
         self.lines = []
         self.outBoxes = []
         self.inBoxes = []

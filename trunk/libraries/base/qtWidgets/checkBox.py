@@ -5,28 +5,42 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class checkBox(widgetState, QWidget):
+class checkBox(widgetState,QWidget):
     def __init__(self,widget,label = None, displayLabel= True, includeInReports=True,
     buttons = None,toolTips = None, setChecked=None,
-    orientation='vertical',callback = None, **args):
+    orientation='vertical',callback = None):
         
+        if toolTips and len(toolTips) != len(buttons):
+            raise RuntimeError('Number of buttons and toolTips must be equal')
+ 
         QWidget.__init__(self,widget)
-        widgetState.__init__(self,widget,label,includeInReports,**args)
+        widgetState.__init__(self,widget,label,includeInReports)
+        
+        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+
+        self.controlArea.layout().addWidget(self)
 
         if displayLabel:
             self.box = groupBox(self.controlArea,label=label,orientation=orientation)
-            self.layout().addWidget(self.box)
+            # self.layout().addWidget(self.box)
         else:
             self.box = widgetBox(self.controlArea,orientation=orientation)
+        
+        # if orientation=='vertical':
+            # self.box.setSizePolicy(QSizePolicy(QSizePolicy.Preferred,
+            # QSizePolicy.MinimumExpanding))
+        # else:
+            # self.box.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,
+            # QSizePolicy.Preferred))
             
         self.label = label
         self.buttons = QButtonGroup(self.box)
         self.buttons.setExclusive(False)
         if buttons:
             for i,b in zip(range(len(buttons)),buttons):
-                w = QCheckBox(b)
-                if toolTips:
-                    w.setToolTip(toolTips[i])
+                w = QCheckBox(b,self.box)
+                # if toolTips:
+                    # w.setToolTip(toolTips[i])
                 self.buttons.addButton(w,i)
                 self.box.layout().addWidget(w)
 
@@ -37,7 +51,7 @@ class checkBox(widgetState, QWidget):
             
     def setChecked(self,ids):
         for i in self.buttons.buttons():
-            if unicode(i.text().toAscii()) in ids: i.setChecked(True)
+            if unicode(i.text()) in ids: i.setChecked(True)
             else: i.setChecked(False)
     def checkAll(self):
         for i in self.buttons.buttons():
@@ -49,10 +63,10 @@ class checkBox(widgetState, QWidget):
     def getChecked(self):
         checked = []
         for i in self.buttons.buttons():
-            if i.isChecked(): checked.append(unicode(i.text().toAscii()))
+            if i.isChecked(): checked.append(unicode(i.text()))
         return checked
     def buttonAt(self,ind):
-        return unicode(self.buttons.button(ind).text().toAscii())
+        return unicode(self.buttons.button(ind).text())
         
     def getSettings(self):
         # print 'radioButtons getSettings' + self.getChecked()
@@ -73,7 +87,7 @@ class checkBox(widgetState, QWidget):
         else:
             text= 'Nothing Checked'
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
-        print '@@@@@@@@@@@@@@@@@@@@@@@', r
+        # print '@@@@@@@@@@@@@@@@@@@@@@@', r
         #t = 'The following items were checked in %s:\n\n%s\n\n' % (self.label, self.getChecked())
         return r
 

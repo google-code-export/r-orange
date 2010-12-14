@@ -8,12 +8,13 @@ from PyQt4.QtGui import *
 
 class spinBox(QDoubleSpinBox ,widgetState):
     def __init__(self, widget, label=None, displayLabel=True, includeInReports=True, value=None, 
-    orientation='horizontal', max = None, min = None, callback=None, toolTip = None, *args):
+    orientation='horizontal', decimals=0, max = None, min = None, callback=None, toolTip = None, *args):
         
         self.widget = widget
         
         widgetState.__init__(self,widget,label,includeInReports)
-        QSpinBox.__init__(self)
+        QDoubleSpinBox.__init__(self)
+        self.setDecimals(decimals)
         self.label = label
         if displayLabel:
             self.hb = widgetBox(self.controlArea,orientation=orientation)

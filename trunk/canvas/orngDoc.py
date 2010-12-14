@@ -4,12 +4,12 @@
 #
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import sys, os, os.path, traceback, log
+import sys, os, os.path, traceback, redRLog
 from xml.dom.minidom import Document, parse
 import xml.dom.minidom
-import orngView, orngCanvasItems, orngTabs
+import orngView, orngCanvasItems
 from orngDlgs import *
-import RSession, globalData, redRPackageManager, redRHistory
+import RSession, globalData, redRPackageManager, redRHistory, redRStyle
 from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, orngHistory, zipfile, urllib, sip, redRObjects, redRSaveLoad
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
@@ -41,15 +41,8 @@ class SchemaDoc(QWidget):
         #self.canvas = QGraphicsScene(0,0,2000,2000)
         
         
-        # right = self.splitter.widgetArea()
-        # self.rightSplitter = redRSplitter(right, orientation = 'vertical')
-        # rightTop = self.rightSplitter.widgetArea(margin = 8)
-        # rightBottom = self.rightSplitter.widgetArea(margin = 8)
+        self.widgetPopupMenu = CanvasPopup(self)
         
-
-        
-        # self.defaultSysOutHandler = sys.stdout
-        # self.catchOutput(1)
         
         self.instances = {}
         self.makeSchemaTab('General')
@@ -58,8 +51,8 @@ class SchemaDoc(QWidget):
         self.schemaID = orngHistory.logNewSchema()
         self.RVariableRemoveSupress = 0
         self.urlOpener = urllib.FancyURLopener()
-        log.setOutputManager(self)
-        self.printOutput = canvasDlg.printOutput
+        # log.setOutputManager(self)
+        # self.printOutput = canvasDlg.printOutput
         redRObjects.setSchemaDoc(self)
         redRSaveLoad.setSchemaDoc(self)
 
@@ -96,7 +89,7 @@ class SchemaDoc(QWidget):
                 break
         
     def makeSchemaTab(self, tabname):   # part of the view
-        log.log(1, 1, 3, 'making new tab %s' % tabname)
+        redRLog.log(1, 1, 3, 'making new tab %s' % tabname)
         if tabname in redRObjects.tabNames():
             self.setTabActive(tabname)
             return
@@ -129,7 +122,7 @@ class SchemaDoc(QWidget):
     # add line connecting widgets outWidget and inWidget
     # if necessary ask which signals to connect
     def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):  # adds the signal link between the data and instantiates the line on the canvas.  move to the signal manager or the view?
-        log.log(1, 1, 3, '############ ADDING LINE ##################</br></br>%s, %s, %s' % (outWidget, inWidget, process))
+        redRLog.log(1, 1, 3, '############ ADDING LINE ##################</br></br>%s, %s, %s' % (outWidget, inWidget, process))
         if outWidget == inWidget: 
             
             raise Exception, 'Same Widget'
@@ -310,7 +303,7 @@ class SchemaDoc(QWidget):
             self.setTabActive(unicode(td.tabName.text()))
     def cloneToTab(self):   # part of the view
         if len(redRSaveLoad._tempWidgets) == 0: 
-            log.log(10, 7, 3, 'No tempWidgets to clone!!!')
+            redRLog.log(10, 7, 3, 'No tempWidgets to clone!!!')
             return
         tempWidgets = redRSaveLoad._tempWidgets
         td = CloneTabDialog(self.canvasDlg)
@@ -320,7 +313,7 @@ class SchemaDoc(QWidget):
         except: return 
         #if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
-            log.log(1, 2, 3, 'Creating clone widget %s in tab %s' % ( w.caption + ' (Clone)', tabName))
+            redRLog.log(1, 2, 3, 'Creating clone widget %s in tab %s' % ( w.caption + ' (Clone)', tabName))
             self.cloneWidget(w, tabName, caption = w.caption + ' (Clone)')
         self.setTabActive(tabName) ## set the new tab as active so the user knows something happened.
     def cloneWidget(self, widget, viewID = None, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True):
@@ -329,10 +322,10 @@ class SchemaDoc(QWidget):
         if redRObjects.instanceOnTab(widget.instance(), viewID): return 1      ## the widget must already be on the tab so we can't add it again.
         qApp.setOverrideCursor(Qt.WaitCursor)
         try:
-            newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widget.widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
+            newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widget.widgetInfo, redRStyle.defaultPic, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
         except:
             type, val, traceback = sys.exc_info()
-            log.log(1, 9, 1, unicode(traceback))
+            redRLog.log(1, 9, 1, unicode(traceback))
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
             qApp.restoreOverrideCursor()
             return None
@@ -386,9 +379,9 @@ class SchemaDoc(QWidget):
             while self.getWidgetByCaption(caption + " (" + unicode(i) + ")"): i+=1
             caption = caption + " (" + unicode(i) + ")"
             
-        newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widgetInfo, self.canvasDlg.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
+        newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widgetInfo, redRStyle.defaultPic, self.canvasDlg, instanceID =  instanceID, tabName = self.activeTabName())## set the new orngCanvasItems.CanvasWidget
         newwidget.caption = caption
-        #log.log(1, 2, 2, 'Set widget caption to %s' % caption)
+        #redRLog.log(1, 2, 2, 'Set widget caption to %s' % caption)
         newwidget.updateText(caption)
         ##self.widgets.append(newwidget)
         return newwidget
@@ -398,10 +391,10 @@ class SchemaDoc(QWidget):
             instanceID = self.addInstance(self.signalManager, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
             newwidget = self.addWidgetIcon(widgetInfo, instanceID)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
-            log.log(1, 9, 3, 'New Widget Created %s' % newwidget)
+            redRLog.log(1, 9, 3, 'New Widget Created %s' % newwidget)
         except:
             type, val, traceback = sys.exc_info()
-            log.log(1, 9, 1, unicode(traceback))
+            redRLog.log(1, 9, 1, unicode(traceback))
             sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
             qApp.restoreOverrideCursor()
             return None
@@ -471,7 +464,7 @@ class SchemaDoc(QWidget):
     # remove widget
     def removeWidget(self, widget, saveTempDoc = True):
         if not widget:
-            log.log(10, 9, 1, 'Bad widget supplied %s' % widget)
+            redRLog.log(10, 9, 1, 'Bad widget supplied %s' % widget)
             return
         instanceID = widget.instanceID
         #widget.closing = close
@@ -479,14 +472,14 @@ class SchemaDoc(QWidget):
             while widget.inLines != []: redRObjects.removeLineInstance(widget.inLines[0])
             while widget.outLines != []:  redRObjects.removeLineInstance(widget.outLines[0])
         except Exception as inst:
-            log.log(10, 9, 1, 'Error in removing lines %s' % str(inst))
+            redRLog.log(10, 9, 1, 'Error in removing lines %s' % str(inst))
         #self.signalManager.removeWidget(widget.instance()) # sending occurs before this point
         try:
-            log.log(10, 5, 1, 'trying to remove widget icon %s' % widget)
+            redRLog.log(10, 5, 1, 'trying to remove widget icon %s' % widget)
             widget.remove() ## here we need to check if others have the widget instance.
             redRObjects.removeWidgetIcon(widget)
         except Exception as inst:
-            log.log(10, 5, 1, 'Error in removing widget icon %s' %widget)
+            redRLog.log(10, 5, 1, 'Error in removing widget icon %s' %widget)
         if not self.instanceStillWithIcon(instanceID):
             redRObjects.removeWidgetInstanceByID(instanceID)
     def clear(self):
@@ -524,7 +517,7 @@ class SchemaDoc(QWidget):
             widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
             return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals, id = id)
         except Exception as inst:
-            log.log(1, 9, 1, 'Loading exception occured for widget '+widgetFileName+' '+unicode(inst))
+            redRLog.log(1, 9, 1, 'Loading exception occured for widget '+widgetFileName+' '+unicode(inst))
             
             return None
     # addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) 
@@ -541,7 +534,7 @@ class SchemaDoc(QWidget):
         widget = redRObjects.widgetRegistry()['widgets'][name]
         return self.addInstance(self.signalManager, widget, settings, inputs, outputs, id = id)
         # except Exception as inst:
-            # log.log(1, 9, 1,  'Loading exception occured for widget '+name+' '+unicode(inst))
+            # redRLog.log(1, 9, 1,  'Loading exception occured for widget '+name+' '+unicode(inst))
             
             # return None
     # return the widget icon that has caption "widgetName"
@@ -556,7 +549,7 @@ class SchemaDoc(QWidget):
     def getWidgetCaption(self, widgetInstance):
         widget = redRObjects.getIconByIconInstanceRef(widgetInstance)
         if widget == None:
-            log.log(1, 9, 1, "Error. Attempted to Access Invalid widget instance : ", widgetInstance)
+            redRLog.log(1, 9, 1, "Error. Attempted to Access Invalid widget instance : ", widgetInstance)
             return ""
         return widget.caption
 
@@ -583,7 +576,7 @@ class SchemaDoc(QWidget):
         if line:
             line.noData = none
             line.refreshToolTip()
-            log.log(1, 3, 3, 'Setting line %s noData slot to %s' % (line, noData))
+            redRLog.log(1, 3, 3, 'Setting line %s noData slot to %s' % (line, noData))
             
         self.canvas.update()
     # ###########################################
@@ -604,10 +597,7 @@ class SchemaDoc(QWidget):
                 return False
         else:
             return True
-    
- 
-    
-    
+        
     def checkWidgetDuplication(self, widgets):
         for widget in widgets.getElementsByTagName("widget"):
             widgetIDisNew = self.checkID(widget.getAttribute('widgetID'))
@@ -626,9 +616,6 @@ class SchemaDoc(QWidget):
             v.sort()
             for val in v:
                 self.canvasDlg.output.write("%s = %s" % (val, getattr(widget.instance, val)))
-
-                
-    
             
     def keyReleaseEvent(self, e):
         self.ctrlPressed = int(e.modifiers()) & Qt.ControlModifier != 0
@@ -759,5 +746,250 @@ class TemplateDialog(QDialog):
         buttonWidgetBox.layout().addWidget(cancelButton)
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
         QObject.connect(cancelButton, SIGNAL("clicked()"), self.reject)
+        
+from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
+     
+class SearchBox(redRlineEditHint):
+    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+        redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
+        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
+            
+    def eventFilter(self, object, ev):
+        try: # a wrapper that prevents problems for the listbox debigging should remove this
+            if object != self.listWidget and object != self:
+                return 0
+            if ev.type() == QEvent.MouseButtonPress:
+                self.listWidget.hide()
+                return 1
+                    
+            consumed = 0
+            if ev.type() == QEvent.KeyPress:
+                consumed = 1
+                if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
+                    #print 'Return pressed'
+                    self.doneCompletion()
+                elif ev.key() == Qt.Key_Escape:
+                    self.listWidget.hide()
+                    #self.setFocus()
+                elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
+                    
+                    self.listWidget.setFocus()
+                    self.listWidget.event(ev)
+                else:
+                    #self.setFocus()
+                    self.event(ev)
+            return consumed
+        except: return 0
+        
+class CanvasWidgetAction(QWidgetAction):
+    def __init__(self, parent, actions):
+        QWidgetAction.__init__(self, parent)
+        self.parent = parent
+        self.actions = actions
+        
+        self.widgetSuggestEdit = SearchBox(None, callback = self.callback)
+        self.widgetSuggestEdit.caseSensitive = 0
+        self.widgetSuggestEdit.matchAnywhere = 1
+        self.widgetSuggestEdit.autoSizeListWidget = 1
+        
+        self.widgetSuggestEdit.setItems([QListWidgetItem(action.icon(), action.widgetInfo.name) for action in actions]) # sets the icon and the names of the widgets that are available when we start to type.  In this case actions are the widgets
+        self.widgetSuggestEdit.setStyleSheet(""" QLineEdit { background: #fffff0; border: 1px solid orange} """)
+        self.widgetSuggestEdit.listWidget.setStyleSheet(""" QListView { background: #fffff0; } QListView::item {padding: 3px 0px 3px 0px} QListView::item:selected { color: white; background: blue;} """)
+        self.widgetSuggestEdit.listWidget.setIconSize(QSize(16,16)) 
+        self.setDefaultWidget(self.widgetSuggestEdit)
+        
+    def callback(self):
+        text = unicode(self.widgetSuggestEdit.text())
+        for action in self.actions:
+            if action.widgetInfo.name == text:
+                self.widgetInfo = action.widgetInfo
+                self.parent.setActiveAction(self)
+                self.activate(QAction.Trigger)
+                QApplication.sendEvent(self.widgetSuggestEdit, QKeyEvent(QEvent.KeyPress, Qt.Key_Enter, Qt.NoModifier))
+                return
+        
+class CanvasPopup(QMenu):
+    def __init__(self, parent):
+        QMenu.__init__(self, parent)
+        self.allActions = []
+        self.templateActions = []
+        self.widgetActionNameList = []
+        self.catActions = []
+        self.quickActions = []
+        self.candidates = []
+        cats = redRObjects.widgetRegistry()
+        self.suggestDict = {} #dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])]) ## gives an error in linux
+        self.suggestItems = [QListWidgetItem(QIcon(widget.info), widget.name) for widget in self.suggestDict.values()]
+        self.categoriesYOffset = 0
+        self.setStyleSheet(""" QMenu { background-color: #fffff0; selection-background-color: blue; } QMenu::item:disabled { color: #dddddd } QMenu::separator {height: 1px; background: #dddddd; margin-left: 3px; margin-right: 4px;}""")   
+        self.constructCategoriesPopup()
+        
+    def showEvent(self, ev):
+        QMenu.showEvent(self, ev)
+#        if self.actions() != []:
+#            self.actions()[0].defaultWidget().setFocus()
+        if self.actions() != []:
+            self.actions()[0].defaultWidget().setFocus()
+        
+    def constructCategoriesPopup(self):
+        mainTabs = redRObjects.widgetRegistry()['tags']
+        treeXML = mainTabs.childNodes[0]
+        #print treeXML.childNodes
+        
+        for itab in treeXML.childNodes:
+            if itab.nodeName == 'group': #picked a group element
+                catmenu = self.addMenu(unicode(itab.getAttribute('name')))
+                self.catActions.append(catmenu) # put the catmenu in the categoriespopup
+                self.insertChildActions(catmenu, self, itab)
+                self.insertWidgets(catmenu, self, unicode(itab.getAttribute('name'))) 
+        # print redREnviron.settings["WidgetTabs"]
+        try:
+            for category, show in redREnviron.settings["WidgetTabs"]:
+                if not show or not redRObjects.widgetRegistry().has_key(category):
+                    continue
+                catmenu = self.addMenu(category)
+                self.catActions.append(catmenu)
+                #print self.canvas.widgetRegistry[category]
+                for widgetInfo in sorted(redRObjects.widgetRegistry()[category].values(), key=lambda x:x.priority):
+                    icon = QIcon(widgetInfo.icon)
+                    act = catmenu.addAction(icon, widgetInfo.name)
+                    
+                    act.widgetInfo = widgetInfo
+                    act.category = catmenu
+                    #self.allActions.append(act)
+        except Exception as inst:
+            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+        
+        ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
+        for template in redRObjects.widgetRegistry()['templates']:
+            try:
+                icon = QIcon(os.path.join(redREnviron.directoryNames['picsDir'], 'Default.png'))
+                act = catmenu.addAction(icon, template.name)
+                act.templateInfo = template
+                self.templateActions.append(act)
+            except Exception as inst:
+                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+        #self.allActions += widgetRegistry['templates']
+        ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
+    def insertChildActions(self,catmenu, categoriesPopup, itab):
+        ####
+        try:
+            #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
+            #print 'checking file '+subfile+' for more tabs'
+            #f = open(subfile, 'r')
+            if itab.hasChildNodes(): subTabs = itab.childNodes
+            else: return
+            
+            for child in subTabs:
+                if child.nodeName == 'group': # we found another group
+                    childTab = catmenu.addMenu(unicode(child.getAttribute('name')))
+                    self.catActions.append(childTab)
+                    self.insertChildActions(childTab, self, child)
+                    self.insertWidgets(childTab, self, unicode(child.getAttribute('name')))
+                    
+        except: #subtabs don't exist
+            return
+    def insertWidgets(self,catmenu, categoriesPopup, catName):
+        #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
+        #redRLog.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
+        widgets = None
+        #print unicode(self.canvas.widgetRegistry['templates'])
+        try:
+            for wName in redRObjects.widgetRegistry()['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
+                widgetInfo = redRObjects.widgetRegistry()['widgets'][wName]
+                try:
+                    if unicode(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
+                        icon = QIcon(widgetInfo.icon)
+                        act = catmenu.addAction(icon, widgetInfo.name)
+                        
+                        act.widgetInfo = widgetInfo
+                        act.category = catmenu
+                        if not widgetInfo.name in self.widgetActionNameList:
+                            self.allActions.append(act)
+                            self.widgetActionNameList.append(widgetInfo.name)
+                except Exception as inst: 
+                    redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
+                    pass
+        except Exception as inst:
+            redRLog.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)
+        
+    
+    def addWidgetSuggest(self):
+        actions = [action for action in self.allActions if action.isEnabled()]
+        self.addAction(CanvasWidgetAction(self, actions))
+        self.addSeparator()
+        
+    def showAllWidgets(self):
+        for cat in self.catActions:
+            cat.setEnabled(True)
+        for act in self.allActions:
+            act.setEnabled(True)
+            
+    def selectActions(self, actClassesAttr, widgetClasses):
+        for cat in self.catActions:
+            cat.setEnabled(False)
+            
+        for act in self.allActions:
+            if getattr(act.widgetInfo, actClassesAttr) & widgetClasses:
+                act.setEnabled(True)
+                act.category.setEnabled(True)
+            else: 
+                act.setEnabled(False)
+
+    def updateWidgesByOutputs(self, widgetInfo):
+        #self.selectActions("outputClasses", widgetInfo.inputClasses)
+        pass
+    def updateWidgetsByInputs(self, widgetInfo):
+        #self.selectActions("inputClasses", widgetInfo.outputClasses)
+        pass
+    def updatePredictedWidgets(self, widgets, actClassesAttr, ioClasses=None):
+        self.candidates = []
+        for widget in widgets:
+            if ioClasses == None:
+                self.candidates.append(widget)
+            else:
+                # filter widgets by allowed signal 
+                # added = False
+                # for category, show in redREnviron.settings["WidgetTabs"]:
+                    # if not show or not self.canvasDlg.widgetRegistry.has_key(category):
+                        # continue
+    
+                    # for candidate in self.canvasDlg.widgetRegistry[category]:
+                        # if widget.strip().lower() == candidate.strip().lower():
+                            # if getattr(self.canvasDlg.widgetRegistry[category][candidate], actClassesAttr) & ioClasses:
+                                # self.candidates.append(candidate)
+                                # added = True
+                    # if added:
+                        # break
+                self.candidates.append(widget)
+        self.candidates = self.candidates[:3]
+        
+    def updateMenu(self):
+        self.clear()
+        self.addWidgetSuggest()
+        for c in self.candidates:
+            for category, show in redREnviron.settings["WidgetTabs"]:
+                if not show or not redRObjects.widgetRegistry().has_key(category):
+                    continue
+                
+                if c in redRObjects.widgetRegistry()[category]:
+                    widgetInfo = redRObjects.widgetRegistry()[category][c]
+                    
+                    icon = QIcon(widgetInfo.icon)
+                    act = self.addAction(icon, widgetInfo.name)
+                    act.widgetInfo = widgetInfo
+                    self.quickActions.append(act)
+                    break
+        self.categoriesYOffset = self.sizeHint().height()
+        self.addSeparator()
+        for m in self.catActions:
+            self.addMenu(m)
+            
+
+
+        
+
+        
+        
         
         

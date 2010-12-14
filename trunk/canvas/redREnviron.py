@@ -44,8 +44,7 @@ def __getDirectoryNames():
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
         except:
-            import log
-            log.log(1, 9, 1, 'Error occured in setting the settingsDir')
+            print 'Error occured in setting the settingsDir'
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
@@ -109,18 +108,21 @@ def loadSettings():
         except:
             pass
 
+    settings['id'] = unicode(time.time())
+    
     settings.setdefault("widgetListType", 3)
     settings.setdefault("iconSize", "40 x 40")
-    settings.setdefault("toolbarIconSize", 2)
+    settings.setdefault("toolbarIconSize", 1)
     settings.setdefault("toolboxWidth", 200)
-    settings.setdefault('schemeIconSize', 1)
+    settings.setdefault('schemeIconSize', 2)
     settings.setdefault("snapToGrid", 1)
     settings.setdefault('helpMode', True)
     settings.setdefault("minSeverity", 5)
     settings.setdefault("saveWidgetsPosition", 1)
-    settings.setdefault("widgetSelectedColor", (0, 255, 0))
-    settings.setdefault("widgetActiveColor", (0,0,255))
-    settings.setdefault("lineColor", (0,255,0))
+    # settings.setdefault("widgetSelectedColor", (0, 255, 0))
+    # settings.setdefault("widgetActiveColor", (0,0,255))
+    # settings.setdefault("lineColor", (0,255,0))
+    
     settings.setdefault("exceptionLevel", 5)
     settings.setdefault("WidgetTabs", [])
 
@@ -130,7 +132,7 @@ def loadSettings():
     
     settings.setdefault("canvasWidth", 700)
     settings.setdefault("canvasHeight", 600)
-    settings.setdefault('dockState', {'notesBox':True, 'outputBox':True})
+    settings.setdefault('dockState', {'notesBox':True, 'outputBox':True, 'widgetBox':True})
         
     settings.setdefault("useDefaultPalette", 0)
 
@@ -138,6 +140,12 @@ def loadSettings():
     settings.setdefault('red-RPackagesUpdated',0)
     settings.setdefault('checkedForUpdates',0)
     
+    ############################
+    #Dubug and output settings##
+    ############################
+
+    settings.setdefault("debug", False)
+    settings.setdefault("minSeverity", 5)
     settings.setdefault("writeLogFile", 1)
     settings.setdefault("dontAskBeforeClose", 0)
     settings.setdefault("debugMode", 0)
@@ -197,17 +205,9 @@ def addOrangeDirectoriesToPath(directoryNames):
         # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'qtWidgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
         # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'signalClasses') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
         
-    
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-
-# try:        
-    # print 'name', __name__
-    # print 'main', __main__
-
-# except:
-    # print 'do the import'
 
 if __name__ =='redREnviron':
     #print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
@@ -215,5 +215,5 @@ if __name__ =='redREnviron':
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-
-
+    setTempDir('temp_'+ settings['id'])
+    

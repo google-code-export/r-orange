@@ -51,7 +51,7 @@ class lineEdit(QLineEdit,widgetState):
     def showToolTip(self):
         name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     def text(self):
-        return unicode(QLineEdit.text(self).toAscii())
+        return unicode(QLineEdit.text(self))
     def widgetId(self):
         return self.id
     def widgetLabel(self):

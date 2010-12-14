@@ -5,7 +5,7 @@ from docutils.writers.odf_odt import Writer, Reader
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRExceptionHandling
-import shutil, log
+import shutil, redRLog
 
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
@@ -117,7 +117,7 @@ class reports(QWizard):
         redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
         if qname.isEmpty(): return
-        qname = unicode(qname.toAscii())
+        qname = unicode(qname)
         
         name = unicode(qname) # this is the file name of the Report
         # name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
@@ -143,7 +143,7 @@ class reports(QWizard):
             os.mkdir(fileDir2)  
         
         except Exception as inst:
-            log.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
         
         
         # show the report list and allow the user to select widgets to include in the report.

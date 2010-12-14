@@ -280,25 +280,25 @@ class graphicsView(QGraphicsView, widgetState):
         print 'save as pdf'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
         if qname.isEmpty(): return
-        qname = unicode(qname.toAscii())
+        qname = unicode(qname)
         self.saveAs(unicode(qname), 'pdf')
     def saveAsPostScript(self):
         print 'save as post script'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
         if qname.isEmpty(): return
-        qname = unicode(qname.toAscii())
+        qname = unicode(qname)
         self.saveAs(unicode(qname), 'ps')
     def saveAsBitmap(self):
         print 'save as bitmap'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
         if qname.isEmpty(): return
-        qname = unicode(qname.toAscii())
+        qname = unicode(qname)
         self.saveAs(unicode(qname), 'bmp')
     def saveAsJPEG(self):
         print 'save as jpeg'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
         if qname.isEmpty(): return
-        qname = unicode(qname.toAscii())
+        qname = unicode(qname)
         self.saveAs(unicode(qname), 'jpeg')
     def backToParent(self):
         self.parent.layout().addWidget(self.controlArea)

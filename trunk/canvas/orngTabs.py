@@ -8,8 +8,9 @@ import os.path, sys
 from string import strip, count, replace
 import orngDoc, redRExceptionHandling, orngRegistry, redRObjects
 #from orngSignalManager import InputSignal, OutputSignal
+import OWGUIEx, redRSaveLoad, redRStyle
 import OWGUIEx, redRSaveLoad
-import redREnviron, log
+import redREnviron, redRLog
 import xml.dom.minidom
 from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
@@ -88,7 +89,7 @@ class WidgetButton(QFrame, WidgetButtonBase):
         if buttonType != WB_TOOLBOX:
             self.layout().setSpacing(0)
             
-        self.icon = canvasDlg.getWidgetIcon(widgetInfo)
+        self.icon = QIcon(widgetInfo.icon)
         self.pixmapWidget.setPixmap(self.icon.pixmap(self.iconSize, self.iconSize))
         self.pixmapWidget.setScaledContents(1)
         self.pixmapWidget.setFixedSize(QSize(self.iconSize, self.iconSize))
@@ -381,14 +382,14 @@ class WidgetListBase:
                                 tab.widgets.append(button)
                             self.allWidgets.append(button)
                         
-    def createWidgetTabs(self, widgetTabList, widgetRegistry, widgetDir, picsDir, defaultPic):
+    def createWidgetTabs(self, widgetRegistry, widgetDir, picsDir, defaultPic):
         #print unicode(widgetRegistry) + ' widget registry'
         self.widgetDir = widgetDir
         self.picsDir = picsDir
         self.defaultPic = defaultPic
         widgetTypeList = redREnviron.settings["widgetListType"]
-        size = min(len(self.canvasDlg.toolbarIconSizeList)-1, redREnviron.settings["toolbarIconSize"])
-        iconSize = self.canvasDlg.toolbarIconSizeList[size]
+        size = min(len(redRStyle.iconSizeList)-1, redREnviron.settings["toolbarIconSize"])
+        iconSize = redRStyle.iconSizeList[size]
         
         # find tab names that are not in widgetTabList
         
@@ -416,7 +417,6 @@ class WidgetListBase:
                     tab.adjustSize()
         
         # return the list of tabs and their status (shown/hidden)
-        return widgetTabList
         
     
     def insertChildTabs(self, itab, tab, widgetRegistry):
@@ -456,6 +456,7 @@ class WidgetListBase:
                     pass
         except:
             pass
+
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
         WidgetListBase.__init__(self, canvasDlg, widgetInfo)
@@ -529,7 +530,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         
         self.setWidget(self.containerWidget)
         
-        iconSize = self.canvasDlg.toolbarIconSizeList[redREnviron.settings["toolbarIconSize"]]
+        iconSize = redRStyle.iconSizeList[redREnviron.settings["toolbarIconSize"]]
         self.treeWidget.setIconSize(QSize(iconSize, iconSize))
 #        self.treeWidget.setRootIsDecorated(0) 
         #self.setWidget(OWGUIEx.lineEditHint(self, None, None, useRE = 0, caseSensitive = 0, matchAnywhere = 1, autoSizeListWidget = 1))
@@ -703,7 +704,7 @@ class CanvasPopup(QMenu):
         self.canvasDlg = canvasDlg
         cats = redRObjects.widgetRegistry()
         self.suggestDict = {} #dict([(widget.name, widget) for widget in reduce(lambda x,y: x+y, [cat.values() for cat in cats.values()])]) ## gives an error in linux
-        self.suggestItems = [QListWidgetItem(self.canvasDlg.getWidgetIcon(widget), widget.name) for widget in self.suggestDict.values()]
+        self.suggestItems = [QListWidgetItem(QIcon(widget.info), widget.name) for widget in self.suggestDict.values()]
         self.categoriesYOffset = 0
                 
     def showEvent(self, ev):
@@ -775,7 +776,7 @@ class CanvasPopup(QMenu):
                 if c in redRObjects.widgetRegistry()[category]:
                     widgetInfo = redRObjects.widgetRegistry()[category][c]
                     
-                    icon = self.canvasDlg.getWidgetIcon(widgetInfo)
+                    icon = QIcon(widgetInfo.icon)
                     act = self.addAction(icon, widgetInfo.name)
                     act.widgetInfo = widgetInfo
                     self.quickActions.append(act)
@@ -817,14 +818,14 @@ def constructCategoriesPopup(canvasDlg):
             categoriesPopup.catActions.append(catmenu)
             #print canvasDlg.widgetRegistry[category]
             for widgetInfo in sorted(redRObjects.widgetRegistry()[category].values(), key=lambda x:x.priority):
-                icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
+                icon = QIcon(widgetInfo.icon)
                 act = catmenu.addAction(icon, widgetInfo.name)
                 
                 act.widgetInfo = widgetInfo
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        log.log(1, 9, 1, redRExceptionHandling.formatException())
+        redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in redRObjects.widgetRegistry()['templates']:
@@ -834,7 +835,7 @@ def constructCategoriesPopup(canvasDlg):
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            log.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -857,7 +858,7 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
         return
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
-    #log.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
+    #redRLog.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
     widgets = None
     #print unicode(canvasDlg.widgetRegistry['templates'])
     try:
@@ -865,7 +866,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
             widgetInfo = redRObjects.widgetRegistry()['widgets'][wName]
             try:
                 if unicode(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
-                    icon = QIcon(canvasDlg.getWidgetIcon(widgetInfo))
+                    icon = QIcon(widgetInfo.icon)
                     act = catmenu.addAction(icon, widgetInfo.name)
                     
                     act.widgetInfo = widgetInfo
@@ -874,10 +875,10 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                log.log(1, 9, 1, redRExceptionHandling.formatException())
+                redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
                 pass
     except Exception as inst:
-        log.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)
+        redRLog.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)
 class SearchBox(redRlineEditHint):
     def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=False,

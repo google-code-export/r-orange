@@ -29,12 +29,12 @@ class SQLiteHandler:
             for row in cursor:
                 response.append(row)
         except Exception as inst:
-            import log
-            log.logException(inst)
+            import redRLog
+            redRLog.logException(inst)
             #pass
         finally:
-            #import log
-            #log.logException(query)
+            #import redRLog
+            #redRLog.logException(query)
             conn.commit()
             conn.close()
             return response
@@ -57,7 +57,7 @@ class SQLiteHandler:
         try:
             self.execute("CREATE TABLE "+table+" "+colNames, database = database)
         except Exception as inst:
-            log.log(1, 9, 1, inst)
+            redRLog.log(1, 9, 1, inst)
     def getTableNames(self, database = None):
         
         response = self.execute('SELECT * FROM SQLITE_MASTER WHERE type="table" OR type ="view"', database = database)

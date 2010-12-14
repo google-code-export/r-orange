@@ -49,7 +49,7 @@ class colMatcher(OWRpy):
         else:
             gl = 1
         self.R(self.Rvariables['compColumn']+'<-NULL', wantType = 'NoConversion')
-        names = [str(i.text().toAscii()) for i in self.columnBox.selectedItems()]
+        names = [str(i.text()) for i in self.columnBox.selectedItems()]
         compMatrix = self.R('as.matrix('+self.RFunctionParam_x+'[,c("'+'","'.join(names)+'")])')
         for l in compMatrix:
             for i in range(len(l)):

@@ -79,8 +79,8 @@ class comboBox(QComboBox,widgetState):
             # self.ids = self.ids + ids
         # else:
             # self.ids = self.ids + range(self.count(), self.count() + len(items))
-    def currentText(self):
-        return unicode(QComboBox.currentText(self).toAscii())
+    # def currentText(self):
+        # return unicode(QComboBox.currentText(self))
         
         
     def addItem(self,item,id=None):

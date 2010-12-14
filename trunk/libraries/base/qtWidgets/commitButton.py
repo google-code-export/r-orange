@@ -10,12 +10,12 @@ import redREnviron
 class commitButton(button,widgetState):
     def __init__(self,widget,label, callback = None, processOnInput=None,processOnChange=None,
     disabled=0, icon=None, orientation='horizontal',
-    toolTip=None, width = None, height = None, alignment=Qt.AlignLeft, toggleButton = False):
+    toolTip=None, width = None, height = None, alignment=Qt.AlignRight, toggleButton = False):
 
         widgetState.__init__(self,widget,label,includeInReports=False)
         icon = str(redREnviron.directoryNames['libraryDir']+'/base/icons/fork.png').replace('\\', '/')
 
-        box = widgetBox(self.controlArea,orientation=orientation,includeInReports=False)
+        box = widgetBox(self.controlArea,orientation=orientation,alignment=alignment,includeInReports=False)
         
         box2 = widgetBox(box,orientation='vertical',margin=0,spacing=0)
         if processOnChange is dict:
@@ -41,9 +41,9 @@ class commitButton(button,widgetState):
             )
 
         button.__init__(self, widget = box, label = label, callback = callback, disabled = disabled, 
-        icon = icon, toolTip = toolTip, width = width, height = 35, alignment = alignment, 
+        icon = icon, toolTip = toolTip, width = width, height = 35, 
         toggleButton = toggleButton)
-
+        
         self.setIcon(QIcon(icon))
         self.setIconSize(QSize(20, 20))
         

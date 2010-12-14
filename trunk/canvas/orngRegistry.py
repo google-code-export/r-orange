@@ -1,7 +1,7 @@
 # Author: Gregor Leban (gregor.leban@fri.uni-lj.si) modified by Kyle R Covington
 #
 
-import os, sys, re, glob, stat, log
+import os, sys, re, glob, stat, redRLog
 
 #from orngSignalManager import OutputSignal, InputSignal
 from PyQt4.QtCore import *
@@ -125,7 +125,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     for filename in glob.iglob(os.path.join(directory, "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
-        #log.log(1, 5, 3, 'logging widget %s' % filename)
+        #redRLog.log(1, 5, 3, 'logging widget %s' % filename)
         datetime = unicode(os.stat(filename)[stat.ST_MTIME])
         cachedDescription = cachedWidgetDescriptions.get(filename, None)
         if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
@@ -179,7 +179,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          fullName = filename
                          #inputList = inputList, outputList = outputList
                          )
-            #log.log(1, 5, 3, 'logging widget info %s' % widgetInfo)
+            #redRLog.log(1, 5, 3, 'logging widget info %s' % widgetInfo)
             for attr, deflt in (
                 #('inputs>', 'None'), ('outputs>', 'None'), 
                 ("contact>", "")
@@ -228,9 +228,9 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s" % (name, widgetInfo.description) #, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))
-            #log.log(1, 5, 3, 'Appending widget %s' % widgetID)
+            #redRLog.log(1, 5, 3, 'Appending widget %s' % widgetID)
         except Exception, msg:
-            log.log(1, 9, 1, 'Exception occurred in %s: %s' % (filename, msg))
+            redRLog.log(1, 9, 1, 'Exception occurred in %s: %s' % (filename, msg))
     return widgets
 
 def readTemplates(directory):

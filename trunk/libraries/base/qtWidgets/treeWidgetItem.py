@@ -21,7 +21,7 @@ class treeWidgetItem(QTreeWidgetItem, widgetState):
         if flags:
             self.setFlags(flags);
     def text(self,col):
-        return str(QTreeWidgetItem.text(self,col).toAscii())
+        return str(QTreeWidgetItem.text(self,col))
     def getSettings(self):
         r = {}
         r['text'] = []

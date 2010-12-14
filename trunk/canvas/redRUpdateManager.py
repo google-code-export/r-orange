@@ -47,7 +47,7 @@ class updateManager():
     def showUpdateDialog(self,auto=False):
         if not redREnviron.checkInternetConnection():
             if not auto:
-              self.showNoInternet()
+              self.createDialog('No Internet Connection',False)
             return
 
         today = date.today()
@@ -60,9 +60,12 @@ class updateManager():
         redREnviron.saveSettings()
         avaliable = self.checkForUpdate()
         if avaliable:
-            self.showUpdateAvaliable(self.availableUpdate)
+            html = "<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s" % (
+            self.availableUpdate['redRVerion'],self.availableUpdate['SVNVersion'],
+            self.availableUpdate['date'],self.availableUpdate['changeLog']) 
+            self.createDialog(html,True)
         elif not avaliable and not auto:
-            self.showNoUpdates()
+            self.createDialog('You have the most current version of Red-R %s.' % self.version,False)
 
     def parseUpdatesXML(self,fileName):
         f = open(fileName, 'r')
@@ -87,6 +90,22 @@ class updateManager():
         rc = str(rc).strip()
         return rc
 
+    def createDialog(self,html,avaliable):
+        UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
+        
+        changeLogBox = redRwebViewBox(UpdatePopup,label='Update',displayLabel=False)
+        changeLogBox.setMinimumWidth(350)
+        changeLogBox.setMinimumHeight(350)
+        changeLogBox.setHtml(html)
+        
+        buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
+        if avaliable:
+            redRbutton(buttonArea2, label = 'Close Red-R and Update', callback = UpdatePopup.accept)
+        redRbutton(buttonArea2, label = 'Cancel', callback = UpdatePopup.reject)
+        if UpdatePopup.exec_() == QDialog.Accepted:
+            self.downloadUpdate(update)
+        
     def showNoUpdates(self):
         UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
         UpdatePopup.setMinimumWidth(350)
@@ -113,9 +132,10 @@ class updateManager():
         UpdatePopup.exec_()
     def showUpdateAvaliable(self,update):
         UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
-        UpdatePopup.setMinimumWidth(350)
-        UpdatePopup.setMinimumHeight(350)
+        
         changeLogBox = redRwebViewBox(UpdatePopup)
+        changeLogBox.setMinimumWidth(350)
+        changeLogBox.setMinimumHeight(350)
         html = "<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4>" % (
         update['redRVerion'],update['SVNVersion'],update['date']) 
 

@@ -12,7 +12,6 @@ class widgetBox(QWidget,widgetState):
         QWidget.__init__(self,self.controlArea)
             
         self.controlArea.layout().addWidget(self)
-        if margin == -1: margin = 0
         # self.setFlat(flat)
         # if widget and widget.layout():
             # widget.layout().addWidget(self)
@@ -36,15 +35,13 @@ class widgetBox(QWidget,widgetState):
             tlabel = QLabel()
             tlabel.setPixmap(icon)
             self.layout().addWidget(tlabel)
-        if sizePolicy:
-            self.setSizePolicy(sizePolicy)
-        # else:
-            # self.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
-        
+
+            
         self.controlArea.layout().setAlignment(alignment)            
 
         if spacing == -1: spacing = 8
         self.layout().setSpacing(spacing)
+        if margin == -1: margin = 0
         if margin != -1:
             self.layout().setMargin(margin)
         if widget:
@@ -52,7 +49,11 @@ class widgetBox(QWidget,widgetState):
                 separator(self.controlArea, 0, addSpace)
             elif addSpace:
                 separator(self.controlArea)
+        if sizePolicy:
+            self.setSizePolicy(sizePolicy)
     
+    def layout(self):
+        return QWidget.layout(self)
     
     def delete(self):
         # itemRange = self.layout().count()

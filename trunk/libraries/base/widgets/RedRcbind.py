@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.button import button
 class RedRcbind(OWRpy): 
-    globalSettingsList = ['sendOnSelect']
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["cbind"])
@@ -27,9 +27,7 @@ class RedRcbind(OWRpy):
         self.RFunctionParamdeparse_level_lineEdit = lineEdit(self.controlArea, label = "deparse_level:", text = '1')
         
         buttonBox = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignRight)
-        self.sendOnSelect = checkBox(buttonBox,buttons=['Calculate on data Input'], 
-        toolTips=['Calculate variance on data input.'])
-        redRCommitButton(buttonBox, "Commit", callback = self.commitFunction)
+        self.commit = redRCommitButton(buttonBox, "Commit", callback = self.commitFunction, processOnInput=True)
         
         
     def processa(self, data):
@@ -39,7 +37,7 @@ class RedRcbind(OWRpy):
         if data:
             self.RFunctionParam_a=data.getData()
             #self.data = data
-            if 'Calculate on data Input' in self.sendOnSelect.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
                 
         else:
@@ -51,7 +49,7 @@ class RedRcbind(OWRpy):
         if data:
             self.RFunctionParam_b=data.getData()
             #self.data = data
-            if 'Calculate on data Input' in self.sendOnSelect.getChecked():
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_b=''

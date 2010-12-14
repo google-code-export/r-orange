@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngDoc, redRObjects, log
+import orngDoc, redRObjects, redRLog
 
 class OutputHandler:
     def __init__(self, parent):                         ## set up the outputHandler, this will take care of sending signals to 
@@ -15,10 +15,10 @@ class OutputHandler:
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
             if id not in self.outputSignals.keys():
-                log.log(1, 9, 3, 'Signal Manager connectSignal: id not in output keys')
+                redRLog.log(1, 9, 3, 'Signal Manager connectSignal: id not in output keys')
                 return False
             if not signal or signal == None:
-                log.log(1, 9, 3, 'Signal Manager connectSignal: no signal or signal is None')
+                redRLog.log(1, 9, 3, 'Signal Manager connectSignal: no signal or signal is None')
                 return False
             self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
             # now send data through
@@ -29,9 +29,9 @@ class OutputHandler:
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
             return True
         except Exception as inst:
-            log.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % unicode(inst))
+            redRLog.log(1, 9, 1, 'redRSignalManager connectSignal: error in connecting signal %s' % unicode(inst))
             return False
-        log.logConnection(self.parent.widgetInfo.fileName, signal['parent'].widgetInfo.fileName)
+        redRLog.logConnection(self.parent.widgetInfo.fileName, signal['parent'].widgetInfo.fileName)
         redRObjects.updateLines()
     def outputIDs(self):
         return self.outputSignals.keys()
@@ -178,7 +178,7 @@ class OutputHandler:
                         print redRExceptionHandling.formatException()
         except:
             import redRExceptionHandling
-            log.log(1, 9, 1, redRExceptionHandling.formatException())
+            redRLog.log(1, 9, 1, redRExceptionHandling.formatException())
     def processData(self, id):
         # collect the signal ID
         signal = self.getSignal(id)
@@ -236,7 +236,7 @@ class OutputHandler:
             error = redRExceptionHandling.formatException(errorMsg="Error occured in processing signal in this widget.\nPlease check the widgets.\n\n",plainText=True)
             parentWidget.setWarning(id = 'signalHandlerWarning', text = unicode(error))
             #print error
-            log.log(1, 9, 1, error)
+            redRLog.log(1, 9, 1, error)
             parentWidget.status.setText('Error in processing signal')
             
     def hasOutputName(self, name):
@@ -276,9 +276,9 @@ class OutputHandler:
                     widget = redRObjects.getWidgetInstanceByID(vValue['parentID'])
                 elif tmp:
                     widget = redRObjects.getWidgetInstanceByTempID(vValue['parentID'])
-                log.log(10, 5, 3, 'Widget is %s' % widget)
+                redRLog.log(10, 5, 3, 'Widget is %s' % widget)
                 if not widget:
-                    log.log(10, 9, 1, 'Failed to find widget %s' % vValue['parentID'])
+                    redRLog.log(10, 9, 1, 'Failed to find widget %s' % vValue['parentID'])
                     return
                 inputSignal = widget.inputs.getSignal(vValue['id'])
                 self.connectSignal(inputSignal, key, vValue['enabled'], process = False)  # connect the signal but don't send data through it.
@@ -293,7 +293,7 @@ class OutputHandler:
         return widgets
     def propogateNone(self, ask = True):    
         ## send None through all of my output channels
-        log.log(1, 6, 3, 'Propagating None through signal')
+        redRLog.log(1, 6, 3, 'Propagating None through signal')
         for id in self.outputIDs():
             #print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
             self.parent.send(id, None)

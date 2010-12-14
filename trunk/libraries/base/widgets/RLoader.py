@@ -45,7 +45,7 @@ class RLoader(OWRpy):
     def browseFile(self): 
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path, "R save file (*.RData *.rda);; All Files (*.*)")
         if fn.isEmpty(): return
-        fn = unicode(fn.toAscii())
+        fn = unicode(fn)
         self.path = os.path.split(unicode(fn))[0]
         self.filecombo.addFile(fn)
         self.saveGlobalSettings()
