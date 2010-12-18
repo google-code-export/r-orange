@@ -825,7 +825,7 @@ def constructCategoriesPopup(canvasDlg):
                 act.category = catmenu
                 #categoriesPopup.allActions.append(act)
     except Exception as inst:
-        redRLog.log(1, 9, 1)
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
     
     ### Add the templates to the popup, these should be actions with a function that puts a templates icon and loads the template
     for template in redRObjects.widgetRegistry()['templates']:
@@ -835,7 +835,7 @@ def constructCategoriesPopup(canvasDlg):
             act.templateInfo = template
             categoriesPopup.templateActions.append(act)
         except Exception as inst:
-            redRLog.log(1, 9, 1)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
     #categoriesPopup.allActions += widgetRegistry['templates']
     ### put the actions into the hintbox here !!!!!!!!!!!!!!!!!!!!!
 def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
@@ -858,7 +858,6 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
         return
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
-    #redRLog.log(3, 9, 3, 'Widget Registry is %s' % redRObjects.widgetRegistry())
     widgets = None
     #print unicode(canvasDlg.widgetRegistry['templates'])
     try:
@@ -875,10 +874,10 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
                         categoriesPopup.allActions.append(act)
                         categoriesPopup.widgetActionNameList.append(widgetInfo.name)
             except Exception as inst: 
-                redRLog.log(1, 9, 1)
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 pass
     except Exception as inst:
-        redRLog.log(1, 9, 1, 'Exception in Tabs with widgetRegistry %s' % inst)
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception in Tabs with widgetRegistry %s' % inst)
 class SearchBox(redRlineEditHint):
     def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=False,

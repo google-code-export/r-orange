@@ -43,7 +43,7 @@ class widgetSignals():
     def send(self, signalName, value):
         ## make sure that the name is actually in the outputs, if not throw an error.
         if not self.outputs.hasOutputName(signalName):
-            redRLog.log(1, 9, 1, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
             raise Exception('Signal name mismatch')
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
@@ -55,7 +55,7 @@ class widgetSignals():
     def refreshToolTips(self):
         lines = redRObjects.lines()
         for l in lines.values():
-            #redRLog.log(1, 9, 3, 'setting tooltip for %s' % l)
+
             if l.outWidget.instance() == self:
                 l.refreshToolTip()
     def callSignalDelete(self, name):
@@ -65,7 +65,7 @@ class widgetSignals():
                 try:
                     self.linksOut[name][id].deleteSignal()
                 except Exception as inst:
-                    redRLog.log(1, 9, 1, unicode(inst))
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         #print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
@@ -78,13 +78,11 @@ class widgetSignals():
             self.status.setStatus(2)
         except:
             self.setError(id = 'sendError', text = 'Failed to send data')
-            import sys, traceback
-            
-            traceback.print_exc(file=sys.stdout)
-            
+            redRLog.log(redRLog.REDRCORE,redRLog.CRITICAL,redRLog.formatException())
             self.status.setStatus(3)
+        
         self.R('gc()', wantType = 'NoConversion')
-
+        redRLog.log(redRLog.REDRWIDGET,redRLog.INFO,'Data sent from slot %s' % name)
 
     # does widget have a signal with name in inputs
     def hasInputName(self, name):

@@ -143,7 +143,7 @@ class reports(QWizard):
             os.mkdir(fileDir2)  
         
         except Exception as inst:
-            redRLog.log(1, 9, 1)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
         
         
         # show the report list and allow the user to select widgets to include in the report.

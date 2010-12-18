@@ -15,7 +15,7 @@ from PyQt4 import QtWebKit
 import urllib, os, redREnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRStyle
 from datetime import date
 
 class redRWidgetGUI(QMainWindow):
@@ -121,7 +121,6 @@ class redRWidgetGUI(QMainWindow):
         self.notesDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.notesDock.setMinimumWidth(minWidth)
         self.notesDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
-        self.notesDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.addDockWidget(Qt.RightDockWidgetArea,self.notesDock)
 
         self.notesBox = redRwidgetBox(None,orientation=QVBoxLayout())
@@ -129,15 +128,14 @@ class redRWidgetGUI(QMainWindow):
         
         self.notesBox.setMinimumWidth(minWidth)
         self.notesBox.setMinimumHeight(50)
-        self.notesBox.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        redRwidgetLabel(self.notesBox, label="Notes:", 
-        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'))
+        redRwidgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
 
-        self.notes = redRtextEdit(self.notesBox, label = 'Notes')
+        self.notes = redRtextEdit(self.notesBox, label = 'Notes', displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
-        self.notes.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         
         
@@ -152,7 +150,7 @@ class redRWidgetGUI(QMainWindow):
         self.RoutputDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.RoutputDock.setMinimumWidth(minWidth)
         self.RoutputDock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea | Qt.BottomDockWidgetArea)
-        self.RoutputDock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        
         self.addDockWidget(Qt.RightDockWidgetArea,self.RoutputDock)
 
         self.ROutputBox = redRwidgetBox(None,orientation=QVBoxLayout())
@@ -160,12 +158,12 @@ class redRWidgetGUI(QMainWindow):
 
         self.ROutputBox.setMinimumHeight(50)
         redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
-        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'))
+        icon=redRStyle.RIcon)
 
-        self.ROutput = redRtextEdit(self.ROutputBox, label = 'R Output')
+        self.ROutput = redRtextEdit(self.ROutputBox, label = 'R Output',displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
-        self.ROutput.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+        self.ROutput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         redRbutton(self.ROutputBox, label = 'Run Selected Code', callback = self._runSelectedRCode, toolTip = 'You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.')
         
         ### help ####

@@ -1342,7 +1342,7 @@ class ValueCallbackLineEdit(ControlledCallback):
                 self.acyclic_setattr(value)
                 self.control.setCursorPosition(pos)
             except:
-                redRLog.log(1, 9, 1, "invalid value %s, %s" % (value, type(value)))
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "invalid value %s, %s" % (value, type(value)))
 
 
 class SetLabelCallback:
@@ -1480,7 +1480,7 @@ class CallFrontComboBox(ControlledCallFront):
                 values = ""
                 for i in range(self.control.count()):
                     values += unicode(self.control.itemText(i)) + (i < self.control.count()-1 and ", " or ".")
-                redRLog.log(1, 9, 1, "unable to set %s to value '%s'. Possible values are %s" % (self.control, value, values))
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "unable to set %s to value '%s'. Possible values are %s" % (self.control, value, values))
                 #import traceback
                 #traceback.print_stack()
             else:
@@ -1498,7 +1498,7 @@ class CallFrontLogSlider(ControlledCallFront):
     def action(self, value):
         if value is not None:
             if value < 1e-30:
-                redRLog.log(1, 9, 1, "unable to set ", self.control, "to value ", value, " (value too small)")
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "unable to set ", self.control, "to value ", value, " (value too small)")
             else:
                 self.control.setValue(math.log10(value))
 

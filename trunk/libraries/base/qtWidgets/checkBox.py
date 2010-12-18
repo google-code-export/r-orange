@@ -48,6 +48,10 @@ class checkBox(widgetState,QWidget):
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
         if setChecked:
             self.setChecked(setChecked)
+    def setSizePolicy(self, h,w):
+        # self.controlArea.setSizePolicy(h,w)
+        # QWidget.setSizePolicy(self,h,w)
+        self.box.setSizePolicy(h,w)
             
     def setChecked(self,ids):
         for i in self.buttons.buttons():

@@ -526,7 +526,7 @@ class MyTableModel(QAbstractTableModel):
             return QVariant() 
         elif not self.Rdata or self.Rdata == None:
             return QVariant()
-        #print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
+        # print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
         
         if (
             (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
@@ -546,10 +546,11 @@ class MyTableModel(QAbstractTableModel):
             ),
             wantType = 'list',silent=True)
                 self.working = False
+                
             else: self.arraydata = []
         if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
             return QVariant()
-        #redRLog.log(10, 5, 3, 'Filter table R data is %s' % self.Rdata)
+        #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Filter table R data is %s' % self.Rdata)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1

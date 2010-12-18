@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager,redRStyle
-import signals, redREnviron, redRObjects, redRLog
+import signals, redREnviron, redRObjects, redRLog, redRHistory
 ERROR = 0
 WARNING = 1
 
@@ -108,16 +108,13 @@ class CanvasLine(QGraphicsPathItem):
     def refreshToolTip(self):
         #  first we need to get the signals that are sent through the line, there might be more than one so we do it here.
         outinstance = self.outWidget.instance()
-        #redRLog.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; outWidget %s, outinstance %s, inInstance %s, signals %s' % (self.outWidget, outinstance, self.inWidget.instance(), outinstance.outputs.outputSignals))
         outSignalIDs = [i[0] for i in outinstance.outputs.getLinkPairs(self.inWidget.instance())]
-        #redRLog.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; outSignalIDs' % outSignalIDs)
         tip = 'Signal Data Summary:\n'
         for id in outSignalIDs:
-            #redRLog.log(1, 9, 3, 'orngCanvasItems in refreshToolTip; setting tooltip from %s' % id)
             s = outinstance.outputs.getSignal(id)
             if s and s['value'] != None:
                 tip += s['value'].summary()+'\n'
-        redRLog.log(1, 2, 3, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
         self.setToolTip(tip)
     def getNoData(self):
         return self.noData
@@ -271,7 +268,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                     try:
                         self.instance().saveGlobalSettings()
                     except:
-                        redRLog.log(1, 9, 1, "Unable to successfully save settings for %s widget" % (self.instance().captionTitle))
+                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Unable to successfully save settings for %s widget" % (self.instance().captionTitle))
                         type, val, traceback = sys.exc_info()
                         sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
                 self.instance().close()
@@ -291,8 +288,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
 
             except: 
-                
-                redRLog.log(1, 9, 1)
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
 
     def savePosition(self):
         self.oldPos = self.pos()
@@ -336,19 +332,27 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         return self.selected
 
     def setSelected(self, selected):
+        print '################################', selected
         self.selected = selected
         self.canvasDlg.suggestButtonsList.hide()
         if self.selected:
             self.canvasDlg.suggestButtonsList.clear()
-            newActions = self.canvasDlg.schema.getSuggestWidgets(self)
-            if len(newActions) > 0:
+            suggestedWidgets = redRHistory.getSuggestWidgets(self)
+            actions = []
+            for wInfo in suggestedWidgets:
+                newAct = QTreeWidgetItem([wInfo.name])
+                newAct.setIcon(0, QIcon(wInfo.icon))
+                newAct.widgetInfo = wInfo
+                actions.append(newAct)
+                
+            if len(actions) > 0:
                 self.canvasDlg.suggestButtonsList.show()
-                self.canvasDlg.suggestButtonsList.addTopLevelItems(newActions)
+                self.canvasDlg.suggestButtonsList.addTopLevelItems(actions)
                 self.canvasDlg.suggestButtonsList.suggestingWidget = self
                 self.canvasDlg.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+unicode(self.widgetInfo.name)])
             else:
                 self.canvasDlg.suggestButtonsList.hide()
-            
+            self.canvasDlg.suggestButtonsList.show()
             # highlight the compatible wigets for this widget.
             # for i in redRObjects.getIconsByTab(self.tab)[self.tab]:
                 # if i.instance().inputs.matchConnections(self.instance().outputs):
@@ -505,7 +509,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         elif line in self.outLines:
             self.outLines.remove(line)
         else:
-            redRLog.log(1, 9, 1, "Red-R Canvas: Erorr. Unable to remove line")
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Red-R Canvas: Erorr. Unable to remove line")
 
         self.updateTooltip()
 

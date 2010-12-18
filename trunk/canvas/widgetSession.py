@@ -23,7 +23,7 @@ class widgetSession():
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
-        redRLog.log(1, 7, 3, 'moving to save'+unicode(self.captionTitle))
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'moving to save'+unicode(self.captionTitle))
         import re
         settings = {}
         if self.saveSettingsList:  ## if there is a saveSettingsList then we just append the required elements to it.
@@ -43,7 +43,7 @@ class widgetSession():
                 var = getattr(self, att)
                 settings[att] = self.returnSettings(var)
             except:
-                redRLog.log(1, 9, 1)
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
@@ -90,7 +90,7 @@ class widgetSession():
             return True
         else: 
             
-            redRLog.log(1, 5, 1, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
             return False
         
             
@@ -112,7 +112,7 @@ class widgetSession():
                 v.update(var.getDefaultState())
             # except: 
                 # v = var.getDefaultState()
-                # redRLog.log(1, 9, 1, 'Could not save qtWidgets class ' + var.__class__.__name__ + '.')
+                # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Could not save qtWidgets class ' + var.__class__.__name__ + '.')
                 #errorMsg='Could not save qtWidgets class ' + var.__class__.__name__ + '.')
 
             settings['redRGUIObject'] = {}
@@ -149,14 +149,14 @@ class widgetSession():
         
         
     def setSettings(self,settings, globalSettings = False):
-        redRLog.log(1, 5, 3, 'Loading settings')
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Loading settings')
         #settings = self.sqlite.setObject(settingsID)
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
             try:
-                #redRLog.log(1, 9, 3, 'Loading %s' % k)
+                #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue
                 if v == None:
                     continue
@@ -211,7 +211,7 @@ class widgetSession():
                         getattr(self, k).setDefaultState(v['redRGUIObject'])
                     except Exception as inst:
                         #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
-                        redRLog.log(1, 7, 1)
+                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     #print 'dict',len(var),len(v['dict'])
@@ -223,7 +223,7 @@ class widgetSession():
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
             except:
-                redRLog.log(1, 5, 1, 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.')
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.')
         
         
     def setSignalClass(self, d):
@@ -264,12 +264,12 @@ class widgetSession():
                         fp.close()
             except:
                 #print 'something is really wrong we need to set some kind of data so let\'s set it to the signals.RVariable'
-                redRLog.log(1, 9, 1)
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 
                 try:
                     var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
-                    redRLog.log(1, 9, 1)
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                     #print 'Fatal exception in loading.  Can\'t assign the signal value'
                     var = None
         finally:

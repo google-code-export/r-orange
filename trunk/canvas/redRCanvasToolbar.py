@@ -4,11 +4,12 @@ from PyQt4.QtGui import *
 import os, sys
 from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 
 class redRCanvasToolbarandMenu():
-    def __init__(self,canvas):
+    def __init__(self,canvas,toolbar):
         self.canvas = canvas
-        
+        self.toolbar = toolbar
         self.menuSaveSettingsID = -1
         self.menuSaveSettings = 1
         self.originalPalette = QApplication.palette()
@@ -18,7 +19,6 @@ class redRCanvasToolbarandMenu():
         self.initToolbar()
         
     def initToolbar(self):
-        self.toolbar = self.canvas.toolbar
         self.toolbar.setOrientation(Qt.Horizontal)
         if not redREnviron.settings.get("showToolbar", True): self.toolbar.hide()
         self.toolbar.addAction(QIcon(redRStyle.openFileIcon), "Open schema", self.menuItemOpen)
@@ -46,13 +46,12 @@ class redRCanvasToolbarandMenu():
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.reloadIcon), 
         "Reload Widgets", self.reloadWidgets)
 
-        self.toolbar.addSeparator()
+        space = redRwidgetBox(None)
+        space.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.toolbar.addWidget(space)
         
-        self.widgetSuggestEdit = SearchBox(None, width=300)
-        
-            
-        # self.widgetSuggestEdit.addItems([QListWidgetItem(action.icon(), action.templateInfo.name) for action in self.templateActions])
 
+        self.widgetSuggestEdit = SearchBox(None, width=300)
         self.toolbar.addWidget(QLabel('Search  '))
         self.toolbar.addWidget(self.widgetSuggestEdit)
         
@@ -215,12 +214,11 @@ class redRCanvasToolbarandMenu():
         
         self.widgetRegistry = orngRegistry.readCategories()
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
-        
-        self.canvas.createWidgetsToolbar()
-        
         signals.registerRedRSignals()
-        
         redRGUI.registerQTWidgets()
+        
+        self.canvas.createWidgetsToolbar(self.widgetRegistry)
+        
         
     def menuItemSaveAs(self):
         redRSaveLoad.saveDocumentAs()
@@ -250,7 +248,7 @@ class redRCanvasToolbarandMenu():
                     widget.instance.printWidget(printer)                
                 except: pass
         except:
-            redRLog.log(1, 9, 1, "Error in printing the schema")
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Error in printing the schema")
         
         self.reports.createReportsMenu(self.canvas.schema.widgets)
         
@@ -425,7 +423,7 @@ class redRCanvasToolbarandMenu():
             if redREnviron.settings["snapToGrid"] != dlg.settings["snapToGrid"]:
                 self.updateSnapToGrid()
             self.updateStyle()
-            
+            self.canvas.createWidgetsToolbar()
 
     def updateStyle(self):
         if not redREnviron.settings.has_key("style"):

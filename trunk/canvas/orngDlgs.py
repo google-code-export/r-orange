@@ -8,7 +8,7 @@ from orngCanvasItems import MyCanvasText
 import OWGUI, sys, os 
 import RSession
 import redREnviron, re, redRStyle, redRObjects
-
+import redRLog
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
 from libraries.base.qtWidgets.listBox import listBox as redRlistBox
@@ -77,7 +77,7 @@ class CanvasOptionsDlg(QDialog):
         
         self.tabs.addTab(GeneralTab, "General")
         # self.tabs.addTab(lookandFeel, "Look and Feel")
-        self.tabs.addTab(ExceptionsTab, "Exception handling")
+        self.tabs.addTab(ExceptionsTab, "Exceptions & Logging")
         self.tabs.addTab(RSettings, 'R Settings')
         QObject.connect(self.tabs, SIGNAL('currentChanged(int)'), self.onTabChange)
         #GeneralTab.layout().addStretch(1)
@@ -92,25 +92,23 @@ class CanvasOptionsDlg(QDialog):
         'Show help icons')
 
         
-        self.writeLogFileCB  = OWGUI.checkBox(generalBox, self.settings, "writeLogFile", 
-        "Save content of the Output window to a log file")
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
         "Don't ask to save schema before closing", debuggingEnabled = 0)
-        self.saveWidgetsPositionCB = OWGUI.checkBox(generalBox, self.settings, "saveWidgetsPosition", 
-        "Save size and position of widgets", debuggingEnabled = 0)
         
         
         # #################################################################
         # LOOK AND FEEL TAB
         
-        validator = QIntValidator(self)
-        validator.setRange(0,10000)
+        # validator = QIntValidator(self)
+        # validator.setRange(0,10000)
         lookFeelBox = OWGUI.widgetBox(GeneralTab, "Look and Feel Options")
 
         self.snapToGridCB = OWGUI.checkBox(lookFeelBox, self.settings, "snapToGrid", 
         "Snap widgets to grid", debuggingEnabled = 0)
         self.showSignalNamesCB = OWGUI.checkBox(lookFeelBox, self.settings, "showSignalNames", 
         "Show signal names between widgets", debuggingEnabled = 0)
+        self.saveWidgetsPositionCB = OWGUI.checkBox(lookFeelBox, self.settings, "saveWidgetsPosition", 
+        "Save size and position of widgets", debuggingEnabled = 0)
         
         items = ["%d x %d" % (v,v) for v in redRStyle.iconSizeList]
         # val = min(len(items)-1, self.settings['schemeIconSize'])
@@ -169,24 +167,29 @@ class CanvasOptionsDlg(QDialog):
         # EXCEPTION TAB
         
         debug = OWGUI.widgetBox(ExceptionsTab, "Debug")
-        self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
+        # self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
         
-        # self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", orientation='horizontal', items=["All", "High", "Medium", "Low"])
-
-        self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
-        self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
+        
+        self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", 
+        orientation='horizontal', items=redRLog.logLevelsName)
+        
+        # self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
+        # self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
         
         exceptions = OWGUI.widgetBox(ExceptionsTab, "Exceptions")
         #self.catchExceptionCB = QCheckBox('Catch exceptions', exceptions)
         self.focusOnCatchExceptionCB = OWGUI.checkBox(exceptions, self.settings, "focusOnCatchException", 'Show output window on exception')
-        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "printExceptionInStatusBar", 'Print last exception in status bar')
+        # self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "printExceptionInStatusBar", 'Print last exception in status bar')
         self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "uploadError", 'Submit Error Report')
         self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "askToUploadError", 'Always ask before submitting error report')
 
-        output = OWGUI.widgetBox(ExceptionsTab, "System output")
+        output = OWGUI.widgetBox(ExceptionsTab, "Log File")
         #self.catchOutputCB = QCheckBox('Catch system output', output)
-        self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
-        self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
+        self.writeLogFileCB  = OWGUI.checkBox(output, self.settings, "writeLogFile", 
+        "Save content of the Output window to a log file")
+
+        # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
+        # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
 
         ExceptionsTab.layout().addStretch(1)
 
@@ -234,8 +237,8 @@ class CanvasOptionsDlg(QDialog):
         # self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()
         # self.settings["lineColor"]           = self.activeLineIcon.color.getRgb()
         
-        self.settings["exceptionLevel"] = int(self.exceptionLevel.value())
-        self.settings["minSeverity"] = int(self.otherLevel.value())
+        # self.settings["exceptionLevel"] = int(self.exceptionLevel.value())
+        # self.settings["minSeverity"] = int(self.otherLevel.value())
         
         # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
         

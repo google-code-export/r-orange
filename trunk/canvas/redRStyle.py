@@ -6,8 +6,9 @@ from PyQt4.QtGui import *
 canvasPicsDir  = os.path.join(redREnviron.directoryNames["canvasDir"], "icons")
 
 #Red-R icons
-canvasIconName  = os.path.join(canvasPicsDir, "CanvasIcon.png")
+canvasIcon  = os.path.join(canvasPicsDir, "CanvasIcon.png")
 redRLogo = os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png")
+RIcon = os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png')
 
 #toolbar icons
 fileNewIcon  = os.path.join(canvasPicsDir, "doc.png")
@@ -22,8 +23,12 @@ printIcon= os.path.join(canvasPicsDir, "print.png")
 updateIcon= os.path.join(canvasPicsDir, "update.png")
 exitIcon = os.path.join(canvasPicsDir, "exit.png")
 
+#Red-R Status bar button Icons
+notesIcon = os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png')
+
+
 #widget icons
-defaultPic = os.path.join(redREnviron.directoryNames['picsDir'], "Unknown.png")
+defaultWidgetIcon = os.path.join(redREnviron.directoryNames['picsDir'], "Unknown.png")
 defaultBackground = os.path.join(redREnviron.directoryNames['picsDir'], "frame.png")
 iconSizeList = [16, 32, 40]
 

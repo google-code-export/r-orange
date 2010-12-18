@@ -187,7 +187,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
                     text += i.getReportText(fileDir)
                     #print i.__class__.__name__
             except Exception as inst:
-                redRLog.log(1, 9, 1, inst)
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, inst)
                 continue
         return text
     def getReportText3(self, fileDir):

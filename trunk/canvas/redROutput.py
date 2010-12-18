@@ -22,43 +22,14 @@ from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
         QDialog.__init__(self, None, Qt.Window)
-        self.canvasDlg = canvasDlg
-        
-        self.defaultExceptionHandler = sys.excepthook
-        self.defaultSysOutHandler = sys.stdout
-
-        self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
-        ### error logging setup ###
-        self.errorDB = redRLog.logDB()
-        self.errorHandler = SQLiteSession.SQLiteHandler(defaultDB = self.errorDB)
+        self.setLayout(QVBoxLayout())
         
         self.textOutput = QTextEdit(self)
         self.textOutput.setReadOnly(1)
         self.textOutput.zoomIn(1)
         self.allOutput = ''
-        
-        self.setLayout(QVBoxLayout())
-        wb = redRwidgetBox(self)
-        self.tw = redRTabWidget(wb)
-        self.outputExplorer = self.tw.createTabPage('General Outputs')
-        self.topWB = redRwidgetBox(self.outputExplorer, orientation = 'horizontal')
-        self.tableCombo = redRComboBox(self.topWB, label = 'Table:', items = ['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')], callback = self.processTable)
-        #self.tableCombo.update(self.errorHandler.getTableNames())
-        self.minSeverity = redRComboBox(self.topWB, label = 'Minimum Severity:', items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], callback = self.processTable)
-        self.maxRecords = redRLineEdit(self.topWB, label = 'Maximum Records:', text = '100')
-        self.typeCombo = redRComboBox(self.topWB, label = 'Output Type:', items = ['No Filter', 'Error', 'Comment', 'Message', 'Warning'], callback = self.processTable)
-        redRbutton(self.topWB, label = 'Refresh', callback = self.refresh)
-        self.sessionID = redRradiobuttons(self.topWB, label = 'Session ID', displayLabel = False, buttons = ['Current Session Only', 'All Sessions'], setChecked = 'Current Session Only', callback = self.processTable)
-        redRbutton(self, label = 'Update View', callback = self.processTable)
-        redRbutton(self.topWB, label = 'Clear DB', callback = self.clearDataBase)
-        self.outputExplorer.layout().addWidget(self.textOutput)
-        self.outputExplorer.layout().setMargin(2)
-        self.setWindowTitle("Output Window")
-        self.setWindowIcon(QIcon( os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "output.png")))
-        self.exceptionTracker = self.tw.createTabPage('Exceptions')
-        self.exceptionText = redRTextEdit(self.exceptionTracker, label = 'Exception Text', displayLabel = False)
+        self.layout().addWidget(self.textOutput)
 
-        
         self.unfinishedText = ""
         
         w = h = 500
@@ -75,145 +46,23 @@ class OutputWindow(QDialog):
         self.lastTime = ti.time()
         self.hide()
 
-    def formatException(self,type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):
-        if not tracebackInfo:
-            (type,value, tracebackInfo) =  sys.exc_info()
-        
-        
-        t = datetime.today().isoformat(' ')
-        text =  '<br>'*2 + '#'*60 + '<br>'
-        if errorMsg:
-            text += '<b>' + errorMsg + '</b><br>'
-        text += "Unhandled exception of type %s occured at %s:<br>Traceback:<br>" % ( self.getSafeString(type.__name__), t)
-        list = traceback.extract_tb(tracebackInfo, 10)
-        #print list
-        space = "&nbsp; "
-        totalSpace = space
-        #print range(len(list))
-        for i in range(len(list)):
-            # print list[i]
-            (file, line, funct, code) = list[i]
-            #print 'code', code
-            
-            (dir, filename) = os.path.split(file)
-            text += "" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b><br>" % (self.getSafeString(funct))
-            if code != None:
-                if not plainText:
-                    code = code.replace('<', '&lt;') #convert for html
-                    code = code.replace('>', '&gt;')
-                    code = code.replace("\t", "\x5ct") # convert \t to unicode \t
-                text += "" + totalSpace + "Code: " + code + "<br>"
-            totalSpace += space
-        
-        lines = traceback.format_exception_only(type, value)
-        for line in lines[:-1]:
-            text += "" + totalSpace + self.getSafeString(line) + "<br>"
-        text += "<b>" + totalSpace + self.getSafeString(lines[-1]) + "</b><br>"
-        
-        text +=  '#'*60 + '<br>'*2
-        if plainText:
-            text = re.sub('<br>','\n',text)
-            text = re.sub('&nbsp;','',text)
-            
-            text = re.sub("</?[^\W].{0,10}?>", "", text)
-            return text
-        else:
-            return text
-
-    
-    def outputManager(self, table, severity, errorType, tb, comment):
-        if table == redRLog.DEBUG:
-            cursor = QTextCursor(self.exceptionText.textCursor())                
-            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-            self.exceptionText.setTextCursor(cursor)                             
-            self.exceptionText.insertPlainText(comment)                              
-            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-            return
-            
-        if errorType==redRLog.ERROR and severity >8 and redREnviron.settings["focusOnCatchException"] and hasattr(qApp,'canvasDlg'):
+    def outputManager(self, table, level, comment):
+        if level >= redRLog.CRITICAL and redREnviron.settings["focusOnCatchException"] and hasattr(qApp,'canvasDlg'):
             self.showExceptionTab()
-            
-        if errorType == redRLog.ERROR:
-            comment = self.formatException(errorMsg=comment)
-            cursor = QTextCursor(self.exceptionText.textCursor())                
-            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-            self.exceptionText.setTextCursor(cursor)                             
-            self.exceptionText.insertHtml(comment)                              
-            cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        else:
-            comment = '\t<b>%s</b>' % (self.getSafeString(comment)) 
-        
-        string = '<div style="color:#0000FF">%s:%s:%s: </div>' %  (redRLog.tables[table],redRLog.errorTypes[errorType], severity)
-        
-        if tb:
-            string+='\t%s' % tb[-3]
-            
-        string += comment
-        
-        cursor = QTextCursor( self.canvasDlg.printOutput.textCursor())                
+        cursor = QTextCursor(self.textOutput.textCursor())                
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
-        self.canvasDlg.printOutput.setTextCursor(cursor)                             
-        self.canvasDlg.printOutput.insertHtml('%s<br>' % string)
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)     
-            
-    def setStatusBarEvent(self, text):
-        
-        if text == "" or text == None:
-            self.canvasDlg.statusBar.showMessage("")
-            return
-        elif text == "\n": return
-        text = unicode(text)
-        text = text.replace("<nobr>", ""); text = text.replace("</nobr>", "")
-        text = text.replace("<b>", ""); text = text.replace("</b>", "")
-        text = text.replace("<i>", ""); text = text.replace("</i>", "")
-        text = text.replace("<br>", ""); text = text.replace("&nbsp", "")
-        self.canvasDlg.statusBar.showMessage("Last event: " + unicode(text), 5000)
-        
+        self.textOutput.setTextCursor(cursor)                             
+        if level ==redRLog.DEBUG:
+            self.textOutput.insertPlainText(comment)                              
+        else:
+            self.textOutput.insertHtml(comment)                              
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+    
+
     def showExceptionTab(self):
         self.hide()
         self.show()
-        self.tw.setCurrentIndex(1)
-    def refresh(self):
-        self.tableCombo.update(['All'] + [row[0] for row in self.errorHandler.execute('SELECT DISTINCT OutputDomain FROM All_Output')])
-        #print self.errorHandler.getTableNames()
-        
-    def processTable(self):
-        inj = []
-        if unicode(self.typeCombo.currentText()) != 'No Filter':
-            inj.append('ErrorType == \"%s\"' % self.typeCombo.currentText())
-        if unicode(self.tableCombo.currentText()) != 'All':
-            inj.append('OutputDomain == \"%s\"' % self.tableCombo.currentText())
-        inj.append('Severity >= %s' % unicode(self.minSeverity.currentText()))
-        query = "SELECT * FROM All_Output WHERE "+" AND ".join(inj)+" ORDER BY k DESC LIMIT %s" % (self.maxRecords.text())
-        response = self.errorHandler.execute(query = query)
-        #print query
-
-            
-        self.showTable(response)
-    def clearDataBase(self):
-        redRLog.clearDB()
-    def showTable(self, response):
-        htmlText = self.toHTMLTable(response)
-        self.textOutput.clear()
-        self.textOutput.insertHtml(htmlText)
-    def toHTMLTable(self, response):
-        
-        s = '<h2>%s</h2>' % self.tableCombo.currentText()
-        s+= '<table border="1" cellpadding="3">'
-        s+= '  <tr><td><b>'
-        s+= '    </b></td><td><b>'.join(['Log ID', 'Output Category', 'Time Stamp', 'Session ID', 'Severity', 'Message Type', 'Message', 'Traceback'])
-        s+= '  </b></td></tr>'
-        
-        for row in response:
-            s+= '  <tr><td>'
-            s+= '    </td><td>'.join([unicode(i) for i in row])
-            s+= '  </td></tr>'
-        s+= '</table>'
-        return s
-    def stopCatching(self):
-        self.catchException(0)
-        self.catchOutput(0)
-
+        # self.tw.setCurrentIndex(1)
     def showEvent(self, ce):
         ce.accept()
         QDialog.showEvent(self, ce)
@@ -230,26 +79,16 @@ class OutputWindow(QDialog):
                 
     def closeEvent(self,ce):
         redREnviron.settings["outputWindowPos"] = (self.width(), self.height(), self.pos().x(), self.pos().y())
-        if getattr(self.canvasDlg, "canvasIsClosing", 0):
-            self.catchException(0)
-            self.catchOutput(0)
-            ce.accept()
-            QDialog.closeEvent(self, ce)
-        else:
-            self.hide()
-
-    def catchException(self, catch):
-        if catch: sys.excepthook = self.exceptionHandler
-        else:     sys.excepthook = self.defaultExceptionHandler
-
-    def catchOutput(self, catch):
-        return
-        if catch:    sys.stdout = self
-        else:         sys.stdout = self.defaultSysOutHandler
+        # if getattr(self.canvasDlg, "canvasIsClosing", 0):
+            # self.catchException(0)
+            # self.catchOutput(0)
+            # ce.accept()
+        QDialog.closeEvent(self, ce)
+        # else:
+            # self.hide()
 
     def clear(self):
         self.textOutput.clear()
-        self.exceptionText.clear()
 
     # print text produced by warning and error widget calls
     def widgetEvents(self, text, eventVerbosity = 1):
@@ -266,12 +105,6 @@ class OutputWindow(QDialog):
             # obj is unicode
             return unicode(obj).encode('unicode_escape')
 
-    def write(self, text):
-        return
-
-    def flush(self):
-        pass
-    
     def getSafeString(self, s):
         return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
@@ -337,13 +170,15 @@ class OutputWindow(QDialog):
             else:
                 return
         except: pass
+    
+    """
     def exceptionHandler(self, type, value, tracebackInfo):
         print 'Exception Occured, please see the output for more details.\n'
         if redREnviron.settings["focusOnCatchException"]:
             self.canvasDlg.menuItemShowOutputWindow()
 
         text = self.formatException(type,value,tracebackInfo)
-        redRLog.log(3,9,1,text)
+        
         
         t = datetime.today().isoformat(' ')
         toUpload = {}
@@ -368,5 +203,5 @@ class OutputWindow(QDialog):
             self.logFile.write(unicode(text) + "<br>\n")
         
         self.uploadException(toUpload)
-
+"""
         

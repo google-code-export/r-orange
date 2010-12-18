@@ -15,6 +15,7 @@ import redREnviron
 import redRLog
 import redRStyle
 import RSession
+import redRHistory
 
 import orngRegistry, OWGUI
 import redROutput, redRSaveLoad
@@ -33,8 +34,8 @@ class OrangeCanvasDlg(QMainWindow):
         QMainWindow.__init__(self, parent)
         
         self.setWindowTitle("Red-R Canvas %s" % redREnviron.version['REDRVERSION'])
-        if os.path.exists(redRStyle.canvasIconName):
-            self.setWindowIcon(QIcon(redRStyle.canvasIconName))
+        if os.path.exists(redRStyle.canvasIcon):
+            self.setWindowIcon(QIcon(redRStyle.canvasIcon))
         
         ###############################
         #####Start splashWindow####
@@ -52,6 +53,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.notesDock = QDockWidget('Notes')
         self.notesDock.setObjectName('CanvasNotes')
         self.notes = redRTextEdit(None, label = 'Notes')
+        self.notes.setMinimumWidth(200)
         self.notesDock.setWidget(self.notes)
         self.addDockWidget(Qt.RightDockWidgetArea, self.notesDock)
         self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
@@ -63,14 +65,15 @@ class OrangeCanvasDlg(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self.outputDock)
         self.connect(self.outputDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
         
+        redRLog.setOutputManager('dock', self.dockOutputManger)
         
         #######################
         #####Output Manager####
         #######################
 
         self.output = redROutput.OutputWindow(self)
-
-        redRLog.setOutputManager(self.output.outputManager)
+        redRLog.setOutputManager('window', self.output.outputManager)
+        
         
         ###################
         #Register Widgets##
@@ -109,20 +112,15 @@ class OrangeCanvasDlg(QMainWindow):
         
         docBox = redRwidgetBox(None,orientation='horizontal')
         
-        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
-        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
-        toolTip='Notes',
-        callback = self.updateDockState)
+        self.showWidgetToolbar = redRbutton(docBox, '',toggleButton=True, 
+        icon=redRStyle.defaultWidgetIcon, toolTip='Widget Tree', callback = self.updateDockState)   
         
         self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
-        icon=os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'CanvasIcon.png'),
-        toolTip='Log',
-        callback = self.updateDockState)   
+        icon=redRStyle.canvasIcon, toolTip='Log', callback = self.updateDockState)   
+
+        self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
+        icon=redRStyle.notesIcon, toolTip='Notes', callback = self.updateDockState)
         
-        self.showWidgetToolbar = redRbutton(docBox, '',toggleButton=True, 
-        icon=os.path.join(redREnviron.directoryNames['canvasIconsDir'], 'CanvasIcon.png'),
-        toolTip='Widget Tree',
-        callback = self.updateDockState)   
         
         self.statusBar.addPermanentWidget(docBox)
         if 'dockState' in redREnviron.settings.keys() and 'widgetBox' in redREnviron.settings['dockState'].keys():
@@ -167,7 +165,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         splashWindow.showMessage("Creating Menu and Toolbar", Qt.AlignHCenter + Qt.AlignBottom)
         self.toolbar = self.addToolBar("Toolbar")
-        self.toolbarFuntions = redRCanvasToolbar.redRCanvasToolbarandMenu(self)
+        self.toolbarFunctions = redRCanvasToolbar.redRCanvasToolbarandMenu(self,self.toolbar)
         
         
         
@@ -205,7 +203,7 @@ class OrangeCanvasDlg(QMainWindow):
         #Show Main Red-R window##
         #########################
         
-        self.toolbarFuntions.updateStyle()
+        self.toolbarFunctions.updateStyle()
         self.show()
 
         if splashWindow:
@@ -226,6 +224,16 @@ class OrangeCanvasDlg(QMainWindow):
         qApp.processEvents()
         
         
+    def dockOutputManger(self,table, level, string):
+        cursor = QTextCursor( self.printOutput.textCursor())                
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
+        self.printOutput.setTextCursor(cursor)                             
+        if level ==redRLog.DEBUG:
+            self.printOutput.insertPlainText(string)
+        else:
+            self.printOutput.insertHtml(string)
+            
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)     
 
     def updateDock(self,ev):
         if self.notesDock.isHidden():
@@ -293,8 +301,9 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.saveSettings()
                 
         
-    def createWidgetsToolbar(self):
-        
+    def createWidgetsToolbar(self,widgetRegistry=None):
+        if widgetRegistry:
+            self.widgetRegistry = widgetRegistry
         # self.widgetsToolBar.hide()
         # self.widgetsToolBar = redRWidgetsTree.WidgetTree(self.widgetDockBox, self, self.widgetRegistry)
         self.widgetsToolBar.clear()
@@ -316,7 +325,7 @@ class OrangeCanvasDlg(QMainWindow):
         # self.widgetsToolBar.setFloating(float)
         # self.widgetsToolBar.treeWidget.collapseAll()
         # self.tabs.createWidgetTabs(self.widgetRegistry, redREnviron.directoryNames['widgetDir'], 
-        # redREnviron.directoryNames['picsDir'], redRStyle.defaultPic)
+        # redREnviron.directoryNames['picsDir'], redRStyle.defaultWidgetIcon)
         # self.widgetsToolBar.treeWidget.collapseAll()
        
     def setCaption(self, caption = ""):
@@ -357,25 +366,27 @@ class OrangeCanvasDlg(QMainWindow):
             closed=True
         else:
             closed=False
+    
 
-        
         if closed:
             if postCloseFun:
                 postCloseFun()
+
 
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
-            #self.schema.clear(close = True)  # clear all of the widgets (this closes them) and also close the R session, this is better than just leaving it for garbage collection especially if there are R things still open like plots and the like.
-            import RSession
-            RSession.Rcommand('quit("no")') # close the entire session dropping anything that was open in case it was left by something else, makes the closing much cleaner than just loosing the session.
-            self.output.logFile.close()
-            self.output.hide()
-            import redRHistory
+
+            # close the entire session dropping anything that was open in case it was left by something else, 
+            # makes the closing much cleaner than just loosing the session.
+            # raise Exception('asdf')
+            #self.output.logFile.close()
             redRHistory.saveConnectionHistory()
+
+            self.output.hide()
+            RSession.Rcommand('quit("no")') 
             ce.accept()
-            
             QMainWindow.closeEvent(self,ce)
         else:
             ce.ignore()

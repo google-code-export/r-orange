@@ -62,11 +62,13 @@ class readFile(OWRpy):
         box = widgetBox(self.browseBox,orientation='horizontal')
         self.filecombo = fileNamesComboBox(box, label='Files', displayLabel=False,
         orientation='horizontal',callback=self.scanNewFile)
+        self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         button(box, label = 'Browse', callback = self.browseFile)
         
         self.fileType = radioButtons(options, label='File Type',
         buttons = ['Text', 'Excel'], setChecked='Text',callback=self.scanNewFile,
         orientation='horizontal')
+        self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         self.fileType.hide()
 
         
@@ -96,11 +98,11 @@ class readFile(OWRpy):
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.otherOptions = checkBox(split,label='Options', displayLabel=False,
-        buttons=['fill','strip.white','blank.lines.skip',
-        'allowEscapes','stringsAsFactors'],
+        buttons=['fill','unicodeip.white','blank.lines.skip',
+        'allowEscapes','unicodeingsAsFactors'],
         setChecked = ['blank.lines.skip'],
         toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
-        'logical. Used only when sep has been specified, and allows the stripping of leading and trailing white space from character fields (numeric fields are always stripped). ',
+        'logical. Used only when sep has been specified, and allows the unicodeipping of leading and trailing white space from character fields (numeric fields are always unicodeipped). ',
         'logical: if TRUE blank lines in the input are ignored.',
         'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
         'logical: should character vectors be converted to factors?'],
@@ -185,9 +187,9 @@ class readFile(OWRpy):
         print self.path
         fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
-        #print str(fn)
+        #print unicode(fn)
         if fn.isEmpty(): return
-        fn = str(fn.toAscii())
+        fn = unicode(fn)
         # print type(fn), fn
         
         self.path = os.path.split(fn)[0]
@@ -224,7 +226,7 @@ class readFile(OWRpy):
 
         self.myColClasses = []
         for i in self.dataTypes:
-            self.myColClasses.append(str(i[1].getChecked()))
+            self.myColClasses.append(unicode(i[1].getChecked()))
         # print 'colClasses' , self.colClasses
         self.loadFile(scan=True)
     def scanFile(self):
@@ -254,10 +256,10 @@ class readFile(OWRpy):
             elif self.delimiter.getChecked() == 'Comma':
                 sep = ','
             elif self.delimiter.getChecked() == 'Other':
-                sep = str(self.otherSepText.text())
+                sep = unicode(self.otherSepText.text())
             otherOptions = ''
             for i in self.otherOptions.getChecked():
-                otherOptions += str(i) + '=TRUE,' 
+                otherOptions += unicode(i) + '=TRUE,' 
             
         if 'Column Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
@@ -266,7 +268,7 @@ class readFile(OWRpy):
         
         
         if scan and scan != 'clipboard':
-            nrows = str(self.numLinesScan.text())
+            nrows = unicode(self.numLinesScan.text())
             processing=False
         else:
             nrows = '-1'
@@ -289,10 +291,10 @@ class readFile(OWRpy):
             ccl = 'c(' + ','.join(cls) + ')'
         else:
             ccl = 'NA'
-        Rstr = 'None'
+        Runicode = 'None'
         try:
             if self.fileType.getChecked() == 'Excel':
-                Rstr = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
+                Runicode = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
                 self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']))
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
                 if not scan:
@@ -306,13 +308,13 @@ class readFile(OWRpy):
                 print 'scan was to clipboard'
                 self.commit()
             else:
-                RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + str(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+str(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+str(self.decimal.text())+'\')'
+                RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + unicode(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+unicode(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+unicode(self.decimal.text())+'\')'
                 #print '####################', processing
                 self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
                 
         except:
             import redRLog
-            redRLog.log(1, 9, 1)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return
@@ -361,12 +363,12 @@ class readFile(OWRpy):
                     s = radioButtons(self.columnTypes,label=i,displayLabel=False,
                     buttons=types,orientation='horizontal',callback=self.updateColClasses)
                     
-                    # print k,i,str(v)
-                    if str(v) in types:
-                        s.setChecked(str(v))
+                    # print k,i,unicode(v)
+                    if unicode(v) in types:
+                        s.setChecked(unicode(v))
                     else:
-                        s.addButton(str(v))
-                        s.setChecked(str(v))
+                        s.addButton(unicode(v))
+                        s.setChecked(unicode(v))
                     label = widgetLabel(None,label=i)
                     self.columnTypes.layout().addWidget(label.controlArea,k,0)
                     self.columnTypes.layout().addWidget(s.controlArea,k,1)
@@ -374,7 +376,7 @@ class readFile(OWRpy):
                     self.dataTypes.append([i,s])
         except:
             import redRLog
-            redRLog.log(1, 9, 1)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             self.scanarea.clear()
             self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
         
@@ -396,7 +398,7 @@ class readFile(OWRpy):
     def updateGUI(self):
         dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', wantType='list',silent=True)
         self.infob.setText(self.R(self.Rvariables['filename']))
-        self.infoc.setText("Rows: " + str(dfsummary[0]) + '\nColumns: ' + str(dfsummary[1]))
+        self.infoc.setText("Rows: " + unicode(dfsummary[0]) + '\nColumns: ' + unicode(dfsummary[1]))
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()

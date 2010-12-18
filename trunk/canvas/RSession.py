@@ -38,7 +38,7 @@ mutex = QMutex()
 def assign(name, object):
     try:
         rpy.r.assign(name, object)
-        redRLog.log(2, 5, 3, 'Assigned object to %s' % name)
+        redRLog.log(redRLog.R, redRLog.DEBUG, 'Assigned object to %s' % name)
         return True
     except:
         return False
@@ -57,7 +57,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     
     output = None
     if not silent:
-        redRLog.log(2, 2, 3, query)
+        redRLog.log(redRLog.R, redRLog.DEBUG, redRLog.getSafeString(query))
     #####################Forked verions of R##############################
     # try:
         # output = qApp.R.R(query)            
@@ -75,7 +75,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         
         output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
-        redRLog.log(2, 8, 1, "Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s." % (query, inst))
+        redRLog.log(redRLog.R, redRLog.CRITICAL, "Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s." % (query, inst))
         mutex.unlock()
         raise RuntimeError(unicode(inst) + '  Orriginal Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
@@ -143,7 +143,7 @@ def convertToPy(inobject):
             return inobject
         return co.convert(inobject)
     except Exception as e:
-        redRLog.log(1, 9, 1, unicode(e))
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(e))
         return None
 def getInstalledLibraries():
     if sys.platform=="win32":
@@ -180,12 +180,12 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
         for library in librarys:
             if library in loadedLibraries: 
-                redRLog.log(2, 1, 2, 'Library already loaded')
+                redRLog.log(redRLog.R, redRLog.DEBUG, 'Library already loaded')
                 continue
             # print 'in loop', library, library in installedRPackages
             # print installedRPackages
             if installedRPackages and library and (library in installedRPackages):
-                redRLog.log(2, 7, 3, 'Loading library %s.' % library)
+                redRLog.log(redRLog.R, redRLog.DEBUG, 'Loading library %s.' % library)
                 Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
                 
                 loadedLibraries.append(library)
@@ -194,14 +194,14 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                     mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+unicode(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
-                            redRLog.log(2, 8, 3, 'Installing library %s.' % library)
+                            redRLog.log(redRLog.R, redRLog.INFO, 'Installing library %s.' % library)
                             Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
                             Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')#, lib=' + libPath + ')')
                             loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')# lib.loc=' + libPath + ')')
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
                             
                         except:
-                            redRLog.log(2, 9, 1, 'Library load failed')
+                            redRLog.log(redRLog.R, redRLog.CRITICAL, 'Library load failed')
                             loadedOK = False
                     else:
                         loadedOK = False

@@ -29,7 +29,7 @@ def getLastSchemaID():
                 if ID > schemaID:
                     schemaID = ID
     except:
-        redRLog.log(1, 9, 1, "%s: %s" % sys.exc_info()[:2])
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "%s: %s" % sys.exc_info()[:2])
     finally:
         if fn != None: fn.close()
         
@@ -48,7 +48,7 @@ def logAppend(schemaID, command, params=""):
         if params == "": fn.write(unicode(time.localtime()) + ";" + unicode(schemaID) + ";" + command + ";\n")
         else: fn.write(unicode(time.localtime()) + ";" + unicode(schemaID) + ";" + command + ";" + params + ";\n")
     except:
-        redRLog.log(1, 9,1, "%s: %s" % sys.exc_info()[:2])
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "%s: %s" % sys.exc_info()[:2])
     finally:
         if fn != None: fn.close()
 
@@ -90,7 +90,7 @@ def logAddLink(schemaID, outWidget, inWidget, outSignalName):
                 break
             except Exception as inst:
                 
-                redRLog.log(1, 9, 1,unicode(inst))
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,unicode(inst))
                 signalType = 'Ambiguous Signal Type'
     
     logAppend(schemaID, "ADDLINK", unicode(id(outWidget)) + ";" + unicode(id(inWidget)) + ";" + unicode(signalType))

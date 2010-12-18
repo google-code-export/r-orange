@@ -108,7 +108,7 @@ def registerQTWidgets():
                 qtWidgets.append(guiClass)
         except:
            import redRLog
-           redRLog.log(1, 9, 1)
+           redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
 
 
 # def separator(widget, width=8, height=8):

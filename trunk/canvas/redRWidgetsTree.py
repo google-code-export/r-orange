@@ -208,7 +208,6 @@ class widgetSuggestions(QTreeWidget):
     def __init__(self, parent,canvasDlg):
         
         self.canvasDlg = canvasDlg
-        
         QTreeWidget.__init__(self, parent)
         parent.layout().addWidget(self)
         self.setHeaderLabels(['Suggested Widgets'])
@@ -242,8 +241,9 @@ class WidgetTree(QTreeWidget):
         # this is needed otherwise the document window will sometimes strangely lose focus and the output window will be focused
         self.setFocusPolicy(Qt.ClickFocus)   
         self.createWidgetTabs(widgetRegistry)            
-        iconSize = redRStyle.iconSizeList[redREnviron.settings["toolbarIconSize"]]
-        self.setIconSize(QSize(iconSize, iconSize))
+        
+        # iconSize = redRStyle.iconSizeList[redREnviron.settings["toolbarIconSize"]]
+        # self.setIconSize(QSize(iconSize, iconSize))
        
         
         # must make a widget container to hold the search area and the widget tree
@@ -303,6 +303,10 @@ class WidgetTree(QTreeWidget):
         QTreeWidget.clear(self)
         
     def createWidgetTabs(self, widgetRegistry):
+        
+        iconSize = redRStyle.iconSizeList[redREnviron.settings["toolbarIconSize"]]
+        self.setIconSize(QSize(iconSize, iconSize))
+
         mainTabs = widgetRegistry['tags']
         treeXML = mainTabs.childNodes[0]
         #print treeXML.childNodes

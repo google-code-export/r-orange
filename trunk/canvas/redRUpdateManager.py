@@ -193,7 +193,7 @@ class updateManager():
             # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
         except:
             
-            redRLog.log(1, 9, 1)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             mb = QMessageBox("Error", "There was an Error in updating Red-R.", 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.NoButton, QMessageBox.NoButton, self.schema)

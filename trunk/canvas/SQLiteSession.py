@@ -57,7 +57,7 @@ class SQLiteHandler:
         try:
             self.execute("CREATE TABLE "+table+" "+colNames, database = database)
         except Exception as inst:
-            redRLog.log(1, 9, 1, inst)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, inst)
     def getTableNames(self, database = None):
         
         response = self.execute('SELECT * FROM SQLITE_MASTER WHERE type="table" OR type ="view"', database = database)

@@ -1,7 +1,7 @@
 ## redRHistory.  Functions and implementations for assessing widget useage and connectivity.  The core of this functionality will be a history file that will represent connections stemming from widgets and to other widgets.  This will be in the form of a dictionary of dictionaries of values.  {widgetA: [(widgetA, c1), (widgetB, c2), ...], widgetB: [(widgetA, c1), (widgetB, c2), ...], ...}.  As new widgets are added using the package manager system this can be modified.
 
 # imports
-import cPickle
+import cPickle, redRObjects
 import os, sys, redREnviron
 
 ## get the data into the history dict
@@ -25,37 +25,68 @@ try:
 except:
     hDictWeb = {}
     
-def getTopConnections(newwidget):
+def getSuggestWidgets(outWidget):
+    topCons = getTopConnections(outWidget)
+    print topCons
+    widgets = redRObjects.widgetRegistry()['widgets']
+    actions = []
+    for con in topCons:
+        if con in widgets.keys():
+            wInfo = widgets[con]
+            # newAct = QTreeWidgetItem([wInfo.name])
+            # newAct.setIcon(0, QIcon(wInfo.icon))
+            # newAct.widgetInfo = wInfo
+            actions.append(wInfo)
+    return actions
+
+def getTopConnections(outWidget):
     ## return the top connections for the widget
-    if newwidget.widgetInfo.fileName in hDict:
-        widgetConns = hDict[newwidget.widgetInfo.fileName] # get the info associated with this widget.
-        tops = sorted(widgetConns, reverse = True)[1:10]
-    else: tops = []
-    if newwidget.widgetInfo.outputWidgets:
-        tops += [val for val in newwidget.widgetInfo.outputWidgets if val not in tops]
-    #print tops
+    print hDict
+    if outWidget.widgetInfo.fileName in hDict:
+        widgetConns = hDict[outWidget.widgetInfo.fileName]['counts'] # get the info associated with this widget.
+        tops = sorted(widgetConns, key=widgetConns.get, reverse=True)[0:9]
+    else: 
+        tops = []
+    
+    if outWidget.widgetInfo.outputWidgets:
+        tops += [val for val in outWidget.widgetInfo.outputWidgets if val not in tops]
+    
     return tops
     
-def addConnectionHistory(newwidget, connectingWidget):
-    if newwidget.widgetInfo.fileName in hDict:
-        widgetConns = hDict[newwidget.widgetInfo.fileName]
-    else:
-        hDict[newwidget.widgetInfo.fileName] = {}
-        widgetConns = hDict[newwidget.widgetInfo.fileName]
-    if connectingWidget.widgetInfo.fileName in widgetConns:
-        widgetConns[connectingWidget.widgetInfo.fileName] += 1
-    else:
-        widgetConns[connectingWidget.widgetInfo.fileName] = 1
+def addConnectionHistory(outWidget,inWidget):
     
-    if newwidget.widgetInfo.fileName in hDictWeb:
-        widgetConnsWeb = hDictWeb[newwidget.widgetInfo.fileName]
+    if outWidget.widgetInfo.fileName not in hDict:
+        hDict[outWidget.widgetInfo.fileName] = {'recent':[], 'counts':{}}
+    if 'recent' not in hDict[outWidget.widgetInfo.fileName]:
+        hDict[outWidget.widgetInfo.fileName]['recent'] = []
+    if 'counts' not in hDict[outWidget.widgetInfo.fileName]:
+        hDict[outWidget.widgetInfo.fileName]['counts'] = {}
+    
+    recent = hDict[outWidget.widgetInfo.fileName]['recent']
+    counts = hDict[outWidget.widgetInfo.fileName]['counts']
+    
+    recent.insert(0,inWidget.widgetInfo.fileName)
+    recent = list(set(recent))
+    
+    if len(recent)  >3:
+        recent.pop()
+    
+    if inWidget.widgetInfo.fileName in counts:
+        counts[inWidget.widgetInfo.fileName] += 1
     else:
-        hDictWeb[newwidget.widgetInfo.fileName] = {}
-        widgetConnsWeb = hDictWeb[newwidget.widgetInfo.fileName]
-    if connectingWidget.widgetInfo.fileName in widgetConnsWeb:
-        widgetConnsWeb[connectingWidget.widgetInfo.fileName] += 1
-    else:
-        widgetConnsWeb[connectingWidget.widgetInfo.fileName] = 1
+        counts[inWidget.widgetInfo.fileName] = 1
+    
+    print hDict
+    
+    # if newwidget.widgetInfo.fileName in hDictWeb:
+        # widgetConnsWeb = hDictWeb[newwidget.widgetInfo.fileName]
+    # else:
+        # hDictWeb[newwidget.widgetInfo.fileName] = {}
+        # widgetConnsWeb = hDictWeb[newwidget.widgetInfo.fileName]
+    # if connectingWidget.widgetInfo.fileName in widgetConnsWeb:
+        # widgetConnsWeb[connectingWidget.widgetInfo.fileName] += 1
+    # else:
+        # widgetConnsWeb[connectingWidget.widgetInfo.fileName] = 1
         
 def setTopConnections(newwidgetFileName, hDictElement):
     if newwidgetFileName not in hDict:

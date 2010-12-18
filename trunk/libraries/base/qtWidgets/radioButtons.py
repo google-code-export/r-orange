@@ -43,6 +43,10 @@ class radioButtons(widgetState,QWidget):
 
         if setChecked:
             self.setChecked(setChecked)
+    def setSizePolicy(self, h,w):
+        # self.controlArea.setSizePolicy(h,w)
+        # QWidget.setSizePolicy(self,h,w)
+        self.box.setSizePolicy(h,w)
         
     def addButton(self,text,toolTip=None):
         w = QRadioButton(text)

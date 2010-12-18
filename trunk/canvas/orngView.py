@@ -5,7 +5,7 @@
 import orngCanvasItems
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import orngHistory, orngTabs, redRObjects, redRLog
+import redRObjects, redRLog
 
         
 class SchemaView(QGraphicsView):
@@ -161,8 +161,8 @@ class SchemaView(QGraphicsView):
             self.selectedLine.updateTooltip()
 
     def unselectAllWidgets(self):
-        redRLog.log(10, 3, 3, 'Unselecting widgets')
-        redRLog.log(10, 3, 3, 'Available icons are %s' % redRObjects.getIconsByTab())
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Unselecting widgets')
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Available icons are %s' % redRObjects.getIconsByTab())
         for k, items in redRObjects.getIconsByTab().items():
             #print k
             for item in items:
@@ -235,7 +235,7 @@ class SchemaView(QGraphicsView):
                     i.setPossibleConnection(False)
         # we clicked on a widget or on a line
         else:
-            redRLog.log(10, 9, 3, 'Active item %s' % activeItem)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Active item %s' % activeItem)
             if type(activeItem) in [orngCanvasItems.CanvasWidget]:# if we clicked on a widget          
                 #print activeItem, 'An item was clicked'
                 self.tempWidget = activeItem
@@ -322,7 +322,6 @@ class SchemaView(QGraphicsView):
                     item.restorePosition()
                 item.updateTooltip()
                 item.setAllLinesFinished(True)
-                orngHistory.logChangeWidgetPosition(self.doc.schemaID, id(item), (item.widgetInfo.packageName, item.widgetInfo.name), item.x(), item.y())
 
 
         # if we are drawing line

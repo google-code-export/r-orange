@@ -90,7 +90,7 @@ class packageManager:
                 self.urlOpener.retrieve(url, path)
                 #print path
                 self.installRRP(package,path)
-                redRLog.log(1, 7, 3, 'Installing package %s from URL %s into path %s' % (packageName, url, path))
+                redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Installing package %s from URL %s into path %s' % (packageName, url, path))
             except:
                 try:
                     packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
@@ -101,7 +101,7 @@ class packageManager:
                     #print path
                     self.installRRP(package,path)
                 except:
-                    redRLog.log(1, 9, 1)
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                     OK=False
         qApp.canvasDlg.reloadWidgets()
         progressBar.hide()
@@ -190,7 +190,7 @@ class packageManager:
     # The file is stored in the canvasSettingsDir/red-RPackages.xml
     def updatePackagesFromRepository(self):
         #print '|#| updatePackagesFromRepository'
-        redRLog.log(1, 7, 3, 'Updating packages from repository')
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Updating packages from repository')
         url = self.repository + '/packages.xml'
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         from datetime import date

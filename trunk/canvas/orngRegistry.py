@@ -125,7 +125,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     for filename in glob.iglob(os.path.join(directory, "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
-        #redRLog.log(1, 5, 3, 'logging widget %s' % filename)
+        
         datetime = unicode(os.stat(filename)[stat.ST_MTIME])
         cachedDescription = cachedWidgetDescriptions.get(filename, None)
         if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
@@ -179,7 +179,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          fullName = filename
                          #inputList = inputList, outputList = outputList
                          )
-            #redRLog.log(1, 5, 3, 'logging widget info %s' % widgetInfo)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'logging widget info %s' % widgetInfo.name)
             for attr, deflt in (
                 #('inputs>', 'None'), ('outputs>', 'None'), 
                 ("contact>", "")
@@ -228,9 +228,9 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     
             widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s" % (name, widgetInfo.description) #, formatedInList[:-4], formatedOutList[:-4]) 
             widgets.append((widgetID, widgetInfo))
-            #redRLog.log(1, 5, 3, 'Appending widget %s' % widgetID)
+            
         except Exception, msg:
-            redRLog.log(1, 9, 1, 'Exception occurred in %s: %s' % (filename, msg))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occurred in %s: %s' % (filename, msg))
     return widgets
 
 def readTemplates(directory):
@@ -260,7 +260,7 @@ def readTemplates(directory):
             templateInfo = TemplateDescription(name = templateName, file = filename) 
             templates.append(templateInfo)
         except Exception, msg:
-            redRLog.log(1, 9, 1)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
         
     return templates
 def loadPackage(package):
