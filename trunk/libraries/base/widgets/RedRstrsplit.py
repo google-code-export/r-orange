@@ -7,7 +7,7 @@ import redRGUI
 import libraries.base.signalClasses as signals
 from libraries.base.signalClasses.RVector import RVector as redRRVector
 from libraries.base.signalClasses.RList import RList as redRRList
-
+from libraries.base.signalClasses.RDataFrame import RDataFrame as redRDataFrame
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.button import button
@@ -15,13 +15,14 @@ class RedRstrsplit(OWRpy):
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
-        self.setRvariableNames(["strsplit"])
+        self.setRvariableNames(["strsplit", "dataframe"])
         self.data = {}
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRVector, self.processx)
 
         self.outputs.addOutput('id0', 'strsplit Output', redRRList)
         self.outputs.addOutput('id1', 'strsplit Vector', redRRVector)
+        self.outputs.addOutput('dataframe', 'Data Table', redRDataFrame)
 
         
         self.RFunctionParamsplit_lineEdit =  lineEdit(self.controlArea,  label = "Split Text Using:", text = '')
@@ -79,30 +80,18 @@ class RedRstrsplit(OWRpy):
             newData = redRRVector(data = 'unlist('+self.Rvariables['strsplit']+')')
             self.rSend("id1", newData)
             
-    def getReportText(self, fileDir):
-        text = 'Split the incomming strings (words) into fragments based on the following criteria:\n\n'
-        injection = []
-        if unicode(self.RFunctionParamfixed_radioButtons.getChecked()) == 'Yes':
-            string = 'fixed=TRUE'
-            injection.append(string)
-        else:
-            string = 'fixed=FALSE'
-            injection.append(string)
-        if unicode(self.RFunctionParamextended_radiButtons.getChecked()) == 'Yes':
-            string = 'extended=TRUE'
-            injection.append(string)
-        else:
-            string = 'extended=FALSE'
-            injection.append(string)
-        if unicode(self.RFunctionParamsplit_lineEdit.text()) != '':
-            string = 'split='+unicode(self.RFunctionParamsplit_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParamperl_radioButtons.getChecked()) == 'Yes':
-            string = 'perl=TRUE'
-            injection.append(string)
-        else:
-            string = 'perl=FALSE'
-            injection.append(string)
-        inj = '\n\n'.join(injection)
-        text += inj + '\n\n'
-        return text
+        ## convert to a data frame
+        self.R(
+        """
+        for(i in 1:length(%s)){
+            if(length(%s[[i]]) == 0){
+                %s[[i]] = c('','')
+            }
+        }
+        """ % (self.Rvariables['strsplit'], self.Rvariables['strsplit'], self.Rvariables['strsplit']),
+        wantType = 'NoConversion',
+        silent = True)
+        self.R(self.Rvariables['dataframe']+'<-t(data.frame('+self.Rvariables['strsplit']+'))', wantType = 'NoConversion')
+        newDataFrame = redRDataFrame(data = self.Rvariables['dataframe'], parent = self.Rvariables['dataframe'], checkVal = False)
+        self.rSend('dataframe', newDataFrame)
+        

@@ -311,14 +311,15 @@ def save(filename = None, template = False, copy = False, pipe = False):
         loadTemplate(filename)
         
     
+    
+    progress += 1
+    progressBar.setValue(progress)
+    progressBar.close()
     if os.path.splitext(filename)[1].lower() == ".rrs":
         (schemaPath, schemaName) = os.path.split(filename)
         redREnviron.settings["saveSchemaDir"] = schemaPath
         canvasDlg.toolbarFunctions.addToRecentMenu(filename)
         canvasDlg.setCaption(schemaName)
-    progress += 1
-    progressBar.setValue(progress)
-    progressBar.close()
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Document Saved Successfully to %s' % filename)
     return True
 # load a scheme with name "filename"
@@ -449,9 +450,14 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     #####  move through all of the tabs and load them.
     (loadedOkT, tempFailureTextT) = loadTabs(tabs = tabs, loadingProgressBar = loadingProgressBar, tmp = tmp, loadedSettingsDict = settingsDict)
     if not tmp:
+        redRLog.log(10, 9,3,'Setting Signals')
         for widget in redRObjects.instances():
-            if widget.widgetID not in settingsDict.keys(): continue
-            widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['connections']), tmp)
+            redRLog.log(10, 9, 9, 'Setting Signals for %s' % widget)
+            try:
+                if widget.widgetID not in settingsDict.keys(): continue
+                widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['connections']), tmp)
+            except Exception as inst:
+                redRLog.log(1, 9, 1, 'Error setting signals %s, Settings are %s' % (inst, settingsDict[widget.widgetID].keys()))
     else:
         for widget in redRObjects.instances():
             if widget.tempID and widget.tempID in settingsDict.keys():
@@ -461,6 +467,15 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
             w.outputs.propogateNone(ask = False)
     for widget in redRObjects.instances():
         widget.tempID = None  ## we set the temp ID to none so that there won't be a conflict with other temp loading.
+        
+    ## some saved sessions may have widget instances that are available but that do not match to icons.  This shouldn't happen normally but if it does then we have instances that can persist without us knowing about it.  We clear those here.
+    for i in redRObjects.instances():
+        try:
+            redRObjects.getWidgetByInstance(i)
+        except:
+            try:
+                redRObjects.removeWidgetInstance(i)
+            except: pass
     qApp.restoreOverrideCursor() 
     qApp.restoreOverrideCursor()
     qApp.restoreOverrideCursor()
@@ -577,8 +592,12 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
             xPos = int(witemp.getAttribute("xPos"))      # save the xPos
             yPos = int(witemp.getAttribute("yPos"))      # same the yPos
             if not tmp:
-                caption = witemp.getAttribute("caption")          # save the caption
-                schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
+                try:
+                    caption = witemp.getAttribute("caption")          # save the caption
+                    redRLog.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
+                    schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
+                except Exception as inst:
+                    redRLog.log(1, 9, 1, 'Loading exception occured for %s, %s' % (name, inst))
             else:
                 #print 'loadedSettingsDict %s' % loadedSettingsDict.keys()
                 caption = ""

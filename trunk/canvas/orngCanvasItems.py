@@ -141,7 +141,7 @@ class CanvasLine(QGraphicsPathItem):
         p2 = self.inWidget.getLeftEdgePoint()
         #self.setLine(p1.x(), p1.y(), p2.x(), p2.y())
         path = QPainterPath(p1)
-        path.cubicTo(p1.x()+120, p1.y(), p2.x()-120, p2.y(), p2.x(),p2.y())
+        path.cubicTo(p1.x()+30, p1.y(), p2.x()-30, p2.y(), p2.x(),p2.y())
         self.setPath(path)
         if self.dirty:
             color = redRStyle.dirtyLineColor

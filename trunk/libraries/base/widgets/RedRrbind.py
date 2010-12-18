@@ -19,6 +19,7 @@ class RedRrbind(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs.addInput("x", "Data", [signals.RDataFrame.RDataFrame, signals.RVector.RVector], self.processx, multiple = True)
         self.outputs.addOutput("rbind Output","Joined Data", signals.RDataFrame.RDataFrame)
+        self.rowcolnames = redRcomboBox(self.controlArea, label = 'Source of Row / Column Names:', callback = self.commitFunction)
         self.bindingMode = redRRadioButtons(self.controlArea, label = 'Binding Mode:', buttons = ['Row', 'Column'], setChecked = 'Row')
         self.RFunctionParamdeparse_level_lineEdit = redRlineEdit(self.controlArea, label = "Deparse Level:", text = '1')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -28,6 +29,7 @@ class RedRrbind(OWRpy):
             self.data[id] = data.getData()
             
             #self.data = data
+            self.rowcolnames.update(self.data.keys())
             self.commitFunction()
         else:
             del self.data[id]
@@ -45,4 +47,8 @@ class RedRrbind(OWRpy):
         self.R(self.Rvariables['rbind']+'<-'+function+'('+','.join([i for k, i in self.data.items()])+','+inj+')', wantType = 'NoConversion')
         newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables["rbind"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
+        if unicode(self.bindingMode.getChecked()) == 'Column':
+            self.R('rownames(%s)<-rownames(%s)' % (self.Rvariables['rbind'], self.data[unicode(self.rowcolnames.currentText())]), wantType = 'NoConversion', silent = True)
+        else:
+            self.R('colnames(%s)<-colnames(%s)' % (self.Rvariables['rbind'], self.data[unicode(self.rowcolnames.currentText())]), wantType = 'NoConversion', silent = True)
         self.rSend("rbind Output", newData)

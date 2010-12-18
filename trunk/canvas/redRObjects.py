@@ -134,6 +134,7 @@ def getWidgetByInstance(instance):
             if widget.instance() == instance:
                 return widget
     else:
+        
         raise Exception('Widget %s not found in %s' % (instance, _widgetIcons))
     
 def newIcon(canvas, tab, info, pic, dlg, instanceID, tabName):
@@ -286,11 +287,18 @@ def instances(wantType = 'list'):
     else:
         return _widgetInstances
 def removeWidgetInstanceByID(id):
-    widget = getWidgetInstanceByID(id)
+    try:
+        widget = getWidgetInstanceByID(id)
+        removeWidgetInstance(widget)
+    except: pass
+    finally:
+        try:
+            del _widgetInstances[id]
+        except: pass
+def removeWidgetInstance(widget):
     widget.onDeleteWidget()
     import sip
     sip.delete(widget)
-    del _widgetInstances[id]
 ###########################
 ######  lines           ###
 ###########################
