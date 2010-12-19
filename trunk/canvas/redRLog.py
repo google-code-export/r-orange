@@ -23,10 +23,10 @@ ERROR	 = 40
 WARNING	 = 30	
 INFO	 = 20	
 DEBUG	 = 10	
-NOTSET	 = 0	
+DEVEL	 = 0	
 
 logLevels = [CRITICAL,ERROR,WARNING,INFO,DEBUG]
-logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG']
+logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG','DEVEL']
 logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
 
@@ -42,24 +42,21 @@ def setOutputManager(lvl,manager):
         
 
     
-def log(table, logLevel = INFO, comment ='', source='logFun'):   
+def log(table, logLevel = INFO, comment ='', source='logFun',widget=None):   
     #lh.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
     # lh.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
     
     # if table == STDOUT:
         # lh.defaultSysOutHandler.write(comment)
         # return
-    
+    if redREnviron.settings["writeLogFile"]:
+        lh.logFile.write(unicode(comment).encode('Latin-1'))
+        
     if logLevel < logLevels[redREnviron.settings['outputVerbosity']]:
         return
-    
-    if logLevel == DEBUG and source !='print':
-        comment = comment.rstrip('\n') + '\n'
-    
-    if table == R:
-        comment = getSafeString(comment)
+
         
-    if logLevels[redREnviron.settings['outputVerbosity']] == DEBUG and source !='print':        
+    if logLevels[redREnviron.settings['outputVerbosity']] == DEBUG:
         stack = traceback.format_stack()
         # if stack < 3:
             # lh.defaultSysOutHandler.write(comment)
@@ -67,8 +64,32 @@ def log(table, logLevel = INFO, comment ='', source='logFun'):
     else:
         stack = None
     
-    logOutput(table, logLevel, stack, comment)
-        
+    formatedLogOutput(table, logLevel, stack, comment,widget)
+    
+def logOutput(table, logLevel, comment,html=False):
+    if _outputDockWriter:
+        _outputDockWriter(table,logLevel,comment,html)
+    if _outputWindowWriter:
+        _outputWindowWriter(table,logLevel,comment,html)
+    
+    # if not (_outputWindowWriter and _outputDockWriter):
+        # lh.defaultSysOutHandler.write(string)
+
+
+def formatedLogOutput(table, logLevel, stack, comment, widget=None):
+    # if logLevel == DEBUG:
+        # comment = comment.rstrip('\n') + '<br>'
+    
+    if table == R:
+        comment = getSafeString(comment)
+
+    string = '<div style="color:#0000FF">%s:%s </div>: ' %  (tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
+    if stack:
+        string+='%s || ' % (getSafeString(stack[-3]))
+    
+    string += '%s<br>' % (comment) 
+    logOutput(table, logLevel, string,html=True)
+          
 def getSafeString(s):
     return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
@@ -120,29 +141,6 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
         return text
     # """
     
-def logOutput(table, logLevel, stack, comment):
-    if logLevel !=DEBUG:
-        string = '<div style="color:#0000FF">%s:%s </div>: ' %  (tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
-        if stack:
-            string+='%s || ' % (getSafeString(stack[-3]))
-        
-        string += '%s<br>' % (comment) 
-        # if redREnviron.settings['debugMode']:
-            # string = '<br>' + string
-    else:
-        string = comment 
-        
-    if _outputDockWriter:
-        _outputDockWriter(table,logLevel,string)
-    if _outputWindowWriter:
-        _outputWindowWriter(table,logLevel,string)
-    
-    # if not (_outputWindowWriter and _outputDockWriter):
-        # lh.defaultSysOutHandler.write(string)
-
-    if redREnviron.settings["writeLogFile"]:
-        lh.logFile.write(unicode(string).encode('Latin-1') + "<br>\n")
-        
 
 class LogHandler():
     def __init__(self):
@@ -152,13 +150,18 @@ class LogHandler():
         if redREnviron.settings['writeLogFile']:
             self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
 
+    #ONLY FOR DEVEL print statements
     def write(self, text):
         # tb = traceback.format_stack()
         # self.defaultSysOutHandler.write('in write' + text + "\n")
         # self.defaultSysOutHandler.write('################\n' + '\n'.join(tb))
         # return
-        #if not redREnviron.settings['debugMode']: return
-        log(REDRCORE, DEBUG, getSafeString(text),source='print')
+        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
+            return
+        if redREnviron.settings["writeLogFile"]:
+            self.logFile.write(unicode(text).encode('Latin-1'))
+            
+        logOutput(REDRCORE,DEVEL, text,html=False)
 
     def exceptionHandler(self, type, value, tracebackInfo):
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo),source='exception')

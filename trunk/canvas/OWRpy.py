@@ -8,7 +8,7 @@ from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
-import RSession, redREnviron, os, redRReports
+import RSession, redREnviron, os, redRReports,redRLog
 #import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
@@ -61,7 +61,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.tempID = None
         
 
-
+    def log(level,comment):
+        redRLog.log(redRLog.REDRWIDGET,level,comment,widget=self.widgetID)
+        
     def resetRvariableNames(self, id = None):
         if id:
             self.widgetID = id

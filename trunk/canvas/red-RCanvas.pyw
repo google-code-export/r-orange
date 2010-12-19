@@ -224,14 +224,14 @@ class OrangeCanvasDlg(QMainWindow):
         qApp.processEvents()
         
         
-    def dockOutputManger(self,table, level, string):
+    def dockOutputManger(self,table, level, string, html):
         cursor = QTextCursor( self.printOutput.textCursor())                
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         self.printOutput.setTextCursor(cursor)                             
-        if level ==redRLog.DEBUG:
-            self.printOutput.insertPlainText(string)
-        else:
+        if html:
             self.printOutput.insertHtml(string)
+        else:
+            self.printOutput.insertPlainText(string)
             
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)     
 

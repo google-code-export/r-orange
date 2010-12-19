@@ -40,7 +40,6 @@ class readFile(OWRpy):
         self.dataTypes = []
         self.useheader = 1
         
-        
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
@@ -114,8 +113,11 @@ class readFile(OWRpy):
         self.quote = lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
         self.decimal = lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
         
-        self.numLinesScan = lineEdit(box2,text='10',label='# Lines to Scan:', 
+        self.numLinesScan = lineEdit(box2,text='10',label='# Lines to Preview:', 
         toolTip='The maximum number of rows to read in while previewing the file. Negative values are ignored.', 
+        width=50,orientation='horizontal')
+        self.numLinesReads = lineEdit(box2,text='-1',label='# Lines to Read:', 
+        toolTip='Number of lines to read from file. Read whole file if 0 or negative values.', 
         width=50,orientation='horizontal')
 
         self.numLinesSkip = lineEdit(box2,text='0',label='# Lines to Skip:',
@@ -271,8 +273,12 @@ class readFile(OWRpy):
             nrows = unicode(self.numLinesScan.text())
             processing=False
         else:
-            nrows = '-1'
+            if int(self.numLinesReads.text()) > 0:
+                nrows = unicode(self.numLinesReads.text())
+            else:
+                nrows = '-1'
             processing=True
+        
         
         
         if self.rowNamesCombo.currentIndex() not in [0,-1]:

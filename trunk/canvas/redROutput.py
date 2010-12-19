@@ -46,16 +46,17 @@ class OutputWindow(QDialog):
         self.lastTime = ti.time()
         self.hide()
 
-    def outputManager(self, table, level, comment):
+    def outputManager(self, table, level, comment,html):
         if level >= redRLog.CRITICAL and redREnviron.settings["focusOnCatchException"] and hasattr(qApp,'canvasDlg'):
             self.showExceptionTab()
         cursor = QTextCursor(self.textOutput.textCursor())                
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
         self.textOutput.setTextCursor(cursor)                             
-        if level ==redRLog.DEBUG:
-            self.textOutput.insertPlainText(comment)                              
+        if html:
+            self.textOutput.insertHtml(comment)                                          
         else:
-            self.textOutput.insertHtml(comment)                              
+            self.textOutput.insertPlainText(comment)                              
+            
         cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)      
     
 

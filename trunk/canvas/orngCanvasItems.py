@@ -332,7 +332,6 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         return self.selected
 
     def setSelected(self, selected):
-        print '################################', selected
         self.selected = selected
         self.canvasDlg.suggestButtonsList.hide()
         if self.selected:

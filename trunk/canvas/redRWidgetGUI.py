@@ -352,9 +352,7 @@ class redRWidgetGUI(QMainWindow):
         
         if self.hasBeenShown and not self.isHidden():
             self.saveWidgetWindowState()
-        print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'
         self.saveGlobalSettings()
-        print 'bbbbbbbbbbbbbbbbbbbbbbbbbbb'
         self.customCloseEvent()
 
         

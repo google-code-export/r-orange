@@ -33,23 +33,23 @@ def getSuggestWidgets(outWidget):
     for con in topCons:
         if con in widgets.keys():
             wInfo = widgets[con]
-            # newAct = QTreeWidgetItem([wInfo.name])
-            # newAct.setIcon(0, QIcon(wInfo.icon))
-            # newAct.widgetInfo = wInfo
             actions.append(wInfo)
     return actions
 
 def getTopConnections(outWidget):
     ## return the top connections for the widget
-    print hDict
+    # print 'filename:', outWidget.widgetInfo.fileName
+    # print 'dict', hDict
     if outWidget.widgetInfo.fileName in hDict:
+        tops = hDict[outWidget.widgetInfo.fileName]['recent']
         widgetConns = hDict[outWidget.widgetInfo.fileName]['counts'] # get the info associated with this widget.
-        tops = sorted(widgetConns, key=widgetConns.get, reverse=True)[0:9]
-    else: 
+        tops += [val for val in sorted(widgetConns, key=widgetConns.get, reverse=True)[0:9] if val not in tops]
+    else:
         tops = []
     
     if outWidget.widgetInfo.outputWidgets:
-        tops += [val for val in outWidget.widgetInfo.outputWidgets if val not in tops]
+        tops += [val for val in outWidget.widgetInfo.outputWidgets if val not in tops and val != '']
+
     
     return tops
     
@@ -68,8 +68,10 @@ def addConnectionHistory(outWidget,inWidget):
     recent.insert(0,inWidget.widgetInfo.fileName)
     recent = list(set(recent))
     
-    if len(recent)  >3:
+    # print 'unique recent', recent
+    if len(recent)  >2:
         recent.pop()
+    hDict[outWidget.widgetInfo.fileName]['recent'] = recent
     
     if inWidget.widgetInfo.fileName in counts:
         counts[inWidget.widgetInfo.fileName] += 1

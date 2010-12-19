@@ -257,10 +257,6 @@ class graphicsView(QGraphicsView, widgetState):
             self.menuParameters.setEnabled(False)
         else:
             self.menuParameters.setEnabled(True)
-    #########################
-    ## R session functions ##
-    #########################
-
 
     
     ##########################
@@ -408,8 +404,8 @@ class graphicsView(QGraphicsView, widgetState):
         print r
         return r
     def loadSettings(self,data):
-        print '@@@@@@@@@@@@@@@@@in loadSettings'
-        print data
+        # print '@@@@@@@@@@@@@@@@@in loadSettings'
+        # print data
         
         self.query = data['query']
         self.function = data['function']
