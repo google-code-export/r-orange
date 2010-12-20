@@ -421,12 +421,14 @@ class filterTable(widgetState, QTableView):
         if self.getFilteredData():
             data = self.R('as.matrix(%s)'% self.getFilteredData())
             colNames = self.R('colnames(%s)' % self.getFilteredData())
-            text = redRReports.createTable(data, columnNames = colNames)
+            # text = redRReports.createTable(data, columnNames = colNames)
+            return {self.widgetName:{'includeInReports': self.includeInReports, 'type':'table', 
+            'data':data,'colNames': colNames,
+            'numRowLimit': self.tm.rowCount(self)}}
+
         else:
-            text = ''
-            
+            return {self.widgetName:{'includeInReports': self.includeInReports, 'text':''}}
         
-        return {self.widgetName:{'includeInReports': self.includeInReports, 'text': text}}
 
 
 class MyTableModel(QAbstractTableModel): 

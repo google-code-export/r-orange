@@ -25,7 +25,7 @@ INFO	 = 20
 DEBUG	 = 10	
 DEVEL	 = 0	
 
-logLevels = [CRITICAL,ERROR,WARNING,INFO,DEBUG]
+logLevels = [CRITICAL,ERROR,WARNING,INFO,DEBUG,DEVEL]
 logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG','DEVEL']
 logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
@@ -42,7 +42,7 @@ def setOutputManager(lvl,manager):
         
 
     
-def log(table, logLevel = INFO, comment ='', source='logFun',widget=None):   
+def log(table, logLevel = INFO, comment ='', widget=None):   
     #lh.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
     # lh.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
     
@@ -50,13 +50,13 @@ def log(table, logLevel = INFO, comment ='', source='logFun',widget=None):
         # lh.defaultSysOutHandler.write(comment)
         # return
     if redREnviron.settings["writeLogFile"]:
-        lh.logFile.write(unicode(comment).encode('Latin-1'))
+        lh.logFile.write(unicode(comment).encode('Latin-1')+'<br>')
         
     if logLevel < logLevels[redREnviron.settings['outputVerbosity']]:
         return
 
         
-    if logLevels[redREnviron.settings['outputVerbosity']] == DEBUG:
+    if logLevels[redREnviron.settings['outputVerbosity']] <= DEBUG:
         stack = traceback.format_stack()
         # if stack < 3:
             # lh.defaultSysOutHandler.write(comment)
@@ -141,22 +141,33 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
         return text
     # """
     
-
+def moveLogFile(newFile):
+    lh.logFile.close()
+    # if os.path.exists(newFile):
+        # os.remove(newFile)
+    # os.rename(lh.currentLogFile, newFile)
+    lh.logFile = open(newFile, "w")
+    # lh.currentLogFile = newFile
+def closeLogFile():
+    lh.logFile.close()
+    os.remove(redREnviron.settings['logFile'])
+    
 class LogHandler():
     def __init__(self):
         self.defaultSysOutHandler = sys.stdout
         sys.stdout = self
         sys.excepthook = self.exceptionHandler
+        # self.currentLogFile = redREnviron.settings['logFile']
         if redREnviron.settings['writeLogFile']:
-            self.logFile = open(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "outputLog.html"), "w") # create the log file
+            self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file
 
     #ONLY FOR DEVEL print statements
     def write(self, text):
         # tb = traceback.format_stack()
-        # self.defaultSysOutHandler.write('in write' + text + "\n")
+        # self.defaultSysOutHandler.write('in write' + str(logLevels[redREnviron.settings['outputVerbosity']]) + "\n")
         # self.defaultSysOutHandler.write('################\n' + '\n'.join(tb))
         # return
-        if logLevels[redREnviron.settings['outputVerbosity']] == DEVEL:
+        if logLevels[redREnviron.settings['outputVerbosity']] != DEVEL:
             return
         if redREnviron.settings["writeLogFile"]:
             self.logFile.write(unicode(text).encode('Latin-1'))
@@ -164,6 +175,6 @@ class LogHandler():
         logOutput(REDRCORE,DEVEL, text,html=False)
 
     def exceptionHandler(self, type, value, tracebackInfo):
-        log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo),source='exception')
+        log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
         
 lh = LogHandler()

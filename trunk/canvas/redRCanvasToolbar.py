@@ -45,12 +45,14 @@ class redRCanvasToolbarandMenu():
         self.toolbar.addSeparator()
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.reloadIcon), 
         "Reload Widgets", self.reloadWidgets)
+        self.toolbar.addSeparator()
+        self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.optionsIcon), 
+        "Red-R Options", self.menuItemCanvasOptions)
 
         space = redRwidgetBox(None)
         space.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.toolbar.addWidget(space)
         
-
         self.widgetSuggestEdit = SearchBox(None, width=300)
         self.toolbar.addWidget(QLabel('Search  '))
         self.toolbar.addWidget(self.widgetSuggestEdit)

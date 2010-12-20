@@ -5,9 +5,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 
-class treeWidgetItem(QTreeWidgetItem, widgetState):
+class treeWidgetItem(QTreeWidgetItem):
     def __init__(self, widget = None, stringList = None, toolTip = None, flags=None):
-        widgetState.__init__(self,widget, 'treeWidgetItem',includeInReports=False)
+        #widgetState.__init__(self,widget, 'treeWidgetItem',includeInReports=False)
         if stringList:
             QTreeWidgetItem.__init__(self, stringList)
         else:
@@ -20,8 +20,14 @@ class treeWidgetItem(QTreeWidgetItem, widgetState):
             self.setToolTip(toolTip)
         if flags:
             self.setFlags(flags);
+            
     def text(self,col):
         return str(QTreeWidgetItem.text(self,col))
+    
+    # def setData(self,col,role,val):
+        # print col,role,val
+        # QTreeWidgetItem.setData(self,col,role,val)
+        
     def getSettings(self):
         r = {}
         r['text'] = []

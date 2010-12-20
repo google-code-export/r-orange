@@ -377,15 +377,14 @@ class OrangeCanvasDlg(QMainWindow):
             redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
-
+            
             # close the entire session dropping anything that was open in case it was left by something else, 
             # makes the closing much cleaner than just loosing the session.
-            # raise Exception('asdf')
-            #self.output.logFile.close()
             redRHistory.saveConnectionHistory()
 
             self.output.hide()
-            RSession.Rcommand('quit("no")') 
+            redRLog.closeLogFile()
+            RSession.Rcommand('quit("no")',silent=True) 
             ce.accept()
             QMainWindow.closeEvent(self,ce)
         else:

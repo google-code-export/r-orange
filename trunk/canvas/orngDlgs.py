@@ -187,7 +187,11 @@ class CanvasOptionsDlg(QDialog):
         #self.catchOutputCB = QCheckBox('Catch system output', output)
         self.writeLogFileCB  = OWGUI.checkBox(output, self.settings, "writeLogFile", 
         "Save content of the Output window to a log file")
-
+        hbox = OWGUI.widgetBox(output, orientation = "horizontal")
+        
+        self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", "Log File:", orientation = 'horizontal')
+        self.okButton = OWGUI.button(hbox, self, "Browse", callback = self.browseLogFile)
+        
         # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
 
@@ -209,6 +213,13 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
+        
+    def browseLogFile(self):
+        fn = QFileDialog.getSaveFileName(self, "Save Log File", redREnviron.settings['logFile'],
+        "Text file (*.html);; All Files (*.*)")
+        #print unicode(fn)
+        if fn.isEmpty(): return
+        self.logFile.setText(fn)
         
         
     def onTabChange(self,index):
@@ -244,6 +255,8 @@ class CanvasOptionsDlg(QDialog):
         
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
+        import redRLog
+        redRLog.moveLogFile(redREnviron.settings['logFile'])
         # redRStyle.widgetSelectedColor = self.settings["widgetSelectedColor"]
         # redRStyle.widgetActiveColor   = self.settings["widgetActiveColor"]  
         # redRStyle.lineColor           = self.settings["lineColor"]          

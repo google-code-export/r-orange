@@ -217,21 +217,20 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         
         return reportData
 
-        arrayOfArray = []
-        for d in reportData:
-            if type(d) is dict:
-                arrayOfArray.append([d['label'], d['text']])
-            elif type(d) is list:
-                for x in d:
-                    arrayOfArray.append([x['label'], x['text']])
+        # arrayOfArray = []
+        # for d in reportData:
+            # if type(d) is dict:
+                # arrayOfArray.append([d['label'], d['text']])
+            # elif type(d) is list:
+                # for x in d:
+                    # arrayOfArray.append([x['label'], x['text']])
                     
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(arrayOfArray)
-        text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
-        tableName='Parameters')
-        #print text
-        return text        
+        # text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
+        # tableName='Parameters')
+        # return text        
 
     def require_librarys(self, librarys, repository = None):
         qApp.setOverrideCursor(Qt.WaitCursor)

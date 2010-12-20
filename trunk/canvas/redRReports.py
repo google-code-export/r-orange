@@ -15,6 +15,7 @@ from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.dialog import dialog as redRdialog
 from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWidgetItem
 from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
+from libraries.base.qtWidgets.lineEdit import lineEdit
 
 def createTable(arrayOfArray,tableName='', columnNames=None):
     # print len(arrayOfArray), len(arrayOfArray[0]), arrayOfArray
@@ -77,16 +78,18 @@ class reports(QWizard):
         
         #mainWidgetBox = redRWidgetBox(self.selectElements)
 
-        topWidgetBox = redRWidgetBox(self.selectElements)
+        self.topWidgetBox = redRWidgetBox(self.selectElements)
         #redRwidgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
         
-        self.widgetList = redRtreeWidget(topWidgetBox, label='Widget List', displayLabel=False)
-        self.widgetList.setHeaderLabels(['Include In Reports'])
+        self.widgetList = redRtreeWidget(self.topWidgetBox, label='Widget List', displayLabel=False)
+        self.widgetList.setHeaderLabels(['Element', 'Parameters'])
 
         self.widgetList.setSelectionMode(QAbstractItemView.NoSelection)
-        # buttonWidgetBox = redRWidgetBox(topWidgetBox,orientation='horizontal')
+        buttonWidgetBox = redRWidgetBox(self.topWidgetBox,orientation='horizontal')
         
-        # acceptButton = redRbutton(buttonWidgetBox, 'Compile Report')
+        acceptButton = redRbutton(buttonWidgetBox, 'Expand/Collapse',callback=self.expandCollapse)
+        self.expandState=False
+        #acceptButton = redRbutton(buttonWidgetBox, 'Expand',toggleButton=True)
         # QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
         QObject.connect(self.widgetList, SIGNAL(" itemClicked (QTreeWidgetItem *,int)"), 
         self.widgetListItemClicked)
@@ -95,32 +98,153 @@ class reports(QWizard):
         self.widgetListStateChange)
         
         self.addPage(self.selectElements)
-    def widgetListItemClicked(self, item):
-        itemText = unicode(item.text())
-        self.widgetNames[itemText]['widget'].instance.includeInReport.setChecked(item.isSelected())
+    
+    def expandCollapse(self):
+        if self.expandState:
+            self.widgetList.collapseAll()
+            self.expandState = False
+        else:
+            self.widgetList.expandAll()
+            self.expandState = True
+    def widgetListItemClicked(self, item,col):
+        #print '@@@@@@@@@@@@', col
+        if col > 0:
+            return
+        #print item.data(col, Qt.DisplayRole).type()
+        # if item.checkState(0) == Qt.Checked:
+            # item.setCheckState(0,Qt.Unchecked)
+        # else:
+            # item.setCheckState(0,Qt.Checked)
+            
+        for x in range(item.childCount()):
+            child = item.child(x)
+            child.setCheckState(0,item.checkState(0))
+            for x in range(child.childCount()):
+                child.child(x).setCheckState(0,child.checkState(0))
+            
+        if item.checkState(0) == Qt.Checked:
+            # print 'asdfasdf'
+            while item.parent():
+                item.parent().setCheckState(0,Qt.Checked)
+                item = item.parent()
+    def widgetListStateChange(self,item,col):
+        try:
+            if item.checkState(0) == Qt.Checked:
+                item.pointer['includeInReports'] = True
+            else:
+                item.pointer['includeInReports'] = False
+            # print item.pointer
+        except:
+            #print 'do nothing'
+            pass
+        
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
+  
+    def createTreeWidgetItem(self, parent, elementName, dataPointer):
+        
+        n  = redRtreeWidgetItem(None, [elementName], flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+        n.pointer = dataPointer
+        
+        if dataPointer['includeInReports']:
+            n.setCheckState(0,Qt.Checked)
+        else:
+            n.setCheckState(0,Qt.Unchecked)
+            
+        parent.addChild(n)
+        
+        # print '##############',elementName, parent, dataPointer
+        
+        # parameterBox = QWidget(None)
+        # parameterBox.setLayout(QHBoxLayout())
+        # parameterBox.setMinimumWidth(200)
+        # parameterBox.layout().setSpacing(9)
+        #parameterBox.controlArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        # parameterBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+
+        if 'numChrLimit' in dataPointer.keys():
+            a = lineEdit(None,label='Word Limit', text=unicode(dataPointer['numChrLimit']), width=50,
+            textChangedCallBack=lambda: self.lineEditChanged(a.text(),dataPointer,'numChrLimit') )
+            a.hb.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            # a.hb.setMaximumWidth(100)
+            #a.hb.setMinimumWidth(100)
+            self.widgetList.setItemWidget(n, 1, a.controlArea)
+        if 'numRowLimit' in dataPointer.keys():
+            a = lineEdit(None,label='Table Row Limit',text=unicode(dataPointer['numRowLimit']),width=50,
+            textChangedCallBack=lambda: self.lineEditChanged(a.text(),dataPointer,'numRowLimit'))
+            a.hb.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            self.widgetList.setItemWidget(n, 1, a.controlArea)
+        # x = self.widgetList.itemWidget(n,1)
+        # print 'x', x
+
+        # self.widgetList.setItemWidget(n, 1, parameterBox.controlArea)
+        # x = self.widgetList.itemWidget(n,1)
+        # print 'x', x
+        # for i in x.children():
+            # print 'child:', i
+
+        # for i in n.findChildren(QWidget):
+            # print i
         
         
-        self.widgetNames = {}
-        for widget in widgets:
-            self.widgetNames[widget.caption] = {'inReport': widget.instance.includeInReport.isChecked(), 'widget':widget}
+        #return n
+
+    def lineEditChanged(self,newValue,dataPointer,key):
+        # print '@@@@@@@@@@@@@@@@@@@@@@@@@@', newValue
+        try:
+            if key in ['numChrLimit', 'numRowLimit']:
+                dataPointer[key] = int(newValue)
+        except:
+            pass
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
+        
+    def updateWidgetList(self):
+        #topWidgetBox.layout().addWidget(self.widgetList)
+        # self.widgetList = redRtreeWidget(self.topWidgetBox, label='Widget List', displayLabel=False)
+        # self.widgetList.setHeaderLabels(['Element', 'Parameters'])
+        
         #print self.widgetNames.keys()
         self.widgetList.clear()
-        self.widgetList.addItems(self.widgetNames.keys())
-        count = int(self.widgetList.count())
+        # self.widgetList.addItems(self.widgetNames.keys())
+        # count = int(self.widgetList.count())
         
-        for i in range(count):
-            item = self.widgetList.item(i)
-            if self.widgetNames[unicode(item.text())]['inReport']:
-                self.widgetList.setItemSelected(item, True)
+        for name,widget in self.reportData.items():
+            print 'widget name', name
+            w = redRtreeWidgetItem(self.widgetList, [name], 
+            flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            w.pointer = self.reportData[name]
+            w.setCheckState(0,Qt.Checked);
+            
+            notesTreeElement = self.createTreeWidgetItem(w, 'Notes', widget['notes'])
+            
+            for container, data in widget['reportData'].items():
+                if container =='main':
+                    parent = w
+                else:
+                    parent  = redRtreeWidgetItem(None, [container],
+                    flags=Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                    #parent.pointer = self.reportData[name]['reportData'][container]
+                    parent.setCheckState(0,Qt.Checked)
+                    w.addChild(parent)
+                
+                for elementName, element in data.items():
+                    self.createTreeWidgetItem(parent, elementName, self.reportData[name]['reportData'][container][elementName])
+                    
+        self.widgetList.setColumnWidth(0,250)
+        #self.widgetList.resizeColumnToContents(0)
+
     def createReportsMenu(self,schemaImage=True):
-        qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
-        redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
-        "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
-        if qname.isEmpty(): return
-        qname = unicode(qname)
+        # qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
+        # redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
+        # "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
+        # if qname.isEmpty(): return
+        # qname = unicode(qname)
         
-        name = unicode(qname) # this is the file name of the Report
-        # name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
+        # name = unicode(qname) # this is the file name of the Report
+        name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
         
         if os.path.splitext(name)[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
         
@@ -174,87 +298,7 @@ class reports(QWizard):
 
         else:
             QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", 
-            QMessageBox.Ok + QMessageBox.Default )    
-    
-    def updateWidgetList(self):
-        #topWidgetBox.layout().addWidget(self.widgetList)
-        
-        #print self.widgetNames.keys()
-        self.widgetList.clear()
-        # self.widgetList.addItems(self.widgetNames.keys())
-        # count = int(self.widgetList.count())
-        
-        for name,widget in self.reportData.items():
-            # print widget
-            w = redRtreeWidgetItem(self.widgetList, [name], 
-            flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-            w.pointer = self.reportData[name]
-            w.setCheckState(0,Qt.Checked);
-            
-            
-            
-            n  = redRtreeWidgetItem(None, ['Notes'],
-            flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-            n.pointer = self.reportData[name]['notes']
-            
-            if widget['notes']['includeInReports']:
-                n.setCheckState(0,Qt.Checked)
-            else:
-                n.setCheckState(0,Qt.Unchecked)
-            w.addChild(n)
-            
-            for container, data in widget['reportData'].items():
-                if container =='main':
-                    parent = w
-                else:
-                    parent  = redRtreeWidgetItem(None, [container],
-                    flags=Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-                    #parent.pointer = self.reportData[name]['reportData'][container]
-                    parent.setCheckState(0,Qt.Checked)
-                    w.addChild(parent)
-                for elementName, element in data.items():
-                    e  = redRtreeWidgetItem(None, [elementName],
-                    flags=Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-                    print 
-                    e.pointer = self.reportData[name]['reportData'][container][elementName]
-                        
-                    if 'includeInReports' not in element.keys():
-                        e.setCheckState(0,Qt.Checked);
-                    elif not element['includeInReports']:
-                        e.setCheckState(0,Qt.Unchecked)
-                    else:
-                        e.setCheckState(0,Qt.Checked)
-                    
-                    parent.addChild(e)
-    
-    def widgetListStateChange(self,item,col):
-        try:
-            if item.checkState(0) == Qt.Checked:
-                item.pointer['includeInReports'] = True
-            else:
-                item.pointer['includeInReports'] = False
-            # print item.pointer
-        except:
-            #print 'do nothing'
-            pass
-        
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.reportData)
-
-    def widgetListItemClicked(self, item,col):
-
-        for x in range(item.childCount()):
-            child = item.child(x)
-            child.setCheckState(0,item.checkState(0))
-            for x in range(child.childCount()):
-                child.child(x).setCheckState(0,child.checkState(0))
-            
-        if item.checkState(0) == Qt.Checked:
-            while item.parent():
-                item.parent().setCheckState(0,Qt.Checked)
-                item = item.parent()
-        
+            QMessageBox.Ok + QMessageBox.Default )          
         
     def createReport(self,fileDir,reportName,widgets,schemaImage):
         
@@ -264,9 +308,9 @@ class reports(QWizard):
         for widget in widgets:
             self.reportData[unicode(widget.windowTitle())] = self.getReportData(fileDir, widget)
 
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.reportData)
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(self.reportData)
 
         self.updateWidgetList()
         if self.exec_() == QDialog.Rejected:
@@ -334,14 +378,15 @@ class reports(QWizard):
         return widgetReport
         
     def formatWidgetReport(self, widgetName, widgetReport):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(widgetReport)
-
-        if widgetReport['notes']['text'] =='':
-            notes = 'No notes were entered in the widget face.'
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(widgetReport)
+        
+        if widgetReport['notes']['text'] == '':
+            notes = 'No notes were entered in the widget.'
         else:
-            notes = widgetReport['notes']['text']
+            notes = createLitralBlock(widgetReport['notes']['text'][0:widgetReport['notes']['numChrLimit']-1])
+        
         
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
@@ -352,13 +397,28 @@ class reports(QWizard):
         for container,data in  widgetReport['reportData'].items():
             tables[container] = []
             for name,data in data.items():
-                print 'data',name, data
+                # print 'data',name, data
                 if data['includeInReports']:
-                    tables[container].append([name, data['text']])
+                    if 'type' not in data.keys():
+                        text = data['text']
+                    elif data['type'] =='litralBlock':
+                        text = createLitralBlock(data['text'][0:data['numChrLimit']-1])
+                    elif data['type']=='table':
+                        colNames = None
+                        tableName = ''
+                        if 'colNames' in data:
+                            colNames = data['colNames'][0:data['numRowLimit']]
+                        if 'tableName' in data:
+                            tableName = data['tableName']
+                            
+                        text = createTable(data['data'][0:data['numRowLimit']], 
+                        columnNames=colNames, tableName=tableName)
+
+                    tables[container].append([name, text])
         
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(tables)
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(tables)
         
         text = createTable(tables['main'],columnNames = ['Parameter','Value'],
         tableName='Main Parameters')

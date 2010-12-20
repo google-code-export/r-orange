@@ -144,13 +144,14 @@ def loadSettings():
     #Dubug and output settings##
     ############################
 
-    settings.setdefault("debug", False)
-    settings.setdefault("minSeverity", 5)
-    settings.setdefault("writeLogFile", 1)
     settings.setdefault("dontAskBeforeClose", 0)
-    # settings.setdefault("debugMode", 0)
+    
+    settings.setdefault("writeLogFile", 1)
+    settings["logFile"] = os.path.join(directoryNames['tempDirHolder'], "outputLog_%s.html" % settings['id'])
+    
     settings.setdefault("uploadError", 0)
     settings.setdefault("askToUploadError", 0)
+    
     settings.setdefault("focusOnCatchException", 1)
     settings.setdefault("focusOnCatchOutput" , 0)
     settings.setdefault("printOutputInStatusBar", 0)

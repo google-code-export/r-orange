@@ -22,7 +22,7 @@ textIcon = os.path.join(canvasPicsDir, "text.png")
 printIcon= os.path.join(canvasPicsDir, "print.png")
 updateIcon= os.path.join(canvasPicsDir, "update.png")
 exitIcon = os.path.join(canvasPicsDir, "exit.png")
-
+optionsIcon = os.path.join(canvasPicsDir, "options.png")
 #Red-R Status bar button Icons
 notesIcon = os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png')
 
