@@ -2,7 +2,7 @@
 
 # imports
 import cPickle, redRObjects
-import os, sys, redREnviron
+import os, sys, redREnviron,redRLog
 
 ## get the data into the history dict
 
@@ -12,7 +12,6 @@ try:
     f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistory.rrdf'))
     hDict = cPickle.load(f)
     f.close()
-    
 except Exception as inst:
     # print inst
     # print 'widgetHistory not found'
@@ -26,16 +25,18 @@ except:
     hDictWeb = {}
     
 def getSuggestWidgets(outWidget):
-    topCons = getTopConnections(outWidget)
-    print topCons
-    widgets = redRObjects.widgetRegistry()['widgets']
     actions = []
-    for con in topCons:
-        if con in widgets.keys():
-            wInfo = widgets[con]
-            actions.append(wInfo)
+    try:
+        topCons = getTopConnections(outWidget)
+        print topCons
+        widgets = redRObjects.widgetRegistry()['widgets']
+        for con in topCons:
+            if con in widgets.keys():
+                wInfo = widgets[con]
+                actions.append(wInfo)
+    except:
+        redRLog.log(redRLog.REDRCORE,redRLog.WARNING,'The widget use history is corrept. Please delete it.')
     return actions
-
 def getTopConnections(outWidget):
     ## return the top connections for the widget
     # print 'filename:', outWidget.widgetInfo.fileName

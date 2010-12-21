@@ -69,6 +69,12 @@ class checkBox(widgetState,QWidget):
         for i in self.buttons.buttons():
             if i.isChecked(): checked.append(unicode(i.text()))
         return checked
+    def getUnchecked(self):
+        unChecked = []
+        for i in self.buttons.buttons():
+            if not i.isChecked(): unChecked.append(unicode(i.text()))
+        return unChecked
+    
     def buttonAt(self,ind):
         return unicode(self.buttons.button(ind).text())
         

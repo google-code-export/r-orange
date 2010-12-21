@@ -236,12 +236,13 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     if settings:
         try:
             instance.setSettings(settings)
-            if '_customSettings' in settings.keys():
-                instance.loadCustomSettings(settings['_customSettings'])
-            else:
-                instance.loadCustomSettings(settings)
+            # if '_customSettings' in settings.keys():
+                # instance.loadCustomSettings(settings['_customSettings'])
+            # else:
+            instance.loadCustomSettings(settings)
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'redRObjects addInstance; error in setting settings or custom settings %s' % inst)
+            # print '##########################\n'*5 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'redRObjects addInstance; error in setting settings or custom settings. <b>%s<b>' % inst)
             
 
     instance.setProgressBarHandler(activeTab().progressBarHandler)   # set progress bar event handler

@@ -97,8 +97,8 @@ class readFile(OWRpy):
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.otherOptions = checkBox(split,label='Options', displayLabel=False,
-        buttons=['fill','unicodeip.white','blank.lines.skip',
-        'allowEscapes','unicodeingsAsFactors'],
+        buttons=['fill','strip.white','blank.lines.skip',
+        'allowEscapes','StringsAsFactors'],
         setChecked = ['blank.lines.skip'],
         toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
         'logical. Used only when sep has been specified, and allows the unicodeipping of leading and trailing white space from character fields (numeric fields are always unicodeipped). ',

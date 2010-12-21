@@ -18,11 +18,12 @@ import sip
 class filterTable(widgetState, QTableView):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
     editable=False, sortable=True, filterable=False,
-    selectionBehavior=QAbstractItemView.SelectColumns, 
-    selectionMode = QAbstractItemView.MultiSelection, 
+    selectionBehavior=QAbstractItemView.SelectRows, 
+    selectionMode = QAbstractItemView.ExtendedSelection, 
     showResizeButtons = True,
     onFilterCallback = None,
-    callback=None):
+    callback=None,
+    selectionCallback=None):
         
         widgetState.__init__(self,widget,label,includeInReports)
         
@@ -41,6 +42,7 @@ class filterTable(widgetState, QTableView):
         self.dataInfo = widgetLabel(leftBox,label='',wordWrap=False) 
         box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
+        
         if showResizeButtons:
             resizeColsBox = widgetBox(box, orientation="horizontal")
             resizeColsBox.layout().setAlignment(Qt.AlignRight)
@@ -65,6 +67,11 @@ class filterTable(widgetState, QTableView):
         self.editable=editable
         self.filterable=filterable
         self.onFilterCallback = onFilterCallback
+        self.selectionCallback = selectionCallback
+        self.selections = QItemSelection()
+        self.working = False
+
+        self.setHorizontalHeader(myHeaderView(self))
         self.setSelectionBehavior(selectionBehavior)
         self.setAlternatingRowColors(True)
         
@@ -82,16 +89,51 @@ class filterTable(widgetState, QTableView):
             # self.horizontalHeader().setSortIndicatorShown(True)
             # self.horizontalHeader().setSortIndicator(-1,0)
         if filterable or sortable:
-            #self.horizontalHeader().setClickable(True)
-            QObject.connect(self.horizontalHeader(), SIGNAL('sectionClicked (int)'), self.headerClicked)
-            # self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
-            # self.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
+            self.horizontalHeader().setClickable(True)
+            # QObject.connect(self.horizontalHeader(), SIGNAL('sectionClicked (int)'), self.selectColumn)
+            self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
+            self.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
 
-        
+            
         if callback:
             QObject.connect(self, SIGNAL('clicked (QModelIndex)'), callback)
+    def selectColumn(self,val):
+        print 'selectColumn#############################', val
 
+    def cellSelection(self,newSelected,oldSelected):
+        # print 'cellSelection ################', newSelected, oldSelected
+        #print self.selectionModel().selectedColumns()#, self.selectionModel().selectedRows() 
+        self.selections.merge(newSelected,QItemSelectionModel.Select)
+        self.selections.merge(oldSelected,QItemSelectionModel.Deselect)
+        inds = self.selections.indexes()
+        
+        if self.working:
+            return 
+        self.working = True
+        rows = []
+        cols = []
+        if len(self.selectionModel().selectedColumns()) > 0:
+            for x in self.selectionModel().selectedColumns():
+                cols.append(str(x.column()+1))
+            tmpData = '%s[,c(%s)]' % (self.Rdata, ','.join(cols))
+        elif len(self.selectionModel().selectedRows()) > 0:
+            for x in self.selectionModel().selectedRows():
+                cols.append(str(x.row()+1))
+            tmpData = '%s[c(%s),]' % (self.Rdata, ','.join(rows))
+        else:
+            for ind in inds:
+                #print 'new', ind.row(),ind.column()
+                rows.append(str(ind.row()+1))
+                cols.append(str(ind.column()+1))
 
+            self.R('rowInd <- c(' + ','.join(rows) + ')',silent=True)
+            self.R('colInd <- c(' + ','.join(cols) + ')',silent=True)
+            
+            self.R('tmpData <- apply(cbind(rowInd,colInd),1,FUN=function(x) {%s[x[1],x[2]]})' % self.Rdata, silent=True)
+            tmpData = 'tmpData'
+            
+        self.selectionCallback(tmpData)
+        self.working = False
         
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         # print 'in setRTable', data
@@ -106,9 +148,9 @@ class filterTable(widgetState, QTableView):
             
         else:
             filteredCols = self.criteriaList.keys()
-        total = self.R('nrow(%s)' % self.Rdata)        
+        total = self.R('nrow(%s)' % self.Rdata,silent=True)        
         if self.filterable:
-            filtered = self.R('nrow(%s)' % data)
+            filtered = self.R('nrow(%s)' % data,silent=True)
             self.dataInfo.setText('Showing %d of %d rows.' % (filtered,total))
         else:
             self.dataInfo.setText('Showing %d rows.' % (total))
@@ -116,6 +158,14 @@ class filterTable(widgetState, QTableView):
         self.tm = MyTableModel(data,self,editable=self.editable, 
         filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
         self.setModel(self.tm)
+    
+    def setModel(self, model):
+        QTableView.setModel(self, model)
+        if self.selectionCallback:
+            self.connect(self.selectionModel(),  
+                         SIGNAL("selectionChanged(QItemSelection, QItemSelection)"),  
+                         self.cellSelection) 
+
     def resizeColumnsToContents(self):
         QTableView.resizeColumnsToContents(self)
         for i in range(self.tm.columnCount(self)):
@@ -138,6 +188,13 @@ class filterTable(widgetState, QTableView):
             return self.tm.columnCount(self)
         else:
             return 0
+    
+    def rowCount(self):
+        if self.tm:
+            return self.tm.rowCount(self)
+        else:
+            return 0
+    
     def addRows(self,count,headers=None):
         self.tm.insertRows(self.tm.rowCount(self),count,headers=headers)
     def addColumns(self,count,headers=None):
@@ -147,7 +204,7 @@ class filterTable(widgetState, QTableView):
         self.criteriaList = {}
     def headerClicked(self,val):
         
-        selectedCol = val + 1
+        selectedCol = self.horizontalHeader().logicalIndexAt(val) + 1
         self.createMenu(selectedCol)
     
     def getData(self,row,col):
@@ -607,177 +664,7 @@ class MyTableModel(QAbstractTableModel):
         sip.delete(self)  
   
 
-
-"""
-class MyTableModel(QAbstractTableModel): 
-    def __init__(self, Rdata, parent,editable=False): 
-        self.R = Rcommand
-        self.editable = editable
-
-        #print parent
-        QAbstractTableModel.__init__(self,parent) 
-        self.Rdata = Rdata
-        self.orgRdata = Rdata
-        
-        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list')
-        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list')
-        self.nrow = self.R('nrow(%s)' % self.Rdata,silent=True)
-        self.ncol = self.R('ncol(%s)' % self.Rdata,silent=True)
-        # nrows = self.R('nrow(%s)' % self.Rdata)
-        #print 'length rownams %d' % len(self.rownames)
-        
-        # if self.editable:
-            # self.arraydata = self.R('as.matrix(rbind(c("rownames",colnames(as.data.frame(' +Rdata+ '))), cbind(rownames(as.data.frame(' +Rdata+')),'+Rdata+')))', wantType = 'list')
-            # self.colnames.insert(0,'Row Names')
-            # self.rownames.insert(0,'Row Names')
-        # else:
-        # self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
-        
-        # print self.arraydata
-        # print 'arraydata type:' ,type(self.arraydata)
-    def flags(self,index):
-        if self.editable:
-            return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
-        else:
-            return (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-    def rowCount(self, parent): 
-        return self.nrow
-        #return len(self.arraydata)
-    def columnCount(self, parent): 
-        return self.ncol
-        #return len(self.arraydata[0])
-    def data(self, index, role): 
-        # print 'in data'
-        if not index.isValid(): 
-            return QVariant() 
-        elif role != Qt.DisplayRole: 
-            return QVariant() 
-        return self.R('%s[%d,%d]' % (self.Rdata,index.row()+1,index.column()+1))
-        #return QVariant(self.arraydata[index.row()][index.column()]) 
-
-    def setData(self,index,data, role):
-        #print 'in setData', data.toString(), index.row(),index.column(), role
-        if not index.isValid(): 
-            return False
-        elif role == Qt.EditRole: 
-            # print self.arraydata[index.row()][index.column()]
-            # self.arraydata[index.row()][index.column()] = data.toString()
-            Rcmd = '%s[%d,%d]="%s"' % (self.Rdata, index.row(), index.column(), data.toString())
-            # print Rcmd
-            self.R(Rcmd, wantType = 'NoConversion')
-            # print self.arraydata
-            # print self.arraydata[index.row()][index.column()]
-            self.emit(SIGNAL("dataChanged()"))
-            return True
-        # elif role == Qt.BackgroundRole:
-            # print 'in BackgroundRole'
-            # d = self.itemDelegate(index)
-            # d.paint(QBrush(Qt.red))
-            # return True
-        
-        return False
+class myHeaderView(QHeaderView):
+    def __init__(self,parent):
+        QHeaderView.__init__(self,Qt.Horizontal,parent)
     
-    def headerData(self, col, orientation, role):
-        # print 'in headerData', col
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return QVariant(self.colnames[col])
-            # return self.R('colnames(as.data.frame(%s))[%d]' % (self.Rdata,col),silent=True)
-        elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
-            return QVariant(self.rownames[col])
-            # return self.R('rownames(as.data.frame(%s))[%d]' % (self.Rdata,col),silent=True)
-        return QVariant()
-    
-    def setHeaderData(self,col,orientation,data,role):
-        # print 'in setHeaderData'
-        if orientation == Qt.Horizontal and role == Qt.EditRole:
-            self.colnames[col] = data.toString()
-            self.emit(SIGNAL("headerDataChanged()"))
-            return True
-        else:
-            return False
-    def clear(self):
-        pass
-        ## please reimplement in a later version
-    def insertRows(self,beforeRow,count,headers=None):
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
-        self.emit(SIGNAL("beginInsertRows()"))
-        size= self.columnCount(self)
-        toAppend= ['' for i in xrange(self.columnCount(self))]
-        # print size
-        # print toAppend
-        # print count
-        for i in xrange(count):
-            self.arraydata.append(toAppend)
-
-        if headers:
-            self.rownames.extend(headers)
-        else:
-            size = len(self.rownames)+1
-            # print self.rownames
-            # print size
-            headers = [unicode(i) for i in range(size,size+count)]
-            # print headers
-            self.rownames.extend(headers)
-        self.R('t = matrix("",nrow='+str(count)+',ncol=ncol('+self.Rdata+'))', wantType = 'NoConversion')
-        self.R('colnames(t) = colnames('+self.Rdata+')', wantType = 'NoConversion')
-        self.R('rownames(t) = rownames("%s")' % '","'.join(headers), wantType = 'NoConversion')
-        self.R(self.Rdata+'=rbind('+self.Rdata+',t)', wantType = 'NoConversion')
-
-
-        self.emit(SIGNAL("endInsertRows()"))
-        self.emit(SIGNAL("layoutChanged()"))
-        return True
-    def insertColumns(self,beforeColumn,count,headers=None):
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
-        self.emit(SIGNAL("beginInsertRows()"))
-
-        toAppend = ['' for i in xrange(count)]
-        for x in self.arraydata:
-            x.extend(toAppend)
-
-        if headers:
-            self.colnames.extend(headers)
-        else:
-            size = len(self.colnames)+1
-            # print self.colnames
-            # print size
-            headers = ['V'  +unicode(i) for i in range(size,size+count)]
-            # print headers
-            self.colnames.extend(headers)
-        
-        #self.R('%s = cbind(%s,
-
-        self.emit(SIGNAL("endInsertRows()"))
-        self.emit(SIGNAL("layoutChanged()"))
-
-    def sort(self, Ncol, order):
-        if self.editable: return
-        
-        if order == Qt.DescendingOrder:
-            self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol+1)
-        else:
-            self.Rdata = '%s[order(%s[,%d],decreasing=TRUE),]' % (self.orgRdata,self.orgRdata,Ncol+1)
-            
-        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list')
-        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list')
-        self.nrow = self.R('nrow(%s)' % self.Rdata)
-        self.ncol = self.R('ncol(%s)' % self.Rdata)
-
-        # print 'in sort'
-        # import operator
-        # self.emit(SIGNAL("layoutAboutToBeChanged()"))
-        
-        # for r,x in zip(self.rownames, self.arraydata):
-            # x.append(r)
-        # self.arraydata.append(self.rownames)
-        # self.arraydata = sorted(self.arraydata, key=operator.itemgetter(Ncol))
-        
-        # if order == Qt.DescendingOrder:
-            # self.arraydata.reverse()
-       
-        # self.rownames = [x.pop() for x in self.arraydata]
-        self.emit(SIGNAL("layoutChanged()"))
-
-    def delete(self):
-        sip.delete(self)  
-"""

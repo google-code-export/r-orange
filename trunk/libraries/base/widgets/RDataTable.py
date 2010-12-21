@@ -81,14 +81,17 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
   replace the place holder. 
           """)
         
-
         #The table
         self.tableBox = widgetBox(self.controlArea)
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #boxSettings = groupBox(self.advancedOptions, label = "Settings")
 
         self.table = filterTable(self.tableBox,label = 'Data Table', sortable=True,
-        filterable=True,selectionMode = QAbstractItemView.SingleSelection, callback=self.itemClicked)
+        filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked,selectionCallback=self.cellSelection)
+        # self.R('data <- data.frame(a=rnorm(1000),b=c("a","b","c","d","e"))')
+        # self.table.setRTable('data')
+        # self.data = 'data'
+        
         self.customSummary = lineEdit(self.advancedOptions, label = 'Custom Summary:', toolTip = 'Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})')
         self.summaryLabel = textEdit(self.advancedOptions, label = 'Summary')
         
@@ -116,11 +119,31 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.table.setRTable(self.data)
 
         self.supressTabClick = False
-            
+    
+    
+    def cellSelection(self,tmpData):
+        # print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n'
+        type = self.R('class('+tmpData+')', wantType = 'Convert', silent = True)
+        if type in ['integer', 'complex', 'float', 'numeric']:
+            summaryText = '<strong>Mean</strong>: %s<br/> <strong>Median</strong>: %s<br/> <strong>Range</strong>: %s<br/> <strong>Standard Deviation</strong>: %s<br/> <strong>Count</strong>: %s<br/> <strong>Min</strong>: %s<br/> <strong>Max</strong>: %s<br/>' % (
+                str(self.R('mean(%s)' % tmpData, wantType = 'Convert', silent = True)), 
+                str(self.R('median(%s)' % tmpData, wantType = 'Convert', silent = True)), 
+                str(self.R('range(%s)' % tmpData, wantType = 'Convert', silent = True)), 
+                str(self.R('sd(%s)' % tmpData, wantType = 'Convert', silent = True)), 
+                str(self.R('length(%s)' % tmpData, wantType = 'Convert', silent = True)), 
+                str(self.R('min(%s)'% tmpData, wantType = 'Convert', silent = True)), 
+                str(self.R('max(%s)' % tmpData, wantType = 'Convert', silent = True)))
+        else:
+            summaryText = unicode(self.R('summary('+tmpData+')', wantType = 'Convert', silent = True)).replace('\n', '<br/>')        
+
+        self.summaryLabel.setHtml(unicode(summaryText))
+        self.working = False
+        
     def itemClicked(self, val):
         # print 'item clicked'
         # print self.data
-        RclickedRow = int(val.row())+1
+        clickedRow = int(val.row())+1
+        clickedCol = int(val.column())+1
         
         for item in self.linkListBox.selectedItems():
             #print item.text()
@@ -130,34 +153,35 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             print 'col', col, type(col)
             if col == 0 or col == 'row': #special cases for looking into rownames
                 #cellVal = self.data.getData()['row_names'][val.row()]  
-                cellVal = self.R('rownames('+self.data+')['+unicode(RclickedRow)+']')
+                cellVal = self.R('rownames('+self.data+')['+clickedRow+']')
             else:
                 
                 #cellVal = self.data.getData()[col][val.row()]  
-                cellVal = self.R(self.data+'['+unicode(RclickedRow)+',"'+col+'"]')
+                cellVal = self.R(self.data+'['+clickedRow+',"'+col+'"]')
             url = url.replace('{'+col+'}', unicode(cellVal))
             #print url
             import webbrowser
             webbrowser.open_new_tab(url)
-            
+        return
         ## make the summary of the data.
-        type = self.R('class('+self.data+'[,'+str(val.column()+1)+'])', wantType = 'Convert', silent = True)
+        type = self.R('class('+self.data+'[,'+str(clickedCol)+'])', wantType = 'Convert', silent = True)
         if type in ['integer', 'complex', 'float', 'numeric']:
             summaryText = '<strong>Mean</strong>: %s<br/> <strong>Median</strong>: %s<br/> <strong>Range</strong>: %s<br/> <strong>Standard Deviation</strong>: %s<br/> <strong>Count</strong>: %s<br/> <strong>Min</strong>: %s<br/> <strong>Max</strong>: %s<br/>' % (
-                str(self.R('mean(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
-                str(self.R('median(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
-                str(self.R('range(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
-                str(self.R('sd(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
-                str(self.R('length(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
-                str(self.R('min(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)), 
-                str(self.R('max(%s[,%s])' % (self.data, val.column()+1), wantType = 'Convert', silent = True)))
-            
+                str(self.R('mean(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                str(self.R('median(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                str(self.R('range(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                str(self.R('sd(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                str(self.R('length(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                str(self.R('min(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)), 
+                str(self.R('max(%s[,%s])' % (self.data, clickedCol), wantType = 'Convert', silent = True)))
         else:
             summaryText = unicode(self.R('summary('+self.data+'[,'+str(val.column()+1)+'])', wantType = 'Convert', silent = True)).replace('\n', '<br/>')        
         if unicode(self.customSummary.text()) != '':
             summaryText += 'Custom: %s' % unicode(self.R(unicode(self.customSummary.text()).replace('{Col}', '%s[,%s]' % (self.data, val.column()+1)), wantType = 'Convert', silent = True))
+        
         self.summaryLabel.setHtml(unicode(summaryText))
-        print summaryText
+        #print summaryText
+    
     def clearLinks(self):
         self.linkListBox.clear()
         self.currentLinks = {}
@@ -220,33 +244,4 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         painter.end()
         self.colButton.setIcon(QIcon(pixmap))
 
-    def getReportText(self, fileDir):
-        text = self.table.getReportText(fileDir)
-        return text
-
-class TableItemDelegate(QItemDelegate):
-    def __init__(self, widget = None, table = None):
-        QItemDelegate.__init__(self, widget)
-        self.table = table
-        self.widget = widget
-
-    def paint(self, painter, option, index):
-        painter.save()
-        self.drawBackground(painter, option, index)
-        value, ok = index.data(Qt.DisplayRole).toDouble()
-
-        if ok:        # in case we get "?" it is not ok
-            if self.widget.showDistributions:
-                col = index.column()
-                if col < len(self.table.dist) and self.table.dist[col]:        # meta attributes and discrete attributes don't have a key
-                    dist = self.table.dist[col]
-                    smallerWidth = option.rect.width() * (dist.max - value) / (dist.max-dist.min or 1)
-                    painter.fillRect(option.rect.adjusted(0,0,-smallerWidth,0), self.widget.distColor)
-##            text = self.widget.locale.toString(value)    # we need this to convert doubles like 1.39999999909909 into 1.4
-##        else:
-        text = index.data(Qt.DisplayRole).toString()
-        ##text = index.data(OrangeValueRole).toString()
-
-        self.drawDisplay(painter, option, option.rect, text)
-        painter.restore()
 

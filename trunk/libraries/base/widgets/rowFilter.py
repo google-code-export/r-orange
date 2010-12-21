@@ -58,7 +58,6 @@ class rowFilter(OWRpy):
         self.table.setRTable(self.data)
         
     def onFilter(self):
-        # print '############################ onFilter'
         if 'Commit on Filter' in self.commitOnInput.getChecked():
             self.commitSubset()
 
@@ -68,36 +67,3 @@ class rowFilter(OWRpy):
 
         self.rSend('id0', newData)
    
-    def saveCustomSettings(self):
-        ## make a dict of settings for each of the dialogs.  These will be reloaded on reload.
-        
-        settings = []
-        for i in self.criteriaDialogList:
-            settings.append({'criteriaCollection':i['criteriaCollection'], 'colname':i['colname']})
-            
-        return settings
-    def loadCustomSettings(self,settings=None):
-        # custom function for reloading the widget
-        print 'Loading Custom Settings for DataExplorer'
-        # process the data again
-        if self.dataParent != None:
-            print 'Processing Data Parent'
-            self.processData(self.dataParent) # this sets the criteriaDialogList and the widget, I'll think of a smarter way of doing this...
-            print 'Done processing the parent, everything should be ready to process the criteria'
-            if settings:
-                for i in settings:
-                    for d in self.criteriaDialogList:
-                        if d['colname'] == i['colname']:
-                            d['criteriaCollection'] = i['criteriaCollection']
-                            d['widgetLabel'].setHtml('<pre>'+i['criteriaCollection']+'</pre>')
-                            print 'Setting ', d['colname'], 'to ', i['criteriaCollection']
-                self.commitCriteriaDialog()
-                print 'Previously Committed data has been displayed.'
-        # pass
-    def customCloseEvent(self):
-        pass
-    def deleteWidget(self):
-        pass
-        
-    def getReportText(self, fileDir):
-        return 'Data was examined and possibly subset based on some Column Critera.  Please see the Red-R .rrs file or the included notes for more information on this subsetting.\n\n'

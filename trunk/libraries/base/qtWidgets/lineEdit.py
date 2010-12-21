@@ -18,11 +18,12 @@ class lineEdit(QLineEdit,widgetState):
             self.hb = widgetBox(self.controlArea,orientation=orientation, spacing=2)
             if sp == 'shrinking':
                 self.hb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-            widgetLabel(self.hb, label)
+            lb = widgetLabel(self.hb, label)
             if width != -1:
                 sb = widgetBox(self.hb)
-                sb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+                sb.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
             self.hb.layout().addWidget(self)
+            self.hb.layout().setAlignment(lb,Qt.AlignRight)
         else:
             self.controlArea.layout().addWidget(self)
         

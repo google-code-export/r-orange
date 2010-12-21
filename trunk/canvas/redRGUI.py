@@ -39,7 +39,11 @@ class widgetState:
         self.controlArea.hide()
     def show(self):
         self.controlArea.show()
-    
+    def setDisabled(self,e):
+        self.controlArea.setDisabled(e)
+    def setEnabled(self,e):
+        self.controlArea.setEnabled(e)
+        
     def getReportTextDefault(self,fileDir):
         # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
         # print 'self', self, self.widgetName

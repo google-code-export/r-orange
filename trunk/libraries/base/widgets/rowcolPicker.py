@@ -194,17 +194,18 @@ class rowcolPicker(OWRpy):
             else:
                 self.rSend('id1', None)
         self.SubsetByAttached = 0
-    # def getReportText(self, fileDir):
-        # if self.SubsetByAttached:
-            # text = 'Data was subset by '+unicode(self.rowcolBox.getChecked())+' '+unicode(self.subsetColumn.currentText())+'\n\n'
-        # else:
-            # text = 'Data was subset by the following selections:\n\n'
-            # selectedDFItems = []
-            # for name in self.attributes.selectedItems():
-                # selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
-                
-            # for name in selectedDFItems:
-                # text += '-'+unicode(name)+'\n\n'
-                
-        # text += '\n\n'
-        # return text
+    def loadCustomSettings(self,settings):
+        # print '######################\n'*5
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings)
+        
+        selected = []
+        print settings['sendSection']['redRGUIObject']['checked']
+        if 'True' in settings['sendSection']['redRGUIObject']['checked']:
+            selected.append('Selected')
+
+        if 'False' in settings['sendSection']['redRGUIObject']['checked']:
+            selected.append('Not Selected')
+        # print selected
+        self.sendSection.setChecked(selected)

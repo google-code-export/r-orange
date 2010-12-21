@@ -179,7 +179,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
                          fullName = filename
                          #inputList = inputList, outputList = outputList
                          )
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'logging widget info %s' % widgetInfo.name)
+            #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'logging widget info %s' % widgetInfo.name)
             for attr, deflt in (
                 #('inputs>', 'None'), ('outputs>', 'None'), 
                 ("contact>", "")
@@ -230,7 +230,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             widgets.append((widgetID, widgetInfo))
             
         except Exception, msg:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occurred in %s: %s' % (filename, msg))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occurred in <b>%s: %s<b>' % (filename, msg))
     return widgets
 
 def readTemplates(directory):
