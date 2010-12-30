@@ -323,9 +323,8 @@ class redRCanvasToolbarandMenu():
         self.canvas.schema.dumpWidgetVariables()
 
     def menuItemShowOutputWindow(self):
-        self.canvas.output.hide()
-        self.canvas.output.show()
-        #self.output.setFocus()
+        self.canvas.outputDock.show()
+    
     def showOutputException(self):
         self.output.hide()
         self.output.show()
@@ -336,19 +335,19 @@ class redRCanvasToolbarandMenu():
 
         
     def menuItemClearOutputWindow(self):
-        self.output.textOutput.clear()
-        self.statusBar().showMessage("")
+        self.canvas.printOutput.clear()
+        
         
 
     def menuItemSaveOutputWindow(self):
-        qname = QFileDialog.getSaveFileName(self, "Save Output To File", redREnviron.directoryNames['canvasSettingsDir'] + "/Output.html", "HTML Document (*.html)")
+        qname = QFileDialog.getSaveFileName(self.canvas, "Save Output To File", 
+        redREnviron.settings['logFile'], "HTML Document (*.html)")
         if qname.isEmpty(): return
         qname = unicode(qname)
 
-        text = unicode(self.output.textOutput.toHtml())
-        #text = text.replace("</nobr>", "</nobr><br>")
+        text = unicode(self.canvas.printOutput.toHtml())
 
-        file = open(name, "wt")
+        file = open(qname, "wt")
         file.write(text)
         file.close()
 

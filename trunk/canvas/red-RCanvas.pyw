@@ -71,8 +71,8 @@ class OrangeCanvasDlg(QMainWindow):
         #####Output Manager####
         #######################
 
-        self.output = redROutput.OutputWindow(self)
-        redRLog.setOutputManager('window', self.output.outputManager)
+        # self.output = redROutput.OutputWindow(self)
+        # redRLog.setOutputManager('window', self.output.outputManager)
         
         
         ###################
@@ -381,8 +381,6 @@ class OrangeCanvasDlg(QMainWindow):
             # close the entire session dropping anything that was open in case it was left by something else, 
             # makes the closing much cleaner than just loosing the session.
             redRHistory.saveConnectionHistory()
-
-            self.output.hide()
             redRLog.closeLogFile()
             RSession.Rcommand('quit("no")',silent=True) 
             ce.accept()

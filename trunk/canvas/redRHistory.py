@@ -28,7 +28,7 @@ def getSuggestWidgets(outWidget):
     actions = []
     try:
         topCons = getTopConnections(outWidget)
-        print topCons
+        #print topCons
         widgets = redRObjects.widgetRegistry()['widgets']
         for con in topCons:
             if con in widgets.keys():
@@ -40,8 +40,10 @@ def getSuggestWidgets(outWidget):
 def getTopConnections(outWidget):
     ## return the top connections for the widget
     # print 'filename:', outWidget.widgetInfo.fileName
-    # print 'dict', hDict
+    
     if outWidget.widgetInfo.fileName in hDict:
+        print 'recent', hDict[outWidget.widgetInfo.fileName]['recent']
+        print 'counts', hDict[outWidget.widgetInfo.fileName]['counts']
         tops = hDict[outWidget.widgetInfo.fileName]['recent']
         widgetConns = hDict[outWidget.widgetInfo.fileName]['counts'] # get the info associated with this widget.
         tops += [val for val in sorted(widgetConns, key=widgetConns.get, reverse=True)[0:9] if val not in tops]
@@ -65,13 +67,21 @@ def addConnectionHistory(outWidget,inWidget):
     
     recent = hDict[outWidget.widgetInfo.fileName]['recent']
     counts = hDict[outWidget.widgetInfo.fileName]['counts']
-    
+    # print 'addConnectionHistory recent', recent
+    if inWidget.widgetInfo.fileName in recent:
+        recent.remove(inWidget.widgetInfo.fileName)
+        # print 'recent after remove', recent
+        
     recent.insert(0,inWidget.widgetInfo.fileName)
-    recent = list(set(recent))
+    # print 'recent after insert', recent
+
+    #recent = list(set(recent))
     
     # print 'unique recent', recent
     if len(recent)  >2:
-        recent.pop()
+        recent = recent[0:2]
+    # print 'unique recent after ', recent
+    
     hDict[outWidget.widgetInfo.fileName]['recent'] = recent
     
     if inWidget.widgetInfo.fileName in counts:
@@ -79,7 +89,7 @@ def addConnectionHistory(outWidget,inWidget):
     else:
         counts[inWidget.widgetInfo.fileName] = 1
     
-    print hDict
+    #print hDict
     
     # if newwidget.widgetInfo.fileName in hDictWeb:
         # widgetConnsWeb = hDictWeb[newwidget.widgetInfo.fileName]

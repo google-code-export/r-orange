@@ -47,6 +47,7 @@ def __getDirectoryNames():
             print 'Error occured in setting the settingsDir'
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
+    logsDir = os.path.join(settingsDir, "RedRlogs")
     canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
     tempDirHolder = os.path.join(canvasSettingsDir, 'temp')
     widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
@@ -64,7 +65,8 @@ def __getDirectoryNames():
     schemaDir = os.path.join(documentsDir, 'Schemas')
     
 
-    for dname in [documentsDir,templatesDir,schemaDir, settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir, downloadsDir , tempDirHolder]:
+    for dname in [documentsDir,templatesDir,schemaDir, settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir,logsDir,
+    downloadsDir , tempDirHolder]:
         if dname <> None and not os.path.isdir(dname):
             try: os.makedirs(dname)        
             # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
@@ -73,7 +75,10 @@ def __getDirectoryNames():
     #tempDir = setTempDir(tempDirHolder)
     # print tempDir
         
-    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", "picsDir", "addOnsDir", "reportsDir", "settingsDir", "downloadsDir",'logDB', "widgetSettingsDir",  "canvasSettingsDir"]])
+    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", 
+    "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", 
+    "picsDir", "addOnsDir", "reportsDir","logsDir",
+    "settingsDir", "downloadsDir",'logDB', "widgetSettingsDir",  "canvasSettingsDir"]])
 def checkInternetConnection():
     import urllib
     try:
@@ -109,7 +114,8 @@ def loadSettings():
             pass
 
     settings['id'] = unicode(time.time())
-    
+    setTempDir('temp_'+ settings['id'])
+
     settings.setdefault("widgetListType", 3)
     settings.setdefault("iconSize", "40 x 40")
     settings.setdefault("toolbarIconSize", 1)
@@ -147,7 +153,7 @@ def loadSettings():
     settings.setdefault("dontAskBeforeClose", 0)
     
     settings.setdefault("writeLogFile", 1)
-    settings["logFile"] = os.path.join(directoryNames['tempDirHolder'], "outputLog_%s.html" % settings['id'])
+    settings["logFile"] = os.path.join(directoryNames['logsDir'], "outputLog_%s.html" % settings['id'])
     
     settings.setdefault("uploadError", 0)
     settings.setdefault("askToUploadError", 0)
@@ -216,5 +222,5 @@ if __name__ =='redREnviron':
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-    setTempDir('temp_'+ settings['id'])
+    
     

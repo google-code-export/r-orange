@@ -82,8 +82,11 @@ def formatedLogOutput(table, logLevel, stack, comment, widget=None):
     
     if table == R:
         comment = getSafeString(comment)
-
-    string = '<div style="color:#0000FF">%s:%s </div>: ' %  (tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
+    if logLevel == CRITICAL:
+        color = '#FF0000'
+    else:
+        color = "#0000FF"
+    string = '<div style="color:%s">%s:%s </div>: ' %  (color, tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
     if stack:
         string+='%s || ' % (getSafeString(stack[-3]))
     

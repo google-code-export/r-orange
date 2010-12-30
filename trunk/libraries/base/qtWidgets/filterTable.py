@@ -195,6 +195,25 @@ class filterTable(widgetState, QTableView):
         else:
             return 0
     
+    def copy(self):
+        selection = self.selectionModel() #self.table = QAbstractItemView
+        indexes = selection.selectedIndexes()
+
+        columns = indexes[-1].column() - indexes[0].column() + 1
+        rows = len(indexes) / columns
+        textTable = [[""] * columns for i in xrange(rows)]
+
+        for i, index in enumerate(indexes):
+         textTable[i % rows][i / rows] = unicode(self.tm.data(index,Qt.DisplayRole).toString()) #self.model = QAbstractItemModel 
+
+         qApp.clipboard().setText("\n".join(("\t".join(i) for i in textTable)))
+    
+    def keyPressEvent(self, event):
+        if event.matches(QKeySequence.Copy):
+            self.copy()
+        else:
+            QTableView.keyPressEvent(self,event)
+
     def addRows(self,count,headers=None):
         self.tm.insertRows(self.tm.rowCount(self),count,headers=headers)
     def addColumns(self,count,headers=None):
