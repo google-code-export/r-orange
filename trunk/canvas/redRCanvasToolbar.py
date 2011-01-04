@@ -154,8 +154,6 @@ class redRCanvasToolbarandMenu():
         self.canvas.setMenuBar(self.menuBar)
     
     
-    
-    
     def readShortcuts(self):
         self.widgetShortcuts = {}
         shfn = os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "shortcuts.txt")

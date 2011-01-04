@@ -172,6 +172,7 @@ class CanvasOptionsDlg(QDialog):
         
         self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", 
         orientation='horizontal', items=redRLog.logLevelsName)
+        self.displayTraceback = OWGUI.checkBox(debug, self.settings, "displayTraceback", 'Display Traceback')
         
         # self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
         # self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])

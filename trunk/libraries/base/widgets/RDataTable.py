@@ -8,8 +8,6 @@ from OWRpy import *
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 ##############################################################################
 
-
-
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -97,7 +95,6 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
-        print '################################dataset', dataset
         if not dataset:
             self.table.clear()
             return
@@ -114,7 +111,8 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         
         #self.currentData = dataset.getData()
         dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
-        self.rowColCount.setText('# Row: ' + unicode(dim[0]) + "\n# Columns: " + unicode(dim[1]))
+        self.rowColCount.setText('# Row: ' + unicode(dim[0]) 
+        + "\n# Columns: " + unicode(dim[1]))
         self.infoBox.setHidden(False)
         self.table.setRTable(self.data)
 

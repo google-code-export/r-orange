@@ -8,7 +8,7 @@ from PyQt4.QtGui import *
 
 class listBox(QListWidget,widgetState):
     def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, 
-    orientation='vertical', 
+    orientation='vertical', selectionMode=QAbstractItemView.SingleSelection,
     enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, 
     callback=None, toolTip = None, items = None, *args):
         
@@ -33,11 +33,13 @@ class listBox(QListWidget,widgetState):
             self.defaultSizeHint = QSize(150,100)
         else:
             self.defaultSizeHint = sizeHint
+        self.setSelectionMode(selectionMode)
         if enableDragDrop:
             self.setDragEnabled(1)
             self.setAcceptDrops(1)
             self.setDropIndicatorShown(1)
             #self.setDragDropMode(QAbstractItemView.DragDrop)
+            
             self.dragStartPosition = 0
         if items and type(items) is list:
             for x in items:

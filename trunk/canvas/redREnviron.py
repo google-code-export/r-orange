@@ -17,6 +17,7 @@ def __getDirectoryNames():
     rpyDir = os.path.join(redRDir, "canvas",'rpy')
     #RDir = os.path.join(os.path.split(redRDir)[0], "R", 'Revo32','R-2.10.1')
     RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.9.2')
+    RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.11.1')
     widgetDir = os.path.join(redRDir, "libraries")
     libraryDir = os.path.join(redRDir, "libraries")
     qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')
@@ -163,6 +164,8 @@ def loadSettings():
     settings.setdefault("printOutputInStatusBar", 0)
     settings.setdefault("printExceptionInStatusBar", 0)
     settings.setdefault("outputVerbosity", 3)
+    settings.setdefault("displayTraceback", 0)
+    
     settings.setdefault("ocShow", 1)
     settings.setdefault("owShow", 0)
     settings.setdefault("ocInfo", 1)

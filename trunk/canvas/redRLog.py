@@ -49,14 +49,15 @@ def log(table, logLevel = INFO, comment ='', widget=None):
     # if table == STDOUT:
         # lh.defaultSysOutHandler.write(comment)
         # return
-    if redREnviron.settings["writeLogFile"]:
-        lh.logFile.write(unicode(comment).encode('Latin-1')+'<br>')
+    
+
+    
         
     if logLevel < logLevels[redREnviron.settings['outputVerbosity']]:
         return
 
         
-    if logLevels[redREnviron.settings['outputVerbosity']] <= DEBUG:
+    if redREnviron.settings['displayTraceback']:
         stack = traceback.format_stack()
         # if stack < 3:
             # lh.defaultSysOutHandler.write(comment)
@@ -64,7 +65,11 @@ def log(table, logLevel = INFO, comment ='', widget=None):
     else:
         stack = None
     
-    formatedLogOutput(table, logLevel, stack, comment,widget)
+    formattedLog = formatedLogOutput(table, logLevel, stack, comment,widget)
+    if redREnviron.settings["writeLogFile"]:
+        lh.logFile.write(unicode(formattedLog).encode('Latin-1'))
+    
+    logOutput(table, logLevel, formattedLog,html=True)
     
 def logOutput(table, logLevel, comment,html=False):
     if _outputDockWriter:
@@ -86,13 +91,13 @@ def formatedLogOutput(table, logLevel, stack, comment, widget=None):
         color = '#FF0000'
     else:
         color = "#0000FF"
-    string = '<div style="color:%s">%s:%s </div>: ' %  (color, tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
+    string = '<span style="color:%s">%s:%s </span>: ' %  (color, tables.get(table,'NOTABLE'),logLevelsByLevel.get(logLevel,'NOSET'))
     if stack:
         string+='%s || ' % (getSafeString(stack[-3]))
     
     string += '%s<br>' % (comment) 
-    logOutput(table, logLevel, string,html=True)
-          
+    return string
+    
 def getSafeString(s):
     return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
@@ -173,7 +178,7 @@ class LogHandler():
         if logLevels[redREnviron.settings['outputVerbosity']] != DEVEL:
             return
         if redREnviron.settings["writeLogFile"]:
-            self.logFile.write(unicode(text).encode('Latin-1'))
+            self.logFile.write(unicode(text).encode('Latin-1')+'<br>')
             
         logOutput(REDRCORE,DEVEL, text,html=False)
 

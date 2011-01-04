@@ -31,6 +31,7 @@ class WidgetCategory(dict):
 AllPackages = {}
 def readCategories():
     # print '##########################in readCategories'
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading repository of packages.')
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
@@ -85,6 +86,8 @@ def readCategories():
     cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
         splashWindow.hide()
+    
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Finished loading repository of packages.')
     return categories ## return the widgets and the templates
 
 hasErrors = False
