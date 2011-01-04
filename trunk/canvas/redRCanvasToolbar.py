@@ -390,7 +390,7 @@ class redRCanvasToolbarandMenu():
         import webbrowser
         webbrowser.open(os.path.join(redREnviron.directoryNames['redRDir'], "doc/canvas/default.htm"))
     def menuItemInstallPackage(self):
-        name = QFileDialog.getOpenFileName(self, "Install Package", 
+        name = QFileDialog.getOpenFileName(self.canvas, "Install Package", 
         redREnviron.settings["saveSchemaDir"], "Package (*.zip)")
         if name.isEmpty(): return
         name = unicode(name)
@@ -487,7 +487,6 @@ class SearchBox(redRlineEditHint):
     def searchDialog(self):
         if unicode(self.text()) in self.itemsAsStrings:
             return
-            
         else:
             itemText = unicode(self.text())
             #print 'Searching '+itemText+' on Red-R.org'

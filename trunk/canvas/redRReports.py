@@ -237,14 +237,14 @@ class reports(QWizard):
         #self.widgetList.resizeColumnToContents(0)
 
     def createReportsMenu(self,schemaImage=True):
-        # qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
-        # redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
-        # "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
-        # if qname.isEmpty(): return
-        # qname = unicode(qname)
+        qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
+        redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
+        "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
+        if qname.isEmpty(): return
+        qname = unicode(qname)
         
-        # name = unicode(qname) # this is the file name of the Report
-        name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
+        name = unicode(qname) # this is the file name of the Report
+        # name = os.path.join(redREnviron.directoryNames['redRDir'],'restr.odt')
         
         if os.path.splitext(name)[1].lower() not in [".odt", ".html", ".tex"]: name = name + '.odt'
         
@@ -305,12 +305,25 @@ class reports(QWizard):
         ## very simply we need to loop through the widgets and get some info 
         ## about them and put that into the report.
         self.reportData = {}
+        
+        progressBar = QProgressDialog()
+        progressBar.setCancelButtonText(QString())
+        progressBar.setWindowTitle('Gathering Report')
+        progressBar.setLabelText('Gathering Report')
+        progressBar.setMaximum(len(widgets))
+        progressBar.setValue(0)
+        progressBar.show()
+        progress= 0
         for widget in widgets:
             self.reportData[unicode(widget.windowTitle())] = self.getReportData(fileDir, widget)
+            progress += 1
+            progressBar.setValue(progress)
 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(self.reportData)
+        progressBar.close()
+
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.reportData)
 
         self.updateWidgetList()
         if self.exec_() == QDialog.Rejected:
