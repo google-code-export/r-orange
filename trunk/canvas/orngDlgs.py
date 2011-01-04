@@ -192,6 +192,7 @@ class CanvasOptionsDlg(QDialog):
         
         self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", "Log File:", orientation = 'horizontal')
         self.okButton = OWGUI.button(hbox, self, "Browse", callback = self.browseLogFile)
+        self.showOutputLog = redRbutton(hbox, label = 'Show Log File', callback = self.showLogFile)
         
         # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
@@ -214,7 +215,10 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
-        
+    def showLogFile(self):
+        ## open a browser to show the log file.
+        import webbrowser
+        webbrowser.open(unicode(self.logFile.text()))
     def browseLogFile(self):
         fn = QFileDialog.getSaveFileName(self, "Save Log File", redREnviron.settings['logFile'],
         "Text file (*.html);; All Files (*.*)")

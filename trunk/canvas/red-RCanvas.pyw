@@ -54,6 +54,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.notesDock.setObjectName('CanvasNotes')
         self.notes = redRTextEdit(None, label = 'Notes')
         self.notes.setMinimumWidth(200)
+        redRSaveLoad.setNotesWidget(self.notes)
         self.notesDock.setWidget(self.notes)
         self.addDockWidget(Qt.RightDockWidgetArea, self.notesDock)
         self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)

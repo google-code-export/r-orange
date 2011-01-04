@@ -1,6 +1,7 @@
 """
-<name>ANOVA-LM</name>
-<tags>Parametric</tags>
+<name>Generic ANOVA</name>
+<description>Performed ANOVA on any model or data received.  This can result in errors if inappropriate models are supplied.</description>
+<tags>Advanced Stats</tags>
 <icon>stats.png</icon>
 """
 from OWRpy import * 
@@ -11,13 +12,13 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
-class anova_lm(OWRpy): 
+class anova(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_object = ''
         self.saveSettingsList.extend(['RFunctionParam_object'])
-        self.inputs.addInput('id0', 'object', redRRLMFit, self.processobject)
+        self.inputs.addInput('id0', 'object', 'All', self.processobject)
 
         
         box = groupBox(self.controlArea, "Output")
@@ -36,7 +37,7 @@ class anova_lm(OWRpy):
         else: self.RFunctionParam_object = ''
     def commitFunction(self):
         if self.RFunctionParam_object == '': return
-        self.R('txt<-capture.output('+'anova.lm(object='+unicode(self.RFunctionParam_object)+'))')
+        self.R('txt<-capture.output('+'anova(object='+unicode(self.RFunctionParam_object)+'))')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)

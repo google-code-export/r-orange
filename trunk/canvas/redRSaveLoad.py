@@ -26,6 +26,10 @@ canvasDlg = None
 schemaDoc = None
 signalManager = SignalManager()
 _tempWidgets = []
+notesTextWidget = None
+def setNotesWidget(widget):
+    global notesTextWidget
+    notesTextWidget = widget
 def setSchemaDoc(doc):
     global schemaDoc
     schemaDoc = doc
@@ -215,6 +219,7 @@ def saveDocument():
 def save(filename = None, template = False, copy = False, pipe = False):
     global _schemaName
     global schemaPath
+    global notesTextWidget
     #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, '%s' % filename)
     if filename == None and not copy:
         filename = os.path.join(schemaPath, _schemaName)
@@ -257,8 +262,12 @@ def save(filename = None, template = False, copy = False, pipe = False):
     
     
     ## save the global settings ##
+    if notesTextWidget:
+        globalData.setGlobalData('Notes', 'globalNotes', unicode(notesTextWidget.toHtml()))
+    
     settingsDict['_globalData'] = cPickle.dumps(globalData.globalData,2)
     settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),'RedR': requireRedRLibraries},2)
+    
     #print requireRedRLibraries
     file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
     file.write(unicode(settingsDict))
@@ -362,6 +371,7 @@ def loadTemplate(filename, caption = None, freeze = 0):
 
 def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global _schemaName
+    global globalNotes
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading Document %s' % filename)
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
@@ -444,6 +454,8 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     loadingProgressBar.setValue(0)
     if not tmp:
         globalData.globalData = cPickle.loads(settingsDict['_globalData'])
+        if notesTextWidget and 'globalNotes' in globalData.globalData['none'].keys():
+            notesTextWidget.setHtml(globalData.globalData['none']['globalNotes']['data'])
         (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
     
     ## LOAD tabs

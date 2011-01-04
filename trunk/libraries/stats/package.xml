@@ -20,6 +20,9 @@
             <group name="Non Parametric">
                 <Description>Non-Parametric Statistics</Description>
             </group>
+            <group name = 'Advanced Stats'>
+                <Description>Advanced Statistical Tools</Description>
+            </group>
         </group>      
     </menuTags>
 </package>

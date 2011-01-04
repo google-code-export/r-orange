@@ -20,7 +20,7 @@ class RedRscale(OWRpy):
         self.outputs.addOutput('id0', 'scale Output', redRDataFrame)
 
         
-        
+        self.roworcol = radioButtons(self.controlArea, label = 'Apply Scaling To:', buttons = ['Rows', 'Columns'], setChecked = 'Columns', orientation = 'horizontal')
         self.RFunctionParamscale_radioButtons =  radioButtons(self.controlArea,  label = "Scale:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
         self.RFunctionParamcenter_radioButtons =  radioButtons(self.controlArea,  label = "Center:", buttons = ['Yes', 'No'], setChecked = 'No', orientation = 'horizontal')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
@@ -50,7 +50,10 @@ class RedRscale(OWRpy):
             string = 'center = FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['scale']+'<-as.data.frame(scale(x=as.matrix('+str(self.RFunctionParam_x)+'),'+inj+'))', wantType = 'NoConversion')
+        if unicode(self.roworcol.getChecked()) == 'Columns':
+            self.R(self.Rvariables['scale']+'<-as.data.frame(scale(x=data.matrix('+str(self.RFunctionParam_x)+'),'+inj+'))', wantType = 'NoConversion')
+        else:
+            self.R(self.Rvariables['scale']+'<-t(as.data.frame(scale(x=t(data.matrix('+str(self.RFunctionParam_x)+')),'+inj+')))', wantType = 'NoConversion')
         self.R('rownames('+self.Rvariables['scale']+')<-rownames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
         self.R('colnames('+self.Rvariables['scale']+')<-colnames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
         newData = redRDataFrame(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
