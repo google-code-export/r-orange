@@ -4,6 +4,7 @@ from PyQt4.QtGui import *
 import os, sys
 from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
+from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 
 class redRCanvasToolbarandMenu():
@@ -53,9 +54,13 @@ class redRCanvasToolbarandMenu():
         space.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.toolbar.addWidget(space)
         
-        self.widgetSuggestEdit = SearchBox(None, width=300)
+        # self.searchBox = SearchBox(None, width=300)
+        # self.toolbar.addWidget(QLabel('Search  '))
+        # self.toolbar.addWidget(self.searchBox)
+        
+        self.searchBox2 = SearchBox2(None, width=300)
         self.toolbar.addWidget(QLabel('Search  '))
-        self.toolbar.addWidget(self.widgetSuggestEdit)
+        self.toolbar.addWidget(self.searchBox2)
         
         
         self.readShortcuts()
@@ -440,10 +445,14 @@ class redRCanvasToolbarandMenu():
         else:
             QApplication.setPalette(self.originalPalette)
 
+      
 class SearchBox(redRlineEditHint):
     def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
-        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback, **args)
+        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
+        **args)
+        self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
+ 
         self.searchBox = redRSearchDialog()
         QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
         self.caseSensitive = 0
@@ -483,6 +492,7 @@ class SearchBox(redRlineEditHint):
                     self.event(ev)
             return consumed
         except: return 0
+    
         
     def searchDialog(self):
         if unicode(self.text()) in self.itemsAsStrings:
@@ -514,5 +524,150 @@ class SearchBox(redRlineEditHint):
                     
                     # self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
                     # return
-    
+import re
+class SearchBox2(redRlineEditHint):
+    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+        redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
+        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
+        **args)
+        self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
+ 
+        self.searchBox = redRSearchDialog()
+        QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
+        self.caseSensitive = 0
+        self.matchAnywhere = 1
+        self.autoSizeListWidget = 1
+        self.useRE=0
+        self.maxResults = 10
+        self.descriptionSize = 100
+        self.listWidget.setAlternatingRowColors(True)
+        
+        widgetList = {}
+        for wName, widgetInfo in redRObjects.widgetRegistry()['widgets'].items():
+            # x = QListWidgetItem(QIcon(widgetInfo.icon), unicode('%s\n%s' % (wName,widgetInfo.description)))
+            # widgetList.append(x)
+            widgetList[wName] = widgetInfo          
+        self.setItems(widgetList)
+    def setItems(self, items):
+        self.itemsAsItems = items
+        self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) for name,item in items.items()]
+    def updateSuggestedItems(self):
+        self.listWidget.setUpdatesEnabled(0)
+        self.listWidget.clear()
+        last = self.getLastTextItem()
+        tuples = zip(self.itemsAsStrings, self.itemsAsItems.values())
 
+        if not self.caseSensitive:
+            tuples = [(text.lower(), item) for (text, item) in tuples]
+            last = last.lower()
+            
+        tuples = [(text, item) for (text, item) in tuples if last in text]
+        
+        if tuples:
+            if len(tuples) > self.maxResults:
+                tuples = tuples[0:self.maxResults-1]
+            pattern = re.compile('(%s)' % last, re.IGNORECASE)
+            height = 0
+            for (text, widgetInfo) in tuples:
+                x = QListWidgetItem(QIcon(widgetInfo.icon), '')
+                x.widgetInfo = widgetInfo
+                self.listWidget.addItem(x)
+                name = pattern.sub(r'<b>\1</b>', widgetInfo.name)
+                description = pattern.sub(r'<b>\1</b>', widgetInfo.description[:self.descriptionSize])
+                
+                a = QLabel(unicode('%s<br>%s' % (name,description)),None)
+                a.setStyleSheet('QLabel{margin-left:10px;}')
+                a.setWordWrap(True)
+                sizeHint = a.sizeHint()
+                height+=sizeHint.height()
+                x.setSizeHint(sizeHint)
+                self.listWidget.setItemWidget(x,a)
+
+            self.listWidget.setCurrentRow(0)
+
+            self.listWidget.setUpdatesEnabled(1)
+            width = max(self.width(), self.autoSizeListWidget and self.listWidget.sizeHintForColumn(0)+10)
+            if self.autoSizeListWidget:
+                self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  
+            self.listWidget.resize(width, min(height,qApp.canvasDlg.height())+30)
+            #self.listWidget.sizeHintForRow(0) * (min(self.nrOfSuggestions, len(tuples)))+5)
+            self.listWidget.move(self.mapToGlobal(QPoint(0, self.height())))
+            self.listWidget.show()
+##            if not self.delimiters and items and not self.matchAnywhere:
+##                self.setText(last + unicode(items[0].text())[len(last):])
+##                self.setSelection(len(unicode(self.text())), -(len(unicode(self.text()))-len(last)))            
+##            self.setFocus()
+        else:
+            self.listWidget.hide()
+            return
+        
+        if self.listUpdateCallback:
+            self.listUpdateCallback()
+    def doneCompletion(self, *args):
+        if self.listWidget.isVisible():
+            widgetInfo = self.listWidget.currentItem().widgetInfo
+            self.setText(unicode(widgetInfo.name))
+            self.listWidget.hide()
+            self.setFocus()
+            
+        if self.callbackOnComplete:
+            QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo))
+            #self.callbackOnComplete()
+              
+    def eventFilter(self, object, ev):
+        try: # a wrapper that prevents problems for the listbox debigging should remove this           
+            if object != self.listWidget and object != self:
+                return 0
+            if ev.type() == QEvent.MouseButtonPress:
+                self.listWidget.hide()
+                return 1
+                    
+            consumed = 0
+            if ev.type() == QEvent.KeyPress:
+                consumed = 1
+                if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
+                    # print 'Return pressed'
+                    self.doneCompletion()
+                elif ev.key() == Qt.Key_Escape:
+                    self.listWidget.hide()
+                    # self.setFocus()
+                elif ev.key() in [Qt.Key_Up, Qt.Key_Down, Qt.Key_Home, Qt.Key_End, Qt.Key_PageUp, Qt.Key_PageDown]:
+                    
+                    self.listWidget.setFocus()
+                    self.listWidget.event(ev)
+                else:
+                    # self.setFocus()
+                    self.event(ev)
+            return consumed
+        except: return 0
+        
+    def searchDialog(self):
+        if unicode(self.text()) in self.itemsAsStrings:
+            return
+        else:
+            itemText = unicode(self.text())
+            #print 'Searching '+itemText+' on Red-R.org'
+            self.searchBox.show()
+            url = 'http://www.red-r.org/?s='+itemText
+            self.searchBox.updateUrl(url)
+    
+    def searchCallback(self,widgetInfo):
+        print widgetInfo
+        qApp.canvasDlg.schema.addWidget(redRObjects.widgetRegistry()['widgets'][widgetInfo.fileName]) # add the correct widget to the schema
+        self.clear()  # clear the line edit for the next widget
+        return
+        #text = unicode(self.widgetSuggestEdit.text())
+        
+        # if '.rrts' in text: ## this is a template, we should load this and not add the widget
+            # for action in self.templateActions:
+                # if action.templateInfo.name == text:
+                    # redRSaveLoad.loadTemplate(action.templateInfo.file)
+                    # return
+        # else: ## if there isn't a .rrts in the filename then we should proceed as normal
+            # for action in self.actions: # move through all of the actions in the actions list
+                # if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
+                    # self.widgetInfo = action.widgetInfo
+                    # self.canvas.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
+                    
+                    # self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
+                    # return

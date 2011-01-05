@@ -5,8 +5,8 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 
 
 class lineEditHint(lineEdit):        
-    def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', items = [], 
-    toolTip = None,  width = 0, callback = None, **args):
+    def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', 
+    items = [], toolTip = None,  width = 0, callback = None, **args):
         
         
         #widgetState.__init__(self,label,includeInReports)
