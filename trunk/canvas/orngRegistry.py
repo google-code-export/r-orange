@@ -60,7 +60,7 @@ def readCategories():
         f.close()
         package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
         # we read in all the widgets in dirName, directory in the directories
-        widgets = readWidgets(os.path.join(directory,'widgets'), package, cachedWidgetDescriptions)  ## calls an internal function
+        widgets = readWidgets(os.path.join(directory), package, cachedWidgetDescriptions)  ## calls an internal function
         AllPackages[package['Name']] = package
         if mainTabs.getElementsByTagName('menuTags'):
             newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
@@ -117,6 +117,14 @@ def addTagsSystemTag(tags,newTag):
     #print '|#|Name not found, appending to group.  This is normal, dont be worried.'
     tags.appendChild(newTag)
     #theTags.childNodes[0] = tags    
+def getXMLText(nodelist):
+    rc = ''
+    for node in nodelist:
+        if node.nodeType == node.TEXT_NODE:
+            rc = rc + node.data
+            
+    rc = unicode(rc).strip()
+    return rc
 
 def readWidgets(directory, package, cachedWidgetDescriptions):
     import sys, imp
@@ -125,7 +133,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
     compileall.compile_dir(directory,quiet=True) # compile the directory for later importing.
     #print '################readWidgets', directory, package
     widgets = []
-    for filename in glob.iglob(os.path.join(directory, "*.py")):
+    for filename in glob.iglob(os.path.join(directory,'widgets', "*.py")):
         if os.path.isdir(filename) or os.path.islink(filename):
             continue
         
@@ -134,106 +142,113 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
             widgets.append((cachedDescription.name, cachedDescription))
             continue
-        widgetID = unicode(package['Name']+'_'+os.path.split(filename)[1].split('.')[0])
-        data = file(filename).read()
-        istart = data.find("<name>")
-        iend = data.find("</name>")
-        if istart < 0 or iend < 0:
-            continue
-        name = data[istart+6:iend]
-        #inputList = getSignalList(re_inputs, data)
-        #outputList = getSignalList(re_outputs, data)
         
         dirname, fname = os.path.split(filename)
         widgetName = os.path.splitext(fname)[0]
+        widgetID = unicode(package['Name']+'_'+os.path.split(filename)[1].split('.')[0])
+        
+        metaFile = os.path.join(directory,'meta','widgets',widgetName+'.xml')
+        widgetMetaXML = xml.dom.minidom.parse(metaFile)
+        widgetMetaData = {}
+
+        widgetMetaData['name'] = getXMLText(widgetMetaXML.getElementsByTagName('name')[0].childNodes)
+        widgetMetaData['icon'] = getXMLText(widgetMetaXML.getElementsByTagName('icon')[0].childNodes)
+        widgetMetaData['description'] = getXMLText(widgetMetaXML.getElementsByTagName('summary')[0].childNodes)
+        widgetMetaData['details'] = getXMLText(widgetMetaXML.getElementsByTagName('details')[0].childNodes)
+        
+        widgetMetaData['tags'] = []
+        for tag in widgetMetaXML.getElementsByTagName('tags')[0].childNodes:
+            if getXMLText(tag.childNodes) != '':
+                widgetMetaData['tags'].append(getXMLText(tag.childNodes))
+
+        widgetMetaData['inputs'] = []
+        if len(widgetMetaXML.getElementsByTagName('input')):
+            for input in widgetMetaXML.getElementsByTagName('input'):
+                widgetMetaData['inputs'].append((
+                getXMLText(input.getElementsByTagName('signalClass')[0].childNodes),
+                getXMLText(input.getElementsByTagName('description')[0].childNodes)))
+        
+        widgetMetaData['outputs'] = []
+        if len(widgetMetaXML.getElementsByTagName('output')):
+            for outputs in widgetMetaXML.getElementsByTagName('output'):
+                widgetMetaData['outputs'].append(
+                (getXMLText(outputs.getElementsByTagName('signalClass')[0].childNodes),
+                getXMLText(outputs.getElementsByTagName('description')[0].childNodes)))
+        
+        # print widgetMetaData
+
+        if not splashWindow:
+            logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
+            splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
+            splashWindow.setMask(logo.mask())
+            splashWindow.show()
+            
+        splashWindow.showMessage("Registering widget %s" % widgetMetaData['name'], Qt.AlignHCenter + Qt.AlignBottom)
+        qApp.processEvents()
+        
+        # We import modules using imp.load_source to avoid storing them in sys.modules,
+        # but we need to append the path to sys.path in case the module would want to load
+        # something
+        dirnameInPath = dirname in sys.path
+        if not dirnameInPath:
+            sys.path.append(dirname)
+        # print widgetName, 'redREnviron' in sys.modules.keys()
         try:
-            if not splashWindow:
-                
-                logo = QPixmap(os.path.join(redREnviron.directoryNames["canvasDir"], "icons", "splash.png"))
-                splashWindow = QSplashScreen(logo, Qt.WindowStaysOnTopHint)
-                splashWindow.setMask(logo.mask())
-                splashWindow.show()
-                
-            splashWindow.showMessage("Registering widget %s" % name, Qt.AlignHCenter + Qt.AlignBottom)
-            qApp.processEvents()
-            
-            # We import modules using imp.load_source to avoid storing them in sys.modules,
-            # but we need to append the path to sys.path in case the module would want to load
-            # something
-            dirnameInPath = dirname in sys.path
-            if not dirnameInPath:
-                sys.path.append(dirname)
-            # print widgetName, 'redREnviron' in sys.modules.keys()
-
             wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
-            
-            # __import__('libraries.' + package['Name'] + '.widgets.' + widgetName)
-            #wmod.__dict__['widgetFilename'] = filename
-            # if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
-                # sys.path.remove(dirname)
-            
-            widgetInfo = WidgetDescription(
-                         name = data[istart+6:iend],
-                         packageName = package['Name'],
-                         package = package,
-                         time = datetime,
-                         fileName = package['Name'] + '_' + widgetName,
-                         widgetName = widgetName,
-                         fullName = filename
-                         #inputList = inputList, outputList = outputList
-                         )
-            #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'logging widget info %s' % widgetInfo.name)
-            for attr, deflt in (
-                #('inputs>', 'None'), ('outputs>', 'None'), 
-                ("contact>", "")
-                ,("icon>", "Default.png")
-                ,("priority>", "5000")
-                ,("description>", "")
-                ,("tags>", "Prototypes")
-                ,("outputWidgets>", "")
-                ,("inputWidgets>", "")
-                ):
-                istart, iend = data.find("<"+attr), data.find("</"+attr)
-                setattr(widgetInfo, attr[:-1], istart >= 0 and iend >= 0 and data[istart+1+len(attr):iend].strip() or deflt)
-                
-            widgetInfo.tags = widgetInfo.tags.replace(' ', '')
-            widgetInfo.tags = widgetInfo.tags.split(',')  # converts the tags to a list split by the comma
-            ## set the icon, this might not exist so we need to check
-            widgetInfo.outputWidgets = widgetInfo.outputWidgets.replace(' ', '').split(',')
-            widgetInfo.inputWidgets = widgetInfo.inputWidgets.replace(' ', '')
-            widgetInfo.inputWidgets = widgetInfo.inputWidgets.split(',')
-
-                
-            widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', widgetInfo.icon)
-            if not os.path.isfile(widgetInfo.icon):
-                if os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', 'Default.png')): 
-                    widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', 'Default.png')
-                else:
-                    widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'],'base', 'icons', 'Unknown.png')
-                
-            # build the tooltip
-            ## these widgetInfo.inputs and outputs are where Red-R defines connections.  This is unstable and should be changed in later versions.  Perhaps all of the widgets should be loaded into memory before they appear here.  Either that or the inputs and outputs should not be displayed in the tooltip.
-            #widgetInfo.inputs = [InputSignal(*signal) for signal in eval(widgetInfo.inputList)]
-            #if len(widgetInfo.inputs) == 0:
-            #formatedInList = "<b>Inputs:</b><br> &nbsp;&nbsp; %s<br>" % widgetInfo.inputs
-            # else:
-                # formatedInList = "<b>Inputs:</b><br>"
-                # for signal in widgetInfo.inputs:
-                    # formatedInList += " &nbsp;&nbsp; - " + signal.name + " (" + signal.type + ")<br>"
-    
-            #widgetInfo.outputs = [OutputSignal(*signal) for signal in eval(widgetInfo.outputList)]
-            #if len(widgetInfo.outputs) == 0:
-            #formatedOutList = "<b>Outputs:</b><br> &nbsp; &nbsp; %s<br>" % widgetInfo.outputs
-            # else:
-                # formatedOutList = "<b>Outputs:</b><br>"
-                # for signal in widgetInfo.outputs:
-                    # formatedOutList += " &nbsp; &nbsp; - " + signal.name + " (" + signal.type + ")<br>"
-    
-            widgetInfo.tooltipText = "<b><b>&nbsp;%s</b></b><hr><b>Description:</b><br>&nbsp;&nbsp;%s" % (name, widgetInfo.description) #, formatedInList[:-4], formatedOutList[:-4]) 
-            widgets.append((widgetID, widgetInfo))
-            
         except Exception, msg:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occurred in <b>%s: %s<b>' % (filename, msg))
+            continue
+        
+        # __import__('libraries.' + package['Name'] + '.widgets.' + widgetName)
+        #wmod.__dict__['widgetFilename'] = filename
+        # if not dirnameInPath and dirname in sys.path: # I have no idea, why we need this, but it seems to disappear sometimes?!
+            # sys.path.remove(dirname)
+        
+        widgetInfo = WidgetDescription(
+                     name = widgetMetaData['name'],
+                     packageName = package['Name'],
+                     package = package,
+                     time = datetime,
+                     fileName = package['Name'] + '_' + widgetName,
+                     widgetName = widgetName,
+                     fullName = filename
+                     )
+        #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'logging widget info %s' % widgetInfo.name)
+        for k,v in widgetMetaData.items():
+            setattr(widgetInfo,k,v)
+     
+        widgetInfo.tooltipText = "<b>%s</b><br />%s" % (widgetInfo.name, widgetInfo.description)
+
+        if len(widgetInfo.inputs):
+            widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
+            for x in widgetInfo.inputs:
+                widgetInfo.tooltipText +='<dt>%s</dt><dd>%s</dd>' % x
+            widgetInfo.tooltipText +='</dl>'
+        else:
+            widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
+            widgetInfo.tooltipText +='<dt>None</dt><dd></dd>' 
+            widgetInfo.tooltipText +='</dl>'
+
+        if len(widgetInfo.outputs):
+            widgetInfo.tooltipText +='<hr><b>Outputs</b><dl>'
+            for x in widgetInfo.outputs:
+                widgetInfo.tooltipText +='<dt>%s</dt><dd>%s</dd>' % x
+            widgetInfo.tooltipText +='</dl>'
+        else:
+            widgetInfo.tooltipText +='<hr><b>Inputs</b><dl>'
+            widgetInfo.tooltipText +='<dt>None</dt><dd></dd>' 
+            widgetInfo.tooltipText +='</dl>'
+
+            
+        widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', widgetInfo.icon)
+        if not os.path.isfile(widgetInfo.icon):
+            if os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', 'Default.png')): 
+                widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'], widgetInfo.packageName,'icons', 'Default.png')
+            else:
+                widgetInfo.icon = os.path.join(redREnviron.directoryNames['libraryDir'],'base', 'icons', 'Unknown.png')
+            
+        widgets.append((widgetID, widgetInfo))
+        
     return widgets
 
 def readTemplates(directory):

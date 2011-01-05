@@ -352,8 +352,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             else:
                 self.canvasDlg.suggestButtonsList.hide()
             self.canvasDlg.suggestButtonsList.show()
-            # highlight the compatible wigets for this widget.
-            # for i in redRObjects.getIconsByTab(self.tab)[self.tab]:
+            #highlight the compatible wigets for this widget.
+            # for i in redRObjects.widgetRegistry()['widgets']:
                 # if i.instance().inputs.matchConnections(self.instance().outputs):
                     # i.setPossibleConnection(1)
                 # else:

@@ -352,7 +352,7 @@ class WidgetTree(QTreeWidget):
             for wName in widgetRegistry['widgets'].keys():
                 widgetInfo = widgetRegistry['widgets'][wName]
                 try:
-                    if unicode(itab.replace(' ', '')) in widgetInfo.tags: # add the widget
+                    if unicode(itab) in widgetInfo.tags: # add the widget
                         button = WidgetTreeItem(tab, widgetInfo.name, widgetInfo, self, self.canvasDlg)
                         if button not in tab.widgets:
                             tab.widgets.append(button)

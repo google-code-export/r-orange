@@ -864,7 +864,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
         for wName in redRObjects.widgetRegistry()['widgets'].keys(): ## move across all of the widgets in the widgetRegistry.  This is different from the templates that are tagged as templates
             widgetInfo = redRObjects.widgetRegistry()['widgets'][wName]
             try:
-                if unicode(catName.replace(' ', '')) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
+                if unicode(catName) in widgetInfo.tags: # add the widget, wtags is the list of tags in the widget, catName is the name of the category that we are adding
                     icon = QIcon(widgetInfo.icon)
                     act = catmenu.addAction(icon, widgetInfo.name)
                     
