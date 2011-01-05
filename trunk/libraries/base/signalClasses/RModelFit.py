@@ -5,6 +5,7 @@ from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
 
 class RModelFit(RList):
+    convertToList = [RList]
     def __init__(self, data, parent = None, checkVal = True):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         self.RListSignal = None

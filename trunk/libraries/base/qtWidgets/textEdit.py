@@ -30,6 +30,7 @@ class textEdit(QTextEdit,widgetState):
             button(self.hb, "Clear", callback = self.clear)
         if not editable:
             self.setReadOnly(True)
+        self.setFontFamily('Courier')
         self.insertHtml(html)
         
         

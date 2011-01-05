@@ -47,6 +47,10 @@ class widgetSignals():
             raise Exception('Signal name mismatch')
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
+        ## clear the warnings, info, and errors
+        self.removeError()
+        self.removeInformation()
+        self.removeWarning()
         self.refreshToolTips()
         self.ROutput.setCursorToEnd()
         self.ROutput.append('\n## '+ 'Data sent through the '+unicode(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.

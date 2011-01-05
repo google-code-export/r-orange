@@ -198,6 +198,7 @@ def collectIcons():
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Selected widgets are %s' % _tempWidgets)
 def copy():
     ## copy the selected files and reload them as templates in the schema
+    collectIcons()
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Making a copy with widgets %s' % _tempWidgets)
     makeTemplate(copy=True)
 def savePipeline():

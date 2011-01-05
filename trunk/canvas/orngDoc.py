@@ -287,6 +287,7 @@ class SchemaDoc(QWidget):
             self.makeSchemaTab(unicode(td.tabName.text()))
             self.setTabActive(unicode(td.tabName.text()))
     def cloneToTab(self):   # part of the view
+        redRSaveLoad.collectIcons()
         if len(redRSaveLoad._tempWidgets) == 0: 
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'No tempWidgets to clone!!!')
             return

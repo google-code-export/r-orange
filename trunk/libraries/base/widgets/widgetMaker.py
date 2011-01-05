@@ -45,13 +45,14 @@ class widgetMaker(OWRpy):
         box = widgetBox.widgetBox(functionTab, orientation = 'horizontal')
         #self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
-        button.button(box, 'Accept Inputs', callback = self.acceptInputs)
-        self.functionAllowOutput = checkBox.checkBox(box, label = None, buttons = ['Allow Output'])
+        
+        self.functionAllowOutput = checkBox.checkBox(box, label = 'Allow Output', displayLable = False, buttons = ['Allow Output'])
         self.captureROutput = checkBox.checkBox(box, buttons = ['Show Output'])
         
         
         #self.inputsCombobox = redRGUI.comboBox(box, label = 'Input Class:', items = self.getRvarClass_classes())
         self.outputsCombobox = comboBox.comboBox(box, label = 'Output Class:', items = self.getRvarClass_classes())
+        button.button(box, label = 'Accept Inputs', callback = self.acceptInputs)
         button.button(box, 'Generate Code', callback = self.generateCode)
         button.button(box, 'Launch Widget', callback = self.launch)
         
@@ -200,6 +201,7 @@ class widgetMaker(OWRpy):
         self.inputArea.editItem(item)
     
     def generateCode(self):
+        self.acceptInputs()
         self.makeHeader()
         self.makeInitHeader()
         self.makeGUI()
@@ -233,7 +235,9 @@ class widgetMaker(OWRpy):
         if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
             self.initCode += '\t\tself.data = {}\n'
-
+        if unicode(self.packageName.text()) != '':
+            self.initCode += '\t\tif not self.require_librarys(["'+unicode(self.packageName.text())+'"]):\n'
+            self.initCode += '\t\t\tself.status.setText(\'R Libraries Not Loaded.\')\n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
@@ -273,9 +277,7 @@ class widgetMaker(OWRpy):
         self.processSignals = ''
         for inputName in self.functionInputs.keys():
             self.processSignals += '\tdef process'+inputName+'(self, data):\n'
-            if unicode(self.packageName.text()) != '':
-                self.processSignals += '\t\tif not self.require_librarys(["'+unicode(self.packageName.text())+'"]):\n'
-                self.processSignals += '\t\t\tself.status.setText(\'R Libraries Not Loaded.\')\n\t\t\treturn\n'
+            
             self.processSignals += '\t\tif data:\n'
             self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data.getData()\n'
             self.processSignals += '\t\t\t#self.data = data\n'
