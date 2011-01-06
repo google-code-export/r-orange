@@ -193,6 +193,7 @@ class CanvasOptionsDlg(QDialog):
         self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", "Log File:", orientation = 'horizontal')
         self.okButton = OWGUI.button(hbox, self, "Browse", callback = self.browseLogFile)
         self.showOutputLog = redRbutton(output, label = 'Show Log File', callback = self.showLogFile)
+        self.numberOfDays = redRSpinBox(output, label = 'Keep File for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
         
         # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
@@ -215,6 +216,9 @@ class CanvasOptionsDlg(QDialog):
 
         self.topLayout.addWidget(self.tabs)
         self.topLayout.addWidget(hbox)
+    def numberOfDaysChanged(self):
+        redRLog.log(redRLog.DEBUG, redRLog.ERROR, 'changing day value to %s' % int(self.numberOfDays.value()))
+        self.settings['keepForXDays'] = int(self.numberOfDays.value())
     def showLogFile(self):
         ## open a browser to show the log file.
         import webbrowser
@@ -257,7 +261,7 @@ class CanvasOptionsDlg(QDialog):
         # self.settings["minSeverity"] = int(self.otherLevel.value())
         
         # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
-        
+        self.settings['keepForXDays'] = int(self.numberOfDays.value())
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
         import redRLog

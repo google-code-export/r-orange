@@ -4,7 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import redREnviron, os, traceback, sys
-from datetime import tzinfo, timedelta, datetime, time
+from datetime import tzinfo, timedelta, datetime
 #import logging
 
 #
@@ -187,9 +187,21 @@ class LogHandler():
         sys.stdout = self
         sys.excepthook = self.exceptionHandler
         # self.currentLogFile = redREnviron.settings['logFile']
+        self.clearOldLogs()
         if redREnviron.settings['writeLogFile']:
             self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file
-
+    
+    def clearOldLogs(self):
+        ## check the mod date for all of the logs in the log directory and remove those that are older than the max number of days.
+        import glob
+        import time
+        for f in glob.glob(os.path.split(redREnviron.settings['logFile'])[0]+'/*.html'):
+            if int(redREnviron.settings['keepForXDays']) > -1 and time.time() - os.path.getmtime(f) > 60*60*24*int(redREnviron.settings['keepForXDays']):
+                try:
+                    os.remove(f)
+                    self.defaultSysOutHandler.write('file %s removed\n' % f)
+                except Exception as inst:
+                    self.defaultSysOutHandler.write(unicode(inst))
     #ONLY FOR DEVEL print statements
     def write(self, text):
         # tb = traceback.format_stack()

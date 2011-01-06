@@ -3,7 +3,7 @@
 <author>Generated using Widget Maker written by Kyle R. Covington, other improvements by Kyle R Covington</author>
 <description>Scores samples based on a scoring matrix.  First merges the data by the row names and extracts only those row names that are in the scoring matrix.  Also any NA values are removed prior to scoring.  Several scoring options are available and include; multiplication (values are multiplied and summed to generate a score for every sample for every level of the scoring matrix), correlation (identical to correlation / variance widget).</description>
 <RFunctions></RFunctions>
-<tags>Data Calssification</tags>
+<tags>Data Classification</tags>
 <icon>default.png</icon>
 """
 from OWRpy import * 

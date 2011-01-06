@@ -146,7 +146,7 @@ def loadSettings():
     settings.setdefault('CRANrepos','http://cran.r-project.org')
     settings.setdefault('red-RPackagesUpdated',0)
     settings.setdefault('checkedForUpdates',0)
-    
+    settings.setdefault('keepForXDays', 7)
     ############################
     #Dubug and output settings##
     ############################
