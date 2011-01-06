@@ -1,5 +1,8 @@
 ## <log Module.  This module (not a class) will contain and provide access to widget icons, lines, widget instances, and other log.  Accessor functions are provided to retrieve these objects, create new objects, and distroy objects.>
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
 import redREnviron, os, traceback, sys
 from datetime import tzinfo, timedelta, datetime, time
 #import logging
@@ -8,6 +11,8 @@ from datetime import tzinfo, timedelta, datetime, time
 #Red-R output writers
 _outputDockWriter = None
 _outputWindowWriter = None
+
+_outputWindow = None
 
 ##Error Tables
 REDRCORE = 1
@@ -31,7 +36,10 @@ logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
 
 
-
+def setOutputWindow(window):
+    global _outputWindow
+    _outputWindow = window
+    
 def setOutputManager(lvl,manager):
     if lvl =='dock':
         global _outputDockWriter
@@ -159,6 +167,19 @@ def moveLogFile(newFile):
 def closeLogFile():
     lh.logFile.close()
     os.remove(redREnviron.settings['logFile'])
+def saveOutputToFile():
+    global _outputWindow
+    ## want to write the output to a file so we can save.
+    import os
+    name = QFileDialog.getSaveFileName(None, "Save File", os.environ['HOMEPATH'], "Document Log (*.html)")
+    if not name or name == None: return False
+    name = unicode(name)
+    if unicode(name) == '': return False
+    if os.path.splitext(unicode(name))[0] == "": return False
+    f = open(name, 'w')
+    f.write(_outputWindow.toHtml())
+    f.close()
+    
     
 class LogHandler():
     def __init__(self):
