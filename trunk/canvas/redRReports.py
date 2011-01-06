@@ -315,6 +315,7 @@ class reports(QWizard):
         progressBar.show()
         progress= 0
         for widget in widgets:
+            progressBar.setLabelText('Gathering Report Data from %s' % unicode(widget.windowTitle()))
             self.reportData[unicode(widget.windowTitle())] = self.getReportData(fileDir, widget)
             progress += 1
             progressBar.setValue(progress)
@@ -327,6 +328,11 @@ class reports(QWizard):
 
         self.updateWidgetList()
         if self.exec_() == QDialog.Rejected:
+            print 'deleting data'
+            del self.reportData
+            import gc
+            gc.collect()
+            print 'done deleting data'
             return False
         
 

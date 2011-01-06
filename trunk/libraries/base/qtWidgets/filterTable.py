@@ -495,12 +495,13 @@ class filterTable(widgetState, QTableView):
         sip.delete(self)
     def getReportText(self, fileDir):
         if self.getFilteredData():
-            data = self.R('as.matrix(%s)'% self.getFilteredData())
+            limit = min(self.tm.rowCount(self),1000)
+            data = self.R('as.matrix(%s[1:%d,])'% (self.getFilteredData(),limit))
             colNames = self.R('colnames(%s)' % self.getFilteredData())
             # text = redRReports.createTable(data, columnNames = colNames)
             return {self.widgetName:{'includeInReports': self.includeInReports, 'type':'table', 
             'data':data,'colNames': colNames,
-            'numRowLimit': self.tm.rowCount(self)}}
+            'numRowLimit': limit}}
 
         else:
             return {self.widgetName:{'includeInReports': self.includeInReports, 'text':''}}

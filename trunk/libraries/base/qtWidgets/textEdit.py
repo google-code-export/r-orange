@@ -52,8 +52,9 @@ class textEdit(QTextEdit,widgetState):
     def toPlainText(self):
         return unicode(QTextEdit.toPlainText(self))
     def getReportText(self,fileDir):
+        limit = min(100000,len(self.toPlainText()))
         return {self.widgetName:{'includeInReports': self.includeInReports, 'type': 'litralBlock',
-        'text': self.toPlainText(), 'numChrLimit': len(self.toPlainText())}}
+        'text': self.toPlainText()[0:limit], 'numChrLimit': limit}}
         
     def printMe(self):
         printer = QPrinter()
