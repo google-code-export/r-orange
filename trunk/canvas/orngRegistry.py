@@ -152,7 +152,11 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         if not os.path.exists(metaFile):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, '<b>Meta file for %s does not exist.</b>' % (filename))
             continue
-        widgetMetaXML = xml.dom.minidom.parse(metaFile)
+        try:
+            widgetMetaXML = xml.dom.minidom.parse(metaFile)
+        except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, '<b>Error loading meta data for %s; %s</b>' % (metaFile, unicode(inst)))
+            continue
         widgetMetaData['name'] = getXMLText(widgetMetaXML.getElementsByTagName('name')[0].childNodes)
         widgetMetaData['icon'] = getXMLText(widgetMetaXML.getElementsByTagName('icon')[0].childNodes)
         widgetMetaData['description'] = getXMLText(widgetMetaXML.getElementsByTagName('summary')[0].childNodes)

@@ -228,10 +228,7 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
         instance.__init__(signalManager = sm,
         forceInSignals = insig, forceOutSignals = outsig)
     else: instance.__init__(signalManager = sm)
-    if id:
-        instance.widgetID = id
-        instance.variable_suffix = '_' + instance.widgetID
-        instance.resetRvariableNames()
+    
     instance.loadGlobalSettings()
     if settings:
         try:
@@ -252,8 +249,13 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     instance.setWidgetWindowIcon(info.icon)
     #instance.canvasWidget = self
     instance.widgetInfo = info
-    
-    id = instance.widgetID
+    if id != None:
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'setting custom widget ID %s, We must be loading' % id)
+        instance.widgetID = id
+        instance.variable_suffix = '_' + instance.widgetID
+        instance.resetRvariableNames()
+    else:
+        id = instance.widgetID
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'instance ID is %s' % instance.widgetID)
     if id in _widgetInstances.keys():
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'id was found in the keys, placing as new ID')

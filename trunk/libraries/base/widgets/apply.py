@@ -10,8 +10,9 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.spinBox import spinBox as RedRSpinBox
-from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
-from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
+# from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
+# from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
+from libraries.base.widgetImport import *
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.filterTable import filterTable as redRFilterTable
 from libraries.base.qtWidgets.radioButtons import radioButtons
@@ -127,6 +128,4 @@ class apply(OWRpy):
             # self.outputTable.clear()
             # self.rSend("id0", None)
         
-        
-    def getReportText(self, fileDir):
-        return 'Data was manipulated using the apply feature performing the function %s along the %s of the data.\n\n' % (unicode(self.functionText.toPlainText()), self.demension.getChecked())
+

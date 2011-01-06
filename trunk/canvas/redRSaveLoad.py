@@ -27,6 +27,7 @@ schemaDoc = None
 signalManager = SignalManager()
 _tempWidgets = []
 notesTextWidget = None
+sessionID = 1
 def setNotesWidget(widget):
     global notesTextWidget
     notesTextWidget = widget
@@ -455,7 +456,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     loadingProgressBar.setValue(0)
     if not tmp:
         globalData.globalData = cPickle.loads(settingsDict['_globalData'])
-        if notesTextWidget and 'globalNotes' in globalData.globalData['none'].keys():
+        if notesTextWidget and ('none' in globalData.globalData.keys()) and ('globalNotes' in globalData.globalData['none'].keys()):
             notesTextWidget.setHtml(globalData.globalData['none']['globalNotes']['data'])
         (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
     
@@ -496,6 +497,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     loadingProgressBar.close()
     redRObjects.updateLines()
 def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
+    global sessionID
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
         tmp=True
@@ -586,6 +588,8 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     qApp.restoreOverrideCursor()
     loadingProgressBar.hide()
     loadingProgressBar.close()
+    if tmp:
+        sessionID += 1
     
 
 def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
@@ -668,6 +672,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     
     return (loadedOk, failureText)
 def loadLines(lineList, loadingProgressBar, freeze, tmp):
+    global sessionID
     failureText = ""
     loadedOk = 1
     for line in lineList:
@@ -687,8 +692,8 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
         signals = eval(str(line.getAttribute("signals")))
         #print '((((((((((((((((\n\nSignals\n\n', signals, '\n\n'
         if tmp: ## index up the index to match sessionID
-            inIndex += '_'+str(self.sessionID)
-            outIndex += '_'+str(self.sessionID)
+            inIndex += '_'+str(sessionID)
+            outIndex += '_'+str(sessionID)
             print inIndex, outIndex, 'Settings template ID to these values'
         inWidget = redRObjects.getWidgetInstanceByID(inIndex)
         outWidget = redRObjects.getWidgetInstanceByID(outIndex)
@@ -739,6 +744,8 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             ## for backward compatibility we need to make both the widgets and the instances.
             #addWidgetInstanceByFileName(name, settings, inputs, outputs)
             widgetInfo =  redRObjects.widgetRegistry()['widgets'][name]
+            if tmp:
+                widgetID += '_'+str(sessionID)
             schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
             #print 'Settings', settings
             lpb += 1

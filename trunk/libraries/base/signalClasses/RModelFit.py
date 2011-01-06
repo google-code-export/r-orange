@@ -3,9 +3,10 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.signalClasses.RList import *
+from libraries.base.signalClasses.RVariable import *
 
 class RModelFit(RList):
-    convertToList = [RList]
+    convertToList = [RList, RVariable]
     def __init__(self, data, parent = None, checkVal = True):
         RList.__init__(self, data = data, parent = parent, checkVal = False)
         self.RListSignal = None
