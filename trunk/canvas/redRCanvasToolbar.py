@@ -525,15 +525,110 @@ class SearchBox(redRlineEditHint):
                     # self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
                     # return
 import re
-class SearchBox2(redRlineEditHint):
+from libraries.base.qtWidgets.lineEdit import lineEdit
+class myQListView(QListView):
+    def __init__(self, parent=None, *args):
+        QListView .__init__(self, parent, *args)
+    def keyPressEvent(self, event):
+        oldIdx = self.currentIndex();
+        QListView.keyPressEvent(self,event);
+        newIdx = self.currentIndex();
+        if(oldIdx.row() != newIdx.row()):
+            self.emit(SIGNAL("clicked (QModelIndex)"), newIdx)
+    
+    def mousePressEvent(self, event):
+        print 'asdfasdfasdf',self.indexAt(event.pos())
+        if not self.indexAt(event.pos()).isValid():
+            print 'invalid index'
+        QListView.mousePressEvent(self, event)
+        self.emit(SIGNAL("activated (QModelIndex)"), self.indexAt(event.pos()))
+    
+
+class HTMLDelegate(QItemDelegate):
+    def __init__(self, parent=None, *args):
+        QItemDelegate .__init__(self, parent, *args)
+    def paint(self, painter, option, index):
+        painter.save()
+        #QStyledItemDelegate.paint(self,painter, option, index)
+        # highlight selected items
+        if option.state & QStyle.State_Selected:  
+            painter.fillRect(option.rect, option.palette.highlight());
+
+
+        model = index.model()
+        record = model.listdata[index.row()]
+
+        # doc = QLabel("%s"%record[0],None)
+        # doc.setWordWrap(True)
+        # doc.setFixedWidth(option.rect.width()-40)
+
+        doc = QTextDocument(self)
+        doc.setHtml("%s"%record[0])
+        doc.setTextWidth(option.rect.width()-40)
+        ctx = QAbstractTextDocumentLayout.PaintContext()
+       
+        painter.translate(option.rect.topLeft());
+        icon = QIcon(record[1].icon)
+        self.drawDecoration(painter, option, QRect(5,5,32,32), icon.pixmap(QSize(32,32)))
+        painter.translate(QPointF(40,4));
+        painter.setClipRect(option.rect.translated(-option.rect.topLeft()))
+        dl = doc.documentLayout()
+        dl.draw(painter, ctx)
+        # painter.resetTransform()
+        # painter.translate(option.rect.topLeft());
+        
+        painter.restore()
+
+
+    def sizeHint(self, option, index):
+        # model = index.model()
+        # record = model.listdata[index.row()]
+        # doc = QTextDocument(self)
+        # doc.setHtml("<b>%s</b>"%record)
+        # doc.setTextWidth(option.rect.width())
+        # return QSize(doc.idealWidth(), doc.size().height())
+        return QSize(50,50)
+
+    def flags(self, index):
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
+
+class SearchBox2(lineEdit):
     def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
-        redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
-        orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
-        **args)
+        lineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
+        orientation = orientation, toolTip = toolTip, width = width, **args)
+        QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
+
         self.setStyleSheet("QLineEdit {border: 2px solid grey; border-radius: 10px; padding: 0 8px;margin-right:60px; selection-background-color: darkgray;}")
  
-        self.searchBox = redRSearchDialog()
-        QObject.connect(self, SIGNAL('returnPressed()'), self.searchDialog)
+        self.listWidget = myQListView()
+        self.listWidget.setMouseTracking(1)
+        self.listWidget.installEventFilter(self)
+        self.listWidget.setWindowFlags(Qt.Popup)
+        self.listWidget.setFocusPolicy(Qt.NoFocus)
+        self.listWidget.setResizeMode(QListView.Fixed)
+        self.listWidget.setUniformItemSizes(True)
+
+        de = HTMLDelegate(self)
+        self.model = QStandardItemModel(self)
+        
+        self.listWidget.setModel(self.model)
+        self.listWidget.setItemDelegate(de)
+        self.listWidget.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.listWidget.setSelectionBehavior(QAbstractItemView.SelectItems)
+        
+        # QObject.connect(self.listWidget, SIGNAL("itemClicked (QListWidgetItem *)"), self.doneCompletion)
+        QObject.connect(self.listWidget, SIGNAL("activated ( QModelIndex )"), self.doneCompletion)
+        QObject.connect(self.listWidget, SIGNAL("selectionChanged ( QItemSelection , QItemSelection ) "), self.doneCompletion)
+
+        QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
+        self.enteredText = ""
+        self.itemList = []
+        self.useRE = 0
+        self.callbackOnComplete = self.searchCallback
+        self.listUpdateCallback = None
+        self.autoSizeListWidget = 0
+        self.nrOfSuggestions = 10
+        self.minTextLength = 1
         self.caseSensitive = 0
         self.matchAnywhere = 1
         self.autoSizeListWidget = 1
@@ -541,19 +636,21 @@ class SearchBox2(redRlineEditHint):
         self.maxResults = 10
         self.descriptionSize = 100
         self.listWidget.setAlternatingRowColors(True)
+        self.delimiters = None          # by default, we only allow selection of one element
+        self.itemsAsStrings = []        # a list of strings that appear in the list widget
+        self.itemsAsItems = items          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
         
         widgetList = {}
         for wName, widgetInfo in redRObjects.widgetRegistry()['widgets'].items():
-            # x = QListWidgetItem(QIcon(widgetInfo.icon), unicode('%s\n%s' % (wName,widgetInfo.description)))
-            # widgetList.append(x)
-            widgetList[wName] = widgetInfo          
+            widgetList[wName] = widgetInfo   
+            
         self.setItems(widgetList)
     def setItems(self, items):
         self.itemsAsItems = items
         self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) for name,item in items.items()]
     def updateSuggestedItems(self):
         self.listWidget.setUpdatesEnabled(0)
-        self.listWidget.clear()
+        self.model.clear()
         last = self.getLastTextItem()
         tuples = zip(self.itemsAsStrings, self.itemsAsItems.values())
 
@@ -566,37 +663,30 @@ class SearchBox2(redRlineEditHint):
         if tuples:
             if len(tuples) > self.maxResults:
                 tuples = tuples[0:self.maxResults-1]
+            
+            self.model.listdata = []
             pattern = re.compile('(%s)' % last, re.IGNORECASE)
-            height = 0
+            
             for (text, widgetInfo) in tuples:
-                x = QListWidgetItem(QIcon(widgetInfo.icon), '')
-                x.widgetInfo = widgetInfo
-                self.listWidget.addItem(x)
                 name = pattern.sub(r'<b>\1</b>', widgetInfo.name)
                 description = pattern.sub(r'<b>\1</b>', widgetInfo.description[:self.descriptionSize])
-                
-                a = QLabel(unicode('%s<br>%s' % (name,description)),None)
-                a.setStyleSheet('QLabel{margin-left:10px;}')
-                a.setWordWrap(True)
-                sizeHint = a.sizeHint()
-                height+=sizeHint.height()
-                x.setSizeHint(sizeHint)
-                self.listWidget.setItemWidget(x,a)
-
-            self.listWidget.setCurrentRow(0)
-
+                theText = unicode('%s (%s)<br>%s' % (name,widgetInfo.packageName,description))
+                self.model.listdata.append((theText,widgetInfo))
+                x = QStandardItem(QIcon(widgetInfo.icon), theText)
+                x.widgetInfo = widgetInfo
+                self.model.appendRow(x)
+            selectionModel = self.listWidget.selectionModel()
+            selectionModel.setCurrentIndex(self.model.index(0,0),QItemSelectionModel.ClearAndSelect)
+            
+            height = len(tuples)*50
+            
             self.listWidget.setUpdatesEnabled(1)
             width = max(self.width(), self.autoSizeListWidget and self.listWidget.sizeHintForColumn(0)+10)
             if self.autoSizeListWidget:
                 self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  
-            self.listWidget.resize(width, min(height,qApp.canvasDlg.height())+30)
-            #self.listWidget.sizeHintForRow(0) * (min(self.nrOfSuggestions, len(tuples)))+5)
+            self.listWidget.resize(width, min(height,qApp.canvasDlg.height())+10)            
             self.listWidget.move(self.mapToGlobal(QPoint(0, self.height())))
             self.listWidget.show()
-##            if not self.delimiters and items and not self.matchAnywhere:
-##                self.setText(last + unicode(items[0].text())[len(last):])
-##                self.setSelection(len(unicode(self.text())), -(len(unicode(self.text()))-len(last)))            
-##            self.setFocus()
         else:
             self.listWidget.hide()
             return
@@ -604,8 +694,10 @@ class SearchBox2(redRlineEditHint):
         if self.listUpdateCallback:
             self.listUpdateCallback()
     def doneCompletion(self, *args):
+        print '############',args,args[0].row()
+        print self.model.listdata[args[0].row()]
         if self.listWidget.isVisible():
-            widgetInfo = self.listWidget.currentItem().widgetInfo
+            widgetInfo = self.model.listdata[args[0].row()][1]
             self.setText(unicode(widgetInfo.name))
             self.listWidget.hide()
             self.setFocus()
@@ -614,6 +706,20 @@ class SearchBox2(redRlineEditHint):
             QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo))
             #self.callbackOnComplete()
               
+    def textEdited(self):
+        # if we haven't typed anything yet we hide the list widget
+        if self.getLastTextItem() == "" or len(unicode(self.text())) < self.minTextLength:
+            self.listWidget.hide()
+        else:
+            self.updateSuggestedItems()
+    
+    def getLastTextItem(self):
+        text = unicode(self.text())
+        if len(text) == 0: return ""
+        if not self.delimiters: return unicode(self.text())     # if no delimiters, return full text
+        if text[-1] in self.delimiters: return ""
+        return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
+   
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this           
             if object != self.listWidget and object != self:

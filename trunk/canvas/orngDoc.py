@@ -615,7 +615,7 @@ class SchemaDoc(QWidget):
 
         # the list could include (e.ShiftButton, "Shift") if the shift key didn't have the special meaning
         pressed = "-".join(filter(None, [int(e.modifiers()) & x and y for x, y in [(Qt.ControlModifier, "Ctrl"), (Qt.AltModifier, "Alt")]]) + [chr(e.key())])
-        widgetToAdd = self.canvasDlg.widgetShortcuts.get(pressed)
+        widgetToAdd = self.canvasDlg.toolbarFunctions.widgetShortcuts.get(pressed)
         if widgetToAdd:
             self.addWidget(widgetToAdd)
             if e.modifiers() & Qt.ShiftModifier and len(self.widgets()) > 1:
