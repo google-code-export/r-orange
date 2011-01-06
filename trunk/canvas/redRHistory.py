@@ -13,8 +13,8 @@ try:
     hDict = cPickle.load(f)
     f.close()
 except Exception as inst:
-    # print inst
-    # print 'widgetHistory not found'
+    print inst
+    print 'widgetHistory not found'
     hDict = {}
     
 try:
@@ -25,6 +25,10 @@ except:
     hDictWeb = {}
     
 def getSuggestWidgets(outWidget):
+    # import pprint
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(hDict)
+
     actions = []
     try:
         topCons = getTopConnections(outWidget)
@@ -36,24 +40,22 @@ def getSuggestWidgets(outWidget):
                 actions.append(wInfo)
     except:
         redRLog.log(redRLog.REDRCORE,redRLog.WARNING,'The widget use history is corrept. Please delete it.')
+        redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,redRLog.formatException())
     return actions
 def getTopConnections(outWidget):
     ## return the top connections for the widget
     # print 'filename:', outWidget.widgetInfo.fileName
     
     if outWidget.widgetInfo.fileName in hDict:
-        print 'recent', hDict[outWidget.widgetInfo.fileName]['recent']
-        print 'counts', hDict[outWidget.widgetInfo.fileName]['counts']
+        # print 'recent', hDict[outWidget.widgetInfo.fileName]['recent']
+        # print 'counts', hDict[outWidget.widgetInfo.fileName]['counts']
         tops = hDict[outWidget.widgetInfo.fileName]['recent']
         widgetConns = hDict[outWidget.widgetInfo.fileName]['counts'] # get the info associated with this widget.
         tops += [val for val in sorted(widgetConns, key=widgetConns.get, reverse=True)[0:9] if val not in tops]
     else:
         tops = []
-    
-    if outWidget.widgetInfo.outputWidgets:
-        tops += [val for val in outWidget.widgetInfo.outputWidgets if val not in tops and val != '']
-
-    
+    # if outWidget.widgetInfo.outputWidgets:
+        # tops += [val for val in outWidget.widgetInfo.outputWidgets if val not in tops and val != '']
     return tops
     
 def addConnectionHistory(outWidget,inWidget):

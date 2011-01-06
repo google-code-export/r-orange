@@ -68,15 +68,15 @@ class redRCanvasToolbarandMenu():
         
         
     def initMenu(self):
-        self.menuRecent = QMenu("Recent Schemas", self.canvas)
+        self.menuRecent = QMenu("Recent Pipelines", self.canvas)
 
         self.menuFile = QMenu("&File", self.canvas)
-        self.menuFile.addAction( "New Schema",  self.menuItemNewScheme, QKeySequence.New)
+        self.menuFile.addAction( "New Pipeline",  self.menuItemNewScheme, QKeySequence.New)
         self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open...", self.menuItemOpen, QKeySequence.Open )
         self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open and Freeze...", self.menuItemOpenFreeze)
-        self.menuFile.addAction("Import Schema", self.importSchema)
+        self.menuFile.addAction("Import Pipeline", self.importSchema)
         if os.path.exists(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "lastSchema.tmp")):
-            self.menuFile.addAction("Reload Last Schema", self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
+            self.menuFile.addAction("Reload Last Pipeline", self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
         #self.menuFile.addAction( "&Clear", self.menuItemClear)
         self.menuFile.addSeparator()
         self.menuSaveID = self.menuFile.addAction(QIcon(redRStyle.saveFileIcon), "&Save", self.menuItemSave, QKeySequence.Save )
@@ -84,7 +84,7 @@ class redRCanvasToolbarandMenu():
         self.menuSaveTemplateID = self.menuFile.addAction( "Save As Template", self.menuItemSaveTemplate)
         self.menuFile.addSeparator()
         #self.menuFile.addAction(QIcon(redRStyle.printIcon), "Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
-        self.menuFile.addAction("Compile &Report", self.menuItemReport)
+        self.menuFile.addAction("Generate &Report", self.menuItemReport)
         self.menuFile.addSeparator()
         self.menuFile.addMenu(self.menuRecent)
         self.menuFile.addSeparator()
@@ -320,7 +320,12 @@ class redRCanvasToolbarandMenu():
         self.menuOptions.setItemChecked(self.menuSaveSettingsID, self.menuSaveSettings)
 
     def menuItemNewScheme(self):
-        self.canvas.schema.clear()
+        mb = QMessageBox("Create New Pipeline", "Creating a new pipeline will delete all existing work.\n\nAre you sure you want to continue?", 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self.canvas)
+        
+        if mb.exec_() == QMessageBox.Ok:
+            self.canvas.schema.clear()
 
     def dumpVariables(self):
         self.canvas.schema.dumpWidgetVariables()

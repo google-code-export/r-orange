@@ -88,8 +88,8 @@ class CanvasOptionsDlg(QDialog):
         
         self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", orientation = 'horizontal')
         
-        self.helpModeSelection = OWGUI.checkBox(generalBox,self.settings,'helpMode',
-        'Show help icons')
+        # self.helpModeSelection = OWGUI.checkBox(generalBox,self.settings,'helpMode',
+        # 'Show help icons')
 
         
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
@@ -192,7 +192,7 @@ class CanvasOptionsDlg(QDialog):
         
         self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", "Log File:", orientation = 'horizontal')
         self.okButton = OWGUI.button(hbox, self, "Browse", callback = self.browseLogFile)
-        self.showOutputLog = redRbutton(hbox, label = 'Show Log File', callback = self.showLogFile)
+        self.showOutputLog = redRbutton(output, label = 'Show Log File', callback = self.showLogFile)
         
         # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
         # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
@@ -451,7 +451,7 @@ class AboutDlg(QDialog):
         logo = redRwidgetLabel(self, "")
         logo.setPixmap(logoImage)
         info = redREnviron.version
-        self.about = redRwebViewBox(self)
+        self.about = redRwebViewBox(self,label='About Info',displayLabel=False)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.about.setMinimumHeight(150)
         self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 

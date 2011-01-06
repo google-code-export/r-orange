@@ -6,9 +6,8 @@ import os.path
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
     toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False):
+
         if icon and (not label or label == ''):
-            
-            
             widgetState.__init__(self,widget,os.path.basename(icon),includeInReports=False)
         else:
             widgetState.__init__(self,widget,label,includeInReports=False)

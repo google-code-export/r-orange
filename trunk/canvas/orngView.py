@@ -161,8 +161,6 @@ class SchemaView(QGraphicsView):
             self.selectedLine.updateTooltip()
 
     def unselectAllWidgets(self):
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Unselecting widgets')
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Available icons are %s' % redRObjects.getIconsByTab())
         for k, items in redRObjects.getIconsByTab().items():
             #print k
             for item in items:

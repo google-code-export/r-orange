@@ -14,6 +14,7 @@ from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, zipfile, urllib, sip, redRObjects, redRSaveLoad
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 from libraries.base.qtWidgets.splitter import splitter as redRSplitter
+from libraries.base.qtWidgets.button import button as redRbutton
 #import pprint, 
 # pp = pprint.PrettyPrinter(indent=4)
 
@@ -36,7 +37,16 @@ class SchemaDoc(QWidget):
         # self.splitter = redRSplitter(self)
         # left = self.splitter.widgetArea()
         self.tabsWidget = QTabWidget()
+        self.tabsWidget.setDocumentMode(True)
+        self.tabsWidget.setTabsClosable(True)
+        self.tabsWidget.setMovable(True)
+        self.tabsWidget.tabBar().setShape(QTabBar.RoundedNorth)
+        addTabButton = redRbutton(None,label='',
+        icon=os.path.join(redREnviron.directoryNames['canvasIconsDir'],'plus.png'),
+        callback=self.newTab)
+        self.tabsWidget.setCornerWidget(addTabButton.controlArea)
         QObject.connect(self.tabsWidget, SIGNAL('currentChanged(int)'), self.resetActiveTab)
+        QObject.connect(self.tabsWidget, SIGNAL('tabCloseRequested(int)'), self.removeTab)
         self.layout().addWidget(self.tabsWidget)
         #self.canvas = QGraphicsScene(0,0,2000,2000)
         
@@ -94,12 +104,23 @@ class SchemaDoc(QWidget):
             return
         redRObjects.setActiveTab(tabname)
         self.tabsWidget.addTab(redRObjects.makeTabView(tabname, self), tabname)
+    def removeTab(self,index):
+        mb = QMessageBox("Remove Tab", "Are you sure that you want to remove the tab?\n\nAny widgets that have not been cloned will be lost.", 
+        QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+        QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
+        
+        if mb.exec_() == QMessageBox.Ok:
+            self.removeSchemaTab(unicode(self.tabsWidget.tabText(index)))
+       
     def removeCurrentTab(self):
-        mb = QMessageBox("Remove Current Tab", "Are you sure that you want to remove the current tab?\n\nAny widgets that have not been cloned will be lost!!!", 
+    
+        mb = QMessageBox("Remove Current Tab", "Are you sure that you want to remove the current tab?\n\nAny widgets that have not been cloned will be lost.", 
             QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
-            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
+        
         if mb.exec_() == QMessageBox.Ok:
             self.removeSchemaTab(redRObjects.activeTabName())
+    
     def removeSchemaTab(self, tabname):
         # set the tab in question to the active tab, this will set the current tab index so we can remove easily.
         self.setTabActive(tabname)
