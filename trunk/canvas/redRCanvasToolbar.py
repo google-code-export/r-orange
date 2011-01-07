@@ -642,7 +642,7 @@ class SearchBox2(lineEdit):
         self.maxResults = 10
         self.descriptionSize = 100
         self.listWidget.setAlternatingRowColors(True)
-        self.delimiters = None          # by default, we only allow selection of one element
+        self.delimiters = ' '          # by default, we only allow selection of one element
         self.itemsAsStrings = []        # a list of strings that appear in the list widget
         self.itemsAsItems = items          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
         
@@ -655,17 +655,31 @@ class SearchBox2(lineEdit):
         self.listWidget.setUpdatesEnabled(0)
         self.model.clear()
         last = self.getLastTextItem()
+        
         tuples = zip(self.itemsAsStrings, self.itemsAsItems.values())
 
         if not self.caseSensitive:
             tuples = [(text.lower(), item) for (text, item) in tuples]
-            last = last.lower()
-            
-        tuples = [(text, item) for (text, item) in tuples if last in text]
+            last = [l.lower() for l in last]
         
+        for i in last:
+            if len(i) == 0: continue
+            tuples = [(text, item) for (text, item) in tuples if i in text]
+        ################### old block ###################
+        # self.listWidget.setUpdatesEnabled(0)
+        # self.model.clear()
+        # last = self.getLastTextItem()
+        # tuples = zip(self.itemsAsStrings, self.itemsAsItems.values())
+
+        # if not self.caseSensitive:
+            # tuples = [(text.lower(), item) for (text, item) in tuples]
+            # last = last.lower()
+            
+        # tuples = [(text, item) for (text, item) in tuples if last in text]
+        ################## end old block ########################
         if tuples:
-            if len(tuples) > self.maxResults:
-                tuples = tuples[0:self.maxResults-1]
+            if len(tuples) > self.maxResults:       # collect only the max results number of records.
+                tuples = tuples[0:self.maxResults]
             
             self.model.listdata = []
             pattern = re.compile('(%s)' % last, re.IGNORECASE)
@@ -710,18 +724,30 @@ class SearchBox2(lineEdit):
             #self.callbackOnComplete()
               
     def textEdited(self):
-        # if we haven't typed anything yet we hide the list widget
-        if self.getLastTextItem() == "" or len(unicode(self.text())) < self.minTextLength:
+        if len(self.getLastTextItem()) == 0:
             self.listWidget.hide()
         else:
             self.updateSuggestedItems()
+        ###########################  old code  #########################
+        # if we haven't typed anything yet we hide the list widget
+        # if self.getLastTextItem() == "" or len(unicode(self.text())) < self.minTextLength:
+            # self.listWidget.hide()
+        # else:
+            # self.updateSuggestedItems()
     
-    def getLastTextItem(self):
+    def getLastTextItem(self):  ## returns a string of the entered text.
         text = unicode(self.text())
-        if len(text) == 0: return ""
-        if not self.delimiters: return unicode(self.text())     # if no delimiters, return full text
-        if text[-1] in self.delimiters: return ""
-        return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
+        if len(text) == 0: return []
+        if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
+        return text.split(self.delimiters)
+        # if text[-1] in self.delimiters: return ""
+        # return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
+        ###########################  old code  #########################
+        # text = unicode(self.text())
+        # if len(text) == 0: return ""
+        # if not self.delimiters: return unicode(self.text())     # if no delimiters, return full text
+        # if text[-1] in self.delimiters: return ""
+        # return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
    
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this           
