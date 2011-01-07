@@ -113,7 +113,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.statusBar.setSizeGripEnabled(False)
         self.setStatusBar(self.statusBar)
         
-        docBox = redRwidgetBox(None,orientation='horizontal')
+        docBox = redRwidgetBox(None,orientation='horizontal',spacing=4)
         
         self.showWidgetToolbar = redRbutton(docBox, '',toggleButton=True, 
         icon=redRStyle.defaultWidgetIcon, toolTip='Widget Tree', callback = self.updateDockState)   

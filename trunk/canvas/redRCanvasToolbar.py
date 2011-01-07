@@ -514,7 +514,6 @@ class SearchBox(redRlineEditHint):
         
         qApp.canvasDlg.schema.addWidget(redRObjects.widgetRegistry()['widgets'][unicode(self.text())]) # add the correct widget to the schema
         self.clear()  # clear the line edit for the next widget
-        return
         #text = unicode(self.widgetSuggestEdit.text())
         
         # if '.rrts' in text: ## this is a template, we should load this and not add the widget
@@ -530,6 +529,7 @@ class SearchBox(redRlineEditHint):
                     
                     # self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
                     # return
+        return
 import re
 from libraries.base.qtWidgets.lineEdit import lineEdit
 class myQListView(QListView):
@@ -682,9 +682,11 @@ class SearchBox2(lineEdit):
                 tuples = tuples[0:self.maxResults]
             
             self.model.listdata = []
-            pattern = re.compile('(%s)' % last, re.IGNORECASE)
+            p =  '(%s)' % '|'.join(last)
+            pattern = re.compile(p, re.IGNORECASE)
             
             for (text, widgetInfo) in tuples:
+                
                 name = pattern.sub(r'<b>\1</b>', widgetInfo.name)
                 description = pattern.sub(r'<b>\1</b>', widgetInfo.description[:self.descriptionSize])
                 theText = unicode('%s (%s)<br>%s' % (name,widgetInfo.packageName,description))

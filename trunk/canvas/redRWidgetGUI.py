@@ -178,10 +178,6 @@ class redRWidgetGUI(QMainWindow):
         if not self.helpFile:
             self.helpFile = 'http://www.red-r.org/documentation'
 
-        self.showHelpButton = redRbutton(self.bottomAreaLeft, '',
-        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
-        toolTip='Help',
-        callback = self.showHelp)
                 
         
         
@@ -190,8 +186,9 @@ class redRWidgetGUI(QMainWindow):
         ################
         
         self.windowState['documentationState'] = {'notesBox':True,'ROutputBox':False}
+
+        docBox = redRwidgetBox(self.controlArea,orientation='horizontal',spacing=4)
         
-        docBox = redRwidgetBox(self.controlArea,orientation='horizontal')
         self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
         toolTip='Notes',
@@ -201,11 +198,17 @@ class redRWidgetGUI(QMainWindow):
         toolTip='R Code',
         callback = self.updateDocumentationDock)
         
-        self.printButton = redRbutton(self.bottomAreaLeft, "",
+        self.printButton = redRbutton(docBox, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
         toolTip='Print',
         callback = self.createReport)
-        self.includeInReport = redRbutton(self.bottomAreaLeft, '', 
+
+        self.showHelpButton = redRbutton(docBox, '',
+        icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
+        toolTip='Help',
+        callback = self.showHelp)
+
+        self.includeInReport = redRbutton(docBox, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
         toolTip='Include In Report', toggleButton = True)
         self.includeInReport.setChecked(True)
@@ -214,9 +217,9 @@ class redRWidgetGUI(QMainWindow):
         self.statusBar.addPermanentWidget(docBox)
         # self.statusBar.addPermanentWidget(self.showNotesButton)
         # self.statusBar.addPermanentWidget(self.showROutputButton)
-        self.statusBar.addPermanentWidget(self.showHelpButton)        
-        self.statusBar.addPermanentWidget(self.printButton)
-        self.statusBar.addPermanentWidget(self.includeInReport)
+        # self.statusBar.addPermanentWidget(self.showHelpButton)        
+        # self.statusBar.addPermanentWidget(self.printButton)
+        # self.statusBar.addPermanentWidget(self.includeInReport)
         
         
         self.GUIDialogDialog = None

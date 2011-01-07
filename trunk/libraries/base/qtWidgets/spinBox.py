@@ -33,7 +33,7 @@ class spinBox(QDoubleSpinBox ,widgetState):
         if value:
             self.setValue(value)
         if callback:
-            QObject.connect(self, SIGNAL('valueChanged(int)'), callback)
+            QObject.connect(self, SIGNAL('valueChanged(double)'), callback)
         
     def getSettings(self):
         value = self.value()
