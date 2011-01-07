@@ -223,7 +223,8 @@ class redRCanvasToolbarandMenu():
         redRGUI.registerQTWidgets()
         
         self.canvas.createWidgetsToolbar(self.widgetRegistry)
-        
+        self.searchBox2.setItems(redRObjects.widgetRegistry()['widgets'])
+
         
     def menuItemSaveAs(self):
         redRSaveLoad.saveDocumentAs()
@@ -645,11 +646,8 @@ class SearchBox2(lineEdit):
         self.itemsAsStrings = []        # a list of strings that appear in the list widget
         self.itemsAsItems = items          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
         
-        widgetList = {}
-        for wName, widgetInfo in redRObjects.widgetRegistry()['widgets'].items():
-            widgetList[wName] = widgetInfo   
             
-        self.setItems(widgetList)
+        self.setItems(redRObjects.widgetRegistry()['widgets'])
     def setItems(self, items):
         self.itemsAsItems = items
         self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) for name,item in items.items()]
