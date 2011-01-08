@@ -321,7 +321,7 @@ class SchemaDoc(QWidget):
         #if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Create a clone widget %s in tab %s.' % ( w.caption + ' (Clone)', tabName))
-            self.cloneWidget(w, tabName, caption = w.caption + ' (Clone)')
+            self.cloneWidget(w, viewID = tabName, x = w.x(), y = w.y(), caption = w.caption)
         self.setTabActive(tabName) ## set the new tab as active so the user knows something happened.
     def cloneWidget(self, widget, viewID = None, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True):
         ## we want to clone the widget.  This involves moving to the correct view and placing the icon on the canvas but setting the instance to be the same as the widget instance on the other widget.
