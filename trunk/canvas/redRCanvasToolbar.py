@@ -381,7 +381,7 @@ class redRCanvasToolbarandMenu():
                 shf.write("%s: %s\n" % (k, (widgetInfo.packageName, widgetInfo.name)))
 
     def menuItemDeleteWidgetSettings(self):
-        if QMessageBox.warning(self,'Red Canvas','If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
+        if QMessageBox.warning(None,'Red Canvas','If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
             if os.path.exists(redREnviron.directoryNames['widgetSettingsDir']):
                 for f in os.listdir(redREnviron.directoryNames['widgetSettingsDir']):
                     if os.path.splitext(f)[1].lower() == ".ini":
@@ -599,7 +599,7 @@ class HTMLDelegate(QItemDelegate):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
 
 class SearchBox2(lineEdit):
-    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+    def __init__(self, widget, label='Search',orientation='horizontal', items = {}, toolTip = None,  width = -1, callback = None, **args):
         lineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
         orientation = orientation, toolTip = toolTip, width = width, **args)
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
@@ -650,7 +650,8 @@ class SearchBox2(lineEdit):
         self.setItems(redRObjects.widgetRegistry()['widgets'])
     def setItems(self, items):
         self.itemsAsItems = items
-        self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) for name,item in items.items()]
+        if type(items) == dict:
+            self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) for name,item in items.items()]
     def updateSuggestedItems(self):
         self.listWidget.setUpdatesEnabled(0)
         self.model.clear()

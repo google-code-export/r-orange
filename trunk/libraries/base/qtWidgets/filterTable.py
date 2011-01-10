@@ -473,13 +473,23 @@ class filterTable(widgetState, QTableView):
         
         # print r
         return r
+    def startProgressBar(self, title,text,max):
+        progressBar = QProgressDialog()
+        progressBar.setCancelButtonText(QString())
+        progressBar.setWindowTitle(title)
+        progressBar.setLabelText(text)
+        progressBar.setMaximum(max)
+        progressBar.setValue(0)
+        progressBar.show()
+        return progressBar
     def loadSettings(self,data):
-        # print '############################# loadSettings'
+        print 'loadSettings for a filter table'
         # print data
         if not data['Rdata']: return 
-
+        progressBar = self.startProgressBar('Filter Table Loading', 'Loading Fiter Table', 50)
         self.Rdata = data['Rdata']
         self.criteriaList = data['criteriaList']
+        print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
         self.filter()
 
         if 'sortIndex' in data.keys():
@@ -487,9 +497,20 @@ class filterTable(widgetState, QTableView):
         selModel = self.selectionModel()
         # print selModel
         if 'selection' in data.keys() and len(data['selection']):
-            for i in data['selection']:
-                selModel.select(self.tm.createIndex(i[0],i[1]),QItemSelectionModel.Select)
-        
+            if len(data['selection']) > 1000:
+                mb = QMessageBox.question(None, 'Setting Selection', 'There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.' % self.label, QMessageBox.Yes, QMessageBox.No)
+                if mb.exec_() == QMessageBox.No:
+                
+                    progressBar.setLabelText('Loading Selections')
+                    progressBar.setMaximum(len(data['selection']))
+                    progressBar.setValue(0)
+                    val = 0
+                    for i in data['selection']:
+                        selModel.select(self.tm.createIndex(i[0],i[1]),QItemSelectionModel.Select)
+                        val += 1
+                        progressBar.setValue(val)
+        progressBar.hide()
+        progressBar.close()
      
     def delete(self):
         sip.delete(self)

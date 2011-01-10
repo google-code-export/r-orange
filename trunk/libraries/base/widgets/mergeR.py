@@ -50,6 +50,7 @@ class mergeR(OWRpy):
         self.sortOption = checkBox(self.bottomAreaLeft, label='Sort by Selected Column', displayLabel=False, 
         buttons = ['Sort by Selected Column'], 
         toolTips = ['logical. Should the results be sorted on the by columns?'])
+        self.rownamesOption = checkBox(self.bottomAreaLeft, label = 'Include Row Names in Merge', displayLabel = False, buttons = ['Include Row in Merge'], toolTips = ['This will include the row names in the data after merge.'], setChecked = ['Include Row in Merge'])
         self.sortOption.layout().setAlignment(Qt.AlignLeft)
         
         self.mergeOptions = radioButtons(self.bottomAreaCenter,label='Type of merge', displayLabel=False,
@@ -127,9 +128,12 @@ class mergeR(OWRpy):
             if self.colBsel == 'Rownames': cbs = '0'
             else: cbs = self.colBsel
             
-            self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+', by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
-            if self.colAsel == 'Rownames':
-                self.R('rownames('+self.Rvariables['merged']+')<-rownames('+self.dataA+')', wantType = 'NoConversion')
+            if 'Include Row in Merge' in self.rownamesOption.getChecked():
+                self.R(self.Rvariables['merged']+'<-merge(cbind('+self.dataA+', RownamesA = rownames('+self.dataA+')), cbind('+self.dataB+', RownamesB = rownames('+self.dataB+')), by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
+            else:
+                self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+', by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
+            # if self.colAsel == 'Rownames':
+                # self.R('rownames('+self.Rvariables['merged']+')<-rownames('+self.dataA+')', wantType = 'NoConversion')
             self.sendMe()
 
     def sendMe(self,kill=False):

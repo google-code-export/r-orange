@@ -299,6 +299,7 @@ def removeWidgetInstanceByID(id):
             del _widgetInstances[id]
         except: pass
 def removeWidgetInstance(widget):
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Removing widget instance %s' % widget)
     widget.onDeleteWidget()
     import sip
     sip.delete(widget)
@@ -387,6 +388,7 @@ def addLine(outWidgetInstance, inWidgetInstance, enabled = 1):
         updateLines()
         return 1
 def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName):
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Removing Line')
         tabIconStructure = getIconsByTab()
         owi = outWidgetInstance
         iwi = inWidgetInstance
@@ -407,7 +409,8 @@ def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName)
             
             
 def removeLineInstance(line):
-    obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance)
+    obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance())
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Removing obsolete signals %s' % obsoleteSignals)
     for (s, id) in obsoleteSignals:
         signal = line.inWidget.instance().inputs.getSignal(id)
         line.outWidget.instance().outputs.removeSignal(signal, s)

@@ -351,7 +351,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.canvasDlg.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+unicode(self.widgetInfo.name)])
             else:
                 self.canvasDlg.suggestButtonsList.hide()
-            self.canvasDlg.suggestButtonsList.show()
+            #self.canvasDlg.suggestButtonsList.show()
             #highlight the compatible wigets for this widget.
             # for i in redRObjects.widgetRegistry()['widgets']:
                 # if i.instance().inputs.matchConnections(self.instance().outputs):

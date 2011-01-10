@@ -11,7 +11,9 @@ class OutputHandler:
         return self.outputSignals
     def addOutput(self, id, name, signalClass):
         self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent, 'sid':id}   # set up an 'empty' signal
-
+    def clearAll(self):
+        self.outputSignals = {}
+        self.connections = {}
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Trying to connect signal and process.')
@@ -47,6 +49,7 @@ class OutputHandler:
             out[key] = value['value']
         return out
     def removeSignal(self, signal, id):
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Removing signal %s, %s' % (signal, id))
         ## send None through the signal to the handler before we disconnect it.
         if signal['id'] in self.outputSignals[id]['connections'].keys():                                 # check if the signal is there to begin with otherwise we don't do anything
             try:

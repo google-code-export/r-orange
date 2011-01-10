@@ -8,6 +8,7 @@ from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButto
 from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
+from libraries.base.qtWidgets.listBox import listBox as redRListBox
 import libraries.base.signalClasses as signals
 
 class RedRtable(OWRpy): 
@@ -21,19 +22,25 @@ class RedRtable(OWRpy):
         self.outputs.addOutput("table Output","Table Output", signals.RDataFrame.RDataFrame)
         self.outputs.addOutput("propTable", "Prob Table Output", signals.RDataFrame.RDataFrame)
         
+        self.cols = redRListBox(self.controlArea, label = 'Use Columns:')
+        
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
         
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data.getData()
+            self.cols.update(self.R('colnames('+self.RFunctionParam_data+')', wantType = 'NoConversion'))
             if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
         if unicode(self.RFunctionParam_data) == '': return
-        self.R(self.Rvariables['table']+'<-table(data='+unicode(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        if len(self.cols.selectedItems()) > 0:
+            self.R(self.Rvariables['table']+'<-table(data='+unicode(self.RFunctionParam_data)+')', wantType = 'NoConversion')
+        else:
+            self.R(self.Rvariables['table']+'<-table('+self.RFunctionParam_data+'$'+unicode(', '+self.RFunctionParam_data+'$').join([unicode(a.text()) for a in self.cols.selectedItems()])+')', wantType = 'NoConversion')
         self.R('txt<-capture.output('+self.Rvariables['table']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')

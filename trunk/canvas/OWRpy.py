@@ -250,6 +250,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.R('if(exists("' + self.Rvariables[k] + '")) { rm(' + self.Rvariables[k] + ') }', wantType = 'NoConversion')
         # send none through the signals
         self.outputs.propogateNone(ask = False)
+        self.outputs.clearAll()
         self.customWidgetDelete()
         # if self.outputs:
             # for output in self.outputs:

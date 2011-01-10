@@ -155,7 +155,7 @@ class SchemaView(QGraphicsView):
 
     def resetLineSignals(self):
         if self.selectedLine:
-            self.doc.resetActiveSignals(self.selectedLine.outWidget, self.selectedLine.inWidget, enabled = self.doc.signalManager.getLinkEnabled(self.selectedLine.outWidget.instance, self.selectedLine.inWidget.instance))
+            self.doc.resetActiveSignals(self.selectedLine.outWidget, self.selectedLine.inWidget, enabled = True)
             self.selectedLine.inWidget.updateTooltip()
             self.selectedLine.outWidget.updateTooltip()
             self.selectedLine.updateTooltip()
