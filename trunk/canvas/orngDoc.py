@@ -164,8 +164,11 @@ class SchemaDoc(QWidget):
                 
                 webbrowser.open(url)
                 
-            
-            return None
+            mb = QMessageBox("Failed to Connect", "Not valid connection.\nWould you like to force this connection anyway?\n\nTHIS MIGHT CAUSE ERRORS AND EVEN CRASH RED-R!!!", 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+            if mb.exec_() == QMessageBox.No:
+                return None
 
         if process != False:
             dialog = SignalDialog(self.canvasDlg, None)
@@ -174,7 +177,7 @@ class SchemaDoc(QWidget):
             # if there are multiple choices, how to connect this two widget, then show the dialog
         
             possibleConnections = inWidget.instance().inputs.getPossibleConnections(outWidget.instance().outputs)  #  .getConnections(outWidget, inWidget)
-            if len(possibleConnections) > 1:
+            if len(possibleConnections) > 1 or len(possibleConnections) == 0:
                 #print possibleConnections
                 #dialog.addLink(possibleConnections[0][0], possibleConnections[0][1])  # add a link between the best signals.
                 if dialog.exec_() == QDialog.Rejected:
@@ -183,7 +186,7 @@ class SchemaDoc(QWidget):
             
 
             #self.signalManager.setFreeze(1)
-            
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Possible Connections are %s' % str(possibleConnections))
             for (outName, inName) in possibleConnections:
                 
                 self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)

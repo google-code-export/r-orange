@@ -273,7 +273,13 @@ class SignalDialog(QDialog):
             raise Exception, 'None sent as signal type'
             
             
-        if not self.inWidget.instance().inputs.doesSignalMatch(inName, outType): return 0
+        if not self.inWidget.instance().inputs.doesSignalMatch(inName, outType): 
+            mb = QMessageBox("Failed to Connect", "Not valid connection.\nWould you like to force this connection anyway?\n\nTHIS MIGHT CAUSE ERRORS AND EVEN CRASH RED-R!!!", 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+            if mb.exec_() == QMessageBox.No:
+                return 0
+            
         inSignal = None
         inputs = self.inWidget.instance().inputs.getAllInputs()
         for id, signal in inputs.items():

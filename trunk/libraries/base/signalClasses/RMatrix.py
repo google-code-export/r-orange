@@ -24,8 +24,8 @@ class RMatrix(RDataFrame):
         self.assignR('matrixConversion'+self.newDataID, signal.getData())
         return RMatrix(data = 'as.matrix('+'matrixConversion'+self.newDataID+')')
     def _convertFromRDataFrame(self, signal):
-        self.R('matrix_'+self.newDataID+'<-apply(as.matrix('+signal.getData()+'),2, as.numeric)', wantType = 'NoConversion')
-        return RMatrix(data = 'matrix_'+self.newDataID, parent = self)
+        #self.R('matrix_'+self.newDataID+'<-apply(data.matrix('+signal.getData()+'),2, as.numeric)', wantType = 'NoConversion')
+        return RMatrix(data = 'data.matrix('+self.newDataID+')', parent = self)
         
     def convertToClass(self, varClass):
         if varClass == RVariable:

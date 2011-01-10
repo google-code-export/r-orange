@@ -14,6 +14,7 @@ class OutputHandler:
 
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Trying to connect signal and process.')
             if id not in self.outputSignals.keys():
                 redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Signal Manager connectSignal: id not in output keys')
                 return False
@@ -156,6 +157,7 @@ class OutputHandler:
                 self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
                 self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
             else:
+                sentSignal = False
                 for sig in connection['signal']['signalClass']:
                     try:
                         if sig in signal['signalClass'].convertToList:
@@ -164,6 +166,7 @@ class OutputHandler:
                             self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
                             self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
                             connection['signal']['value'] = newVal
+                            sentSignal = True
                             break
                         elif signal['signalClass'] in sig.convertFromList:
                             tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
@@ -172,9 +175,15 @@ class OutputHandler:
                             self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
                             self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
                             connection['signal']['value'] = newVal
+                            sentSignal = True
                             break
                     except:
                         redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+                if sentSignal == False:
+                    ## we made it this far and the signal is still not sent.  The user must have allowed this to get this far so we send the signal anyway.
+                    self._handleSignal(signal['value'], handler, multiple, connection['signal']['parent'])
+                    self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
+                    self._handleNone(connection['signal']['parent'], connection['signal']['sid'], False)   ## indicate that the signal doesn't have a None
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             

@@ -34,6 +34,7 @@ class wilcox_test(OWRpy):
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
+            self.status.setText('X data set to %s' % self.RFunctionParam_x)
             if self.commit.processOnInput():
                 self.commitFunction()
     def processy(self, data):
@@ -42,7 +43,9 @@ class wilcox_test(OWRpy):
             if self.commit.processOnInput():
                 self.commitFunction()
     def commitFunction(self):
-        if self.RFunctionParam_x == '': return
+        if self.RFunctionParam_x == '': 
+            self.status.setText('No X data available')
+            return
         injection = []
         if self.RFunctionParam_y != '':
             injection.append(unicode('y='+unicode(self.RFunctionParam_y)))
