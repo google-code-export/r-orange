@@ -7,9 +7,6 @@
 #Contains all the functionality for connecting the widget to the underlying R session.
 from OWRpy import *
 
-# redRGUI contains all the QT gui elements. 
-# These elements all have special functions for saving and loading state. 
-import redRGUI
 
 # signalClasses classes contain the data that is passed between widgets. 
 # In this case we are using the RDataFrame and RMatrix signals
@@ -20,7 +17,7 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 # our first widget. Must be a child of OWRpy class
 # The wiget class name must be the same as the file name
 
-
+## these are the imports of the qt widgets that are Red-R compliant.  Feel free to make your own widgets and use them.  You can even use Qt widgets directly, though this is not recomended as they may not work with loading and saving.
 from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
@@ -40,7 +37,7 @@ class cor(OWRpy):
         #Here we init the parent class of our widget OWRpy.
         OWRpy.__init__(self)
         
-        #create a R variable cor in the R session.
+        #create a R variable cor in the R session.  These variables will be in the R session to track the ouputs of functions that run in R.
         #the cor variable will not conflict with some other widgets cor function
         self.setRvariableNames(["cor"])
         
@@ -62,6 +59,8 @@ class cor(OWRpy):
         
         options = widgetBox(area,orientation='vertical')
         area.layout().setAlignment(options,Qt.AlignTop)
+        
+        # radioButtons are a type of qtWidget from the base package.  This widget will show radioButtons in a group.  Only one radio button may be selected at one time.  Buttons are declared using buttons = , the callback is the function that will be executed when the button selection changes.  setChecked sets a button to be checked by default.
         self.type = radioButtons(options,  label = "Perform", 
         buttons = ['Variance', 'Correlation', 'Covariance'],setChecked='Correlation',
         orientation='vertical',callback=self.changeType)
@@ -73,11 +72,12 @@ class cor(OWRpy):
         self.useButtons =  radioButtons(options, label='Handing Missing Values', setChecked='everything',
         buttons = ["everything","all.obs", "complete.obs", "pairwise.complete.obs"],
         orientation='vertical')
-
+        
+        # the commit button is a special button that can be set to process on data input.  Widgets must be aware of these selections.  Clicking the commit button executes the callback which in this case executes the commitFunction.
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
-
+        # this is a filter table designed to hold R data.  The name is Cor/Var for the report generation but the user will not see this label because displayLabel is set to False.
         self.RoutputWindow = redRfilterTable(area,label='Cor/Var', displayLabel=False,
         sortable=True,filterable=False)
     
