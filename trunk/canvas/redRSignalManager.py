@@ -12,6 +12,10 @@ class OutputHandler:
     def addOutput(self, id, name, signalClass):
         self.outputSignals[id] = {'name':name, 'signalClass':signalClass, 'connections':{}, 'value':None, 'parent':self.parent, 'sid':id}   # set up an 'empty' signal
     def clearAll(self):
+        for id, outputSignal in self.outputSignals.items():
+            val = outputSignal['value']
+            if val == None: continue
+            val.deleteSignal() # calls the distructor function for the signal
         self.outputSignals = {}
         self.connections = {}
     def connectSignal(self, signal, id, enabled = 1, process = True):

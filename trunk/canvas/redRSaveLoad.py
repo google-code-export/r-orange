@@ -105,6 +105,13 @@ def saveInstances(instances, widgets, doc, progressBar):
 def makeTemplate(filename = None, copy = False):
     ## this is different from saving.  We want to make a special file that only has the selected widgets, their connections, and settings.  No R data or tabs are saved.
     if copy and len(_tempWidgets) == 0: return 
+    elif len(_tempWidgets) == 0:
+        mb = QMessageBox("Save Template", "No widgets are selected.\nTemplates require widgets to be selected before saving as template.", 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+        
+        mb.exec_()
+        return
     if not copy:
         if not filename:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
@@ -373,6 +380,7 @@ def loadTemplate(filename, caption = None, freeze = 0):
 
 def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global _schemaName
+    global schemaPath
     global globalNotes
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading Document %s' % filename)
     import redREnviron
@@ -796,6 +804,8 @@ def toZip(file, filename):
     zip_file.close()
     
 def saveDocumentAs():
+    global _schemaName
+    global schemaPath
     name = QFileDialog.getSaveFileName(None, "Save File", os.path.join(schemaPath, _schemaName), "Red-R Widget Schema (*.rrs)")
     if not name or name == None: return False
     name = unicode(name)
@@ -803,6 +813,7 @@ def saveDocumentAs():
     if os.path.splitext(unicode(name))[0] == "": return False
     if os.path.splitext(unicode(name))[1].lower() != ".rrs": name = name + ".rrs"
     #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'saveDocument: name is %s' % name)
+    schemaPath, _schemaName = os.path.split(name)
     return save(name,template=False)
 def checkWidgetDuplication(widgets):
     for widget in widgets.getElementsByTagName("widget"):

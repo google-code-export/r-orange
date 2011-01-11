@@ -73,7 +73,7 @@ class redRCanvasToolbarandMenu():
         self.menuFile = QMenu("&File", self.canvas)
         self.menuFile.addAction( "New Pipeline",  self.menuItemNewScheme, QKeySequence.New)
         self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open...", self.menuItemOpen, QKeySequence.Open )
-        self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open and Freeze...", self.menuItemOpenFreeze)
+        #self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open and Freeze...", self.menuItemOpenFreeze)
         self.menuFile.addAction("Import Pipeline", self.importSchema)
         if os.path.exists(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "lastSchema.tmp")):
             self.menuFile.addAction("Reload Last Pipeline", self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
@@ -214,7 +214,7 @@ class redRCanvasToolbarandMenu():
             self.canvas.schema.loadDocument(fullName)
 
     def menuItemSave(self):
-        redRSaveLoad.saveDocumentAs()
+        redRSaveLoad.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
         
         self.widgetRegistry = orngRegistry.readCategories()

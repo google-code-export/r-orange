@@ -74,8 +74,16 @@ class BaseRedRVariable:
         del self.dictAttrs['name']
     def deleteSignal(self):
         pass
-        #print 'Deleting signal'
-        
+        print 'Deleting signal'
+    def progressBar(self, title = 'Signal Prosess', text = '', max = 100):
+        progressBar = QProgressDialog()
+        progressBar.setCancelButtonText(QString())
+        progressBar.setWindowTitle(title)
+        progressBar.setLabelText(text)
+        progressBar.setMaximum(max)
+        progressBar.setValue(0)
+        progressBar.show()
+        return progressBar
 
 
 ##############################################################

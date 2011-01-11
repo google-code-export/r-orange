@@ -166,19 +166,17 @@ class listBox(QListWidget,widgetState):
             
             for i in data['selected']:
                 self.setItemSelected(self.item(i), True)
-        except:
-            print 'Error occured in List Box loading'
-            import traceback,sys
-            print '-'*60
-            traceback.print_exc(file=sys.stdout)
-            print '-'*60        
+        except Exception as inst:
+            print 'Error occured in List Box loading: %s' % unicode(inst)
+                
 
     def invertSelection(self):
         for i in range(self.count()):
-            if self.isItemSelected(self.item(i)):
-                self.item(i).setSelected(False)
-            else:
-                self.item(i).setSelected(True)
+            self.item(i).setSelected(not self.item(i).isSelected())
+            # if self.isItemSelected(self.item(i)):
+                # self.item(i).setSelected(False)
+            # else:
+                # self.item(i).setSelected(True)
     
     def selectionCount(self):
         return len(self.selectedIndexes())

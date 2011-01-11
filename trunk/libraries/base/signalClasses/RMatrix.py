@@ -12,7 +12,7 @@ class RMatrix(RDataFrame):
         self.RListSignal = None
         self.StructuredDictSignal = None
         self.newDataID = unicode(time.time()).replace('.', '_')
-        
+        self.matrix = None
         
     def convertFromClass(self, signal):
         if isinstance(signal, RDataFrame):
@@ -25,8 +25,11 @@ class RMatrix(RDataFrame):
         return RMatrix(data = 'as.matrix('+'matrixConversion'+self.newDataID+')')
     def _convertFromRDataFrame(self, signal):
         #self.R('matrix_'+self.newDataID+'<-apply(data.matrix('+signal.getData()+'),2, as.numeric)', wantType = 'NoConversion')
-        return RMatrix(data = 'data.matrix('+signal.getData()+')')
-        
+        if not self.matrix:
+            self.matrix = RMatrix(data = 'data.matrix('+signal.getData()+')')
+            return RMatrix(data = 'data.matrix('+signal.getData()+')')
+        else:
+            return self.matrix
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
@@ -70,4 +73,5 @@ class RMatrix(RDataFrame):
             return self.RListSignal
         else:
             return self.RListSignal
-            
+    def deleteSignal(self):
+        self.R('if(exists("matrixConversion'+self.newDataID+'")){rm(matrixConversion'+self.newDataID+')}', wantType = 'NoConversion')
