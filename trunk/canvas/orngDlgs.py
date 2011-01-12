@@ -15,6 +15,7 @@ from libraries.base.qtWidgets.listBox import listBox as redRlistBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
+from libraries.base.qtWidgets.comboBox import comboBox as comboBox
 
 
 class ColorIcon(QToolButton):
@@ -141,6 +142,7 @@ class CanvasOptionsDlg(QDialog):
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
         OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
         
+        self.language = comboBox(lookFeelBox, label = 'Language', items = [u'English', u'Fran\u00E7aise', u'Deutsch'])
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
         # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
         # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
@@ -262,6 +264,7 @@ class CanvasOptionsDlg(QDialog):
         
         # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
+        self.settings['language'] = unicode(self.language.currentText())
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
         import redRLog
