@@ -29,6 +29,10 @@ from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
+
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags =  0):
         QMainWindow.__init__(self, parent)
@@ -52,7 +56,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.notesDock = QDockWidget('Notes')
         self.notesDock.setObjectName('CanvasNotes')
-        self.notes = redRTextEdit(None, label = 'Notes')
+        self.notes = redRTextEdit(None, label = _('Notes'))
         self.notes.setMinimumWidth(200)
         redRSaveLoad.setNotesWidget(self.notes)
         self.notesDock.setWidget(self.notes)
@@ -62,7 +66,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.outputDock = QDockWidget('Output')
         self.outputDock.setObjectName('CanvasOutput')
         outbox = redRwidgetBox(None)
-        self.printOutput = redRTextEdit(outbox, label = 'Output',editable=False)
+        self.printOutput = redRTextEdit(outbox, label = _('Output'),editable=False)
         redRbutton(outbox, label = 'Save Output', callback = redRLog.saveOutputToFile)
         self.outputDock.setWidget(outbox)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.outputDock)
@@ -116,13 +120,13 @@ class OrangeCanvasDlg(QMainWindow):
         docBox = redRwidgetBox(None,orientation='horizontal',spacing=4)
         
         self.showWidgetToolbar = redRbutton(docBox, '',toggleButton=True, 
-        icon=redRStyle.defaultWidgetIcon, toolTip='Widget Tree', callback = self.updateDockState)   
+        icon=redRStyle.defaultWidgetIcon, toolTip=_('Widget Tree'), callback = self.updateDockState)   
         
         self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
-        icon=redRStyle.canvasIcon, toolTip='Log', callback = self.updateDockState)   
+        icon=redRStyle.canvasIcon, toolTip=_('Log'), callback = self.updateDockState)   
 
         self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
-        icon=redRStyle.notesIcon, toolTip='Notes', callback = self.updateDockState)
+        icon=redRStyle.notesIcon, toolTip=_('Notes'), callback = self.updateDockState)
         
         
         self.statusBar.addPermanentWidget(docBox)
@@ -135,14 +139,14 @@ class OrangeCanvasDlg(QMainWindow):
         ###################
         #Package Manager###
         ###################
-        splashWindow.showMessage("Creating Package Manager", Qt.AlignHCenter + Qt.AlignBottom)
+        splashWindow.showMessage(_("Creating Package Manager"), Qt.AlignHCenter + Qt.AlignBottom)
         
         self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
         
         ###################
         #Main Cavas########
         ###################
-        splashWindow.showMessage("Main Cavas", Qt.AlignHCenter + Qt.AlignBottom)
+        splashWindow.showMessage(_("Main Cavas"), Qt.AlignHCenter + Qt.AlignBottom)
 
         self.schema = orngDoc.SchemaDoc(self)
         self.setCentralWidget(self.schema)
@@ -151,14 +155,14 @@ class OrangeCanvasDlg(QMainWindow):
         ###################
         ##Reports##########
         ###################
-        splashWindow.showMessage("Creating Reports", Qt.AlignHCenter + Qt.AlignBottom)
+        splashWindow.showMessage(_("Creating Reports"), Qt.AlignHCenter + Qt.AlignBottom)
         
         self.reports = redRReports.reports(self,self.schema)
 
         ###################
         ##Update Manager###
         ###################
-        splashWindow.showMessage("Creating Update Manager", Qt.AlignHCenter + Qt.AlignBottom)
+        splashWindow.showMessage(_("Creating Update Manager"), Qt.AlignHCenter + Qt.AlignBottom)
         
         self.updateManager = redRUpdateManager.updateManager(self)
         
@@ -166,7 +170,7 @@ class OrangeCanvasDlg(QMainWindow):
         #Toolbar and Menu##
         ###################
         
-        splashWindow.showMessage("Creating Menu and Toolbar", Qt.AlignHCenter + Qt.AlignBottom)
+        splashWindow.showMessage(_("Creating Menu and Toolbar"), Qt.AlignHCenter + Qt.AlignBottom)
         self.toolbar = self.addToolBar("Toolbar")
         self.toolbarFunctions = redRCanvasToolbar.redRCanvasToolbarandMenu(self,self.toolbar)
         
@@ -176,7 +180,7 @@ class OrangeCanvasDlg(QMainWindow):
         #Load Windows Settings##
         ########################
 
-        splashWindow.showMessage("Setting States", Qt.AlignHCenter + Qt.AlignBottom)
+        splashWindow.showMessage(_("Setting States"), Qt.AlignHCenter + Qt.AlignBottom)
 
         if 'windowState' in redREnviron.settings.keys():
             self.restoreState(redREnviron.settings['windowState'])
@@ -286,7 +290,7 @@ class OrangeCanvasDlg(QMainWindow):
         setupWizard = redRInitWizard.RedRInitWizard()
         if setupWizard.exec_() == QDialog.Accepted:
             redREnviron.settings['email'] = unicode(setupWizard.email.text())
-            redREnviron.settings['canContact'] = unicode(setupWizard.allowContact.getChecked()) == 'Yes'
+            redREnviron.settings['canContact'] = unicode(setupWizard.allowContact.getChecked()) == _('Yes')
             try:
                 redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
             except:
@@ -311,25 +315,7 @@ class OrangeCanvasDlg(QMainWindow):
         # self.widgetsToolBar = redRWidgetsTree.WidgetTree(self.widgetDockBox, self, self.widgetRegistry)
         self.widgetsToolBar.clear()
         self.widgetsToolBar.createWidgetTabs(self.widgetRegistry) 
-        # float = False
-        # if self.widgetsToolBar:
-            # if self.widgetsToolBar.isFloating():
-                # float = True
 
-            # redREnviron.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
-            # redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.treeWidget.width()
-            # self.removeDockWidget(self.widgetsToolBar)
-
-           
-        # self.tabs =  self.widgetsToolBar = orngTabs.WidgetTree(self, self.widgetRegistry)
-        
-        # self.widgetsToolBar.setWindowTitle('Widget Toolbar')
-        # self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetsToolBar)
-        # self.widgetsToolBar.setFloating(float)
-        # self.widgetsToolBar.treeWidget.collapseAll()
-        # self.tabs.createWidgetTabs(self.widgetRegistry, redREnviron.directoryNames['widgetDir'], 
-        # redREnviron.directoryNames['picsDir'], redRStyle.defaultWidgetIcon)
-        # self.widgetsToolBar.treeWidget.collapseAll()
        
     def setCaption(self, caption = ""):
         if caption:
@@ -339,13 +325,7 @@ class OrangeCanvasDlg(QMainWindow):
             self.setWindowTitle("Red Canvas")
 
     def closeEvent(self, ce, postCloseFun=None):
-        #print '|#| redRCanvas closeEvent'
-        # save the current width of the toolbox, if we are using it
-        # if isinstance(self.widgetsToolBar, orngTabs.WidgetToolBox):
-            # redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
-        # redREnviron.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
-        # redREnviron.settings["showToolbar"] = self.toolbar.isVisible()
-        
+
         redREnviron.settings["geometry"] = self.saveGeometry()
         # redREnviron.settings["layout"] = self.saveLayout()
         redREnviron.settings["windowState"] = self.saveState()
@@ -359,7 +339,7 @@ class OrangeCanvasDlg(QMainWindow):
         if redREnviron.settings['dontAskBeforeClose']:
             res = QMessageBox.No
         else:
-            res = QMessageBox.question(self, 'Red-R Canvas','Do you wish to save the schema?', QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
+            res = QMessageBox.question(self, 'Red-R Canvas',_('Do you wish to save the schema?'), QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel)
         
         if res == QMessageBox.Yes:
             self.RVariableRemoveSupress = 1

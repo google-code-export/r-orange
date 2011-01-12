@@ -10,6 +10,10 @@ import signals, redREnviron, redRObjects, redRLog, redRHistory
 ERROR = 0
 WARNING = 1
 
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
+
 class TempCanvasLine(QGraphicsLineItem):
     def __init__(self, canvasDlg, canvas):
         QGraphicsLineItem.__init__(self, None, canvas)
@@ -109,12 +113,12 @@ class CanvasLine(QGraphicsPathItem):
         #  first we need to get the signals that are sent through the line, there might be more than one so we do it here.
         outinstance = self.outWidget.instance()
         outSignalIDs = [i[0] for i in outinstance.outputs.getLinkPairs(self.inWidget.instance())]
-        tip = 'Signal Data Summary:\n'
+        tip = _('Signal Data Summary:\n')
         for id in outSignalIDs:
             s = outinstance.outputs.getSignal(id)
             if s and s['value'] != None:
                 tip += s['value'].summary()+'\n'
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
+        #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
         self.setToolTip(tip)
     def getNoData(self):
         return self.noData
@@ -348,7 +352,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.canvasDlg.suggestButtonsList.show()
                 self.canvasDlg.suggestButtonsList.addTopLevelItems(actions)
                 self.canvasDlg.suggestButtonsList.suggestingWidget = self
-                self.canvasDlg.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+unicode(self.widgetInfo.name)])
+                self.canvasDlg.suggestButtonsList.setHeaderLabels([_('Suggested Widgets for ')+unicode(self.widgetInfo.name)])
             else:
                 self.canvasDlg.suggestButtonsList.hide()
             #self.canvasDlg.suggestButtonsList.show()
@@ -523,32 +527,9 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if self.ghost: return
         string = "<nobr><b>" + self.caption + "</b></nobr><hr>Inputs:<br>"
 
-        # if self.instance.inputs == [] or self.instance.inputs == None: string += "&nbsp; &nbsp; None<br>"
-        # else:
-            # for signal in self.instance.inputs:
-                
-                # widgets = self.signalManager.getLinkWidgetsIn(self.instance, signal[0])
-                # if len(widgets) > 0:
-                    # string += "<nobr> &nbsp; &nbsp; - <b>" + signal[0] + "</b> (from "
-                    # for i in range(len(widgets)-1):
-                        # string += self.view.doc.getWidgetCaption(widgets[i]) + ", "
-                    # string += self.view.doc.getWidgetCaption(widgets[-1]) + ")</nobr><br>"
-                # else:
-                    # string += "<nobr> &nbsp; &nbsp; - " + signal[0] + "</nobr><br>"
-
         string = string[:-4]
         string += "<hr>Outputs:<br>"
-        # if self.instance.outputs == [] or self.instance.outputs == None: string += "&nbsp; &nbsp; None<br>"
-        # else:
-            # for signal in self.instance.outputs:
-                # widgets = self.signalManager.getLinkWidgetsOut(self.instance, signal[0])
-                # if len(widgets) > 0:
-                    # string += "<nobr> &nbsp; &nbsp; - <b>" + signal[0] + "</b> (to "
-                    # for i in range(len(widgets)-1):
-                        # string += self.view.doc.getWidgetCaption(widgets[i]) + ", "
-                    # string += self.view.doc.getWidgetCaption(widgets[-1]) + ")</nobr><br>"
-                # else:
-                    # string += "<nobr> &nbsp; &nbsp; - " + signal[0] + "</nobr><br>"
+
         string = string[:-4]
         self.setToolTip(string)
 

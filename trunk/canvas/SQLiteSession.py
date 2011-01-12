@@ -1,6 +1,8 @@
 ## SQLiteSession.  Implimentation of sqlite functions for Red-R.  
 import redREnviron, sqlite3, os, time, cPickle
-
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
 class SQLiteHandler:
     def __init__(self, defaultDB = None):
         if defaultDB:

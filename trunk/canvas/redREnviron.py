@@ -147,7 +147,7 @@ def loadSettings():
     settings.setdefault('red-RPackagesUpdated',0)
     settings.setdefault('checkedForUpdates',0)
     settings.setdefault('keepForXDays', 7)
-    settings.setdefault('language', 'English')
+    settings.setdefault('language', 'French')
     ############################
     #Dubug and output settings##
     ############################

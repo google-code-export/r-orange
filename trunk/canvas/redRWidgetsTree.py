@@ -10,6 +10,11 @@ import orngDoc, orngRegistry, redRObjects
 import OWGUIEx, redRSaveLoad, redRStyle
 import redREnviron, redRLog
 import xml.dom.minidom
+
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
+
 # from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
 # from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
 

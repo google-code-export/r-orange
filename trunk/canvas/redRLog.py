@@ -85,8 +85,8 @@ def logOutput(table, logLevel, comment,html=False):
     if _outputWindowWriter:
         _outputWindowWriter(table,logLevel,comment,html)
     
-    # if not (_outputWindowWriter and _outputDockWriter):
-        # lh.defaultSysOutHandler.write(string)
+    if not (_outputWindowWriter and _outputDockWriter):
+        lh.defaultSysOutHandler.write(comment)
 
 
 def formatedLogOutput(table, logLevel, stack, comment, widget=None):

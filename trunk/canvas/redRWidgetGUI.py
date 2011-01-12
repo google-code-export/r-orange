@@ -18,6 +18,10 @@ from PyQt4.QtGui import *
 import redRStyle
 from datetime import date
 
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
+
 class redRWidgetGUI(QMainWindow):
     def __new__(cls, *arg, **args):
         self = QMainWindow.__new__(cls)
@@ -130,9 +134,9 @@ class redRWidgetGUI(QMainWindow):
         self.notesBox.setMinimumHeight(50)
         self.notesBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        redRwidgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
+        redRwidgetLabel(self.notesBox, label=_("Notes:"), icon=redRStyle.notesIcon)
 
-        self.notes = redRtextEdit(self.notesBox, label = 'Notes', displayLabel=False)
+        self.notes = redRtextEdit(self.notesBox, label = _('Notes'), displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -157,14 +161,14 @@ class redRWidgetGUI(QMainWindow):
         self.RoutputDock.setWidget(self.ROutputBox)
 
         self.ROutputBox.setMinimumHeight(50)
-        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
+        redRwidgetLabel(self.ROutputBox, label=_("R code executed in this widget:"),
         icon=redRStyle.RIcon)
 
-        self.ROutput = redRtextEdit(self.ROutputBox, label = 'R Output',displayLabel=False)
+        self.ROutput = redRtextEdit(self.ROutputBox, label = _('R Output'),displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        redRbutton(self.ROutputBox, label = 'Run Selected Code', callback = self._runSelectedRCode, toolTip = 'You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.')
+        redRbutton(self.ROutputBox, label = _('Run Selected Code'), callback = self._runSelectedRCode, toolTip = _('You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.'))
         
         ### help ####
         self.helpFile = None
@@ -191,26 +195,26 @@ class redRWidgetGUI(QMainWindow):
         
         self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
-        toolTip='Notes',
+        toolTip=_('Notes'),
         callback = self.updateDocumentationDock)
         self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
-        toolTip='R Code',
+        toolTip=_('R Code'),
         callback = self.updateDocumentationDock)
         
         self.printButton = redRbutton(docBox, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
-        toolTip='Print',
+        toolTip=_('Print'),
         callback = self.createReport)
 
         self.showHelpButton = redRbutton(docBox, '',
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
-        toolTip='Help',
+        toolTip=_('Help'),
         callback = self.showHelp)
 
         self.includeInReport = redRbutton(docBox, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
-        toolTip='Include In Report', toggleButton = True)
+        toolTip=_('Include In Report'), toggleButton = True)
         self.includeInReport.setChecked(True)
         
         ###############################################
@@ -256,7 +260,7 @@ class redRWidgetGUI(QMainWindow):
         
         if isActive:
             self.RIndicator.setPixmap(QPixmap(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'redLight.png')))
-            self.RIndicator.setToolTip('R is currently running. Please wait...')
+            self.RIndicator.setToolTip(_('R is currently running. Please wait...'))
         else:
             self.RIndicator.setPixmap(QPixmap(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'greenLight.png')))
             self.RIndicator.setToolTip('R is idle.')
@@ -282,20 +286,20 @@ class redRWidgetGUI(QMainWindow):
     def updateDock(self,ev):
         #print self.windowTitle()
         if self.notesDock.isFloating():
-            self.notesDock.setWindowTitle(self.windowTitle() + ' Notes')
+            self.notesDock.setWindowTitle(_('%s Notes') % self.windowTitle())
         else:
-            self.notesDock.setWindowTitle('Notes')
+            self.notesDock.setWindowTitle(_('Notes'))
             
         if self.RoutputDock.isFloating():
-            self.RoutputDock.setWindowTitle(self.windowTitle() + ' R Output')
+            self.RoutputDock.setWindowTitle(_('%s R Output') % self.windowTitle())
         else:
-            self.RoutputDock.setWindowTitle('R Output')
+            self.RoutputDock.setWindowTitle(_('R Output'))
             
         if hasattr(self, "leftDock"): 
             if self.leftDock.isFloating():
-                self.leftDock.setWindowTitle(self.windowTitle() + ' Advanced Options')
+                self.leftDock.setWindowTitle(_('%s Advanced Options') % self.windowTitle())
             else:
-                self.leftDock.setWindowTitle('Advanced Options')
+                self.leftDock.setWindowTitle(_('Advanced Options'))
 
     
     def showLeftDock(self):

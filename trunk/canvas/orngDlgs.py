@@ -17,6 +17,10 @@ from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.comboBox import comboBox as comboBox
 
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
+
 
 class ColorIcon(QToolButton):
     def __init__(self, parent, color):
@@ -57,9 +61,9 @@ class CanvasOptionsDlg(QDialog):
         self.canvasDlg = canvasDlg
         self.settings = dict(redREnviron.settings)        # create a copy of the settings dict. in case we accept the dialog, we update the redREnviron.settings with this dict
         if sys.platform == "darwin":
-            self.setWindowTitle("Preferences")
+            self.setWindowTitle(_("Preferences"))
         else:
-            self.setWindowTitle("Canvas Options")
+            self.setWindowTitle(_("Canvas Options"))
         self.topLayout = QVBoxLayout(self)
         self.topLayout.setSpacing(0)
         self.resize(350,300)
@@ -76,25 +80,25 @@ class CanvasOptionsDlg(QDialog):
         RSettings = OWGUI.widgetBox(self.tabs, margin = 4)
         RSettings.layout().setAlignment(Qt.AlignTop)
         
-        self.tabs.addTab(GeneralTab, "General")
+        self.tabs.addTab(GeneralTab, _("General"))
         # self.tabs.addTab(lookandFeel, "Look and Feel")
-        self.tabs.addTab(ExceptionsTab, "Exceptions & Logging")
-        self.tabs.addTab(RSettings, 'R Settings')
+        self.tabs.addTab(ExceptionsTab, _("Exceptions & Logging"))
+        self.tabs.addTab(RSettings, _('R Settings'))
         QObject.connect(self.tabs, SIGNAL('currentChanged(int)'), self.onTabChange)
         #GeneralTab.layout().addStretch(1)
         
         # #################################################################
         # GENERAL TAB
-        generalBox = OWGUI.widgetBox(GeneralTab, 'General Options')
+        generalBox = OWGUI.widgetBox(GeneralTab, _('General Options'))
         
-        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", orientation = 'horizontal')
+        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", _("Email Address:"), orientation = 'horizontal')
         
         # self.helpModeSelection = OWGUI.checkBox(generalBox,self.settings,'helpMode',
         # 'Show help icons')
 
         
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
-        "Don't ask to save schema before closing", debuggingEnabled = 0)
+        _("Don't ask to save schema before closing"), debuggingEnabled = 0)
         
         
         # #################################################################
@@ -102,26 +106,26 @@ class CanvasOptionsDlg(QDialog):
         
         # validator = QIntValidator(self)
         # validator.setRange(0,10000)
-        lookFeelBox = OWGUI.widgetBox(GeneralTab, "Look and Feel Options")
+        lookFeelBox = OWGUI.widgetBox(GeneralTab, _("Look and Feel Options"))
 
         self.snapToGridCB = OWGUI.checkBox(lookFeelBox, self.settings, "snapToGrid", 
-        "Snap widgets to grid", debuggingEnabled = 0)
+        _("Snap widgets to grid"), debuggingEnabled = 0)
         self.showSignalNamesCB = OWGUI.checkBox(lookFeelBox, self.settings, "showSignalNames", 
-        "Show signal names between widgets", debuggingEnabled = 0)
+        _("Show signal names between widgets"), debuggingEnabled = 0)
         self.saveWidgetsPositionCB = OWGUI.checkBox(lookFeelBox, self.settings, "saveWidgetsPosition", 
-        "Save size and position of widgets", debuggingEnabled = 0)
+        _("Save size and position of widgets"), debuggingEnabled = 0)
         
         items = ["%d x %d" % (v,v) for v in redRStyle.iconSizeList]
         # val = min(len(items)-1, self.settings['schemeIconSize'])
         self.schemeIconSizeCombo = OWGUI.comboBoxWithCaption(lookFeelBox, self.settings, 'schemeIconSize', 
-        "Scheme icon size:", items = items, tooltip = "Set the size of the widget icons on the scheme", 
+        _("Schema icon size:"), items = items, tooltip = _("Set the size of the widget icons on the schema"), 
         debuggingEnabled = 0)
 
         # redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
         
         self.toolbarIconSizeCombo = OWGUI.comboBoxWithCaption(lookFeelBox, self.settings, "toolbarIconSize", 
-        "Widget Tree Icon size:", items = items, 
-        tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", 
+        _("Widget Tree Icon size:"), items = items, 
+        tooltip = _("Set the size of the widget icons in the toolbar, tool box, and tree view area"), 
         debuggingEnabled = 0)
 
         # hbox1 = OWGUI.widgetBox(GeneralTab, orientation = "horizontal")
@@ -138,11 +142,11 @@ class CanvasOptionsDlg(QDialog):
         # OWGUI.separator(canvasDlgSettings)
         
 
-        OWGUI.comboBox(lookFeelBox, self.settings, "style", label = "Window style:", orientation = "horizontal", 
+        OWGUI.comboBox(lookFeelBox, self.settings, "style", label = _("Window style:"), orientation = "horizontal", 
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
-        OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
+        OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", _("Use style's standard palette"), debuggingEnabled = 0)
         
-        self.language = comboBox(lookFeelBox, label = 'Language', items = [u'English', u'Fran\u00E7aise', u'Deutsch'])
+        self.language = comboBox(lookFeelBox, label = _('Language'), items = [u'English', u'French', u'Deutsch']) #u'Fran\u00E7aise'
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
         # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
         # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)

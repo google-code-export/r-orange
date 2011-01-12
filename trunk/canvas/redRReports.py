@@ -17,6 +17,10 @@ from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem as redRtreeWi
 from libraries.base.qtWidgets.treeWidget import treeWidget as redRtreeWidget
 from libraries.base.qtWidgets.lineEdit import lineEdit
 
+import gettext
+t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
+_ = t.ugettext
+
 def createTable(arrayOfArray,tableName='', columnNames=None):
     # print len(arrayOfArray), len(arrayOfArray[0]), arrayOfArray
     if not arrayOfArray  or len(arrayOfArray) == 0 or len(arrayOfArray[0]) == 0:
@@ -68,26 +72,26 @@ class reports(QWizard):
         self.schema = schema
         
         QWizard.__init__(self, parent)
-        self.setWindowTitle('Generate Report')
+        self.setWindowTitle(_('Generate Report'))
 
         self.selectElements = QWizardPage()
         self.selectElements.setLayout(QVBoxLayout())
 
-        self.selectElements.setTitle('Create A Report')
-        self.selectElements.setSubTitle('Select the widgets to include in this report.')
+        self.selectElements.setTitle(_('Create A Report'))
+        self.selectElements.setSubTitle(_('Select the widgets to include in this report.'))
         
         #mainWidgetBox = redRWidgetBox(self.selectElements)
 
         self.topWidgetBox = redRWidgetBox(self.selectElements)
         #redRwidgetLabel(topWidgetBox,label='Select the widgets to include in the report.')
         
-        self.widgetList = redRtreeWidget(self.topWidgetBox, label='Widget List', displayLabel=False)
-        self.widgetList.setHeaderLabels(['Element', 'Parameters'])
+        self.widgetList = redRtreeWidget(self.topWidgetBox, label=_('Widget List'), displayLabel=False)
+        self.widgetList.setHeaderLabels([_('Element'), _('Parameters')])
 
         self.widgetList.setSelectionMode(QAbstractItemView.NoSelection)
         buttonWidgetBox = redRWidgetBox(self.topWidgetBox,orientation='horizontal')
         
-        acceptButton = redRbutton(buttonWidgetBox, 'Expand/Collapse',callback=self.expandCollapse)
+        acceptButton = redRbutton(buttonWidgetBox, _('Expand/Collapse'),callback=self.expandCollapse)
         self.expandState=False
         #acceptButton = redRbutton(buttonWidgetBox, 'Expand',toggleButton=True)
         # QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
@@ -164,14 +168,14 @@ class reports(QWizard):
         # parameterBox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         if 'numChrLimit' in dataPointer.keys():
-            a = lineEdit(None,label='Word Limit', text=unicode(dataPointer['numChrLimit']), width=50,
+            a = lineEdit(None,label=_('Word Limit'), text=unicode(dataPointer['numChrLimit']), width=50,
             textChangedCallBack=lambda: self.lineEditChanged(a.text(),dataPointer,'numChrLimit') )
             a.hb.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             # a.hb.setMaximumWidth(100)
             #a.hb.setMinimumWidth(100)
             self.widgetList.setItemWidget(n, 1, a.controlArea)
         if 'numRowLimit' in dataPointer.keys():
-            a = lineEdit(None,label='Table Row Limit',text=unicode(dataPointer['numRowLimit']),width=50,
+            a = lineEdit(None,label=_('Table Row Limit'),text=unicode(dataPointer['numRowLimit']),width=50,
             textChangedCallBack=lambda: self.lineEditChanged(a.text(),dataPointer,'numRowLimit'))
             a.hb.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
             self.widgetList.setItemWidget(n, 1, a.controlArea)
@@ -237,7 +241,7 @@ class reports(QWizard):
         #self.widgetList.resizeColumnToContents(0)
 
     def createReportsMenu(self,schemaImage=True):
-        qname = QFileDialog.getSaveFileName(self, "Write Report to File", 
+        qname = QFileDialog.getSaveFileName(self, _("Write Report to File"), 
         redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
         if qname.isEmpty(): return
@@ -279,10 +283,10 @@ class reports(QWizard):
             return
         if os.name =='nt':
             #os.startfile
-            doneDialog = redRdialog(self.schema,title="Report Generated")
-            redRwidgetLabel(doneDialog,label='Your report is ready to view.')
+            doneDialog = redRdialog(self.schema,title=_("Report Generated"))
+            redRwidgetLabel(doneDialog,label=_('Your report is ready to view.'))
             buttonBox = redRWidgetBox(doneDialog,orientation='horizontal')
-            acceptButton = redRbutton(buttonBox,'View Report')
+            acceptButton = redRbutton(buttonBox,_('View Report'))
             QObject.connect(acceptButton, SIGNAL("clicked()"), doneDialog.accept)
             acceptButton = redRbutton(buttonBox,'Done')
             QObject.connect(acceptButton, SIGNAL("clicked()"), doneDialog.reject)
@@ -290,14 +294,14 @@ class reports(QWizard):
                 try:
                     os.startfile(name,'open')
                 except:
-                    mb = QMessageBox("Cannot Open File", 
-                    "Red-R cannot open the reports file. Please open the file manually.", 
+                    mb = QMessageBox(_("Cannot Open File"), 
+                    _("Red-R cannot open the reports file. Please open the file manually."), 
                     QMessageBox.Information, 
                     QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton, QMessageBox.NoButton,self)
                     mb.exec_()
 
         else:
-            QMessageBox.information(self, "Red-R Canvas", "Your report is ready to view.", 
+            QMessageBox.information(self, _("Red-R Canvas"), _("Your report is ready to view."), 
             QMessageBox.Ok + QMessageBox.Default )          
         
     def createReport(self,fileDir,reportName,widgets,schemaImage):
@@ -402,7 +406,7 @@ class reports(QWizard):
         # pp.pprint(widgetReport)
         
         if widgetReport['notes']['text'] == '':
-            notes = 'No notes were entered in the widget.'
+            notes = _('No notes were entered in the widget.')
         else:
             notes = createLitralBlock(widgetReport['notes']['text'][0:widgetReport['notes']['numChrLimit']-1])
         
@@ -439,13 +443,13 @@ class reports(QWizard):
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(tables)
         
-        text = createTable(tables['main'],columnNames = ['Parameter','Value'],
-        tableName='Main Parameters')
+        text = createTable(tables['main'],columnNames = [_('Parameter'),_('Value')],
+        tableName=_('Main Parameters'))
         
         for table,data in tables.items():
             if table == 'main': continue
             text += '\n\n'
-            text += createTable(data,columnNames = ['Parameter','Value'],
+            text += createTable(data,columnNames = [_('Parameter'),_('Value')],
             tableName=table)
 
         
