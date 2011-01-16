@@ -14,7 +14,10 @@ import redREnviron, redRLog
 import xml.dom.minidom
 from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDialog
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 WB_TOOLBOX = 0
 WB_TREEVIEW = 1
 WB_TABBAR_NO_TEXT = 2
@@ -143,7 +146,7 @@ class WidgetButton(QFrame, WidgetButtonBase):
              #dinwin.canvasView.scene().update()
 
         if inside:
-            #print 'I\'m inside'
+            #print 'I\_('m inside')
             if not widget:
                 #print 'I\'m adding a widget!!!'
                 widget = schema.addWidget(self.widgetInfo, p.x(), p.y())
@@ -304,13 +307,13 @@ class WidgetListBase:
             ffile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/favorites.xml')
             f = open(ffile, 'r')
         except: # there was an exception, the user might not have the favorites file, we need to make one and set a default settings 
-            self.insertFavoriteWidgetTab('Favorites', 1) # make a favorites tab
+            self.insertFavoriteWidgetTab(_('Favorites'), 1) # make a favorites tab
             return
             
         favTabs = xml.dom.minidom.parse(f)
         f.close()
         treeXML = favTabs.childNodes[0] # everything is contained within the Favorites
-        #print 'Favorites' + unicode(treeXML.childNodes)
+        #print _('Favorites') + unicode(treeXML.childNodes)
             
         #loop to make the catagories
         for node in treeXML.childNodes: # put the child nodes into the widgets
@@ -362,11 +365,11 @@ class WidgetListBase:
                         if wName.replace(' ', '') in widgetNames: # add the widget
                             if tabName not in awidgets.keys(): awidgets[tabName] = {}
                             awidgets[tabName][wName] = widgetRegistry[tabName][wName]
-                            #print 'made it past the awidgets stage'
+                            #print _('made it past the awidgets stage')
                             #print unicode(awidgets[tabName].items())
                             (name, widgetInfo) = awidgets[tabName].items()[0]
                             (priority, name, widgetInfo) = (int(widgetInfo.priority), name, widgetInfo)
-                            #print unicode((priority, name, widgetInfo)) + 'made it to 7894'
+                            #print unicode((priority, name, widgetInfo)) + _('made it to 7894')
                             #print unicode(widgetInfo)
                             if isinstance(self, WidgetTree):
                                 #print unicode(tab)
@@ -383,7 +386,7 @@ class WidgetListBase:
                             self.allWidgets.append(button)
                         
     def createWidgetTabs(self, widgetRegistry, widgetDir, picsDir, defaultPic):
-        #print unicode(widgetRegistry) + ' widget registry'
+        #print unicode(widgetRegistry) + _(' widget registry')
         self.widgetDir = widgetDir
         self.picsDir = picsDir
         self.defaultPic = defaultPic
@@ -408,7 +411,7 @@ class WidgetListBase:
                 
                 tab = self.insertWidgetTab(unicode(itab.getAttribute('name')), 1) # a QTreeWidgetItem
                 
-                #print 'inserted tab '+unicode(itab.getAttribute('name'))
+                #print _('inserted tab ')+unicode(itab.getAttribute('name'))
                 self.insertChildTabs(itab, tab, widgetRegistry)
                 
                 self.insertWidgets(itab.getAttribute('name'), tab, widgetRegistry)
@@ -521,7 +524,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
         tmpBoxLayout.insertWidget(0, self.widgetSuggestEdit)
         tmpBoxLayout.insertWidget(1, self.treeWidget)
         self.suggestButtonsList = QTreeWidget()
-        self.suggestButtonsList.setHeaderLabels(['Suggested Widgets'])
+        self.suggestButtonsList.setHeaderLabels([_('Suggested Widgets')])
         tmpBoxLayout.insertWidget(2, self.suggestButtonsList)
         QObject.connect(self.suggestButtonsList, SIGNAL('itemClicked (QTreeWidgetItem *,int)'), lambda action: self.activateSuggestWidget(action))
         self.suggestButtonsList.hide()
@@ -588,7 +591,7 @@ class WidgetTree(WidgetListBase, QDockWidget):
             for action in self.actions: # move through all of the actions in the actions list
                 if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
                     self.widgetInfo = action.widgetInfo
-                    #print action.widgetInfo, 'Widget info'
+                    #print action.widgetInfo, _('Widget info')
                     self.canvasDlg.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
                     
                     self.widgetSuggestEdit.clear()  # clear the line edit for the next widget
@@ -842,7 +845,7 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
     ####
     try:
         #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
-        #print 'checking file '+subfile+' for more tabs'
+        #print _('checking file ')+subfile+_(' for more tabs')
         #f = open(subfile, 'r')
         if itab.hasChildNodes(): subTabs = itab.childNodes
         else: return
@@ -879,7 +882,7 @@ def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     except Exception as inst:
         redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception in Tabs with widgetRegistry %s' % inst)
 class SearchBox(redRlineEditHint):
-    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+    def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=False,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
         self.searchBox = redRSearchDialog()
@@ -897,7 +900,7 @@ class SearchBox(redRlineEditHint):
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
                 if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    #print 'Return pressed'
+                    #print _('Return pressed')
                     self.doneCompletion()
                 elif ev.key() == Qt.Key_Escape:
                     self.listWidget.hide()
@@ -918,7 +921,7 @@ class SearchBox(redRlineEditHint):
             
         else:
             itemText = unicode(self.text())
-            #print 'Searching '+itemText+' on Red-R.org'
+            #print _('Searching ')+itemText+' on Red-R.org'
             self.searchBox.show()
             url = 'http://www.red-r.org/?s='+itemText
             self.searchBox.updateUrl(url)

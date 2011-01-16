@@ -15,8 +15,11 @@ from libraries.base.qtWidgets.listBox import listBox as redRlistBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-
-
+from libraries.base.qtWidgets.comboBox import comboBox
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class ColorIcon(QToolButton):
     def __init__(self, parent, color):
         QToolButton.__init__(self, parent)
@@ -56,9 +59,9 @@ class CanvasOptionsDlg(QDialog):
         self.canvasDlg = canvasDlg
         self.settings = dict(redREnviron.settings)        # create a copy of the settings dict. in case we accept the dialog, we update the redREnviron.settings with this dict
         if sys.platform == "darwin":
-            self.setWindowTitle("Preferences")
+            self.setWindowTitle(_("Preferences"))
         else:
-            self.setWindowTitle("Canvas Options")
+            self.setWindowTitle(_("Canvas Options"))
         self.topLayout = QVBoxLayout(self)
         self.topLayout.setSpacing(0)
         self.resize(350,300)
@@ -78,22 +81,22 @@ class CanvasOptionsDlg(QDialog):
         self.tabs.addTab(GeneralTab, "General")
         # self.tabs.addTab(lookandFeel, "Look and Feel")
         self.tabs.addTab(ExceptionsTab, "Exceptions & Logging")
-        self.tabs.addTab(RSettings, 'R Settings')
+        self.tabs.addTab(RSettings, _('R Settings'))
         QObject.connect(self.tabs, SIGNAL('currentChanged(int)'), self.onTabChange)
         #GeneralTab.layout().addStretch(1)
         
         # #################################################################
         # GENERAL TAB
-        generalBox = OWGUI.widgetBox(GeneralTab, 'General Options')
+        generalBox = OWGUI.widgetBox(GeneralTab, _('General Options'))
         
-        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", "Email Address:", orientation = 'horizontal')
+        self.emailEdit = OWGUI.lineEdit(generalBox, self.settings, "email", _("Email Address:"), orientation = 'horizontal')
         
         # self.helpModeSelection = OWGUI.checkBox(generalBox,self.settings,'helpMode',
-        # 'Show help icons')
+        # _('Show help icons'))
 
         
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
-        "Don't ask to save schema before closing", debuggingEnabled = 0)
+        _("Don't ask to save schema before closing"), debuggingEnabled = 0)
         
         
         # #################################################################
@@ -101,26 +104,26 @@ class CanvasOptionsDlg(QDialog):
         
         # validator = QIntValidator(self)
         # validator.setRange(0,10000)
-        lookFeelBox = OWGUI.widgetBox(GeneralTab, "Look and Feel Options")
+        lookFeelBox = OWGUI.widgetBox(GeneralTab, _("Look and Feel Options"))
 
         self.snapToGridCB = OWGUI.checkBox(lookFeelBox, self.settings, "snapToGrid", 
-        "Snap widgets to grid", debuggingEnabled = 0)
+        _("Snap widgets to grid"), debuggingEnabled = 0)
         self.showSignalNamesCB = OWGUI.checkBox(lookFeelBox, self.settings, "showSignalNames", 
-        "Show signal names between widgets", debuggingEnabled = 0)
+        _("Show signal names between widgets"), debuggingEnabled = 0)
         self.saveWidgetsPositionCB = OWGUI.checkBox(lookFeelBox, self.settings, "saveWidgetsPosition", 
-        "Save size and position of widgets", debuggingEnabled = 0)
+        _("Save size and position of widgets"), debuggingEnabled = 0)
         
         items = ["%d x %d" % (v,v) for v in redRStyle.iconSizeList]
         # val = min(len(items)-1, self.settings['schemeIconSize'])
         self.schemeIconSizeCombo = OWGUI.comboBoxWithCaption(lookFeelBox, self.settings, 'schemeIconSize', 
-        "Scheme icon size:", items = items, tooltip = "Set the size of the widget icons on the scheme", 
+        _("Scheme icon size:"), items = items, tooltip = _("Set the size of the widget icons on the scheme"), 
         debuggingEnabled = 0)
 
         # redREnviron.settings["toolbarIconSize"] = min(len(items)-1, redREnviron.settings["toolbarIconSize"])
         
         self.toolbarIconSizeCombo = OWGUI.comboBoxWithCaption(lookFeelBox, self.settings, "toolbarIconSize", 
-        "Widget Tree Icon size:", items = items, 
-        tooltip = "Set the size of the widget icons in the toolbar, tool box, and tree view area", 
+        _("Widget Tree Icon size:"), items = items, 
+        tooltip = _("Set the size of the widget icons in the toolbar, tool box, and tree view area"), 
         debuggingEnabled = 0)
 
         # hbox1 = OWGUI.widgetBox(GeneralTab, orientation = "horizontal")
@@ -137,10 +140,11 @@ class CanvasOptionsDlg(QDialog):
         # OWGUI.separator(canvasDlgSettings)
         
 
-        OWGUI.comboBox(lookFeelBox, self.settings, "style", label = "Window style:", orientation = "horizontal", 
+        OWGUI.comboBox(lookFeelBox, self.settings, "style", label = _("Window style:"), orientation = "horizontal", 
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
-        OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", "Use style's standard palette", debuggingEnabled = 0)
+        OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", _("Use style's standard palette"), debuggingEnabled = 0)
         
+        self.language = comboBox(lookFeelBox, label = _('Language'), items = [u'English', u'Fran\u00E7aise', u'Deutsch'])
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
         # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
         # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
@@ -166,43 +170,43 @@ class CanvasOptionsDlg(QDialog):
         # #################################################################
         # EXCEPTION TAB
         
-        debug = OWGUI.widgetBox(ExceptionsTab, "Debug")
+        debug = OWGUI.widgetBox(ExceptionsTab, _("Debug"))
         # self.setDebugModeCheckBox = OWGUI.checkBox(debug, self.settings, "debugMode", "Set to debug mode") # sets the debug mode of the canvas.
         
         
-        self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = "Set level of widget output: ", 
+        self.verbosityCombo = OWGUI.comboBox(debug, self.settings, "outputVerbosity", label = _("Set level of widget output: "), 
         orientation='horizontal', items=redRLog.logLevelsName)
-        self.displayTraceback = OWGUI.checkBox(debug, self.settings, "displayTraceback", 'Display Traceback')
+        self.displayTraceback = OWGUI.checkBox(debug, self.settings, "displayTraceback", _('Display Traceback'))
         
         # self.exceptionLevel = redRSpinBox(debug, label = 'Exception Print Level:', toolTip = 'Select the level of exception that will be printed to the Red-R general output', min = 0, max = 9, value = redREnviron.settings['exceptionLevel'])
-        # self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = 'Select the level of general logging that will be output to the general output', min = 0, max = 9, value = redREnviron.settings['minSeverity'])
+        # self.otherLevel = redRSpinBox(debug, label = 'General Print Level:', toolTip = _('Select the level of general logging that will be output to the general output'), min = 0, max = 9, value = redREnviron.settings['minSeverity'])
         
-        exceptions = OWGUI.widgetBox(ExceptionsTab, "Exceptions")
-        #self.catchExceptionCB = QCheckBox('Catch exceptions', exceptions)
-        self.focusOnCatchExceptionCB = OWGUI.checkBox(exceptions, self.settings, "focusOnCatchException", 'Show output window on exception')
-        # self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "printExceptionInStatusBar", 'Print last exception in status bar')
-        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "uploadError", 'Submit Error Report')
-        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "askToUploadError", 'Always ask before submitting error report')
+        exceptions = OWGUI.widgetBox(ExceptionsTab, _("Exceptions"))
+        #self.catchExceptionCB = QCheckBox(_('Catch exceptions'), exceptions)
+        self.focusOnCatchExceptionCB = OWGUI.checkBox(exceptions, self.settings, "focusOnCatchException", _('Show output window on exception'))
+        # self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "printExceptionInStatusBar", _('Print last exception in status bar'))
+        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "uploadError", _('Submit Error Report'))
+        self.printExceptionInStatusBarCB = OWGUI.checkBox(exceptions, self.settings, "askToUploadError", _('Always ask before submitting error report'))
 
-        output = OWGUI.widgetBox(ExceptionsTab, "Log File")
-        #self.catchOutputCB = QCheckBox('Catch system output', output)
+        output = OWGUI.widgetBox(ExceptionsTab, _("Log File"))
+        #self.catchOutputCB = QCheckBox(_('Catch system output'), output)
         self.writeLogFileCB  = OWGUI.checkBox(output, self.settings, "writeLogFile", 
-        "Save content of the Output window to a log file")
+        _("Save content of the Output window to a log file"))
         hbox = OWGUI.widgetBox(output, orientation = "horizontal")
         
-        self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", "Log File:", orientation = 'horizontal')
-        self.okButton = OWGUI.button(hbox, self, "Browse", callback = self.browseLogFile)
-        self.showOutputLog = redRbutton(output, label = 'Show Log File', callback = self.showLogFile)
+        self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", _("Log File:"), orientation = 'horizontal')
+        self.okButton = OWGUI.button(hbox, self, _("Browse"), callback = self.browseLogFile)
+        self.showOutputLog = redRbutton(output, label = _('Show Log File'), callback = self.showLogFile)
         self.numberOfDays = redRSpinBox(output, label = 'Keep File for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
         
-        # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", 'Focus output window on system output')
-        # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", 'Print last system output in status bar')
+        # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", _('Focus output window on system output'))
+        # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", _('Print last system output in status bar'))
 
         ExceptionsTab.layout().addStretch(1)
 
         #####################################
         # R Settings Tab
-        self.rlibrariesBox = OWGUI.widgetBox(RSettings, 'R Libraries')
+        self.rlibrariesBox = OWGUI.widgetBox(RSettings, _('R Libraries'))
         self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
         
         
@@ -210,8 +214,8 @@ class CanvasOptionsDlg(QDialog):
         # OK, Cancel buttons
         hbox = OWGUI.widgetBox(self, orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed))
         hbox.layout().addStretch(1)
-        self.okButton = OWGUI.button(hbox, self, "OK", callback = self.accept)
-        self.cancelButton = OWGUI.button(hbox, self, "Cancel", callback = self.reject)
+        self.okButton = OWGUI.button(hbox, self, _("OK"), callback = self.accept)
+        self.cancelButton = OWGUI.button(hbox, self, _("Cancel"), callback = self.reject)
         #self.connect(self.tabOrderList, SIGNAL("currentRowChanged(int)"), self.enableDisableButtons)
 
         self.topLayout.addWidget(self.tabs)
@@ -224,7 +228,7 @@ class CanvasOptionsDlg(QDialog):
         import webbrowser
         webbrowser.open(unicode(self.logFile.text()))
     def browseLogFile(self):
-        fn = QFileDialog.getSaveFileName(self, "Save Log File", redREnviron.settings['logFile'],
+        fn = QFileDialog.getSaveFileName(self, _("Save Log File"), redREnviron.settings['logFile'],
         "Text file (*.html);; All Files (*.*)")
         #print unicode(fn)
         if fn.isEmpty(): return
@@ -234,7 +238,7 @@ class CanvasOptionsDlg(QDialog):
     def onTabChange(self,index):
         # print 'onTabChange',index
         # get a data frame (dict) of r libraries
-        if self.tabs.tabText(index) != 'R Settings':
+        if self.tabs.tabText(index) != _('R Settings'):
             return
         try:
             if not self.libListBox: return
@@ -242,7 +246,7 @@ class CanvasOptionsDlg(QDialog):
             self.libs = RSession.Rcommand('getCRANmirrors()')
             # place a listBox in the widget and fill it with a list of mirrors
             
-            self.libListBox = redRlistBox(self.rlibrariesBox, label = 'Mirrors', 
+            self.libListBox = redRlistBox(self.rlibrariesBox, label = _('Mirrors'), 
             items = self.libs['Name'], callback = self.setMirror)
         
     def setMirror(self):
@@ -260,7 +264,7 @@ class CanvasOptionsDlg(QDialog):
         # self.settings["exceptionLevel"] = int(self.exceptionLevel.value())
         # self.settings["minSeverity"] = int(self.otherLevel.value())
         
-        # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in 'Show Help Icons')
+        # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in _('Show Help Icons'))
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
@@ -318,7 +322,7 @@ class CanvasOptionsDlg(QDialog):
         #self.removeButton.setEnabled(1)
 
     def addCategory(self):
-        dir = unicode(QFileDialog.getExistingDirectory(self, "Select the folder that contains the add-on:"))
+        dir = unicode(QFileDialog.getExistingDirectory(self, _("Select the folder that contains the add-on:")))
         if dir != "":
             if os.path.split(dir)[1] == "widgets":     # register a dir above the dir that contains the widget folder
                 dir = os.path.split(dir)[0]
@@ -328,12 +332,12 @@ class CanvasOptionsDlg(QDialog):
                 self.tabOrderList.addItem(name)
                 self.tabOrderList.item(self.tabOrderList.count()-1).setCheckState(Qt.Checked)
             else:
-                QMessageBox.information( None, "Information", 'The specified folder does not seem to contain an Orange add-on.', QMessageBox.Ok + QMessageBox.Default)
+                QMessageBox.information( None, _("Information"), _('The specified folder does not seem to contain a Red-R add-on.'), QMessageBox.Ok + QMessageBox.Default)
             
         
     def removeCategory(self):
         curCat = unicode(self.tabOrderList.item(self.tabOrderList.currentRow()).text())
-        if QMessageBox.warning(self,'Orange Canvas', "Unregister widget category '%s' from Orange canvas?\nThis will not remove any files." % curCat, QMessageBox.Ok , QMessageBox.Cancel | QMessageBox.Default | QMessageBox.Escape) == QMessageBox.Ok:
+        if QMessageBox.warning(self,_('Red-R Canvas'), _("Unregister widget category '%s' from Red-R canvas?\nThis will not remove any files.") % curCat, QMessageBox.Ok , QMessageBox.Cancel | QMessageBox.Default | QMessageBox.Escape) == QMessageBox.Ok:
             self.toRemove.append((curCat, self.canvasDlg.widgetRegistry[curCat].directory))
             item = self.tabOrderList.takeItem(self.tabOrderList.row(self.tabOrderList.currentItem()))
             #if item: item.setHidden(1)
@@ -365,7 +369,7 @@ class KeyEdit(QLineEdit):
         pressed = "-".join(filter(None, [e.modifiers() & x and y for x, y in [(Qt.ControlModifier, "Ctrl"), (Qt.AltModifier, "Alt")]]) + [chr(e.key())])
 
         assigned = self.invInvDict.get(pressed, None)
-        if assigned and assigned != self and QMessageBox.question(self, "Confirmation", "'%(pressed)s' is already assigned to '%(assigned)s'. Override?" % {"pressed": pressed, "assigned": assigned.widget.name}, QMessageBox.Yes | QMessageBox.Default, QMessageBox.No | QMessageBox.Escape) == QMessageBox.No:
+        if assigned and assigned != self and QMessageBox.question(self, _("Confirmation"), _("'%(pressed)s' is already assigned to '%(assigned)s'. Override?") % {"pressed": pressed, "assigned": assigned.widget.name}, QMessageBox.Yes | QMessageBox.Default, QMessageBox.No | QMessageBox.Escape) == QMessageBox.No:
             return
         
         if assigned:
@@ -381,7 +385,7 @@ class WidgetShortcutDlg(QDialog):
     def __init__(self, canvasDlg, *args):
         apply(QDialog.__init__,(self,) + args)
         self.canvasDlg = canvasDlg
-        self.setWindowTitle("Widget Shortcuts")
+        self.setWindowTitle(_("Widget Shortcuts"))
         self.setLayout(QVBoxLayout())
         self.layout().setSpacing(10)
         self.resize(700,500)
@@ -437,8 +441,8 @@ class WidgetShortcutDlg(QDialog):
         # OK, Cancel buttons
         hbox = OWGUI.widgetBox(self, orientation = "horizontal", sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed))
         hbox.layout().addStretch(1)
-        self.okButton = OWGUI.button(hbox, self, "OK", callback = self.accept)
-        self.cancelButton = OWGUI.button(hbox, self, "Cancel", callback = self.reject)
+        self.okButton = OWGUI.button(hbox, self, _("OK"), callback = self.accept)
+        self.cancelButton = OWGUI.button(hbox, self, _("Cancel"), callback = self.reject)
         self.okButton.setDefault(True)
 
         self.layout().addWidget(self.tabs)
@@ -455,14 +459,11 @@ class AboutDlg(QDialog):
         logo = redRwidgetLabel(self, "")
         logo.setPixmap(logoImage)
         info = redREnviron.version
-        self.about = redRwebViewBox(self,label='About Info',displayLabel=False)
+        self.about = redRwebViewBox(self,label=_('About Info'),displayLabel=False)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.about.setMinimumHeight(150)
-        self.about.setHtml('<h2>' + info['NAME'] + " " + info['REDRVERSION'] + '</h2>' + 
-        'Type: ' + info['TYPE'] + '; Revision: ' + info['SVNVERSION'] +
-        '; Build Time: ' + info['DATE'] + '; Copy Number:' + unicode(redREnviron.settings['id']) + '' +
-        '<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>')
-        self.licenceButton = redRbutton(self, 'Licence', callback = self.showLicence)
+        self.about.setHtml('<h2>%(NAME)s %(RVERSION)s</h2>Type: %(TYPE)s;  Revision: %(SVNVERSION)s; Build Time: %(DATE)s; Copy Number: %(ID)s<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>' % {'NAME': info['NAME'], 'RVERSION': info['RVERSION'], 'TYPE':info['TYPE'], 'SVNVERSION':info['SVNVERSION'], 'DATE':info['DATE'], 'ID':unicode(redREnviron.settings['id'])})
+        self.licenceButton = redRbutton(self, _('Licence'), callback = self.showLicence)
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)
         self.layout().addWidget(b)

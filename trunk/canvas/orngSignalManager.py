@@ -7,6 +7,10 @@ import sys, time, OWGUI, os, redREnviron
 #from orngCanvasItems import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 Single = 2
 Multiple = 4
 
@@ -84,7 +88,7 @@ class SignalManager:
         # print self.links.keys()
         # print self.links.get(theWidget, [])
         for (widget, signalNameFrom, signalNameTo, enabled) in self.links.get(theWidget, []):
-            # print 'widget',widget
+            # print _('widget'),widget
             children.append(widget)
             children.extend(self.getChildern(widget))
         return children
@@ -109,11 +113,11 @@ class SignalManager:
                 if widget == widgetTo and signalFrom == signalNameFrom and signalTo == signalNameTo:
                     for key in widgetFrom.linksOut[signalFrom].keys():
                         widgetTo.updateNewSignalData(widgetFrom, signalNameTo, None, key, signalNameFrom)
-                        print 'updating signal data'
+                        print _('updating signal data')
                     self.links[widgetFrom].remove((widget, signalFrom, signalTo, enabled))
                     if not self.freezing and not self.signalProcessingInProgress: 
                         self.processNewSignals(widgetFrom)
-                        #print 'processing signals'
+                        #print _('processing signals')
         
         widgetTo.removeInputConnection(widgetFrom, signalNameTo)
     """
@@ -124,13 +128,13 @@ class SignalManager:
     def setNeedAttention(self,firstWidget) :
         #index = self.widgets.index(firstWidget)
         # print 'setNeedAttention\n'*5
-        # print 'firstWidget', firstWidget
+        # print _('firstWidget'), firstWidget
         children = self.getChildern(firstWidget)
         children.append(firstWidget)
         # print children
         #for i in range(index, len(self.widgets)):
         for i in children:
-            # print 'propagating', i.windowTitle(), i#, index
+            # print _('propagating'), i.windowTitle(), i#, index
             if i.outputs != None and len(i.outputs) !=0 and not i.loadSavedSession:
                 i.setInformation(id = 'attention', text = 'Widget needs attention.')
     
@@ -138,10 +142,10 @@ class SignalManager:
     def processNewSignals(self, firstWidget):
         print 'processNewSignals'
         if len(self.widgets) == 0: 
-            print 'No widgets', self.widgets
+            print _('No widgets'), self.widgets
             return
         if self.signalProcessingInProgress: 
-            print 'processing in progress'
+            print _('processing in progress')
             return
 
         if firstWidget not in self.widgets:
@@ -155,10 +159,10 @@ class SignalManager:
         children = self.getChildern(firstWidget)
         children.append(firstWidget)
 
-        print 'children', children
+        print _('children'), children
         for i in children:
             if i.needProcessing:
-                print 'needs processing', i
+                print _('needs processing'), i
                 try:
                     i.processSignals()  ## call process signals in the widgetSignals function.
                 except:
@@ -206,7 +210,7 @@ class SignalDialog(QDialog):
         self.allSignalsTaken = 0
 
         # GUI    ### canvas dialog that is shown when there are multiple possible connections.
-        self.setWindowTitle('Connect Signals')
+        self.setWindowTitle(_('Connect Signals'))
         self.setLayout(QVBoxLayout())
 
         self.canvasGroup = OWGUI.widgetBox(self, 1)
@@ -239,7 +243,7 @@ class SignalDialog(QDialog):
         links = outWidget.instance().outputs.getSignalLinks(inWidget.instance())
         for (outName, inName) in links:
             self.addLink(outName, inName)
-        #print 'Output Handler Returned the following links', links
+        #print _('Output Handler Returned the following links'), links
 
     def countCompatibleConnections(self, outputs, inputs, outInstance, inInstance, outType, inType):
         count = 0
@@ -263,14 +267,14 @@ class SignalDialog(QDialog):
 
     def addLink(self, outName, inName):
         if (outName, inName) in self._links: 
-            #print 'signal already in the links'
+            #print _('signal already in the links')
             return 1
-        #print outName, inName, 'Names'
+        #print outName, inName, _('Names')
         # check if correct types
         outType = self.outWidget.instance().outputs.getSignal(outName)['signalClass']
         inType = self.inWidget.instance().inputs.getSignal(inName)['signalClass']
         if not outType or not inType:
-            raise Exception, 'None sent as signal type'
+            raise Exception, _('None sent as signal type')
             
             
         if not self.inWidget.instance().inputs.doesSignalMatch(inName, outType): 
@@ -433,7 +437,7 @@ class SignalCanvasView(QGraphicsView):
     # ###################################################################
     # mouse button was pressed
     def mousePressEvent(self, ev):
-        #print ' SignalCanvasView mousePressEvent'
+        #print _(' SignalCanvasView mousePressEvent')
         self.bMouseDown = 1
         point = self.mapToScene(ev.pos())
         activeItem = self.scene().itemAt(QPointF(ev.pos()))
@@ -474,7 +478,7 @@ class SignalCanvasView(QGraphicsView):
                     if box == inBox: inName = id
                 print outName, inName
                 if outName != None and inName != None:
-                    print 'adding link'
+                    print _('adding link')
                     self.dlg.addLink(outName, inName)
 
             self.tempLine.hide()
@@ -483,7 +487,7 @@ class SignalCanvasView(QGraphicsView):
 
 
     def addLink(self, outName, inName):  ## makes the line that goes from one widget to the other on the canvas, outName and inName are the id's for the links
-        #print 'Adding link in the canvas', outName, inName
+        #print _('Adding link in the canvas'), outName, inName
         outBox = None; inBox = None
         for (name, box, id) in self.outBoxes:
             if id == outName: outBox = box

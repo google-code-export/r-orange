@@ -2,12 +2,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 from PyQt4.QtNetwork import *
-import os
-
+import os, redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class HelpWindow(QDialog):
     def __init__(self, canvasDlg):
         QDialog.__init__(self)
-        self.setWindowTitle("Orange Canvas Help")
+        self.setWindowTitle(_("Red-R Canvas Help"))
         self.canvasDlg = canvasDlg
         
         self.setWindowIcon(QIcon(os.path.join(self.canvasDlg.widgetDir, "icons/Unknown.png")))

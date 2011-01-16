@@ -2,7 +2,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, redRLog
 #import sys, traceback
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 YesNo = NoYes = ("No", "Yes")
 groupBoxMargin = 7
 
@@ -21,7 +24,7 @@ def getdeepattr(obj, attr, **argkw):
 #        if argkw.has_key("default"):
 #            return argkw["default"]
 #        else:
-            raise AttributeError, "'%s' has no attribute '%s'" % (obj, attr)
+            raise AttributeError, _("'%s' has no attribute '%s'") % (obj, attr)
 
 
 def getEnterIcon():

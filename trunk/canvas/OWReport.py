@@ -4,7 +4,10 @@ from PyQt4.QtWebKit import *
 import os, time, tempfile, shutil, urllib, zipfile, re, shutil
 import datetime
 import redREnviron, OWGUI
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 reportsDir = redREnviron.directoryNames['reportsDir']
 report = None
 def escape(s):
@@ -18,7 +21,7 @@ class OWebView(QWebView):
 class ReportWindow(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.setWindowTitle("Report")
+        self.setWindowTitle(_("Report"))
         self.setWindowIcon(QIcon(os.path.join(redREnviron.widgetDir, "icons/Unknown.png")))
         global report
         if not self.checkExtLibrary():
@@ -52,7 +55,7 @@ class ReportWindow(QWidget):
         return
         if os.path.exists(os.path.join(reportsDir, "ext-2.2")):
             return True
-        resp = QMessageBox("Additional library download", "Your version of Orange supports creating reports, but it needs to download the Ext library (~330 kB) for JavaScript. Proceed?\n\nIf you answer no, it will ask again next time you run Orange; sorry for the inconvenience ;)", QMessageBox.Question, QMessageBox.Yes|QMessageBox.Default, QMessageBox.No|QMessageBox.Escape, QMessageBox.NoButton).exec_()
+        resp = QMessageBox(_("Additional library download"), _("Your version of Orange supports creating reports, but it needs to download the Ext library (~330 kB) for JavaScript. Proceed?\n\nIf you answer no, it will ask again next time you run Orange; sorry for the inconvenience ;)"), QMessageBox.Question, QMessageBox.Yes|QMessageBox.Default, QMessageBox.No|QMessageBox.Escape, QMessageBox.NoButton).exec_()
         if resp == QMessageBox.No:
             return False
         try:
@@ -67,7 +70,7 @@ class ReportWindow(QWidget):
                     break
             zf.close()
         except:
-            QMessageBox.warning(None, "Additional library download", "Error downloading Ext. Reporting will not be available")
+            QMessageBox.warning(None, _("Additional library download"), _("Error downloading Ext. Reporting will not be available"))
             return False
         
         try:
@@ -78,7 +81,7 @@ class ReportWindow(QWidget):
                 else:
                     file(os.path.join(reportsDir, name), 'wb').write(zf.read(name))
         except:
-            QMessageBox.warning(None, "Additional library download", "Error unzipping Ext. Reporting will not be available")
+            QMessageBox.warning(None, _("Additional library download"), _("Error unzipping Ext. Reporting will not be available"))
             return False
 
         try:

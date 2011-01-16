@@ -2,7 +2,8 @@
 import orngSignalManager
 
 globalData = {}
-
+def _(a):
+    return a
 def setGlobalData(creatorWidget, name, data, description = None):
     if type(creatorWidget) in [str]:
         widgetID = 'none'

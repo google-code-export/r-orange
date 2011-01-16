@@ -5,6 +5,10 @@ from PyQt4.QtGui import *
 if sys.platform=="win32":
     import win32com.client
 #print 'Importing redREnviron.py'
+# import redRi18n
+def _(a):
+    return a
+# _ = redRi18n.Coreget_()
 def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
     try:
@@ -43,7 +47,7 @@ def __getDirectoryNames():
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
         except:
-            print 'Error occured in setting the settingsDir'
+            print _('Error occured in setting the settingsDir')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
     logsDir = os.path.join(settingsDir, "RedRlogs")
@@ -70,7 +74,7 @@ def __getDirectoryNames():
             try: os.makedirs(dname)        
             # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
-    # print 'create temp'
+    # print _('create temp')
     #tempDir = setTempDir(tempDirHolder)
     # print tempDir
         
@@ -88,7 +92,7 @@ def checkInternetConnection():
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
 def setTempDir(temp):
-    # print 'setting temp dir' + unicode(time.time())
+    # print _('setting temp dir') + unicode(time.time())
     
     tempDir = os.path.join(directoryNames['tempDirHolder'], temp) 
     os.mkdir(tempDir)

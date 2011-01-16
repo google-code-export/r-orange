@@ -14,7 +14,10 @@ import xml.dom.minidom
 import redRGUI, re 
 import pprint
 import xml.etree.ElementTree as etree
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 
 ## packageManager class handles package functions such as resolving rrp's resolving dependencies, appending packages to the package xml or any function that remotely has to do with handling packages
 class packageManager:
@@ -32,7 +35,7 @@ class packageManager:
     def installRRP(self,packageName,filename):
 
         installDir = os.path.join(redREnviron.directoryNames['libraryDir'], packageName)
-        #print 'installDir', installDir
+        #print _('installDir'), installDir
         import shutil
         import compileall
         shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying
@@ -69,8 +72,8 @@ class packageManager:
             window  = qApp.canvasDlg
         progressBar = QProgressDialog(window)
         progressBar.setCancelButtonText(QString())
-        progressBar.setWindowTitle('Installing Packages')
-        progressBar.setLabelText('Installing Packages ...')
+        progressBar.setWindowTitle(_('Installing Packages'))
+        progressBar.setLabelText(_('Installing Packages ...'))
         progressBar.setMaximum(len(packages.keys())+1)
         i = 0
         progressBar.setValue(i)
@@ -81,7 +84,7 @@ class packageManager:
             if not package in self.sitePackages: continue
             i = i + 1
             progressBar.setValue(i)
-            progressBar.setLabelText('Installing: ' + package)
+            progressBar.setLabelText(_('Installing: %s') % package)
             try:
                 packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
                 url = unicode(self.repository+'/'+package+'/'+packageName)
@@ -90,7 +93,7 @@ class packageManager:
                 self.urlOpener.retrieve(url, path)
                 #print path
                 self.installRRP(package,path)
-                redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Installing package %s from URL %s into path %s' % (packageName, url, path))
+                redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s from URL %(URL)s into path %(PATH)s') % {'PACKAGENAME':packageName, 'URL':url, 'PATH':path})
             except:
                 try:
                     packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
@@ -190,7 +193,7 @@ class packageManager:
     # The file is stored in the canvasSettingsDir/red-RPackages.xml
     def updatePackagesFromRepository(self):
         #print '|#| updatePackagesFromRepository'
-        redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Updating packages from repository')
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Updating packages from repository'))
         url = self.repository + '/packages.xml'
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         from datetime import date
@@ -262,7 +265,7 @@ class packageManager:
         
 class packageManagerDialog(redRdialog):
     def __init__(self,widget):
-        redRdialog.__init__(self,widget, title = 'Package Manager')
+        redRdialog.__init__(self,widget, title = _('Package Manager'))
         
         self.setMinimumWidth(650)
         self.packageManager = packageManager
@@ -271,45 +274,45 @@ class packageManagerDialog(redRdialog):
         #### set up a screen that will show a listbox of packages that are on the system that should be updated, 
         
         self.tabsArea = redRtabWidget(self)
-        self.updatesTab = self.tabsArea.createTabPage(name = 'Updates')
-        self.installedTab = self.tabsArea.createTabPage(name = 'Installed Packages')
-        self.availableTab = self.tabsArea.createTabPage(name = 'Available Packages')
+        self.updatesTab = self.tabsArea.createTabPage(name = _('Updates'))
+        self.installedTab = self.tabsArea.createTabPage(name = _('Installed Packages'))
+        self.availableTab = self.tabsArea.createTabPage(name = _('Available Packages'))
         
         #### layout of the tabsArea
-        self.treeViewUpdates = redRtreeWidget(self.updatesTab, label='Update List', displayLabel=False, 
+        self.treeViewUpdates = redRtreeWidget(self.updatesTab, label=_('Update List'), displayLabel=False, 
         callback = self.updateItemClicked)  ## holds the tree view of all of the packages that need updating
-        self.treeViewUpdates.setHeaderLabels(['Package', 'Author', 'Summary', 
-        'Current Version', 'Current Version Stability', 'New Version', 'New Version Stability'])
+        self.treeViewUpdates.setHeaderLabels([_('Package'), _('Author'), _('Summary'), 
+        _('Current Version'), _('Current Version Stability'), _('New Version'), _('New Version Stability')])
 
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewUpdates.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewUpdates = redRtextEdit(self.updatesTab, label='Update Info', displayLabel=False)  ## holds the info for a package
-        redRbutton(self.updatesTab, 'Install Updates', callback = self.installUpdates)
+        self.infoViewUpdates = redRtextEdit(self.updatesTab, label=_('Update Info'), displayLabel=False)  ## holds the info for a package
+        redRbutton(self.updatesTab, _('Install Updates'), callback = self.installUpdates)
         
-        self.treeViewInstalled = redRtreeWidget(self.installedTab, label='Update List', displayLabel=False, 
+        self.treeViewInstalled = redRtreeWidget(self.installedTab, label=_('Update List'), displayLabel=False, 
         callback = self.installItemClicked)
-        self.treeViewInstalled.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
+        self.treeViewInstalled.setHeaderLabels([_('Package'), _('Author'), _('Summary'), _('Version'), _('Stability')])
 
         #self.treeViewInstalled.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewInstalled.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewInstalled = redRtextEdit(self.installedTab, label='Install Info', displayLabel=False)
-        redRbutton(self.installedTab, 'Remove Packages', callback = self.uninstallPackages)
+        self.infoViewInstalled = redRtextEdit(self.installedTab, label=_('Install Info'), displayLabel=False)
+        redRbutton(self.installedTab, _('Remove Packages'), callback = self.uninstallPackages)
         
-        self.treeViewAvailable = redRtreeWidget(self.availableTab, label='Update List', displayLabel=False, 
+        self.treeViewAvailable = redRtreeWidget(self.availableTab, label=_('Update List'), displayLabel=False, 
         callback = self.availableItemClicked)
-        self.treeViewAvailable.setHeaderLabels(['Package', 'Author', 'Summary', 'Version', 'Stability'])
+        self.treeViewAvailable.setHeaderLabels([_('Package'), _('Author'), _('Summary'), _('Version'), _('Stability')])
 
         #self.treeViewAvailable.setSelectionModel(QItemSelectModel.Rows)
         self.treeViewAvailable.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.infoViewAvailable = redRtextEdit(self.availableTab, label='Avaliable Info', displayLabel=False)
-        redRbutton(self.availableTab, 'Install Packages', callback = self.installNewPackage)
+        self.infoViewAvailable = redRtextEdit(self.availableTab, label=_('Avaliable Info'), displayLabel=False)
+        redRbutton(self.availableTab, _('Install Packages'), callback = self.installNewPackage)
         
         #### buttons and the like
         buttonArea2 = redRwidgetBox(self,orientation = 'horizontal')
-        redRbutton(buttonArea2, label = 'Update from Repository', callback = self.loadPackagesLists)
+        redRbutton(buttonArea2, label = _('Update from Repository'), callback = self.loadPackagesLists)
         redRwidgetBox(buttonArea2, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
         orientation = 'horizontal')
-        redRbutton(buttonArea2, label = 'Done', callback = self.accept)
+        redRbutton(buttonArea2, label = _('Done'), callback = self.accept)
     def installItemClicked(self, item1, item2):
         if item1:
             self.infoViewInstalled.setHtml(self.localPackages[unicode(item1.text(0))]['Description'])
@@ -410,12 +413,12 @@ class packageManagerDialog(redRdialog):
         for item in selectedItems:
             name = unicode(item.text(0))
             if name == 'base':  ## special case of trying to delete base.
-                QMessageBox.information(self, "Deleting Base", "You are not allowed to delete base.", QMessageBox.Ok)
+                QMessageBox.information(self, _("Deleting Base"), _("You are not allowed to delete base."), QMessageBox.Ok)
                 continue
             uninstallList.append(name)
         if len(uninstallList) ==0: return
         
-        mb = QMessageBox("Uninstall Packages", "Are you sure that you want to uninstall these packages?\n\n"+
+        mb = QMessageBox(_("Uninstall Packages"), _("Are you sure that you want to uninstall these packages?\n\n")+
         "\n".join(uninstallList), QMessageBox.Information, 
         QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
         
@@ -444,11 +447,11 @@ class packageManagerDialog(redRdialog):
                 depStr.append(package + '-' + version['Version'])
             
         
-        msg = msg + "\nRepository: Red-R.org\nPackages:\n-- " + "\n-- ".join(mainStr)
+        msg = msg + _("\nRepository: Red-R.org\nPackages:\n-- ") + "\n-- ".join(mainStr)
         if len(depStr) > 0:
-            msg = msg + "\n With dependencies:\n-- " + "\n-- ".join(depStr)
+            msg = msg + _("\n With dependencies:\n-- ") + "\n-- ".join(depStr)
             
-        mb = QMessageBox("Install Packages", msg, 
+        mb = QMessageBox(_("Install Packages"), msg, 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
         QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
         if mb.exec_() != QMessageBox.Ok:
@@ -470,7 +473,7 @@ class packageManagerDialog(redRdialog):
             name = unicode(item.text(0))
             downloadList[name] = {'Version':unicode(item.text(3)), 'installed':False}
 
-        self.askToInstall(downloadList,"Are you sure that you want to install these packages?")
+        self.askToInstall(downloadList,_("Are you sure that you want to install these packages?"))
 
     # install file form file. Takes package rrp location and parses the xml file to dependencies
     # installs the local rrp file as well as all the required dependencies if they exist in the repository
@@ -479,8 +482,7 @@ class packageManagerDialog(redRdialog):
             package = self.packageManager.getPackageInfo(filename)
             
             if package['Name'] in self.localPackages.keys() and self.localPackages[package['Name']]['Version']['Number'] == package['Version']['Number']: 
-                mb = QMessageBox("Install Package", 'Package "'+package['Name']+
-                '" is already installed. Do you want to remove the current version and continue installation?', 
+                mb = QMessageBox(_("Install Package"), 'Package "%s" is already installed. Do you want to remove the current version and continue installation?' % package['Name'], 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
                 if mb.exec_() != QMessageBox.Ok:
@@ -499,17 +501,17 @@ class packageManagerDialog(redRdialog):
                 else:
                     notFound.append(name)
             if len(notFound) > 0:
-                mb = QMessageBox.warning(self,"Install Package", 
-                'The following packages are required but not found in the Red-R.org repository. Installation will not proceed.\n\n--'+
+                mb = QMessageBox.warning(self,_("Install Package"), 
+                _('The following packages are required but not found in the Red-R.org repository. Installation will not proceed.\n\n--')+
                 '\n--'.join(notFound),
                 QMessageBox.Ok)
                 return
             else:
-                msg = "Are you sure that you want to install this package and its dependencies?\nRepository: Red-R.org\nPackage:\n--" + package['Name']
+                msg = _("Are you sure that you want to install this package and its dependencies?\nRepository: Red-R.org\nPackage:\n--") + package['Name']
                 if len(download.keys()) > 0:
-                    msg = msg + "\n With dependencies:\n--" + "\n--".join(deps.keys())
+                    msg = msg + _("\n With dependencies:\n--") + "\n--".join(deps.keys())
                     
-                mb = QMessageBox("Install Package", msg, 
+                mb = QMessageBox(_("Install Package"), msg, 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,self)
                 if mb.exec_() != QMessageBox.Ok:
@@ -523,8 +525,8 @@ class packageManagerDialog(redRdialog):
             self.loadPackagesLists()
             self.tabsArea.setCurrentIndex(1)
         except Exception as inst:
-            mb = QMessageBox.warning(self,"Install Package", 
-                'The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n'+unicode(inst),
+            mb = QMessageBox.warning(self,_("Install Package"), 
+                _('The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n')+unicode(inst),
                 QMessageBox.Ok)
             raise Exception, unicode(inst)
             

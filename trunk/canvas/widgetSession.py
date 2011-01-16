@@ -6,8 +6,10 @@ from PyQt4.QtGui import *
 import redRGUI 
 import signals 
 # from SQLiteSession import *
- 
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class widgetSession():
     def __init__(self,dontSaveList):
         #collect the sent items
@@ -23,7 +25,7 @@ class widgetSession():
 
 
     def getSettings(self):  # collects settings for the save function, these will be included in the output file.  Called in orngDoc during save.
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'moving to save'+unicode(self.captionTitle))
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('moving to save %s') % unicode(self.captionTitle))
         import re
         settings = {}
         if self.saveSettingsList:  ## if there is a saveSettingsList then we just append the required elements to it.
@@ -72,7 +74,7 @@ class widgetSession():
         #if isinstance(d,QObject):
         # print unicode(type(d))
         if re.search('PyQt4|OWGUIEx|OWToolbars',unicode(type(d))) or d.__class__.__name__ in redRGUI.qtWidgets:
-            #print 'QT object NOT Pickleable'
+            #print _('QT object NOT Pickleable')
             return False
         elif type(d) in [list, dict, tuple]:
             #ok = True
@@ -94,7 +96,7 @@ class widgetSession():
             return True
         else: 
             
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Type ' + unicode(d) + ' is not supported at the moment..')  # notify the developer that the class that they are using is not saveable
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Type %s is not supported at the moment') % unicode(d))  # notify the developer that the class that they are using is not saveable
             return False
         
             
@@ -104,7 +106,7 @@ class widgetSession():
         from redRGUI import widgetState
         # from redRGUI import widgetState
         from signals import BaseRedRVariable
-        # print 'var class', var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
+        # print _('var class'), var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
         if isinstance(var, widgetState):
             # print 'getting gui settings\n\n'
             # try:
@@ -116,8 +118,8 @@ class widgetSession():
                 v.update(var.getDefaultState())
             # except: 
                 # v = var.getDefaultState()
-                # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Could not save qtWidgets class ' + var.__class__.__name__ + '.')
-                #errorMsg='Could not save qtWidgets class ' + var.__class__.__name__ + '.')
+                # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Could not save qtWidgets class ') + var.__class__.__name__ + '.')
+                #errorMsg=_('Could not save qtWidgets class ') + var.__class__.__name__ + '.')
 
             settings['redRGUIObject'] = {}
             if v: settings['redRGUIObject'] = v
@@ -153,7 +155,7 @@ class widgetSession():
         
         
     def setSettings(self,settings, globalSettings = False):
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Loading settings')
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Loading settings'))
         #settings = self.sqlite.setObject(settingsID)
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
@@ -188,18 +190,18 @@ class widgetSession():
                                 signalID = self.outputs.getSignalByName(sentItemName)
                                 self.send(signalID, var)
                             else:
-                                #print 'Error in matching item name'
+                                #print _('Error in matching item name')
                                 from libraries.base.qtWidgets.dialog import dialog
                                 tempDialog = dialog(None)
                                 from libraries.base.qtWidgets.widgetLabel import widgetLabel
                                 from libraries.base.qtWidgets.listBox import listBox
                                 from libraries.base.qtWidgets.button import button
-                                widgetLabel(tempDialog, 'Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.' % (sentItemName, unicode(var)))
+                                widgetLabel(tempDialog, _('Error occured in matching the loaded signal (Name:%s, Value:%s) to the appropriate signal name.\nPlease select the signal that matches the desired output,\n or press cancel to abandon the signal.') % (sentItemName, unicode(var)))
                                 
                                 #print self.outputs.outputSignals
                                 itemListBox = listBox(tempDialog, items = signalItemNames)
-                                button(tempDialog, label = 'Done', callback = tempDialog.accept)
-                                button(tempDialog, label = 'Cancel', callback = tempDialog.reject)
+                                button(tempDialog, label = _('Done'), callback = tempDialog.accept)
+                                button(tempDialog, label = _('Cancel'), callback = tempDialog.reject)
                                 res = tempDialog.exec_()
                                 if res != QDialog.rejected:
                                     signalName = unicode(itemListBox.selectedItems()[0].text())
@@ -227,21 +229,21 @@ class widgetSession():
                     if len(var) != len(v['list']): continue
                     self.recursiveSetSetting(var,v['list'])
             except:
-                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.')
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Exception occured during loading in the setting of an attribute.  This will not halt loading but the widget maker shoudl be made aware of this.'))
         
         
     def setSignalClass(self, d):
         #print '|##| setSentRvarClass' #% unicode(d)
         
         # print d
-        # print 'setting ', className
+        # print _('setting '), className
         try: # try to reload the output class from the signals
             
             # try to get the class variabel (var) this will be done by accessing the class info of the class attribute of data
             import imp
             ## find the libraries directory
             fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
-            #print 'loading module'
+            #print _('loading module')
             varc = imp.load_module('libraries', fp, pathname, description)
             #print varc
             for mod in d['class'].split('.')[1:]:
@@ -256,7 +258,7 @@ class widgetSession():
                 for (key, val) in d.items():
                     ## find the libraries directory
                     fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
-                    #print 'loading module'
+                    #print _('loading module')
                     varc = imp.load_module('libraries', fp, pathname, description)
                     #print varc
                     for mod in val['class'].split('.')[1:]:
@@ -282,7 +284,7 @@ class widgetSession():
         return var
             
     def recursiveSetSetting(self,var,d):
-        # print 'recursiveSetSetting'
+        # print _('recursiveSetSetting')
         
         if type(var) in [list,tuple]:
             for k in xrange(len(d)):
@@ -315,7 +317,7 @@ class widgetSession():
         
     
     def getGlobalSettingsFile(self):
-        # print 'getSettingsFile in owbasewidget'
+        # print _('getSettingsFile in owbasewidget')
         file = os.path.join(redREnviron.directoryNames['widgetSettingsDir'], self._widgetInfo.fileName + ".ini")
         #print 'getSettingsFile', file
         return file

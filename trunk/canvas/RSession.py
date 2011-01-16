@@ -34,11 +34,15 @@ from PyQt4.QtGui import *
 import redrrpy._conversion as co
 import redRLog
 
+# import redRi18n
+def _(a):
+    return a
+# _ = redRi18n.Coreget_()
 mutex = QMutex()
 def assign(name, object):
     try:
         rpy.r.assign(name, object)
-        redRLog.log(redRLog.R, redRLog.DEBUG, 'Assigned object to %s' % name)
+        redRLog.log(redRLog.R, redRLog.DEBUG, _('Assigned object to %s') % name)
         return True
     except:
         return False
@@ -46,7 +50,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     
     unlocked = mutex.tryLock()
     if not unlocked:
-        mb = QMessageBox("R Session Locked", "The R Session is currently locked, please wait for the prior execution to finish.", QMessageBox.Information, 
+        mb = QMessageBox(_("R Session Locked"), _("The R Session is currently locked, please wait for the prior execution to finish."), QMessageBox.Information, 
         QMessageBox.Ok | QMessageBox.Default,
         QMessageBox.NoButton, 
         QMessageBox.NoButton, 
@@ -75,7 +79,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         
         output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.CRITICAL, "Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s." % (query, inst))
+        redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s.") % (query, inst))
         mutex.unlock()
         raise RuntimeError(unicode(inst) + '  Orriginal Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
@@ -92,7 +96,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     # print 'converted', type(output)
     if wantType == None:
         mutex.unlock()
-        raise Exception('WantType not specified')
+        raise Exception(_('WantType not specified'))
     
     if type(output) == list and len(output) == 1 and wantType != 'list':
         output = output[0]
@@ -111,9 +115,9 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         elif type(output) is numpy.ndarray:
             output = output.tolist()
         else:
-            print 'Warning, conversion was not of a known type;', unicode(type(output))
+            print _('Warning, conversion was not of a known type;'), unicode(type(output))
     elif wantType == 'listOfLists':
-        # print 'Converting to list of lists'
+        # print _('Converting to list of lists')
         
         if type(output) in [str, int, float, bool]:
             output =  [[output]]
@@ -131,13 +135,13 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
             elif type(output[0]) not in [list]:
                 output = [output]
         else:
-            print 'Warning, conversion was not of a known type;', str(type(output))
+            print _('Warning, conversion was not of a known type;'), str(type(output))
                 
     mutex.unlock()
     return output
 	
 def convertToPy(inobject):
-    #print 'in convertToPy', inobject.getrclass()        
+    #print _('in convertToPy'), inobject.getrclass()        
     try:
         if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
             return inobject
@@ -175,14 +179,14 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]
-        # print 'librarys', librarys
-        # print 'installedRPackages', installedRPackages
+        # print _('librarys'), librarys
+        # print _('installedRPackages'), installedRPackages
         
         for library in librarys:
             if library in loadedLibraries: 
-                redRLog.log(redRLog.R, redRLog.DEBUG, 'Library already loaded')
+                redRLog.log(redRLog.R, redRLog.DEBUG, _('Library already loaded'))
                 continue
-            # print 'in loop', library, library in installedRPackages
+            # print _('in loop'), library, library in installedRPackages
             # print installedRPackages
             if installedRPackages and library and (library in installedRPackages):
                 redRLog.log(redRLog.R, redRLog.DEBUG, 'Loading library %s.' % library)
@@ -191,17 +195,17 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 loadedLibraries.append(library)
             elif library:
                 if redREnviron.checkInternetConnection():
-                    mb = QMessageBox("Download R Library", "You are missing some key files for this widget.\n\n"+unicode(library)+"\n\nWould you like to download it?", QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+                    mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it?") % unicode(library), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
-                            redRLog.log(redRLog.R, redRLog.INFO, 'Installing library %s.' % library)
+                            redRLog.log(redRLog.R, redRLog.INFO, _('Installing library %s.') % library)
                             Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
                             Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')#, lib=' + libPath + ')')
                             loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')# lib.loc=' + libPath + ')')
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
                             
                         except:
-                            redRLog.log(redRLog.R, redRLog.CRITICAL, 'Library load failed')
+                            redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
                             loadedOK = False
                     else:
                         loadedOK = False

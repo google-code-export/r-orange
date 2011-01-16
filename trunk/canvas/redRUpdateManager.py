@@ -19,7 +19,10 @@ import xml.etree.ElementTree as etree
 from datetime import date
 import win32api, win32process
 from win32com.shell import shell, shellcon
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class updateManager():
     def __init__(self,schema):
         self.schema = schema
@@ -47,7 +50,7 @@ class updateManager():
     def showUpdateDialog(self,auto=False):
         if not redREnviron.checkInternetConnection():
             if not auto:
-              self.createDialog('No Internet Connection',False)
+              self.createDialog(_('No Internet Connection'),False)
             return
 
         today = date.today()
@@ -60,12 +63,12 @@ class updateManager():
         redREnviron.saveSettings()
         avaliable = self.checkForUpdate()
         if avaliable:
-            html = "<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s" % (
+            html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s") % (
             self.availableUpdate['redRVerion'],self.availableUpdate['SVNVersion'],
             self.availableUpdate['date'],self.availableUpdate['changeLog']) 
             self.createDialog(html,True)
         elif not avaliable and not auto:
-            self.createDialog('You have the most current version of Red-R %s.' % self.version,False)
+            self.createDialog(_('You have the most current version of Red-R %s.') % self.version,False)
 
     def parseUpdatesXML(self,fileName):
         f = open(fileName, 'r')
@@ -91,9 +94,9 @@ class updateManager():
         return rc
 
     def createDialog(self,html,avaliable):
-        UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
+        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
         
-        changeLogBox = redRwebViewBox(UpdatePopup,label='Update',displayLabel=False)
+        changeLogBox = redRwebViewBox(UpdatePopup,label=_('Update'),displayLabel=False)
         changeLogBox.setMinimumWidth(350)
         changeLogBox.setMinimumHeight(350)
         changeLogBox.setHtml(html)
@@ -101,42 +104,42 @@ class updateManager():
         buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
         if avaliable:
-            redRbutton(buttonArea2, label = 'Close Red-R and Update', callback = UpdatePopup.accept)
-        redRbutton(buttonArea2, label = 'Cancel', callback = UpdatePopup.reject)
+            redRbutton(buttonArea2, label = _('Close Red-R and Update'), callback = UpdatePopup.accept)
+        redRbutton(buttonArea2, label = _('Cancel'), callback = UpdatePopup.reject)
         if UpdatePopup.exec_() == QDialog.Accepted:
             self.downloadUpdate(update)
         
     def showNoUpdates(self):
-        UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
+        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
         UpdatePopup.setMinimumWidth(350)
         UpdatePopup.setMinimumHeight(350)
         changeLogBox = redRwebViewBox(UpdatePopup)
-        changeLogBox.setHtml('You have the most current version of Red-R %s.' % self.version)
+        changeLogBox.setHtml(_('You have the most current version of Red-R %s.') % self.version)
         
         buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
         
-        redRbutton(buttonArea2, label = 'Done', callback = UpdatePopup.reject)
+        redRbutton(buttonArea2, label = _('Done'), callback = UpdatePopup.reject)
         UpdatePopup.exec_()    
     def showNoInternet(self):
-        UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
+        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
         UpdatePopup.setMinimumWidth(350)
         UpdatePopup.setMinimumHeight(350)
         changeLogBox = redRwebViewBox(UpdatePopup)
-        changeLogBox.setHtml('No Internet Connection.')
+        changeLogBox.setHtml(_('No Internet Connection.'))
         
         buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
         
-        redRbutton(buttonArea2, label = 'Done', callback = UpdatePopup.reject)
+        redRbutton(buttonArea2, label = _('Done'), callback = UpdatePopup.reject)
         UpdatePopup.exec_()
     def showUpdateAvaliable(self,update):
-        UpdatePopup = redRdialog(self.schema, title = 'Update Manager')
+        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
         
         changeLogBox = redRwebViewBox(UpdatePopup)
         changeLogBox.setMinimumWidth(350)
         changeLogBox.setMinimumHeight(350)
-        html = "<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4>" % (
+        html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4>") % (
         update['redRVerion'],update['SVNVersion'],update['date']) 
 
         changeLogBox.setHtml(html +'<br>' +update['changeLog'])
@@ -145,7 +148,7 @@ class updateManager():
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
         
         redRbutton(buttonArea2, label = 'Close Red-R and Update', callback = UpdatePopup.accept)
-        redRbutton(buttonArea2, label = 'Cancel', callback = UpdatePopup.reject)
+        redRbutton(buttonArea2, label = _('Cancel'), callback = UpdatePopup.reject)
         if UpdatePopup.exec_() == QDialog.Accepted:
             self.downloadUpdate(update)
         
@@ -194,12 +197,12 @@ class updateManager():
         except:
             
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
-            mb = QMessageBox("Error", "There was an Error in updating Red-R.", 
+            mb = QMessageBox(_("Error"), _("There was an Error in updating Red-R."), 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.NoButton, QMessageBox.NoButton, self.schema)
             mb.exec_()
             return
-        # print 'asdfasdfa'
+        # print _('asdfasdfa')
         
     def closeAndUpdate(self,file):
         qApp.canvasDlg.closeEvent(QCloseEvent(),postCloseFun=lambda:self.execUpdate(file))

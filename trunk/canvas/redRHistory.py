@@ -7,14 +7,17 @@ import os, sys, redREnviron,redRLog
 ## get the data into the history dict
 
 
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 try:
     f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistory.rrdf'))
     hDict = cPickle.load(f)
     f.close()
 except Exception as inst:
     print inst
-    print 'widgetHistory not found'
+    print _('widgetHistory not found')
     hDict = {}
     
 try:
@@ -39,7 +42,7 @@ def getSuggestWidgets(outWidget):
                 wInfo = widgets[con]
                 actions.append(wInfo)
     except:
-        redRLog.log(redRLog.REDRCORE,redRLog.WARNING,'The widget use history is corrept. Please delete it.')
+        redRLog.log(redRLog.REDRCORE,redRLog.WARNING,_('The widget use history is corrept. Please delete it.'))
         redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,redRLog.formatException())
     return actions
 def getTopConnections(outWidget):
@@ -48,7 +51,7 @@ def getTopConnections(outWidget):
     
     if outWidget.widgetInfo.fileName in hDict:
         # print 'recent', hDict[outWidget.widgetInfo.fileName]['recent']
-        # print 'counts', hDict[outWidget.widgetInfo.fileName]['counts']
+        # print _('counts'), hDict[outWidget.widgetInfo.fileName][_('counts')]
         tops = hDict[outWidget.widgetInfo.fileName]['recent']
         widgetConns = hDict[outWidget.widgetInfo.fileName]['counts'] # get the info associated with this widget.
         tops += [val for val in sorted(widgetConns, key=widgetConns.get, reverse=True)[0:9] if val not in tops]
@@ -62,27 +65,27 @@ def addConnectionHistory(outWidget,inWidget):
     
     if outWidget.widgetInfo.fileName not in hDict:
         hDict[outWidget.widgetInfo.fileName] = {'recent':[], 'counts':{}}
-    if 'recent' not in hDict[outWidget.widgetInfo.fileName]:
+    if _('recent') not in hDict[outWidget.widgetInfo.fileName]:
         hDict[outWidget.widgetInfo.fileName]['recent'] = []
     if 'counts' not in hDict[outWidget.widgetInfo.fileName]:
         hDict[outWidget.widgetInfo.fileName]['counts'] = {}
     
     recent = hDict[outWidget.widgetInfo.fileName]['recent']
     counts = hDict[outWidget.widgetInfo.fileName]['counts']
-    # print 'addConnectionHistory recent', recent
+    # print _('addConnectionHistory recent'), recent
     if inWidget.widgetInfo.fileName in recent:
         recent.remove(inWidget.widgetInfo.fileName)
-        # print 'recent after remove', recent
+        # print _('recent after remove'), recent
         
     recent.insert(0,inWidget.widgetInfo.fileName)
-    # print 'recent after insert', recent
+    # print _('recent after insert'), recent
 
     #recent = list(set(recent))
     
-    # print 'unique recent', recent
+    # print _('unique recent'), recent
     if len(recent)  >2:
         recent = recent[0:2]
-    # print 'unique recent after ', recent
+    # print _('unique recent after '), recent
     
     hDict[outWidget.widgetInfo.fileName]['recent'] = recent
     

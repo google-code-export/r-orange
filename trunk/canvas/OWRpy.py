@@ -28,7 +28,10 @@ from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
 from libraries.base.qtWidgets.splitter import splitter as redRSplitter
 from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
 
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
     uniqueWidgetNumber = 0
     globalRHistory = []
@@ -97,18 +100,18 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         try:
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
-            #print 'asdfasdfasdf', inst
+            #print _('asdfasdfasdf'), inst
             qApp.restoreOverrideCursor()
             self.setRIndicator(False)
             if showException:
-                QMessageBox.information(self, 'Red-R Canvas','R Error: '+ unicode(inst),  
+                QMessageBox.information(self, _('Red-R Canvas'),_('R Error: ')+ unicode(inst),  
                 QMessageBox.Ok + QMessageBox.Default)
             
             raise RuntimeError(unicode(inst))
             return None # now processes can catch potential errors
         
         #except: 
-        #    print 'R exception occurred'
+        #    print _('R exception occurred')
         self.processing = False
         if processingNotice:
             self.status.setStatus(5)
@@ -129,11 +132,11 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
     def assignR(self, name, object):
         assignOK = RSession.assign(name, object)
         if not assignOK:
-            QMessageBox.information(self, 'Red-R Canvas','Object was not assigned correctly in R, please tell package manager.',  
+            QMessageBox.information(self, _('Red-R Canvas'),_('Object was not assigned correctly in R, please tell package manager.'),  
             QMessageBox.Ok + QMessageBox.Default)
-            raise Exception, 'Object was not assigned correctly in R, please tell package manager.'
+            raise Exception, _('Object was not assigned correctly in R, please tell package manager.')
         else:
-            histquery = 'Assign '+unicode(name)+' to '+unicode(object)
+            histquery = _('Assign ')+unicode(name)+_(' to ')+unicode(object)
             OWRpy.globalRHistory.append(histquery)
             self.widgetRHistory.append(histquery)
 
@@ -228,8 +231,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(arrayOfArray)
-        # text = redRReports.createTable(arrayOfArray,columnNames = ['Parameter','Value'],
-        # tableName='Parameters')
+        # text = redRReports.createTable(arrayOfArray,columnNames = [_('Parameter'),_('Value')],
+        # tableName=_('Parameters'))
         # return text        
 
     def require_librarys(self, librarys, repository = None):
@@ -237,7 +240,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         if not repository and 'CRANrepos' in redREnviron.settings.keys():
             repository = redREnviron.settings['CRANrepos']
         
-        #print 'Loading required librarys'
+        #print _('Loading required librarys')
         success = RSession.require_librarys(librarys = librarys, repository = repository)
         self.requiredRLibraries.extend(librarys)
         qApp.restoreOverrideCursor()

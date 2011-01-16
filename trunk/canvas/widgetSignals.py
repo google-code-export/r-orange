@@ -10,9 +10,11 @@ from string import *
 from orngSignalManager import *
 import signals
 from redRSignalManager import *
-import orngDoc, redRLog, redRObjects
+import orngDoc, redRLog, redRObjects, redRi18n
 
-
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class widgetSignals():
     def __init__(self, parent = None, signalManager = None):
         # do we want to save widget position and restore it on next load
@@ -43,8 +45,8 @@ class widgetSignals():
     def send(self, signalName, value):
         ## make sure that the name is actually in the outputs, if not throw an error.
         if not self.outputs.hasOutputName(signalName):
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
-            raise Exception('Signal name mismatch')
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name.") % (signalName, self.captionTitle))
+            raise Exception(_('Signal name mismatch'))
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
         ## clear the warnings, info, and errors
@@ -53,7 +55,7 @@ class widgetSignals():
         self.removeWarning()
         self.refreshToolTips()
         self.ROutput.setCursorToEnd()
-        self.ROutput.append('\n## '+ 'Data sent through the '+unicode(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.
+        self.ROutput.append(_('\n##Data sent through the %s channel\n') % unicode(self.outputs.outputNames()[signalName])) #Keep track automatically of what R functions were performed.
         
         redRObjects.updateLines()
     def refreshToolTips(self):
@@ -81,12 +83,12 @@ class widgetSignals():
             #self.sentItems.append((name, variable))
             self.status.setStatus(2)
         except:
-            self.setError(id = 'sendError', text = 'Failed to send data')
+            self.setError(id = 'sendError', text = _('Failed to send data'))
             redRLog.log(redRLog.REDRCORE,redRLog.CRITICAL,redRLog.formatException())
             self.status.setStatus(3)
         
         self.R('gc()', wantType = 'NoConversion')
-        redRLog.log(redRLog.REDRWIDGET,redRLog.INFO,'Data sent from slot %s' % name)
+        redRLog.log(redRLog.REDRWIDGET,redRLog.INFO,_('Data sent from slot %s') % name)
 
     # does widget have a signal with name in inputs
     def hasInputName(self, name):
@@ -181,7 +183,7 @@ class widgetSignals():
         #print unicode(self.inputs)
         #print unicode(self.outputs)
         for i in self.inputs:
-            #print unicode(*i) + ' input owbasewidget'
+            #print unicode(*i) + _(' input owbasewidget')
             input = InputSignal(*i)
             if input.name == signal and not input.single: return None
 
@@ -201,7 +203,7 @@ class widgetSignals():
 
     # signal manager calls this function when all input signals have updated the data
     def setLoadingSavedSession(self,state):
-        #print 'setting setloadingSavedSession', state
+        #print _('setting setloadingSavedSession'), state
         self.loadSavedSession = state
 
     def processSignals(self, convert = False): ## not called inside of this class 
@@ -230,7 +232,7 @@ class widgetSignals():
                     # print 'data being passed: ' + unicode(signalData)
                      
                     if not (handler and dirty): continue
-                    # print 'do the work'
+                    # print _('do the work')
                     newSignal = 1
                     qApp.setOverrideCursor(Qt.WaitCursor)
                     try:
@@ -250,7 +252,7 @@ class widgetSignals():
                                         value = signal[1](data = '', checkVal = False) ## make a dummy signal to handle the conversion
                                         value = value.convertFromClass(oldValue)
                                         # except:
-                                            # raise Exception, 'No conversion function'
+                                            # raise Exception, _('No conversion function')
                                 else:
                                     value = oldValue ## send self with no conversion
                             if self.signalIsOnlySingleConnection(key):
@@ -263,7 +265,7 @@ class widgetSignals():
                             
                     except:
                         thistype, val, traceback = sys.exc_info()
-                        #print 'Some exception occured'
+                        #print _('Some exception occured')
                         sys.excepthook(thistype, val, traceback)  # we pretend that we handled the exception, so that we don't crash other widgets
                     qApp.restoreOverrideCursor()
 
@@ -280,7 +282,7 @@ class widgetSignals():
 
     # set new data from widget widgetFrom for a signal with name signalName
     def updateNewSignalData(self, widgetFrom, signalName, value, id, signalNameFrom):
-        #print 'updating new signal data'
+        #print _('updating new signal data')
         if not self.linksIn.has_key(signalName): return
         for i in range(len(self.linksIn[signalName])):
             (dirty, widget, handler, signalData) = self.linksIn[signalName][i]

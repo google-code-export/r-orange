@@ -12,56 +12,59 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRGUI
 import RSession, redREnviron
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class RedRInitWizard(QWizard):
     def __init__(self, parent = None):
         QWizard.__init__(self, parent)
         self.libs = {}
         #layout = [QWizard.BackButton, QWizard.NextButton, QWizard.FinishButton]
         #self.setButtonLayout(layout)
-        self.setWindowTitle('Red-R Setup')
+        self.setWindowTitle(_('Red-R Setup'))
         self.settings = dict(redREnviron.settings)
         self.registerPage = QWizardPage()
         self.registerPage.setLayout(QVBoxLayout())
-        self.registerPage.setTitle('Please Register Red-R')
-        self.registerPage.setSubTitle('Registration will help us track errors to make Red-R better.')
+        self.registerPage.setTitle(_('Please Register Red-R'))
+        self.registerPage.setSubTitle(_('Registration will help us track errors to make Red-R better.'))
         
-        self.email = redRlineEdit(self.registerPage, label = 'Email Address (Optional):', width = -1)
-        self.allowContact = redRradioButtons(self.registerPage, label = 'Red-R can contact me to ask about errors:', buttons = ['Yes', 'No'])
-        self.allowContact.setChecked('Yes')
+        self.email = redRlineEdit(self.registerPage, label = _('Email Address (Optional):'), width = -1)
+        self.allowContact = redRradioButtons(self.registerPage, label = _('Red-R can contact me to ask about errors:'), buttons = [_('Yes'), _('No')])
+        self.allowContact.setChecked(_('Yes'))
         
         self.errorReportingPage = QWizardPage()
         self.errorReportingPage.setLayout(QVBoxLayout())
-        self.errorReportingPage.setTitle('Error Reporting')
-        self.errorReportingPage.setSubTitle('How would you like errors to be reported to Red-R.')
+        self.errorReportingPage.setTitle(_('Error Reporting'))
+        self.errorReportingPage.setSubTitle(_('How would you like errors to be reported to Red-R.'))
         self.redRExceptionHandling = redRcheckBox(self.errorReportingPage, label='exceptionHandling', buttons = [
-        'Show output window on exception', 'Print last exception in status bar', 
-        'Submit Error Report', 'Always ask before submitting error report'], 
-        toolTips = ['Check this if you want to see the output when an error happens.', 
-        'Check this if you want the last exception printed in the status bar.', 
-        'Check this if you want to send errors to Red-R.\nWe will only show the errors to Red-R or package maintainers.', 
-        'Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.'])
-        self.redRExceptionHandling.setChecked(['Submit Error Report'])
+        _('Show output window on exception'), _('Print last exception in status bar'), 
+        _('Submit Error Report'), _('Always ask before submitting error report')], 
+        toolTips = [_('Check this if you want to see the output when an error happens.'), 
+        _('Check this if you want the last exception printed in the status bar.'), 
+        _('Check this if you want to send errors to Red-R.\nWe will only show the errors to Red-R or package maintainers.'), 
+        _('Check this if you want to be asked before a report is sent to Red-R.\nOtherwise a report will be sent automatically to Red-R.')])
+        self.redRExceptionHandling.setChecked([_('Submit Error Report')])
         
         
         self.RSetupPage = QWizardPage()
         self.RSetupPage.setLayout(QVBoxLayout())
-        self.RSetupPage.setTitle('R Repository')
-        self.RSetupPage.setSubTitle('Please set the repository closest to you.  This will help you get R packages faster.')
-        self.rlibrariesBox = redRgroupBox(self.RSetupPage, 'R Libraries')
-        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
+        self.RSetupPage.setTitle(_('R Repository'))
+        self.RSetupPage.setSubTitle(_('Please set the repository closest to you.  This will help you get R packages faster.'))
+        self.rlibrariesBox = redRgroupBox(self.RSetupPage, _('R Libraries'))
+        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label=_('Repository URL: ')+ self.settings['CRANrepos'])
         
 
         # place a listBox in the widget and fill it with a list of mirrors
-        redRButton(self.rlibrariesBox, 'Get Libraries', callback = self.loadMirrors)
-        self.libListBox = redRlistBox(self.rlibrariesBox, label = 'Mirrors', callback = self.setMirror)
+        redRButton(self.rlibrariesBox, _('Get Libraries'), callback = self.loadMirrors)
+        self.libListBox = redRlistBox(self.rlibrariesBox, label = _('Mirrors'), callback = self.setMirror)
         self.libMessageBox = redRwidgetLabel(self.rlibrariesBox)
         
         self.runExamplePage = QWizardPage()
         self.runExamplePage.setLayout(QVBoxLayout())
-        self.runExamplePage.setTitle('Finish')
-        self.runExamplePage.setSubTitle('Thanks for setting up Red-R.\n\nIf you want to start an example schema to help you get started then check the "Start Example" box.')
-        self.showExample = redRcheckBox(self.runExamplePage,label='Show Example', buttons = ['Start Example'], setChecked=['Start Example'])
+        self.runExamplePage.setTitle(_('Finish'))
+        self.runExamplePage.setSubTitle(_('Thanks for setting up Red-R.\n\nIf you want to start an example schema to help you get started then check the "Start Example" box.'))
+        self.showExample = redRcheckBox(self.runExamplePage,label=_('Show Example'), buttons = [_('Start Example')], setChecked=[_('Start Example')])
         
         
         self.addPage(self.registerPage)
@@ -71,7 +74,7 @@ class RedRInitWizard(QWizard):
     def loadMirrors(self):
         self.libMessageBox.clear()
         if not redREnviron.checkInternetConnection():
-            self.libMessageBox.setText('No Internet Connection, please try again')
+            self.libMessageBox.setText(_('No Internet Connection, please try again'))
             return
         self.libs = RSession.Rcommand('getCRANmirrors()')
         self.libListBox.update(self.libs['Name'])

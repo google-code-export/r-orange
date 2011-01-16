@@ -1,7 +1,10 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import orngDoc, redRObjects, redRLog
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class OutputHandler:
     def __init__(self, parent):                         ## set up the outputHandler, this will take care of sending signals to 
         self.outputSignals = {}
@@ -20,23 +23,23 @@ class OutputHandler:
         self.connections = {}
     def connectSignal(self, signal, id, enabled = 1, process = True):
         try:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Trying to connect signal and process.')
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Trying to connect signal and process.'))
             if id not in self.outputSignals.keys():
-                redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Signal Manager connectSignal: id not in output keys')
+                redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Signal Manager connectSignal: id not in output keys'))
                 return False
             if not signal or signal == None:
-                redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Signal Manager connectSignal: no signal or signal is None')
+                redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Signal Manager connectSignal: no signal or signal is None'))
                 return False
             self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
             # now send data through
             signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
             redRObjects.addLine(self.parent, signal['parent'])
             if process:
-                #print 'processing signal'
+                #print _('processing signal')
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
             return True
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'redRSignalManager connectSignal: error in connecting signal %s' % unicode(inst))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSignalManager connectSignal: error in connecting signal %s') % unicode(inst))
             return False
         redRLog.logConnection(self.parent.widgetInfo.fileName, signal['parent'].widgetInfo.fileName)
         redRObjects.updateLines()
@@ -53,7 +56,7 @@ class OutputHandler:
             out[key] = value['value']
         return out
     def removeSignal(self, signal, id):
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Removing signal %s, %s' % (signal, id))
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing signal %s, %s') % (signal, id))
         ## send None through the signal to the handler before we disconnect it.
         if signal['id'] in self.outputSignals[id]['connections'].keys():                                 # check if the signal is there to begin with otherwise we don't do anything
             try:
@@ -74,11 +77,11 @@ class OutputHandler:
                 ## remove the signal from the outputSignals
                 del self.outputSignals[id]['connections'][signal['id']]
                 signal['parent'].inputs.removeLink(signal['sid'], self.getSignal(id))
-                # res = QMessageBox.question(None, 'Signal Propogation', 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
+                # res = QMessageBox.question(None, _('Signal Propogation'), 'A signal is being removed, do you want to send No data through all downstream widgets?\nThis will remove any analysis done in downstream widgets.', QMessageBox.Yes | QMessageBox.No)
                 # if res != QMessageBox.Yes: 
-                    # print 'Deletion rejected'
+                    # print _('Deletion rejected')
                     # return
-                #print 'propogating None in widgets'
+                #print _('propogating None in widgets')
                 try:
                     signal['parent'].outputs.propogateNone()
                 except:
@@ -217,7 +220,7 @@ class OutputHandler:
             self._markDirty(c)
     def _markDirty(self, connection):
         return
-        print 'Connection\n',connection, '\n\n'
+        #print 'Connection\n',connection, '\n\n'
         
         parent = connection['signal']['parent']
         id = connection['signal']['sid']
@@ -229,7 +232,7 @@ class OutputHandler:
         links = self.getWidgetConnections(parentWidget)
         lines = redRObjects.getLinesByInstanceIDs(self.parent.widgetID, parentWidget.widgetID)
         for line in lines:
-            #print 'The line is ', line, 'the signal is ', none
+            #print _('The line is '), line, _('the signal is '), none
             for l in links:
                 if parentWidget.inputs.getSignal(l['signal']['sid'])['none']:
                     line.setNoData(True)
@@ -244,15 +247,15 @@ class OutputHandler:
                 handler(value, self.parent.widgetID)
             else:   
                 handler(value)
-            parentWidget.status.setText('New Data Received')
+            parentWidget.status.setText(_('New Data Received'))
             parentWidget.removeWarning(id = 'signalHandlerWarning')
         except:
             
-            error = "Error occured in processing signal in this widget.\nPlease check the widgets.\n"
+            error = _("Error occured in processing signal in this widget.\nPlease check the widgets.\n")
             parentWidget.setWarning(id = 'signalHandlerWarning', text = unicode(error))
             #print error
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
-            parentWidget.status.setText('Error in processing signal')
+            parentWidget.status.setText(_('Error in processing signal'))
             
     def hasOutputName(self, name):
         return name in self.outputSignals.keys()
@@ -282,7 +285,7 @@ class OutputHandler:
     def setOutputs(self, data, tmp = False):
         for (key, value) in data.items():
             if key not in self.outputSignals.keys():
-                #print 'Signal does not exist'
+                #print _('Signal does not exist')
                 continue
             ## find the signal from the widget and connect it
             for (vKey, vValue) in value['connections'].items():
@@ -308,7 +311,7 @@ class OutputHandler:
         return widgets
     def propogateNone(self, ask = True):    
         ## send None through all of my output channels
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Propagating None through signal')
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Propagating None through signal'))
         for id in self.outputIDs():
             #print 'None sent in widget %s through id %s' % (self.parent.widgetID, id)
             self.parent.send(id, None)

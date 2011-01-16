@@ -4,7 +4,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, re, string, numpy
 from OWGUI import widgetLabel, widgetBox, lineEdit
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 def lineEditFilter(widget, master, value, *arg, **args):
     callback = args.get("callback", None)
     args["callback"] = None         # we will have our own callback handler

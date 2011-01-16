@@ -9,7 +9,8 @@ from xml.dom.minidom import Document, parse
 import xml.dom.minidom
 import orngView, orngCanvasItems
 from orngDlgs import *
-import RSession, globalData, redRPackageManager, redRStyle, redRHistory
+import RSession, globalData, redRPackageManager, redRStyle, redRHistory, redREnviron
+import redRi18n
 from orngSignalManager import SignalManager, SignalDialog
 import cPickle, math, zipfile, urllib, sip, redRObjects, redRSaveLoad
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
@@ -18,9 +19,13 @@ from libraries.base.qtWidgets.button import button as redRbutton
 #import pprint, 
 # pp = pprint.PrettyPrinter(indent=4)
 
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class SchemaDoc(QWidget):
     def __init__(self, canvasDlg, *args):
         QWidget.__init__(self, *args)
+        
         self.canvasDlg = canvasDlg
         self.ctrlPressed = 0
         self.version = 'trunk'                  # should be changed before making the installer or when moving to a new branch.
@@ -55,7 +60,7 @@ class SchemaDoc(QWidget):
         
         
         self.instances = {}
-        self.makeSchemaTab('General')
+        self.makeSchemaTab(_('General'))
         
         self.layout().setMargin(0)
         self.RVariableRemoveSupress = 0
@@ -98,14 +103,14 @@ class SchemaDoc(QWidget):
                 break
         
     def makeSchemaTab(self, tabname):   # part of the view
-        redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Make a new tab called %s.' % tabname)
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Make a new tab called %s.') % tabname)
         if tabname in redRObjects.tabNames():
             self.setTabActive(tabname)
             return
         redRObjects.setActiveTab(tabname)
         self.tabsWidget.addTab(redRObjects.makeTabView(tabname, self), tabname)
     def removeTab(self,index):
-        mb = QMessageBox("Remove Tab", "Are you sure that you want to remove the tab?\n\nAny widgets that have not been cloned will be lost.", 
+        mb = QMessageBox(_("Remove Tab"), _("Are you sure that you want to remove the tab?\n\nAny widgets that have not been cloned will be lost."), 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
         QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
         
@@ -114,7 +119,7 @@ class SchemaDoc(QWidget):
        
     def removeCurrentTab(self):
     
-        mb = QMessageBox("Remove Current Tab", "Are you sure that you want to remove the current tab?\n\nAny widgets that have not been cloned will be lost.", 
+        mb = QMessageBox(_("Remove Current Tab"), _("Are you sure that you want to remove the current tab?\n\nAny widgets that have not been cloned will be lost."), 
             QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
             QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self)
         
@@ -133,7 +138,7 @@ class SchemaDoc(QWidget):
         ## next find the index
         i = self.tabsWidget.currentIndex()
         ## remove the widget
-        if tabname != 'General':  ## General tab is a special case, this will always be present.
+        if tabname != _('General'):  ## General tab is a special case, this will always be present.
             self.tabsWidget.removeTab(i)
             ## remove the references to the tab in the redRObjects
             redRObjects.removeSchemaTab(tabname)
@@ -144,7 +149,7 @@ class SchemaDoc(QWidget):
     def addLine(self, outWidget, inWidget, enabled = True, process = True, ghost = False):  # adds the signal link between the data and instantiates the line on the canvas.  move to the signal manager or the view?
         
         if outWidget == inWidget: 
-            raise Exception, 'Same Widget'
+            raise Exception, _('Same Widget')
         
         # check if line already exists
         line = self.getLine(outWidget, inWidget)
@@ -154,7 +159,7 @@ class SchemaDoc(QWidget):
         canConnect = inWidget.instance().inputs.matchConnections(outWidget.instance().outputs)
         
         if not canConnect:
-            mb = QMessageBox("Failed to Connect", "Connection Not Possible\n\nWould you like to search for templates\nwith these widgets?", 
+            mb = QMessageBox(_("Failed to Connect"), _("Connection Not Possible\n\nWould you like to search for templates\nwith these widgets?"), 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
             if mb.exec_() == QMessageBox.Ok:
@@ -164,7 +169,7 @@ class SchemaDoc(QWidget):
                 
                 webbrowser.open(url)
                 
-            mb = QMessageBox("Failed to Connect", "Not valid connection.\nWould you like to force this connection anyway?\n\nTHIS MIGHT CAUSE ERRORS AND EVEN CRASH RED-R!!!", 
+            mb = QMessageBox(_("Failed to Connect"), _("Not valid connection.\nWould you like to force this connection anyway?\n\nTHIS MIGHT CAUSE ERRORS AND EVEN CRASH RED-R!!!"), 
                 QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
                 QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
             if mb.exec_() == QMessageBox.No:
@@ -186,7 +191,7 @@ class SchemaDoc(QWidget):
             
 
             #self.signalManager.setFreeze(1)
-            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Possible Connections are %s' % str(possibleConnections))
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Possible Connections are %s') % str(possibleConnections))
             for (outName, inName) in possibleConnections:
                 
                 self.addLink(outWidget, inWidget, outName, inName, enabled, process = process)
@@ -199,7 +204,7 @@ class SchemaDoc(QWidget):
             outWidget.updateTooltip()
             inWidget.updateTooltip()
         redRHistory.addConnectionHistory(outWidget,inWidget)
-        redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Add connection between %s and %s.' % (outWidget.caption, inWidget.caption))
+        redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Add connection between %s and %s.') % (outWidget.caption, inWidget.caption))
         return line
 
 
@@ -313,7 +318,7 @@ class SchemaDoc(QWidget):
     def cloneToTab(self):   # part of the view
         redRSaveLoad.collectIcons()
         if len(redRSaveLoad._tempWidgets) == 0: 
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'No tempWidgets to clone!!!')
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('No tempWidgets to clone!!!'))
             return
         tempWidgets = redRSaveLoad._tempWidgets
         td = CloneTabDialog(self.canvasDlg)
@@ -323,7 +328,7 @@ class SchemaDoc(QWidget):
         except: return 
         #if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
-            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Create a clone widget %s in tab %s.' % ( w.caption + ' (Clone)', tabName))
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Create a clone widget %s in tab %s.') % ( w.caption + _(' (Clone)'), tabName))
             self.cloneWidget(w, viewID = tabName, x = w.x(), y = w.y(), caption = w.caption)
         self.setTabActive(tabName) ## set the new tab as active so the user knows something happened.
     def cloneWidget(self, widget, viewID = None, x= -1, y=-1, caption = "", widgetSettings = None, saveTempDoc = True):
@@ -343,12 +348,12 @@ class SchemaDoc(QWidget):
         self.resolveCollisions(newwidget, x, y)
 
         if caption == "":
-            caption = widget.caption + ' (Clone)'
+            caption = widget.caption + _(' (Clone)')
         newwidget.updateText(caption)
         self.activeCanvas().update()
 
         ### add lines to widgets on the current active tab if there is a link from the widget in question to one of the other widgets on the canvas.
-        #print 'Adding lines'
+        #print _('Adding lines')
         tabWidgets = redRObjects.getIconsByTab(self.activeTabName())[self.activeTabName()]
         tabWidgetInstances = [i.instance() for i in tabWidgets]
         lines = redRObjects.lines()
@@ -400,7 +405,7 @@ class SchemaDoc(QWidget):
             instanceID = self.addInstance(self.signalManager, widgetInfo, widgetSettings, forceInSignals, forceOutSignals, id = id)
             newwidget = self.addWidgetIcon(widgetInfo, instanceID)
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
-            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Create new widget named %s.' % newwidget.caption)
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Create new widget named %s.') % newwidget.caption)
         except:
             type, val, traceback = sys.exc_info()
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(traceback))
@@ -472,7 +477,7 @@ class SchemaDoc(QWidget):
     # remove widget
     def removeWidget(self, widget, saveTempDoc = True):
         if not widget:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Bad widget supplied %s' % widget)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Bad widget supplied %s') % widget)
             return
         instanceID = widget.instanceID
         #widget.closing = close
@@ -480,21 +485,21 @@ class SchemaDoc(QWidget):
             while widget.inLines != []: redRObjects.removeLineInstance(widget.inLines[0])
             while widget.outLines != []:  redRObjects.removeLineInstance(widget.outLines[0])
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Error in removing lines %s' % str(inst))
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Error in removing lines %s') % str(inst))
         #self.signalManager.removeWidget(widget.instance()) # sending occurs before this point
         try:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'trying to remove widget icon %s' % widget)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('trying to remove widget icon %s') % widget)
             widget.remove() ## here we need to check if others have the widget instance.
             redRObjects.removeWidgetIcon(widget)
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Error in removing widget icon %s' %widget)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Error in removing widget icon %s') %widget)
         if not self.instanceStillWithIcon(instanceID):
-            redRLog.log(10, 9, 3, 'Removing Widget')
+            redRLog.log(10, 9, 3, _('Removing Widget'))
             redRObjects.removeWidgetInstanceByID(instanceID)
     def clear(self):
         self.canvasDlg.setCaption()
         for t in redRObjects.tabNames():
-            #if t == 'General': continue
+            #if t == _('General'): continue
             self.removeSchemaTab(t)
         RSession.Rcommand('rm(list = ls())')
         #self.activeCanvas().update()
@@ -522,11 +527,11 @@ class SchemaDoc(QWidget):
     # return a new widget instance of a widget with filename "widgetName"
     def addWidgetByFileName(self, widgetFileName, x, y, caption = '', widgetSettings=None, saveTempDoc = True, forceInSignals = None, forceOutSignals = None, id = None):
         try:
-            if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
+            if widgetFileName == 'base_dummy': print _('Loading dummy step 1a')
             widget = redRObjects.widgetRegistry()['widgets'][widgetFileName]
             return self.addWidget(widget, x, y, caption, widgetSettings, saveTempDoc, forceInSignals, forceOutSignals, id = id)
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading exception occured for widget '+widgetFileName+' '+unicode(inst))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Loading exception occured for widget ')+widgetFileName+' '+unicode(inst))
             
             return None
     # addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) 
@@ -539,11 +544,11 @@ class SchemaDoc(QWidget):
             newwidget.updateText(caption)
     def addWidgetInstanceByFileName(self, name, settings = None, inputs = None, outputs = None, id = None):
         #try:
-            #if widgetFileName == 'base_dummy': print 'Loading dummy step 1a'
+            #if widgetFileName == 'base_dummy': print _('Loading dummy step 1a')
         widget = redRObjects.widgetRegistry()['widgets'][name]
         return self.addInstance(self.signalManager, widget, settings, inputs, outputs, id = id)
         # except Exception as inst:
-            # redRLog.log(redRLog.REDRCORE, redRLog.ERROR,  'Loading exception occured for widget '+name+' '+unicode(inst))
+            # redRLog.log(redRLog.REDRCORE, redRLog.ERROR,  _('Loading exception occured for widget ')+name+' '+unicode(inst))
             
             # return None
     # return the widget icon that has caption "widgetName"
@@ -558,7 +563,7 @@ class SchemaDoc(QWidget):
     def getWidgetCaption(self, widgetInstance):
         widget = redRObjects.getIconByIconInstanceRef(widgetInstance)
         if widget == None:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Error. Attempted to Access Invalid widget instance : ", widgetInstance)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Error. Attempted to Access Invalid widget instance : "), widgetInstance)
             return ""
         return widget.caption
 
@@ -585,7 +590,7 @@ class SchemaDoc(QWidget):
         if line:
             line.noData = none
             line.refreshToolTip()
-            redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Setting line %s noData slot to %s' % (line, noData))
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Setting line %s noData slot to %s') % (line, noData))
             
         self.canvas.update()
     # ###########################################
@@ -612,8 +617,8 @@ class SchemaDoc(QWidget):
             widgetIDisNew = self.checkID(widget.getAttribute('widgetID'))
             if widgetIDisNew == False:
                 qApp.restoreOverrideCursor()
-                QMessageBox.critical(self, 'Red-R Canvas', 
-                'Widget ID is a duplicate, I can\'t load this!!!',  QMessageBox.Ok)
+                QMessageBox.critical(self, _('Red-R Canvas'), 
+                _('Widget ID is a duplicate, I can\'t load this!!!'),  QMessageBox.Ok)
                 return False
         return True
 
@@ -653,7 +658,9 @@ class SchemaDoc(QWidget):
 class CloneTabDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle('New Tab')
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        self.setWindowTitle(_('New Tab'))
         
         self.setLayout(QVBoxLayout())
         layout = self.layout()
@@ -661,7 +668,7 @@ class CloneTabDialog(QDialog):
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
         
-        mainWidgetBox.layout().addWidget(QLabel('Select the Destination for the Clone.', mainWidgetBox))
+        mainWidgetBox.layout().addWidget(QLabel(_('Select the Destination for the Clone.'), mainWidgetBox))
         
         
         topWidgetBox = QWidget(mainWidgetBox)
@@ -676,8 +683,8 @@ class CloneTabDialog(QDialog):
         buttonWidgetBox.setLayout(QHBoxLayout())
         mainWidgetBox.layout().addWidget(buttonWidgetBox)
         
-        acceptButton = QPushButton('Accept', buttonWidgetBox)
-        cancelButton = QPushButton('Cancel', buttonWidgetBox)
+        acceptButton = QPushButton(_('Accept'), buttonWidgetBox)
+        cancelButton = QPushButton(_('Cancel'), buttonWidgetBox)
         buttonWidgetBox.layout().addWidget(acceptButton)
         buttonWidgetBox.layout().addWidget(cancelButton)
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
@@ -685,7 +692,9 @@ class CloneTabDialog(QDialog):
 class NewTabDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
-        self.setWindowTitle('New Tab')
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        self.setWindowTitle(_('New Tab'))
         
         self.setLayout(QVBoxLayout())
         layout = self.layout()
@@ -693,7 +702,7 @@ class NewTabDialog(QDialog):
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
         
-        mainWidgetBox.layout().addWidget(QLabel('New Tab Name', mainWidgetBox))
+        mainWidgetBox.layout().addWidget(QLabel(_('New Tab Name'), mainWidgetBox))
         
         
         topWidgetBox = QWidget(mainWidgetBox)
@@ -707,8 +716,8 @@ class NewTabDialog(QDialog):
         buttonWidgetBox.setLayout(QHBoxLayout())
         mainWidgetBox.layout().addWidget(buttonWidgetBox)
         
-        acceptButton = QPushButton('Accept', buttonWidgetBox)
-        cancelButton = QPushButton('Cancel', buttonWidgetBox)
+        acceptButton = QPushButton(_('Accept'), buttonWidgetBox)
+        cancelButton = QPushButton(_('Cancel'), buttonWidgetBox)
         buttonWidgetBox.layout().addWidget(acceptButton)
         buttonWidgetBox.layout().addWidget(cancelButton)
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
@@ -716,8 +725,9 @@ class NewTabDialog(QDialog):
 class TemplateDialog(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        
-        self.setWindowTitle('Save as template')
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        self.setWindowTitle(_('Save as template'))
         
         self.setLayout(QVBoxLayout())
         layout = self.layout()
@@ -726,14 +736,14 @@ class TemplateDialog(QDialog):
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
         
-        mainWidgetBox.layout().addWidget(QLabel('Set tags as comma ( , ) delimited list', mainWidgetBox))
+        mainWidgetBox.layout().addWidget(QLabel(_('Set tags as comma ( , ) delimited list'), mainWidgetBox))
         
         
         topWidgetBox = QWidget(mainWidgetBox)
         topWidgetBox.setLayout(QHBoxLayout())
         mainWidgetBox.layout().addWidget(topWidgetBox)
         
-        topWidgetBox.layout().addWidget(QLabel('Tags:', topWidgetBox))
+        topWidgetBox.layout().addWidget(QLabel(_('Tags:'), topWidgetBox))
         self.tagsList = QLineEdit(topWidgetBox)
         topWidgetBox.layout().addWidget(self.tagsList)
         
@@ -741,7 +751,7 @@ class TemplateDialog(QDialog):
         bottomWidgetBox.setLayout(QVBoxLayout())
         mainWidgetBox.layout().addWidget(bottomWidgetBox)
         
-        bottomWidgetBox.layout().addWidget(QLabel('Description:', bottomWidgetBox))
+        bottomWidgetBox.layout().addWidget(QLabel(_('Description:'), bottomWidgetBox))
         self.descriptionEdit = QTextEdit(bottomWidgetBox)
         bottomWidgetBox.layout().addWidget(self.descriptionEdit)
         
@@ -749,8 +759,8 @@ class TemplateDialog(QDialog):
         buttonWidgetBox.setLayout(QHBoxLayout())
         mainWidgetBox.layout().addWidget(buttonWidgetBox)
         
-        acceptButton = QPushButton('Accept', buttonWidgetBox)
-        cancelButton = QPushButton('Cancel', buttonWidgetBox)
+        acceptButton = QPushButton(_('Accept'), buttonWidgetBox)
+        cancelButton = QPushButton(_('Cancel'), buttonWidgetBox)
         buttonWidgetBox.layout().addWidget(acceptButton)
         buttonWidgetBox.layout().addWidget(cancelButton)
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)
@@ -759,9 +769,11 @@ class TemplateDialog(QDialog):
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
      
 class SearchBox(redRlineEditHint):
-    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+    def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
             
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this
@@ -775,7 +787,7 @@ class SearchBox(redRlineEditHint):
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
                 if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    #print 'Return pressed'
+                    #print _('Return pressed')
                     self.doneCompletion()
                 elif ev.key() == Qt.Key_Escape:
                     self.listWidget.hide()
@@ -792,6 +804,8 @@ class SearchBox(redRlineEditHint):
 class CanvasWidgetAction(QWidgetAction):
     def __init__(self, parent, actions):
         QWidgetAction.__init__(self, parent)
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
         self.parent = parent
         self.actions = actions
         
@@ -819,6 +833,8 @@ class CanvasWidgetAction(QWidgetAction):
 class CanvasPopup(QMenu):
     def __init__(self, parent):
         QMenu.__init__(self, parent)
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
         self.allActions = []
         self.templateActions = []
         self.widgetActionNameList = []
@@ -883,7 +899,7 @@ class CanvasPopup(QMenu):
         ####
         try:
             #subfile = os.path.abspath(tfile[:tfile.rindex('\\')+1]+itab+'Subtree.txt')
-            #print 'checking file '+subfile+' for more tabs'
+            #print _('checking file ')+subfile+_(' for more tabs')
             #f = open(subfile, 'r')
             if itab.hasChildNodes(): subTabs = itab.childNodes
             else: return
@@ -918,7 +934,7 @@ class CanvasPopup(QMenu):
                     redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                     pass
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception in Tabs with widgetRegistry %s' % inst)
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Exception in Tabs with widgetRegistry %s') % inst)
         
     
     def addWidgetSuggest(self):

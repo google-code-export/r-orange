@@ -5,7 +5,10 @@ import redREnviron
 
 import os.path
 import imp
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class qtWidgetBox(QWidget):
     def __init__(self,widget):
         QWidget.__init__(self,widget)
@@ -31,7 +34,7 @@ class widgetState:
         
         if not widgetName:
             # print '#########widget Name is required############'
-            raise RuntimeError('#########widget Name is required############')
+            raise RuntimeError(_('#########widget Name is required############'))
 
         self.widgetName = widgetName
     
@@ -46,7 +49,7 @@ class widgetState:
         
     def getReportTextDefault(self,fileDir):
         # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-        # print 'self', self, self.widgetName
+        # print _('self'), self, self.widgetName
         children = self.children()
         # print children
         if len(children) ==0:
@@ -74,7 +77,7 @@ class widgetState:
         r = {'enabled': self.controlArea.isEnabled(),'hidden': self.controlArea.isHidden()}
         return r
     def setDefaultState(self,data):
-        # print ' in wdiget state'
+        # print _(' in wdiget state')
         self.controlArea.setEnabled(data['enabled'])
         self.controlArea.setHidden(data['hidden'])
     def getSettings(self):

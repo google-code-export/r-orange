@@ -129,7 +129,7 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
     for i in range(len(list)):
         # print list[i]
         (file, line, funct, code) = list[i]
-        #print 'code', code
+        #print _('code'), code
         
         (dir, filename) = os.path.split(file)
         text += "" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b><br>" % (getSafeString(funct))

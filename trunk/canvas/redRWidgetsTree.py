@@ -15,6 +15,11 @@ import xml.dom.minidom
 
 # we have to use a custom class since QLabel by default ignores the mouse
 # events if it is showing text (it does not ignore events if it's showing an icon)
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
+
 class OrangeLabel(QLabel):
     def mousePressEvent(self, e):
         pos = self.mapToParent(e.pos())
@@ -210,7 +215,7 @@ class widgetSuggestions(QTreeWidget):
         self.canvasDlg = canvasDlg
         QTreeWidget.__init__(self, parent)
         parent.layout().addWidget(self)
-        self.setHeaderLabels(['Suggested Widgets'])
+        self.setHeaderLabels([_('Suggested Widgets')])
         QObject.connect(self, SIGNAL('itemClicked (QTreeWidgetItem *,int)'), lambda action: self.activateSuggestWidget(action))
         self.hide()
         
@@ -316,7 +321,7 @@ class WidgetTree(QTreeWidget):
                 
                 tab = self.insertWidgetTab(unicode(itab.getAttribute('name')), 1) # a QTreeWidgetItem
                 
-                #print 'inserted tab '+unicode(itab.getAttribute('name'))
+                #print _('inserted tab ')+unicode(itab.getAttribute('name'))
                 self.insertChildTabs(itab, tab, widgetRegistry)
                 
                 self.insertWidgets(itab.getAttribute('name'), tab, widgetRegistry)
@@ -395,7 +400,7 @@ class WidgetTree(QTreeWidget):
             for action in self.actions: # move through all of the actions in the actions list
                 if action.widgetInfo.name == text: # find the widget (action) that has the correct name, note this finds the first instance.  Widget names must be unique   ??? should we allow multiple widgets with the same name ??? probably not.
                     self.widgetInfo = action.widgetInfo
-                    #print action.widgetInfo, 'Widget info'
+                    #print action.widgetInfo, _('Widget info')
                     self.canvasDlg.schema.addWidget(action.widgetInfo) # add the correct widget to the schema
                     
                     self.widgetSuggestEdit.clear()  # clear the line edit for the next widget

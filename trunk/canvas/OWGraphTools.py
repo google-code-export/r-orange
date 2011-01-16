@@ -2,7 +2,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qwt5 import *
 import numpy
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 SelectionCurveRtti = QwtPlotCurve.Rtti_PlotUserItem + 123
 LegendCurveRtti = QwtPlotCurve.Rtti_PlotUserItem + 124
 

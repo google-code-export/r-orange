@@ -6,10 +6,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager,redRStyle
-import signals, redREnviron, redRObjects, redRLog, redRHistory
+import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n
 ERROR = 0
 WARNING = 1
 
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class TempCanvasLine(QGraphicsLineItem):
     def __init__(self, canvasDlg, canvas):
         QGraphicsLineItem.__init__(self, None, canvas)
@@ -277,14 +280,14 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.instance().onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
                 # for x in self.instance().findChildren(QAbstractTableModel):
                     # print 'in canvasItems', x
-                # print 'delete instance' 
+                # print _('delete instance') 
                 # sip.delete(self.instance())
                 # for x in self.canvasDlg.findChildren(QAbstractTableModel):
                     # print x
                 # import gc
                 # gc.collect()
-                # print 'Remaining references to '+unicode(gc.get_referrers(self.instance()))
-                # print 'Remaining references from '+unicode(gc.get_referents(self.instance()))
+                # print _('Remaining references to ')+unicode(gc.get_referrers(self.instance()))
+                # print _('Remaining references from ')+unicode(gc.get_referents(self.instance()))
 
 
             except: 
@@ -348,7 +351,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 self.canvasDlg.suggestButtonsList.show()
                 self.canvasDlg.suggestButtonsList.addTopLevelItems(actions)
                 self.canvasDlg.suggestButtonsList.suggestingWidget = self
-                self.canvasDlg.suggestButtonsList.setHeaderLabels(['Suggested Widgets for '+unicode(self.widgetInfo.name)])
+                self.canvasDlg.suggestButtonsList.setHeaderLabels([_('Suggested Widgets for %s') % unicode(self.widgetInfo.name)])
             else:
                 self.canvasDlg.suggestButtonsList.hide()
             #self.canvasDlg.suggestButtonsList.show()

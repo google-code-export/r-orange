@@ -1,6 +1,9 @@
 import sys, traceback,os, re
 from datetime import tzinfo, timedelta, datetime
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 def getSafeString( s):
     return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
 
@@ -13,7 +16,7 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
     text =  '<br>'*2 + '#'*60 + '<br>'
     if errorMsg:
         text += '<b>' + errorMsg + '</b><br>'
-    text += "Unhandled exception of type %s occured at %s:<br>Traceback:<br>" % ( getSafeString(type.__name__), t)
+    text += _("Unhandled exception of type %s occured at %s:<br>Traceback:<br>") % ( getSafeString(type.__name__), t)
     list = traceback.extract_tb(tracebackInfo, 10)
     #print list
     space = "&nbsp; "
@@ -22,7 +25,7 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
     for i in range(len(list)):
         # print list[i]
         (file, line, funct, code) = list[i]
-        #print 'code', code
+        #print _('code'), code
         
         (dir, filename) = os.path.split(file)
         text += "" + totalSpace + "File: <b>" + filename + "</b>, line %4d" %(line) + " in <b>%s</b><br>" % (getSafeString(funct))

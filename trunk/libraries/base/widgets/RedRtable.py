@@ -22,7 +22,7 @@ class RedRtable(OWRpy):
         self.outputs.addOutput("table Output","Table Output", signals.RDataFrame.RDataFrame)
         self.outputs.addOutput("propTable", "Prob Table Output", signals.RDataFrame.RDataFrame)
         
-        self.cols = redRListBox(self.controlArea, label = 'Use Columns:')
+        self.cols = redRListBox(self.controlArea, label = 'Use Columns:', selectionMode = QAbstractItemView.MultiSelection)
         
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
         

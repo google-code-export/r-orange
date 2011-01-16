@@ -15,7 +15,10 @@ import xml.dom.minidom
     # sys.path.append(redRDir)
 
 import redREnviron
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class WidgetDescription:
     def __init__(self, **attrs):
         self.__dict__.update(attrs)
@@ -31,7 +34,7 @@ class WidgetCategory(dict):
 AllPackages = {}
 def readCategories():
     # print '##########################in readCategories'
-    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading repository of packages.')
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading repository of packages.'))
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
@@ -87,7 +90,7 @@ def readCategories():
     if splashWindow:
         splashWindow.hide()
     
-    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Finished loading repository of packages.')
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Finished loading repository of packages.'))
     return categories ## return the widgets and the templates
 
 hasErrors = False
@@ -100,12 +103,12 @@ def addTagsSystemTag(tags,newTag):
     # move through the group tags in tags, if you find the grouname of tag 
     #then you don't need to add it, rather just add the child tags to that tag.
     #tags = theTags.childNodes[0]
-    #print tags.childNodes, 'Child Nodes'
+    #print tags.childNodes, _('Child Nodes')
     for t in tags.childNodes:
         if t.nodeName == 'group':
             #print t
             if unicode(t.getAttribute('name')) == name: ## found the right tag
-                #print 'Found the name'
+                #print _('Found the name')
                 #print t.childNodes
                 for tt in newTag.childNodes:
                     if tt.nodeName == 'group':
@@ -150,12 +153,12 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         widgetMetaData = {}
         metaFile = os.path.join(directory,'meta','widgets',widgetName+'.xml')
         if not os.path.exists(metaFile):
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, '<b>Meta file for %s does not exist.</b>' % (filename))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Meta file for %s does not exist.</b>') % (filename))
             continue
         try:
             widgetMetaXML = xml.dom.minidom.parse(metaFile)
         except Exception as inst:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, '<b>Error loading meta data for %s; %s</b>' % (metaFile, unicode(inst)))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
             continue
         widgetMetaData['name'] = getXMLText(widgetMetaXML.getElementsByTagName('name')[0].childNodes)
         widgetMetaData['icon'] = getXMLText(widgetMetaXML.getElementsByTagName('icon')[0].childNodes)
@@ -202,7 +205,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         try:
             wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
         except Exception, msg:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Exception occurred in <b>%s: %s<b>' % (filename, msg))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Exception occurred in <b>%s: %s<b>') % (filename, msg))
             continue
         
         # __import__('libraries.' + package['Name'] + '.widgets.' + widgetName)

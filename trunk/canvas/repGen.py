@@ -1,7 +1,10 @@
 ## docutils interface.  this interface should provide some utility in making reports such as addition of figures, text, etc.
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 def setImage(fileDir, imageFile):
-    text = 'The following plot was generated:\n\n'
+    text = _('The following plot was generated:\n\n')
     text += '.. image:: '+fileDir+'/'+unicode(imageFile)+'\n    :scale: 50%%\n\n'
     
     return text
@@ -24,7 +27,7 @@ def setBreak():
     
     return nt
     
-def setTable(file, title = 'Table'):
+def setTable(file, title = _('Table')):
     nt = '\n\n'
     nt += '.. csv-table:: '+unicode(title)+'\n  :file: '+unicode(file)+'\n\n'
     

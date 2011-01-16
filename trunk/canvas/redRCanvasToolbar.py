@@ -6,7 +6,10 @@ from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDial
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class redRCanvasToolbarandMenu():
     def __init__(self,canvas,toolbar):
         self.canvas = canvas
@@ -22,7 +25,7 @@ class redRCanvasToolbarandMenu():
     def initToolbar(self):
         self.toolbar.setOrientation(Qt.Horizontal)
         if not redREnviron.settings.get("showToolbar", True): self.toolbar.hide()
-        self.toolbar.addAction(QIcon(redRStyle.openFileIcon), "Open schema", self.menuItemOpen)
+        self.toolbar.addAction(QIcon(redRStyle.openFileIcon), _("Open schema"), self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(redRStyle.saveFileIcon), "Save schema", self.menuItemSave)
         #self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.reloadIcon), "Reload Widgets", self.reloadWidgets)
         # self.toolbar.addAction(QIcon(redRStyle.showAllIcon), "Show All Widget Windows", redRObjects.showAllWidgets)
@@ -31,35 +34,35 @@ class redRCanvasToolbarandMenu():
         # self.toolbar.addAction(QIcon(redRStyle.printIcon), "Print", self.menuItemPrinter)
 
         self.toolbar.addSeparator()
-        self.toolbar.addAction(QIcon(redRStyle.showAllIcon), "Show All Widget Windows", 
+        self.toolbar.addAction(QIcon(redRStyle.showAllIcon), _("Show All Widget Windows"), 
         redRObjects.showAllWidgets)
-        self.toolbar.addAction(QIcon(redRStyle.closeAllIcon), "Close All Widget Windows", 
+        self.toolbar.addAction(QIcon(redRStyle.closeAllIcon), _("Close All Widget Windows"), 
         redRObjects.closeAllWidgets)
         
         self.toolbar.addSeparator()
-        self.toolbar.addAction(QIcon(redRStyle.printIcon), "Generate Report", self.menuItemReport)
+        self.toolbar.addAction(QIcon(redRStyle.printIcon), _("Generate Report"), self.menuItemReport)
         
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(redRStyle.updateIcon), 
-        "Check for Updates", self.menuCheckForUpdates)
+        _("Check for Updates"), self.menuCheckForUpdates)
         
         self.toolbar.addSeparator()
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.reloadIcon), 
-        "Reload Widgets", self.reloadWidgets)
+        _("Reload Widgets"), self.reloadWidgets)
         self.toolbar.addSeparator()
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.optionsIcon), 
-        "Red-R Options", self.menuItemCanvasOptions)
+        _("Red-R Options"), self.menuItemCanvasOptions)
 
         space = redRwidgetBox(None)
         space.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.toolbar.addWidget(space)
         
         # self.searchBox = SearchBox(None, width=300)
-        # self.toolbar.addWidget(QLabel('Search  '))
+        # self.toolbar.addWidget(QLabel(_('Search  ')))
         # self.toolbar.addWidget(self.searchBox)
         
         self.searchBox2 = SearchBox2(None, width=300)
-        self.toolbar.addWidget(QLabel('Search  '))
+        self.toolbar.addWidget(QLabel(_('Search  ')))
         self.toolbar.addWidget(self.searchBox2)
         
         
@@ -68,41 +71,41 @@ class redRCanvasToolbarandMenu():
         
         
     def initMenu(self):
-        self.menuRecent = QMenu("Recent Pipelines", self.canvas)
+        self.menuRecent = QMenu(_("Recent Pipelines"), self.canvas)
 
-        self.menuFile = QMenu("&File", self.canvas)
-        self.menuFile.addAction( "New Pipeline",  self.menuItemNewScheme, QKeySequence.New)
-        self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open...", self.menuItemOpen, QKeySequence.Open )
+        self.menuFile = QMenu(_("&File"), self.canvas)
+        self.menuFile.addAction( _("New Pipeline"),  self.menuItemNewScheme, QKeySequence.New)
+        self.menuFile.addAction(QIcon(redRStyle.openFileIcon), _("&Open..."), self.menuItemOpen, QKeySequence.Open )
         #self.menuFile.addAction(QIcon(redRStyle.openFileIcon), "&Open and Freeze...", self.menuItemOpenFreeze)
-        self.menuFile.addAction("Import Pipeline", self.importSchema)
+        self.menuFile.addAction(_("Import Pipeline"), self.importSchema)
         if os.path.exists(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "lastSchema.tmp")):
-            self.menuFile.addAction("Reload Last Pipeline", self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
+            self.menuFile.addAction(_("Reload Last Pipeline"), self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
         #self.menuFile.addAction( "&Clear", self.menuItemClear)
         self.menuFile.addSeparator()
-        self.menuSaveID = self.menuFile.addAction(QIcon(redRStyle.saveFileIcon), "&Save", self.menuItemSave, QKeySequence.Save )
-        self.menuSaveAsID = self.menuFile.addAction( "Save &As...", self.menuItemSaveAs)
-        self.menuSaveTemplateID = self.menuFile.addAction( "Save As Template", self.menuItemSaveTemplate)
+        self.menuSaveID = self.menuFile.addAction(QIcon(redRStyle.saveFileIcon), _("&Save"), self.menuItemSave, QKeySequence.Save )
+        self.menuSaveAsID = self.menuFile.addAction( _("Save &As..."), self.menuItemSaveAs)
+        self.menuSaveTemplateID = self.menuFile.addAction( _("Save As Template"), self.menuItemSaveTemplate)
         self.menuFile.addSeparator()
         #self.menuFile.addAction(QIcon(redRStyle.printIcon), "Print Schema / Save image", self.menuItemPrinter, QKeySequence.Print )
-        self.menuFile.addAction("Generate &Report", self.menuItemReport)
+        self.menuFile.addAction(_("Generate &Report"), self.menuItemReport)
         self.menuFile.addSeparator()
         self.menuFile.addMenu(self.menuRecent)
         self.menuFile.addSeparator()
-        self.menuFile.addAction( "E&xit",  self.canvas.close, Qt.CTRL+Qt.Key_Q )
+        self.menuFile.addAction( _("E&xit"),  self.canvas.close, Qt.CTRL+Qt.Key_Q )
 
-        self.menuOptions = QMenu("&Options", self.canvas)
-        self.menuOptions.addAction( "Enable All Links",  self.menuItemEnableAll, Qt.CTRL+Qt.Key_E)
-        self.menuOptions.addAction( "Disable All Links",  self.menuItemDisableAll, Qt.CTRL+Qt.Key_D)
-        self.menuOptions.addAction( "Select All Widgets", self.selectAllWidgets, Qt.CTRL+Qt.Key_A)
+        self.menuOptions = QMenu(_("&Options"), self.canvas)
+        # self.menuOptions.addAction( "Enable All Links",  self.menuItemEnableAll, Qt.CTRL+Qt.Key_E)
+        # self.menuOptions.addAction( "Disable All Links",  self.menuItemDisableAll, Qt.CTRL+Qt.Key_D)
+        self.menuOptions.addAction( _("Select All Widgets"), self.selectAllWidgets, Qt.CTRL+Qt.Key_A)
         #self.menuOptions.addAction("New Tab", self.canvas.schema.newTab)
         self.menuOptions.addSeparator()
-        self.menuOptions.addAction("Show Output Window", self.menuItemShowOutputWindow)
-        self.menuOptions.addAction("Clear Output Window", self.menuItemClearOutputWindow)
-        self.menuOptions.addAction("Save Output Text...", self.menuItemSaveOutputWindow)
+        self.menuOptions.addAction(_("Show Output Window"), self.menuItemShowOutputWindow)
+        self.menuOptions.addAction(_("Clear Output Window"), self.menuItemClearOutputWindow)
+        self.menuOptions.addAction(_("Save Output Text..."), self.menuItemSaveOutputWindow)
 
-        self.menuTabs = QMenu("&Tabs", self.canvas)
-        self.menuTabs.addAction("Add New Tab", self.canvas.schema.newTab)
-        self.menuTabs.addAction("Remove Current Tab", self.canvas.schema.removeCurrentTab)
+        self.menuTabs = QMenu(_("&Tabs"), self.canvas)
+        self.menuTabs.addAction(_("Add New Tab"), self.canvas.schema.newTab)
+        self.menuTabs.addAction(_("Remove Current Tab"), self.canvas.schema.removeCurrentTab)
         # uncomment this only for debugging
         #self.menuOptions.addSeparator()
         #self.menuOptions.addAction("Dump widget variables", self.dumpVariables)
@@ -111,40 +114,40 @@ class redRCanvasToolbarandMenu():
         #self.menuOptions.addAction( "Channel preferences",  self.menuItemPreferences)
         #self.menuOptions.addSeparator()
         # self.menuOptions.addAction( "&Customize Shortcuts",  self.menuItemEditWidgetShortcuts)
-        self.menuOptions.addAction( "&Delete Widget Settings",  self.menuItemDeleteWidgetSettings)
+        self.menuOptions.addAction( _("&Delete Widget Settings"),  self.menuItemDeleteWidgetSettings)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction( sys.platform == "darwin" and "&Preferences..." or "Canvas &Options...",  self.menuItemCanvasOptions)
 
-        self.packageMenu = QMenu("&Packages", self.canvas)
-        self.packageMenu.addAction("Package Manager", self.menuOpenPackageManager)
-        self.packageMenu.addAction(QIcon(redRStyle.openFileIcon), "&Install Package", self.menuItemInstallPackage)
+        self.packageMenu = QMenu(_("&Packages"), self.canvas)
+        self.packageMenu.addAction(_("Package Manager"), self.menuOpenPackageManager)
+        self.packageMenu.addAction(QIcon(redRStyle.openFileIcon), _("&Install Package"), self.menuItemInstallPackage)
 
         localHelp = 0
         self.menuHelp = QMenu("&Help", self.canvas)
         
         if os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"doc/reference/default.htm")) or os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"doc/canvas/default.htm")):
-            if os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"doc/reference/default.htm")): self.menuHelp.addAction("Red-R Help", self.menuOpenLocalOrangeHelp)
-            if os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"doc/canvas/default.htm")): self.menuHelp.addAction("Red Canvas Help", self.menuOpenLocalCanvasHelp)
+            if os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"doc/reference/default.htm")): self.menuHelp.addAction(_("Red-R Help"), self.menuOpenLocalOrangeHelp)
+            if os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"doc/canvas/default.htm")): self.menuHelp.addAction(_("Red Canvas Help"), self.menuOpenLocalCanvasHelp)
 
-        self.menuHelp.addAction("Red-R Online Help", self.menuOpenOnlineOrangeHelp)
+        self.menuHelp.addAction(_("Red-R Online Help"), self.menuOpenOnlineOrangeHelp)
         #self.menuHelp.addAction("Orange Canvas Online Help", self.menuOpenOnlineCanvasHelp)
 
         if os.path.exists(os.path.join(redREnviron.directoryNames['redRDir'], r"updateOrange.py")):
             self.menuHelp.addSeparator()
-            self.menuHelp.addAction("Check for updates", self.menuCheckForUpdates)
+            self.menuHelp.addAction(_("Check for updates"), self.menuCheckForUpdates)
             
         self.menuHelp.addSeparator()
-        self.menuHelp.addAction("About Red-R", self.menuItemAboutOrange)
+        self.menuHelp.addAction(_("About Red-R"), self.menuItemAboutOrange)
 
         # widget popup menu
-        self.widgetPopup = QMenu("Widget", self.canvas)
-        self.widgetPopup.addAction("Open",  self.canvas.schema.activeTab().openActiveWidget)
+        self.widgetPopup = QMenu(_("Widget"), self.canvas)
+        self.widgetPopup.addAction(_("Open"),  self.canvas.schema.activeTab().openActiveWidget)
         self.widgetPopup.addSeparator()
-        rename = self.widgetPopup.addAction( "&Rename", self.canvas.schema.activeTab().renameActiveWidget, Qt.Key_F2)
-        delete = self.widgetPopup.addAction("Remove", self.canvas.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
+        rename = self.widgetPopup.addAction( _("&Rename"), self.canvas.schema.activeTab().renameActiveWidget, Qt.Key_F2)
+        delete = self.widgetPopup.addAction(_("Remove"), self.canvas.schema.activeTab().removeActiveWidget, Qt.Key_Delete)
         #copy = self.menuTabs.addAction("&Copy", redRSaveLoad.collectIcons, Qt.CTRL+Qt.Key_C)
-        cloneToTab = self.menuTabs.addAction("Clone To Tab", self.canvas.schema.cloneToTab, Qt.CTRL+Qt.Key_G)
-        duplicateToTab = self.menuTabs.addAction("Duplicate To Tab", redRSaveLoad.copy, Qt.CTRL+Qt.Key_H)
+        cloneToTab = self.menuTabs.addAction(_("Clone To Tab"), self.canvas.schema.cloneToTab, Qt.CTRL+Qt.Key_G)
+        duplicateToTab = self.menuTabs.addAction(_("Duplicate To Tab"), redRSaveLoad.copy, Qt.CTRL+Qt.Key_H)
         
         self.widgetPopup.setEnabled(0)
         self.canvas.widgetPopup = self.widgetPopup
@@ -174,7 +177,7 @@ class redRCanvasToolbarandMenu():
                     self.widgetShortcuts[key] = self.widgetRegistry[cat][widgetName]
 
     def importSchema(self):
-        name = QFileDialog.getOpenFileName(self.canvas, "Import File", redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
+        name = QFileDialog.getOpenFileName(self.canvas, _("Import File"), redREnviron.settings["saveSchemaDir"], "Red-R Widget Schema (*.rrs *.rrts)")
         if name.isEmpty(): return
         name = unicode(name)
         
@@ -185,7 +188,7 @@ class redRCanvasToolbarandMenu():
         self.addToRecentMenu(unicode(name))
         
     def menuItemOpen(self):
-        name = QFileDialog.getOpenFileName(self.canvas, "Open File", 
+        name = QFileDialog.getOpenFileName(self.canvas, _("Open File"), 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         
         if name.isEmpty(): return
@@ -198,7 +201,7 @@ class redRCanvasToolbarandMenu():
 
 
     def menuItemOpenFreeze(self):
-        name = QFileDialog.getOpenFileName(self.canvas, "Open File", 
+        name = QFileDialog.getOpenFileName(self.canvas, _("Open File"), 
         redREnviron.settings["saveSchemaDir"], "Schema or Template (*.rrs *.rrts)")
         if name.isEmpty(): return
         name = unicode(name)
@@ -254,7 +257,7 @@ class redRCanvasToolbarandMenu():
                     widget.instance.printWidget(printer)                
                 except: pass
         except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Error in printing the schema")
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Error in printing the schema"))
         
         self.reports.createReportsMenu(self.canvas.schema.widgets)
         
@@ -271,11 +274,11 @@ class redRCanvasToolbarandMenu():
 
         recentDocs = recentDocs[:9]
         redREnviron.settings["RecentFiles"] = recentDocs
-        #print recentDocs, 'Recent Docs'
+        #print recentDocs, _('Recent Docs')
         for i in range(len(recentDocs)):
             shortName = "&" + unicode(i+1) + " " + os.path.basename(recentDocs[i])
             self.menuRecent.addAction(shortName, lambda k = i+1: self.openRecentFile(k))
-            #print 'Added doc ', shortName, ' to position ', i
+            #print _('Added doc '), shortName, _(' to position '), i
 
     def openRecentFile(self, index):
         if len(redREnviron.settings["RecentFiles"]) >= index:
@@ -321,7 +324,7 @@ class redRCanvasToolbarandMenu():
         self.menuOptions.setItemChecked(self.menuSaveSettingsID, self.menuSaveSettings)
 
     def menuItemNewScheme(self):
-        mb = QMessageBox("Create New Pipeline", "Creating a new pipeline will delete all existing work.\n\nAre you sure you want to continue?", 
+        mb = QMessageBox(_("Create New Pipeline"), _("Creating a new pipeline will delete all existing work.\n\nAre you sure you want to continue?"), 
             QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
             QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton,self.canvas)
         
@@ -349,7 +352,7 @@ class redRCanvasToolbarandMenu():
         
 
     def menuItemSaveOutputWindow(self):
-        qname = QFileDialog.getSaveFileName(self.canvas, "Save Output To File", 
+        qname = QFileDialog.getSaveFileName(self.canvas, _("Save Output To File"), 
         redREnviron.settings['logFile'], "HTML Document (*.html)")
         if qname.isEmpty(): return
         qname = unicode(qname)
@@ -381,7 +384,7 @@ class redRCanvasToolbarandMenu():
                 shf.write("%s: %s\n" % (k, (widgetInfo.packageName, widgetInfo.name)))
 
     def menuItemDeleteWidgetSettings(self):
-        if QMessageBox.warning(None,'Red Canvas','If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.',QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
+        if QMessageBox.warning(None,_('Red Canvas'),_('If you want to delete widget settings press Ok, otherwise press Cancel.\nFor the deletion to be complete there cannot be any widgets on your schema.\nIf there are, clear the schema first.'),QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape) == QMessageBox.Ok:
             if os.path.exists(redREnviron.directoryNames['widgetSettingsDir']):
                 for f in os.listdir(redREnviron.directoryNames['widgetSettingsDir']):
                     if os.path.splitext(f)[1].lower() == ".ini":
@@ -395,11 +398,11 @@ class redRCanvasToolbarandMenu():
        
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
-        webbrowser.open("file:///" + os.path.join(redREnviron.directoryNames['redRDir'], "doc/catalog/index.html"))
+        webbrowser.open("file:///" + os.path.join(redREnviron.directoryNames[_('redRDir')], "doc/catalog/index.html"))
 
     def menuOpenLocalCanvasHelp(self):
         import webbrowser
-        webbrowser.open(os.path.join(redREnviron.directoryNames['redRDir'], "doc/canvas/default.htm"))
+        webbrowser.open(os.path.join(redREnviron.directoryNames[_('redRDir')], "doc/canvas/default.htm"))
     def menuItemInstallPackage(self):
         name = QFileDialog.getOpenFileName(self.canvas, "Install Package", 
         redREnviron.settings["saveSchemaDir"], "Package (*.zip)")
@@ -453,7 +456,7 @@ class redRCanvasToolbarandMenu():
 
       
 class SearchBox(redRlineEditHint):
-    def __init__(self, widget, label='Search',orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
+    def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = self.searchCallback,
         **args)
@@ -484,7 +487,7 @@ class SearchBox(redRlineEditHint):
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
                 if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    # print 'Return pressed'
+                    # print _('Return pressed')
                     self.doneCompletion()
                 elif ev.key() == Qt.Key_Escape:
                     self.listWidget.hide()
@@ -505,7 +508,7 @@ class SearchBox(redRlineEditHint):
             return
         else:
             itemText = unicode(self.text())
-            #print 'Searching '+itemText+' on Red-R.org'
+            #print _('Searching ')+itemText+' on Red-R.org'
             self.searchBox.show()
             url = 'http://www.red-r.org/?s='+itemText
             self.searchBox.updateUrl(url)
@@ -545,7 +548,7 @@ class myQListView(QListView):
     def mousePressEvent(self, event):
         print 'asdfasdfasdf',self.indexAt(event.pos())
         if not self.indexAt(event.pos()).isValid():
-            print 'invalid index'
+            print _('invalid index')
         QListView.mousePressEvent(self, event)
         self.emit(SIGNAL("activated (QModelIndex)"), self.indexAt(event.pos()))
     
@@ -599,7 +602,7 @@ class HTMLDelegate(QItemDelegate):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
 
 class SearchBox2(lineEdit):
-    def __init__(self, widget, label='Search',orientation='horizontal', items = {}, toolTip = None,  width = -1, callback = None, **args):
+    def __init__(self, widget, label=_('Search'),orientation='horizontal', items = {}, toolTip = None,  width = -1, callback = None, **args):
         lineEdit.__init__(self, widget = widget, label = label, displayLabel=False,
         orientation = orientation, toolTip = toolTip, width = width, **args)
         QObject.connect(self, SIGNAL("textEdited(const QString &)"), self.textEdited)
@@ -767,7 +770,7 @@ class SearchBox2(lineEdit):
             if ev.type() == QEvent.KeyPress:
                 consumed = 1
                 if ev.key() in [Qt.Key_Enter, Qt.Key_Return]:
-                    # print 'Return pressed'
+                    # print _('Return pressed')
                     self.doneCompletion()
                 elif ev.key() == Qt.Key_Escape:
                     self.listWidget.hide()
@@ -787,7 +790,7 @@ class SearchBox2(lineEdit):
             return
         else:
             itemText = unicode(self.text())
-            #print 'Searching '+itemText+' on Red-R.org'
+            #print _('Searching ')+itemText+' on Red-R.org'
             self.searchBox.show()
             url = 'http://www.red-r.org/?s='+itemText
             self.searchBox.updateUrl(url)

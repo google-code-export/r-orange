@@ -18,6 +18,10 @@ from libraries.base.qtWidgets.tabWidget import tabWidget as redRTabWidget
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 
 class OutputWindow(QDialog):
     def __init__(self, canvasDlg, *args):
@@ -115,7 +119,7 @@ class OutputWindow(QDialog):
     def uploadNo(self):
         self.msg.done(0)
     def rememberResponse(self):
-        if 'Remember my Response' in self.remember.getChecked():
+        if _('Remember my Response') in self.remember.getChecked():
             self.checked = True
             redREnviron.settings['askToUploadError'] = 0
 
@@ -137,10 +141,10 @@ class OutputWindow(QDialog):
                 redRwidgetLabel(error, label='Do you wish to report the Error Log?')
                 buttons = redRwidgetBox(error,orientation='horizontal')
 
-                redRbutton(buttons, label = 'Yes', callback = self.uploadYes)
-                redRbutton(buttons, label = 'No', callback = self.uploadNo)
+                redRbutton(buttons, label = _('Yes'), callback = self.uploadYes)
+                redRbutton(buttons, label = _('No'), callback = self.uploadNo)
                 self.checked = False
-                self.remember = redRcheckBox(error,buttons=['Remember my Response'],callback=self.rememberResponse)
+                self.remember = redRcheckBox(error,buttons=[_('Remember my Response')],callback=self.rememberResponse)
                 res = self.msg.exec_()
                 redREnviron.settings['uploadError'] = res
             #print res

@@ -14,6 +14,9 @@ from RSession import Rcommand
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sip
+import redRi18n
+
+_ = None
 
 class filterTable(widgetState, QTableView):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
@@ -26,7 +29,8 @@ class filterTable(widgetState, QTableView):
     selectionCallback=None):
         
         widgetState.__init__(self,widget,label,includeInReports)
-        
+        global _
+        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'languages'), languages = ['French'])
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
@@ -38,7 +42,7 @@ class filterTable(widgetState, QTableView):
         box = widgetBox(mainBox,orientation='horizontal')
         leftBox = widgetBox(box,orientation='horizontal')
         if filterable:
-            self.clearButton = button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
+            self.clearButton = button(leftBox,label=_('Clear All Filtering'), callback=self.clearFiltering)
         self.dataInfo = widgetLabel(leftBox,label='',wordWrap=False) 
         box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
@@ -47,9 +51,9 @@ class filterTable(widgetState, QTableView):
             resizeColsBox = widgetBox(box, orientation="horizontal")
             resizeColsBox.layout().setAlignment(Qt.AlignRight)
             box.layout().setAlignment(resizeColsBox, Qt.AlignRight)
-            widgetLabel(resizeColsBox, label = "Resize columns: ")
+            widgetLabel(resizeColsBox, label = _("Resize columns: "))
             button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
-            toolTip = "Increase the width of the columns", width=30)
+            toolTip = _("Increase the width of the columns"), width=30)
             button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
             toolTip = "Decrease the width of the columns", width=30)
             button(resizeColsBox, label = "Resize To Content", callback=self.resizeColumnsToContents, 

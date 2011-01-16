@@ -3,7 +3,10 @@ from PyQt4.QtGui import *
 #from OWWidget import *
 import OWGUI
 import math
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 defaultRGBColors = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 128, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255), (128, 0, 255), (0, 128, 255), (255, 223, 128), (127, 111, 64), (92, 46, 0), (0, 84, 0), (192, 192, 0), (0, 127, 127), (128, 0, 0), (127, 0, 127)]
 defaultColorBrewerPalette = {3: [(127, 201, 127), (190, 174, 212), (253, 192, 134)], 4: [(127, 201, 127), (190, 174, 212), (253, 192, 134), (255, 255, 153)], 5: [(127, 201, 127), (190, 174, 212), (253, 192, 134), (255, 255, 153), (56, 108, 176)], 6: [(127, 201, 127), (190, 174, 212), (253, 192, 134), (255, 255, 153), (56, 108, 176), (240, 2, 127)], 7: [(127, 201, 127), (190, 174, 212), (253, 192, 134), (255, 255, 153), (56, 108, 176), (240, 2, 127), (191, 91, 23)], 8: [(127, 201, 127), (190, 174, 212), (253, 192, 134), (255, 255, 153), (56, 108, 176), (240, 2, 127), (191, 91, 23), (102, 102, 102)]} 
 
@@ -88,7 +91,7 @@ class ColorPaletteDlg(OWBaseWidget):
         else:
             # if we changed the deafult schema, we must save it under a new name
             if self.colorSchemas[self.selectedSchemaIndex][0] == "Default":
-                if QMessageBox.information(self, 'Question', 'The color schema has changed. Do you want to save changes?','Yes','No', '', 0,1):
+                if QMessageBox.information(self, _('Question'), 'The color schema has changed. Do you want to save changes?',_('Yes'),_('No'), '', 0,1):
                     QDialog.reject(self)
                 else:
                     self.selectedSchemaIndex = self.schemaCombo.count()-1

@@ -2,7 +2,7 @@
 # This module 
 
 import os, sys, time, smtplib, redRLog
-import redREnviron
+import redREnviron, redRi18n
 #from orngSignalManager import OutputSignal
 
 logHistory = 1
@@ -11,7 +11,9 @@ logFile = os.path.join(redREnviron.directoryNames["canvasSettingsDir"], "history
 if not os.path.exists(logFile):
     file = open(logFile, "w")
     file.close()
-
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 lastSchemaID = None
 openSchemas = {}
 

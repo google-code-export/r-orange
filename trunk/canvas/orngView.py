@@ -6,7 +6,10 @@ import orngCanvasItems
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRObjects, redRLog
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
         
 class SchemaView(QGraphicsView):
     def __init__(self, doc, name, *args):
@@ -25,12 +28,12 @@ class SchemaView(QGraphicsView):
         self.ensureVisible(0,0,1,1)
 
         # create popup menus
-        self.linePopup = QMenu("Link", self)
-        self.lineEnabledAction = self.menupopupLinkEnabledID = self.linePopup.addAction( "Enabled",  self.toggleEnabledLink)
+        self.linePopup = QMenu(_("Link"), self)
+        self.lineEnabledAction = self.menupopupLinkEnabledID = self.linePopup.addAction( _("Enabled"),  self.toggleEnabledLink)
         self.lineEnabledAction.setCheckable(1)
         self.linePopup.addSeparator()
-        self.linePopup.addAction("Reset Signals", self.resetLineSignals)
-        self.linePopup.addAction("Remove", self.deleteSelectedLine)
+        self.linePopup.addAction(_("Reset Signals"), self.resetLineSignals)
+        self.linePopup.addAction(_("Remove"), self.deleteSelectedLine)
         self.linePopup.addSeparator()
         self.setAcceptDrops(1)
         self.controlHeld = False
@@ -86,12 +89,12 @@ class SchemaView(QGraphicsView):
         widget = widgets[0]
 
         exName = unicode(widget.caption)
-        (newName, ok) = QInputDialog.getText(self, "Rename Widget", "Enter new name for the '" + exName + "' widget:", QLineEdit.Normal, exName)
+        (newName, ok) = QInputDialog.getText(self, _("Rename Widget"), _("Enter new name for the '%s' widget:") % exName, QLineEdit.Normal, exName)
         newName = unicode(newName)
         if ok and newName != exName:
             for w in self.doc.widgets():
                 if w != widget and w.caption == newName:
-                    QMessageBox.information(self, 'Red-R Canvas', 'Unable to rename widget. An instance with that name already exists.')
+                    QMessageBox.information(self, _('Red-R Canvas'), _('Unable to rename widget. An instance with that name already exists.'))
                     return
             widget.updateText(newName)
             widget.instance().setWindowTitle(newName)
@@ -99,10 +102,10 @@ class SchemaView(QGraphicsView):
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
         #print "Trying to remove the widget"
-        res = QMessageBox.question(self.doc.canvasDlg, 'Red-R Canvas Remove Widget', 'Are you sure you want to remove selected widget(s)?  This will remove the downstream data.', QMessageBox.Yes | QMessageBox.No)
+        res = QMessageBox.question(self.doc.canvasDlg, _('Red-R Canvas Remove Widget'), _('Are you sure you want to remove selected widget(s)?  This will remove the downstream data.'), QMessageBox.Yes | QMessageBox.No)
         if res != QMessageBox.Yes: return
         if self.doc.signalManager.signalProcessingInProgress:
-            QMessageBox.information( self, "Red-R Canvas", "Unable to remove widgets while signal processing is in progress. Please wait.")
+            QMessageBox.information( self, _("Red-R Canvas"), _("Unable to remove widgets while signal processing is in progress. Please wait."))
             return
 
         selectedWidgets = self.getSelectedWidgets()
@@ -138,7 +141,7 @@ class SchemaView(QGraphicsView):
     def deleteSelectedLine(self):
         if not self.selectedLine: return
         if self.doc.signalManager.signalProcessingInProgress:
-             QMessageBox.information( self, "Red-R Canvas", "Unable to remove connection while signal processing is in progress. Please wait.")
+             QMessageBox.information( self, _("Red-R Canvas"), _("Unable to remove connection while signal processing is in progress. Please wait."))
              return
         self.deleteLine(self.selectedLine)
         self.selectedLine = None
@@ -233,9 +236,9 @@ class SchemaView(QGraphicsView):
                     i.setPossibleConnection(False)
         # we clicked on a widget or on a line
         else:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Active item %s' % activeItem)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Active item %s') % activeItem)
             if type(activeItem) in [orngCanvasItems.CanvasWidget]:# if we clicked on a widget          
-                #print activeItem, 'An item was clicked'
+                #print activeItem, _('An item was clicked')
                 self.tempWidget = activeItem
 
                 ## if it was a ghost widget we need to do something
@@ -336,7 +339,7 @@ class SchemaView(QGraphicsView):
             # we must check if we have really connected some output to input
             if start and end and start != end:
                 if self.doc.signalManager.signalProcessingInProgress:
-                     QMessageBox.information( self, "Red-R Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
+                     QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
                 else:
                     self.doc.addLine(start, end)
             else:
@@ -352,7 +355,7 @@ class SchemaView(QGraphicsView):
                     if newWidget != None:
                         nw = redRObjects.getWidgetByIDActiveTabOnly(newWidget)
                         if self.doc.signalManager.signalProcessingInProgress:
-                            QMessageBox.information( self, "Red-R Canvas", "Unable to connect widgets while signal processing is in progress. Please wait.")
+                            QMessageBox.information( self, _("Red-R Canvas"), _("Unable to connect widgets while signal processing is in progress. Please wait."))
                         else:
                             self.doc.addLine(start or nw, end or nw)
 
@@ -380,12 +383,12 @@ class SchemaView(QGraphicsView):
         point = self.mapToScene(ev.pos())
         activeItem = self.scene().itemAt(point)
         if type(activeItem) in [orngCanvasItems.CanvasWidget]:        # if we clicked on a widget
-            #print activeItem, 'Item double clicked'
+            #print activeItem, _('Item double clicked')
             self.tempWidget = activeItem
             self.openActiveWidget()
         elif type(activeItem) == orngCanvasItems.CanvasLine:
             if self.doc.signalManager.signalProcessingInProgress:
-                QMessageBox.information( self, "Orange Canvas", "Please wait until Orange finishes processing signals.")
+                QMessageBox.information( self, _("Orange Canvas"), _("Please wait until Orange finishes processing signals."))
                 return
             self.doc.resetActiveSignals(activeItem.outWidget, activeItem.inWidget, enabled = activeItem.outWidget.instance().outputs.isSignalEnabled(activeItem.inWidget.instance()))
             activeItem.inWidget.updateTooltip()

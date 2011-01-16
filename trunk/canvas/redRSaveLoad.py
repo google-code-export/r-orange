@@ -17,6 +17,10 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 import cPickle, math, zipfile, urllib, sip
 from xml.dom.minidom import Document, parse
 from orngSignalManager import SignalManager
@@ -81,7 +85,7 @@ def saveInstances(instances, widgets, doc, progressBar):
         temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
         temp.setAttribute('widgetID', widget.widgetID)
         temp.setAttribute('captionTitle', unicode(widget.windowTitle()))
-        print 'save in orngDoc ' + unicode(widget.captionTitle)
+        print _('save in orngDoc ') + unicode(widget.captionTitle)
         progress += 1
         progressBar.setValue(progress)
         
@@ -106,7 +110,7 @@ def makeTemplate(filename = None, copy = False):
     ## this is different from saving.  We want to make a special file that only has the selected widgets, their connections, and settings.  No R data or tabs are saved.
     if copy and len(_tempWidgets) == 0: return 
     elif len(_tempWidgets) == 0:
-        mb = QMessageBox("Save Template", "No widgets are selected.\nTemplates require widgets to be selected before saving as template.", 
+        mb = QMessageBox(_("Save Template"), _("No widgets are selected.\nTemplates require widgets to be selected before saving as template."), 
             QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
             QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
         
@@ -114,7 +118,7 @@ def makeTemplate(filename = None, copy = False):
         return
     if not copy:
         if not filename:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.')
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.'))
             return
         tempDialog = TemplateDialog()
         if tempDialog.exec_() == QDialog.Rejected:
@@ -122,8 +126,8 @@ def makeTemplate(filename = None, copy = False):
     else:
         filename = redREnviron.directoryNames['tempDir']+'/copy.rrts'
     progressBar = startProgressBar(
-    'Saving '+unicode(os.path.basename(filename)),
-    'Saving '+unicode(os.path.basename(filename)),
+    _('Saving ')+unicode(os.path.basename(filename)),
+    _('Saving ')+unicode(os.path.basename(filename)),
     len(redRObjects.instances(wantType = 'list'))+len(redRObjects.lines().values())+3)
     progress = 0
     # create xml document
@@ -197,21 +201,21 @@ def makeTemplate(filename = None, copy = False):
     progress += 1
     progressBar.setValue(progress)
     progressBar.close()
-    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Template saved successfully')
+    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Template saved successfully'))
     return True
 def collectIcons():
     global _tempWidgets
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Collecting Icons')
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Collecting Icons'))
     _tempWidgets = redRObjects.activeTab().getSelectedWidgets()
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Selected widgets are %s' % _tempWidgets)
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Selected widgets are %s') % _tempWidgets)
 def copy():
     ## copy the selected files and reload them as templates in the schema
     collectIcons()
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Making a copy with widgets %s' % _tempWidgets)
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Making a copy with widgets %s') % _tempWidgets)
     makeTemplate(copy=True)
 def savePipeline():
-    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Saving Pipeline')
-    name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
+    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Saving Pipeline'))
+    name = QFileDialog.getSaveFileName(None, _("Save Template"), redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     if not name or name == None: return False
     name = unicode(name)
     if unicode(name) == '': return False
@@ -219,7 +223,7 @@ def savePipeline():
     if os.path.splitext(unicode(name))[1].lower() != ".rrpipe": name = name + '.rrpipe'
     return save(filename = name, template = False, copy = False, pipe = True)
 def saveDocument():
-    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Saving Document')
+    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Saving Document'))
     #return
     if _schemaName == "":
         return saveDocumentAs()
@@ -236,8 +240,8 @@ def save(filename = None, template = False, copy = False, pipe = False):
         filename = os.path.join(redREnviron.directoryNames['tempDir'], 'copy.rrts')
     #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Saveing file as name %s' % filename)
     progressBar = startProgressBar(
-    'Saving '+unicode(os.path.basename(filename)),
-    'Saving '+unicode(os.path.basename(filename)),
+    _('Saving ')+unicode(os.path.basename(filename)),
+    _('Saving ')+unicode(os.path.basename(filename)),
     len(redRObjects.instances())+len(redRObjects.lines())+3)
     progress = 0
 
@@ -353,7 +357,7 @@ def loadRequiredPackages(required, loadingProgressBar):
                 repo = redREnviron.settings['CRANrepos']
             else:
                 repo = None
-            loadingProgressBar.setLabelText('Loading required R Packages. If not found they will be downloaded.\n This may take a while...')
+            loadingProgressBar.setLabelText(_('Loading required R Packages. If not found they will be downloaded.\n This may take a while...'))
             RSession.require_librarys(required['R'], repository=repo)
         
         installedPackages = redRPackageManager.packageManager.getInstalledPackages()
@@ -370,9 +374,9 @@ def loadRequiredPackages(required, loadingProgressBar):
         if len(downloadList.keys()) > 0:
             pm = redRPackageManager.packageManagerDialog()
             pm.show()
-            pm.askToInstall(downloadList, 'The following packages need to be installed before the session can be loaded.')
+            pm.askToInstall(downloadList, _('The following packages need to be installed before the session can be loaded.'))
     except Exception as inst: 
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'redRSaveLoad loadRequiredPackages; error loading package %s' % inst)  
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad loadRequiredPackages; error loading package %s') % inst)  
 
 def loadTemplate(filename, caption = None, freeze = 0):
     
@@ -382,7 +386,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global _schemaName
     global schemaPath
     global globalNotes
-    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Loading Document %s' % filename)
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading Document %s') % filename)
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
         tmp=True
@@ -395,12 +399,12 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         tmp = False
     else:
         QMessageBox.information(None, 'Red-R Error', 
-        'Cannot load file with extension ' + unicode(filename.split('.')[-1]),  
+        _('Cannot load file with extension %s') % unicode(filename.split('.')[-1]),  
         QMessageBox.Ok + QMessageBox.Default)
         return
     
-    loadingProgressBar = startProgressBar('Loading '+unicode(os.path.basename(filename)),
-    'Loading '+unicode(filename), 2)
+    loadingProgressBar = startProgressBar(_('Loading %s') % unicode(os.path.basename(filename)),
+    _('Loading %s') % unicode(filename), 2)
     
         
     # set cursor
@@ -412,7 +416,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     if importing: # a normal load of the session
         _schemaName = ""
 
-    loadingProgressBar.setLabelText('Loading Schema Data, please wait')
+    loadingProgressBar.setLabelText(_('Loading Schema Data, please wait'))
 
     ### unzip the file ###
     
@@ -427,15 +431,15 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         
         version = schema.getElementsByTagName("header")[0].getAttribute('version')
         if not version:
-            redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Version Tag Missing, using Red-R 1.80 loading specifications')            ## we should move everything to the earlier versions of orngDoc for loading.
+            redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Version Tag Missing, using Red-R 1.80 loading specifications'))            ## we should move everything to the earlier versions of orngDoc for loading.
             loadDocument180(filename, caption = None, freeze = 0, importing = 0)
             loadingProgressBar.hide()
             loadingProgressBar.close()
             return
         else:
-            print 'The version is:', version
+            print _('The version is:%s') % version
     except Exception as inst:
-        redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Error in loading the schema %s, reverting to load with 1.80 settings' % inst)
+        redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Error in loading the schema %s, reverting to load with 1.80 settings') % inst)
         loadDocument180(filename, caption = None, freeze = 0, importing = 0)
         loadingProgressBar.hide()
         loadingProgressBar.close()
@@ -454,12 +458,12 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     if not tmp and not pipe:
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         if not checkWidgetDuplication(widgets = widgets):
-            QMessageBox.information(canvasDlg, 'Schema Loading Failed', 'Duplicated widgets were detected between this schema and the active one.  Loading is not possible.',  QMessageBox.Ok + QMessageBox.Default)
+            QMessageBox.information(canvasDlg, _('Schema Loading Failed'), _('Duplicated widgets were detected between this schema and the active one.  Loading is not possible.'),  QMessageBox.Ok + QMessageBox.Default)
     
             return
         RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
     
-    loadingProgressBar.setLabelText('Loading Widgets')
+    loadingProgressBar.setLabelText(_('Loading Widgets'))
     loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
     loadingProgressBar.setValue(0)
     if not tmp:
@@ -472,14 +476,14 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     #####  move through all of the tabs and load them.
     (loadedOkT, tempFailureTextT) = loadTabs(tabs = tabs, loadingProgressBar = loadingProgressBar, tmp = tmp, loadedSettingsDict = settingsDict)
     if not tmp:
-        redRLog.log(10, 9,3,'Setting Signals')
+        redRLog.log(10, 9,3,_('Setting Signals'))
         for widget in redRObjects.instances():
-            redRLog.log(10, 9, 9, 'Setting Signals for %s' % widget)
+            redRLog.log(10, 9, 9, _('Setting Signals for %s') % widget)
             try:
                 if widget.widgetID not in settingsDict.keys(): continue
                 widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['connections']), tmp)
             except Exception as inst:
-                redRLog.log(1, 9, 1, 'Error setting signals %s, Settings are %s' % (inst, settingsDict[widget.widgetID].keys()))
+                redRLog.log(1, 9, 1, _('Error setting signals %s, Settings are %s') % (inst, settingsDict[widget.widgetID].keys()))
     else:
         for widget in redRObjects.instances():
             if widget.tempID and widget.tempID in settingsDict.keys():
@@ -512,19 +516,19 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     elif filename.split('.')[-1] in ['rrs']:
         tmp=False
     else:
-        QMessageBox.information(self, 'Red-R Error', 
-        'Cannot load file with extension ' + unicode(filename.split('.')[-1]),  
+        QMessageBox.information(self, _('Red-R Error'), 
+        _('Cannot load file with extension %s') % unicode(filename.split('.')[-1]),  
         QMessageBox.Ok + QMessageBox.Default)
         return
     
-    loadingProgressBar = startProgressBar('Loading '+unicode(os.path.basename(filename)),
-    'Loading '+unicode(filename), 2)
+    loadingProgressBar = startProgressBar(_('Loading %s') % unicode(os.path.basename(filename)),
+    _('Loading ')+unicode(filename), 2)
     
     ## What is the purpose of this???
     if not os.path.exists(filename):
         if os.path.splitext(filename)[1].lower() != ".tmp":
-            QMessageBox.critical(self, 'Red-R Canvas', 
-            'Unable to locate file "'+ filename + '"',  QMessageBox.Ok)
+            QMessageBox.critical(self, _('Red-R Canvas'), 
+            _('Unable to locate file "%s"') % filename,  QMessageBox.Ok)
         return
         loadingProgressBar.hide()
         loadingProgressBar.close()
@@ -539,7 +543,7 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     if importing: # a normal load of the session
         _schemaName = ""
 
-    loadingProgressBar.setLabelText('Loading Schema Data, please wait')
+    loadingProgressBar.setLabelText(_('Loading Schema Data, please wait'))
 
     ### unzip the file ###
     
@@ -565,19 +569,19 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     if not tmp:
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         if not checkWidgetDuplication(widgets = widgets):
-            QMessageBox.information(self, 'Schema Loading Failed', 'Duplicated widgets were detected between this schema and the active one.  Loading is not possible.',  QMessageBox.Ok + QMessageBox.Default)
+            QMessageBox.information(self, _('Schema Loading Failed'), _('Duplicated widgets were detected between this schema and the active one.  Loading is not possible.'),  QMessageBox.Ok + QMessageBox.Default)
     
             return
         RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
     
-    loadingProgressBar.setLabelText('Loading Widgets')
+    loadingProgressBar.setLabelText(_('Loading Widgets'))
     loadingProgressBar.setMaximum(len(widgets.getElementsByTagName("widget"))+1)
     loadingProgressBar.setValue(0)
     globalData.globalData = cPickle.loads(loadedSettingsDict['_globalData'])
     (loadedOkW, tempFailureTextW) = loadWidgets180(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = loadedSettingsDict, tmp = tmp)
     
     lineList = lines.getElementsByTagName("channel")
-    loadingProgressBar.setLabelText('Loading Lines')
+    loadingProgressBar.setLabelText(_('Loading Lines'))
     (loadedOkL, tempFailureTextL) = loadLines(lineList, loadingProgressBar = loadingProgressBar, 
     freeze = freeze, tmp = tmp)
 
@@ -587,7 +591,7 @@ def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     
     if not loadedOkW and loadedOkL:
         failureText = tempFailureTextW + tempFailureTextL
-        QMessageBox.information(canvasDlg, 'Schema Loading Failed', 'The following errors occured while loading the schema: <br><br>' + failureText,  QMessageBox.Ok + QMessageBox.Default)
+        QMessageBox.information(canvasDlg, _('Schema Loading Failed'), _('The following errors occured while loading the schema: <br><br>') + failureText,  QMessageBox.Ok + QMessageBox.Default)
     
     for widget in redRObjects.instances():
         widget.setLoadingSavedSession(False)
@@ -619,10 +623,10 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
             if not tmp:
                 try:
                     caption = witemp.getAttribute("caption")          # save the caption
-                    redRLog.log(1, 5, 3, 'loading widgeticon %s, %s, %s' % (name, instance, caption))
+                    redRLog.log(1, 5, 3, _('loading widgeticon %(NAME)s, %(INSTANCE)s, %(CAPTION)s') % {'NAME':name, 'INSTANCE':instance, 'CAPTION':caption})
                     schemaDoc.addWidgetIconByFileName(name, x = xPos, y = yPos + addY, caption = caption, instance = instance) ##  add the widget icon 
                 except Exception as inst:
-                    redRLog.log(1, 9, 1, 'Loading exception occured for %s, %s' % (name, inst))
+                    redRLog.log(1, 9, 1, _('Loading exception occured for %s, %s') % (name, inst))
             else:
                 #print 'loadedSettingsDict %s' % loadedSettingsDict.keys()
                 caption = ""
@@ -657,7 +661,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
-            #print 'adding instance', widgetID, inputs, outputs
+            #print _('adding instance'), widgetID, inputs, outputs
             newwidget = addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
             if newwidget and tmp:
                 import time
@@ -671,7 +675,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 nw.outputs.propogateNone()
             nw = redRObjects.getWidgetInstanceByID(newwidget)
             nw.setWindowTitle(caption)
-            #print 'Settings', settings
+            #print _('Settings'), settings
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
@@ -687,7 +691,7 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
         ## collect the indicies of the widgets to connect.
         inIndex = line.getAttribute("inWidgetIndex")
         outIndex = line.getAttribute("outWidgetIndex")
-        print inIndex, outIndex, '###################HFJSDADSHFAK#############'
+        print inIndex, outIndex
         
         if inIndex == None or outIndex == None or str(inIndex) == '' or str(outIndex) == '': # drive down the except path
             print inIndex, outIndex 
@@ -702,7 +706,7 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
         if tmp: ## index up the index to match sessionID
             inIndex += '_'+str(sessionID)
             outIndex += '_'+str(sessionID)
-            print inIndex, outIndex, 'Settings template ID to these values'
+            print inIndex, outIndex, _('Settings template ID to these values')
         inWidget = redRObjects.getWidgetInstanceByID(inIndex)
         outWidget = redRObjects.getWidgetInstanceByID(outIndex)
         
@@ -710,7 +714,7 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
         if inWidget == None or outWidget == None:
             print 'Expected ID\'s', inIndex, outIndex
 
-            failureText += "<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>" % (outIndex, inIndex)
+            failureText += _("<nobr>Failed to create a signal line between widgets <b>%s</b> and <b>%s</b></nobr><br>") % (outIndex, inIndex)
             loadedOk = 0
             continue
             
@@ -722,7 +726,7 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
             #if not schemaDoc.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
                 ## try to add using the old settings
             #    schemaDoc.addLink175(outWidget, inWidget, outName, inName, enabled)
-        print '######## enabled ########\n\n', enabled, '\n\n'
+        #print '######## enabled ########\n\n', enabled, '\n\n'
         #self.addLine(outWidget, inWidget, enabled, process = False)
         #self.signalManager.setFreeze(0)
         qApp.processEvents()
@@ -755,11 +759,11 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             if tmp:
                 widgetID += '_'+str(sessionID)
             schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
-            #print 'Settings', settings
+            #print _('Settings'), settings
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
-            print unicode(inst), 'Widget load failure 180'
+            print unicode(inst), _('Widget load failure 180')
     return (loadedOk, failureText)
 def getXMLText(nodelist):
     rc = ''
@@ -806,7 +810,7 @@ def toZip(file, filename):
 def saveDocumentAs():
     global _schemaName
     global schemaPath
-    name = QFileDialog.getSaveFileName(None, "Save File", os.path.join(schemaPath, _schemaName), "Red-R Widget Schema (*.rrs)")
+    name = QFileDialog.getSaveFileName(None, _("Save File"), os.path.join(schemaPath, _schemaName), "Red-R Widget Schema (*.rrs)")
     if not name or name == None: return False
     name = unicode(name)
     if unicode(name) == '': return False
@@ -820,12 +824,12 @@ def checkWidgetDuplication(widgets):
         #widgetIDisNew = self.checkID(widget.getAttribute('widgetID'))
         if widget.getAttribute('widgetID') in redRObjects.instances(wantType = 'dict').keys():
             qApp.restoreOverrideCursor()
-            QMessageBox.critical(canvasDlg, 'Red-R Canvas', 
-            'Widget ID is a duplicate, I can\'t load this!!!',  QMessageBox.Ok)
+            QMessageBox.critical(canvasDlg, _('Red-R Canvas'), 
+            _('Widget ID is a duplicate, I can\'t load this!!!'),  QMessageBox.Ok)
             return False
     return True
 def saveTemplate():
-    name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
+    name = QFileDialog.getSaveFileName(None, _("Save Template"), redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     if not name or name == None: return False
     name = unicode(name)
     if unicode(name) == '': return False
@@ -871,7 +875,7 @@ class TemplateDialog(QDialog):
     def __init__(self):
         QDialog.__init__(self)
         
-        self.setWindowTitle('Save as template')
+        self.setWindowTitle(_('Save as template'))
         
         self.setLayout(QVBoxLayout())
         layout = self.layout()
@@ -880,14 +884,14 @@ class TemplateDialog(QDialog):
         mainWidgetBox.setLayout(QVBoxLayout())
         layout.addWidget(mainWidgetBox)
         
-        mainWidgetBox.layout().addWidget(QLabel('Set tags as comma ( , ) delimited list', mainWidgetBox))
+        mainWidgetBox.layout().addWidget(QLabel(_('Set tags as comma ( , ) delimited list'), mainWidgetBox))
         
         
         topWidgetBox = QWidget(mainWidgetBox)
         topWidgetBox.setLayout(QHBoxLayout())
         mainWidgetBox.layout().addWidget(topWidgetBox)
         
-        topWidgetBox.layout().addWidget(QLabel('Tags:', topWidgetBox))
+        topWidgetBox.layout().addWidget(QLabel(_('Tags:'), topWidgetBox))
         self.tagsList = QLineEdit(topWidgetBox)
         topWidgetBox.layout().addWidget(self.tagsList)
         
@@ -895,7 +899,7 @@ class TemplateDialog(QDialog):
         bottomWidgetBox.setLayout(QVBoxLayout())
         mainWidgetBox.layout().addWidget(bottomWidgetBox)
         
-        bottomWidgetBox.layout().addWidget(QLabel('Description:', bottomWidgetBox))
+        bottomWidgetBox.layout().addWidget(QLabel(_('Description:'), bottomWidgetBox))
         self.descriptionEdit = QTextEdit(bottomWidgetBox)
         bottomWidgetBox.layout().addWidget(self.descriptionEdit)
         
@@ -903,8 +907,8 @@ class TemplateDialog(QDialog):
         buttonWidgetBox.setLayout(QHBoxLayout())
         mainWidgetBox.layout().addWidget(buttonWidgetBox)
         
-        acceptButton = QPushButton('Accept', buttonWidgetBox)
-        cancelButton = QPushButton('Cancel', buttonWidgetBox)
+        acceptButton = QPushButton(_('Accept'), buttonWidgetBox)
+        cancelButton = QPushButton(_('Cancel'), buttonWidgetBox)
         buttonWidgetBox.layout().addWidget(acceptButton)
         buttonWidgetBox.layout().addWidget(cancelButton)
         QObject.connect(acceptButton, SIGNAL("clicked()"), self.accept)

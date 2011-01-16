@@ -1,6 +1,9 @@
 ## SQLiteSession.  Implimentation of sqlite functions for Red-R.  
 import redREnviron, sqlite3, os, time, cPickle
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class SQLiteHandler:
     def __init__(self, defaultDB = None):
         if defaultDB:

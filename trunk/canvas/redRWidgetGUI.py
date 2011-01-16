@@ -17,7 +17,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRStyle
 from datetime import date
-
+import redRi18n
+# def _(a):
+    # return a
+_ = redRi18n.Coreget_()
 class redRWidgetGUI(QMainWindow):
     def __new__(cls, *arg, **args):
         self = QMainWindow.__new__(cls)
@@ -39,7 +42,7 @@ class redRWidgetGUI(QMainWindow):
 
         return self
 
-    def __init__(self, parent=None, signalManager=None, title="Red-R Widget", 
+    def __init__(self, parent=None, signalManager=None, title=_("Generic Red-R Widget"), 
     savePosition=True, wantGUIDialog = 0, resizingEnabled=1, **args):
         """
         Initialization
@@ -113,7 +116,7 @@ class redRWidgetGUI(QMainWindow):
         # Notes Dock ###
         ################
         minWidth = 200
-        self.notesDock=QDockWidget('Notes')
+        self.notesDock=QDockWidget(_('Notes'))
         self.notesDock.setObjectName('widgetNotes')
         
         QObject.connect(self.notesDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
@@ -132,7 +135,7 @@ class redRWidgetGUI(QMainWindow):
 
         redRwidgetLabel(self.notesBox, label="Notes:", icon=redRStyle.notesIcon)
 
-        self.notes = redRtextEdit(self.notesBox, label = 'Notes', displayLabel=False)
+        self.notes = redRtextEdit(self.notesBox, label = _('Notes'), displayLabel=False)
         self.notes.setMinimumWidth(minWidth)
         self.notes.setMinimumHeight(50)
         self.notes.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -142,7 +145,7 @@ class redRWidgetGUI(QMainWindow):
         ################
         # R output ###
         ################
-        self.RoutputDock=QDockWidget('R Output')
+        self.RoutputDock=QDockWidget(_('R Output'))
         self.RoutputDock.setObjectName('RoutputDock')
         
         QObject.connect(self.RoutputDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
@@ -157,14 +160,14 @@ class redRWidgetGUI(QMainWindow):
         self.RoutputDock.setWidget(self.ROutputBox)
 
         self.ROutputBox.setMinimumHeight(50)
-        redRwidgetLabel(self.ROutputBox, label="R code executed in this widget:",
+        redRwidgetLabel(self.ROutputBox, label=_("R code executed in this widget:"),
         icon=redRStyle.RIcon)
 
-        self.ROutput = redRtextEdit(self.ROutputBox, label = 'R Output',displayLabel=False)
+        self.ROutput = redRtextEdit(self.ROutputBox, label = _('R Output'),displayLabel=False)
         self.ROutput.setMinimumWidth(minWidth)
         self.ROutput.setMinimumHeight(50)
         self.ROutput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        redRbutton(self.ROutputBox, label = 'Run Selected Code', callback = self._runSelectedRCode, toolTip = 'You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.')
+        redRbutton(self.ROutputBox, label = _('Run Selected Code'), callback = self._runSelectedRCode, toolTip = _('You may select any code to execute in the R session.  This will override anything that other widgets have done to this point and will be overriden when this widget executes again.  Use this with great caution.'))
         
         ### help ####
         self.helpFile = None
@@ -191,26 +194,26 @@ class redRWidgetGUI(QMainWindow):
         
         self.showNotesButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'Notes-icon.png'),
-        toolTip='Notes',
+        toolTip=_('Notes'),
         callback = self.updateDocumentationDock)
         self.showROutputButton = redRbutton(docBox, '',toggleButton=True, 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'R_icon.png'),
-        toolTip='R Code',
+        toolTip=_('R Code'),
         callback = self.updateDocumentationDock)
         
         self.printButton = redRbutton(docBox, "",
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'printer_icon.png'),
-        toolTip='Print',
+        toolTip=_('Print'),
         callback = self.createReport)
 
         self.showHelpButton = redRbutton(docBox, '',
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'help_icon.png'),
-        toolTip='Help',
+        toolTip=_('Help'),
         callback = self.showHelp)
 
         self.includeInReport = redRbutton(docBox, '', 
         icon=os.path.join(redREnviron.directoryNames['picsDir'], 'report_icon.png'),
-        toolTip='Include In Report', toggleButton = True)
+        toolTip=_('Include In Report'), toggleButton = True)
         self.includeInReport.setChecked(True)
         
         ###############################################
@@ -225,7 +228,7 @@ class redRWidgetGUI(QMainWindow):
         self.GUIDialogDialog = None
         self.windowState['leftDockState'] = False
         if self.hasAdvancedOptions:
-            self.leftDock=QDockWidget('Advanced Options')
+            self.leftDock=QDockWidget(_('Advanced Options'))
             self.leftDock.setObjectName('leftDock')
             self.connect(self.leftDock,SIGNAL('topLevelChanged(bool)'),self.updateDock)
             self.leftDock.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
@@ -234,7 +237,7 @@ class redRWidgetGUI(QMainWindow):
             self.GUIDialog = redRwidgetBox(self.leftDock,orientation='vertical')
             self.GUIDialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             self.leftDock.setWidget(self.GUIDialog)
-            self.leftDockButton = redRbutton(self.bottomAreaLeft, 'Advanced Options',toggleButton=True, callback = self.showLeftDock)
+            self.leftDockButton = redRbutton(self.bottomAreaLeft, _('Advanced Options'),toggleButton=True, callback = self.showLeftDock)
             self.statusBar.insertPermanentWidget(2,self.leftDockButton)
             self.windowState['leftDockState'] = True
   
@@ -256,10 +259,10 @@ class redRWidgetGUI(QMainWindow):
         
         if isActive:
             self.RIndicator.setPixmap(QPixmap(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'redLight.png')))
-            self.RIndicator.setToolTip('R is currently running. Please wait...')
+            self.RIndicator.setToolTip(_('R is currently running. Please wait...'))
         else:
             self.RIndicator.setPixmap(QPixmap(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'greenLight.png')))
-            self.RIndicator.setToolTip('R is idle.')
+            self.RIndicator.setToolTip(_('R is idle.'))
         qApp.processEvents()
         # self.RStateIdle = QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'Green_Light.gif'))
         # self.RStateRunning = QIcon(os.path.join(redREnviron.directoryNames['canvasIconsDir'],'Red_Light.gif'))
@@ -282,24 +285,24 @@ class redRWidgetGUI(QMainWindow):
     def updateDock(self,ev):
         #print self.windowTitle()
         if self.notesDock.isFloating():
-            self.notesDock.setWindowTitle(self.windowTitle() + ' Notes')
+            self.notesDock.setWindowTitle(self.windowTitle() + _(' Notes'))
         else:
-            self.notesDock.setWindowTitle('Notes')
+            self.notesDock.setWindowTitle(_('Notes'))
             
         if self.RoutputDock.isFloating():
-            self.RoutputDock.setWindowTitle(self.windowTitle() + ' R Output')
+            self.RoutputDock.setWindowTitle(self.windowTitle() + _(' R Output'))
         else:
-            self.RoutputDock.setWindowTitle('R Output')
+            self.RoutputDock.setWindowTitle(_('R Output'))
             
         if hasattr(self, "leftDock"): 
             if self.leftDock.isFloating():
-                self.leftDock.setWindowTitle(self.windowTitle() + ' Advanced Options')
+                self.leftDock.setWindowTitle(self.windowTitle() + _(' Advanced Options'))
             else:
-                self.leftDock.setWindowTitle('Advanced Options')
+                self.leftDock.setWindowTitle(_('Advanced Options'))
 
     
     def showLeftDock(self):
-        #print 'in updatedock left', self.leftDockButton.isChecked()
+        #print _('in updatedock left'), self.leftDockButton.isChecked()
         
         if self.leftDockButton.isChecked():
             self.leftDock.show()
@@ -309,7 +312,7 @@ class redRWidgetGUI(QMainWindow):
             self.windowState['leftDockState'] = False
             
     def updateDocumentationDock(self):
-        #print 'in updatedock right'
+        #print _('in updatedock right')
         if 'documentationState' not in self.windowState.keys():
             self.windowState['documentationState'] = {}
         
@@ -341,7 +344,7 @@ class redRWidgetGUI(QMainWindow):
         self.windowState['size'] = self.size()
         
     def closeEvent(self, event):
-        #print 'in owrpy closeEvent'
+        #print _('in owrpy closeEvent')
         if self.notesDock.isFloating():
             self.notesDock.hide()
         if self.RoutputDock.isFloating():
@@ -383,7 +386,7 @@ class redRWidgetGUI(QMainWindow):
     # and we must process them immediately otherwise the width(), height(), ... of elements in the widget will be wrong
     def show(self):
         
-        # print 'owbasewidget show'
+        # print _('owbasewidget show')
         #print '|#| in onShow'
         # print self.windowState
         self.hasBeenShown = True
