@@ -9,14 +9,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class fileNamesComboBox(comboBox):
-    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, 
-    orientation='horizontal',callback = None, callback2 = None, **args):
+    def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, editable=False,
+    orientation='horizontal',callback = None, **args):
 
-        #widgetState.__init__(self, widget, label, includeInReports)
-        
         comboBox.__init__(self,widget,label=label,displayLabel=displayLabel,
-        items=None, orientation=orientation,
-        callback=callback,callback2=callback2, **args)
+        items=None, orientation=orientation,editable=editable,
+        callback=callback, **args)
         
         self.label = label
         
@@ -62,10 +60,10 @@ class fileNamesComboBox(comboBox):
             #print type(file), file
             
             if os.path.exists(file) or file =='Select File':
-                self.addItem(os.path.basename(file))
+                self.addItem(file, os.path.basename(file))
                 # newFiles.append(file)
             else:
-                self.addItem('Not Found - ' + os.path.basename(file))
+                self.addItem(file, 'Not Found - ' + os.path.basename(file))
                 #newFiles.append(file)
         #self.files = newFiles
         # print self.files

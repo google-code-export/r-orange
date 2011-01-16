@@ -12,9 +12,6 @@ import signals
 from redRSignalManager import *
 import orngDoc, redRLog, redRObjects
 
-import redREnviron, gettext
-t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
-_ = t.ugettext
 
 class widgetSignals():
     def __init__(self, parent = None, signalManager = None):
@@ -46,7 +43,7 @@ class widgetSignals():
     def send(self, signalName, value):
         ## make sure that the name is actually in the outputs, if not throw an error.
         if not self.outputs.hasOutputName(signalName):
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name.") % (signalName, self.captionTitle))
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name." % (signalName, self.captionTitle))
             raise Exception('Signal name mismatch')
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
@@ -56,7 +53,7 @@ class widgetSignals():
         self.removeWarning()
         self.refreshToolTips()
         self.ROutput.setCursorToEnd()
-        self.ROutput.append(_('\n## Data sent through the %s Channel \n') % unicode(self.outputs.outputNames()[signalName])) #Keep track automatically of what R functions were performed.
+        self.ROutput.append('\n## '+ 'Data sent through the '+unicode(self.outputs.outputNames()[signalName])+' Channel' + '\n') #Keep track automatically of what R functions were performed.
         
         redRObjects.updateLines()
     def refreshToolTips(self):
@@ -84,14 +81,12 @@ class widgetSignals():
             #self.sentItems.append((name, variable))
             self.status.setStatus(2)
         except:
-            self.setError(id = 'sendError', text = _('Failed to send data'))
+            self.setError(id = 'sendError', text = 'Failed to send data')
             redRLog.log(redRLog.REDRCORE,redRLog.CRITICAL,redRLog.formatException())
             self.status.setStatus(3)
         
         self.R('gc()', wantType = 'NoConversion')
-        import gc
-        gc.collect()
-        redRLog.log(redRLog.REDRWIDGET,redRLog.INFO,_('Data sent from slot %s') % name)
+        redRLog.log(redRLog.REDRWIDGET,redRLog.INFO,'Data sent from slot %s' % name)
 
     # does widget have a signal with name in inputs
     def hasInputName(self, name):

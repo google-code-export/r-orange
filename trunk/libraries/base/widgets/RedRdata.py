@@ -9,7 +9,6 @@ from libraries.base.qtWidgets.filterTable import filterTable
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
-
 class RedRdata(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):

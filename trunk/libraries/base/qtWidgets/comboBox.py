@@ -3,11 +3,12 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+from OrderedDict import OrderedDict
+import redRLog
 class comboBox(QComboBox,widgetState):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
     items=None, itemIds=None,editable=False,
-    orientation='horizontal',callback = None, callback2 = None, **args):
+    orientation='horizontal',callback = None):
         
         widgetState.__init__(self,widget,label,includeInReports)
         QComboBox.__init__(self,self.controlArea)
@@ -22,91 +23,54 @@ class comboBox(QComboBox,widgetState):
             self.hasLabel = False
         self.label = label
 
-        self.ids = [] 
-        
-        if items:
-            self.addItems([i for i in items],itemIds)
-        #if editable:
+        self.items = OrderedDict()
         self.setEditable(editable)
-        
+
+        if items:
+            self.addItems(items)
+
         if callback:
             QObject.connect(self, SIGNAL('activated(int)'), callback)
-            
-        if callback2: # more overload for other functions
-            QObject.connect(self, SIGNAL('activated(int)'), callback2)
 
-    def getSettings(self):
-        items = []
-        # print 'in comboBox get'
-
-        for i in range(0,self.count()):
-            items.append(self.itemText(i))
-            
-        r = {'items':items,
-             'current':self.currentIndex(), 
-             'ids':self.ids}
+    def getSettings(self):            
+        r = {'items':self.items,
+             'current':self.currentIndex()}
         return r
     
     def loadSettings(self,data):
         # print 'in comboBox load'
         # print data
-        try:
-            self.clear()
-            if 'ids' in data.keys():
-                self.addItems([i for i in data['items']],data['ids'])
-            else:
-                self.addItems([i for i in data['items']])
-            self.setCurrentIndex(data['current'])
-            
-            #self.setEnabled(data['enabled'])
-        except:
-            print 'Loading of comboBox encountered an error.'
-            import traceback,sys
-            print '-'*60
-            traceback.print_exc(file=sys.stdout)
-            print '-'*60        
+
+        self.addItems(data['items'])
+        self.setCurrentIndex(data['current'])
+    
     def currentId(self):
-        return self.ids[self.currentIndex()]
-    def addItems(self,items,ids=None):
+        return self.items.keys()[self.currentIndex()]
+    def currentItem(self):
+        return {self.items.keys()[self.currentIndex()]:self.items.values()[self.currentIndex()]}
         
-        if ids:
-            for item, id in zip(items,ids):
-                self.addItem(item,id)
+    def addItems(self,items):
+        if type(items) in [dict,OrderedDict]:
+            for k,v in items.items():
+                self.addItem(k,v)
+        elif type(items) in [list]:
+            if len(items) > 0 and type(items[0]) is tuple:
+                for k,v in items:
+                    self.addItem(k,v)
+            else:
+                for v in items:
+                    self.addItem(v,v)
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,'In listBox should not use list')
         else:
-            for i in items:
-                self.addItem(i)
-        # if ids:
-            # self.ids = self.ids + ids
-        # else:
-            # self.ids = self.ids + range(self.count(), self.count() + len(items))
-    # def currentText(self):
-        # return unicode(QComboBox.currentText(self))
+            raise Exception('In comboBox, addItems takes a list, dict or OrderedDict')
         
-        
-    def addItem(self,item,id=None):
+    def clear(self):
+        QComboBox.clear(self)
+        self.items = OrderedDict()
+    def addItem(self,id,item):
         QComboBox.addItem(self,item)
-        if id:
-            self.ids.append(id)
-        else:
-            self.ids.append(self.count())
+        self.items[id] = item
             
-    def addRItems(self, items):
-        if items:
-            if type(items) == type(''):
-                self.addItems([items])
-            elif type(items) == type([]):
-                self.addItems(items)
-        else:
-            print unicode(items)
-            print 'Items failed to add'
-    def update(self, items):
-        print 'Updating comboBox with the following items', items
-        current = self.currentText()
-        self.clear()
-        self.addRItems(items)
-        index = self.findText(current)
-        if index != -1:
-            self.setCurrentIndex(index)
     def getReportText(self, fileDir):
 
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.currentText()}}

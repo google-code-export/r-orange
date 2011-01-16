@@ -72,8 +72,9 @@ class readFile(OWRpy):
 
         
         self.delimiter = radioButtons(options, label='Column Seperator',
-        buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab',callback=self.scanNewFile,
+        buttons = [(',','Comma'), ('\t','Tab'), (' ','Space'),('other','Other')], setChecked='\t',callback=self.scanNewFile,
         orientation='horizontal')
+        
         self.otherSepText = lineEdit(self.delimiter.box,label='Seperator', displayLabel=False,
         text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
@@ -86,7 +87,7 @@ class readFile(OWRpy):
         toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
         orientation='vertical',callback=self.scanNewFile)
         
-        self.rowNamesCombo = comboBox(self.headersBox,label='Select Row Names', items=[],
+        self.rowNamesCombo = comboBox(self.headersBox,label='Select Row Names', 
         orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
         
@@ -164,19 +165,33 @@ class readFile(OWRpy):
             self.require_librarys(['RODBC'])
             self.setForExcel()
         ##self.require_librarys(['ff'])
+    # def rep(self):
+        # for x in range(10):
+            # self.loadFile()
+
     def setForExcel(self):
         self.fileType.show()
     def otherSep(self,text):
-        self.delimiter.setChecked('Other')
+        self.delimiter.setChecked('other')
         
     def loadCustomSettings(self,settings):
-        #print settings
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings)
+        # print settings['colClasses']['pythonObject']
+        # self.colClasses = settings['colClasses']['pythonObject']
+        # self.colNames = settings['colNames']['pythonObject']
+        # self.myColClasses = settings['myColClasses']['list']
         if not self.filecombo.getCurrentFile():
             widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
-        for i in range(len(self.myColClasses)):
+        # print '#############################', self.colClasses
+        # print '#############################', self.colNames
+        # print '#############################', self.myColClasses #, settings['myColClasses']['list']
+        for i in range(len(self.colClasses)):
             s = radioButtons(self.columnTypes,label=self.colNames[i],displayLabel=False,
             buttons = ['factor','numeric','character','integer','logical'], 
             orientation = 'horizontal', callback = self.updateColClasses)
+            
             s.setChecked(self.myColClasses[i])
             if not self.filecombo.getCurrentFile():
                 s.setEnabled(False)
@@ -225,11 +240,10 @@ class readFile(OWRpy):
         self.loadFile(scan=True)
     
     def updateColClasses(self):
-
         self.myColClasses = []
         for i in self.dataTypes:
-            self.myColClasses.append(unicode(i[1].getChecked()))
-        # print 'colClasses' , self.colClasses
+            self.myColClasses.append(unicode(i[1].getCheckedId()))
+        # print '#####################myColClasses' , self.myColClasses
         self.loadFile(scan=True)
     def scanFile(self):
         self.loadFile(scan=True)
@@ -251,16 +265,13 @@ class readFile(OWRpy):
             # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
                 # self.delimiter.setChecked('Comma')
 
-            if self.delimiter.getChecked() == 'Tab': #'tab'
-                sep = '\\t'
-            elif self.delimiter.getChecked() == 'Space':
-                sep = ' '
-            elif self.delimiter.getChecked() == 'Comma':
-                sep = ','
-            elif self.delimiter.getChecked() == 'Other':
+            if self.delimiter.getCheckedId() == 'other':
                 sep = unicode(self.otherSepText.text())
+            else:
+                sep = self.delimiter.getCheckedId() 
+                
             otherOptions = ''
-            for i in self.otherOptions.getChecked():
+            for i in self.otherOptions.getCheckedIds():
                 otherOptions += unicode(i) + '=TRUE,' 
             
         if 'Column Headers' in self.hasHeader.getChecked():
@@ -314,6 +325,7 @@ class readFile(OWRpy):
                 print 'scan was to clipboard'
                 self.commit()
             else:
+                print 
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + unicode(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+unicode(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+unicode(self.decimal.text())+'\')'
                 #print '####################', processing
                 self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
@@ -334,8 +346,9 @@ class readFile(OWRpy):
         if self.rowNamesCombo.count() == 0:
             self.colNames = self.R('colnames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
             self.rowNamesCombo.clear()
-            self.rowNamesCombo.addItem('NULL')
-            self.rowNamesCombo.addItems(self.colNames)
+            self.rowNamesCombo.addItem('NULL','NULL')
+            for x in self.colNames:
+                self.rowNamesCombo.addItem(x,x)
         self.scanarea.clear()
         # print self.R(self.Rvariables['dataframe_org'])
         # return
@@ -361,6 +374,7 @@ class readFile(OWRpy):
             if len(self.colClasses) ==0:
                 self.colClasses = self.R('as.vector(sapply(' + self.Rvariables['dataframe_org'] + ',class))',wantType='list')
                 self.myColClasses = self.colClasses
+                # print '@@@@@@@@@@@@@@@@@@@@@@@@@', self.myColClasses
             if len(self.dataTypes) ==0:
                 types = ['factor','numeric','character','integer','logical']
                 self.dataTypes = []

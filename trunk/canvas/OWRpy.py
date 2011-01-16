@@ -197,7 +197,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         ## should be implimented by each widget.
         from redRGUI import qtWidgetBox
         children = self.controlArea.children() + self.bottomAreaRight.children() + self.bottomAreaCenter.children() + self.bottomAreaLeft.children()
-        print 'OWRpy= ',children
+        # print 'OWRpy= ',children
         #import re
         reportData = {}
         for i in children:

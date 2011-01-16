@@ -22,5 +22,3 @@ for p in packages:
 # survival
 
 ## http://www.red-r.org/packages/Red-R-1.75/upload.php
-
-#7z a -tzip -xr!*.svn* -xr!*.pyc -xr!*.pyo -xr!*strawberryPerl* -xr!*RedRmatplotlib* C:\Python26\Lib\site-packages\R.zip C:\Python26\Lib\site-packages\R\R-2.11.1\*

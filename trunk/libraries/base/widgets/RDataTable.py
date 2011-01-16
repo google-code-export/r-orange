@@ -56,7 +56,7 @@ class RDataTable(OWRpy):
         #button(saveTab, label="Set File", callback = self.chooseDirectory)
         #self.fileName = widgetLabel(saveTab, label="")
         self.separator = comboBox(saveTab, label = 'Seperator:', 
-        items = ['Comma', 'Tab', 'Space'], orientation = 'horizontal')
+        items = {',':'Comma', '\t':'Tab', ' ':'Space'}, orientation = 'horizontal')
         save = button(saveTab, label="Save As File", callback=self.writeFile,
         toolTip = "Write the table to a text file.")
         saveTab.layout().setAlignment(save,Qt.AlignRight)
@@ -199,12 +199,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         "Text file (*.csv *.tab *.txt );; All Files (*.*)")
         if name.isEmpty(): return
         name = unicode(name)
-        if self.separator.currentText() == 'Tab': #'tab'
-            sep = '\t'
-        elif self.separator.currentText() == 'Space':
-            sep = ' '
-        elif self.separator.currentText() == 'Comma':
-            sep = ','
+        sep = self.separator.currentId()
         #use the R function if the parent of the dict is an R object.
         if type(self.data) in [str, unicode]:
             self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, sep="'+sep+'")', wantType = 'NoConversion')

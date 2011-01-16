@@ -240,6 +240,7 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
         except Exception as inst:
             # print '##########################\n'*5 
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'redRObjects addInstance; error in setting settings or custom settings. <b>%s<b>' % inst)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
             
 
     instance.setProgressBarHandler(activeTab().progressBarHandler)   # set progress bar event handler

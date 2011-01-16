@@ -15,8 +15,6 @@ def __getDirectoryNames():
     canvasDir = os.path.join(redRDir, "canvas")
     canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
     rpyDir = os.path.join(redRDir, "canvas",'rpy')
-    #RDir = os.path.join(os.path.split(redRDir)[0], "R", 'Revo32','R-2.10.1')
-    RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.9.2')
     RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.11.1')
     widgetDir = os.path.join(redRDir, "libraries")
     libraryDir = os.path.join(redRDir, "libraries")
@@ -147,7 +145,6 @@ def loadSettings():
     settings.setdefault('red-RPackagesUpdated',0)
     settings.setdefault('checkedForUpdates',0)
     settings.setdefault('keepForXDays', 7)
-    settings.setdefault('language', 'French')
     ############################
     #Dubug and output settings##
     ############################
@@ -219,9 +216,9 @@ def addOrangeDirectoriesToPath(directoryNames):
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-
+# print __name__
 if __name__ =='redREnviron':
-    #print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
+    # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()

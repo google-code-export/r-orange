@@ -2,16 +2,16 @@ from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
-import redRReports
+import redRReports,redRLog
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from OrderedDict import OrderedDict
 
 class listBox(QListWidget,widgetState):
     def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, 
     orientation='vertical', selectionMode=QAbstractItemView.SingleSelection,
     enableDragDrop = 0, dragDropCallback = None, dataValidityCallback = None, sizeHint = None, 
     callback=None, toolTip = None, items = None, *args):
-        
         
         widgetState.__init__(self,widget,label,includeInReports)
         QListWidget.__init__(self, *args)
@@ -41,14 +41,87 @@ class listBox(QListWidget,widgetState):
             #self.setDragDropMode(QAbstractItemView.DragDrop)
             
             self.dragStartPosition = 0
-        if items and type(items) is list:
-            for x in items:
-                self.addItem(x)
         if toolTip:
             self.setToolTip(toolTip)
+        
+        self.items = OrderedDict()
+        if items:
+            self.addItems(items)
+        
         if callback:
             QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
+
+
+    def items(self):
+        return self.items()
+        # items = []
+        # for i in range(0, self.count()):
+            # items.append(self.item(i))
+        # return items
+    def getItems(self):
+        return self.items()
+        # items = []
+        # for i in range(0, self.count()):
+            # items.append(unicode(self.item(i).text()))
+        # return items
+    def addItem(self,id,item):
+        QListWidget.addItem(self,item)
+        self.items[id] = item
+    def addItems(self,items):
+        if type(items) in [dict,OrderedDict]:
+            for k,v in items.items():
+                self.addItem(k,v)
+        elif type(items) in [list]:
+            if len(items) > 0 and type(items[0]) is tuple:
+                for k,v in items:
+                    self.addItem(k,v)
+            else:
+                for v in items:
+                    self.addItem(v,v)
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,'In listBox should not use list')
+        else:
+            raise Exception('In listBox, addItems takes a list, dict or OrderedDict')
+
+    def setSelectedIds(self,ids):
+        for x in ids:
+            try:
+                self.item(self.items.keys().index(x)).setSelected(True)
+            except:
+                pass
+                
+    def update(self, items):
+        current = self.getSelectedIds()
+        self.clear()
+        self.addItems(items)
+        self.setSelectedIds(current)
         
+
+    def clear(self):
+        QListWidget.clear(self)
+        self.items = OrderedDict()
+
+    def invertSelection(self):
+        for i in range(self.count()):
+            if self.isItemSelected(self.item(i)):
+                self.item(i).setSelected(False)
+            else:
+                self.item(i).setSelected(True)
+    
+    def selectionCount(self):
+        return len(self.selectedIndexes())
+    def getCurrentSelection(self):
+            return [unicode(i.text()) for i in self.selectedItems()]
+    def getSelectedItems(self):
+        items = {}
+        for x in self.selectedIndexes():
+            items[self.items.keys()[x.row()]] = self.items.values()[x.row()]
+        return items
+    def getSelectedIds(self):
+        ids = []
+        for x in self.selectedIndexes():
+            ids.append(self.items.keys()[x.row()])
+        return ids
+    
     def sizeHint(self):
         return self.defaultSizeHint
     def startDrag(self, supportedActions):
@@ -144,70 +217,18 @@ class listBox(QListWidget,widgetState):
             ev.ignore()
 
     def getSettings(self):
-        # print 'saving list box'
-        items = []
-        selected = []
-        for i in range(self.count()):
-            # print i
-            items.append(unicode(self.item(i).text()))
-            if self.isItemSelected(self.item(i)):
-                selected.append(i)
-
-        r = {'items':items, 'selected':selected}
-        # print r
+        print 'saving list box'
+        r = {'items':self.items, 'selected':self.getSelectedIds()}
+        print r
         return r
     def loadSettings(self,data):
-        try:
-            print 'loading list box'
-            # print data
-            self.clear()
-            for x in data['items']:
-                self.addItem(x)
-            
-            for i in data['selected']:
-                self.setItemSelected(self.item(i), True)
-        except Exception as inst:
-            print 'Error occured in List Box loading: %s' % unicode(inst)
-                
-
-    def invertSelection(self):
-        for i in range(self.count()):
-            self.item(i).setSelected(not self.item(i).isSelected())
-            # if self.isItemSelected(self.item(i)):
-                # self.item(i).setSelected(False)
-            # else:
-                # self.item(i).setSelected(True)
-    
-    def selectionCount(self):
-        return len(self.selectedIndexes())
-        # i = 0
-        # for i in range(self.count()):
-            # if self.isItemSelected(self.item(i)): i = i + 1
-        # return i
-    def getCurrentSelection(self):
-            return [unicode(i.text()) for i in self.selectedItems()]
-                
-    def items(self):
-        items = []
-        for i in range(0, self.count()):
-            items.append(self.item(i))
-        return items
-    def getItems(self):
-        items = []
-        for i in range(0, self.count()):
-            items.append(unicode(self.item(i).text()))
-        return items
-        
-    def update(self, items):
-        current = [unicode(item.text()) for item in self.selectedItems()]
+        print 'loading list box'
+        print data
         self.clear()
-        self.addItems(items)
-        index = []
-        for t in current:
-            for lwi in self.findItems(t, Qt.MatchExactly):
-                index.append(lwi)
-        for i in index:
-            i.setSelected(True)
+        self.addItems(data['items'])
+        self.setSelectedIds(data['selected'])
+
+
     def getReportText(self, fileDir):
         items = self.getItems()
         selected = self.getCurrentSelection()

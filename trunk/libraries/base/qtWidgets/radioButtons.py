@@ -2,6 +2,9 @@ from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
 
+import redRReports,redRLog
+from OrderedDict import OrderedDict
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -29,39 +32,78 @@ class radioButtons(widgetState,QWidget):
         # else:
             # self.box.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,
             # QSizePolicy.Preferred))
-            
+        
+        self.items = OrderedDict()
         self.buttons = QButtonGroup(self.box)
-        for i,b in zip(range(len(buttons)),buttons):
-            w = QRadioButton(b)
-            if toolTips:
-                w.setToolTip(toolTips[i])
-            self.buttons.addButton(w)
-            self.box.layout().addWidget(w)
+        if buttons:
+            self.addButtons(buttons)
+
+        # for i,b in zip(range(len(buttons)),buttons):
+            # w = QRadioButton(b)
+            # if toolTips:
+                # w.setToolTip(toolTips[i])
+            # self.buttons.addButton(w)
+            # self.box.layout().addWidget(w)
 
         if callback:
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)
 
         if setChecked:
             self.setChecked(setChecked)
+    
+    def addButtons(self,buttons):
+        if type(buttons) in [dict,OrderedDict]:
+            for k,v in buttons.items():
+                self.addButton(k,v)
+        elif type(buttons) in [list]:
+            if len(buttons) > 0 and type(buttons[0]) is tuple:
+                for k,v in buttons:
+                    self.addButton(k,v)
+            else:
+                for v in buttons:
+                    self.addButton(v,v)
+
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,'In radioButtons should not use list')
+        else:
+            raise Exception('In radioButtons, addButtons takes a list, dict or OrderedDict')
+
+    def addButton(self,id, text,toolTip=None):
+        self.items[id] = text
+        w = QRadioButton(text)
+        if toolTip:
+            w.setToolTip(toolTip)
+        self.buttons.addButton(w,self.items.keys().index(id))
+        self.box.layout().addWidget(w)
+        
+    def setChecked(self,id):
+        buttons = self.buttons.buttons()
+        try:
+            self.buttons.button(self.items.keys().index(id)).setChecked(True)
+        except:
+            pass
+        # for i in self.buttons.buttons():
+            # if i.text() == id: i.setChecked(True)
+            # else: i.setChecked(False)
+    def getCheckedItem(self):
+        buttonId = self.buttons.checkedId()
+        if buttonId == -1:return
+        return {self.items.keys()[buttonId]: self.items[self.items.keys()[buttonId]]}
+    def getChecked(self):
+        buttonId = self.buttons.checkedId()
+        if buttonId == -1:return
+        return self.items[self.items.keys()[buttonId]]
+        
+        # if button == 0 or button == None or button.isEnabled()==False: return 0
+        # else: return unicode(button.text())
+    def getCheckedId(self):
+        buttonId = self.buttons.checkedId()
+        if buttonId == -1:return
+        return self.items.keys()[buttonId]
+        
     def setSizePolicy(self, h,w):
         # self.controlArea.setSizePolicy(h,w)
         # QWidget.setSizePolicy(self,h,w)
         self.box.setSizePolicy(h,w)
-        
-    def addButton(self,text,toolTip=None):
-        w = QRadioButton(text)
-        if toolTip:
-            w.setToolTip(toolTip)
-        self.buttons.addButton(w)
-        self.box.layout().addWidget(w)
-    def setChecked(self,id):
-        for i in self.buttons.buttons():
-            if i.text() == id: i.setChecked(True)
-            else: i.setChecked(False)
-    def getChecked(self):
-        button = self.buttons.checkedButton()
-        if button == 0 or button == None or button.isEnabled()==False: return 0
-        else: return unicode(button.text())
     
     def disable(self,buttons):
         for i in self.buttons.buttons():
@@ -70,12 +112,14 @@ class radioButtons(widgetState,QWidget):
     def enable(self,buttons):
         for i in self.buttons.buttons():
             if i.text() in buttons: i.setEnabled(True)
+    
     def getSettings(self):
         #print 'radioButtons getSettings' + self.getChecked()
-        r = {'checked': self.getChecked()}
+        r = {'items':self.items, 'checked': self.getCheckedId()}
         return r
     def loadSettings(self,data):
         #print 'radioButtons loadSettings' + data
+        #self.addButtons(data['items'])
         self.setChecked(data['checked'])
         
     def getReportText(self, fileDir):

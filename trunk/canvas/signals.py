@@ -4,9 +4,7 @@ import glob,os.path,redREnviron
 import imp, sys
 import imp, sys
 
-import redREnviron, gettext
-t = gettext.translation('messages', localedir = redREnviron.directoryNames['redRDir'], languages = ['French'])
-_ = t.ugettext
+
 
 # parent class of all signals.  This class holds base functions such as assignment and item setting
 class BaseRedRVariable:
@@ -60,7 +58,7 @@ class BaseRedRVariable:
             return False
     def __str__(self):
         ## print output for the class
-        string = _('Class: ')+unicode(self.__class__)+_('; Data: ')+unicode(self.data)
+        string = 'Class: '+unicode(self.__class__)+'; Data: '+unicode(self.data)
         
         return string
     def summary(self):

@@ -29,7 +29,7 @@ class plot(OWRpy):
         self.RFunctionParam_x = 'data'
         
         self.plotArea = graphicsView2(self.controlArea,label='Plot', displayLabel=False)
-        self.plotArea.plot(query = 'data', data = 'data')
+        
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
@@ -41,7 +41,9 @@ class plot(OWRpy):
                # print x, x.__class__
                # print 'aaaa', x.__dict__
                # print x.getReportText('a')
-        
+    def show(self):
+        OWRpy.show(self)
+        self.plotArea.plot(query = 'data', data = 'data')
     def processx(self, data):
         if data:
             self.data = data
@@ -137,40 +139,52 @@ class graphicsView2(QGraphicsView, widgetState):
         self.query = ''
         self.function = 'plot'
         self.layers = []
-        
-        self.options = {
-        'main': None
-        ,'xlab': None
-        ,'ylab': None
-        ,'bg': None
-        ,'cex.axis' : None
-        ,'cex.lab' : None
-        ,'cex.main' : None
-        ,'cex.sub' : None
-        ,'col' : None
-        ,'colAxis' : None
-        ,'col.main' : None
-        ,'colSub' : None
-        ,'family' : None
-        ,'fg' : None
-        ,'lty' : None
-        ,'lwd' : None
-        ,'legendNames' : None
-        ,'legendLocation' : "'bottomleft'"
-        ,'pch' : None
-        ,'dheight' :4
-        ,'dwidth' : 4
-        }
-        
-
-        self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']
-        self._replotAfterChange = True
-        
         self.image = 'plot'+unicode(time.time()) # the base file name without an extension
         self.imageFileName = ''
         self.currentScale = 1
 
-####################################################        
+    ################################
+    ####   Themes              #####
+    ################################
+        
+        
+        self.options = {
+            'main': {'value':"Title", 'function':lambda : self.updateOptions(self.optionWidgets['mainTitle'],'main') }
+            ,'xlab': {'value':"XLab", 'function':lambda : self.updateOptions(self.optionWidgets['xLab'],'xlab')}
+            ,'ylab': {'value':"YLab", 'function':lambda : self.updateOptions(self.optionWidgets['yLab'],'ylab')}
+            ,'col': {'value':None, 'function':self.generateColors}
+            ,'bg': {'when': 'before',
+                    'Rcall': 'par', 
+                    'value':None, 
+                    'function':lambda: self.setColor(self.optionWidgets['bgColor'],'bg')
+                    }
+        }
+        # ,'cex.axis' : None
+        # ,'cex.lab' : None
+        # ,'cex.main' : None
+        # ,'cex.sub' : None
+        # ,'col' : None
+        # ,'colAxis' : None
+        # ,'col.main' : None
+        # ,'colSub' : None
+        # ,'family' : None
+        # ,'fg' : None
+        # ,'lty' : None
+        # ,'lwd' : None
+        # ,'legendNames' : None
+        # ,'legendLocation' : "'bottomleft'"
+        # ,'pch' : None
+        # ,'dheight' :4
+        # ,'dwidth' : 4
+        # }
+        
+        self.optionWidgets = {}
+        self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']       
+
+
+    ################################
+    ####   Setup Tabs          #####
+    ################################
         self.graphicOptionsButton = button(self.topArea,label='Graphic Options',
         toggleButton = True,callback=self.displayGraphicOptions)
         self.graphicOptions = tabWidget(self.topArea)
@@ -182,49 +196,62 @@ class graphicsView2(QGraphicsView, widgetState):
         firstTab = widgetBox(self.labels,orientation='horizontal')
         secondTab = widgetBox(self.points,orientation='horizontal')
         advancedTab = widgetBox(self.advanced,orientation='vertical')
+    ################################
+    ####   Advanced Tabs       #####
+    ################################
         
-        self.extrasLineEdit = lineEdit(advancedTab, label = 'Advanced plotting parameters', 
+        self.optionWidgets['extrasLineEdit'] = lineEdit(advancedTab, label = 'Advanced plotting parameters', 
         toolTip = 'Add extra parameters to the main plot.\nPlease see documentation for more details about parameters.')
         
-        self.onlyAdvanced = checkBox(advancedTab,
+        self.optionWidgets['onlyAdvanced'] = checkBox(advancedTab,
         buttons=['Only use the advanced options here'],
         label='advancedOnly',displayLabel=False)
 
+    ################################
+    ####   First Tabs          #####
+    ################################
         labelBox = groupBox(firstTab,label='Labels', orientation='vertical',
         sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
+       
+        self.optionWidgets['mainTitle'] = lineEdit(labelBox,label='Main Title', text=self.options['main']['value'])
         
-        self.mainTitle = lineEdit(labelBox,label='Main Title',
-        textChangedCallBack=lambda : self.updateOptions(self.mainTitle,'main'))
+        self.optionWidgets['xLab'] = lineEdit(labelBox,label='X Axis Label', text=self.options['xlab']['value'])
         
-        self.xLab = lineEdit(labelBox,label='X Axis Label',
-        textChangedCallBack=lambda : self.updateOptions(self.xLab,'xlab'))
+        self.optionWidgets['yLab'] = lineEdit(labelBox,label='Y Axis Label', text=self.options['ylab']['value'])
+
+        # self.optionWidgets['mainTitle'] = lineEdit(labelBox,label='Main Title', text=self.options['main'],
+        # textChangedCallBack=lambda : self.updateOptions(self.optionWidgets['mainTitle'],'main'))
         
-        self.yLab = lineEdit(labelBox,label='Y Axis Label',
-        textChangedCallBack=lambda : self.updateOptions(self.yLab,'ylab'))
+        # self.optionWidgets['xLab'] = lineEdit(labelBox,label='X Axis Label', text=self.options['xlab'],
+        # textChangedCallBack=lambda : self.updateOptions(self.optionWidgets['xLab'],'xlab'))
+        
+        # self.optionWidgets['yLab'] = lineEdit(labelBox,label='Y Axis Label',
+        # textChangedCallBack=lambda : self.updateOptions(self.optionWidgets['yLab'],'ylab'))
         
         fontBox = groupBox(firstTab,label='Fonts', orientation='vertical',
         sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
         fontColumnBox = widgetBox(fontBox,orientation='horizontal')
         fontColumn1 = widgetBox(fontColumnBox,orientation='vertical')
         fontColumn2 = widgetBox(fontColumnBox,orientation='vertical')
-        self.fontCombo = comboBox(fontColumn1, items = ['serif', 'sans', 'mono'], ids=['serif', 'sans', 'mono'],
-        label='Font Family', callback = lambda : self.updateOptions(self.fontCombo,'family'))
         
-        self.plotFont = spinBox(fontColumn1, label = 'Plot Text Size', min = 1, max = 500, value = 100, 
-        callback = lambda  :self.setFontMagnification(self.plotFont,'cex'))
+        self.optionWidgets['fontCombo'] = comboBox(fontColumn1, items = ['serif', 'sans', 'mono'], ids=['serif', 'sans', 'mono'],
+        label='Font Family', callback = lambda : self.updateOptions(self.optionWidgets['fontCombo'],'family'))
         
-        self.axisFont = spinBox(fontColumn1, label = 'Axis Text Size', min = 1, max = 500, value = 100, 
-        callback = lambda  :self.setFontMagnification(self.axisFont,'cex.axis'))
+        self.optionWidgets['plotFont'] = spinBox(fontColumn1, label = 'Plot Text Size', min = 1, max = 500, value = 100, 
+        callback = lambda:self.setFontMagnification(self.optionWidgets['plotFont'] ,'cex'))
+        
+        self.optionWidgets['axisFont'] = spinBox(fontColumn1, label = 'Axis Text Size', min = 1, max = 500, value = 100, 
+        callback = lambda:self.setFontMagnification(self.optionWidgets['axisFont'],'cex.axis'))
         
 
-        self.mainFont = spinBox(fontColumn2, label = 'Title Text Size', min = 1, max = 500, value = 100, 
-        callback = lambda  :self.setFontMagnification(self.mainFont,'cex.main'))
+        self.optionWidgets['mainFont'] = spinBox(fontColumn2, label = 'Title Text Size', min = 1, max = 500, value = 100, 
+        callback = lambda  :self.setFontMagnification(self.optionWidgets['mainFont'],'cex.main'))
         
-        self.subFont = spinBox(fontColumn2, label = 'Subtitle Text Size', min = 1, max = 500, value = 100, 
-        callback = lambda  :self.setFontMagnification(self.subFont,'cex.sub'))
+        self.optionWidgets['subFont'] = spinBox(fontColumn2, label = 'Subtitle Text Size', min = 1, max = 500, value = 100, 
+        callback = lambda  :self.setFontMagnification(self.optionWidgets['subFont'],'cex.sub'))
 
-        self.labFont = spinBox(fontColumn2, label = ' XY Label Text Size', min = 1, max = 500, value = 100, 
-        callback = lambda  :self.setFontMagnification(self.labFont,'cex.lab'))
+        self.optionWidgets['labFont'] = spinBox(fontColumn2, label = ' XY Label Text Size', min = 1, max = 500, value = 100, 
+        callback = lambda  :self.setFontMagnification(self.optionWidgets['labFont'],'cex.lab'))
         
 
         colorBox = groupBox(firstTab,label='Colors', orientation='vertical',
@@ -234,36 +261,43 @@ class graphicsView2(QGraphicsView, widgetState):
         colorColumn1 = widgetBox(colorColumnBox,orientation='vertical')
         colorColumn2 = widgetBox(colorColumnBox,orientation='vertical')
       
-        self.colorSeries = comboBox(colorColumn1,label='Generate Colors Series',orientation='vertical',
-        items = ['rainbow','heat.colors','terrain.colors','topo.colors','cm.colors'],
+        self.optionWidgets['colorSeries'] = comboBox(colorColumn1,label='Generate Colors Series',orientation='vertical',
+        items = ['select','rainbow','heat.colors','terrain.colors','topo.colors','cm.colors'],
         callback=self.generateColors)
         
-        self.colorSeriesLen = spinBox(colorColumn1,label='Length of Series',min=1,max=500,value=1,
+        self.optionWidgets['colorSeriesLen'] = spinBox(colorColumn1,label='Length of Series',min=1,max=500,value=1,
         callback=self.generateColors)
-        self.customColors = button(colorColumn1,label='Custom Plot Colors',callback=self.setPlotColors)
-                        
-        self.titleColor = self.colorSelector(colorColumn2,label='Title Color',color='000000',
-        callback=lambda: self.setColor(self.titleColor,'col.main'))
         
-        self.subColor = self.colorSelector(colorColumn2,label='Subtitle Color',color='000000',
-        callback=lambda: self.setColor(self.subColor,'col.sub'))
+        self.optionWidgets['customColors'] = button(colorColumn1,label='Custom Plot Colors',callback=self.setPlotColors)
+                 
+        self.optionWidgets['bgColor'] = self.colorSelector(colorColumn2,label='Background Color',color='#FFFFFF')
         
-        self.labColor = self.colorSelector(colorColumn2,label='Subtitle Color',color='000000',
-        callback=lambda: self.setColor(self.labColor,'col.lab'))
+        self.optionWidgets['titleColor'] = self.colorSelector(colorColumn2,label='Title Color',color='#000000',
+        callback=lambda: self.setColor(self.optionWidgets['titleColor'],'col.main'))
+        
+        self.optionWidgets['subColor'] = self.colorSelector(colorColumn2,label='Subtitle Color',color='#000000',
+        callback=lambda: self.setColor(self.optionWidgets['subColor'],'col.sub'))
+        
+        self.optionWidgets['labColor'] = self.colorSelector(colorColumn2,label='Subtitle Color',color='#000000',
+        callback=lambda: self.setColor(self.optionWidgets['labColor'],'col.lab'))
 
-        self.axisColor = self.colorSelector(colorColumn2,label='Axis Color',color='000000',
-        callback=lambda: self.setColor(self.axisColor,'col.axis'))
+        self.optionWidgets['axisColor'] = self.colorSelector(colorColumn2,label='Axis Color',color='#000000',
+        callback=lambda: self.setColor(self.optionWidgets['axisColor'],'col.axis'))
+    ################################
+    ####   Second Tabs         #####
+    ################################
         
         lineBox = groupBox(secondTab,label='Lines', orientation='vertical',
         sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
        
-        self.linesListBox = listBox(lineBox, label = 'Line types', displayLabel=False,
+        self.optionWidgets['linesListBox'] = listBox(lineBox, label = 'Line types', displayLabel=False,
+        selectionMode = QAbstractItemView.ExtendedSelection,
         items = ['________', '- - - -', '........', '_._._._.', 
         '__ __ __', '__.__.__.'], callback = self.setLineTypes)
-        self.linesListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         
-        self.lineWidth = spinBox(lineBox,label='Line Width',min=1,max=50,value=1,
-        callback = lambda  :self.updateOptions(self.lineWidth,'lwd'))
+        
+        self.optionWidgets['lineWidth'] = spinBox(lineBox,label='Line Width',min=1,max=50,value=1,
+        callback = lambda  :self.updateOptions(self.optionWidgets['lineWidth'],'lwd'))
         
         pointBox = groupBox(secondTab,label='Points', orientation='vertical',
         sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
@@ -276,18 +310,17 @@ class graphicsView2(QGraphicsView, widgetState):
         for i in range(32,128):
             items.append('%s %d' % (chr(i), i))
             
-        self.pointListBox = listBox(pointBox, label = 'Line types', displayLabel=False,
-        items = items, callback = self.selectPointType)
-        self.pointListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-
-        # self.setPointType = lineEdit(pointBox,label='Points\n(comma delimited)',callback=self.setPointType)
-        
-        button(self.points,label='Update Graphic', alignment=Qt.AlignRight, callback=self.replot)
-        button(self.labels,label='Update Graphic', alignment=Qt.AlignRight, callback=self.replot)
+        self.optionWidgets['pointListBox'] = listBox(pointBox, label = 'Line types', displayLabel=False,
+        selectionMode = QAbstractItemView.ExtendedSelection, items = items, callback = self.selectPointType)
         
 
-####################################################
-        ### right click menu
+        button(self.points,label='Update Graphic', alignment=Qt.AlignRight, callback=self.plotMultiple)
+        button(self.labels,label='Update Graphic', alignment=Qt.AlignRight, callback=self.plotMultiple)
+
+        
+    ################################
+    ### right click menu     #######
+    ################################
         self.menu = QMenu(self)
         save = self.menu.addMenu('Save As')
         save.addAction('Bitmap')
@@ -306,49 +339,35 @@ class graphicsView2(QGraphicsView, widgetState):
         self.dialog.setLayout(QHBoxLayout())
         
         self.standardImageType = 'svg'
-        self.plotExactlySwitch = False ## a switch that can be activated to allow plotting exactly as the plot is sent, no function generation will be performed and all attribute alteration will be disabled
         QObject.connect(self.dialog, SIGNAL('finished(int)'), self.dialogClosed)
-    
+
+
+
 
     ################################
-    ####  Tab Actions         #####
+    #### Plot Option Widgets   #####
     ################################
+    
     def colorSelector(self,parent,label,color,callback=None):
         box = widgetBox(parent,orientation='horizontal')
-        
+        box.color = color
         a = widgetLabel(box,label=label)
         a.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         a.setMaximumWidth(70)
         a.setMinimumWidth(70)
         # colorBox = widgetBox(box,sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
         # colorBox.setFixedSize(QSize(40,30))
-        r = button(box,label='  ', callback=callback)
+        r = button(box,label=' ', callback=lambda:self.showColorDialog(r,box))
         box.setStyleSheet("QPushButton  { color: %s; background-color: %s }" % (color,color))
         return box
-    def setColor(self,qtWidget,var):
-        colorDialog = QColorDialog(self)
-        self.options[var] = "'%s'" % unicode(colorDialog.getColor().name())
+    def showColorDialog(self,qtWidget,box):
+        colorDialog = QColorDialog(self)        
+        color = colorDialog.getColor().name()
         colorDialog.hide()
-        #print type(qtWidget), self.options[var]
+        qtWidget.setStyleSheet("QPushButton  { color: %s; background-color: %s }" % (color,color))
         
-        qtWidget.setStyleSheet("QPushButton  { color: %s; background-color: %s }" % (self.options[var],self.options[var]))
-        #qtWidget.setStyleSheet("* { color: %s }" % self.options[var])
-    
-    def setPlotColors(self):
-        colorDialog = colorListDialog(data = self.data)
-        colorDialog.setColors(self.colorList)
-        colorDialog.exec_()
-        self.options['col'] = 'c('+','.join([unicode(a) for a in colorDialog.listOfColors])+')'
-        self.colorList = colorDialog.listOfColors
-        if self.options['col'] == 'c()':
-           self.options['col'] = 'c("#FFFFFF")'
-        colorDialog.hide()
-        # if self._replotAfterChange:
-            # self.replot()
+        box.color = color
 
-    def generateColors(self):
-        series = self.colorSeries.currentText()
-        self.options['col'] = '%s(%d)' % (series,self.colorSeriesLen.value())
     
     def displayGraphicOptions(self):
         if self.graphicOptionsButton.isChecked():
@@ -356,23 +375,47 @@ class graphicsView2(QGraphicsView, widgetState):
         else:
             self.graphicOptions.hide()
     
+
+    ################################
+    ####  Tab Actions         #####
+    ################################
+    def setColor(self,qtWidget,var):
+        self.options[var]['value'] = "'%s'" % qtWidget.color
+    
+    def setPlotColors(self):
+        colorDialog = colorListDialog(data = self.data)
+        colorDialog.setColors(self.colorList)
+        colorDialog.exec_()
+        self.options['col']['value'] = 'c('+','.join([unicode(a) for a in colorDialog.listOfColors])+')'
+        self.colorList = colorDialog.listOfColors
+        if self.options['col']['value'] == 'c()':
+           self.options['col']['value'] = 'c("#FFFFFF")'
+        colorDialog.hide()
+        # if self._replotAfterChange:
+            # self.replot()
+
+    def generateColors(self):
+        if self.optionWidgets['colorSeries'].currentText() == 'select':return
+        series = self.optionWidgets['colorSeries'].currentText()
+        self.options['col']['value'] = '%s(%d)' % (series,self.optionWidgets['colorSeriesLen'].value())
+    
     def updateOptions(self,qtWidget,var):
         if isinstance(qtWidget,lineEdit):
-            self.options[var] = "'%s'" % qtWidget.text()
+            self.options[var]['value'] = "'%s'" % qtWidget.text()
         elif isinstance(qtWidget,comboBox):
-            self.options[var] = "'%s'" % qtWidget.currentText()
+            self.options[var]['value'] = "'%s'" % qtWidget.currentText()
         elif isinstance(qtWidget,spinBox):
-            self.options[var] = qtWidget.value()
+            self.options[var]['value'] = qtWidget.value()
     
     def setFontMagnification(self,qtWidget,var):
         if float(qtWidget.value())/100 > 0:
-            self.options[var] = float(qtWidget.value())/100
+            self.options[var]['value'] = float(qtWidget.value())/100
         else:
-            self.options[var] = 1
+            self.options[var]['value'] = 1
     
     def setLineTypes(self):
         numbers = []
-        for item in self.linesListBox.selectedItems():
+        for item in self.optionWidgets['linesListBox'].selectedItems():
             if item.text() == '________':
                 numbers.append('1')
             elif item.text() == '- - - -':
@@ -385,26 +428,19 @@ class graphicsView2(QGraphicsView, widgetState):
                 numbers.append('5')
             elif item.text() == '__.__.__.':
                 numbers.append('6')
-        print numbers
         
-        self.options['lty'] = 'c('+','.join(numbers)+')'
+        self.options['lty']['value'] = 'c('+','.join(numbers)+')'
     def selectPointType(self):
         points = []
-        for item in self.pointListBox.selectedItems():
+        for item in self.optionWidgets['pointListBox'].selectedItems():
             a = unicode(item.text()).split(' ')
             if len(a) == 2:
                 points.append(a[1])
             else:
                 points.append(unicode(item.text()))
         
-        self.options['pch'] = 'c('+','.join(points)+')'
+        self.options['pch']['value'] = 'c('+','.join(points)+')'
     
-    def setPointType(self):
-        points = self.pointTypes.split(',')
-        points = [ord(x.strip()) for x in points]
-        
-        self.options['pch'] = 'c('+','.join(points)+')'
-        
         
     ##############################
     ### Plotting #################\
@@ -439,16 +475,21 @@ class graphicsView2(QGraphicsView, widgetState):
     def _setLegendLocation(self, location):
         self._legendLocation = location
     def _setParameters(self):
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(self.options)
+        self.calls = {'before':[], 'after':[]}
         inj = ''
         injection = []
         for k,v in self.options.items():
-            if v:
-                injection.append('%s = %s' % (k,v))
-            
-
+            v['function']()               
+            if v['value']:
+                if 'when' not in v.keys() or v['when'] =='main':
+                    injection.append('%s = %s' % (k,v['value']))
+                else:
+                    self.calls[v['when']].append('%s( %s = %s )' %  (v['Rcall'],k,v['value']))
+        
         inj = ','.join(injection)
-        print inj
-
         return inj
     def _startRDevice(self, dwidth, dheight, imageType):
         if imageType not in ['svg', 'png', 'jpeg']:
@@ -475,40 +516,44 @@ class graphicsView2(QGraphicsView, widgetState):
                 
     def plot(self, query, function = 'plot', dwidth=6, dheight=6, data = None, legend = False):
         ## performs a quick plot given a query and an imageType
-        self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
-            
-
-    def plotMultiple(self, query, function = 'plot', dwidth = 6, dheight = 6, layers = [], 
-    data = None, legend = False):
-        ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.data = data
         self.function = function
         self.query = query
-        self._startRDevice(dwidth, dheight, self.standardImageType)
+        self.legend = legend
+        self.layers = []
+        self._dwidth = dwidth
+        self._dheight = dheight
+           
+        self.plotMultiple()
         
-        if not self.plotExactlySwitch:
-            self.extras = self._setParameters()
-            if unicode(self.extrasLineEdit.text()) != '':
-                self.extras += ', '+unicode(self.extrasLineEdit.text())
-            if self.extras != '':
-                fullquery = '%s(%s, %s)' % (function, query, self.extras)
-            else:
-                fullquery = '%s(%s)' % (function, query)
+    def plotMultiple(self):
+        ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
+        self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
+        
+        self.extras = self._setParameters()
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(self.calls)
+
+        if unicode(self.optionWidgets['extrasLineEdit'].text()) != '':
+            self.extras += ', '+unicode(self.optionWidgets['extrasLineEdit'].text())
+        if self.extras != '':
+            fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
         else:
-            fullquery = self.query
+            fullquery = '%s(%s)' % (self.function, self.query)
         
         try:
-            self.R(fullquery)
-        
-            
+            for x in self.calls['before']:
+                self.R(x)
             print fullquery
-            if len(layers) > 0:
-                for l in layers:
+            self.R(fullquery)
+            for x in self.calls['after']:
+                self.R(x)
+            if len(self.layers) > 0:
+                for l in self.layers:
                     self.R(l)
-            if legend:
+            if self.legend:
                 self._setLegend()
-            fileName = unicode(self.imageFileName)
-            print fileName
         except Exception as inst:
             self.R('dev.off()') ## we still need to turn off the graphics device
             print 'Plotting exception occured'
@@ -516,11 +561,7 @@ class graphicsView2(QGraphicsView, widgetState):
         self.R('dev.off()')
         self.clear()
         fileName = unicode(self.imageFileName)
-        print fileName
         self.addImage(fileName)
-        self.layers = layers
-        self._dwidth = dwidth
-        self._dheight = dheight
         self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
         
     def setExtrasLineEditEnabled(self, enabled = True):
@@ -530,34 +571,6 @@ class graphicsView2(QGraphicsView, widgetState):
             self.extrasLineEdit.show()
         else:
             self.extrasLineEdit.hide()
-    def setReplotAfterChange(self, replot = True):
-        if replot:
-            self._replotAfterChange = True
-        else:
-            self._replotAfterChange = False
-    def replot(self):
-        if self.query == '': return ## no plot can be generated.
-        self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
-        if not self.plotExactlySwitch:
-            self.extras = self._setParameters()
-            if unicode(self.extrasLineEdit.text()) != '':
-                self.extras += ', '+unicode(self.extrasLineEdit.text())
-            if self.extras != '':
-                fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
-            else:
-                fullquery = '%s(%s)' % (self.function, self.query)
-        else:
-            fullquery = self.query
-        
-        
-        self.R(fullquery)
-        if len(self.layers) > 0:
-            for l in self.layers:
-                self.R(l)
-        self.R('dev.off()')
-        self.clear()
-        fileName = unicode(self.imageFileName)
-        self.addImage(fileName)
     def printMe(self):
         printer = QPrinter()
         printDialog = QPrintDialog(printer)

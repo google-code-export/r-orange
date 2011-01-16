@@ -15,10 +15,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sip
 
-import redREnviron, gettext
-t = gettext.translation('messages', localedir = os.path.join(redREnviron.directoryNames['redRDir'], 'libraries', 'base', 'meta', 'languages'), languages = ['French'])
-_ = t.ugettext
-
 class filterTable(widgetState, QTableView):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
     editable=False, sortable=True, filterable=False,
@@ -403,38 +399,38 @@ class filterTable(widgetState, QTableView):
         filters  = []
         for col,criteria in self.criteriaList.items():
             #print 'in loop', col,criteria['method']
-            if _('Numeric Equals') == criteria['method']:
+            if 'Numeric Equals' == criteria['method']:
                 filters.append('%s[,%s] == %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Does Not Equal') == criteria['method']:
+            elif 'Numeric Does Not Equal' == criteria['method']:
                 filters.append('%s[,%s] != %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Greater Than') == criteria['method']:
+            elif 'Numeric Greater Than' == criteria['method']:
                 filters.append('%s[,%s] > %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Greater Than Or Equal To') == criteria['method']:
+            elif 'Numeric Greater Than Or Equal To' == criteria['method']:
                 filters.append('%s[,%s] >= %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Less Than') == criteria['method']:
+            elif 'Numeric Less Than' == criteria['method']:
                 filters.append('%s[,%s] < %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Less Than or Equal To') == criteria['method']:
+            elif 'Numeric Less Than or Equal To' == criteria['method']:
                 filters.append('%s[,%s] <= %s' % (self.Rdata,col,criteria['value']))
-            elif _('Numeric Between\n(2 numbers comma\nseparated, inclusive)') == criteria['method']:
+            elif 'Numeric Between\n(2 numbers comma\nseparated, inclusive)' == criteria['method']:
                 (start,comma,stop) = criteria['value'].partition(',')
                 if start !='' and stop !='' or comma == ',':
                     filters.append('%s[,%s] >= %s & %s[,%s] <= %s' % (self.Rdata,col,start,self.Rdata,col,stop))
-            elif _('Numeric Not Between\n(2 numbers comma\nseparated)') == criteria['method']:
+            elif 'Numeric Not Between\n(2 numbers comma\nseparated)' == criteria['method']:
                 (start,comma, stop) = criteria['value'].partition(',')
                 if start !='' and stop !='' or comma == ',':
                     filters.append('%s[,%s] < %s | %s[,%s] > %s' % (self.Rdata,col,start,self.Rdata,col,stop))
 
-            elif _('String Equals') == criteria['method']:
+            elif 'String Equals' == criteria['method']:
                 filters.append('%s[,%s] == "%s"' % (self.Rdata,col,criteria['value']))
-            elif _('String Does Not Equal') == criteria['method']:
+            elif 'String Does Not Equal' == criteria['method']:
                 filters.append('%s[,%s] != "%s"' % (self.Rdata,col,criteria['value']))
-            elif _('String Begins With') == criteria['method']:
+            elif 'String Begins With' == criteria['method']:
                 filters.append('grepl("^%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif _('String Ends With') == criteria['method']:
+            elif 'String Ends With' == criteria['method']:
                 filters.append('grepl("%s$",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif _('String Contains') == criteria['method']:
+            elif 'String Contains' == criteria['method']:
                 filters.append('grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif _('String Does Not Contain') == criteria['method']:
+            elif 'String Does Not Contain' == criteria['method']:
                 filters.append('!grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
             
             
@@ -490,7 +486,7 @@ class filterTable(widgetState, QTableView):
         print 'loadSettings for a filter table'
         # print data
         if not data['Rdata']: return 
-        progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
+        progressBar = self.startProgressBar('Filter Table Loading', 'Loading Fiter Table', 50)
         self.Rdata = data['Rdata']
         self.criteriaList = data['criteriaList']
         print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
@@ -502,7 +498,7 @@ class filterTable(widgetState, QTableView):
         # print selModel
         if 'selection' in data.keys() and len(data['selection']):
             if len(data['selection']) > 1000:
-                mb = QMessageBox.question(None, _('Setting Selection'), _('There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.') % self.label, QMessageBox.Yes, QMessageBox.No)
+                mb = QMessageBox.question(None, 'Setting Selection', 'There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.' % self.label, QMessageBox.Yes, QMessageBox.No)
                 if mb.exec_() == QMessageBox.No:
                 
                     progressBar.setLabelText('Loading Selections')
@@ -520,8 +516,12 @@ class filterTable(widgetState, QTableView):
         sip.delete(self)
     def getReportText(self, fileDir):
         if self.getFilteredData():
-            limit = min(self.tm.rowCount(self),1000)
+            limit = min(self.tm.rowCount(self),50)
+            # import time
+            # start = time.time()
+            # print 'start'
             data = self.R('as.matrix(%s[1:%d,])'% (self.getFilteredData(),limit))
+            # print 'stop', time
             colNames = self.R('colnames(%s)' % self.getFilteredData())
             # text = redRReports.createTable(data, columnNames = colNames)
             return {self.widgetName:{'includeInReports': self.includeInReports, 'type':'table', 

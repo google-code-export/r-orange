@@ -48,6 +48,10 @@ class widgetSession():
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
         
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(settings)
+       
         
         
         #settingsID = self.sqlite.saveObject(settings)
@@ -84,7 +88,7 @@ class widgetSession():
                         #ok = False
                         return False
                 return True
-        elif type(d) in [type(None), str, int, float, bool, numpy.float64]:  # list of allowed save types, may epand in the future considerably
+        elif type(d) in [type(None), str,unicode, int, float, bool, numpy.float64]:  # list of allowed save types, may epand in the future considerably
             return True
         elif isinstance(d, signals.BaseRedRVariable):
             return True
