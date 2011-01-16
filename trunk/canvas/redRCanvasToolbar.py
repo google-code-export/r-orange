@@ -644,21 +644,24 @@ class SearchBox2(lineEdit):
         self.listWidget.setAlternatingRowColors(True)
         self.delimiters = ' '          # by default, we only allow selection of one element
         self.itemsAsStrings = []        # a list of strings that appear in the list widget
-        self.itemsAsItems = items          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
+        self.itemsAsItems = {}          # can be a list of QListWidgetItems or a list of strings (the same as self.itemsAsStrings)
         
             
         self.setItems(redRObjects.widgetRegistry()['widgets'])
     def setItems(self, items):
+        # print items
         self.itemsAsItems = items
-        if type(items) == dict:
-            self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) for name,item in items.items()]
+        # print '################', type(items), items
+        # if type(items) == dict:
+        self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) 
+        for name,item in items.items()]
     def updateSuggestedItems(self):
         self.listWidget.setUpdatesEnabled(0)
         self.model.clear()
         last = self.getLastTextItem()
         
         tuples = zip(self.itemsAsStrings, self.itemsAsItems.values())
-
+        
         if not self.caseSensitive:
             tuples = [(text.lower(), item) for (text, item) in tuples]
             last = [l.lower() for l in last]

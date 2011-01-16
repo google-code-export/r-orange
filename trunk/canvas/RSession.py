@@ -31,7 +31,7 @@ os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
 import rpy3.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import canvas.redrrpy._conversion as co
+import redrrpy._conversion as co
 import redRLog
 
 mutex = QMutex()
