@@ -25,6 +25,7 @@ try:
     qRed(-1)
     wantsPositiveColor = False
 except:
+    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
     wantsPositiveColor = True
 
 def signedColor(long):

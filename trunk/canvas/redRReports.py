@@ -138,6 +138,7 @@ class reports(QWizard):
                 item.pointer['includeInReports'] = False
             # print item.pointer
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             #print 'do nothing'
             pass
         
@@ -199,6 +200,7 @@ class reports(QWizard):
             if key in ['numChrLimit', 'numRowLimit']:
                 dataPointer[key] = int(newValue)
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
         # import pprint
         # pp = pprint.PrettyPrinter(indent=4)
@@ -293,6 +295,7 @@ class reports(QWizard):
                 try:
                     os.startfile(name,'open')
                 except:
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                     mb = QMessageBox(_("Cannot Open File"), 
                     _("Red-R cannot open the reports file. Please open the file manually.\nThis is not a problem with Red-R, it is a problem with your document viewer."), 
                     QMessageBox.Information, 

@@ -254,6 +254,7 @@ class widgetSession():
             
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
             ## kick over to compatibility layer to add the settings. for 175 attributes
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             try:
                 for (key, val) in d.items():
                     ## find the libraries directory
@@ -313,6 +314,7 @@ class widgetSession():
             settings = cPickle.load(file)
             self.setSettings(settings, globalSettings = True)
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
         
     

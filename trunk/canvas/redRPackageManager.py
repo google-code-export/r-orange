@@ -95,6 +95,7 @@ class packageManager:
                 self.installRRP(package,path)
                 redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s from URL %(URL)s into path %(PATH)s') % {'PACKAGENAME':packageName, 'URL':url, 'PATH':path})
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 try:
                     packageName = unicode(package+'-'+self.sitePackages[package]['Version']['Number']+'.zip')
                     url = unicode(self.repository+'/'+package+'/'+packageName)

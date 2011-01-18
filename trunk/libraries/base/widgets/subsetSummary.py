@@ -11,6 +11,8 @@ from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.textEdit import textEdit
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class subsetSummary(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -19,19 +21,19 @@ class subsetSummary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', 'R Variable Object', redRRDataFrame, self.processobject)
-        self.namesList = redRListBox(self.controlArea, label = 'Splitting Element:')
+        self.inputs.addInput('id0', _('R Variable Object'), redRRDataFrame, self.processobject)
+        self.namesList = redRListBox(self.controlArea, label = _('Splitting Element:'))
         self.namesList.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.processOnConnect = checkBox(self.controlArea, buttons = ['Process On Connect'], setChecked = 'Process On Connect')
+        self.processOnConnect = checkBox(self.controlArea, buttons = [_('Process On Connect')], setChecked = _('Process On Connect'))
         
-        redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = _("RoutputWindow"))
     def processobject(self, data):
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
             self.namesList.update(self.R('names('+self.RFunctionParam_object+')', wantType = 'list'))
-            if 'Process On Connect' in self.processOnConnect.getChecked():
+            if _('Process On Connect') in self.processOnConnect.getChecked():
                 
                 self.commitFunction()
         else:
@@ -44,7 +46,3 @@ class subsetSummary(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-    def getReportText(self, fileDir):
-        text = 'Summary of attached data:\n\n'
-        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
-        return text

@@ -9,7 +9,8 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 import libraries.base.signalClasses as signals
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RedRrbind(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -17,12 +18,12 @@ class RedRrbind(OWRpy):
         self.setRvariableNames(["rbind"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput("x", "Data", [signals.RDataFrame.RDataFrame, signals.RVector.RVector], self.processx, multiple = True)
-        self.outputs.addOutput("rbind Output","Joined Data", signals.RDataFrame.RDataFrame)
-        self.rowcolnames = redRcomboBox(self.controlArea, label = 'Source of Row / Column Names:', callback = self.commitFunction)
-        self.bindingMode = redRRadioButtons(self.controlArea, label = 'Binding Mode:', buttons = ['Row', 'Column'], setChecked = 'Row')
-        self.RFunctionParamdeparse_level_lineEdit = redRlineEdit(self.controlArea, label = "Deparse Level:", text = '1')
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        self.inputs.addInput("x", _("Data"), [signals.RDataFrame.RDataFrame, signals.RVector.RVector], self.processx, multiple = True)
+        self.outputs.addOutput("rbind Output",_("Joined Data"), signals.RDataFrame.RDataFrame)
+        self.rowcolnames = redRcomboBox(self.controlArea, label = _('Source of Row / Column Names:'), callback = self.commitFunction)
+        self.bindingMode = redRRadioButtons(self.controlArea, label = _('Binding Mode:'), buttons = [_('Row'), _('Column')], setChecked = _('Row'))
+        self.RFunctionParamdeparse_level_lineEdit = redRlineEdit(self.controlArea, label = _("Deparse Level:"), text = '1')
+        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data, id):
         
         if data:

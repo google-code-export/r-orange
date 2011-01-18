@@ -19,7 +19,8 @@ from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class apply(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -27,9 +28,9 @@ class apply(OWRpy):
         self.setRvariableNames(["apply"])
         self.numDims = 2
         self.data=None
-        self.inputs.addInput('id0', 'X', redRRMatrix, self.processX)
+        self.inputs.addInput('id0', _('X'), redRRMatrix, self.processX)
 
-        self.outputs.addOutput('id0', 'apply Output', redRRDataFrame)
+        self.outputs.addOutput('id0', _('apply Output'), redRRDataFrame)
 
         
         area = widgetBox(self.controlArea,orientation='horizontal')       
@@ -38,39 +39,39 @@ class apply(OWRpy):
         box.setMinimumWidth(200)
         area.layout().setAlignment(box,Qt.AlignLeft)
         
-        self.functions =  listBox(box,  label = "Select Function",
+        self.functions =  listBox(box,  label = _("Select Function"),
         items=['mean','median','max','min','sum','log2', 'log10'],callback=self.functionSelect)
         self.functions.setSelectionMode(QAbstractItemView.SingleSelection)
         
         separator(box,height=10)
-        self.functionText = redRTextEdit(box,label='Function:', orientation='vertical')
-        self.parameters = redRLineEdit(box,label='Additional Parameters:', orientation='vertical')
+        self.functionText = redRTextEdit(box,label=_('Function:'), orientation='vertical')
+        self.parameters = redRLineEdit(box,label=_('Additional Parameters:'), orientation='vertical')
         
-        self.demension =  radioButtons(box, label = "To:", buttons = ['Rows', 'Columns',''],
-        setChecked='Rows', orientation='horizontal',callback= lambda: self.dimensionChange(1))
-        self.indexSpinBox = RedRSpinBox(self.demension.box, label='Demension', displayLabel=False,
+        self.demension =  radioButtons(box, label = _("To:"), buttons = [_('Rows'), _('Columns'),_('')],
+        setChecked=_('Rows'), orientation='horizontal',callback= lambda: self.dimensionChange(1))
+        self.indexSpinBox = RedRSpinBox(self.demension.box, label=_('Demension'), displayLabel=False,
         min = 1, value = 1, callback= lambda: self.dimensionChange(2))
         buttonBox = widgetBox(box,orientation='horizontal')
         
         
-        self.commit = redRCommitButton(buttonBox, "Commit", alignment=Qt.AlignLeft, 
+        self.commit = redRCommitButton(buttonBox, _("Commit"), alignment=Qt.AlignLeft, 
         callback = self.commitFunction, processOnInput=True,processOnChange=True)
         
-        self.outputTable = redRFilterTable(area,label='Results of Apply', sortable=True)
+        self.outputTable = redRFilterTable(area,label=_('Results of Apply'), sortable=True)
 
     def dimensionChange(self,type):
         if type == 1:
-            if self.demension.getChecked() =='Rows':
+            if self.demension.getChecked() ==_('Rows'):
                 self.indexSpinBox.setValue(1)
             else:
                 self.indexSpinBox.setValue(2)
         else:
             if self.indexSpinBox.value() == 1:
-                self.demension.setChecked('Rows')
+                self.demension.setChecked(_('Rows'))
             elif self.indexSpinBox.value() == 2:
-                self.demension.setChecked('Columns')
+                self.demension.setChecked(_('Columns'))
             else:
-                self.demension.setChecked('')
+                self.demension.setChecked(_(''))
             
     def processX(self, data):
         if data:

@@ -174,7 +174,9 @@ class OutputWindow(QDialog):
                 
             else:
                 return
-        except: pass
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            pass
     
     """
     def exceptionHandler(self, type, value, tracebackInfo):

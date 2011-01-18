@@ -11,6 +11,8 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.listBox import listBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class rank(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -20,19 +22,19 @@ class rank(OWRpy):
         #self.RFunctionParam_na_last = "TRUE"
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'x', redRRList, self.processx)
+        self.inputs.addInput('id0', _('x'), redRRList, self.processx)
 
-        self.outputs.addOutput('id0', 'rank Output', redRRMatrix)
+        self.outputs.addOutput('id0', _('rank Output'), redRRMatrix)
         
         
         
         #self.help.setHtml('<small>This Widget ranks elements in a vector and returns a ranked vector.</small>')
-        self.RFunctionParamties_method_comboBox = comboBox(self.controlArea, label = "ties_method:", 
-        items = ['average', 'first', 'random', 'max', 'min'])
+        self.RFunctionParamties_method_comboBox = comboBox(self.controlArea, label = _("How to handle ties:"), 
+        items = [_('average'), _('first'), _('random'), _('max'), _('min')])
         
-        self.columns = listBox(self.controlArea, label = 'Dataset A:', callback = self.onSelect)
+        self.columns = listBox(self.controlArea, label = _('Dataset:'), callback = self.onSelect)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True, processOnChange=True)
     def processx(self, data):
         if not data:
@@ -59,7 +61,7 @@ class rank(OWRpy):
             col = None
 
         if self.RFunctionParam_x == '' and not col: 
-            self.status.setText('No data')
+            self.status.setText(_('No data'))
             return
         
         injection = []
@@ -72,7 +74,4 @@ class rank(OWRpy):
         self.R(self.Rvariables['rank']+'<-rank(x='+unicode(self.RFunctionParam_x)+','+inj+', na.last = TRUE)', wantType = 'NoConversion')
         newData = redRRMatrix(data = 'as.matrix('+self.Rvariables['rank']+')')
         self.rSend("id0", newData)
-        
-    def getReportText(self, fileDir):
-        return 'Data was ranked.\n\n'
 

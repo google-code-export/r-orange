@@ -14,6 +14,7 @@ def __getDirectoryNames():
     try:
         redRDir = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
     except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         pass
 
     canvasDir = os.path.join(redRDir, "canvas")
@@ -42,11 +43,13 @@ def __getDirectoryNames():
             os.makedirs(os.path.join(os.environ['APPDATA'], 'red-r'))
         settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
     except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         try:
             if not os.path.isdir(os.path.join(os.environ['HOME'], '.redr', 'red-r')):
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             print _('Error occured in setting the settingsDir')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
@@ -88,6 +91,7 @@ def checkInternetConnection():
         urllib.urlopen('http://www.google.com/')
         return True
     except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
@@ -114,6 +118,7 @@ def loadSettings():
         try:
             settings = cPickle.load(open(filename, "rb"))
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
     settings['id'] = unicode(time.time())

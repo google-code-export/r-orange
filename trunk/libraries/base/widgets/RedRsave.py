@@ -13,7 +13,8 @@ from libraries.base.qtWidgets.widgetBox import widgetBox as widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox as groupBox 
 from libraries.base.qtWidgets.commitButton import commitButton as commitButton 
 import libraries.base.signalClasses as signals
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RedRsave(OWRpy): 
     globalSettingsList = ['path','commit']
     def __init__(self, parent=None, signalManager=None):
@@ -21,55 +22,55 @@ class RedRsave(OWRpy):
         self.path = os.path.abspath('/')
 
         self.data = None
-        self.inputs.addInput("list", "R Data", signals.RVariable.RVariable, self.processlist)
+        self.inputs.addInput("list", _("R Data"), signals.RVariable.RVariable, self.processlist)
         
-        self.fileType = radioButtons(self.controlArea, label='Save File Type',
-        buttons = ['Text', 'R Data File'], setChecked='Text', orientation='horizontal',callback=self.selectFileType)
+        self.fileType = radioButtons(self.controlArea, label=_('Save File Type'),
+        buttons = [_('Text'), _('R Data File')], setChecked=_('Text'), orientation='horizontal',callback=self.selectFileType)
         
         self.rDataFileOptions = widgetBox(self.controlArea, orientation='vertical')
-        self.varName = redRlineEdit(self.rDataFileOptions,label="Variable Name")        
+        self.varName = redRlineEdit(self.rDataFileOptions,label=_("Variable Name"))        
         self.textFileOptions = widgetBox(self.controlArea, orientation='vertical')
         self.rDataFileOptions.setDisabled(True)
-        self.delimiter = radioButtons(self.textFileOptions, label='Column Seperator',
-        buttons = ['Tab', 'Space', 'Comma', 'Other'], setChecked='Tab', orientation='horizontal')
-        self.otherSepText = redRlineEdit(self.delimiter.box,label='Seperator', displayLabel=False,
+        self.delimiter = radioButtons(self.textFileOptions, label=_('Column Seperator'),
+        buttons = {'\t':_('Tab'), ' ':_('Space'), ',':_('Comma'), '?':_('Other')}, setChecked='\t', orientation='horizontal')
+        self.otherSepText = redRlineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
         text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), lambda: self.delimiter.setChecked('Other'))
         
         
-        twoColHolder = groupBox(self.textFileOptions,label='File Options', orientation='horizontal')
+        twoColHolder = groupBox(self.textFileOptions,label=_('File Options'), orientation='horizontal')
         colOne = widgetBox(twoColHolder)
         colTwo = widgetBox(twoColHolder)
 
-        self.fileOptions = redRcheckBox(colOne,label='Options', displayLabel=False,
-        buttons=['append','quote','row.names','col.names'],
-        setChecked = ['quote','col.names'],
-        toolTips = ['If TRUE, the output is appended to the file.',
-        ' If TRUE, any character or factor columns will be surrounded by double quotes.',
-        'a logical value indicating whether the row names of data are to be written.',
-        'a logical value indicating whether the column names of data are to be written.'],
+        self.fileOptions = redRcheckBox(colOne,label=_('Options'), displayLabel=False,
+        buttons=[_('append'),_('quote'),_('row.names'),_('col.names')],
+        setChecked = [_('quote'),_('col.names')],
+        toolTips = [_('If TRUE, the output is appended to the file.'),
+        _(' If TRUE, any character or factor columns will be surrounded by double quotes.'),
+        _('a logical value indicating whether the row names of data are to be written.'),
+        _('a logical value indicating whether the column names of data are to be written.')],
         orientation='vertical')
 
-        self.eolChr = redRlineEdit(colTwo,label='End of line Chr:',text='\\n',width=50)
-        self.naStr = redRlineEdit(colTwo,label='Missing Value String:',text='NA',width=50)
-        self.decStr = redRlineEdit(colTwo,label='Decimel point Chr:',text='.',width=50)
+        self.eolChr = redRlineEdit(colTwo,label=_('End of line Chr:'),text='\\n',width=50)
+        self.naStr = redRlineEdit(colTwo,label=_('Missing Value String:'),text='NA',width=50)
+        self.decStr = redRlineEdit(colTwo,label=_('Decimel point Chr:'),text='.',width=50)
 
-        self.qmethod = radioButtons(self.textFileOptions,label='Deal with embedded double quote characters ', 
-        buttons=['escape','double'],
-        setChecked='escape',orientation='horizontal')
+        self.qmethod = radioButtons(self.textFileOptions,label=_('Deal with embedded double quote characters '), 
+        buttons=[_('escape'),_('double')],
+        setChecked=_('escape'),orientation='horizontal')
         
         
-        self.browseBox = groupBox(self.controlArea, label="Save File", 
+        self.browseBox = groupBox(self.controlArea, label=_("Save File"), 
         addSpace = True, orientation='vertical')
         
         box = widgetBox(self.browseBox,orientation='horizontal')
-        self.fileLocation = redRlineEdit(box, label='File Location', displayLabel=False, orientation='horizontal')
+        self.fileLocation = redRlineEdit(box, label=_('File Location'), displayLabel=False, orientation='horizontal')
         
-        redRbutton(box, label = 'Browse', callback = self.browseFile)
+        redRbutton(box, label = _('Browse'), callback = self.browseFile)
 
-        self.commit = commitButton(self.bottomAreaRight, "Save", callback = self.commitFunction,processOnInput=True)
+        self.commit = commitButton(self.bottomAreaRight, _("Save"), callback = self.commitFunction,processOnInput=True)
     def selectFileType(self):
-        if self.fileType.getChecked() =='Text':
+        if self.fileType.getChecked() ==_('Text'):
             self.textFileOptions.setEnabled(True)
             self.rDataFileOptions.setDisabled(True)
         else:
@@ -78,11 +79,11 @@ class RedRsave(OWRpy):
             
     def browseFile(self): 
         print self.path
-        if self.fileType.getChecked() == 'Text':
-            fn = QFileDialog.getSaveFileName(self, "Open File", self.path,
+        if self.fileType.getChecked() == _('Text'):
+            fn = QFileDialog.getSaveFileName(self, _("Open File"), self.path,
             "Text file (*.txt *.csv *.tab);; All Files (*.*)")
         else:
-            fn = QFileDialog.getSaveFileName(self, "Open File", self.path,
+            fn = QFileDialog.getSaveFileName(self, _("Open File"), self.path,
             "R Data File (*.RData *.rda);; All Files (*.*)")
             
         #print unicode(fn)
@@ -102,19 +103,19 @@ class RedRsave(OWRpy):
     def commitFunction(self):
         if not self.data or self.fileLocation.text() =='': return
         
-        print self.fileType.getChecked(), self.fileType.getChecked() =='R Data File'
-        if self.fileType.getChecked() =='R Data File':
+        print self.fileType.getChecked(), self.fileType.getChecked() == _('R Data File')
+        if self.fileType.getChecked() == _('R Data File'):
            self.R('%s <- %s' %  (unicode(self.varName.text()),self.data))
            self.R('save(%s,file="%s")' % (unicode(self.varName.text()),unicode(self.fileLocation.text())))
         else:
             options = []
-            if self.delimiter.getChecked() == 'Tab': #'tab'
+            if self.delimiter.getChecked() == _('Tab'): #'tab'
                 sep = '\\t'
-            elif self.delimiter.getChecked() == 'Space':
+            elif self.delimiter.getChecked() == _('Space'):
                 sep = ' '
-            elif self.delimiter.getChecked() == 'Comma':
+            elif self.delimiter.getChecked() == _('Comma'):
                 sep = ','
-            elif self.delimiter.getChecked() == 'Other':
+            elif self.delimiter.getChecked() == _('Other'):
                 sep = unicode(self.otherSepText.text())
 
             options.append('sep="%s"' % sep)

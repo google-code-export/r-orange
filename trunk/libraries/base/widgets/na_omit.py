@@ -12,6 +12,8 @@ import libraries.base.signalClasses.RMatrix as rmat
 from libraries.base.qtWidgets.button import button as RedRButton
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class na_omit(OWRpy): 
     globalSettingsList = ['commit']
 
@@ -21,14 +23,14 @@ class na_omit(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', 'object', redRRVariable, self.processobject)
+        self.inputs.addInput('id0', _('object'), redRRVariable, self.processobject)
 
-        self.outputs.addOutput('id0', 'R Data Frame', redRRDataFrame)
-        self.outputs.addOutput('id1', 'R List', redRRList)
-        self.outputs.addOutput('id2', 'R Vector', redRRVector)
-        self.outputs.addOutput('id3', 'R.object', redRRVariable)
+        self.outputs.addOutput('id0', _('R Data Frame'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('R List'), redRRList)
+        self.outputs.addOutput('id2', _('R Vector'), redRRVector)
+        self.outputs.addOutput('id3', _('R.object'), redRRVariable)
 
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
         
     def processobject(self, data):
@@ -55,37 +57,37 @@ class na_omit(OWRpy):
                 newData = redRRVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
-                self.status.setText('Data  sent through the R Vector channel')
+                self.status.setText(_('Data  sent through the R Vector channel'))
             elif thisdataclass == 'character': #we have a character vector as the object
                 newData = redRRVector(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
-                self.status.setText('Data  sent through the R Vector channel')
+                self.status.setText(_('Data  sent through the R Vector channel'))
             elif thisdataclass == 'data.frame': # the object is a data.frame
                 newData = redRRDataFrame(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
-                self.status.setText('Data  sent through the R Data Frame channel')
+                self.status.setText(_('Data  sent through the R Data Frame channel'))
             elif thisdataclass == 'matrix': # the object is a matrix
                 newData = rmat.RMatrix(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
-                self.status.setText('Data  sent through the R Data Frame channel')
+                self.status.setText(_('Data  sent through the R Data Frame channel'))
             elif thisdataclass == 'list': # the object is a list
                 newData = redRRList(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id1", newData)
-                self.status.setText('Data  sent through the R List channel')
+                self.status.setText(_('Data  sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic
                 newData = redRRVariable(data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id3", newData)
-                self.status.setText('Data  sent through the R Object channel')
+                self.status.setText(_('Data  sent through the R Object channel'))
         else:
             newData = redRRVariable(data = self.Rvariables['na.omit'])
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend("id3", newData)
-            self.status.setText('Data  sent through the R Object channel')
+            self.status.setText(_('Data  sent through the R Object channel'))
         
         
     def getReportText(self, fileDir):

@@ -10,7 +10,8 @@ from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 from libraries.base.qtWidgets.listBox import listBox as redRListBox
 import libraries.base.signalClasses as signals
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RedRtable(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -18,15 +19,15 @@ class RedRtable(OWRpy):
         self.setRvariableNames(["table", "propTable"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.inputs.addInput("data", "Data Table", signals.RDataFrame.RDataFrame, self.processdata)
-        self.outputs.addOutput("table Output","Table Output", signals.RDataFrame.RDataFrame)
-        self.outputs.addOutput("propTable", "Prob Table Output", signals.RDataFrame.RDataFrame)
+        self.inputs.addInput("data", _("Data Table"), signals.RDataFrame.RDataFrame, self.processdata)
+        self.outputs.addOutput("table Output",_("Table Output"), signals.RDataFrame.RDataFrame)
+        self.outputs.addOutput("propTable", _("Prob Table Output"), signals.RDataFrame.RDataFrame)
         
-        self.cols = redRListBox(self.controlArea, label = 'Use Columns:', selectionMode = QAbstractItemView.MultiSelection)
+        self.cols = redRListBox(self.controlArea, label = _('Use Columns:'), selectionMode = QAbstractItemView.MultiSelection)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,processOnInput=True)
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,processOnInput=True)
         
-        self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
+        self.RoutputWindow = redRtextEdit(self.controlArea, label = _("R Output Window"))
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data.getData()

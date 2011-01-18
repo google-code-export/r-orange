@@ -7,6 +7,8 @@ from OWRpy import *
 import redRGUI
 import libraries.base.signalClasses as signals
 from libraries.base.qtWidgets import tabWidget, lineEdit, widgetLabel, widgetBox, button, checkBox, comboBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class widgetMaker(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         settingsList = ['output_txt', 'parameters']
@@ -26,16 +28,16 @@ class widgetMaker(OWRpy):
         # GUI
         # several tabs with different parameters such as loading in a function, setting parameters, setting inputs and outputs
         tabs = tabWidget.tabWidget(self.controlArea)
-        functionTab = tabs.createTabPage("Function Info")
-        codeTab = tabs.createTabPage("Code")
+        functionTab = tabs.createTabPage(_("Function Info"))
+        codeTab = tabs.createTabPage(_("Code"))
         box = widgetBox.widgetBox(functionTab, "")
         box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.infoa = widgetLabel.widgetLabel(box, '')
-        self.packageName = lineEdit.lineEdit(box, label = 'Package:', orientation = 1)
+        self.packageName = lineEdit.lineEdit(box, label = _('Package:'), orientation = 1)
         button.button(box, 'Load Package', callback = self.loadRPackage)
-        self.functionName = lineEdit.lineEdit(box, label = 'Function Name:', orientation = 1)
+        self.functionName = lineEdit.lineEdit(box, label = _('Function Name:'), orientation = 1)
         button.button(box, 'Parse Function', callback = self.parseFunction)
-        self.argsLineEdit = lineEdit.lineEdit(box, label = 'GUI Args')
+        self.argsLineEdit = lineEdit.lineEdit(box, label = _('GUI Args'))
         self.connect(self.argsLineEdit, SIGNAL('textChanged(QString)'), self.setArgsLineEdit)
         box = widgetBox.widgetBox(functionTab)
         box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -46,15 +48,15 @@ class widgetMaker(OWRpy):
         #self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
         
-        self.functionAllowOutput = checkBox.checkBox(box, label = 'Allow Output', displayLable = False, buttons = ['Allow Output'])
-        self.captureROutput = checkBox.checkBox(box, buttons = ['Show Output'])
+        self.functionAllowOutput = checkBox.checkBox(box, label = _('Allow Output'), displayLable = False, buttons = [_('Allow Output')])
+        self.captureROutput = checkBox.checkBox(box, buttons = [_('Show Output')])
         
         
         #self.inputsCombobox = redRGUI.comboBox(box, label = 'Input Class:', items = self.getRvarClass_classes())
-        self.outputsCombobox = comboBox.comboBox(box, label = 'Output Class:', items = self.getRvarClass_classes())
-        button.button(box, label = 'Accept Inputs', callback = self.acceptInputs)
-        button.button(box, 'Generate Code', callback = self.generateCode)
-        button.button(box, 'Launch Widget', callback = self.launch)
+        self.outputsCombobox = comboBox.comboBox(box, label = _('Output Class:'), items = self.getRvarClass_classes())
+        button.button(box, label = _('Accept Inputs'), callback = self.acceptInputs)
+        button.button(box, _('Generate Code'), callback = self.generateCode)
+        button.button(box, _('Launch Widget'), callback = self.launch)
         
         self.codeArea = QTextEdit()
         codeTab.layout().addWidget(self.codeArea)
@@ -102,7 +104,7 @@ class widgetMaker(OWRpy):
     def loadRPackage(self):
         
         if not self.require_librarys([unicode(self.packageName.text())]):
-            self.status.setText('R Libraries Not Loaded.')
+            self.status.setText(_('R Libraries Not Loaded.'))
         
     def parseFunction(self):
         self.args = {}
@@ -112,11 +114,11 @@ class widgetMaker(OWRpy):
             s = ''
             functionParams = s.join(holder)
             print unicode(self.functionName.text())
-            self.infoa.setText("Function called successfully.")
+            self.infoa.setText(_("Function called successfully."))
             print 'function called successfully'
             print unicode(self.functionParams)
         except:
-            self.infoa.setText("Error with calling function.")
+            self.infoa.setText(_("Error with calling function."))
             return
             
         start = functionParams.find('(')+1 #where the args start 
@@ -155,7 +157,7 @@ class widgetMaker(OWRpy):
         self.inputArea.setRowCount(int(len(unicode(self.argsLineEdit.text()).split(' '))))
 
         self.inputArea.show()
-        self.inputArea.setHorizontalHeaderLabels(['Name', 'Input Type', 'Required', 'Signal Class', 'Input class', 'Default', 'Options'])
+        self.inputArea.setHorizontalHeaderLabels([_('Name'), _('Input Type'), _('Required'), _('Signal Class'), _('Input class'), _('Default'), _('Options')])
         n=0
         for arg in unicode(self.argsLineEdit.text()).split(' '):
             arg = arg.replace('.', '_') # python uses points for class refference
@@ -163,16 +165,16 @@ class widgetMaker(OWRpy):
             #itemClass = QTableWidgetItem
             self.inputArea.setItem(n,0,itemname)
             cw = QComboBox()
-            cw.addItems(['Widget Input', 'Connection Input'])
+            cw.addItems([_('Widget Input'), _('Connection Input')])
             self.inputArea.setCellWidget(n,1,cw)
             re = QComboBox()
-            re.addItems(['Optional', 'Required'])
+            re.addItems([_('Optional'), _('Required')])
             self.inputArea.setCellWidget(n,2,re)
             ic = QComboBox()
             ic.addItems(self.getRvarClass_classes())
             self.inputArea.setCellWidget(n,3,ic)
             ipt = QComboBox()
-            ipt.addItems(['lineEdit', 'radioButtons', 'comboBox', 'checkBox'])
+            ipt.addItems([_('lineEdit'), _('radioButtons'), _('comboBox'), _('checkBox')])
             self.inputArea.setCellWidget(n, 4, ipt)
             dt = QLineEdit()
             dt.setText(unicode(self.args[arg]))
@@ -187,7 +189,7 @@ class widgetMaker(OWRpy):
             #print 'i:'+unicode(i)
             combo = self.inputArea.cellWidget(i, 1)
             #print combo
-            if combo.currentText() == 'Widget Input':
+            if combo.currentText() == _('Widget Input'):
                 recombo = self.inputArea.cellWidget(i, 2)
                 #print unicode(self.inputArea.item(i ,0).text())
                 dt = self.inputArea.cellWidget(i, 5)
@@ -232,20 +234,20 @@ class widgetMaker(OWRpy):
         self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
 
         self.initCode += '\t\tOWRpy.__init__(self)\n'
-        if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
+        if (_('Allow Output') in self.functionAllowOutput.getChecked()) or (_('Show Output') in self.captureROutput.getChecked()):
             self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
             self.initCode += '\t\tself.data = {}\n'
         if unicode(self.packageName.text()) != '':
             self.initCode += '\t\tif not self.require_librarys(["'+unicode(self.packageName.text())+'"]):\n'
-            self.initCode += '\t\t\tself.status.setText(\'R Libraries Not Loaded.\')\n'
+            self.initCode += '\t\t\tself.status.setText(_(\'R Libraries Not Loaded.\'))\n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
                 self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
             #self.initCode += '\t\tself.inputs = ['
             for element in self.functionInputs.keys():
-                self.initCode += '\t\tself.inputs.addInput("'+element+'", "'+element+'", signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+')\n'
+                self.initCode += '\t\tself.inputs.addInput("'+element+'", _("'+element+'"), signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+')\n'
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output","'+self.functionName.text()+' Output", signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+')\n'
+            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output",_("'+self.functionName.text()+' Output"), signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+')\n'
         self.initCode += '\t\t\n'
         
     def makeGUI(self):
@@ -269,8 +271,8 @@ class widgetMaker(OWRpy):
                     self.guiCode += ')\n'
                 
         self.guiCode += '\t\tredRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
-        if 'Show Output' in self.captureROutput.getChecked():
-            self.guiCode += '\t\tself.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")\n'
+        if _('Show Output') in self.captureROutput.getChecked():
+            self.guiCode += '\t\tself.RoutputWindow = redRtextEdit(self.controlArea, label = _("R Output Window"))\n'
             #self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):

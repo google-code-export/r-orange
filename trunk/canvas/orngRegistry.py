@@ -45,6 +45,7 @@ def readCategories():
         cats = cPickle.load(file(cacheFilename, "rb"))
         cachedWidgetDescriptions = dict([(w.fullName, w) for cat in cats.values() for w in cat.values()])
     except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         cachedWidgetDescriptions = {} 
 
     directories = []
@@ -158,6 +159,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
         try:
             widgetMetaXML = xml.dom.minidom.parse(metaFile)
         except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
             continue
         widgetMetaData['name'] = getXMLText(widgetMetaXML.getElementsByTagName('name')[0].childNodes)

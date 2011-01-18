@@ -243,6 +243,7 @@ class CanvasOptionsDlg(QDialog):
         try:
             if not self.libListBox: return
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             self.libs = RSession.Rcommand('getCRANmirrors()')
             # place a listBox in the widget and fill it with a list of mirrors
             

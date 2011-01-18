@@ -2,7 +2,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import math, re, string, numpy
+import math, re, string, numpy, redRLog
 from OWGUI import widgetLabel, widgetBox, lineEdit
 import redRi18n
 # def _(a):
@@ -88,6 +88,7 @@ class LineEditFilter(QLineEdit):
                 pattern = re.compile(last)
                 tuples = [(text, QListWidgetItem(item)) for (text, item) in tuples if pattern.match(text)]
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 tuples = [(t, QListWidgetItem(i)) for (t,i) in self.listboxItems]        # in case we make regular expressions crash we show all items
         else:
             if self.matchAnywhere:  tuples = [(text, QListWidgetItem(item)) for (text, item) in tuples if last in text]
@@ -185,7 +186,9 @@ class LineEditHint(QLineEdit):
                     #self.setFocus()
                     self.event(ev)
             return consumed
-        except: return 0
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 0
         
     def doneCompletion(self, *args):
         if self.listWidget.isVisible():
@@ -229,6 +232,7 @@ class LineEditHint(QLineEdit):
                 pattern = re.compile(last)
                 tuples = [(text, item) for (text, item) in tuples if pattern.match(text)]
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 tuples = zip(self.itemsAsStrings, self.itemsAsItems)        # in case we make regular expressions crash we show all items
         else:
             if self.matchAnywhere:  tuples = [(text, item) for (text, item) in tuples if last in text]

@@ -26,7 +26,8 @@ from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
     
     globalSettingsList = ['filecombo','path']
@@ -44,7 +45,7 @@ class readFile(OWRpy):
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
         #signals
-        self.outputs.addOutput('od1', 'Output Data', rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
+        self.outputs.addOutput('od1', _('Output Data'), rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
@@ -56,86 +57,86 @@ class readFile(OWRpy):
         #area.layout().setAlignment(options,Qt.AlignTop)
         
         
-        self.browseBox = groupBox(options, label="Load File", 
+        self.browseBox = groupBox(options, label=_("Load File"), 
         addSpace = True, orientation='vertical')
         box = widgetBox(self.browseBox,orientation='horizontal')
-        self.filecombo = fileNamesComboBox(box, label='Files', displayLabel=False,
+        self.filecombo = fileNamesComboBox(box, label=_('Files'), displayLabel=False,
         orientation='horizontal',callback=self.scanNewFile)
         self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
-        button(box, label = 'Browse', callback = self.browseFile)
+        button(box, label = _('Browse'), callback = self.browseFile)
         
-        self.fileType = radioButtons(options, label='File Type',
-        buttons = ['Text', 'Excel'], setChecked='Text',callback=self.scanNewFile,
+        self.fileType = radioButtons(options, label=_('File Type'),
+        buttons = [_('Text'), _('Excel')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
         self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
         self.fileType.hide()
 
         
-        self.delimiter = radioButtons(options, label='Column Seperator',
-        buttons = [(',','Comma'), ('\t','Tab'), (' ','Space'),('other','Other')], setChecked='\t',callback=self.scanNewFile,
+        self.delimiter = radioButtons(options, label=_('Column Seperator'),
+        buttons = [(',',_('Comma')), ('\t',_('Tab')), (' ',_('Space')),('other',_('Other'))], setChecked='\t',callback=self.scanNewFile,
         orientation='horizontal')
         
-        self.otherSepText = lineEdit(self.delimiter.box,label='Seperator', displayLabel=False,
+        self.otherSepText = lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
         text=';',width=20,orientation='horizontal')
         QObject.connect(self.otherSepText, SIGNAL('textChanged(const QString &)'), self.otherSep)
         
-        self.headersBox = groupBox(options, label="Row and Column Names", 
+        self.headersBox = groupBox(options, label=_("Row and Column Names"), 
         addSpace = True, orientation ='horizontal')
 
-        self.hasHeader = checkBox(self.headersBox,label='Column Header', displayLabel=False, 
-        buttons = ['Column Headers'],setChecked=['Column Headers'],
-        toolTips=['a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.'],
+        self.hasHeader = checkBox(self.headersBox,label=_('Column Header'), displayLabel=False, 
+        buttons = [_('Column Headers')],setChecked=[_('Column Headers')],
+        toolTips=[_('a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns.')],
         orientation='vertical',callback=self.scanNewFile)
         
-        self.rowNamesCombo = comboBox(self.headersBox,label='Select Row Names', 
+        self.rowNamesCombo = comboBox(self.headersBox,label=_('Select Row Names'), 
         orientation='vertical',callback=self.scanFile)
         #self.rowNamesCombo.setMaximumWidth(250)        
         
-        self.otherOptionsBox = groupBox(options, label="Other Options", 
+        self.otherOptionsBox = groupBox(options, label=_("Other Options"), 
         addSpace = True, orientation ='vertical')
         # box.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         split = widgetBox(self.otherOptionsBox,orientation='horizontal')
         # split.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        self.otherOptions = checkBox(split,label='Options', displayLabel=False,
+        self.otherOptions = checkBox(split,label=_('Options'), displayLabel=False,
         buttons=['fill','strip.white','blank.lines.skip',
         'allowEscapes','StringsAsFactors'],
         setChecked = ['blank.lines.skip'],
-        toolTips = ['logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.',
-        'logical. Used only when sep has been specified, and allows the unicodeipping of leading and trailing white space from character fields (numeric fields are always unicodeipped). ',
-        'logical: if TRUE blank lines in the input are ignored.',
-        'logical. Should C-style escapes such as \n be processed or read verbatim (the default)? ',
-        'logical: should character vectors be converted to factors?'],
+        toolTips = [_('logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added.'),
+        _('logical. Used only when sep has been specified, and allows the unicodeipping of leading and trailing white space from character fields (numeric fields are always unicodeipped). '),
+        _('logical: if TRUE blank lines in the input are ignored.'),
+        _('logical. Should C-style escapes such as \n be processed or read verbatim (the default)? '),
+        _('logical: should character vectors be converted to factors?')],
         orientation='vertical',callback=self.scanFile)
         # box.layout().addWidget(self.otherOptions,1,1)
         box2 = widgetBox(split,orientation='vertical')
         #box2.setSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed)
         split.layout().setAlignment(box2,Qt.AlignTop)
-        self.quote = lineEdit(box2,text='"',label='Quote:', width=50, orientation='horizontal')
-        self.decimal = lineEdit(box2, text = '.', label = 'Decimal:', width = 50, orientation = 'horizontal', toolTip = 'Decimal sign, some countries may want to use the \'.\'')
+        self.quote = lineEdit(box2,text='"',label=_('Quote:'), width=50, orientation='horizontal')
+        self.decimal = lineEdit(box2, text = '.', label = _('Decimal:'), width = 50, orientation = 'horizontal', toolTip = _('Decimal sign, some countries may want to use the \'.\''))
         
-        self.numLinesScan = lineEdit(box2,text='10',label='# Lines to Preview:', 
-        toolTip='The maximum number of rows to read in while previewing the file. Negative values are ignored.', 
+        self.numLinesScan = lineEdit(box2,text='10',label=_('# Lines to Preview:'), 
+        toolTip=_('The maximum number of rows to read in while previewing the file. Negative values are ignored.'), 
         width=50,orientation='horizontal')
-        self.numLinesReads = lineEdit(box2,text='-1',label='# Lines to Read:', 
-        toolTip='Number of lines to read from file. Read whole file if 0 or negative values.', 
+        self.numLinesReads = lineEdit(box2,text='-1',label=_('# Lines to Read:'), 
+        toolTip=_('Number of lines to read from file. Read whole file if 0 or negative values.'), 
         width=50,orientation='horizontal')
 
-        self.numLinesSkip = lineEdit(box2,text='0',label='# Lines to Skip:',
-        toolTip="The number of lines of the data file to skip before beginning to read data.", 
+        self.numLinesSkip = lineEdit(box2,text='0',label=_('# Lines to Skip:'),
+        toolTip=_("The number of lines of the data file to skip before beginning to read data."), 
         width=50,orientation='horizontal')
         
         holder = widgetBox(options,orientation='horizontal')
-        clipboard = button(holder, label = 'Load Clipboard', 
-        toolTip = 'Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.', 
+        clipboard = button(holder, label = _('Load Clipboard'), 
+        toolTip = _('Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.'), 
         callback = self.loadClipboard)
-        rescan = button(holder, label = 'Rescan File',toolTip="Preview a small portion of the file",
+        rescan = button(holder, label = _('Rescan File'),toolTip=_("Preview a small portion of the file"),
         callback = self.scanNewFile)
-        load = button(holder, label = 'Load File',toolTip="Load the file into Red-R",
+        load = button(holder, label = _('Load File'),toolTip=_("Load the file into Red-R"),
         callback = self.loadFile)
         holder.layout().setAlignment(Qt.AlignRight)
 
-        self.FileInfoBox = groupBox(options, label = "File Info", addSpace = True)       
+        self.FileInfoBox = groupBox(options, label = _("File Info"), addSpace = True)       
         self.infob = widgetLabel(self.FileInfoBox, label='')
         self.infob.setWordWrap(True)
         self.infoc = widgetLabel(self.FileInfoBox, label='')
@@ -147,7 +148,7 @@ class readFile(OWRpy):
         #self.tableArea.setHidden(True)
         self.tableArea.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding)
 
-        self.scanarea = textEdit(self.tableArea,label='File Preview',includeInReports=False)
+        self.scanarea = textEdit(self.tableArea,label= _('File Preview'),includeInReports=False)
         self.scanarea.setLineWrapMode(QTextEdit.NoWrap)
         self.scanarea.setReadOnly(True)
         self.scroll = scrollArea(self.tableArea);
@@ -183,7 +184,7 @@ class readFile(OWRpy):
         # self.colNames = settings['colNames']['pythonObject']
         # self.myColClasses = settings['myColClasses']['list']
         if not self.filecombo.getCurrentFile():
-            widgetLabel(self.browseBox,label='The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.') 
+            widgetLabel(self.browseBox,label=_('The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.')) 
         # print '#############################', self.colClasses
         # print '#############################', self.colNames
         # print '#############################', self.myColClasses #, settings['myColClasses']['list']
@@ -202,7 +203,7 @@ class readFile(OWRpy):
     
     def browseFile(self): 
         print self.path
-        fn = QFileDialog.getOpenFileName(self, "Open File", self.path,
+        fn = QFileDialog.getOpenFileName(self, _("Open File"), self.path,
         "Text file (*.txt *.csv *.tab *.xls);; All Files (*.*)")
         #print unicode(fn)
         if fn.isEmpty(): return
@@ -218,7 +219,7 @@ class readFile(OWRpy):
         self.removeInformation()
         self.removeWarning()
         
-        if self.fileType.getChecked() == 'Excel':
+        if self.fileType.getChecked() == _('Excel'):
             self.delimiter.setDisabled(True)
             self.otherOptionsBox.setDisabled(True)
             self.headersBox.setDisabled(True)
@@ -255,7 +256,7 @@ class readFile(OWRpy):
         #print scan
         fn = self.filecombo.getCurrentFile()
         if not fn and not scan == 'clipboard':
-            print 'No file selected'
+            print _('No file selected')
             return
         if not scan =='clipboard':
             self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn)) 
@@ -310,7 +311,7 @@ class readFile(OWRpy):
             ccl = 'NA'
         Runicode = 'None'
         try:
-            if self.fileType.getChecked() == 'Excel':
+            if self.fileType.getChecked() == _('Excel'):
                 Runicode = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
                 self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']))
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
@@ -365,7 +366,7 @@ class readFile(OWRpy):
         
         self.scanarea.setText(txt)
         # except:
-            # QMessageBox.information(self,'R Error', "Try selected a different Column Seperator.", 
+            # QMessageBox.information(self,'R Error', _("Try selected a different Column Seperator."), 
             # QMessageBox.Ok + QMessageBox.Default)
             # return
             
@@ -398,13 +399,13 @@ class readFile(OWRpy):
             import redRLog
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
             self.scanarea.clear()
-            self.scanarea.setText('Problem reading or scanning the file.  Please check the file integrity and try again.')
+            self.scanarea.setText(_('Problem reading or scanning the file.  Please check the file integrity and try again.'))
         
         # print self.getReportText('./')
           
     def html_table(self,lol,rownames):
         s = '<table border="1" cellpadding="3">'
-        s+= '  <tr><td>Rownames</td><td><b>'
+        s+= _('  <tr><td>Rownames</td><td><b>')
         s+= '    </b></td><td><b>'.join(lol[0])
         s+= '  </b></td></tr>'
         
@@ -418,7 +419,7 @@ class readFile(OWRpy):
     def updateGUI(self):
         dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', wantType='list',silent=True)
         self.infob.setText(self.R(self.Rvariables['filename']))
-        self.infoc.setText("Rows: " + unicode(dfsummary[0]) + '\nColumns: ' + unicode(dfsummary[1]))
+        self.infoc.setText(_("Rows: %(ROWS)s\nColumns: %(COLS)s") % {'ROWS':unicode(dfsummary[0]), 'COLS':unicode(dfsummary[1])})
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()

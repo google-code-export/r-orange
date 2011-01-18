@@ -393,7 +393,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 widgetState = self.instance().widgetState
                 if widgetState.get("Info", {}).values() + widgetState.get("Warning", {}).values() + widgetState.get("Error", {}).values() != []:
                     rect.setTop(rect.top()-21)
-            except: pass
+            except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return rect
 
     # is mouse position inside the left signal channel
@@ -482,7 +483,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
                 if len(self.instance().inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
                 if len(self.instance().outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
             except:
-                pass
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         # draw the label
         painter.setPen(QPen(QColor(0,0,0)))
         midX, midY = self.widgetSize.width()/2., self.widgetSize.height() + 5

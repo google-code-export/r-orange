@@ -11,6 +11,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.commitButton import commitButton
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class nameProtector(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
@@ -19,27 +21,27 @@ class nameProtector(OWRpy):
         self.parentData = {}
         self.data = ''
         self.setRvariableNames(['nameProtector', 'newDataFromNameProtector'])
-        self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotDF)
-        self.inputs.addInput('id1', 'Vector', redRRVector, self.gotV)
+        self.inputs.addInput('id0', _('Data Frame'), redRRDataFrame, self.gotDF)
+        self.inputs.addInput('id1', _('Vector'), redRRVector, self.gotV)
 
-        self.outputs.addOutput('id0', 'Data Frame', redRRDataFrame)
-        self.outputs.addOutput('id1', 'Vector', redRRVector)
+        self.outputs.addOutput('id0', _('Data Frame'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('Vector'), redRRVector)
 
         
         ### The data frame GUI
         self.dfbox = widgetBox(self.controlArea)
-        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = 'Protect the names in:', 
-        buttons = ['Rows', 'Columns'], toolTips = ['Use make.names to protect the names in the rows.', 
-        'Use make.names to protect the names in the columns.'])
-        self.namesProtectDFcomboBox = comboBox(self.dfbox, label = 'Column names to protect:')
-        self.commit =commitButton(self.dfbox, "Commit", callback = self.dfCommit,processOnInput=True)
+        self.nameProtectDFcheckBox = checkBox(self.dfbox, label = _('Protect the names in:'), 
+        buttons = [_('Rows'), _('Columns')], toolTips = [_('Use make.names to protect the names in the rows.'), 
+        _('Use make.names to protect the names in the columns.')])
+        self.namesProtectDFcomboBox = comboBox(self.dfbox, label = _('Column names to protect:'))
+        self.commit =commitButton(self.dfbox, _("Commit"), callback = self.dfCommit,processOnInput=True)
         
         
         
         ### The Vector GUI
         self.vbox = widgetBox(self.controlArea)
         self.vbox.hide()
-        self.commitVbutton = button(self.vbox, "Commit", callback = self.vCommit,alignment=Qt.AlignRight)
+        self.commitVbutton = button(self.vbox, _("Commit"), callback = self.vCommit,alignment=Qt.AlignRight)
         
     def gotDF(self, data):
         if data:
@@ -95,5 +97,3 @@ class nameProtector(OWRpy):
         self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')', wantType = 'NoConversion')
         self.parentData['data'] = self.Rvariables['nameProtector']
         self.rSend("id1", self.parentData)
-    def getReportText(self, fileDir):
-        return 'Names of the incomming data were changed to fit valid names in R.\n\n'

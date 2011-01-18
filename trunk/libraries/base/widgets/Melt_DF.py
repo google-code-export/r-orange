@@ -10,6 +10,8 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class Melt_DF(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -17,19 +19,19 @@ class Melt_DF(OWRpy):
         self.setRvariableNames(["melt.data.frame", "melt.data.frame.cm"])
         self.RFunctionParam_data = ''
         self.data = {}
-        self.inputs.addInput('id0', 'data', redRRDataFrame, self.processdata)
+        self.inputs.addInput('id0', _('data'), redRRDataFrame, self.processdata)
 
-        self.outputs.addOutput('id0', 'melt.data.frame Output', redRRDataFrame)
+        self.outputs.addOutput('id0', _('melt.data.frame Output'), redRRDataFrame)
 
         
-        box = widgetBox(self.controlArea, "Widget Box")
-        self.RFunctionParam_na_rm = comboBox(box, label = "Remove NA:", items = ['Yes', 'No'])
-        self.RFunctionParam_measure_var = listBox(box, label = "Result Variable:", toolTip = 'The column that contains the result or the measurement that the data should be melted around.')
+        box = widgetBox(self.controlArea, _("Widget Box"))
+        self.RFunctionParam_na_rm = comboBox(box, label = _("Remove NA:"), items = [_('Yes'), _('No')])
+        self.RFunctionParam_measure_var = listBox(box, label = _("Result Variable:"), toolTip = _('The column that contains the result or the measurement that the data should be melted around.'))
         self.RFunctionParam_measure_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParam_id_var = listBox(box, label = "Groupings:", toolTip = 'The columns indicating the groupings of the data.')
+        self.RFunctionParam_id_var = listBox(box, label = _("Groupings:"), toolTip = _('The columns indicating the groupings of the data.'))
         self.RFunctionParam_id_var.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParam_variable_name = lineEdit(box, label = "New Group Name:", toolTip = 'The name of the new column that the groupings will be put into.')
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction, 
+        self.RFunctionParam_variable_name = lineEdit(box, label = _("New Group Name:"), toolTip = _('The name of the new column that the groupings will be put into.'))
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction, 
         processOnInput=True)
     
     def RWidgetReload(self):
@@ -37,7 +39,7 @@ class Melt_DF(OWRpy):
     def processdata(self, data):
         if data:
             if not self.require_librarys(['reshape']):
-                self.status.setText('R Libraries Not Loaded.')
+                self.status.setText(_('R Libraries Not Loaded.'))
                 return
             self.RFunctionParam_data=data.getData()
             self.data = data
@@ -51,7 +53,7 @@ class Melt_DF(OWRpy):
             self.RFunctionParam_id_var.clear()
     def commitFunction(self):
         if not self.require_librarys(['reshape']):
-            self.status.setText('R Libraries Not Loaded.')
+            self.status.setText(_('R Libraries Not Loaded.'))
             return
         if self.RFunctionParam_na_rm == 0: pna = 'TRUE'
         else: pna = 'FALSE'
@@ -82,16 +84,4 @@ class Melt_DF(OWRpy):
         newData = redRRDataFrame(data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)
-        
-    def getReportText(self, fileDir):
-        text = 'Reshaped (melted) the data using the following parameters:\n\n'
-        text += 'Remove NA: '
-        if self.RFunctionParam_na_rm == 0: text += 'TRUE'
-        else: text += 'FALSE'
-        text += '\n\nVariable Name For Reshaping: %s\n\n' % unicode(self.RFunctionParam_variable_name.text())
-        text += 'ID Variables: '
-        for item in ivItem:
-            text += unicode(ivItem.text())+', '
-        text += '\n\n'
-        return text
         

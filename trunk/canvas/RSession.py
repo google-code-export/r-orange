@@ -45,6 +45,7 @@ def assign(name, object):
         redRLog.log(redRLog.R, redRLog.DEBUG, _('Assigned object to %s') % name)
         return True
     except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return False
 def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     
@@ -205,6 +206,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
                             
                         except:
+                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                             redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
                             loadedOK = False
                     else:

@@ -18,6 +18,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
     def __init__(self, parent=None, signalManager=None):
@@ -31,13 +33,13 @@ class rExecutor(OWRpy):
         self.setRvariableNames(['rExecutor', 'rExecutor_cm'])
         
         
-        self.inputs.addInput('id0', 'R.object', redRRVariable, self.process)
+        self.inputs.addInput('id0', _('R.object'), redRRVariable, self.process)
 
-        self.outputs.addOutput('id0', 'R Data Frame', redRRDataFrame)
-        self.outputs.addOutput('id1', 'R List', redRRList)
-        self.outputs.addOutput('id2', 'R Vector', redRRVector)
-        self.outputs.addOutput('id3', 'R.object', 'All')
-        self.outputs.addOutput('id4', 'R Matrix', redRRMatrix)
+        self.outputs.addOutput('id0', _('R Data Frame'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('R List'), redRRList)
+        self.outputs.addOutput('id2', _('R Vector'), redRRVector)
+        self.outputs.addOutput('id3', _('R.object'), 'All')
+        self.outputs.addOutput('id4', _('R Matrix'), redRRMatrix)
 
         #self.breakme()
         
@@ -46,7 +48,7 @@ class rExecutor(OWRpy):
         #GUI
         
         #GUIDialog
-        self.box = groupBox(self.GUIDialog, "R Executor Advanced")
+        self.box = groupBox(self.GUIDialog, _("R Executor Advanced"))
         self.infob = widgetLabel(self.box, "")
         
         self.infoa = widgetLabel(self.box, "")
@@ -58,30 +60,30 @@ class rExecutor(OWRpy):
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         rightArea = widgetBox(area)
 
-        runbox = groupBox(rightArea, label = "Command Edit:", orientation='horizontal')
+        runbox = groupBox(rightArea, label = _("Command Edit:"_, orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         #self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
-        self.command = textEdit(runbox, label = 'Command Edit:')
+        self.command = textEdit(runbox, label = _('Command Edit:'))
         #self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        processbutton = button(runbox, label = "&Run", callback = self.runR, width=100)
-        statusBox = groupBox(rightArea, label = "Status")
-        self.sendStatus = widgetLabel(statusBox, 'Nothing Sent')
-        self.dataBox = groupBox(leftArea, label = "Input Infromation")
-        self.mystatus = widgetLabel(self.dataBox, "No Input")
+        processbutton = button(runbox, label = _("&Run"), callback = self.runR, width=100)
+        statusBox = groupBox(rightArea, label = _("Status"))
+        self.sendStatus = widgetLabel(statusBox, _('Nothing Sent'))
+        self.dataBox = groupBox(leftArea, label = _("Input Infromation"))
+        self.mystatus = widgetLabel(self.dataBox, _("No Input"))
         
-        # self.metadataBox = widgetBox(leftArea, "Metadata")
-        # self.infoM = widgetLabel(self.metadataBox, "No Meta Data")
+        # self.metadataBox = widgetBox(leftArea, _("Metadata"))
+        # self.infoM = widgetLabel(self.metadataBox, _("No Meta Data"))
         # self.metadataLB = listBox(self.metadataBox, callback = self.insertMetaDataVar)
-        varbutton = button(leftArea, "Recieved", callback = self.putrecieved, width = 150)
-        history = button(leftArea, "RHistory", callback = self.putRHistory, width = 150)
-        button(leftArea, "Clear Output", callback = self.clearOutput)
+        varbutton = button(leftArea, _("Recieved"), callback = self.putrecieved, width = 150)
+        history = button(leftArea, _("RHistory"), callback = self.putRHistory, width = 150)
+        button(leftArea, _("Clear Output"), callback = self.clearOutput)
         
-        self.lsList = listBox(self.box, label = 'Available R Items', items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
+        self.lsList = listBox(self.box, label = _('Available R Items'), items = self.R('ls()', wantType = 'list'), callback = self.addlsList)
         button(self.box, 'Refresh List', callback = self.refreshLsList)
 
-        self.thistext = textEdit(rightArea,label='Output', displayLabel=False)
+        self.thistext = textEdit(rightArea,label=_('Output'), displayLabel=False)
 
-        sendbutton = button(runbox, label = "&Send", toolTip = 'Send the data in the command line into the Red-R schema.', callback =self.sendThis, width=100)
+        sendbutton = button(runbox, label = _("&Send"), toolTip = _('Send the data in the command line into the Red-R schema.'), callback =self.sendThis, width=100)
     def addlsList(self):
         self.command.insertPlainText(unicode(self.lsList.selectedItems()[0].text()))
     def refreshLsList(self):
@@ -94,7 +96,7 @@ class rExecutor(OWRpy):
         if unicode(self.command.textCursor().selectedText()) != '':
                 text = unicode(self.command.textCursor().selectedText())
         else:
-                self.sendStatus.setText('No object Selected')
+                self.sendStatus.setText(_('No object Selected'))
                 return
         thisdataclass = self.R('class('+unicode(text)+')')
         thisdata = unicode(text)
@@ -106,29 +108,29 @@ class rExecutor(OWRpy):
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
                 newData = redRRVector(data = unicode(text))
                 self.rSend("id2", newData)
-                self.sendStatus.setText(thisdata+' sent through the R Vector channel')
+                self.sendStatus.setText(thisdata+_(' sent through the R Vector channel'))
             elif thisdataclass in ['data.frame']:
                 newData = redRRDataFrame(data = unicode(text))
                 self.rSend("id0", newData)
-                self.sendStatus.setText(thisdata+' sent through the R Data Frame channel')
+                self.sendStatus.setText(thisdata+_(' sent through the R Data Frame channel'))
             elif thisdataclass in ['matrix']:
                 newData = redRRMatrix(data = unicode(text))
                 self.rSend("id4", newData)
-                self.sendStatus.setText(thisdata+' sent through the Matrix channel')
+                self.sendStatus.setText(thisdata+_(' sent through the Matrix channel'))
             elif thisdataclass == 'list': # the object is a list
                 for i in range(self.R('length('+text+')')):
                     if self.R('class(%s[[%s]])' % (text, i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
                         newData = ral.RArbitraryList(data = self.sendThis)
-                        self.status.setText('Data sent through the R Arbitrary List channel')
+                        self.status.setText(_('Data sent through the R Arbitrary List channel'))
                         self.rSend('ral', newData)
                         return
                 newData = redRRList(data = unicode(text))
                 self.rSend("id1", newData)
-                self.sendStatus.setText(thisdata+' sent through the R List channel')
+                self.sendStatus.setText(thisdata+_(' sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic
                 newData = redRRVariable(data = unicode(text))
                 self.rSend("id3", newData)
-                self.sendStatus.setText(thisdata+' sent through the R Object channel')
+                self.sendStatus.setText(thisdata+_(' sent through the R Object channel'))
         else:
             newData = redRRVariable(data = unicode(text))
             self.rSend("id3", newData)
@@ -149,7 +151,7 @@ class rExecutor(OWRpy):
             self.thistext.insertPlainText('\n'+'\n'.join(output)+'\n')
             self.thistext.setAlignment(Qt.AlignBottom)
         except Exception as inst:
-            self.thistext.insertPlainText('Error Occurred: %s' % inst)
+            self.thistext.insertPlainText(_('Error Occurred: %s') % inst)
     def putRHistory(self):
         self.thistext.clear()
         self.thistext.insertPlainText('\n'.join(OWRpy.globalRHistory))
@@ -177,7 +179,7 @@ class rExecutor(OWRpy):
                 elif thisclass == 'list': # the object is a list
                     self.isList()
                 else:
-                    self.mystatus.setText("R object is of non-standard type.")
+                    self.mystatus.setText(_("R object is of non-standard type."))
             if thisclass.__class__.__name__ == 'list': # we need to handle multible classes 
                 for item in thisclass:
                     if item == 'numeric': # we have a numeric vector as the object
@@ -191,16 +193,16 @@ class rExecutor(OWRpy):
                     elif item == 'list': # the object is a list
                         self.isList()
                     else:
-                        self.mystatus.setText("R object is of non-standard type.")
+                        self.mystatus.setText(_("R object is of non-standard type."))
                     
         else: return
     
     def isNumeric(self):
-        self.mystatus.setText("Numeric Vector Connected of length %s" % unicode(self.R('length('+self.data+')')))
+        self.mystatus.setText(_("Numeric Vector Connected of length %s") % unicode(self.R('length('+self.data+')')))
     def isCharacter(self):
-        self.mystatus.setText("Character Vector Connected of length %s" % unicode(self.R('length('+self.data+')')))
+        self.mystatus.setText(_("Character Vector Connected of length %s") % unicode(self.R('length('+self.data+')')))
     def isDataFrame(self):
-        self.mystatus.setText("Data Frame Connected with %s columns" % unicode(self.R('length('+self.data+')')))
+        self.mystatus.setText(_("Data Frame Connected with %s columns") % unicode(self.R('length('+self.data+')')))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and self.dfselected == None:
             self.dfselected = listBox(self.dataBox, self)
@@ -211,7 +213,7 @@ class rExecutor(OWRpy):
             for e in colnames:
                 self.dfselected.addItem(e)
     def isMatrix(self):
-        self.mystatus.setText("Matrix connected with %s elements and %s columns" % (unicode(self.R('length('+self.data+')')), unicode(self.R('length('+self.data+'[1,])'))))
+        self.mystatus.setText(_("Matrix connected with %s elements and %s columns") % (unicode(self.R('length('+self.data+')')), unicode(self.R('length('+self.data+'[1,])'))))
         colnames = self.R('colnames('+self.data+')')
         if colnames != 'NULL' and colnames != '' and colnames != 'None' and colnames != None:
             self.dfselected = listBox(self.dataBox, self)
@@ -219,16 +221,9 @@ class rExecutor(OWRpy):
                 for e in colnames:
                     self.dfselected.addItem(e)
             except:
-                print 'Error with colnames, may not exist.'
+                print _('Error with colnames, may not exist.')
     def isList(self):
-        self.mystatus.setText("List object connected with %s elements" % unicode(self.R('length('+self.data+')')))
-        
-    def getReportText(self, fileDir):
-        ## report for this entry
-        text = ''
-        text += 'The following is entered into the R Executor:</br>'
-        text += '<pre>'+unicode(self.thistext.toPlainText())+'</pre>'
-        
-        return text
+        self.mystatus.setText(_("List object connected with %s elements") % unicode(self.R('length('+self.data+')')))
+    
         
         

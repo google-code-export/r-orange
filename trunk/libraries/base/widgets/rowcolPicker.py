@@ -19,6 +19,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class rowcolPicker(OWRpy): 
        
     globalSettingsList = ['subsetButton']
@@ -30,12 +32,12 @@ class rowcolPicker(OWRpy):
         self.setRvariableNames(['rowcolSelector', 'rowcolSelectorNot'])
         self.SubsetByAttached = 0
         
-        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.setWidget)
-        self.inputs.addInput('id1', 'Subsetting Vector', redRRList, self.setSubsettingVector)
+        self.inputs.addInput('id0', _('Data Table'), redRRDataFrame, self.setWidget)
+        self.inputs.addInput('id1', _('Subsetting Vector'), redRRList, self.setSubsettingVector)
 
         
-        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
-        self.outputs.addOutput('id1', 'Not Data Table', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Selected Items'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('Non-selected Items'), redRRDataFrame)
 
         
         #set the gui
@@ -43,26 +45,26 @@ class rowcolPicker(OWRpy):
         area = widgetBox(self.controlArea,orientation='horizontal')       
         options = widgetBox(area, orientation = 'vertical')
         
-        self.rowcolBox = radioButtons(options, label='Select On', buttons=['Column','Row'], setChecked= 'Column',
+        self.rowcolBox = radioButtons(options, label=_('Select On'), buttons=[_('Column'),_('Row')], setChecked= _('Column'),
         callback=self.rowcolButtonSelected,orientation='horizontal')
         
-        self.sendSection = checkBox(options,label='Create subset from:', displayLabel=True,
-        buttons=['Selected','Not Selected'],
-        setChecked = ['Selected'],
+        self.sendSection = checkBox(options,label=_('Create subset from:'), displayLabel=True,
+        buttons=[_('Selected'),_('Not Selected')],
+        setChecked = [_('Selected')],
         orientation='horizontal')
         
 
-        # toolTips = ["Select True to send data from the Data slot where the selections that you made are True.",
-        # "Select False to send data from the Not Data slot that are not the selections you made."])
+        # toolTips = [_("Select True to send data from the Data slot where the selections that you made are True."),
+        # _("Select False to send data from the Not Data slot that are not the selections you made.")])
         
         
-        self.invertButton = button(options, "Invert Selection", callback=self.invertSelection)
+        self.invertButton = button(options, _("Invert Selection"), callback=self.invertSelection)
       
         separator(options,height=15)
 
-        self.subsetBox = groupBox(options,label='Subset by')
-        self.subsetColumn = comboBox(self.subsetBox,label="Column:", orientation='vertical',items=['Select'])
-        self.subOnAttachedButton = button(self.subsetBox, "Subset by column", callback=self.subOnAttached)
+        self.subsetBox = groupBox(options,label=_('Subset by'))
+        self.subsetColumn = comboBox(self.subsetBox,label=_("Column:"), orientation='vertical',items=[_('Select')])
+        self.subOnAttachedButton = button(self.subsetBox, _("Subset by column"), callback=self.subOnAttached)
         self.subsetBox.setDisabled(True)
         
         separator(options,height=20)
@@ -73,15 +75,15 @@ class rowcolPicker(OWRpy):
         separator(info,height=15)
         self.selectionInfoBox = widgetLabel(info)
         mainArea = widgetBox(area,orientation='vertical')
-        self.attributes = listBox(mainArea, label='Select',callback=self.onSelect)
+        self.attributes = listBox(mainArea, label=_('Select'),callback=self.onSelect)
         self.attributes.setSelectionMode(QAbstractItemView.ExtendedSelection)
         
-        self.subsetButton = commitButton(mainArea, "Subset on Selection", callback=self.subset,
+        self.subsetButton = commitButton(mainArea, _("Subset on Selection"), callback=self.subset,
         processOnChange=True, processOnInput=True,alignment=Qt.AlignRight)
         
     def onSelect(self):
         count = self.attributes.selectionCount()
-        self.selectionInfoBox.setText('# ' + self.rowcolBox.getChecked()  + 's selected: ' + unicode(count))
+        self.selectionInfoBox.setText(_('# %(ITEMTYPE)ss selected: %(NUMBERSELECTED)s') % {'ITEMTYPE':self.rowcolBox.getChecked(), 'NUMBERSELECTED':unicode(count)})
         if self.subsetButton.processOnChange():
             self.subset()
     def setWidget(self, data):
@@ -90,7 +92,7 @@ class rowcolPicker(OWRpy):
             self.dataParent = data
             self.rowcolButtonSelected()
             dims = data.getDims_data()
-            self.infoBox.setText('# Rows: ' + unicode(dims[0]) +'\n# Columns: ' + unicode(dims[1]))
+            self.infoBox.setText(_('# Rows: %(ROWS)s\n# Columns: %(COLS)s') % {'ROWS':unicode(dims[0]), 'COLS':unicode(dims[1])})
             if self.subsetButton.processOnInput():
                 self.subset()
         else:
@@ -104,18 +106,18 @@ class rowcolPicker(OWRpy):
         # print self.rowcolBox.getChecked()
         # if self.dataParent:
         if not self.dataParent: return
-        if self.rowcolBox.getChecked() == 'Row': #if we are looking at rows
+        if self.rowcolBox.getChecked() == _('Row'): #if we are looking at rows
             r =  self.R('rownames('+self.data+')', wantType = 'list')
             if type(r) == list:
                 self.attributes.update(r)
 
-        elif self.rowcolBox.getChecked() == 'Column': # if we are looking in the columns
+        elif self.rowcolBox.getChecked() == _('Column'): # if we are looking in the columns
             c =  self.R('colnames('+self.data+')', wantType = 'list')
             if type(c) == list:
                 self.attributes.update(c)
 
         else: #by exclusion we haven't picked anything yet
-            self.status.setText('You must select either Row or Column to procede')
+            self.status.setText(_('You must select either Row or Column to procede'))
     def setSubsettingVector(self, data):
         if data == None: 
             self.subsetBox.setEnabled(False)
@@ -136,22 +138,22 @@ class rowcolPicker(OWRpy):
                 
         col=unicode(self.subsetColumn.currentText())
         
-        if self.rowcolBox.getChecked() == 'Row':
-            if "Selected" in self.sendSection.getChecked():
+        if self.rowcolBox.getChecked() == _('Row'):
+            if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],,drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
-            if "Not Selected" in self.sendSection.getChecked():
+            if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],,drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
-            if "Selected" in self.sendSection.getChecked():
+            if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+
             ' %in% '+self.ssv+'[[\''+col+'\']],drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
-            if "Not Selected" in self.sendSection.getChecked():
+            if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+
             ' %in% '+self.ssv+'[[\''+col+'\']],drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
@@ -159,7 +161,7 @@ class rowcolPicker(OWRpy):
         self.SubsetByAttached = 1
     def subset(self): # now we need to make the R command that will handle the subsetting.
         if self.data == None or self.data == '': 
-            self.status.setText("Connect data before processing")
+            self.status.setText(_("Connect data before processing"))
             return
         
         selectedDFItems = []
@@ -167,27 +169,27 @@ class rowcolPicker(OWRpy):
             selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
         
         
-        if self.rowcolBox.getChecked() == 'Row':
-            if "Selected" in self.sendSection.getChecked():
+        if self.rowcolBox.getChecked() == _('Row'):
+            if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',,drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             else:
                 self.rSend('id0', None)
-            if "Not Selected" in self.sendSection.getChecked():
+            if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),,drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
             else:
                 self.rSend('id1', None)
-        elif self.rowcolBox.getChecked() == 'Column':
-            if "Selected" in self.sendSection.getChecked():
+        elif self.rowcolBox.getChecked() == _('Column'):
+            if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',drop = FALSE])', wantType = 'NoConversion')
                 newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             else:
                 self.rSend('id0', None)
-            if "Not Selected" in self.sendSection.getChecked():
+            if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+'),drop = FALSE])', wantType = 'NoConversion')
                 newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)

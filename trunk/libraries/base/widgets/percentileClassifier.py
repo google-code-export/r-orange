@@ -10,6 +10,8 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class percentileClassifier(OWRpy): 
     globalSettingsList = ['commitButton']
     def __init__(self, parent=None, signalManager=None):
@@ -17,19 +19,19 @@ class percentileClassifier(OWRpy):
         self.setRvariableNames(["percentileClassifier_df", "percentileClassifier", 'percentileClassifier_cm'])
         self.data = ''
         self.dataParent = None
-        self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.processData)
+        self.inputs.addInput('id0', _('Data Frame'), redRRDataFrame, self.processData)
 
-        self.outputs.addOutput('id0', 'Data Frame', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Frame'), redRRDataFrame)
 
         
         ### GUI ###
-        self.colNames_listBox = listBox(self.controlArea, label = 'Column Names:',callback=self.onChange)
+        self.colNames_listBox = listBox(self.controlArea, label = _('Column Names:'),callback=self.onChange)
         self.colNames_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.percentile_spinBox = spinBox(self.controlArea, label= 'Percentile Cutoff Selector:', min = 0, max = 100, callback=self.onChange)
-        self.percentile_lineEdit = lineEdit(self.controlArea, label = 'Percentile Cutoff:', toolTip = 'Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.')
-        self.outputWindow = textEdit(self.controlArea, label = 'Output Summary')
+        self.percentile_spinBox = spinBox(self.controlArea, label= _('Percentile Cutoff Selector:'), min = 0, max = 100, callback=self.onChange)
+        self.percentile_lineEdit = lineEdit(self.controlArea, label = _('Percentile Cutoff:'), toolTip = _('Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\nThis takes the place of the Percentile Cutoff Selector if not blank.'))
+        self.outputWindow = textEdit(self.controlArea, label = _('Output Summary'))
         
-        self.commitButton = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commit,
+        self.commitButton = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commit,
         processOnInput=True,processOnChange=True)
         
     def onChange(self):
@@ -54,14 +56,14 @@ class percentileClassifier(OWRpy):
         # set a column where the classes are either greater than or less than the xth percentile of the selected column
         self.outputWindow.clear()
         if self.data == '': 
-            self.outputWindow.insertHtml('No data to work with')
+            self.outputWindow.insertHtml(_('No data to work with'))
             return
         if self.dataParent == {}: 
-            self.outputWindow.insertHtml('No data to work with')
+            self.outputWindow.insertHtml(_('No data to work with'))
             return
         items = self.colNames_listBox.selectedItems()
         if len(items) == 0: 
-            self.outputWindow.insertHtml('No items selected in the Column Names box')
+            self.outputWindow.insertHtml(_('No items selected in the Column Names box'))
             return
         percentile = [unicode(self.percentile_spinBox.value())]
         if unicode(self.percentile_lineEdit.text()) not in ['', ' ']:
@@ -69,7 +71,7 @@ class percentileClassifier(OWRpy):
             lineText.replace(' ', '')
             percentile = lineText.split(',')
         self.R(self.Rvariables['percentileClassifier_df']+'<-'+self.data, wantType = 'NoConversion')
-        self.outputWindow.insertHtml('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>')
+        self.outputWindow.insertHtml(_('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>'))
         for percent in percentile:
             if int(percent) == 0 or int(percent) == 100: continue
             for item in items:
@@ -83,8 +85,3 @@ class percentileClassifier(OWRpy):
         newData = self.dataParent.copy()
         newData.data = self.Rvariables['percentileClassifier_df']
         self.rSend("id0", newData)
-        
-    def getReportText(self, fileDir):
-        text = 'Data classified as being greater than a specified percentile of the data.  To see the data please open the Red-R .rrs file or an output of the data.  A summary of the operations are here:\n\n'
-        text += unicode(self.outputWindow.toPlainText())+'\n\n'
-        return text

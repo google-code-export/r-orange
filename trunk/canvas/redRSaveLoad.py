@@ -439,6 +439,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         else:
             print _('The version is:%s') % version
     except Exception as inst:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Error in loading the schema %s, reverting to load with 1.80 settings') % inst)
         loadDocument180(filename, caption = None, freeze = 0, importing = 0)
         loadingProgressBar.hide()
@@ -483,6 +484,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
                 if widget.widgetID not in settingsDict.keys(): continue
                 widget.outputs.setOutputs(cPickle.loads(settingsDict[widget.widgetID]['connections']), tmp)
             except Exception as inst:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 redRLog.log(1, 9, 1, _('Error setting signals %s, Settings are %s') % (inst, settingsDict[widget.widgetID].keys()))
     else:
         for widget in redRObjects.instances():
@@ -499,9 +501,12 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         try:
             redRObjects.getWidgetByInstance(i)
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             try:
                 redRObjects.removeWidgetInstance(i)
-            except: pass
+            except: 
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+                pass
     qApp.restoreOverrideCursor() 
     qApp.restoreOverrideCursor()
     qApp.restoreOverrideCursor()
@@ -679,6 +684,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(inst))
     ## now the widgets are loaded so we can move on to setting the connections
     
@@ -763,6 +769,7 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             print unicode(inst), _('Widget load failure 180')
     return (loadedOk, failureText)
 def getXMLText(nodelist):

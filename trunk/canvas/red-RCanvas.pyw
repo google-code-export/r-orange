@@ -224,6 +224,7 @@ class OrangeCanvasDlg(QMainWindow):
             if redREnviron.settings['firstLoad']:
                 self.startSetupWizard()
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
         redRSaveLoad.setCanvasDlg(self)
         qApp.processEvents()
@@ -292,6 +293,7 @@ class OrangeCanvasDlg(QMainWindow):
             try:
                 redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 pass
             redREnviron.settings['focusOnCatchException'] = _('Show output window on exception') in setupWizard.redRExceptionHandling.getChecked()
             redREnviron.settings['printExceptionInStatusBar'] = _('Print last exception in status bar') in setupWizard.redRExceptionHandling.getChecked()

@@ -15,7 +15,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class rowFilter(OWRpy):
     globalSettingsList = ['commitOnInput']
     def __init__(self, parent=None, signalManager = None):
@@ -32,21 +33,21 @@ class rowFilter(OWRpy):
         
         self.setRvariableNames(['dataExplorer'])
         self.criteriaDialogList = []
-        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processData)
+        self.inputs.addInput('id0', _('Data Table'), redRRDataFrame, self.processData)
  
-        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Table'), redRRDataFrame)
 
         
         ######## GUI ############
         
         self.tableArea = widgetBox(self.controlArea)
-        self.table = filterTable(self.controlArea, sortable=True,label='Data Table',displayLabel=False,
+        self.table = filterTable(self.controlArea, sortable=True,label=_('Data Table'),displayLabel=False,
         filterable=True,selectionMode = QAbstractItemView.NoSelection,onFilterCallback=self.onFilter)
         
-        self.commitOnInput = redRCheckBox(self.bottomAreaRight, label='commit', displayLabel=False,
-        buttons = ['Commit on Filter'],
-        toolTips = ['On filter send data forward.'])
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitSubset)
+        self.commitOnInput = redRCheckBox(self.bottomAreaRight, label=_('Commit'), displayLabel=False,
+        buttons = [_('Commit on Filter')],
+        toolTips = [_('On filter send data forward.')])
+        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitSubset)
         
     def processData(self, data):
         if not data: 
@@ -58,7 +59,7 @@ class rowFilter(OWRpy):
         self.table.setRTable(self.data)
         
     def onFilter(self):
-        if 'Commit on Filter' in self.commitOnInput.getChecked():
+        if _('Commit on Filter') in self.commitOnInput.getChecked():
             self.commitSubset()
 
     def commitSubset(self):

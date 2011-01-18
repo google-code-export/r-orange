@@ -15,6 +15,8 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.radioButtons import radioButtons
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class mergeR(OWRpy):
     globalSettingsList = ['commit']
 
@@ -27,10 +29,10 @@ class mergeR(OWRpy):
         self.dataB = ''
         
         
-        self.inputs.addInput('id0', 'Dataset A', redRRDataFrame, self.processA)
-        self.inputs.addInput('id1', 'Dataset B', redRRDataFrame, self.processB)
+        self.inputs.addInput('id0', _('Dataset A'), redRRDataFrame, self.processA)
+        self.inputs.addInput('id1', _('Dataset B'), redRRDataFrame, self.processB)
 
-        self.outputs.addOutput('id0', 'Merged', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Merged'), redRRDataFrame)
 
         #default values        
         self.colAsel = None
@@ -43,23 +45,23 @@ class mergeR(OWRpy):
         #GUI
         box = widgetBox(self.controlArea,orientation='horizontal')
     
-        self.colA = listBox(box, label='Columns to Merge From A', callback = self.setcolA)
-        self.colB = listBox(box, label='Columns to Merge From B',  callback = self.setcolB)
+        self.colA = listBox(box, label=_('Columns to Merge From A'), callback = self.setcolA)
+        self.colB = listBox(box, label=_('Columns to Merge From B'),  callback = self.setcolB)
         
 
-        self.sortOption = checkBox(self.bottomAreaLeft, label='Sort by Selected Column', displayLabel=False, 
-        buttons = ['Sort by Selected Column'], 
-        toolTips = ['logical. Should the results be sorted on the by columns?'])
-        self.rownamesOption = checkBox(self.bottomAreaLeft, label = 'Include Row Names in Merge', displayLabel = False, buttons = ['Include Row in Merge'], toolTips = ['This will include the row names in the data after merge.'], setChecked = ['Include Row in Merge'])
+        self.sortOption = checkBox(self.bottomAreaLeft, label=_('Sort by Selected Column'), displayLabel=False, 
+        buttons = [_('Sort by Selected Column')], 
+        toolTips = [_('logical. Should the results be sorted on the by columns?')])
+        self.rownamesOption = checkBox(self.bottomAreaLeft, label = _('Include Row Names in Merge'), displayLabel = False, buttons = [_('Include Row in Merge')], toolTips = [_('This will include the row names in the data after merge.')], setChecked = [_('Include Row in Merge')])
         self.sortOption.layout().setAlignment(Qt.AlignLeft)
         
-        self.mergeOptions = radioButtons(self.bottomAreaCenter,label='Type of merge', displayLabel=False,
+        self.mergeOptions = radioButtons(self.bottomAreaCenter,label=_('Type of merge'), displayLabel=False,
         buttons=['A+B','B+A','AB'],setChecked='A+B',
         orientation='horizontal')
         
         self.mergeOptions.layout().setAlignment(Qt.AlignCenter) 
         
-        self.commit = redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.run, 
+        self.commit = redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.run, 
         processOnChange=True,processOnInput=True)
         
     def processA(self, data):
@@ -100,7 +102,7 @@ class mergeR(OWRpy):
         if self.dataB == '': return
         
         if len(self.colA.selectedItems()) == 0 or len(self.colB.selectedItems()) == 0:
-            self.status.setText('Please make valid column selections')
+            self.status.setText(_('Please make valid column selections'))
             return
         if self.dataA != '' and self.dataB != '':
             h = self.R('intersect(colnames('+self.dataA+'), colnames('+self.dataB+'))')
@@ -113,7 +115,7 @@ class mergeR(OWRpy):
             options = 'all.y=T'
         else:
             options = '' #'all.y=T, all.x=T'
-        if 'Sort by Selected Column' in self.sortOption.getChecked():
+        if _('Sort by Selected Column') in self.sortOption.getChecked():
             options += ', sort=TRUE'
             
         if self.colAsel == None and self.colBsel == None and type(h) is str: 
@@ -158,6 +160,3 @@ class mergeR(OWRpy):
         except: return
         if self.commit.processOnChange():
             self.run()
-    def getReportText(self, fileDir):
-        return 'Data from %s was merged with data from %s using the %s column in the first table and %s in the second.\n\n' % (self.dataA, self.dataB, self.colAsel, self.colBsel)
-    

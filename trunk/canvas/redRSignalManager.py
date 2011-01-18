@@ -39,6 +39,7 @@ class OutputHandler:
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
             return True
         except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSignalManager connectSignal: error in connecting signal %s') % unicode(inst))
             return False
         redRLog.logConnection(self.parent.widgetInfo.fileName, signal['parent'].widgetInfo.fileName)
@@ -72,6 +73,7 @@ class OutputHandler:
                         None
                         )
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 pass
             finally:
                 ## remove the signal from the outputSignals
@@ -85,6 +87,7 @@ class OutputHandler:
                 try:
                     signal['parent'].outputs.propogateNone()
                 except:
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                     pass
     def setOutputData(self, signalName, value):
         self.outputSignals[signalName]['value'] = value

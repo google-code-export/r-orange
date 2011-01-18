@@ -19,12 +19,13 @@ def getdeepattr(obj, attr, **argkw):
     try:
         return reduce(lambda o, n: getattr(o, n),  attr.split("."), obj)
     except:
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
 # I (JD) commented this out. This is ugly and dangerous.
 # If any widget wants this behavour, it should redefine its __getattr__ to return defaults. 
 #        if argkw.has_key("default"):
 #            return argkw["default"]
 #        else:
-            raise AttributeError, _("'%s' has no attribute '%s'") % (obj, attr)
+        raise AttributeError, _("'%s' has no attribute '%s'") % (obj, attr)
 
 
 def getEnterIcon():
@@ -1319,6 +1320,7 @@ class ValueCallback(ControlledCallback):
             try:
                 self.acyclic_setattr(value)
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 traceback.print_exception(*sys.exc_info())
 
 
@@ -1345,6 +1347,7 @@ class ValueCallbackLineEdit(ControlledCallback):
                 self.acyclic_setattr(value)
                 self.control.setCursorPosition(pos)
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "invalid value %s, %s" % (value, type(value)))
 
 

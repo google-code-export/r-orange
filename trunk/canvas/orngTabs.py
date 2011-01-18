@@ -307,6 +307,7 @@ class WidgetListBase:
             ffile = os.path.abspath(redREnviron.directoryNames['redRDir'] + '/tagsSystem/favorites.xml')
             f = open(ffile, 'r')
         except: # there was an exception, the user might not have the favorites file, we need to make one and set a default settings 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             self.insertFavoriteWidgetTab(_('Favorites'), 1) # make a favorites tab
             return
             
@@ -340,6 +341,7 @@ class WidgetListBase:
                     self.insertFavoriteWidgets(child, childTab, widgetRegistry)
                 
         except: #subtabs don't exist
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             return
             
     def insertFavoriteWidgets(self, node, tab, widgetRegistry):
@@ -438,7 +440,7 @@ class WidgetListBase:
                     self.insertWidgets(child.getAttribute('name'), childTab, widgetRegistry)
                     
         except Exception as inst: #subtabs don't exist
-            print inst
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             return
                 
     def insertWidgets(self, itab, tab, widgetRegistry):
@@ -455,10 +457,10 @@ class WidgetListBase:
                         self.allWidgets.append(button)
                             
                 except Exception as inst: 
-                    print inst
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                     pass
         except:
-            pass
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
 
 class WidgetTabs(WidgetListBase, QTabWidget):
     def __init__(self, canvasDlg, widgetInfo, *args):
@@ -858,6 +860,7 @@ def insertChildActions(canvasDlg, catmenu, categoriesPopup, itab):
                 insertWidgets(canvasDlg, childTab, categoriesPopup, unicode(child.getAttribute('name')))
                 
     except: #subtabs don't exist
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return
 def insertWidgets(canvasDlg, catmenu, categoriesPopup, catName):
     #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
@@ -913,7 +916,9 @@ class SearchBox(redRlineEditHint):
                     #self.setFocus()
                     self.event(ev)
             return consumed
-        except: return 0
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 0
         
     def searchDialog(self):
         if unicode(self.text()) in self.itemsAsStrings:

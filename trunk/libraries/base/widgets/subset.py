@@ -16,6 +16,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class subset(OWRpy): 
     globalSettingsList= ['commit']
 
@@ -31,21 +33,21 @@ class subset(OWRpy):
         self.setRvariableNames(['subset'])
         
         
-        self.inputs.addInput('id0', 'Data Table to Subset On', redRRDataFrame, self.processA)
-        self.inputs.addInput('id1', 'Optional List of Subsetting Attributes', redRRList, self.processB)
+        self.inputs.addInput('id0', _('Data Table to Subset On'), redRRDataFrame, self.processA)
+        self.inputs.addInput('id1', _('Optional List of Subsetting Attributes'), redRRList, self.processB)
 
-        self.outputs.addOutput('id0', 'Subsetted Data Table', redRRDataFrame)
-        self.outputs.addOutput('id1', 'Subsetted Data Vector', redRRVector)
+        self.outputs.addOutput('id0', _('Subsetted Data Table'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('Subsetted Data Vector'), redRRVector)
 
         #GUI
         box = widgetBox(self.controlArea,orientation = 'horizontal')
         #pickA = groupBox(box, "Subset on:")
-        self.colA = listBox(box,label='Subset On', callback = self.setcolA)
+        self.colA = listBox(box,label=_('Subset On'), callback = self.setcolA)
         
         #pickB = groupBox(box, "Subset by:")
-        self.colB = listBox(box, label='Subset By', callback = self.setcolB)
+        self.colB = listBox(box, label=_('Subset By'), callback = self.setcolB)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.subset,
+        self.commit = redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.subset,
         processOnInput=True,processOnChange=True)
 
         

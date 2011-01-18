@@ -15,6 +15,8 @@ from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class mathWidget(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -25,42 +27,42 @@ class mathWidget(OWRpy):
         self.counter = 1
         self.functionsList = ['log2', 'log10', 'add', 'subtract', 'multiply', 'divide', 'match', 'as.numeric', 'as.character', 'exp', 'logicAND', 'logicOR', 'toDateTime (MDY)', 'toDateTime (DMY)', 'toDateTime (YMD)']
         
-        self.inputs.addInput('id0', 'Data Frame', redRRDataFrame, self.gotData)
+        self.inputs.addInput('id0', _('Data Frame'), redRRDataFrame, self.gotData)
 
-        self.outputs.addOutput('id0', 'Data Frame', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Frame'), redRRDataFrame)
 
         #GUI#
         
         mainArea = widgetBox(self.controlArea, orientation = 'horizontal')
-        leftArea = groupBox(mainArea, label = 'Table View')
-        rightArea = groupBox(mainArea, label = 'Math Box')
+        leftArea = groupBox(mainArea, label = _('Table View'))
+        rightArea = groupBox(mainArea, label = _('Math Box'))
         
-        self.table = redRfilterTable(leftArea,label='Data Table', displayLabel=False,
+        self.table = redRfilterTable(leftArea,label= _('Data Table'), displayLabel=False,
         filterable=False,sortable=False)
         
-        self.functionLineEdit = lineEdit(rightArea, label = 'Function Search or Run', 
+        self.functionLineEdit = lineEdit(rightArea, label = _('Function Search or Run'), 
         callback = self.functionDone)
         QObject.connect(self.functionLineEdit, SIGNAL('textChanged(const QString&)'), 
         lambda s: self.textChanged(s))
         
-        self.functionListBox = listBox(rightArea, label='List of Functions',displayLabel=False,
+        self.functionListBox = listBox(rightArea, label= _('List of Functions'),displayLabel=False,
         includeInReports=False,
         items = self.functionsList, callback = self.funcionPressed)
         
         #self.helpButton = button(rightArea, label = 'Help') #, toolTip = 'Press this then select a function from the list for help.')
         self.dialog = dialog(self)
-        self.dialogTopArea = groupBox(self.dialog, label = 'Left Side')
-        self.dialogTopLineEdit = lineEdit(self.dialogTopArea, label = 'Constant', toolTip = 'Must be a number')
-        self.dialogTopListBox = listBox(self.dialogTopArea, label = 'Columns', toolTip = 'Select one of the columns', callback = self.dialogTopLineEdit.clear)
+        self.dialogTopArea = groupBox(self.dialog, label = _('Left Side'))
+        self.dialogTopLineEdit = lineEdit(self.dialogTopArea, label = _('Constant'), toolTip = _('Must be a number'))
+        self.dialogTopListBox = listBox(self.dialogTopArea, label = _('Columns'), toolTip = _('Select one of the columns'), callback = self.dialogTopLineEdit.clear)
         
         self.dialogLabel = widgetLabel(self.dialog)
         
-        self.dialogBottomArea = groupBox(self.dialog, label = 'Right Side')
-        self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = 'Constant', 
-        toolTip = 'Must be a number')
-        self.dialogBottomListBox = listBox(self.dialogBottomArea, label = 'Columns', 
-        toolTip = 'Select one of the columns', callback = self.dialogBottomLineEdit.clear)
-        redRCommitButton(self.dialog, label = 'Done', callback = self.functionCommit)
+        self.dialogBottomArea = groupBox(self.dialog, label = _('Right Side'))
+        self.dialogBottomLineEdit = lineEdit(self.dialogBottomArea, label = _('Constant'), 
+        toolTip = _('Must be a number'))
+        self.dialogBottomListBox = listBox(self.dialogBottomArea, label = _('Columns'), 
+        toolTip = _('Select one of the columns'), callback = self.dialogBottomLineEdit.clear)
+        redRCommitButton(self.dialog, label = _('Done'), callback = self.functionCommit)
         self.dialog.hide()
     def gotData(self, data):
         if data:
@@ -99,7 +101,7 @@ class mathWidget(OWRpy):
                 try:
                     a = float(topText)
                 except:
-                    self.status.setText('Top Text Area Does Not Contain A Number')
+                    self.status.setText(_('Top Text Area Does Not Contain A Number'))
                     return 
             else:
                 topText = self.data+'$'+unicode(self.dialogTopListBox.selectedItems()[0].text())
@@ -111,7 +113,7 @@ class mathWidget(OWRpy):
                         if unicode(self.dialogLabel.text()) not in ['match']:
                             a = float(bottomText)
                     except:
-                        self.status.setText('Top Text Area Does Not Contain A Number')
+                        self.status.setText(_('Top Text Area Does Not Contain A Number'))
                         return
                 else:
                     bottomText = self.data+'$'+unicode(self.dialogBottomListBox.selectedItems()[0].text())
@@ -124,7 +126,7 @@ class mathWidget(OWRpy):
                     self.table.setRTable(self.data)
                     self.counter += 1
                 except:
-                    self.status.setText('An error occured in your function')
+                    self.status.setText(_('An error occured in your function'))
             elif function in ['toDateTime (MDY)', 'toDateTime(YMD)', 'toDateTime(DMY)']:
                 if function == 'toDateTime (MDY)':
                     self.R(self.data+'$dateAsMDY'+unicode(self.counter)+'<-strptime('+topText+', "%m/%d/%y")', wantType = 'NoConversion')
@@ -138,42 +140,42 @@ class mathWidget(OWRpy):
                     self.table.setRTable(self.data)
                     self.counter += 1
                 except:
-                    self.status.setText('An error occured in your function')
+                    self.status.setText(_('An error occured in your function'))
             else:
                 if function == 'add':
                     try:
                         self.R(self.data+'$'+'plus_'+unicode(self.counter)+'<-'+topText+' + '+bottomText, wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
-                        self.status.setText('An error occured in your function')
+                        self.status.setText(_('An error occured in your function'))
                 elif function == 'subtract':
                     try:
                         self.R(self.data+'$'+'minus_'+unicode(self.counter)+'<-'+topText+' - '+bottomText, wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
-                        self.status.setText('An error occured in your function')
+                        self.status.setText(_('An error occured in your function'))
                 elif function == 'multiply':
                     try:
                         self.R(self.data+'$'+'times_'+unicode(self.counter)+'<-as.numeric('+topText+') * as.numeric('+bottomText+')', wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
-                        self.status.setText('An error occured in your function')
+                        self.status.setText(_('An error occured in your function'))
                 elif function == 'divide':
                     try:
                         self.R(self.data+'$'+'divide_'+unicode(self.counter)+'<-as.numeric('+topText+') / as.numeric('+bottomText+')', wantType = 'NoConversion')
                         self.table.setRTable(self.data)
                     except:
-                        self.status.setText('An error occured in your function')
+                        self.status.setText(_('An error occured in your function'))
                 elif function == 'logicAND':
                     try:
                         self.R(self.data+'$'+'logic_AND'+unicode(self.counter)+'<-'+topText+'&'+bottomText, wantType = 'NoConversion')
                     except:
-                        self.status.setText('An error occured in your function')
+                        self.status.setText(_('An error occured in your function'))
                 elif function == 'logicOR':
                     try:
                         self.R(self.data+'$'+'logic_OR'+unicode(self.counter)+'<-'+topText+'|'+bottomText, wantType = 'NoConversion')
                     except:
-                        self.status.setText('An error occured in your function')
+                        self.status.setText(_('An error occured in your function'))
                 self.counter += 1
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
@@ -181,8 +183,4 @@ class mathWidget(OWRpy):
             self.rSend("id0", newData)
             self.dialog.hide()
         except:
-            self.status.setText('An error occured in your function')
-            
-    def getReportText(self, fileDir):
-        text = 'Performed one or more mathematical opperations on the columns of the data.  See the Red-R .rrs file or the included notes for more information on what procedures were performed.\n\n'
-        return text
+            self.status.setText(_('An error occured in your function'))

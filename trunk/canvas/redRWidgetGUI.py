@@ -406,6 +406,7 @@ class redRWidgetGUI(QMainWindow):
                 self.leftDockButton.setChecked(self.windowState['leftDockState'])
                 self.showLeftDock()
             except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 self.hasAdvancedOptions = False
         
         if 'documentationState' in self.windowState.keys():
@@ -500,6 +501,7 @@ class redRWidgetGUI(QMainWindow):
             webbrowser.open(url, 0, 1)
             return
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
         # try:

@@ -14,6 +14,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.separator import separator
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class rownames(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -22,30 +24,30 @@ class rownames(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', _('Input Data'), redRRDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', 'Set of Names', redRRVector)
+        self.outputs.addOutput('id0', _('Row or Column Names'), redRRVector)
 
         
         box = widgetBox(self.controlArea)
         self.controlArea.layout().setAlignment(box,Qt.AlignTop | Qt.AlignLeft)
-        widgetLabel(box,'Get row or column names from input object.')
+        widgetLabel(box,_('Get row or column names from input object.'))
         separator(box,height=10)
-        self.function =  radioButtons(box, label='Row/Column',displayLabel=False,
-        buttons=['Row Names','Column Names'],setChecked='Row Names', orientation='horizontal')
+        self.function =  radioButtons(box, label=_('Row or Column'),displayLabel=False,
+        buttons=[_('Row Names'),_('Column Names')],setChecked=_('Row Names'), orientation='horizontal')
         separator(box,height=10)
 
-        self.RFunctionParamprefix_lineEdit =  lineEdit(box,  label = "prefix:", 
-        toolTip='prepend prefix to simple numbers when creating names.')
+        self.RFunctionParamprefix_lineEdit =  lineEdit(box,  label = _("prefix:"), 
+        toolTip=_('Prepend prefix to simple numbers when creating names.'))
         separator(box,height=10)
         
-        self.doNullButton =  radioButtons(box,  label = "do.NULL:",
-        toolTips=['logical. Should this create names if they are NULL?']*2,
-        buttons=['TRUE','FALSE'],setChecked='TRUE', orientation='horizontal')
+        self.doNullButton =  radioButtons(box,  label = _("do.NULL:"),
+        toolTips=[_('logical. Should this create names if they are NULL?')]*2,
+        buttons=[_('TRUE'),_('FALSE')],setChecked=_('TRUE'), orientation='horizontal')
         buttonBox = widgetBox(box,orientation='horizontal')
-        redRCommitButton(buttonBox, "Commit", callback = self.commitFunction)
-        self.autoCommit = checkBox(buttonBox,label='commit', displayLabel=False,
-        buttons=['Commit on Input'],setChecked=['Commit on Input'])
+        redRCommitButton(buttonBox, _("Commit"), callback = self.commitFunction)
+        self.autoCommit = checkBox(buttonBox,label=_('commit'), displayLabel=False,
+        buttons=[_('Commit on Input')],setChecked=[_('Commit on Input')])
         
     def processx(self, data):
         if data:
@@ -55,14 +57,14 @@ class rownames(OWRpy):
         else:
             self.RFunctionParam_x = ''
     def commitFunction(self,userClick=True):
-        if not userClick and 'Commit on Input' not in self.autoCommit.getChecked():
+        if not userClick and _('Commit on Input') not in self.autoCommit.getChecked():
             return
         if unicode(self.RFunctionParam_x) == '': 
-            self.status.setText('No data')
+            self.status.setText(_('No data'))
             return
             
         injection = []
-        if self.function.getChecked() =='Row Names':
+        if self.function.getChecked() == _('Row Names'):
             function = 'rownames'
         else:
             function = 'colnames'
@@ -80,5 +82,5 @@ class rownames(OWRpy):
 
         self.rSend("id0", newData)
     def getReportText(self, fileDir):
-        text = unicode(self.function.getChecked())+' were sent from this widget.\n\n'
+        text = _('%s were sent from this widget.\n\n') % unicode(self.function.getChecked())
         return text

@@ -17,7 +17,8 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.button import button as RedRButton
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class ListSelector(OWRpy):
     globalSettingsList= ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -27,23 +28,23 @@ class ListSelector(OWRpy):
         self.setRvariableNames(['listelement'])
         self.data = None
         
-        self.inputs.addInput('id0', 'R List', [redRRList, redRRArbitraryList] , self.process)
+        self.inputs.addInput('id0', _('R List'), [redRRList, redRRArbitraryList] , self.process)
 
-        self.outputs.addOutput('id0', 'R Data Frame', redRRDataFrame)
-        self.outputs.addOutput('id1', 'R Vector', redRRVector)
-        self.outputs.addOutput('id2', 'R List', redRRList)
-        self.outputs.addOutput('id3', 'R Variable', redRRVariable)
-        self.outputs.addOutput('id4', 'R Matrix', redRRMatrix)
+        self.outputs.addOutput('id0', _('R Data Frame'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('R Vector'), redRRVector)
+        self.outputs.addOutput('id2', _('R List'), redRRList)
+        self.outputs.addOutput('id3', _('R Variable'), redRRVariable)
+        self.outputs.addOutput('id4', _('R Matrix'), redRRMatrix)
 
         
         #GUI
         #box = groupBox(self.controlArea, "List Data")
         
-        self.names = listBox(self.controlArea, label="List of Data", displayLabel=True,
+        self.names = listBox(self.controlArea, label=_("List of Data"), displayLabel=True,
         callback = self.selectionChanged)
         self.infoa = widgetLabel(self.controlArea, '')
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.sendSelection,
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.sendSelection,
         processOnChange=True, processOnInput=True)
 
         
@@ -105,6 +106,4 @@ class ListSelector(OWRpy):
             self.rSend("id3", newData)
             slot = 'R Variable'
         
-        self.infoa.setText('Sent %s as %s' %(name, slot))
-    def getReportText(self, fileDir):
-        return 'The %s element of the incomming data was sent.\n\n' % (self.Rvariables['listelement'])
+        self.infoa.setText(_('Sent %(NAME)s as %(SLOT)s') % {'NAME':name, 'SLOT':slot})

@@ -16,7 +16,8 @@ from libraries.base.qtWidgets.listBox import listBox as redRlistBox
 from libraries.base.qtWidgets.spinBox import spinBox as redRspinBox
 from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 import libraries.base.signalClasses as signals
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class score(OWRpy): 
     settingsList = []
     def __init__(self, signalManager = None):
@@ -27,15 +28,15 @@ class score(OWRpy):
         self.data = {}
         self.RFunctionParam_data = ''
         self.RFunctionParam_score = ''
-        self.inputs.addInput("data", "Sample Data", signals.RDataFrame.RDataFrame, self.processdata)
-        self.inputs.addInput("scoremat", "Scoring Matrix", signals.RDataFrame.RDataFrame, self.processscores)
-        self.outputs.addOutput("fscoremat","Sored Samples", signals.RDataFrame.RDataFrame)
-        self.outputs.addOutput("maxScore", "Max Scored Class", signals.RVector.RVector)
+        self.inputs.addInput("data", _("Sample Data"), signals.RDataFrame.RDataFrame, self.processdata)
+        self.inputs.addInput("scoremat", _("Scoring Matrix"), signals.RDataFrame.RDataFrame, self.processscores)
+        self.outputs.addOutput("fscoremat",_("Sored Samples"), signals.RDataFrame.RDataFrame)
+        self.outputs.addOutput("maxScore", _("Max Scored Class"), signals.RVector.RVector)
 
         wb = redRwidgetBox(self.controlArea, orientation = 'horizontal')
-        self.scoremethod = redRcomboBox(wb, label = 'Scoring Method', items = ['Multiplication', 'Correlation'], callback = self.commitFunction)
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        self.RoutputWindow = redRfilterTable(wb,label='Scores', displayLabel=False,
+        self.scoremethod = redRcomboBox(wb, label = _('Scoring Method'), items = [_('Multiplication'), _('Correlation')], callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
+        self.RoutputWindow = redRfilterTable(wb,label=_('Scores'), displayLabel=False,
             sortable=True,filterable=False)
             
     def processdata(self, data):
@@ -63,11 +64,11 @@ class score(OWRpy):
         self.R('%s<-%s[,c(\"%s\")]' % (self.Rvariables['mergedmatrix'], self.Rvariables['tempmerge'], '\",\"'.join(self.R('colnames(%s)' % self.RFunctionParam_score, wantType = 'NoConversion'))), wantType = 'NoConversion')
         
         ## now make the matrixes
-        if unicode(self.scoremethod.currentText()) == 'Multiplication':
+        if unicode(self.scoremethod.currentText()) == _('Multiplication'):
             ## for each col in the samples we need to multiply the cols in the score matrix and save the result.
             self.R(self.Rvariables['score']+'<-as.data.frame(t(data.matrix('+self.Rvariables['mergedmatrix']+')) %*% data.matrix('+ self.Rvariables['mergedvals'] + '))', wantType = 'NoConversion')
             
-        elif unicode(self.scoremethod.currentText()) == 'Correlation':
+        elif unicode(self.scoremethod.currentText()) == _('Correlation'):
             # perform cor and show the results
             self.R('%s<-as.data.frame(cor(data.matrix(%s), data.matrix(%s)))' % (self.Rvariables['score'], self.Rvariables['mergedmatrix'], self.Rvariables['mergedvals']), wantType = 'NoConversion')
         self.RoutputWindow.setRTable(self.Rvariables['score'])

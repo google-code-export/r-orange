@@ -9,13 +9,15 @@ from libraries.base.qtWidgets.filterTable import filterTable
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RedRdata(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
-        self.outputs.addOutput('id0', 'data Output', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Example Data'), redRRDataFrame)
 
                 
         self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
@@ -30,11 +32,11 @@ class RedRdata(OWRpy):
         box = groupBox(self.controlArea,orientation='horizontal', margin=16)
         self.controlArea.layout().setAlignment(box,Qt.AlignHCenter)
         # the package does not need to be loaded to get its datasets
-        self.package = lineEdit(box, label = 'Package:', text = '')#, callback = self.loadPackage)
-        self.RFunctionParamdataName_lineEdit = lineEdit(box, label = "Data Name:", 
+        self.package = lineEdit(box, label = _('Package:'), text = '')#, callback = self.loadPackage)
+        self.RFunctionParamdataName_lineEdit = lineEdit(box, label = _("Data Name:"), 
         text = '', callback = self.commitFunction)
         
-        self.commit = redRCommitButton(box, "Commit", callback = self.commitFunction,
+        self.commit = redRCommitButton(box, _("Commit"), callback = self.commitFunction,
         processOnChange=True, orientation='vertical')
     
     def loadPackage(self):
@@ -71,7 +73,7 @@ class RedRdata(OWRpy):
             newData = redRRDataFrame(data = 'as.data.frame(' + unicode(self.RFunctionParamdataName_lineEdit.text() + ')'))
             self.rSend("id0", newData)            
         except RuntimeError as inst:
-            QMessageBox.information(self, 'Red-R Canvas','R Error: '+ unicode(inst),  
+            QMessageBox.information(self, _('Red-R Canvas'),_('R Error: %s') % unicode(inst),  
             QMessageBox.Ok + QMessageBox.Default)
 
         

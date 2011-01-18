@@ -347,6 +347,7 @@ class WidgetTree(QTreeWidget):
                     self.insertWidgets(child.getAttribute('name'), childTab, widgetRegistry)
                     
         except Exception as inst: #subtabs don't exist
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             print inst
             return
                 
@@ -364,9 +365,11 @@ class WidgetTree(QTreeWidget):
                         self.allWidgets.append(button)
                             
                 except Exception as inst: 
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                     print inst
                     pass
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
         

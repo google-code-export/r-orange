@@ -13,7 +13,8 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 import libraries.base.signalClasses as signals
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RedRstrptime(OWRpy): 
     settingsList = []
     def __init__(self, parent=None, signalManager=None):
@@ -21,11 +22,11 @@ class RedRstrptime(OWRpy):
         self.setRvariableNames(["strptime"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput("x", "x", signals.RDataFrame.RDataFrame, self.processx)
-        self.outputs.addOutput("strptime Output","strptime Output", signals.RDataFrame.RDataFrame)
+        self.inputs.addInput("x", _("Input Data"), signals.RDataFrame.RDataFrame, self.processx)
+        self.outputs.addOutput("strptime Output",_("strptime Output"), signals.RDataFrame.RDataFrame)
         
-        self.columnSelection = redRcomboBox(self.controlArea, label = "Data Column:")
-        self.RFunctionParamformat_comboBox = redRcomboBox(self.controlArea, label = "format:", items = ["yyyymmdd", "yymmdd", "ddmmyyyy", "ddmmyy", "mmddyyyy", "mmddyy"], toolTip = "Select the format of the date time.  y is year m is month and d is day.")
+        self.columnSelection = redRcomboBox(self.controlArea, label = _("Data Column:"))
+        self.RFunctionParamformat_comboBox = redRcomboBox(self.controlArea, label = "format:", items = [_("yyyymmdd"), _("yymmdd"), _("ddmmyyyy"), _("ddmmyy"), _("mmddyyyy"), _("mmddyy")], toolTip = _("Select the format of the date time.  y is year m is month and d is day."))
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
     def processx(self, data):
         if data:
@@ -39,27 +40,27 @@ class RedRstrptime(OWRpy):
     def commitFunction(self):
         if unicode(self.RFunctionParam_x) == '': return
         injection = []
-        if unicode(self.RFunctionParamformat_comboBox.currentText()) == 'yyyymmdd':
+        if unicode(self.RFunctionParamformat_comboBox.currentText()) == _('yyyymmdd'):
             
             string = ',format="%Y/%m/%d"'
             injection.append(string)
-        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == 'yymmdd':
+        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == _('yymmdd'):
             
             string = ',format="%y/%m/%d"'
             injection.append(string)
-        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == 'ddmmyy':
+        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == _('ddmmyy'):
             
             string = ',format="%d/%m/%y"'
             injection.append(string)
-        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == 'ddmmyyyy':
+        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == _('ddmmyyyy'):
             
             string = ',format="%d/%m/%Y"'
             injection.append(string)
-        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == 'mmddyy':
+        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == _('mmddyy'):
             
             string = ',format="%m/%d/%y"'
             injection.append(string)
-        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == 'mmddyyyy':
+        elif unicode(self.RFunctionParamformat_comboBox.currentText()) == _('mmddyyyy'):
             
             string = ',format="%m/%d/%Y"'
             injection.append(string)

@@ -25,6 +25,7 @@ try:
     hDictWeb = cPickle.load(f)
     f.close()
 except:
+    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
     hDictWeb = {}
     
 def getSuggestWidgets(outWidget):
@@ -42,7 +43,7 @@ def getSuggestWidgets(outWidget):
                 wInfo = widgets[con]
                 actions.append(wInfo)
     except:
-        redRLog.log(redRLog.REDRCORE,redRLog.WARNING,_('The widget use history is corrept. Please delete it.'))
+        redRLog.log(redRLog.REDRCORE,redRLog.WARNING,_('The widget use history is corrupt. Please delete it.'))
         redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,redRLog.formatException())
     return actions
 def getTopConnections(outWidget):

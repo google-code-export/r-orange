@@ -325,7 +325,9 @@ class SchemaDoc(QWidget):
         if td.exec_() == QDialog.Rejected: return ## nothing interesting to do
         try:
             tabName = unicode(td.tabList.selectedItems()[0].text())
-        except: return 
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 
         #if tabName == unicode(self.tabsWidget.tabText(self.tabsWidget.currentIndex())): return # can't allow two of the same widget on a tab.
         for w in tempWidgets:
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Create a clone widget %s in tab %s.') % ( w.caption + _(' (Clone)'), tabName))
@@ -339,9 +341,7 @@ class SchemaDoc(QWidget):
         try:
             newwidget = redRObjects.newIcon(self.activeCanvas(), self.activeTab(), widget.widgetInfo, redRStyle.defaultWidgetIcon, self.canvasDlg, instanceID = widget.instance().widgetID, tabName = self.activeTabName()) ## set the new orngCanvasItems.CanvasWidget, this item contains the instance!!!
         except:
-            type, val, traceback = sys.exc_info()
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(traceback))
-            sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             qApp.restoreOverrideCursor()
             return None
 
@@ -407,9 +407,7 @@ class SchemaDoc(QWidget):
             #if widgetInfo.name == 'dummy' and (forceInSignals or forceOutSignals):
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Create new widget named %s.') % newwidget.caption)
         except:
-            type, val, traceback = sys.exc_info()
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(traceback))
-            sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             qApp.restoreOverrideCursor()
             return None
 
@@ -430,7 +428,8 @@ class SchemaDoc(QWidget):
             newwidget.setProcessing(0)
         except:
             type, val, traceback = sys.exc_info()
-            sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            #sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
 
             
         ## try to set up the ghost widgets
@@ -492,6 +491,7 @@ class SchemaDoc(QWidget):
             widget.remove() ## here we need to check if others have the widget instance.
             redRObjects.removeWidgetIcon(widget)
         except Exception as inst:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Error in removing widget icon %s') %widget)
         if not self.instanceStillWithIcon(instanceID):
             redRLog.log(10, 9, 3, _('Removing Widget'))
@@ -800,7 +800,9 @@ class SearchBox(redRlineEditHint):
                     #self.setFocus()
                     self.event(ev)
             return consumed
-        except: return 0
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 0
 class CanvasWidgetAction(QWidgetAction):
     def __init__(self, parent, actions):
         QWidgetAction.__init__(self, parent)
@@ -912,7 +914,7 @@ class CanvasPopup(QMenu):
                     self.insertWidgets(childTab, self, unicode(child.getAttribute('name')))
                     
         except: #subtabs don't exist
-            return
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
     def insertWidgets(self,catmenu, categoriesPopup, catName):
         #print 'Widget Registry is \n\n' + unicode(widgetRegistry) + '\n\n'
         widgets = None

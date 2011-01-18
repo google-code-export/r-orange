@@ -13,6 +13,8 @@ from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class sort(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -21,20 +23,20 @@ class sort(OWRpy):
         self.data = {}
          
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', 'Data Tabel', redRRDataFrame, self.processx)
+        self.inputs.addInput('id0', _('Data Tabel'), redRRDataFrame, self.processx)
 
-        self.outputs.addOutput('id0', 'Sorted Data Table', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Sorted Data Table'), redRRDataFrame)
 
         self.standardTab = widgetBox(self.controlArea)
-        self.options =  checkBox(self.standardTab,label='Options',
-        buttons = ["Decreasing", 'NA Last'], orientation='horizontal')
+        self.options =  checkBox(self.standardTab,label=_('Options'),
+        buttons = [_("Decreasing"), _('NA Last')], orientation='horizontal')
         # self.standardTab.layout().setAlignment(self.options,Qt.AlignLeft)
         
-        self.sortingColumn1 = comboBox(self.standardTab, label = 'First Column to Sort:')
-        self.sortingColumn2 = comboBox(self.standardTab, label = 'Second Column to Sort:')
-        self.sortingColumn3 = comboBox(self.standardTab, label = 'Third Column to Sort:')
+        self.sortingColumn1 = comboBox(self.standardTab, label = _('First Column to Sort:'))
+        self.sortingColumn2 = comboBox(self.standardTab, label = _('Second Column to Sort:'))
+        self.sortingColumn3 = comboBox(self.standardTab, label = _('Third Column to Sort:'))
         
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
 
     def processx(self, data):
@@ -62,12 +64,12 @@ class sort(OWRpy):
             injection.append('%s$%s' % (self.RFunctionParam_x, self.sortingColumn3.currentText()))
             
             
-        if 'Decreasing' in self.options.getChecked():
+        if _('Decreasing') in self.options.getChecked():
             string = 'decreasing=TRUE'
             injection.append(string)
         else:
             injection.append('decreasing = FALSE')
-        if 'NA Last' in self.options.getChecked():
+        if _('NA Last') in self.options.getChecked():
             injection.append('na.last = TRUE')
         inj = ','.join(injection)
 
@@ -75,11 +77,3 @@ class sort(OWRpy):
         newData = redRRDataFrame(data = self.Rvariables["sort"]) 
         
         self.rSend("id0", newData)
-    def getReportText(self, fileDir):
-        text = 'Sorted the incomming data in '
-        if unicode(self.options.text()) != 'FALSE':
-            text += 'increasing'
-        else:
-            text += 'decreasing'
-        text += 'order.\n\n'
-        return text

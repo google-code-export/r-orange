@@ -15,22 +15,24 @@ from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.button import button
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class colMatcher(OWRpy): 
     
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.RFunctionParam_x = ''
         self.setRvariableNames(['newmat', 'compColumn'])
-        self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processx)
-        self.outputs.addOutput('data', 'Data Table', redRDataFrame)
+        self.inputs.addInput('id0', _('Data Table'), redRDataFrame, self.processx)
+        self.outputs.addOutput('data', _('Data Table'), redRDataFrame)
 
         
-        box = groupBox(self.controlArea, "Column Selector")
-        self.columnBox = redRListBox(box, label = 'Column Box', toolTip = 'Select the columns to find the largest or smallest value')
+        box = groupBox(self.controlArea, _("Column Selector"))
+        self.columnBox = redRListBox(box, label = _('Column Box'), toolTip = _('Select the columns to find the largest or smallest value'))
         self.columnBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.glSelector = redRRadioButtons(box, label = 'Comarison Selection', buttons = ['Greater Than', 'Less Than'], setChecked = 'Greater Than')
+        self.glSelector = redRRadioButtons(box, label = _('Comarison Selection'), buttons = [_('Greater Than'), _('Less Than')], setChecked = _('Greater Than'))
 
-        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
+        redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
@@ -44,7 +46,7 @@ class colMatcher(OWRpy):
         if self.RFunctionParam_x == '': return
         if len(self.columnBox.selectedItems()) < 2: return  # must select at least two columns to compare.
         ## make a new column that has the names of the columns that are greatest.
-        if str(self.glSelector.getChecked()) == 'Greater Than':
+        if str(self.glSelector.getChecked()) == _('Greater Than'):
             gl = 0
         else:
             gl = 1

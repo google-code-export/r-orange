@@ -4,7 +4,8 @@
 <name>Red-R Save Point</name>
 <tags>R</tags>
 """
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 from OWRpy import * 
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
@@ -17,13 +18,13 @@ class redRSavePoint(OWRpy):
         self.setRvariableNames(['saveData'])
         self.inputObject = None
         self.outputObject = None
-        self.inputs.addInput('id0', 'Input Object', 'All', self.processobject)
-        self.outputs.addOutput('id0', 'Output Object', 'All')
+        self.inputs.addInput('id0', _('Input Object'), 'All', self.processobject)
+        self.outputs.addOutput('id0', _('Output Object'), 'All')
         self.outputs.propogateNone = self.newPropNone  ## this is here to stop the propogation of None when a None is received.
-        widgetLabel(self.controlArea, 'This widget acts as a save point for analyses so that data is not lost when upstream widgets are removed.  You can use this to help manage memory in your schemas by deleting upstream data (making the schema smaller) yet retaining the analyses.', wordWrap = True)
-        redRCommitButton(self.bottomAreaRight, label = "Commit", callback = self.commitFunction)
-        self.RoutputWindow = textEdit(self.controlArea, label = 'Input Object')
-        self.RoutputWindow2 = textEdit(self.controlArea, label = 'Output Object')
+        widgetLabel(self.controlArea, _('This widget acts as a save point for analyses so that data is not lost when upstream widgets are removed.  You can use this to help manage memory in your schemas by deleting upstream data (making the schema smaller) yet retaining the analyses.'), wordWrap = True)
+        redRCommitButton(self.bottomAreaRight, label = _("Commit"), callback = self.commitFunction)
+        self.RoutputWindow = textEdit(self.controlArea, label = _('Input Object'))
+        self.RoutputWindow2 = textEdit(self.controlArea, label = _('Output Object'))
         #box.layout().addWidget(self.RoutputWindow)
     def newPropNone(self, ask = False):
         pass
@@ -37,7 +38,7 @@ class redRSavePoint(OWRpy):
         self.commitFunction()
     def commitFunction(self):
         if self.inputObject == None: 
-            self.status.setText('Input Does not Exist')
+            self.status.setText(_('Input Does not Exist'))
             return
         print 'Setting output'
         ## set a new variable in R which is a copy of the old variable.

@@ -8,6 +8,8 @@ from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.textEdit import textEdit
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class summary(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -16,15 +18,15 @@ class summary(OWRpy):
         self.data = {}
          
         self.RFunctionParam_object = ''
-        self.inputs.addInput('id0', 'R Variable Object', redRRVariable, self.processobject)
+        self.inputs.addInput('id0', _('R Variable Object'), redRRVariable, self.processobject)
         
-        self.commit = redRCommitButton(self.bottomAreaRight, 'Commit', callback = self.commitFunction,
+        self.commit = redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.commitFunction,
         processOnInput=True)
         
-        self.RoutputWindow = textEdit(self.controlArea, label = "RoutputWindow")
+        self.RoutputWindow = textEdit(self.controlArea, label = _("RoutputWindow"))
     def processobject(self, data):
         if not self.require_librarys(["base"]):
-            self.status.setText('R Libraries Not Loaded.')
+            self.status.setText(_('R Libraries Not Loaded.'))
             return
         if data:
             self.RFunctionParam_object=data.getData()
@@ -39,7 +41,4 @@ class summary(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-    def getReportText(self, fileDir):
-        text = 'Summary of attached data:\n\n'
-        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
-        return text
+

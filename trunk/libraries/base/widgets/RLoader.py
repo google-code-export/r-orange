@@ -13,37 +13,39 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RLoader(OWRpy): 
     globalSettingsList = ['filecombo','path']
 
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
-        self.outputs.addOutput('id0', 'R Session', redRREnvironment)
+        self.outputs.addOutput('id0', _('R Session'), redRREnvironment)
 
         # print os.path.abspath('/')
         self.path = os.path.abspath('/')
         self.setRvariableNames(['sessionEnviron'])
         
         
-        gbox = groupBox(self.controlArea,orientation='vertical',label='Select R session')
+        gbox = groupBox(self.controlArea,orientation='vertical',label=_('Select R session'))
         
         box = widgetBox(gbox,orientation='horizontal')
-        self.filecombo = fileNamesComboBox(box,label='Session File', displayLabel=False,
+        self.filecombo = fileNamesComboBox(box,label=_('Session File'), displayLabel=False,
         orientation='vertical')
         self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Maximum)
 
-        button(box, label='Browse', callback = self.browseFile)
-        self.commit = commitButton(gbox, label='Load Session', callback = self.loadSession,
+        button(box, label=_('Browse'), callback = self.browseFile)
+        self.commit = commitButton(gbox, label=_('Load Session'), callback = self.loadSession,
         alignment=Qt.AlignRight)
         #gbox.layout().setAlignment(self.commit,Qt.AlignRight)
         
         self.infoa = widgetLabel(self.controlArea, '')
-        self.varBox = listBox(self.controlArea, label = 'Variables')
+        self.varBox = listBox(self.controlArea, label = _('Variables'))
         self.varBox.hide()
         self.infob = widgetLabel(self.controlArea, '')
     
     def browseFile(self): 
-        fn = QFileDialog.getOpenFileName(self, "Open File", self.path, "R save file (*.RData *.rda);; All Files (*.*)")
+        fn = QFileDialog.getOpenFileName(self, _("Open File"), self.path, "R save file (*.RData *.rda);; All Files (*.*)")
         if fn.isEmpty(): return
         fn = unicode(fn)
         self.path = os.path.split(unicode(fn))[0]
@@ -59,18 +61,14 @@ class RLoader(OWRpy):
         self.R('load(\''+file+'\', '+self.Rvariables['sessionEnviron']+')', wantType = 'NoConversion') #load the saved session into a protective environment
         
         
-        self.infoa.setText('Data loaded from '+unicode(file))
+        self.infoa.setText(_('Data loaded from %s') % unicode(file))
         self.varBox.show()
         dataList = self.R('local(ls(), '+self.Rvariables['sessionEnviron']+')', wantType = 'list')
         self.varBox.update(dataList)
-        self.infob.setText('Please use the R Variable Separator widget to extract your data.')
+        self.infob.setText(_('Please use the R Variable Separator widget to extract your data.'))
         newData = redRREnvironment(data = self.Rvariables['sessionEnviron'])
         self.rSend('id0', newData)
         #self.status.setText('Data sent.')
         
     def customWidgetDelete(self):
         self.R('if(exists("' + self.Rvariables['sessionEnviron'] + '")) { local(rm(ls()), envir = ' + self.Rvariables['sessionEnviron'] + ')}', wantType = 'NoConversion')
-        
-    def getReportText(self, fileDir):
-        text = 'Data loaded from '+unicode(self.infoa.text()).replace('\\', '/')+'.\n\n'
-        return text

@@ -12,6 +12,8 @@ from libraries.base.qtWidgets.pyDataTable import pyDataTable as pyDataTable
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class dataEntry(OWRpy):
     
     def __init__(self, parent=None, signalManager=None):
@@ -25,26 +27,26 @@ class dataEntry(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs.addInput('id0', 'Data Table', redRRDataFrame, self.processDF)
+        self.inputs.addInput('id0', _('Data Table'), redRRDataFrame, self.processDF)
 
-        self.outputs.addOutput('id0', 'Data Table', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Table'), redRRDataFrame)
         #GUI.
         
-        redRCommitButton(self.bottomAreaRight, 'Commit', self.commitTable)
+        redRCommitButton(self.bottomAreaRight, _('Commit'), self.commitTable)
 
         self.columnDialog = QDialog(self)
         self.columnDialog.setLayout(QVBoxLayout())
         self.columnDialog.hide()
-        self.columnNameLineEdit = lineEdit(self.columnDialog, label = 'Column Name:')
-        button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
-        button(self.bottomAreaRight, "Add Column", callback = self.columnDialog.show)
+        self.columnNameLineEdit = lineEdit(self.columnDialog, label = _('Column Name:'))
+        button(self.columnDialog, _('Commit'), callback = self.commitNewColumn)
+        button(self.bottomAreaRight, _("Add Column"), callback = self.columnDialog.show)
         
-        box = groupBox(self.controlArea, label = "Table", 
+        box = groupBox(self.controlArea, label = _("Table"), 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)
         
 
-        self.dataTable = pyDataTable(box,label='Data Entry',displayLabel=False,
+        self.dataTable = pyDataTable(box,label=_('Data Entry'),displayLabel=False,
         data = None)
         
         self.connect(self.dataTable, SIGNAL("cellClicked(int, int)"), self.cellClicked) # works OK
@@ -57,10 +59,10 @@ class dataEntry(OWRpy):
         self.menu = QDialog(None,Qt.Popup)
         self.menu.setLayout(QVBoxLayout())
         box = widgetBox(self.menu, orientation = 'horizontal')
-        name = lineEdit(box, label = 'New Name (Overrides Current Value)', callback = self.menu.accept)
-        equation = lineEdit(box, label = 'Equation (Overrides Current Values)', callback = self.menu.accept)
-        remove = button(box, label = 'Remove Column', callback = lambda: self.removeColumn(index))
-        done = button(box, label = 'Done', callback = self.menu.accept)
+        name = lineEdit(box, label = _('New Name (Overrides Current Value)'), callback = self.menu.accept)
+        equation = lineEdit(box, label = _('Equation (Overrides Current Values)'), callback = self.menu.accept)
+        remove = button(box, label = _('Remove Column'), callback = lambda: self.removeColumn(index))
+        done = button(box, label = _('Done'), callback = self.menu.accept)
         res = self.menu.exec_()
         if res == Qt.Accept:
             if unicode(equation.text()) != '':
@@ -233,7 +235,5 @@ class dataEntry(OWRpy):
         self.rSend("id0", self.newData)
         self.processDF(self.newData)  ## a good way to ensure loading and saving.
         
-    def getReportText(self, fileDir):
-        return 'Data was entered into the R session manually through this widget.  For more informaiton please see the Red-R .rrs file or some output from the Red-R file.\n\n'
 
             

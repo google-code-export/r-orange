@@ -255,8 +255,11 @@ class redRCanvasToolbarandMenu():
             for widget in self.canvas.schema.widgets:
                 try:
                     widget.instance.printWidget(printer)                
-                except: pass
+                except: 
+                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+                    pass
         except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Error in printing the schema"))
         
         self.reports.createReportsMenu(self.canvas.schema.widgets)
@@ -500,7 +503,9 @@ class SearchBox(redRlineEditHint):
                     # self.setFocus()
                     self.event(ev)
             return consumed
-        except: return 0
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 0
     
         
     def searchDialog(self):
@@ -783,7 +788,9 @@ class SearchBox2(lineEdit):
                     # self.setFocus()
                     self.event(ev)
             return consumed
-        except: return 0
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            return 0
         
     def searchDialog(self):
         if unicode(self.text()) in self.itemsAsStrings:

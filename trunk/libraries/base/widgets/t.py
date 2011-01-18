@@ -9,7 +9,8 @@ from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
 
 from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class t(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
@@ -19,11 +20,11 @@ class t(OWRpy):
         self.data={}
         
         
-        self.inputs.addInput('id0', 'Input Data Table or Matrix', [redRRDataFrame, redRRMatrix], self.processx)
+        self.inputs.addInput('id0', _('Input Data Table or Matrix'), [redRRDataFrame, redRRMatrix], self.processx)
 
-        self.outputs.addOutput('id0', 'Transposed Data Table', redRRDataFrame)
+        self.outputs.addOutput('id0', _('Transposed Data Table'), redRRDataFrame)
 
-        self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
     def processx(self, data):
         if data:
@@ -39,6 +40,3 @@ class t(OWRpy):
         newData = redRRDataFrame(data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)
-    def getReportText(self, fileDir):
-        text = 'Data transposed and sent to downstream widgets.\n\n'
-        return text

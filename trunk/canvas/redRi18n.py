@@ -21,9 +21,9 @@ def Coreget_(domain = 'messages', locale = os.path.join(redREnviron.directoryNam
             print 'Exception occured in setting the get_ function, %s' % unicode(inst)
             return superfallback
         
-def get_(domain, locale, languages, fallback = False):
+def get_(domain = 'messages', package, languages, fallback = False):
     try:
-        t = gettext.translation(domain, locale, languages, fallback = fallback)
+        t = gettext.translation(domain, locale  = os.path.join(redREnviron.directoryNames['libraryDir'], package, 'languages'), languages = redREnviron.settings['language'], fallback = fallback)
         return t.gettext  # returns the function
     except Exception as inst:
         print 'Exception occured in setting the get_ function, %s' % unicode(inst)

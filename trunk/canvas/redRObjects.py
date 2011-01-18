@@ -297,11 +297,15 @@ def removeWidgetInstanceByID(id):
     try:
         widget = getWidgetInstanceByID(id)
         removeWidgetInstance(widget)
-    except: pass
+    except: 
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        pass
     finally:
         try:
             del _widgetInstances[id]
-        except: pass
+        except: 
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            pass
 def removeWidgetInstance(widget):
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing widget instance %s') % widget)
     widget.onDeleteWidget()

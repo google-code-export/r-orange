@@ -16,7 +16,8 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.textEdit import textEdit
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class setOperations(OWRpy): 
     globalSettingsList = ['commit']
 
@@ -26,20 +27,20 @@ class setOperations(OWRpy):
         self.dataA = None
         self.dataB = None
         
-        self.inputs.addInput('id0', 'Data Set A', redRRList, self.processA)
-        self.inputs.addInput('id1', 'Data Set B', redRRList, self.processB)
+        self.inputs.addInput('id0', _('Input Data A'), redRRList, self.processA)
+        self.inputs.addInput('id1', _('Input Data B'), redRRList, self.processB)
 
-        self.outputs.addOutput('id0', 'intersect Output', redRRVector)
+        self.outputs.addOutput('id0', _('intersect Output'), redRRVector)
         
         box = widgetBox(self.controlArea,orientation = 'vertical')
         dataSetBox = widgetBox(box,orientation = 'horizontal')
         #pickA = groupBox(dataSetBox, "Dataset A:")
-        self.colA = listBox(dataSetBox, label = 'Dataset A:', callback = self.onSelect)
+        self.colA = listBox(dataSetBox, label = _('Input Data A'), callback = self.onSelect)
         
         #pickB = groupBox(dataSetBox, "Dataset B:")
-        self.colB = listBox(dataSetBox, label = 'Dataset B:', callback = self.onSelect)
+        self.colB = listBox(dataSetBox, label = _('Input Data B'), callback = self.onSelect)
 
-        self.resultInfo = textEdit(box,label='Results', displayLabel=False,includeInReports=False,
+        self.resultInfo = textEdit(box,label=_('Results'), displayLabel=False,includeInReports=False,
         editable=False, alignment=Qt.AlignHCenter)
         self.resultInfo.setMaximumWidth(170)
         self.resultInfo.setMaximumHeight(25)
@@ -47,21 +48,21 @@ class setOperations(OWRpy):
         self.resultInfo.setMinimumHeight(25)
         #box.layout().setAlignment(self.resultInfo,Qt.AlignHCenter)
         self.resultInfo.hide()
-        self.type = radioButtons(self.bottomAreaLeft,  label = "Perform", 
-        buttons = ['Intersect', 'Union', 'Set Difference', 'Set Equal'],setChecked='Intersect',
+        self.type = radioButtons(self.bottomAreaLeft,  label = _("Perform"), 
+        buttons = [_('Intersect'), _('Union'), _('Set Difference'), _('Set Equal')],setChecked=_('Intersect'),
         orientation='horizontal',callback=self.onTypeSelect)
         
         commitBox = widgetBox(self.bottomAreaRight,orientation = 'horizontal')
         self.bottomAreaRight.layout().setAlignment(commitBox, Qt.AlignBottom)
 
-        self.commit = redRCommitButton(commitBox, "Commit", callback = self.commitFunction, processOnChange=True, processOnInput=True)
+        self.commit = redRCommitButton(commitBox, _("Commit"), callback = self.commitFunction, processOnChange=True, processOnInput=True)
     
     def onSelect(self):
         if self.commit.processOnChange():
             self.commitFunction()
     def onTypeSelect(self):
         self.resultInfo.setPlainText('')
-        if self.type.getChecked() =='Set Equal':
+        if self.type.getChecked() == _('Set Equal'):
             self.resultInfo.show()
         else:
             self.resultInfo.hide()
@@ -107,13 +108,13 @@ class setOperations(OWRpy):
         else:
             nameB = None
             
-        if self.type.getChecked() =='Intersect':
+        if self.type.getChecked() == _('Intersect'):
             func = 'intersect'
-        elif self.type.getChecked() =='Union':
+        elif self.type.getChecked() == _('Union'):
             func = 'union'
-        elif self.type.getChecked() =='Set Difference':
+        elif self.type.getChecked() == _('Set Difference'):
             func = 'setdiff'
-        elif self.type.getChecked() =='Set Equal':
+        elif self.type.getChecked() == _('Set Equal'):
             func = 'setequal'
         else:
             return 
@@ -127,7 +128,7 @@ class setOperations(OWRpy):
         else:
             return
             
-        if self.type.getChecked() =='Set Equal':
+        if self.type.getChecked() == _('Set Equal'):
             eq = self.R(self.Rvariables['intersect'])
             if eq:
                 self.resultInfo.setPlainText('%s is equal to %s' % (nameA, nameB))
@@ -136,7 +137,4 @@ class setOperations(OWRpy):
         else:
             newData = redRRVector(data = self.Rvariables["intersect"])
             self.rSend("id0", newData)
-            
-    def getReportText(self, fileDir):
-        return 'Sends the intersecting element, those that are the same, in the two incomming data vectors.\n\n'
-
+    
