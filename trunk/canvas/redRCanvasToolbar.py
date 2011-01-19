@@ -6,7 +6,7 @@ from libraries.base.qtWidgets.SearchDialog import SearchDialog as redRSearchDial
 from libraries.base.qtWidgets.lineEditHint import lineEditHint as redRlineEditHint
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRlineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
-import redRi18n
+import redRi18n, redRLog
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()

@@ -208,6 +208,7 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             wmod = imp.load_source(package['Name'] + '_' + widgetName, filename)
         except Exception, msg:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Exception occurred in <b>%s: %s<b>') % (filename, msg))
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, redRLog.formatException())
             continue
         
         # __import__('libraries.' + package['Name'] + '.widgets.' + widgetName)

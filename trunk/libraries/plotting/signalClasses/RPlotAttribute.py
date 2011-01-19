@@ -1,8 +1,8 @@
 ### RPlotAttribute signal.  Contains instructions for adding a plot attribute to a plot.
 
-from canvas.signals import *
+import signals
 
-class RPlotAttribute(BaseRedRVariable):
+class RPlotAttribute(signals.BaseRedRVariable):
     convertFromList = []
     convertToList = []
     

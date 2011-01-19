@@ -91,7 +91,7 @@ class listBox(QListWidget,widgetState):
                 pass
                 
     def update(self, items):
-        current = self.getSelectedIds()
+        current = self.selectedIds()
         self.clear()
         self.addItems(items)
         self.setSelectedIds(current)
@@ -110,14 +110,14 @@ class listBox(QListWidget,widgetState):
     
     def selectionCount(self):
         return len(self.selectedIndexes())
-    def getCurrentSelection(self):
+    def currentSelection(self):
             return [unicode(i.text()) for i in self.selectedItems()]
-    def getSelectedItems(self):
+    def selectedItems(self):
         items = {}
         for x in self.selectedIndexes():
             items[self.items.keys()[x.row()]] = self.items.values()[x.row()]
         return items
-    def getSelectedIds(self):
+    def selectedIds(self):
         ids = []
         for x in self.selectedIndexes():
             ids.append(self.items.keys()[x.row()])
@@ -219,7 +219,7 @@ class listBox(QListWidget,widgetState):
 
     def getSettings(self):
         print 'saving list box'
-        r = {'items':self.items, 'selected':self.getSelectedIds()}
+        r = {'items':self.items, 'selected':self.selectedIds()}
         print r
         return r
     def loadSettings(self,data):
@@ -232,7 +232,7 @@ class listBox(QListWidget,widgetState):
 
     def getReportText(self, fileDir):
         items = self.getItems()
-        selected = self.getCurrentSelection()
+        selected = self.currentSelection()
         new = []
         
         for x in items:

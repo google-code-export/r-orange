@@ -11,6 +11,7 @@ from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
+from libraries.plotting.qtWidgets.redRPlot import redRPlot as redRgraphicsView
 import libraries.base.signalClasses as signals
 
 class RedRbarplot(OWRpy): 
@@ -37,7 +38,7 @@ class RedRbarplot(OWRpy):
             return
         if data:
             self.RFunctionParam_height=data.getData()
-            self.namesBox.update(self.R('names('+self.RFunctionParam_height+')'))
+            self.namesBox.update(self.R('names('+self.RFunctionParam_height+')',wantType='list'))
             #self.data = data
             if self.commit.processOnInput():
                 self.commitFunction()

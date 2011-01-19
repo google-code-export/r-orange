@@ -83,7 +83,7 @@ class apply(OWRpy):
         else:
             self.data=None
     def functionSelect(self):
-        selection = self.functions.getCurrentSelection()
+        selection = self.functions.currentSelection()
         f = selection[0].split('\n--')
         #print f
         self.functionText.setText(f[0])

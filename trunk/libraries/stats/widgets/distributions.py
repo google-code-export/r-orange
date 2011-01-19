@@ -53,8 +53,14 @@ class distributions(OWRpy):
         self.count = RedRSpinBox(options, label='# Observations to Generate', min = 0,max=60000000, value = 10)
         
         self.methodButtons = redRcomboBox(options,  label = "Distributions", 
-        items = ["Normal",'Beta','Binomial','Cauchy','Chi Square','Exponential','F','Gamma'],
-        itemIds = ["rnorm",'rbeta','rbinom','rcauchy','rchisq','rexp','rf','rgamma'], 
+        items = [("rnorm", "Normal"),
+        ('rbeta','Beta'),
+        ('rbinom','Binomial'),
+        ('rcauchy','Cauchy'),
+        ('rchisq','Chi Square'),
+        ('rexp','Exponential'),
+        ('rf','F'),
+        ('rgamma','Gamma') ],
         editable=True, callback = self.onDistChange)
         
         textBoxWidth = 70

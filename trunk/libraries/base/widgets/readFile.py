@@ -73,7 +73,7 @@ class readFile(OWRpy):
 
         
         self.delimiter = radioButtons(options, label=_('Column Seperator'),
-        buttons = [(',',_('Comma')), ('\t',_('Tab')), (' ',_('Space')),('other',_('Other'))], setChecked='\t',callback=self.scanNewFile,
+        buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked='\t',callback=self.scanNewFile,
         orientation='horizontal')
         
         self.otherSepText = lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,

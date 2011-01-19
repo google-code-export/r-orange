@@ -9,8 +9,7 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class comboBox(QComboBox,widgetState):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
-    items=None, itemIds=None,editable=False,
-    orientation='horizontal',callback = None):
+    items=None, editable=False, orientation='horizontal',callback = None):
         
         widgetState.__init__(self,widget,label,includeInReports)
         QComboBox.__init__(self,self.controlArea)
@@ -47,10 +46,17 @@ class comboBox(QComboBox,widgetState):
         self.setCurrentIndex(data['current'])
     
     def currentId(self):
-        return self.items.keys()[self.currentIndex()]
+        try:
+            return self.items.keys()[self.currentIndex()]
+        except:
+            return None
     def currentItem(self):
         return {self.items.keys()[self.currentIndex()]:self.items.values()[self.currentIndex()]}
-        
+    def setCurrentId(self,id):
+        try:
+            self.setCurrentIndex(self.items.keys().index(id))
+        except:
+            pass
     def addItems(self,items):
         if type(items) in [dict,OrderedDict]:
             for k,v in items.items():
@@ -65,6 +71,12 @@ class comboBox(QComboBox,widgetState):
             redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
         else:
             raise Exception(_('In comboBox, addItems takes a list, dict or OrderedDict'))
+    
+    def update(self, items):
+        current = self.currentId()
+        self.clear()
+        self.addItems(items)
+        self.setCurrentId(current)
         
     def clear(self):
         QComboBox.clear(self)

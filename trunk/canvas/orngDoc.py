@@ -494,7 +494,7 @@ class SchemaDoc(QWidget):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Error in removing widget icon %s') %widget)
         if not self.instanceStillWithIcon(instanceID):
-            redRLog.log(10, 9, 3, _('Removing Widget'))
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Removing Widget'))
             redRObjects.removeWidgetInstanceByID(instanceID)
     def clear(self):
         self.canvasDlg.setCaption()

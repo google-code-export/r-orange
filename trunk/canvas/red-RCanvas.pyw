@@ -64,7 +64,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.outputDock = QDockWidget(_('Output'))
         self.outputDock.setObjectName(_('CanvasOutput'))
         outbox = redRwidgetBox(None)
-        self.printOutput = redRTextEdit(outbox, label = _('Output'),editable=False)
+        self.printOutput = redRTextEdit(outbox, label = _('Output'),displayLabel=False, editable=False)
         redRbutton(outbox, label = _('Save Output'), callback = redRLog.saveOutputToFile)
         self.outputDock.setWidget(outbox)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.outputDock)

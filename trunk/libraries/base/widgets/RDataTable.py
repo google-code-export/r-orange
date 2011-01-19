@@ -58,7 +58,7 @@ class RDataTable(OWRpy):
         #button(saveTab, label=_("Set File"), callback = self.chooseDirectory)
         #self.fileName = widgetLabel(saveTab, label="")
         self.separator = comboBox(saveTab, label = 'Seperator:', 
-        items = {',':_('Comma'), '\t':_('Tab'), ' ':_('Space')}, orientation = 'horizontal')
+        items = [_('Comma'), _('Tab'), _('Space')], orientation = 'horizontal')
         save = button(saveTab, label=_("Save As File"), callback=self.writeFile,
         toolTip = _("Write the table to a text file."))
         saveTab.layout().setAlignment(save,Qt.AlignRight)

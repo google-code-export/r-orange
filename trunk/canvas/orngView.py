@@ -236,7 +236,7 @@ class SchemaView(QGraphicsView):
                     i.setPossibleConnection(False)
         # we clicked on a widget or on a line
         else:
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Active item %s') % activeItem)
+            #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Active item %s') % activeItem)
             if type(activeItem) in [orngCanvasItems.CanvasWidget]:# if we clicked on a widget          
                 #print activeItem, _('An item was clicked')
                 self.tempWidget = activeItem
