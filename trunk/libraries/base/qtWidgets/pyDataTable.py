@@ -16,7 +16,8 @@ from RSession import Rcommand
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sip
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class pyDataTable(widgetState, QTableView):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, data=None, 
     editable=False, sortable=True, filterable=False,
@@ -39,7 +40,7 @@ class pyDataTable(widgetState, QTableView):
         box = widgetBox(mainBox,orientation='horizontal')
         leftBox = widgetBox(box,orientation='horizontal')
         if filterable:
-            self.clearButton = button(leftBox,label='Clear All Filtering', callback=self.clearFiltering)
+            self.clearButton = button(leftBox,label=_('Clear All Filtering'), callback=self.clearFiltering)
         self.dataInfo = widgetLabel(leftBox,label='',wordWrap=False) 
         box.layout().setAlignment(leftBox, Qt.AlignLeft)
 
@@ -47,13 +48,13 @@ class pyDataTable(widgetState, QTableView):
             resizeColsBox = widgetBox(box, orientation="horizontal")
             resizeColsBox.layout().setAlignment(Qt.AlignRight)
             box.layout().setAlignment(resizeColsBox, Qt.AlignRight)
-            widgetLabel(resizeColsBox, label = "Resize columns: ")
+            widgetLabel(resizeColsBox, label = _("Resize columns: "))
             button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
-            toolTip = "Increase the width of the columns", width=30)
+            toolTip = _("Increase the width of the columns"), width=30)
             button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
-            toolTip = "Decrease the width of the columns", width=30)
-            button(resizeColsBox, label = "Resize To Content", callback=self.resizeColumnsToContents, 
-            toolTip = "Set width based on content size")
+            toolTip = _("Decrease the width of the columns"), width=30)
+            button(resizeColsBox, label = _("Resize To Content"), callback=self.resizeColumnsToContents, 
+            toolTip = _("Set width based on content size"))
 
 
         self.data = None
@@ -218,7 +219,7 @@ class MyTableModel(QAbstractTableModel):   # a table model based on the filterTa
         #return len(self.arraydata[0])
  
     def data(self, index, role): 
-        # print 'in data'
+        # print _('in data')
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 
@@ -254,11 +255,11 @@ class MyTableModel(QAbstractTableModel):   # a table model based on the filterTa
         return QVariant(self.data.getData()[colInd][rowInd]) 
 
     def headerData(self, col, orientation, role):
-        # print 'in headerData', col, orientation, role
+        # print _('in headerData'), col, orientation, role
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
         elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
-            # print 'DecorationRole'
+            # print _('DecorationRole')
             if col+1 in self.filteredOn:
                 # print self.filter_delete
                 return QVariant(self.filter_delete)

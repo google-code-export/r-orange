@@ -4,7 +4,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class statusLabel(QLabel,widgetState):
     def __init__(self,widget,label = '', wordWrap=True):
         widgetState.__init__(self, widget, 'statusLabel',includeInReports=False)
@@ -29,12 +30,12 @@ class statusLabel(QLabel,widgetState):
         self.setWordWrap(wordWrap)
         
     def getSettings(self):
-        # print 'in widgetLabel getSettings'
+        # print _('in widgetLabel getSettings')
         r = {'text':self.text(),'status':self.status}
         print r
         return r
     def loadSettings(self,data):
-        # print 'in widgetLabel loadSettings'
+        # print _('in widgetLabel loadSettings')
         print data
         self.setText(data['text'])
         self.setStatus(data['status'])
@@ -52,17 +53,17 @@ class statusLabel(QLabel,widgetState):
     def setStatus(self, statusInt):
         self.status = statusInt
         if statusInt == 0: ## No valid data
-            self.setText('No Data To Process')
+            self.setText(_('No Data To Process'))
         elif statusInt == 1: ## New data not processed
-            self.setText('New Data Received, Not Processed','#ffff00')
+            self.setText(_('New Data Received, Not Processed'),'#ffff00')
         elif statusInt == 2: ## data sent
-            self.setText('Data Processed And Sent','#00ff00')
+            self.setText(_('Data Processed And Sent'),'#00ff00')
         elif statusInt == 3: ## Error
-            self.setText('Error','#ff0000')
+            self.setText(_('Error'),'#ff0000')
         elif statusInt == 4: ## Data Processing    
-            self.setText('Data Processing...','#ffff00')
+            self.setText(_('Data Processing...'),'#ffff00')
         elif statusInt == 5: ## Data Processing Complete
-            self.setText('Data Processing Complete','#ffff00')
+            self.setText(_('Data Processing Complete'),'#ffff00')
         
 
         qApp.processEvents()    

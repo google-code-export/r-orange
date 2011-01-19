@@ -2,7 +2,8 @@ from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class tabWidget(QTabWidget,widgetState):
     def __init__(self,widget):
         
@@ -15,7 +16,7 @@ class tabWidget(QTabWidget,widgetState):
     def createTabPage(self, name, widgetToAdd = None, canScroll = False):
         #print 'start: ' + name
         if widgetToAdd == None:
-            # print 'make widgetBox'
+            # print _('make widgetBox')
             widgetToAdd = widgetBox(self, addToLayout = 0, margin = 4)
         if canScroll:
             scrollArea = QScrollArea() 

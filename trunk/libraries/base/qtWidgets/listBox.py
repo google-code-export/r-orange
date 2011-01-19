@@ -6,7 +6,8 @@ import redRReports,redRLog
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from OrderedDict import OrderedDict
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class listBox(QListWidget,widgetState):
     def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, 
     orientation='vertical', selectionMode=QAbstractItemView.SingleSelection,
@@ -78,9 +79,9 @@ class listBox(QListWidget,widgetState):
             else:
                 for v in items:
                     self.addItem(v,v)
-            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,'In listBox should not use list')
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
         else:
-            raise Exception('In listBox, addItems takes a list, dict or OrderedDict')
+            raise Exception(_('In listBox, addItems takes a list, dict or OrderedDict'))
 
     def setSelectedIds(self,ids):
         for x in ids:
@@ -222,7 +223,7 @@ class listBox(QListWidget,widgetState):
         print r
         return r
     def loadSettings(self,data):
-        print 'loading list box'
+        print _('loading list box')
         print data
         self.clear()
         self.addItems(data['items'])
@@ -236,11 +237,11 @@ class listBox(QListWidget,widgetState):
         
         for x in items:
             if x in selected:
-                new.append(['Selected', x])
+                new.append([_('Selected'), x])
             else:
-                new.append(['Not Selected',x])
+                new.append([_('Not Selected'),x])
         #print new
-        text = redRReports.createTable(new,columnNames=['Selection','Option'])
+        text = redRReports.createTable(new,columnNames=[_('Selection'),_('Option')])
         # if text != '':
             # text += '\nSelected text has * in front'
         

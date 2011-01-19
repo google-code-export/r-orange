@@ -5,7 +5,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class spinBox(QDoubleSpinBox ,widgetState):
     def __init__(self, widget, label=None, displayLabel=True, includeInReports=True, value=None, 
     orientation='horizontal', decimals=0, max = None, min = None, callback=None, toolTip = None, *args):
@@ -53,7 +54,7 @@ class spinBox(QDoubleSpinBox ,widgetState):
             self.setMinimum(data['min'])
             self.setSingleStep(data['singleStep'])
         except:
-            print 'Error occured in Spin Box loading'
+            print _('Error occured in Spin Box loading')
             import traceback,sys
             print '-'*60
             traceback.print_exc(file=sys.stdout)

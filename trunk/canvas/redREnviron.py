@@ -186,6 +186,7 @@ def loadSettings():
     settings.setdefault("firstLoad", 1)
     settings.setdefault("email", '')
     settings.setdefault('canContact', 1)
+    settings.setdefault('language', ['latin', 'English'])
     
     return settings
     

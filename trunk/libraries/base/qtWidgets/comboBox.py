@@ -5,6 +5,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from OrderedDict import OrderedDict
 import redRLog
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class comboBox(QComboBox,widgetState):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
     items=None, itemIds=None,editable=False,
@@ -38,7 +40,7 @@ class comboBox(QComboBox,widgetState):
         return r
     
     def loadSettings(self,data):
-        # print 'in comboBox load'
+        # print _('in comboBox load')
         # print data
 
         self.addItems(data['items'])
@@ -60,9 +62,9 @@ class comboBox(QComboBox,widgetState):
             else:
                 for v in items:
                     self.addItem(v,v)
-            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,'In listBox should not use list')
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
         else:
-            raise Exception('In comboBox, addItems takes a list, dict or OrderedDict')
+            raise Exception(_('In comboBox, addItems takes a list, dict or OrderedDict'))
         
     def clear(self):
         QComboBox.clear(self)

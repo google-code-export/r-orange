@@ -658,8 +658,7 @@ class SchemaDoc(QWidget):
 class CloneTabDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        
         self.setWindowTitle(_('New Tab'))
         
         self.setLayout(QVBoxLayout())
@@ -692,8 +691,7 @@ class CloneTabDialog(QDialog):
 class NewTabDialog(QDialog):
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        
         self.setWindowTitle(_('New Tab'))
         
         self.setLayout(QVBoxLayout())
@@ -725,8 +723,7 @@ class NewTabDialog(QDialog):
 class TemplateDialog(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        
         self.setWindowTitle(_('Save as template'))
         
         self.setLayout(QVBoxLayout())
@@ -772,8 +769,7 @@ class SearchBox(redRlineEditHint):
     def __init__(self, widget, label=_('Search'),orientation='horizontal', items = [], toolTip = None,  width = -1, callback = None, **args):
         redRlineEditHint.__init__(self, widget = widget, label = label,displayLabel=True,
         orientation = orientation, items = items, toolTip = toolTip, width = width, callback = callback, **args)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        
             
     def eventFilter(self, object, ev):
         try: # a wrapper that prevents problems for the listbox debigging should remove this
@@ -806,8 +802,7 @@ class SearchBox(redRlineEditHint):
 class CanvasWidgetAction(QWidgetAction):
     def __init__(self, parent, actions):
         QWidgetAction.__init__(self, parent)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        
         self.parent = parent
         self.actions = actions
         
@@ -835,8 +830,7 @@ class CanvasWidgetAction(QWidgetAction):
 class CanvasPopup(QMenu):
     def __init__(self, parent):
         QMenu.__init__(self, parent)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        
         self.allActions = []
         self.templateActions = []
         self.widgetActionNameList = []

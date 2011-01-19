@@ -7,7 +7,8 @@ from OrderedDict import OrderedDict
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class radioButtons(widgetState,QWidget):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
     buttons=None,toolTips = None, setChecked = None,
@@ -63,9 +64,9 @@ class radioButtons(widgetState,QWidget):
                 for v in buttons:
                     self.addButton(v,v)
 
-            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,'In radioButtons should not use list')
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In radioButtons should not use list'))
         else:
-            raise Exception('In radioButtons, addButtons takes a list, dict or OrderedDict')
+            raise Exception(_('In radioButtons, addButtons takes a list, dict or OrderedDict'))
 
     def addButton(self,id, text,toolTip=None):
         self.items[id] = text
@@ -114,11 +115,11 @@ class radioButtons(widgetState,QWidget):
             if i.text() in buttons: i.setEnabled(True)
     
     def getSettings(self):
-        #print 'radioButtons getSettings' + self.getChecked()
+        #print _('radioButtons getSettings') + self.getChecked()
         r = {'items':self.items, 'checked': self.getCheckedId()}
         return r
     def loadSettings(self,data):
-        #print 'radioButtons loadSettings' + data
+        #print _('radioButtons loadSettings') + data
         #self.addButtons(data['items'])
         self.setChecked(data['checked'])
         

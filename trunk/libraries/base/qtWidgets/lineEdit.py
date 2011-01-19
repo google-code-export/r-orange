@@ -4,7 +4,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import redREnviron
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 
 class lineEdit(QLineEdit,widgetState):
     def __init__(self,widget,text='', label=None, displayLabel=True, includeInReports=True,
@@ -50,7 +51,7 @@ class lineEdit(QLineEdit,widgetState):
         if textChangedCallBack:
             QObject.connect(self, SIGNAL('textEdited(QString)'), textChangedCallBack)
     def showToolTip(self):
-        name = QFileDialog.getSaveFileName(None, "Save Template", redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
+        return
     def text(self):
         return unicode(QLineEdit.text(self))
     def widgetId(self):
@@ -70,7 +71,7 @@ class lineEdit(QLineEdit,widgetState):
                 self.id = data['id']
             #self.setEnabled(data['enabled'])
         except:
-            print 'Loading of lineEdit encountered an error.'
+            print _('Loading of lineEdit encountered an error.')
             
     def getReportText(self, fileDir):
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.text()}}

@@ -11,9 +11,10 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class RFormulaEntry(widgetState):
-    def __init__(self, widget, label = 'Formula Entry', displayLabel=True, includeInReports=True):
+    def __init__(self, widget, label = _('Formula Entry'), displayLabel=True, includeInReports=True):
         # make a widgetBox to hold everything
         widgetState.__init__(self,widget,label,includeInReports)
         
@@ -21,23 +22,23 @@ class RFormulaEntry(widgetState):
 
         ## add the elements to the box
         #place the command keys
-        self.buttonsBox = groupBox(box, label = "Formula Commands")
-        self.plusButton = button(self.buttonsBox, "And (+)", callback = self.plusButtonClicked)
+        self.buttonsBox = groupBox(box, label = _("Formula Commands"))
+        self.plusButton = button(self.buttonsBox, _("And (+)"), callback = self.plusButtonClicked)
         self.plusButton.setEnabled(False)
-        self.colonButton = button(self.buttonsBox, "Interacting With (:)", callback = self.colonButtonClicked)
+        self.colonButton = button(self.buttonsBox, _("Interacting With (:)"), callback = self.colonButtonClicked)
         self.colonButton.setEnabled(False)
-        self.starButton = button(self.buttonsBox, "Together and Interacting (*)", callback = self.starButtonClicked)
+        self.starButton = button(self.buttonsBox, _("Together and Interacting (*)"), callback = self.starButtonClicked)
         self.starButton.setEnabled(False)
-        button(self.buttonsBox, 'Clear', self.clearFormula)
-        self.elementsListBox = listBox(self.buttonsBox, label = 'Elements', callback = self.FormulaEntryElementSelected)
+        button(self.buttonsBox, _('Clear'), self.clearFormula)
+        self.elementsListBox = listBox(self.buttonsBox, label = _('Elements'), callback = self.FormulaEntryElementSelected)
         self.elementsListBox.setEnabled(True)
         
         # place the formula line edit
-        self.modelBox = groupBox(box, label = "Model Formula", orientation = 'horizontal')
+        self.modelBox = groupBox(box, label = _("Model Formula"), orientation = 'horizontal')
         self.extrasBox = widgetBox(self.modelBox)
-        self.outcomeVariable = comboBox(self.modelBox, label = 'Outcome (f(x)):')
+        self.outcomeVariable = comboBox(self.modelBox, label = _('Outcome (f(x)):'))
         widgetLabel(self.modelBox, ' = ')
-        self.modelLineEdit = lineEdit(self.modelBox, label = 'model', displayLabel=False)
+        self.modelLineEdit = lineEdit(self.modelBox, label = _('model'), displayLabel=False)
         self.label = label
     def clear(self):
         self.elementsListBox.clear()
@@ -98,7 +99,7 @@ class RFormulaEntry(widgetState):
             self.updateEnabled(data['buttonState'])
             self.outcomeVariable.setCurrentIndex(data['current'])
         except:
-            print "Loading of RFormulaEntry encountered an error."
+            print _("Loading of RFormulaEntry encountered an error.")
         
     def update(self, items):
         

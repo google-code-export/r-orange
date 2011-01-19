@@ -2,7 +2,8 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os.path
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
     toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False):

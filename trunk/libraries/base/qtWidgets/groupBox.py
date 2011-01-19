@@ -3,7 +3,8 @@ from libraries.base.qtWidgets.separator import separator
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class groupBox(QGroupBox,widgetState):
     def __init__(self,widget, label = None, displayLabel=True, includeInReports=True,
     orientation='vertical', addSpace=False, 
@@ -11,7 +12,7 @@ class groupBox(QGroupBox,widgetState):
         if label:
             widgetState.__init__(self,widget,label,includeInReports)
         else:
-            widgetState.__init__(self,widget,'Group Box',includeInReports)
+            widgetState.__init__(self,widget,_('Group Box'),includeInReports)
         
         if displayLabel:
             QGroupBox.__init__(self,label)

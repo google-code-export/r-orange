@@ -3,12 +3,13 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.qtWidgets.button import button as redRButton
 import redREnviron, os
-        
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class widgetBox(QWidget,widgetState):
     def __init__(self,widget, orientation='vertical', addSpace=False, includeInReports=True,
     sizePolicy = None, margin = -1, spacing = -1, addToLayout = 1, alignment=Qt.AlignTop, helpButton = False):
 
-        widgetState.__init__(self,widget, 'WidgetBox',includeInReports)
+        widgetState.__init__(self,widget, _('WidgetBox'),includeInReports)
         QWidget.__init__(self,self.controlArea)
             
         self.controlArea.layout().addWidget(self)

@@ -7,7 +7,8 @@ from libraries.base.qtWidgets.treeWidgetItem import treeWidgetItem
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class treeWidget(QTreeWidget, widgetState):
     def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, 
     orientation='vertical', toolTip = None, callback = None):
@@ -55,4 +56,4 @@ class treeWidget(QTreeWidget, widgetState):
                 except:
                     continue
         except:
-            print 'Exception during setting assignment.'
+            print _('Exception during setting assignment.')

@@ -60,7 +60,7 @@ class rExecutor(OWRpy):
         leftArea.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         rightArea = widgetBox(area)
 
-        runbox = groupBox(rightArea, label = _("Command Edit:"_, orientation='horizontal')
+        runbox = groupBox(rightArea, label = _("Command Edit:"), orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         #self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
         self.command = textEdit(runbox, label = _('Command Edit:'))

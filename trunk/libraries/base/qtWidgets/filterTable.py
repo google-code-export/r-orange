@@ -15,8 +15,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import sip
 import redRi18n
-
-_ = None
+_ = redRi18n.get_(package = 'base')
 
 class filterTable(widgetState, QTableView):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, Rdata=None, 
@@ -29,8 +28,7 @@ class filterTable(widgetState, QTableView):
     selectionCallback=None):
         
         widgetState.__init__(self,widget,label,includeInReports)
-        global _
-        _ = redRi18n.get_('messages', os.path.join(redREnviron.directoryNames['libraryDir'], 'base', 'languages'), languages = ['French'])
+        
         if displayLabel:
             mainBox = groupBox(self.controlArea,label=label, orientation='vertical')
         else:
@@ -55,9 +53,9 @@ class filterTable(widgetState, QTableView):
             button(resizeColsBox, label = "+", callback=self.increaseColWidth, 
             toolTip = _("Increase the width of the columns"), width=30)
             button(resizeColsBox, label = "-", callback=self.decreaseColWidth, 
-            toolTip = "Decrease the width of the columns", width=30)
-            button(resizeColsBox, label = "Resize To Content", callback=self.resizeColumnsToContents, 
-            toolTip = "Set width based on content size")
+            toolTip = _("Decrease the width of the columns"), width=30)
+            button(resizeColsBox, label = _("Resize To Content"), callback=self.resizeColumnsToContents, 
+            toolTip = _("Set width based on content size"))
 
         
         self.R = Rcommand
@@ -126,7 +124,7 @@ class filterTable(widgetState, QTableView):
             tmpData = '%s[c(%s),]' % (self.Rdata, ','.join(rows))
         else:
             for ind in inds:
-                #print 'new', ind.row(),ind.column()
+                #print _('new'), ind.row(),ind.column()
                 rows.append(str(ind.row()+1))
                 cols.append(str(ind.column()+1))
 
@@ -140,7 +138,7 @@ class filterTable(widgetState, QTableView):
         self.working = False
         
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
-        # print 'in setRTable', data
+        # print _('in setRTable'), data
         if self.R('class(%s)' %data, silent=True) != 'data.frame':
             data = 'as.data.frame(%s)' %data
         #self.Rdata = Rdata
@@ -155,9 +153,9 @@ class filterTable(widgetState, QTableView):
         total = self.R('nrow(%s)' % self.Rdata,silent=True)        
         if self.filterable:
             filtered = self.R('nrow(%s)' % data,silent=True)
-            self.dataInfo.setText('Showing %d of %d rows.' % (filtered,total))
+            self.dataInfo.setText(_('Showing %d of %d rows.') % (filtered,total))
         else:
-            self.dataInfo.setText('Showing %d rows.' % (total))
+            self.dataInfo.setText(_('Showing %d rows.') % (total))
 
         self.tm = MyTableModel(data,self,editable=self.editable, 
         filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
@@ -235,7 +233,7 @@ class filterTable(widgetState, QTableView):
         return self.tm.data(self.tm.createIndex(row,col),Qt.DisplayRole).toString()
     def createMenu(self, selectedCol):
         #print selectedCol, pos
-        # print 'in createMenu', self.criteriaList
+        # print _('in createMenu'), self.criteriaList
 
         globalPos = QCursor.pos() #self.mapToGlobal(pos)
         self.menu = QDialog(None,Qt.Popup)
@@ -244,11 +242,11 @@ class filterTable(widgetState, QTableView):
             box = widgetBox(self.menu,orientation='horizontal')
             box.layout().setAlignment(Qt.AlignLeft)
             button(box,label='A->Z',callback= lambda: self.sort(selectedCol,Qt.AscendingOrder))
-            widgetLabel(box,label='Ascending Sort')
+            widgetLabel(box,label=_('Ascending Sort'))
             box = widgetBox(self.menu,orientation='horizontal')
             box.layout().setAlignment(Qt.AlignLeft)
             button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
-            widgetLabel(box,label='Descending Sort')
+            widgetLabel(box,label=_('Descending Sort'))
             # qmenu = QMenu(self.menu)
             # self.menu.layout().addWidget(qmenu)
             # a = QAction('A->Z',self.menu)
@@ -267,17 +265,17 @@ class filterTable(widgetState, QTableView):
             self.menu.layout().addWidget(hr)
     
         
-        clearButton = button(self.menu,label='Clear Filter',
+        clearButton = button(self.menu,label=_('Clear Filter'),
         callback=lambda col=selectedCol: self.createCriteriaList(col,self.menu,action='clear'))
         self.menu.layout().setAlignment(clearButton,Qt.AlignHCenter)
         clearButton.hide()
         
-        self.numericLabel = widgetLabel(self.menu,label='Enter a value for one of these critera:')
+        self.numericLabel = widgetLabel(self.menu,label=_('Enter a value for one of these critera:'))
         self.numericLabel.hide()
-        self.stringLabel = widgetLabel(self.menu,label='Enter a value for one of these critera (case sensitive):')
+        self.stringLabel = widgetLabel(self.menu,label=_('Enter a value for one of these critera (case sensitive):'))
         self.stringLabel.hide()
         
-        self.factorLabel = widgetLabel(self.menu,label='Select Levels:')
+        self.factorLabel = widgetLabel(self.menu,label=_('Select Levels:'))
         self.factorLabel.hide()
         
         
@@ -302,21 +300,21 @@ class filterTable(widgetState, QTableView):
                 levels = self.R('levels(%s[,%d])' % (self.Rdata,selectedCol),wantType='list', silent=True)
                 
             if len(levels) > 1:
-                levels.insert(0,'Check All')
+                levels.insert(0,_('Check All'))
             scroll = scrollArea(self.optionsBox,spacing=1)
             
-            c = checkBox(scroll,label='Levels',displayLabel=False, buttons=levels,setChecked = checked)
+            c = checkBox(scroll,label=_('Levels'),displayLabel=False, buttons=levels,setChecked = checked)
             scroll.setWidget(c.controlArea)
             
             QObject.connect(c.buttons, SIGNAL('buttonClicked (int)'), lambda val : self.factorCheckBox(val,self.optionsBox))
     
         elif colClass in ['integer','numeric']:
             self.numericLabel.show()
-            self.options = ['Equals', 'Does Not Equal','Greater Than','Greater Than Or Equal To', 
-            'Less Than', 'Less Than or Equal To', 'Between\n(2 numbers comma\nseparated, inclusive)', 
+            self.options = [_('Equals'), _('Does Not Equal'),_('Greater Than'),_('Greater Than Or Equal To'), 
+            _('Less Than'), _('Less Than or Equal To'), 'Between\n(2 numbers comma\nseparated, inclusive)', 
             'Not Between\n(2 numbers comma\nseparated)']
             for x in self.options:
-                if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == 'Numeric ' + x:
+                if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == _('Numeric ') + x:
                     e = lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
                 else:
                     e = lineEdit(self.optionsBox,label=x)
@@ -325,10 +323,10 @@ class filterTable(widgetState, QTableView):
     
         elif colClass in ['character']:
             self.stringLabel.show()
-            self.options = ['Equals', 'Does Not Equal','Begins With','Ends With', 
-            'Contains', 'Does Not Contain']
+            self.options = [_('Equals'), _('Does Not Equal'),_('Begins With'),_('Ends With'), 
+            _('Contains'), _('Does Not Contain')]
             for x in self.options:
-                if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == 'String ' + x:
+                if selectedCol in self.criteriaList and self.criteriaList[selectedCol]['method'] == _('String ') + x:
                     e = lineEdit(self.optionsBox,label=x,text=self.criteriaList[selectedCol]['value'])
                 else:
                     e = lineEdit(self.optionsBox,label=x)
@@ -337,10 +335,10 @@ class filterTable(widgetState, QTableView):
             
         buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)
-        okButton = button(buttonBox,label='OK',
-        callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='OK'))
+        okButton = button(buttonBox,label=_('OK'),
+        callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action=_('OK')))
         okButton.setDefault (True)
-        button(buttonBox,label='Cancel',
+        button(buttonBox,label=_('Cancel'),
         callback=lambda col=selectedCol: self.createCriteriaList(col,self.optionsBox,action='cancel'))
         
         self.menu.move(globalPos)
@@ -348,9 +346,9 @@ class filterTable(widgetState, QTableView):
     def factorCheckBox(self,val,menu):
         if val != 0: return
         checkbox = menu.findChildren(checkBox)[0]
-        if checkbox.buttonAt(0) != 'Check All': return
-        #print checkbox.getChecked(), 'Check All' in checkbox.getChecked()
-        if 'Check All' in checkbox.getChecked():
+        if checkbox.buttonAt(0) != _('Check All'): return
+        #print checkbox.getChecked(), _('Check All') in checkbox.getChecked()
+        if _('Check All') in checkbox.getChecked():
             checkbox.checkAll()
         else: 
             checkbox.uncheckAll()
@@ -380,40 +378,40 @@ class filterTable(widgetState, QTableView):
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
                         # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": 'Numeric ' + unicode(label.text()), "value": unicode(value.text())}
+                        self.criteriaList[col] = {'column':col, "method": _('Numeric ') + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['character']:
                 for label,value in zip(menu.findChildren(QLabel),menu.findChildren(QLineEdit)):
                     if value.text() != '':
                         # print label.text(),value.text()
-                        self.criteriaList[col] = {'column':col, "method": 'String ' + unicode(label.text()), "value": unicode(value.text())}
+                        self.criteriaList[col] = {'column':col, "method": _('String ') + unicode(label.text()), "value": unicode(value.text())}
             elif colClass in ['factor','logical']:
                 checks = menu.findChildren(checkBox)[0].getChecked()
-                if 'Check All' in checks:
-                    checks.remove('Check All')
+                if _('Check All') in checks:
+                    checks.remove(_('Check All'))
                 if len(checks) != 0:
                     self.criteriaList[col] = {'column':col, "method": colClass, "value": checks}
                 else:
                     del self.criteriaList[col]
             
-        #print 'criteriaList', self.criteriaList
+        #print _('criteriaList'), self.criteriaList
         self.menu.hide()
         self.filter()
     
     def filter(self):
         filters  = []
         for col,criteria in self.criteriaList.items():
-            #print 'in loop', col,criteria['method']
-            if 'Numeric Equals' == criteria['method']:
+            #print _('in loop'), col,criteria['method']
+            if _('Numeric Equals') == criteria['method']:
                 filters.append('%s[,%s] == %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Does Not Equal' == criteria['method']:
+            elif _('Numeric Does Not Equal') == criteria['method']:
                 filters.append('%s[,%s] != %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Greater Than' == criteria['method']:
+            elif _('Numeric Greater Than') == criteria['method']:
                 filters.append('%s[,%s] > %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Greater Than Or Equal To' == criteria['method']:
+            elif _('Numeric Greater Than Or Equal To') == criteria['method']:
                 filters.append('%s[,%s] >= %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Less Than' == criteria['method']:
+            elif _('Numeric Less Than') == criteria['method']:
                 filters.append('%s[,%s] < %s' % (self.Rdata,col,criteria['value']))
-            elif 'Numeric Less Than or Equal To' == criteria['method']:
+            elif _('Numeric Less Than or Equal To') == criteria['method']:
                 filters.append('%s[,%s] <= %s' % (self.Rdata,col,criteria['value']))
             elif 'Numeric Between\n(2 numbers comma\nseparated, inclusive)' == criteria['method']:
                 (start,comma,stop) = criteria['value'].partition(',')
@@ -424,17 +422,17 @@ class filterTable(widgetState, QTableView):
                 if start !='' and stop !='' or comma == ',':
                     filters.append('%s[,%s] < %s | %s[,%s] > %s' % (self.Rdata,col,start,self.Rdata,col,stop))
 
-            elif 'String Equals' == criteria['method']:
+            elif _('String Equals') == criteria['method']:
                 filters.append('%s[,%s] == "%s"' % (self.Rdata,col,criteria['value']))
-            elif 'String Does Not Equal' == criteria['method']:
+            elif _('String Does Not Equal') == criteria['method']:
                 filters.append('%s[,%s] != "%s"' % (self.Rdata,col,criteria['value']))
-            elif 'String Begins With' == criteria['method']:
+            elif _('String Begins With') == criteria['method']:
                 filters.append('grepl("^%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif 'String Ends With' == criteria['method']:
+            elif _('String Ends With') == criteria['method']:
                 filters.append('grepl("%s$",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif 'String Contains' == criteria['method']:
+            elif _('String Contains') == criteria['method']:
                 filters.append('grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
-            elif 'String Does Not Contain' == criteria['method']:
+            elif _('String Does Not Contain') == criteria['method']:
                 filters.append('!grepl("%s",%s[,%s])' % (criteria['value'],self.Rdata,col))
             
             
@@ -487,10 +485,10 @@ class filterTable(widgetState, QTableView):
         progressBar.show()
         return progressBar
     def loadSettings(self,data):
-        print 'loadSettings for a filter table'
+        print _('loadSettings for a filter table')
         # print data
         if not data['Rdata']: return 
-        progressBar = self.startProgressBar('Filter Table Loading', 'Loading Fiter Table', 50)
+        progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
         self.Rdata = data['Rdata']
         self.criteriaList = data['criteriaList']
         print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
@@ -502,10 +500,10 @@ class filterTable(widgetState, QTableView):
         # print selModel
         if 'selection' in data.keys() and len(data['selection']):
             if len(data['selection']) > 1000:
-                mb = QMessageBox.question(None, 'Setting Selection', 'There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.' % self.label, QMessageBox.Yes, QMessageBox.No)
+                mb = QMessageBox.question(None, _('Setting Selection'), _('There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.') % self.label, QMessageBox.Yes, QMessageBox.No)
                 if mb.exec_() == QMessageBox.No:
                 
-                    progressBar.setLabelText('Loading Selections')
+                    progressBar.setLabelText(_('Loading Selections'))
                     progressBar.setMaximum(len(data['selection']))
                     progressBar.setValue(0)
                     val = 0
@@ -603,7 +601,7 @@ class MyTableModel(QAbstractTableModel):
         ),
         wantType = 'listOfLists',silent=True)
         
-        # print 'self.arraydata loaded'
+        # print _('self.arraydata loaded')
 
         self.colnames = self.R('colnames(as.data.frame(' +Rdata+ '))', wantType = 'list',silent=True)
         self.rownames = self.R('rownames(as.data.frame(' +Rdata+'))', wantType = 'list',silent=True)
@@ -624,7 +622,7 @@ class MyTableModel(QAbstractTableModel):
         #return len(self.arraydata[0])
  
     def data(self, index, role): 
-        # print 'in data'
+        # print _('in data')
         # if self.working == True:
             # return QVariant()
         # self.working = True
@@ -666,11 +664,11 @@ class MyTableModel(QAbstractTableModel):
         return QVariant(self.arraydata[rowInd][colInd]) 
 
     def headerData(self, col, orientation, role):
-        # print 'in headerData', col, orientation, role
+        # print _('in headerData'), col, orientation, role
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
         elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
-            # print 'DecorationRole'
+            # print _('DecorationRole')
             if col+1 in self.filteredOn:
                 # print self.filter_delete
                 return QVariant(self.filter_delete)

@@ -3,7 +3,8 @@ from redRGUI import widgetState
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class dialog(QDialog,widgetState):
     def __init__(self, parent = None, 
     layout = 'vertical',title=None, callback = None):

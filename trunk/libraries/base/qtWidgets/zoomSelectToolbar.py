@@ -5,7 +5,8 @@ import OWGUI
 import redREnviron
 from redRGUI import widgetState
 
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 dir = os.path.join(redREnviron.directoryNames["libraryDir"],'base','icons')
 
 dlg_zoom = os.path.join(dir , "Dlg_zoom.png")
@@ -54,16 +55,16 @@ class zoomSelectToolbar(QGroupBox,widgetState):
         if not hasattr(zoomSelectToolbar, "builtinFunctions"):
             zoomSelectToolbar.builtinFunctions = \
                  (None,
-                 ("Zooming", "buttonZoom", "activateZooming", QIcon(dlg_zoom), Qt.ArrowCursor, 1),
-                 ("Panning", "buttonPan", "activatePanning", QIcon(dlg_pan), Qt.OpenHandCursor, 1),
-                 ("Selection", "buttonSelect", "activateSelection", QIcon(dlg_select), Qt.CrossCursor, 1),
-                 ("Rectangle selection", "buttonSelectRect", "activateRectangleSelection", QIcon(dlg_rect), Qt.CrossCursor, 1),
-                 ("Polygon selection", "buttonSelectPoly", "activatePolygonSelection", QIcon(dlg_poly), Qt.CrossCursor, 1),
-                 ("Remove last selection", "buttonRemoveLastSelection", "removeLastSelection", QIcon(dlg_undo), None, 0),
-                 ("Remove all selections", "buttonRemoveAllSelections", "removeAllSelections", QIcon(dlg_clear), None, 0),
+                 (_("Zooming"), "buttonZoom", "activateZooming", QIcon(dlg_zoom), Qt.ArrowCursor, 1),
+                 (_("Panning"), "buttonPan", "activatePanning", QIcon(dlg_pan), Qt.OpenHandCursor, 1),
+                 (_("Selection"), "buttonSelect", "activateSelection", QIcon(dlg_select), Qt.CrossCursor, 1),
+                 (_("Rectangle selection"), "buttonSelectRect", "activateRectangleSelection", QIcon(dlg_rect), Qt.CrossCursor, 1),
+                 (_("Polygon selection"), "buttonSelectPoly", "activatePolygonSelection", QIcon(dlg_poly), Qt.CrossCursor, 1),
+                 (_("Remove last selection"), "buttonRemoveLastSelection", "removeLastSelection", QIcon(dlg_undo), None, 0),
+                 (_("Remove all selections"), "buttonRemoveAllSelections", "removeAllSelections", QIcon(dlg_clear), None, 0),
                  #("Send selections", "buttonSendSelections", "sendData", QIcon(dlg_send), None, 0),
-                 ("Zoom to extent", "buttonZoomExtent", "zoomExtent", QIcon(dlg_zoom_extent), None, 0),
-                 ("Zoom selection", "buttonZoomSelection", "zoomSelection", QIcon(dlg_zoom_selection), None, 0)
+                 (_("Zoom to extent"), "buttonZoomExtent", "zoomExtent", QIcon(dlg_zoom_extent), None, 0),
+                 (_("Zoom selection"), "buttonZoomSelection", "zoomSelection", QIcon(dlg_zoom_selection), None, 0)
                 )
 
         QGroupBox.__init__(self, name, parent)

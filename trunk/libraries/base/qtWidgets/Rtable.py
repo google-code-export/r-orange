@@ -5,6 +5,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import numpy,sip
 from libraries.base.qtWidgets.groupBox import groupBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class Rtable(widgetState,QTableView):
     def __init__(self,widget, label=None, displayLabel=True,includeInReports=True, 
     Rdata=None, editable=False, rows=None, columns=None,
@@ -131,8 +133,8 @@ class MyTableModel(QAbstractTableModel):
         
         # if self.editable:
             # self.arraydata = self.R('as.matrix(rbind(c("rownames",colnames(as.data.frame(' +Rdata+ '))), cbind(rownames(as.data.frame(' +Rdata+')),'+Rdata+')))', wantType = 'list')
-            # self.colnames.insert(0,'Row Names')
-            # self.rownames.insert(0,'Row Names')
+            # self.colnames.insert(0,_('Row Names'))
+            # self.rownames.insert(0,_('Row Names'))
         # else:
         #self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
         self.initData(Rdata)
@@ -155,7 +157,7 @@ class MyTableModel(QAbstractTableModel):
         return len(self.arraydata[0])
  
     def data(self, index, role): 
-        # print 'in data'
+        # print _('in data')
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 
@@ -163,7 +165,7 @@ class MyTableModel(QAbstractTableModel):
         return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
-        print 'in setData', data.toString(), index.row(),index.column(), role
+        print _('in setData'), data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
         elif role == Qt.EditRole: 
@@ -177,7 +179,7 @@ class MyTableModel(QAbstractTableModel):
             self.emit(SIGNAL("dataChanged()"))
             return True
         # elif role == Qt.BackgroundRole:
-            # print 'in BackgroundRole'
+            # print _('in BackgroundRole')
             # d = self.itemDelegate(index)
             # d.paint(QBrush(Qt.red))
             # return True
@@ -185,7 +187,7 @@ class MyTableModel(QAbstractTableModel):
         return False
     
     def headerData(self, col, orientation, role):
-        # print 'in headerData', col
+        # print _('in headerData'), col
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
         elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
@@ -193,7 +195,7 @@ class MyTableModel(QAbstractTableModel):
         return QVariant()
     
     def setHeaderData(self,col,orientation,data,role):
-        # print 'in setHeaderData'
+        # print _('in setHeaderData')
         if orientation == Qt.Horizontal and role == Qt.EditRole:
             self.colnames[col] = data.toString()
             self.emit(SIGNAL("headerDataChanged()"))
@@ -257,7 +259,7 @@ class MyTableModel(QAbstractTableModel):
         """Sort table by given column number.
         """
         if self.editable: return
-        print 'in sort'
+        print _('in sort')
         import operator
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
         
@@ -295,8 +297,8 @@ class MyTableModel(QAbstractTableModel):
         
         # if self.editable:
             # self.arraydata = self.R('as.matrix(rbind(c("rownames",colnames(as.data.frame(' +Rdata+ '))), cbind(rownames(as.data.frame(' +Rdata+')),'+Rdata+')))', wantType = 'list')
-            # self.colnames.insert(0,'Row Names')
-            # self.rownames.insert(0,'Row Names')
+            # self.colnames.insert(0,_('Row Names'))
+            # self.rownames.insert(0,_('Row Names'))
         # else:
         # self.arraydata = self.R('as.matrix('+Rdata+')', wantType = 'list')
         
@@ -314,7 +316,7 @@ class MyTableModel(QAbstractTableModel):
         return self.ncol
         #return len(self.arraydata[0])
     def data(self, index, role): 
-        # print 'in data'
+        # print _('in data')
         if not index.isValid(): 
             return QVariant() 
         elif role != Qt.DisplayRole: 
@@ -323,7 +325,7 @@ class MyTableModel(QAbstractTableModel):
         #return QVariant(self.arraydata[index.row()][index.column()]) 
 
     def setData(self,index,data, role):
-        print 'in setData', data.toString(), index.row(),index.column(), role
+        print _('in setData'), data.toString(), index.row(),index.column(), role
         if not index.isValid(): 
             return False
         elif role == Qt.EditRole: 
@@ -337,7 +339,7 @@ class MyTableModel(QAbstractTableModel):
             self.emit(SIGNAL("dataChanged()"))
             return True
         # elif role == Qt.BackgroundRole:
-            # print 'in BackgroundRole'
+            # print _('in BackgroundRole')
             # d = self.itemDelegate(index)
             # d.paint(QBrush(Qt.red))
             # return True
@@ -345,7 +347,7 @@ class MyTableModel(QAbstractTableModel):
         return False
     
     def headerData(self, col, orientation, role):
-        # print 'in headerData', col
+        # print _('in headerData'), col
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return QVariant(self.colnames[col])
             # return self.R('colnames(as.data.frame(%s))[%d]' % (self.Rdata,col),silent=True)
@@ -355,7 +357,7 @@ class MyTableModel(QAbstractTableModel):
         return QVariant()
     
     def setHeaderData(self,col,orientation,data,role):
-        # print 'in setHeaderData'
+        # print _('in setHeaderData')
         if orientation == Qt.Horizontal and role == Qt.EditRole:
             self.colnames[col] = data.toString()
             self.emit(SIGNAL("headerDataChanged()"))
@@ -430,7 +432,7 @@ class MyTableModel(QAbstractTableModel):
         self.nrow = self.R('nrow(%s)' % self.Rdata)
         self.ncol = self.R('ncol(%s)' % self.Rdata)
 
-        # print 'in sort'
+        # print _('in sort')
         # import operator
         # self.emit(SIGNAL("layoutAboutToBeChanged()"))
         

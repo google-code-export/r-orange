@@ -4,7 +4,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class table(widgetState,QTableWidget):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
     data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
@@ -40,7 +41,7 @@ class table(widgetState,QTableWidget):
     def addColumns(self, cols):
         self.setColumnCount(self.columnCount() + cols)
     def setTable(self, data, keys = None):
-        print 'in table set'
+        print _('in table set')
         if data==None:
             return
         if not keys and type(data) == dict:
@@ -49,20 +50,20 @@ class table(widgetState,QTableWidget):
             keys = range(len(data))
             
         self.setHidden(True)
-        print 'Set data'
+        print _('Set data')
         self.data = data
         qApp.setOverrideCursor(Qt.WaitCursor)
         #print data
-        print 'Set Table'
+        print _('Set Table')
         self.clear()
         self.setRowCount(len(data[data.keys()[0]]))
         self.setColumnCount(len(data.keys()))
 
-        print 'Set Labels'
+        print _('Set Labels')
         self.setHorizontalHeaderLabels(keys)
         if 'row_names' in self.data.keys(): ## special case if the keyword row_names is present we want to populate the rownames of the table
             self.setVerticalHeaderLabels([unicode(item) for item in self.data['row_names']])
-        print 'Set Items'
+        print _('Set Items')
         n = 0
         for key in keys:
             m = 0
@@ -71,7 +72,7 @@ class table(widgetState,QTableWidget):
                 self.setItem(m, n, newitem)
                 m += 1
             n += 1
-        print 'Done'
+        print _('Done')
         self.setHidden(False)
         qApp.restoreOverrideCursor()
 

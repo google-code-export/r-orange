@@ -7,8 +7,10 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.checkBox import checkBox
 import redREnviron
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class commitButton(button,widgetState):
-    def __init__(self,widget,label, callback = None, processOnInput=None,processOnChange=None,
+    def __init__(self,widget,label = _('Commit'), callback = None, processOnInput=None,processOnChange=None,
     disabled=0, icon=None, orientation='horizontal',
     toolTip=None, width = None, height = None, alignment=Qt.AlignRight, toggleButton = False):
 
@@ -19,25 +21,25 @@ class commitButton(button,widgetState):
         
         box2 = widgetBox(box,orientation='vertical',margin=0,spacing=0)
         if processOnChange is dict:
-            self.processOnChangeState = checkBox(box2, label='processOnChange', displayLabel=False,
+            self.processOnChangeState = checkBox(box2, label=_('processOnChange'), displayLabel=False,
             buttons = [processOnInput['name']],
             toolTips = [processOnInput['toolTip']]
             )
         elif processOnChange == True:
-            self.processOnChangeState = checkBox(box2, label='processOnInput', displayLabel=False,
-            buttons = ['Process On Parameter Change'],
-            toolTips = ['Try to process as soon as a parameter is changed.']
+            self.processOnChangeState = checkBox(box2, label=_('processOnInput'), displayLabel=False,
+            buttons = [_('Process On Parameter Change')],
+            toolTips = [_('Try to process as soon as a parameter is changed.')]
             )
         
         if processOnInput is dict:
-            self.processOnInputState = checkBox(box2, label='processOnInput', displayLabel=False,
+            self.processOnInputState = checkBox(box2, label=_('processOnInput'), displayLabel=False,
             buttons = [processOnInput['name']],
             toolTips = [processOnInput['toolTip']]
             )
         elif processOnInput == True:
-            self.processOnInputState = checkBox(box2, label='processOnInput', displayLabel=False,
-            buttons = ['Process On Data Input'],
-            toolTips = ['Try to process as soon as data is received by the widget. The current state of parameters will be applied.']
+            self.processOnInputState = checkBox(box2, label=_('processOnInput'), displayLabel=False,
+            buttons = [_('Process On Data Input')],
+            toolTips = [_('Try to process as soon as data is received by the widget. The current state of parameters will be applied.')]
             )
 
         button.__init__(self, widget = box, label = label, callback = callback, disabled = disabled, 

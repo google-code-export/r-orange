@@ -4,10 +4,11 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class treeWidgetItem(QTreeWidgetItem):
     def __init__(self, widget = None, stringList = None, toolTip = None, flags=None):
-        #widgetState.__init__(self,widget, 'treeWidgetItem',includeInReports=False)
+        #widgetState.__init__(self,widget, _('treeWidgetItem'),includeInReports=False)
         if stringList:
             QTreeWidgetItem.__init__(self, stringList)
         else:
@@ -51,7 +52,7 @@ class treeWidgetItem(QTreeWidgetItem):
                 except:
                     continue
         except Exception as inst:
-            print inst, 'Error setting text'
+            print inst, _('Error setting text')
         ## load the child items
         try:
             if len(data['childSettings']) > 0:
@@ -63,4 +64,4 @@ class treeWidgetItem(QTreeWidgetItem):
                     except:
                         continue
         except Exception as inst:
-            print inst, 'Exception occured in loading child items.'
+            print inst, _('Exception occured in loading child items.')

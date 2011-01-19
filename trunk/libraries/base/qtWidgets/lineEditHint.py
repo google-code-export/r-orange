@@ -2,7 +2,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math, re, string, numpy
 from libraries.base.qtWidgets.lineEdit import lineEdit
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 
 class lineEditHint(lineEdit):        
     def __init__(self, widget, label=None, displayLabel=True,includeInReports=True,orientation='horizontal', 
@@ -50,7 +51,7 @@ class lineEditHint(lineEdit):
             elif type(items[0]) in [numpy.float64]:
                 self.itemsAsStrings = [unicode(item) for item in items]
             elif type(items[0]) == QListWidgetItem:     self.itemsAsStrings = [unicode(item.text()) for item in items]
-            else:                                       print "SuggestLineEdit error: unsupported type for the items: "+unicode(type(items[0]))
+            else:                                       print _("SuggestLineEdit error: unsupported type for the items: ")+unicode(type(items[0]))
         else:
             self.itemsAsItems = []
             self.itemsAsStrings = [] 
@@ -70,7 +71,7 @@ class lineEditHint(lineEdit):
             elif type(items[0]) == QListWidgetItem:
                 self.itemsAsStrings += [unicode(item.text()) for item in items]
             else:
-                print "SuggestLineEdit error: unsupported type for the items: "+unicode(type(items[0]))
+                print _("SuggestLineEdit error: unsupported type for the items: ")+unicode(type(items[0]))
          
     def setDelimiters(self, delimiters):
         self.delimiters = delimiters
@@ -187,7 +188,7 @@ class lineEditHint(lineEdit):
             lineEditHint.loadSettings(self, settings['lesettings'])
             self.itemsAsStrings = settings['itemsAsStrings']
         except:
-            print 'Loading of lineEditHint encountered an error.'
+            print _('Loading of lineEditHint encountered an error.')
             
     def getReportText(self, fileDir):
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.text()}}

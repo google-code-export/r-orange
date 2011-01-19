@@ -4,7 +4,8 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from libraries.base.qtWidgets.widgetBox import widgetBox
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class splitter(QSplitter, widgetState):
     def __init__(self, widget = None, orientation = 'horizontal'):
         widgetState.__init__(self,widget, 'splitter',includeInReports=False)

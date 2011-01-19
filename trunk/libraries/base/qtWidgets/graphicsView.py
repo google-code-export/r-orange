@@ -12,9 +12,10 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
 import RSession, redREnviron, datetime, os, time
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class graphicsView(QGraphicsView, widgetState):
-    def __init__(self, parent,label='Graph', displayLabel=True,includeInReports=True, name = '', data = None):
+    def __init__(self, parent,label=_('Graph'), displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         self.R = RSession.Rcommand
         self.require_librarys = RSession.require_librarys
@@ -69,25 +70,25 @@ class graphicsView(QGraphicsView, widgetState):
         self.menuBar = QMenuBar(self.bottomArea)
         self.bottomArea.layout().addWidget(self.menuBar)
         
-        self.menuParameters = QMenu('Parameters', self)
-        colors = self.menuParameters.addMenu('Colors')
-        colors.addAction('Set Plotting Colors', self.setPlotColors)
-        colors.addAction('Set Axis Colors', self.setAxisColors)
-        colors.addAction('Set Label Colors', self.setLabelColors)
-        colors.addAction('Set Main Title Color', self.setTitleColors)
-        colors.addAction('Set Subtitle Color', self.setSubtitleColors)
-        colors.addAction('Set Forground Color', self.setForgroundColors)
-        colors.addAction('Set Background Color', self.setBackgroundColors)
+        self.menuParameters = QMenu(_('Parameters'), self)
+        colors = self.menuParameters.addMenu(_('Colors'))
+        colors.addAction(_('Set Plotting Colors'), self.setPlotColors)
+        colors.addAction(_('Set Axis Colors'), self.setAxisColors)
+        colors.addAction(_('Set Label Colors'), self.setLabelColors)
+        colors.addAction(_('Set Main Title Color'), self.setTitleColors)
+        colors.addAction(_('Set Subtitle Color'), self.setSubtitleColors)
+        colors.addAction(_('Set Forground Color'), self.setForgroundColors)
+        colors.addAction(_('Set Background Color'), self.setBackgroundColors)
         
-        font = self.menuParameters.addMenu('Font')
-        ffa = font.addMenu('Set Font Family')
+        font = self.menuParameters.addMenu(_('Font'))
+        ffa = font.addMenu(_('Set Font Family'))
         
-        legend = self.menuParameters.addMenu('Legend')
-        ll = legend.addMenu('Legend Location')
-        ll.addAction('Set to bottom right', lambda x = 'bottomright': self._setLegendLocation(x))
-        ll.addAction('Set to bottom left', lambda x = 'bottomleft': self._setLegendLocation(x))
-        ll.addAction('Set to top right', lambda x = 'topleft': self._setLegendLocation(x))
-        ll.addAction('Set to top left', lambda x = 'topright': self._setLegendLocation(x))
+        legend = self.menuParameters.addMenu(_('Legend'))
+        ll = legend.addMenu(_('Legend Location'))
+        ll.addAction(_('Set to bottom right'), lambda x = 'bottomright': self._setLegendLocation(x))
+        ll.addAction(_('Set to bottom left'), lambda x = 'bottomleft': self._setLegendLocation(x))
+        ll.addAction(_('Set to top right'), lambda x = 'topleft': self._setLegendLocation(x))
+        ll.addAction(_('Set to top left'), lambda x = 'topright': self._setLegendLocation(x))
         fontComboAction = QWidgetAction(font)
         self.fontCombo = comboBox(None, items = ['serif', 'sans', 'mono'], label='fonts', displayLabel=False,
             #'HersheySerif', 'HersheySans', 'HersheyScript',
@@ -95,7 +96,7 @@ class graphicsView(QGraphicsView, widgetState):
             callback = self.setFontFamily)
         fontComboAction.setDefaultWidget(self.fontCombo)
         ffa.addAction(fontComboAction)
-        #font.addAction('Set Font Magnification', self.setFontMagnification)
+        #font.addAction(_('Set Font Magnification'), self.setFontMagnification)
         wb = widgetBox(None)
         self.fontMag = spinBox(wb, label = 'Font Magnification:', min = 0, max = 500, value = 100) #, callback = self.setFontMagnification)
         QObject.connect(self.fontMag, SIGNAL('editingFinished ()'), self.setFontMagnification) ## must define ourselves because the function calls the attribute and this causes an error in Qt
@@ -103,53 +104,53 @@ class graphicsView(QGraphicsView, widgetState):
         magAction.setDefaultWidget(wb)
         font.addAction(magAction)
         
-        self.menuParameters.setToolTip('Set the parameters of the rendered image.\nThese parameters are standard graphics parameters which may or may not be applicable or rendered\ndepending on the image type and the settings of the plotting widget.')
-        fa = font.addMenu('Font Attributes')
-        lines = self.menuParameters.addMenu('Lines')
-        lines.addAction('Set Line Type', self.setLineType)
-        lines.addAction('Set Line Width', self.setLineWidth)
-        points = self.menuParameters.addMenu('Points')
-        points.addAction('Set Point Characters', self.setPointCharacters)
+        self.menuParameters.setToolTip(_('Set the parameters of the rendered image.\nThese parameters are standard graphics parameters which may or may not be applicable or rendered\ndepending on the image type and the settings of the plotting widget.'))
+        fa = font.addMenu(_('Font Attributes'))
+        lines = self.menuParameters.addMenu(_('Lines'))
+        lines.addAction(_('Set Line Type'), self.setLineType)
+        lines.addAction(_('Set Line Width'), self.setLineWidth)
+        points = self.menuParameters.addMenu(_('Points'))
+        points.addAction(_('Set Point Characters'), self.setPointCharacters)
         
-        self.imageParameters = QMenu('Image', self)
-        type = self.imageParameters.addMenu('Type')
-        type.addAction('Set Image Vector Graphics', self.setImageSVG).setToolTip('Renders the image using vector graphics which are scaleable and zoomable,\nbut may not show all graphical options such as forground color changes.')
-        type.addAction('Set Image Bitmap Graphics', self.setImagePNG).setToolTip('Redners the image using bitmap graphics which will become distorted on zooming,\nbut will show all graphical options.')
-        #type.addAction('Set Image JPEG', self.setImageJPEG)
-        type.setToolTip('Changes the plotting type of the rendered image.\nDifferent image types may enable or disable certain graphics parameters.')
+        self.imageParameters = QMenu(_('Image'), self)
+        type = self.imageParameters.addMenu(_('Type'))
+        type.addAction(_('Set Image Vector Graphics'), self.setImageSVG).setToolTip(_('Renders the image using vector graphics which are scaleable and zoomable,\nbut may not show all graphical options such as forground color changes.'))
+        type.addAction(_('Set Image Bitmap Graphics'), self.setImagePNG).setToolTip(_('Redners the image using bitmap graphics which will become distorted on zooming,\nbut will show all graphical options.'))
+        #type.addAction(_('Set Image JPEG'), self.setImageJPEG)
+        type.setToolTip(_('Changes the plotting type of the rendered image.\nDifferent image types may enable or disable certain graphics parameters.'))
         
-        self.fileParameters = QMenu('File', self)
-        save = self.fileParameters.addMenu('Save')
-        save.addAction('Bitmap', self.saveAsBitmap)
-        save.addAction('PDF', self.saveAsPDF)
-        save.addAction('Post Script', self.saveAsPostScript)
-        save.addAction('JPEG', self.saveAsJPEG)
+        self.fileParameters = QMenu(_('File'), self)
+        save = self.fileParameters.addMenu(_('Save'))
+        save.addAction(_('Bitmap'), self.saveAsBitmap)
+        save.addAction(_('PDF'), self.saveAsPDF)
+        save.addAction(_('Post Script'), self.saveAsPostScript)
+        save.addAction(_('JPEG'), self.saveAsJPEG)
         
-        printScene = self.fileParameters.addAction('Print', self.printMe)
+        printScene = self.fileParameters.addAction(_('Print'), self.printMe)
         
         self.menuBar.addMenu(self.fileParameters)
         self.menuBar.addMenu(self.menuParameters)
         #self.menuBar.addMenu(self.imageParameters)
         
         ### lower Line Edit
-        self.extrasLineEdit = lineEdit(self.bottomArea, label = 'Advanced plotting parameters', 
-            toolTip = 'Add extra parameters to the main plot.\nPlease see documentation for more details about parameters.', callback = self.replot)
+        self.extrasLineEdit = lineEdit(self.bottomArea, label = _('Advanced plotting parameters'), 
+            toolTip = _('Add extra parameters to the main plot.\nPlease see documentation for more details about parameters.'), callback = self.replot)
         
         ### right click menu
         self.menu = QMenu(self)
-        save = self.menu.addMenu('Save As')
-        save.addAction('Bitmap')
-        save.addAction('PDF')
-        save.addAction('Post Script')
-        save.addAction('JPEG')
-        self.menu.addAction('Copy')
-        self.menu.addAction('Fit In Window')
-        self.menu.addAction('Zoom Out')
-        self.menu.addAction('Zoom In')
-        self.menu.addAction('Undock')
-        self.menu.addAction('Redock')
+        save = self.menu.addMenu(_('Save As'))
+        save.addAction(_('Bitmap'))
+        save.addAction(_('PDF'))
+        save.addAction(_('Post Script'))
+        save.addAction(_('JPEG'))
+        self.menu.addAction(_('Copy'))
+        self.menu.addAction(_('Fit In Window'))
+        self.menu.addAction(_('Zoom Out'))
+        self.menu.addAction(_('Zoom In'))
+        self.menu.addAction(_('Undock'))
+        self.menu.addAction(_('Redock'))
         self.dialog = QDialog()
-        self.dialog.setWindowTitle('Red-R Graphics View' + name)
+        self.dialog.setWindowTitle(_('Red-R Graphics View') + name)
         self.dialog.setLayout(QHBoxLayout())
         
         self.standardImageType = 'svg'
@@ -236,7 +237,7 @@ class graphicsView(QGraphicsView, widgetState):
     def setLineType(self):
         ltd = lineTypeDialog(self)
         if ltd.exec_() != QDialog.Accepted: 
-            print 'Not accepted'
+            print _('Not accepted')
             return
         self._lty = 'c('+','.join(ltd.ltys)+')'
         print self._lty
@@ -266,33 +267,33 @@ class graphicsView(QGraphicsView, widgetState):
         if self.scene():
             self.scene().clear()
         else:
-            print 'loading scene'
+            print _('loading scene')
             scene = QGraphicsScene()
             self.setScene(scene)
         
     def toClipboard(self):
         QApplication.clipboard().setImage(self.returnImage())
     def saveAsPDF(self):
-        print 'save as pdf'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
+        print _('save as pdf')
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
         if qname.isEmpty(): return
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'pdf')
     def saveAsPostScript(self):
-        print 'save as post script'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
+        print _('save as post script')
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
         if qname.isEmpty(): return
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'ps')
     def saveAsBitmap(self):
-        print 'save as bitmap'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
+        print _('save as bitmap')
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
         if qname.isEmpty(): return
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'bmp')
     def saveAsJPEG(self):
-        print 'save as jpeg'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
+        print _('save as jpeg')
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
         if qname.isEmpty(): return
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'jpeg')
@@ -311,20 +312,20 @@ class graphicsView(QGraphicsView, widgetState):
             newCoords = QPoint(mouseEvent.globalPos())
             action = self.menu.exec_(newCoords)
             if action:
-                if unicode(action.text()) == 'Copy':
+                if unicode(action.text()) == _('Copy'):
                     self.toClipboard()
-                elif unicode(action.text()) == 'Zoom Out':
+                elif unicode(action.text()) == _('Zoom Out'):
                     self.scale(0.80, 0.80)
-                elif unicode(action.text()) == 'Zoom In':
+                elif unicode(action.text()) == _('Zoom In'):
                     self.scale(1.50, 1.50)
-                elif unicode(action.text()) == 'Undock':
+                elif unicode(action.text()) == _('Undock'):
                     ## want to undock from the widget and make an independent viewing dialog.
                     self.dialog.layout().addWidget(self.controlArea)
                     self.dialog.show()
-                elif unicode(action.text()) == 'Redock':
+                elif unicode(action.text()) == _('Redock'):
                     self.parent.layout().addWidget(self.controlArea)
                     self.dialog.hide()
-                elif unicode(action.text()) == 'Fit In Window':
+                elif unicode(action.text()) == _('Fit In Window'):
                     print self.mainItem.boundingRect()
                     self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
                 elif unicode(action.text()) == 'Bitmap':
@@ -372,9 +373,9 @@ class graphicsView(QGraphicsView, widgetState):
         ## add an image to the view
         #self.image = os.path.abspath(image)
         #print self.image
-        print 'Addign Image'
+        print _('Addign Image')
         if not self.scene():
-            print 'loading scene'
+            print _('loading scene')
             scene = QGraphicsScene()
             self.setScene(scene)
             print self.image
@@ -382,8 +383,8 @@ class graphicsView(QGraphicsView, widgetState):
             imageType = image.split('.')[-1]
         if imageType not in ['svg', 'png', 'jpeg']:
             self.clear()
-            print imageType, 'Error occured'
-            raise Exception, 'Image type specified is not a valid type for this widget.'
+            print imageType, _('Error occured')
+            raise Exception, _('Image type specified is not a valid type for this widget.')
         if imageType == 'svg':
             self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
@@ -416,7 +417,7 @@ class graphicsView(QGraphicsView, widgetState):
         image = image.scaled(1000,1000, Qt.KeepAspectRatio)
         imageFile = os.path.join(fileDir, self.image + '.png').replace('\\', '/')
         if not image.save(imageFile):
-            print 'Error in saving image in graphicsView'
+            print _('Error in saving image in graphicsView')
             return ''
         
         text = '.. image:: %s\n    :scale: 50%%\n\n' % imageFile
@@ -464,7 +465,7 @@ class graphicsView(QGraphicsView, widgetState):
                    # plot = TRUE, ncol = 1, horiz = FALSE, title = NULL,
                    # inset = 0, xpd, title.col = text.col)
         if not self._legendNames:
-            self.parent.status.setText('No legend names specified. Can\'t make the legend')
+             self.parent.status.setText(_('No legend names specified. Can\'t make the legend'))
         function = 'legend(x=\''+self._legendLocation+'\', legend = '+self._legendNames
         if self._col:
             function += ', col = '+self._col
@@ -576,7 +577,7 @@ class graphicsView(QGraphicsView, widgetState):
             print fileName
         except Exception as inst:
             self.R('dev.off()', wantType = 'NoConversion') ## we still need to turn off the graphics device
-            print 'Plotting exception occured'
+            print _('Plotting exception occured')
             raise Exception(unicode(inst))
         self.R('dev.off()', wantType = 'NoConversion')
         self.clear()
@@ -626,7 +627,7 @@ class graphicsView(QGraphicsView, widgetState):
         printer = QPrinter()
         printDialog = QPrintDialog(printer)
         if printDialog.exec_() == QDialog.Rejected: 
-            print 'Printing Rejected'
+            print _('Printing Rejected')
             return
         painter = QPainter(printer)
         self.scene().render(painter)
@@ -645,7 +646,7 @@ class graphicsView(QGraphicsView, widgetState):
         dom.writexml(f)
         f.close()
     def _getsvgdom(self, file):
-        print 'getting DOM model'
+        print _('getting DOM model')
         import xml.dom
         import xml.dom.minidom as mini
         f = open(file, 'r')
@@ -720,7 +721,7 @@ class graphicsView(QGraphicsView, widgetState):
             elif not i%2: # it's even
                 nl2.append(float(nl[i]) + float(y))
             else:
-                print i, nl[i], 'error'
+                print i, nl[i], _('error')
         return nl2
     def nltostring(self, nl): # convert a colection of nl's to a string
         col = []
@@ -734,7 +735,7 @@ class graphicsView(QGraphicsView, widgetState):
         
     
 class colorListDialog(QDialog):
-    def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):
+    def __init__(self, parent = None, layout = 'vertical', title = _('Color List Dialog'), data = ''):
         QDialog.__init__(self, parent)
         self.setWindowTitle(title)
         if layout == 'horizontal':
@@ -750,13 +751,13 @@ class colorListDialog(QDialog):
         ## GUI
         
         # color list
-        self.colorList = listBox(leftBox, label = 'Color List')
-        button(leftBox, label = 'Add Color', callback = self.addColor)
-        button(leftBox, label = 'Remove Color', callback = self.removeColor)
-        button(leftBox, label = 'Clear Colors', callback = self.colorList.clear)
-        button(mainArea, label = 'Finished', callback = self.accept)
+        self.colorList = listBox(leftBox, label = _('Color List'))
+        button(leftBox, label = _('Add Color'), callback = self.addColor)
+        button(leftBox, label = _('Remove Color'), callback = self.removeColor)
+        button(leftBox, label = _('Clear Colors'), callback = self.colorList.clear)
+        button(mainArea, label = _('Finished'), callback = self.accept)
         # attribute list
-        self.attsList = listBox(rightBox, label = 'Data Parameters', callback = self.attsListSelected)
+        self.attsList = listBox(rightBox, label = _('Data Parameters'), callback = self.attsListSelected)
         if data:
             names = self.R('names('+data+')')
             print names
@@ -811,13 +812,13 @@ class dialog(QDialog):
             self.setLayout(QVBoxLayout())
 
 class lineTypeDialog(dialog):
-    def __init__(self, parent = None, layout = 'vertical', title = 'Line Type Dialog'):
+    def __init__(self, parent = None, layout = 'vertical', title = _('Line Type Dialog')):
         dialog.__init__(self, parent = parent, layout = layout, title = title)
         
         ## add a set of line types that can be shown in R and allow the user to pick them
         self.linesListBox = listBox(self, label = 'Line types:', items = ['________', '- - - -', '........', '_._._._.', '__ __ __', '__.__.__.'], callback = self.setLineTypes)
         self.linesListBox.setSelectionMode(QAbstractItemView.MultiSelection)
-        button(self, "Done", callback = self.accept)
+        button(self, _("Done"), callback = self.accept)
     def setLineTypes(self):
         numbers = []
         for item in self.linesListBox.selectedItems():

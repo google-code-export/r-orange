@@ -7,7 +7,8 @@ import os.path
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class fileNamesComboBox(comboBox):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, files=None, editable=False,
     orientation='horizontal',callback = None, **args):
@@ -21,7 +22,7 @@ class fileNamesComboBox(comboBox):
         if files:
             self.files = files
         else:
-            self.files=['Select File']
+            self.files=[_('Select File')]
         self.setFileList()
         
         
@@ -31,7 +32,7 @@ class fileNamesComboBox(comboBox):
         return r
         
     def loadSettings(self,data):
-        # print 'in comboBox load'
+        # print _('in comboBox load')
         # print data
         try:
             self.clear()
@@ -39,13 +40,13 @@ class fileNamesComboBox(comboBox):
             self.setFileList()
             # self.addItems(self.files)
             ind = self.findText(data['current'])
-            #print 'aaaaaaaaaaa', ind
+            #print _('aaaaaaaaaaa'), ind
             if ind != -1:
                 self.setCurrentIndex(ind)
             else:
                 self.setCurrentIndex(0)
         except:
-            print 'Loading of comboBox encountered an error.'
+            print _('Loading of comboBox encountered an error.')
             import traceback,sys
             print '-'*60
             traceback.print_exc(file=sys.stdout)
@@ -53,17 +54,17 @@ class fileNamesComboBox(comboBox):
 
     def setFileList(self):
         #import copy
-        if self.files == None: self.files = ['Select File']
+        if self.files == None: self.files = [_('Select File')]
         self.clear()
         #newFiles = []
         for file in self.files:
             #print type(file), file
             
-            if os.path.exists(file) or file =='Select File':
+            if os.path.exists(file) or file ==_('Select File'):
                 self.addItem(file, os.path.basename(file))
                 # newFiles.append(file)
             else:
-                self.addItem(file, 'Not Found - ' + os.path.basename(file))
+                self.addItem(file, _('Not Found - ') + os.path.basename(file))
                 #newFiles.append(file)
         #self.files = newFiles
         # print self.files

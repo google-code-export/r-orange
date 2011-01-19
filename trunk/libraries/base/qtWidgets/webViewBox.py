@@ -5,7 +5,8 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4 import QtWebKit
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class webViewBox(QtWebKit.QWebView,widgetState):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
     url=None,orientation='vertical', followHere = False):

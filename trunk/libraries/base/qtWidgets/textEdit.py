@@ -7,7 +7,8 @@ from libraries.base.qtWidgets.button import button
 import redRReports
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class textEdit(QTextEdit,widgetState):
     def __init__(self,widget,html='',label=None, displayLabel=True,includeInReports=True, 
     orientation='vertical', alignment=None, editable=True, printable=False,clearable=False,**args):
@@ -25,9 +26,9 @@ class textEdit(QTextEdit,widgetState):
         if alignment:
             self.controlArea.layout().setAlignment(self.hb,alignment)
         if printable:
-            button(self.hb, "Print", self.printMe)
+            button(self.hb, _("Print"), self.printMe)
         if clearable:
-            button(self.hb, "Clear", callback = self.clear)
+            button(self.hb, _("Clear"), callback = self.clear)
         if not editable:
             self.setReadOnly(True)
         self.setFontFamily('Courier')
@@ -41,7 +42,7 @@ class textEdit(QTextEdit,widgetState):
         cursor.movePosition(QTextCursor.End)
         self.setTextCursor(cursor)
     def getSettings(self):
-        # print 'in textEdit getSettings'
+        # print _('in textEdit getSettings')
         r = {'text': self.toHtml()}
         # print r['text']
         return r
@@ -60,7 +61,7 @@ class textEdit(QTextEdit,widgetState):
         printer = QPrinter()
         printDialog = QPrintDialog(printer)
         if printDialog.exec_() == QDialog.Rejected: 
-            print 'Printing Rejected'
+            print _('Printing Rejected')
             return
         self.print_(printer)
         

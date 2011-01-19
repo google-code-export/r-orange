@@ -3,6 +3,8 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from redRGUI import widgetState
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 class graphicsScene(QGraphicsView, widgetState):
     def __init__(self, parent, image = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
@@ -14,7 +16,7 @@ class graphicsScene(QGraphicsView, widgetState):
             if self.scene:
                 self.scene.addItem(QGraphicsPixmapItem(QPixmap(image)))
             else:
-                print 'Error, no scene initialized'
+                print _('Error, no scene initialized')
                 raise Exception
     def clear(self):
         self.scene.clear()
@@ -23,12 +25,12 @@ class graphicsScene(QGraphicsView, widgetState):
         ## add an image to the view
         self.scene.addItem(QGraphicsPixmapItem(QPixmap(image)))
     def getSettings(self):
-        # print 'in widgetLabel getSettings'
+        # print _('in widgetLabel getSettings')
         r = {'text':None}
         # print r
         return r
     def loadSettings(self,data):
-        # print 'in widgetLabel loadSettings'
+        # print _('in widgetLabel loadSettings')
         # print data
         #self.setText(data['text'])
         pass

@@ -2,6 +2,8 @@ from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+import redRi18n
+_ = redRi18n.get_(package = 'base')
         
 class scrollArea(QScrollArea,widgetState):
     def __init__(self,widget, orientation=QVBoxLayout(), addSpace=False, 
