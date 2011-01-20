@@ -284,14 +284,14 @@ class CanvasOptionsDlg(QDialog):
             # widget.instance.updateStatusBarState()
             widget.resetWidgetSize()
             widget.updateWidgetState()
-          
+            widget.update()
         # update tooltips for lines in all documents
         for line in self.canvasDlg.schema.lines():
             line.showSignalNames = redREnviron.settings["showSignalNames"]
             line.updateTooltip()
 
         redRObjects.activeTab().repaint()
-        
+        qApp.canvasDlg.update()
         QDialog.accept(self)
         
         

@@ -214,9 +214,24 @@ class listBox(QListWidget,widgetState):
                 self.dragDopCallback()
             ev.setDropAction(Qt.MoveAction)
             ev.accept()
+            
+            ## whatever all of this does we need to execute the function to update the items
+            self.updateRedRItems()
         else:
             ev.ignore()
 
+    def updateRedRItems(self):
+        ## we go through all of the items and remake the items OrderedDict
+        newDict = OrderedDict()
+        for r in range(self.count()):
+            t = unicode(self.itemAt(r).text())  # get the text of the item
+            if t not in self.items.values():
+                newDict[t] = t
+            else:
+                for i, ov in self.items.items():
+                    if ov == t:
+                        newDict[i] = ov
+        self.items = newDict
     def getSettings(self):
         print 'saving list box'
         r = {'items':self.items, 'selected':self.selectedIds()}

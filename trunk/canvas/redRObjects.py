@@ -297,15 +297,14 @@ def removeWidgetInstanceByID(id):
     try:
         widget = getWidgetInstanceByID(id)
         removeWidgetInstance(widget)
+        del _widgetInstances[id]
     except: 
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-        pass
-    finally:
-        try:
-            del _widgetInstances[id]
-        except: 
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            pass
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Failed to remove the widget instance %s' % id)
+        
+    # finally:
+        # try:
+            # del _widgetInstances[id]
+        # except: pass
 def removeWidgetInstance(widget):
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing widget instance %s') % widget)
     widget.onDeleteWidget()
@@ -419,6 +418,7 @@ def removeLine(outWidgetInstance, inWidgetInstance, outSignalName, inSignalName)
 def removeLineInstance(line):
     obsoleteSignals = line.outWidget.instance().outputs.getSignalLinks(line.inWidget.instance())
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Removing obsolete signals %s') % obsoleteSignals)
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'removing the following signals %s' % obsoleteSignals)
     for (s, id) in obsoleteSignals:
         signal = line.inWidget.instance().inputs.getSignal(id)
         line.outWidget.instance().outputs.removeSignal(signal, s)
