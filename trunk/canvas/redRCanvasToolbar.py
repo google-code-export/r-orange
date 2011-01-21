@@ -434,7 +434,7 @@ class redRCanvasToolbarandMenu():
         dlg.exec_()
 
     def menuItemCanvasOptions(self):
-        dlg = orngDlgs.CanvasOptionsDlg(self.canvas, None)
+        dlg = orngDlgs.CanvasOptionsDlg(self.canvas)
         if dlg.exec_() == QDialog.Accepted:
             if redREnviron.settings["snapToGrid"] != dlg.settings["snapToGrid"]:
                 self.updateSnapToGrid()

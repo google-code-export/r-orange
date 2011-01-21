@@ -18,7 +18,7 @@ import RSession
 import redRHistory
 import redRi18n
 import orngRegistry, OWGUI
-import redROutput, redRSaveLoad
+import redRSubmitErrors, redRSaveLoad
 import orngDoc, orngDlgs
 import redRWidgetsTree
 import redRPackageManager, redRGUI,signals, redRInitWizard
@@ -69,15 +69,16 @@ class OrangeCanvasDlg(QMainWindow):
         self.outputDock.setWidget(outbox)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.outputDock)
         self.connect(self.outputDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
-        redRLog.setOutputWindow(self.printOutput)
+        # redRLog.setOutputWindow(self.printOutput)
         redRLog.setOutputManager('dock', self.dockOutputManger)
         
         #######################
-        #####Output Manager####
+        #Error Update Manager##
         #######################
 
-        # self.output = redROutput.OutputWindow(self)
-        # redRLog.setOutputManager('window', self.output.outputManager)
+        # self.output = redRSubmitErrors.redRSubmitErrors(self)
+        redRLog.setOutputManager('submitErrors', redRSubmitErrors.errorSubmitter,level=redRLog.CRITICAL)
+        redRLog.setLogTrigger('displayError', lambda x,y: self.showOutputDock(),level=redRLog.CRITICAL)
         
         
         ###################
@@ -239,8 +240,16 @@ class OrangeCanvasDlg(QMainWindow):
         else:
             self.printOutput.insertPlainText(string)
             
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)     
-
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)
+        
+    def showOutputDock(self):
+        if not redREnviron.settings["focusOnCatchException"]: return
+        
+        self.showROutputButton.setChecked(True)
+        self.updateDockState()
+        self.raise_()
+        self.outputDock.raise_()
+        
     def updateDock(self,ev):
         if self.notesDock.isHidden():
             self.showNotesButton.setChecked(False)

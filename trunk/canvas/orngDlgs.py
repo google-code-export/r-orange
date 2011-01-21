@@ -16,6 +16,7 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel as redRwidgetLabel
 from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.lineEdit import lineEdit
 import redRi18n
 # def _(a):
     # return a
@@ -54,8 +55,8 @@ class ColorIcon(QToolButton):
 
 # canvas dialog
 class CanvasOptionsDlg(QDialog):
-    def __init__(self, canvasDlg, *args):
-        apply(QDialog.__init__,(self,) + args)
+    def __init__(self, canvasDlg):
+        QDialog.__init__(self,canvasDlg)
         self.canvasDlg = canvasDlg
         self.settings = dict(redREnviron.settings)        # create a copy of the settings dict. in case we accept the dialog, we update the redREnviron.settings with this dict
         if sys.platform == "darwin":
@@ -194,7 +195,8 @@ class CanvasOptionsDlg(QDialog):
         _("Save content of the Output window to a log file"))
         hbox = OWGUI.widgetBox(output, orientation = "horizontal")
         
-        self.logFile = OWGUI.lineEdit(hbox, self.settings, "logFile", _("Log File:"), orientation = 'horizontal')
+        self.logFile = lineEdit(hbox, label= _("Log File:"), orientation = 'horizontal',
+        text=redREnviron.settings['logFile'])
         self.okButton = OWGUI.button(hbox, self, _("Browse"), callback = self.browseLogFile)
         self.showOutputLog = redRbutton(output, label = _('Show Log File'), callback = self.showLogFile)
         self.numberOfDays = redRSpinBox(output, label = 'Keep File for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
@@ -266,11 +268,19 @@ class CanvasOptionsDlg(QDialog):
         # self.settings["minSeverity"] = int(self.otherLevel.value())
         
         # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in _('Show Help Icons'))
+        # print self.settings
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
+        oldLogFile = redREnviron.settings['logFile']
+        self.settings['logFile'] = self.logFile.text()
+        # print 'a',oldLogFile
+        # print 'b',self.settings['logFile']
+        
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
-        import redRLog
-        redRLog.moveLogFile(redREnviron.settings['logFile'])
+        
+        if oldLogFile != self.settings['logFile']:
+            import redRLog
+            redRLog.moveLogFile(redREnviron.settings['logFile'])
         # redRStyle.widgetSelectedColor = self.settings["widgetSelectedColor"]
         # redRStyle.widgetActiveColor   = self.settings["widgetActiveColor"]  
         # redRStyle.lineColor           = self.settings["lineColor"]          

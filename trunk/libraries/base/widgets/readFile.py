@@ -40,7 +40,6 @@ class readFile(OWRpy):
         self.colNames = []
         self.dataTypes = []
         self.useheader = 1
-        
         #set R variable names        
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
@@ -254,6 +253,8 @@ class readFile(OWRpy):
     
     def loadFile(self,scan=False):
         #print scan
+        raise Exception('asdfadsf')
+
         fn = self.filecombo.getCurrentFile()
         if not fn and not scan == 'clipboard':
             print _('No file selected')

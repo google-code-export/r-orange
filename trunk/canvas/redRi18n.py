@@ -14,7 +14,7 @@ def Coreget_(domain = 'messages', locale = os.path.join(redREnviron.directoryNam
         return core_
     else:
         try:
-            t = gettext.translation(domain, locale, languages = ['latin'], fallback = fallback)
+            t = gettext.translation(domain, locale, languages = ['english'], fallback = fallback)
             core_ = t.gettext
             return core_  # returns the function
         except Exception as inst:
