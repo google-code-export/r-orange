@@ -109,6 +109,7 @@ class CanvasLine(QGraphicsPathItem):
     def setNoData(self, noData):
         self.noData = noData
     def refreshToolTip(self):
+        return
         #  first we need to get the signals that are sent through the line, there might be more than one so we do it here.
         outinstance = self.outWidget.instance()
         outSignalIDs = [i[0] for i in outinstance.outputs.getLinkPairs(self.inWidget.instance())]
@@ -117,7 +118,7 @@ class CanvasLine(QGraphicsPathItem):
             s = outinstance.outputs.getSignal(id)
             if s and s['value'] != None:
                 tip += s['value'].summary()+'\n'
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
+        #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'orngCanvasItems in refreshToolTip; setting tooltip to %s' % tip)
         self.setToolTip(tip)
     def getNoData(self):
         return self.noData

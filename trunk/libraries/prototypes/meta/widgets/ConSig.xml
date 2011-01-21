@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>Generic Plot</name>
-    <icon>plot.png</icon>
+    <name>ConSig</name>
+    <icon>Default.png</icon>
     <tags> 
-        <tag>Plotting</tag> 
+        <tag>Data Manipulation</tag> 
     </tags>
-    <screenshots></screenshots>
-    <summary></summary>
-    <details></details>
+    <summary>Generates a set of ConSig Scores from a given gene list.  Will also accept a connection to a list of reference genes and a set of disriptors of genes.  The requirement of the discriptor is that it contain a set of concepts and geneID's that match the geneID's that are in the reference list.  Other data from the concepts map is appended to the end of the final table of scores.</summary>
+    <details>Generates a set of ConSig Scores from a given gene list.  Will also accept a connection to a list of reference genes and a set of disriptors of genes.  The requirement of the discriptor is that it contain a set of concepts and geneID's that match the geneID's that are in the reference list.  Other data from the concepts map is appended to the end of the final table of scores.</details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
         <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>

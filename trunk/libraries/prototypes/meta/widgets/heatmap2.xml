@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>Generic Plot</name>
-    <icon>plot.png</icon>
+    <name>Heatmap2</name>
+    <icon>heatmap.png</icon>
     <tags> 
-        <tag>Plotting</tag> 
+        <tag>Prototypes</tag> 
     </tags>
-    <screenshots></screenshots>
-    <summary></summary>
-    <details></details>
+    <summary>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.</summary>
+    <details>Makes heatmaps of data.  This data should be in the form of a data table and should contain only numeric data, no text.</details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
         <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>
