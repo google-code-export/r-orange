@@ -6,6 +6,7 @@
     <tags> 
         <tag>Deprecated</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>This widget takes two vectors and performs a set intersect. Returns the set of element common to both.</summary>
     <details><p></p></details>
     <relatedWidgets>

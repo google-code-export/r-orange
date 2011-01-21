@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Cast</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Reshape</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>

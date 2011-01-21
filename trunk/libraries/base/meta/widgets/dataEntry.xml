@@ -6,6 +6,7 @@
     <tags> 
         <tag>Data Input</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>A table input data entry into a data.frame.</summary>
     <details><p>Similar to Excel, you can enter data into a table. A data.frame is created in R on submit and sent forward.</p></details>
     <relatedWidgets>

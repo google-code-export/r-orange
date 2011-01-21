@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Convert To Table/Prop Table</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Converts a data table of factors to counts of the unique combinations of levels.  For exampel if your data table consisted of rows representing observations of cars with columns indicating make, color, and year, this widget would return a list of counts for each make color year combination.</summary>
     <details><p><!-- [REQUIRED] A detailed description of the widget and what it does--></p></details>
     <relatedWidgets>

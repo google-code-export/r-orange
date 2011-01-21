@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Math</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Perform basic math operations on columns of data.</summary>
     <details><p>Perform simple math transformation of data one column at at time.</p></details>
     <relatedWidgets>

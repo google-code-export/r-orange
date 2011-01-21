@@ -7,6 +7,7 @@
         <tag>Plotting</tag> 
         <tag>Subsetting</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Displays data as a interactive scatter plot.</summary>
     <details><p>Select the x and y data column to plot points in the graph. Optionally also select a column to color the data by. The toolbar offers options for zooming and selection data in the graph.<br />
 </p></details>

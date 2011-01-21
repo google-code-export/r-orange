@@ -200,7 +200,12 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         "Text file (*.csv *.tab *.txt );; All Files (*.*)")
         if name.isEmpty(): return
         name = unicode(name)
-        sep = self.separator.currentId()
+        if self.separator.currentId() =='Tab':
+            sep  = '\t'
+        elif self.separator.currentId() =='Comma':
+            sep  = ','
+        elif self.separator.currentId() =='Space':
+            sep  = ' '
         #use the R function if the parent of the dict is an R object.
         if type(self.data) in [str, unicode]:
             self.R('write.table('+self.data+',file="'+unicode(name)+'", quote = FALSE, sep="'+sep+'")', wantType = 'NoConversion')

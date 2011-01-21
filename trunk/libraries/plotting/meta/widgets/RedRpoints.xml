@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>points</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Plotting</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>

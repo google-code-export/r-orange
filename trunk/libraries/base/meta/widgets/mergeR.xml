@@ -6,6 +6,7 @@
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Merge two datasets</summary>
     <details><p>Combining data from different tables is often required during data mining.  The Merge Data widget combines data in a variety of ways.
 <br />

@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Apply</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Apply a function across an matrix or array.</summary>
     <details><p>
 The apply function takes an array (an n-dimentional rectangular datasets) as an input object and applies the function specified either by the 'Select Function' box or any arbitrary function in the 'Function' box.  Any additional parameters to the function can be input in the 'Additional Parameters' line.  

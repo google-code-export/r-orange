@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Rank</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Returns the sample ranks of the values in a vector</summary>
     <details><p><!-- [REQUIRED] A detailed description of the widget and what it does--></p></details>
     <relatedWidgets>

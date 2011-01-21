@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Subset</name>
-    <icon>Subset.png</icon>
+    <icon>subset.png</icon>
     <tags> 
         <tag>Subsetting</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Subset a dataset by values from another dataset.</summary>
     <details><p><!-- [REQUIRED] A detailed description of the widget and what it does--></p></details>
     <relatedWidgets>

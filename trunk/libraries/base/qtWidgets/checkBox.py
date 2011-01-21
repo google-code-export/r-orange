@@ -68,7 +68,7 @@ class checkBox(widgetState,QWidget):
                 for v in buttons:
                     self.addButton(v,v)
 
-            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In radioButtons should not use list'))
+            # redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In radioButtons should not use list'))
         else:
             raise Exception(_('In radioButtons, addButtons takes a list, dict or OrderedDict'))
 

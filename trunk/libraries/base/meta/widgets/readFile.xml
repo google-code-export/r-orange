@@ -6,6 +6,9 @@
     <tags> 
         <tag>Data Input</tag> 
     </tags>
+    <screenshots>
+        <screenshot>meta/widgets/screenshots/readFile.jpg</screenshot>
+    </screenshots>
     <summary>Read data files into Red-R.</summary>
     <details><p>This widget will read data from tab, comma, or space delimited text files. On Microsoft Windows it will also ready Excel files. Click the browse button to search your computer for the file to read. Select how the columns are delimited. On data read or change in these options, the first few lines of the file will be scanned. R will try to automaticlly determine the type of the column. The column data types can be changed. Once the data, column and row header information is properly selected click Load Data to read the full file into Red-R and send forward. </p></details>
     <relatedWidgets>

@@ -73,7 +73,7 @@ class readFile(OWRpy):
 
         
         self.delimiter = radioButtons(options, label=_('Column Seperator'),
-        buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked='\t',callback=self.scanNewFile,
+        buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked=_('Tab'),callback=self.scanNewFile,
         orientation='horizontal')
         
         self.otherSepText = lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
@@ -265,11 +265,14 @@ class readFile(OWRpy):
                 # self.delimiter.setChecked('Tab')
             # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
                 # self.delimiter.setChecked('Comma')
-
-            if self.delimiter.getCheckedId() == 'other':
+            if self.delimiter.getCheckedId() =='Tab':
+                sep  = '\t'
+            elif self.delimiter.getCheckedId() =='Comma':
+                sep  = ','
+            elif self.delimiter.getCheckedId() =='Space':
+                sep  = ' '
+            elif self.delimiter.getCheckedId() == 'other':
                 sep = unicode(self.otherSepText.text())
-            else:
-                sep = self.delimiter.getCheckedId() 
                 
             otherOptions = ''
             for i in self.otherOptions.getCheckedIds():

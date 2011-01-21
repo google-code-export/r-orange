@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>plsr</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Prototypes</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Beginning module for the pls package to generate a model fit.</summary>
     <details>Beginning module for the pls package to generate a model fit.</details>
     <relatedWidgets>

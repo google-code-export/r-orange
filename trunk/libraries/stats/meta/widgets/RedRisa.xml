@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>isa</name>
-    <icon>icons/RExecutor.png</icon>
+    <icon>icons/rexecutor.png</icon>
     <tags> 
         <tag>Prototypes</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>

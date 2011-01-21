@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>save</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>View Data</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Save data to file</summary>
     <details><p><!-- [REQUIRED] A detailed description of the widget and what it does--></p></details>
     <relatedWidgets>

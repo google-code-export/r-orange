@@ -6,6 +6,7 @@
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Perform base set operations:union, intersect, difference, and equality</summary>
     <details><p>Perform base set operations:union, intersect, difference, and equality.<br />
 Each of union, intersect, setdiff and setequal will discard any duplicated values in the arguments. 

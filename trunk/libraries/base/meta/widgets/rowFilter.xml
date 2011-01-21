@@ -6,6 +6,7 @@
     <tags> 
         <tag>Subsetting</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Filter data by column criteria.</summary>
     <details><p>Click on the column headers to bring up a menu for filtering data.<br />
 Depending on the column type (numeric, string, factor) a different menu is presented. You can filter one mutliple columns at a time. Columns that have been filtered will show a different icon in column header. <br />

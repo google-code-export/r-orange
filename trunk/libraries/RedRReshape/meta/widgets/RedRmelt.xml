@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Melt Data</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Reshape</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Generates a molten set of data.  The function Cast can be used to recast the data into a new shape.</summary>
     <details>Generates a molten set of data.  The function Cast can be used to recast the data into a new shape.</details>
     <relatedWidgets>

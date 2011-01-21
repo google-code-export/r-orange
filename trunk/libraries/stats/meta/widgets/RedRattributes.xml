@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Attributes</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>Stats</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>

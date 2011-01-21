@@ -1,12 +1,14 @@
 import os, sys
-os.chdir('C:/Program Files/7-zip')
-libDir = 'C:/Python26/Lib/site-packages/RedRTrunk/libraries'
+#os.chdir('C:/Program Files/7-zip')
+libDir = sys.argv[1]
 packages = os.listdir(libDir)
 
-for p in packages:
+for p in packages: 
     if not os.path.isdir(os.path.join(libDir, p)): continue
-    print p
-    call = '7z a -tzip -xr!*.svn* -xr!*.pyc -xr!*.pyo C:\Python26\Lib\site-packages\RedRTrunk\libraries\%s\%s.zip C:\Python26\Lib\site-packages\RedRTrunk\libraries\%s\*' % (p,p,p)
+    if not os.path.exists(os.path.join(libDir, p, 'package.xml')): continue
+    #print p
+    
+    call = '7z a -tzip -xr!*.svn* -xr!*.pyc -xr!*.pyo %s.zip %s/%s/*' % (p,libDir,p)
     print call
     os.system(call)
 

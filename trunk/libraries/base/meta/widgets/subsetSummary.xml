@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Subset Summary</name>
-    <icon>Subset.png</icon>
+    <icon>subset.png</icon>
     <tags> 
         <tag>R</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Very similar to summary except that this function first splits a data table into multiple tables based on the levels of a factor(s) and then performs the summary function on each resulting data table.</summary>
     <details>Very similar to summary except that this function first splits a data table into multiple tables based on the levels of a factor(s) and then performs the summary function on each resulting data table.</details>
     <relatedWidgets>

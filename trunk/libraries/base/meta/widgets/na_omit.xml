@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Remove NA</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>R</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Remove NAs from data</summary>
     <details><p><!-- [REQUIRED] A detailed description of the widget and what it does--></p></details>
     <relatedWidgets>

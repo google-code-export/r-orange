@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Create Valid Rows\Columns</name>
-    <icon>Default.png</icon>
+    <icon>default.png</icon>
     <tags> 
         <tag>R</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary>Make row and column names valid R names.</summary>
     <details><p>R cannot handle row and column names that begin with numbers. This widget renames the row or column names that begin with numbers by adding and 'X' to the beginning.</p></details>
     <relatedWidgets>

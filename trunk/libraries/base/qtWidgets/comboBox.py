@@ -68,7 +68,7 @@ class comboBox(QComboBox,widgetState):
             else:
                 for v in items:
                     self.addItem(v,v)
-            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
+            # redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
         else:
             raise Exception(_('In comboBox, addItems takes a list, dict or OrderedDict'))
     

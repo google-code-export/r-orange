@@ -2,10 +2,11 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Row or Column Selection</name>
-    <icon>Subset.png</icon>
+    <icon>subset.png</icon>
     <tags> 
         <tag>Subsetting</tag> 
     </tags>
+    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>

@@ -45,7 +45,7 @@ class listBox(QListWidget,widgetState):
         if toolTip:
             self.setToolTip(toolTip)
         
-        self.items = OrderedDict()
+        self.listItems = OrderedDict()
         if items:
             self.addItems(items)
         
@@ -53,21 +53,13 @@ class listBox(QListWidget,widgetState):
             QObject.connect(self, SIGNAL('itemClicked(QListWidgetItem*)'), callback)
 
 
-    def items(self):
-        return self.items()
-        # items = []
-        # for i in range(0, self.count()):
-            # items.append(self.item(i))
-        # return items
+
     def getItems(self):
-        return self.items()
-        # items = []
-        # for i in range(0, self.count()):
-            # items.append(unicode(self.item(i).text()))
-        # return items
+        return self.listItems
+
     def addItem(self,id,item):
         QListWidget.addItem(self,item)
-        self.items[id] = item
+        self.listItems[id] = item
     def addItems(self,items):
         if type(items) in [dict,OrderedDict]:
             for k,v in items.items():
@@ -79,14 +71,14 @@ class listBox(QListWidget,widgetState):
             else:
                 for v in items:
                     self.addItem(v,v)
-            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
+            # redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
         else:
             raise Exception(_('In listBox, addItems takes a list, dict or OrderedDict'))
 
     def setSelectedIds(self,ids):
         for x in ids:
             try:
-                self.item(self.items.keys().index(x)).setSelected(True)
+                self.item(self.listItems.keys().index(x)).setSelected(True)
             except:
                 pass
                 
@@ -111,16 +103,16 @@ class listBox(QListWidget,widgetState):
     def selectionCount(self):
         return len(self.selectedIndexes())
     def currentSelection(self):
-            return [unicode(i.text()) for i in self.selectedItems()]
+            return self.selectedItems().values()
     def selectedItems(self):
         items = {}
         for x in self.selectedIndexes():
-            items[self.items.keys()[x.row()]] = self.items.values()[x.row()]
+            items[self.listItems.keys()[x.row()]] = self.listItems.values()[x.row()]
         return items
     def selectedIds(self):
         ids = []
         for x in self.selectedIndexes():
-            ids.append(self.items.keys()[x.row()])
+            ids.append(self.listItems.keys()[x.row()])
         return ids
     
     def sizeHint(self):
@@ -225,13 +217,13 @@ class listBox(QListWidget,widgetState):
         newDict = OrderedDict()
         for r in range(self.count()):
             t = unicode(self.itemAt(r).text())  # get the text of the item
-            if t not in self.items.values():
+            if t not in self.listItems.values():
                 newDict[t] = t
             else:
-                for i, ov in self.items.items():
+                for i, ov in self.listItems.items():
                     if ov == t:
                         newDict[i] = ov
-        self.items = newDict
+        self.listItems = newDict
     def getSettings(self):
         print 'saving list box'
         r = {'items':self.items, 'selected':self.selectedIds()}
