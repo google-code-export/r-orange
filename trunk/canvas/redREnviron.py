@@ -144,8 +144,8 @@ def loadSettings():
     settings.setdefault("saveApplicationDir", directoryNames['canvasSettingsDir'])
     settings.setdefault("showSignalNames", 1)
     
-    settings.setdefault("canvasWidth", 700)
-    settings.setdefault("canvasHeight", 600)
+    settings.setdefault("canvasWidth", 900)
+    settings.setdefault("canvasHeight", 700)
     settings.setdefault('dockState', {'notesBox':True, 'outputBox':True, 'widgetBox':True})
         
     settings.setdefault("useDefaultPalette", 0)

@@ -219,14 +219,17 @@ class OrangeCanvasDlg(QMainWindow):
         #First Load##
         #########################
         
-        try:
-            if 'firstLoad' not in redREnviron.settings.keys():
-                redREnviron.settings['firstLoad'] = True
-            if redREnviron.settings['firstLoad']:
-                self.startSetupWizard()
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            pass
+        # try:
+            # if 'firstLoad' not in redREnviron.settings.keys():
+                # redREnviron.settings['firstLoad'] = True
+            # if redREnviron.settings['firstLoad']:
+                # redRInitWizard.startSetupWizard()
+        # except:
+            # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            # pass
+        
+        redRInitWizard.startSetupWizard()
+        
         redRSaveLoad.setCanvasDlg(self)
         qApp.processEvents()
         
@@ -294,28 +297,6 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings['dockState']['widgetBox'] = False
         
     
-    def startSetupWizard(self):
-        setupWizard = redRInitWizard.RedRInitWizard()
-        if setupWizard.exec_() == QDialog.Accepted:
-            redREnviron.settings['email'] = unicode(setupWizard.email.text())
-            redREnviron.settings['canContact'] = unicode(setupWizard.allowContact.getChecked()) == _('Yes')
-            try:
-                redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
-            except:
-                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-                pass
-            redREnviron.settings['focusOnCatchException'] = _('Show output window on exception') in setupWizard.redRExceptionHandling.getChecked()
-            redREnviron.settings['printExceptionInStatusBar'] = _('Print last exception in status bar') in setupWizard.redRExceptionHandling.getChecked()
-            redREnviron.settings['uploadError'] = _('Submit Error Report') in setupWizard.redRExceptionHandling.getChecked()
-            redREnviron.settings['askToUploadError'] = _('Always ask before submitting error report') in setupWizard.redRExceptionHandling.getChecked()
-        
-            if _('Start Example') in setupWizard.showExample.getChecked():
-                self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
-            
-        #print redREnviron.settings
-        redREnviron.settings['firstLoad'] = False
-        redREnviron.saveSettings()
-                
         
     def createWidgetsToolbar(self,widgetRegistry=None):
         if widgetRegistry:

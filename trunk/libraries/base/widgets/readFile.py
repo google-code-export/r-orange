@@ -253,7 +253,6 @@ class readFile(OWRpy):
     
     def loadFile(self,scan=False):
         #print scan
-        raise Exception('asdfadsf')
 
         fn = self.filecombo.getCurrentFile()
         if not fn and not scan == 'clipboard':

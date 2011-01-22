@@ -386,6 +386,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global _schemaName
     global schemaPath
     global globalNotes
+    global canvasDlg
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading Document %s') % filename)
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:

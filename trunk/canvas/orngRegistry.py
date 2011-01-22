@@ -38,15 +38,15 @@ def readCategories():
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
-    cacheFilename = os.path.join(canvasSettingsDir, "cachedWidgetDescriptions.pickle")
+    # cacheFilename = os.path.join(canvasSettingsDir, "cachedWidgetDescriptions.pickle")
 
-    try:
-        import cPickle
-        cats = cPickle.load(file(cacheFilename, "rb"))
-        cachedWidgetDescriptions = dict([(w.fullName, w) for cat in cats.values() for w in cat.values()])
-    except:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-        cachedWidgetDescriptions = {} 
+    # try:
+        # import cPickle
+        # cats = cPickle.load(file(cacheFilename, "rb"))
+        # cachedWidgetDescriptions = dict([(w.fullName, w) for cat in cats.values() for w in cat.values()])
+    # except:
+        # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        # cachedWidgetDescriptions = {} 
 
     directories = []
     for dirName in os.listdir(widgetDirName):
@@ -64,7 +64,7 @@ def readCategories():
         f.close()
         package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
         # we read in all the widgets in dirName, directory in the directories
-        widgets = readWidgets(os.path.join(directory), package, cachedWidgetDescriptions)  ## calls an internal function
+        widgets = readWidgets(os.path.join(directory), package)  ## calls an internal function
         AllPackages[package['Name']] = package
         if mainTabs.getElementsByTagName('menuTags'):
             newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
@@ -87,7 +87,7 @@ def readCategories():
         
     allTemplates += readTemplates(redREnviron.directoryNames['templatesDir'])
     categories['templates'] = allTemplates
-    cPickle.dump(categories, file(cacheFilename, "wb"))
+    # cPickle.dump(categories, file(cacheFilename, "wb"))
     if splashWindow:
         splashWindow.hide()
     
@@ -130,7 +130,7 @@ def getXMLText(nodelist):
     rc = unicode(rc).strip()
     return rc
 
-def readWidgets(directory, package, cachedWidgetDescriptions):
+def readWidgets(directory, package):
     import sys, imp
     global hasErrors, splashWindow, widgetsWithError
     import compileall
@@ -142,10 +142,10 @@ def readWidgets(directory, package, cachedWidgetDescriptions):
             continue
         
         datetime = unicode(os.stat(filename)[stat.ST_MTIME])
-        cachedDescription = cachedWidgetDescriptions.get(filename, None)
-        if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
-            widgets.append((cachedDescription.name, cachedDescription))
-            continue
+        # cachedDescription = cachedWidgetDescriptions.get(filename, None)
+        # if cachedDescription and cachedDescription.time == datetime and hasattr(cachedDescription, "inputClasses"):
+            # widgets.append((cachedDescription.name, cachedDescription))
+            # continue
         
         dirname, fname = os.path.split(filename)
         widgetName = os.path.splitext(fname)[0]
