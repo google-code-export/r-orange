@@ -219,16 +219,16 @@ class OrangeCanvasDlg(QMainWindow):
         #First Load##
         #########################
         
-        # try:
-            # if 'firstLoad' not in redREnviron.settings.keys():
-                # redREnviron.settings['firstLoad'] = True
-            # if redREnviron.settings['firstLoad']:
-                # redRInitWizard.startSetupWizard()
-        # except:
-            # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            # pass
+        try:
+            if 'firstLoad' not in redREnviron.settings.keys():
+                redREnviron.settings['firstLoad'] = True
+            if redREnviron.settings['firstLoad']:
+                redRInitWizard.startSetupWizard()
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            pass
         
-        redRInitWizard.startSetupWizard()
+        # redRInitWizard.startSetupWizard()
         
         redRSaveLoad.setCanvasDlg(self)
         qApp.processEvents()
