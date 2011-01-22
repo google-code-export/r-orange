@@ -19,7 +19,7 @@ def __getDirectoryNames():
 
     canvasDir = os.path.join(redRDir, "canvas")
     canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
-    rpyDir = os.path.join(redRDir, "canvas",'rpy')
+    rpyDir = os.path.join(redRDir, 'rpy3')
     RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.11.1')
     widgetDir = os.path.join(redRDir, "libraries")
     libraryDir = os.path.join(redRDir, "libraries")
@@ -233,5 +233,4 @@ if __name__ =='redREnviron':
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-    
-    
+ 
