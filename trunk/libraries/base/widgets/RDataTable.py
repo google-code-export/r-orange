@@ -24,6 +24,8 @@ class RDataTable(OWRpy):
     def __init__(self, parent=None, signalManager = None):
         OWRpy.__init__(self, wantGUIDialog = 1)
         
+        self.setRvariableNames(['summaryData'])
+
         self.inputs.addInput('id1', _('Input Data Table'), redRRDataFrame, self.dataset) 
 
         self.data = {}          # dict containing the table infromation
@@ -68,10 +70,11 @@ class RDataTable(OWRpy):
         self.linkListBox = listBox(linksTab,label=_('Links to Websites'), displayLabel=False,includeInReports=False)
         self.linkListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.customLink = lineEdit(linksTab, label = _('Add Link:'), includeInReports=False)
-        b = button(linksTab, label = _('Add'), toolTip = _('Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.'), callback=self.addCustomLink)
-        button(linksTab, label = _('Clear Links'), toolTip = _('Clears the links from the links section'), 
+        hbox = widgetBox(linksTab,orientation='horizontal')
+        b = button(hbox, label = _('Add'), toolTip = _('Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.'), callback=self.addCustomLink)
+        button(hbox, label = _('Clear Links'), toolTip = _('Clears the links from the links section'), 
         callback = self.clearLinks)
-        linksTab.layout().setAlignment(b,Qt.AlignRight)
+        hbox.layout().setAlignment(Qt.AlignRight)
         widgetLabel(linksTab,label ="""
 Creating new links:
 http://www.ncbi.nlm.nih.gov/gene/{gene_id}
@@ -88,9 +91,12 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
 
         self.table = filterTable(self.tableBox,label = _('Data Table'), sortable=True,
         filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked,selectionCallback=self.cellSelection)
+        ##########################################################
         # self.R('data <- data.frame(a=rnorm(1000),b=c("a","b","c","d","e"))')
-        # self.table.setRTable('data')
-        # self.data = 'data'
+        # self.data = 'iris'
+        # self.table.setRTable(self.data)
+        #self.data = 'iris'
+        ##########################################################
         
         self.customSummary = lineEdit(self.advancedOptions, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
         self.summaryLabel = textEdit(self.advancedOptions, label = _('Summary'))
@@ -120,18 +126,78 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.supressTabClick = False
     
     
-    def cellSelection(self,tmpData):
+    def cellSelection(self,selections):
+        # return
         # print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n'
-        type = self.R('class('+tmpData+')', wantType = 'Convert', silent = True)
-        if type in ['integer', 'complex', 'float', 'numeric']:
-            summaryText = _('<strong>Mean</strong>: %(MEAN)s<br/> <strong>Median</strong>: %(MEDIAN)s<br/> <strong>Range</strong>: %(RANGE)s<br/> <strong>Standard Deviation</strong>: %(SD)s<br/> <strong>Count</strong>: %(COUNT)s<br/> <strong>Min</strong>: %(MIN)s<br/> <strong>Max</strong>: %(MAX)s<br/>') % {
-                'MEAN':str(self.R('mean(%s)' % tmpData, wantType = 'Convert', silent = True)), 
-                'MEDIAN':str(self.R('median(%s)' % tmpData, wantType = 'Convert', silent = True)), 
-                'RANGE':str(self.R('range(%s)' % tmpData, wantType = 'Convert', silent = True)), 
-                'SD':str(self.R('sd(%s)' % tmpData, wantType = 'Convert', silent = True)), 
-                'COUNT':str(self.R('length(%s)' % tmpData, wantType = 'Convert', silent = True)), 
-                'MIN':str(self.R('min(%s)'% tmpData, wantType = 'Convert', silent = True)), 
-                'MAX':str(self.R('max(%s)' % tmpData, wantType = 'Convert', silent = True))}
+        # for x in selections:
+            # rstart = min(x.top()+1,x.bottom()+1)
+            # rend = max(x.top()+1,x.bottom()+1)
+            # cstart = min(x.right()+1,x.left()+1)
+            # cend = max(x.right()+1,x.left()+1)
+            # print rstart,rend,cstart,cend
+            # self.R('%s <- c(%s,((%s[%d:%d,%d:%d])))' % (
+                # self.Rvariables['summaryData'],self.Rvariables['summaryData'],self.table.getFilteredData(),
+                # rstart,rend,cstart,cend),silent=True)
+        
+        # print self.R(self.Rvariables['summaryData'],silent=True)
+        # self.R('rowInd <- c(' + ','.join(rows) + ')',silent=True)
+        # self.R('colInd <- c(' + ','.join(cols) + ')',silent=True)
+        
+        # self.R('tmpData <- apply(cbind(rowInd,colInd),1,FUN=function(x) {%s[x[1],x[2]]})' % self.Rdata, silent=True)
+        # tmpData = self.Rvariables['summaryData']
+        if len(selections) > 1:
+            self.R('%s <- NULL' % self.Rvariables['summaryData'],silent=True)
+            rows = []
+            cols = []
+            inds = selections.indexes()
+            for ind in inds:
+                #print _('new'), ind.row(),ind.column()
+                rows.append(str(ind.row()+1))
+                cols.append(str(ind.column()+1))
+
+            self.R('rowInd <- c(' + ','.join(rows) + ')',silent=True)
+            self.R('colInd <- c(' + ','.join(cols) + ')',silent=True)
+            
+            self.R('%s <- apply(cbind(rowInd,colInd),1,FUN=function(x) {%s[x[1],x[2]]})' % (
+            self.Rvariables['summaryData'],self.table.getFilteredData()), silent=True)
+            tmpData = self.Rvariables['summaryData']
+
+        else:
+            x = selections[0]
+            rstart = min(x.top()+1,x.bottom()+1)
+            rend = max(x.top()+1,x.bottom()+1)
+            cstart = min(x.right()+1,x.left()+1)
+            cend = max(x.right()+1,x.left()+1)
+            # print rstart,rend,cstart,cend
+            # self.R('%s <- c(%s,((%s[%d:%d,%d:%d])))' % (
+                # self.Rvariables['summaryData'],self.Rvariables['summaryData'],self.table.getFilteredData(),
+                # rstart,rend,cstart,cend),silent=True)
+            tmpData = '%s[%d:%d,%d:%d]' % (self.table.getFilteredData(),rstart,rend,cstart,cend)
+        
+        # type = self.R('class('+tmpData+')', wantType = 'Convert', silent = True)
+        # print 'type:',type
+        # if type =='data.frame':
+        isNumeric = self.R('sum(sapply(as.data.frame(%s),FUN=function(x) {!(is.numeric(x) | is.complex(x))})) ==0' % tmpData,silent=True)
+        # print 'isNumeric', isNumeric
+        if isNumeric:
+#        if type in ['integer', 'complex', 'float', 'numeric']:
+            summaryText = _('<strong>Sum</strong>: %(SUM)s<br/><strong>Mean</strong>: %(MEAN)s<br/> <strong>Median</strong>: %(MEDIAN)s<br/> <strong>Range</strong>: %(RANGE)s<br/> <strong>Standard Deviation</strong>: %(SD)s<br/> <strong>Count</strong>: %(COUNT)s<br/> <strong>Min</strong>: %(MIN)s<br/> <strong>Max</strong>: %(MAX)s<br/>') % {
+                'SUM':str(self.R('format(sum(data.matrix(%s),na.rm=T),digits=4)' % tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'MEAN':str(self.R('format(mean(data.matrix(%s),na.rm=T),digits=4)' % tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'MEDIAN':str(self.R('format(median(data.matrix(%s),na.rm=T),digits=4)' % tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'RANGE':str(self.R('format(range(data.matrix(%s),na.rm=T),digits=4)' % tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'SD':str(self.R('format(sd(as.vector(data.matrix(%s)),na.rm=T),digits=4)' % tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'COUNT':str(self.R('length(data.matrix(%s))' % tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'MIN':str(self.R('format(min(data.matrix(%s),na.rm=T),digits=4)'% tmpData, 
+                wantType = 'Convert', silent = True)), 
+                'MAX':str(self.R('format(max(data.matrix(%s),na.rm=T),digits=4)' % tmpData, 
+                wantType = 'Convert', silent = True))}
         else:
             summaryText = unicode(self.R('summary('+tmpData+')', wantType = 'Convert', silent = True)).replace('\n', '<br/>')        
 

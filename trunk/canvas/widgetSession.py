@@ -308,7 +308,7 @@ class widgetSession():
         ##########set global settings#############
     def loadGlobalSettings(self):
         file = self.getGlobalSettingsFile()
-        if not file: return 
+        if not os.path.exists(file): return
         try:
             file = open(file, "r")
             settings = cPickle.load(file)
@@ -321,8 +321,9 @@ class widgetSession():
     def getGlobalSettingsFile(self):
         # print 'getSettingsFile in owbasewidget'
         file = os.path.join(redREnviron.directoryNames['widgetSettingsDir'], self._widgetInfo.fileName + ".ini")
-        if os.path.exists(file): return file
-        else: return False
+        return file
+        # if os.path.exists(file): return file
+        # else: return False
 
     
     # save global settings

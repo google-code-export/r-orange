@@ -226,7 +226,7 @@ class listBox(QListWidget,widgetState):
         self.listItems = newDict
     def getSettings(self):
         print 'saving list box'
-        r = {'items':self.items, 'selected':self.selectedIds()}
+        r = {'items':self.listItems, 'selected':self.selectedIds()}
         print r
         return r
     def loadSettings(self,data):

@@ -103,15 +103,23 @@ class filterTable(widgetState, QTableView):
         print 'selectColumn#############################', val
 
     def cellSelection(self,newSelected,oldSelected):
-        # print 'cellSelection ################', newSelected, oldSelected
+        # print 'cellSelection ################'#, newSelected, oldSelected
         #print self.selectionModel().selectedColumns()#, self.selectionModel().selectedRows() 
-        self.selections.merge(newSelected,QItemSelectionModel.Select)
-        self.selections.merge(oldSelected,QItemSelectionModel.Deselect)
-        inds = self.selections.indexes()
-        
+        # self.selections.merge(oldSelected,QItemSelectionModel.Deselect)
+        # self.selections.merge(newSelected,QItemSelectionModel.Select)
+        # inds = self.selections.indexes()
+        selections = self.selectionModel().selection()
         if self.working:
             return 
         self.working = True
+        # print 'adsfad', len(self.selections)
+        # for x in selections:
+            # print x.top(),x.bottom(),x.right(),x.left()
+        
+        self.selectionCallback(selections)
+        self.working = False
+        return 
+        """    
         rows = []
         cols = []
         if len(self.selectionModel().selectedColumns()) > 0:
@@ -123,6 +131,9 @@ class filterTable(widgetState, QTableView):
                 cols.append(str(x.row()+1))
             tmpData = '%s[c(%s),]' % (self.Rdata, ','.join(rows))
         else:
+            inds = self.selections.indexes()
+            #for x in self.selections:
+
             for ind in inds:
                 #print _('new'), ind.row(),ind.column()
                 rows.append(str(ind.row()+1))
@@ -133,9 +144,9 @@ class filterTable(widgetState, QTableView):
             
             self.R('tmpData <- apply(cbind(rowInd,colInd),1,FUN=function(x) {%s[x[1],x[2]]})' % self.Rdata, silent=True)
             tmpData = 'tmpData'
-            
         self.selectionCallback(tmpData)
         self.working = False
+        """    
         
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         # print _('in setRTable'), data
@@ -463,11 +474,12 @@ class filterTable(widgetState, QTableView):
         
     def getSettings(self):
         # print '############################# getSettings'
+        selections = self.selectionModel().selection()
         r = {
         'Rdata': self.Rdata,
         'filteredData':self.filteredData,
-        'criteriaList': self.criteriaList,
-        'selection':[[i.row(),i.column()] for i in self.selectedIndexes()]
+        'criteriaList': self.criteriaList
+        ,'selection2':[(x.top(),x.left(),x.bottom(),x.right()) for x in selections]
         }
         
         if self.sortIndex:
@@ -485,20 +497,27 @@ class filterTable(widgetState, QTableView):
         progressBar.show()
         return progressBar
     def loadSettings(self,data):
-        print _('loadSettings for a filter table')
+        # print _('loadSettings for a filter table')
         # print data
         if not data['Rdata']: return 
-        progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
         self.Rdata = data['Rdata']
         self.criteriaList = data['criteriaList']
-        print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
+        # print 'filtering data on the following criteria %s' % unicode(self.criteriaList)
         self.filter()
 
         if 'sortIndex' in data.keys():
             self.sortByColumn(data['sortIndex'][0],data['sortIndex'][1])
         selModel = self.selectionModel()
         # print selModel
+        
+        if 'selection2' in data.keys() and len(data['selection2']):
+            for x in data['selection2']:
+                selModel.select( QItemSelection(self.tm.createIndex(x[0],x[1]),self.tm.createIndex(x[2],x[3])),QItemSelectionModel.Select)
+        
+        
         if 'selection' in data.keys() and len(data['selection']):
+            progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
+
             if len(data['selection']) > 1000:
                 mb = QMessageBox.question(None, _('Setting Selection'), _('There are more than 1000 selections to set for %s,\ndo you want to discard them?\nSetting may take a very long time.') % self.label, QMessageBox.Yes, QMessageBox.No)
                 if mb.exec_() == QMessageBox.No:
@@ -511,8 +530,8 @@ class filterTable(widgetState, QTableView):
                         selModel.select(self.tm.createIndex(i[0],i[1]),QItemSelectionModel.Select)
                         val += 1
                         progressBar.setValue(val)
-        progressBar.hide()
-        progressBar.close()
+            progressBar.hide()
+            progressBar.close()
      
     def delete(self):
         sip.delete(self)

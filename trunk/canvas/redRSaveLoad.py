@@ -92,8 +92,15 @@ def saveInstances(instances, widgets, doc, progressBar):
         s = widget.getSettings()
         i = widget.getInputs()
         o = widget.getOutputs()
+        # print '#############', s 
+        # print '#############', i 
+        # print '#############', o 
+        # print widget.widgetID
+        # if not i:
+            # i = {}
+        # if not s:
+        # s = {'id':None}
         c = widget.outputs.returnOutputs()
-        
         settingsDict[widget.widgetID] = {}
         settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
         settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
