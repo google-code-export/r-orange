@@ -371,8 +371,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
     # set coordinates of the widget
     def setCoords(self, x, y):
         if redREnviron.settings["snapToGrid"]:
-            x = round(x/10)*10
-            y = round(y/10)*10
+            x = round(x/100)*100
+            y = round(y/100)*100
         self.setPos(x, y)
         self.updateWidgetState()
 

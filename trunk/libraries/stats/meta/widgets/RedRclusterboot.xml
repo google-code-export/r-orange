@@ -2,11 +2,10 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>clusterboot</name>
-    <icon>default.png</icon>
+    <icon>Default.png</icon>
     <tags> 
         <tag>Prototypes</tag> 
     </tags>
-    <screenshots></screenshots>
     <summary></summary>
     <details></details>
     <relatedWidgets>

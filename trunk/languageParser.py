@@ -24,18 +24,32 @@ def parseFile(f, skipList = None):
             newF.append(l)
         l = f.readline()
     return newF
-a = os.listdir('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/widgets')
+a = os.listdir('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/qtWidgets')
 skipList = []
 for i in a:
-    if os.path.isdir(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/widgets', i)): continue
-    if not os.path.isfile(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/widgets', i)): continue
+    if os.path.isdir(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/qtWidgets', i)): continue
+    if not os.path.isfile(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/qtWidgets', i)): continue
     elif i[0] == 'l': continue
     elif 'l'+i in a: continue
     elif '.pyc' in i: continue
     else:
-        with open(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/widgets', i), 'r') as f:
+        with open(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/qtWidgets', i), 'r') as f:
             n = parseFile(f, skipList)
             f.close()
-            g = open(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/widgets', 'l'+i), 'w')
+            g = open(os.path.join('C:/Python26/Lib/site-packages/RedRWorkingTrunk/libraries/base/qtWidgets', 'l'+i), 'w')
             g.write(''.join(n))
             g.close()
+            
+            
+def collectMSGID(loc):
+    newF = []
+    with open(loc, 'r') as f:
+        l = f.readline()
+        while l:
+            if 'msgid ' in l:
+                newF.append(l)
+            l = f.readline()
+        g = open('C:/Python26/Tools/msgids.html', 'w')
+        g.write('<br/>'.join(newF))
+        g.close()
+        

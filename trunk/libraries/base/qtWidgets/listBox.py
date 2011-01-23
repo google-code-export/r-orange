@@ -216,7 +216,7 @@ class listBox(QListWidget,widgetState):
         ## we go through all of the items and remake the items OrderedDict
         newDict = OrderedDict()
         for r in range(self.count()):
-            t = unicode(self.itemAt(r).text())  # get the text of the item
+            t = unicode(self.item(r).text())  # get the text of the item
             if t not in self.listItems.values():
                 newDict[t] = t
             else:

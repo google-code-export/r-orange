@@ -1,11 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
+# French translation of base.
 # Copyright (C) YEAR ORGANIZATION
-# Kyle R Covington <kyle@red-r.org>, 2011-01-13.
+# Kyle R Covington <kyle@red-r.org>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2011-01-13 17:24+Central Standard Time\n"
+"POT-Creation-Date: 2011-01-19 10:03+Central Standard Time\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,17 +16,3193 @@ msgstr ""
 
 
 #:
-#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:45
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:17
+msgid "Formula Entry"
+msgstr "Entr\x00e9e \x00e9quation"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:25
+msgid "Formula Commands"
+msgstr "\x00c9quation commandes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:26
+msgid "And (+)"
+msgstr "Ajouter (+)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:28
+msgid "Interacting With (:)"
+msgstr "Interagir avec (:)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:30
+msgid "Together and Interacting (*)"
+msgstr "Ajouter et puis Interagir (*)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\textEdit.py:31
+msgid "Clear"
+msgstr "Effacer"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:33
+msgid "Elements"
+msgstr "\x00c9l\x00e9ments"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:37
+msgid "Model Formula"
+msgstr "\x00c9quation du mod\x00e9le"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:39
+msgid "Outcome (f(x)):"
+msgstr "R\x00e9sultat (f(x))"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:41
+msgid "model"
+msgstr "Model"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\RFormulaEntry.py:102
+msgid "Loading of RFormulaEntry encountered an error."
+msgstr "Chargement de RFormulaEntry a rencontr\x00e9 une erreur."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\Rtable.py:168
+msgid "in setData"
+msgstr "dans setData"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\Rtable.py:262
+msgid "in sort"
+msgstr "dans sort"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\SearchDialog.py:12
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\SearchDialog.py:27
+msgid "Search Dialog"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\SearchDialog.py:13
+msgid "SearchDialog"
+msgstr "Recherche de dialogue"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\checkBox.py:17
+msgid "Number of buttons and toolTips must be equal"
+msgstr "Nombre de boutons et les info-bulles doit \x00eatre \x00e9gal"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\checkBox.py:71
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\radioButtons.py:67
+msgid "In radioButtons should not use list"
+msgstr "radiobuttons ne devrait pas utiliser la liste"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\checkBox.py:73
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\radioButtons.py:69
+msgid "In radioButtons, addButtons takes a list, dict or OrderedDict"
+msgstr "En radio, des addButtons prend une liste, ou dict OrderedDict"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\checkBox.py:145
+msgid "Nothing Checked"
+msgstr "Rien Checked"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\comboBox.py:38
+msgid "items"
+msgstr "articles"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\comboBox.py:65
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:82
+msgid "In listBox should not use list"
+msgstr "En listBox ne devrait pas utiliser la liste"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\comboBox.py:67
+msgid "In comboBox, addItems takes a list, dict or OrderedDict"
+msgstr "En comboBox, addItems prend une liste, ou dict OrderedDict"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:13
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:47
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:34
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:45
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRdata.py:39
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:26
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRtable.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:57
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:41
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:64
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:33
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:44
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:34
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:47
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:50
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:48
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:38
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:58
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:39
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:50
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subsetSummary.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\summary.py:23
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\t.py:27
+msgid "Commit"
+msgstr "Commettre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:40
+msgid "processOnInput"
+msgstr "processOnInput"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:30
+msgid "Process On Parameter Change"
+msgstr "Le processus de changement des param\x00e8tres"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:31
+msgid "Try to process as soon as a parameter is changed."
+msgstr "Essayez de processus d\x00e8s qu'un param\x00e8tre est modifi\x00e9."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:41
+msgid "Process On Data Input"
+msgstr "Processus de donn\x00e9es d'entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\commitButton.py:42
+msgid "Try to process as soon as data is received by the widget. The current state of parameters will be applied."
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\fileNamesComboBox.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\fileNamesComboBox.py:57
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\fileNamesComboBox.py:63
+msgid "Select File"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\fileNamesComboBox.py:49
+msgid "Loading of comboBox encountered an error."
+msgstr "Essayez de traiter d\x00e8s que les donn\x00e9es sont re\x00e7ues par le widget. L'\x00e9tat actuel des param\x00e8tres seront appliqu\x00e9s."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\fileNamesComboBox.py:67
+msgid "Not Found - "
+msgstr "Impossible de trouver - "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:43
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\pyDataTable.py:43
 msgid "Clear All Filtering"
-msgstr "Annuler les filtering"
+msgstr "Supprimer tous les filtres"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\pyDataTable.py:51
+msgid "Resize columns: "
+msgstr "Redimensionner les colonnes:"
 
 #:
 #: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:54
-msgid "Resize columns: "
-msgstr "Refait les columns: "
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\pyDataTable.py:53
+msgid "Increase the width of the columns"
+msgstr "Augmenter la largeur des colonnes"
 
 #:
 #: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:56
-msgid "Increase the width of the columns"
-msgstr "Increase le gradaur de le columns"
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\pyDataTable.py:55
+msgid "Decrease the width of the columns"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:57
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\pyDataTable.py:56
+msgid "Resize To Content"
+msgstr "R\x00e9duire la largeur des colonnes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:58
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\pyDataTable.py:57
+msgid "Set width based on content size"
+msgstr "Largeur de l'appareil repose sur la taille du contenu"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:156
+msgid "Showing %d of %d rows."
+msgstr "Affichage de %d sur %d lignes."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:158
+msgid "Showing %d rows."
+msgstr "Affichage %d lignes."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:245
+msgid "Ascending Sort"
+msgstr "Trier Ascendant"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:249
+msgid "Descending Sort"
+msgstr "Descendant Trier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:268
+msgid "Clear Filter"
+msgstr "Supprimer tous les filtres"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:273
+msgid "Enter a value for one of these critera:"
+msgstr "Entrez une valeur pour l'un de ces criteres:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:275
+msgid "Enter a value for one of these critera (case sensitive):"
+msgstr "Entrez une valeur pour l'un de ces criteres (sensible \x00e0 la casse):"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:278
+msgid "Select Levels:"
+msgstr "S\x00e9lectionner les niveaux:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:303
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:349
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:351
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:389
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:390
+msgid "Check All"
+msgstr "S\x00e9lectionnez toutes les options"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:306
+msgid "Levels"
+msgstr "Niveaux"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:313
+msgid "Greater Than Or Equal To"
+msgstr "Sup\x00e9rieur ou \x00e9gal \x00e0"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:313
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:326
+msgid "Does Not Equal"
+msgstr "Ne pas \x00e9galit\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:313
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:326
+msgid "Equals"
+msgstr "Equals"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:313
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:33
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:49
+msgid "Greater Than"
+msgstr "Sup\x00e9rieur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:314
+msgid "Less Than or Equal To"
+msgstr "Inf\x00e9rieur ou \x00e9gal \x00e0"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:314
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:33
+msgid "Less Than"
+msgstr "Inf\x00e9rieur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:317
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:381
+msgid "Numeric "
+msgstr "Num\x00e9rique "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:326
+msgid "Begins With"
+msgstr "Commence par"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:326
+msgid "Ends With"
+msgstr "Se termine par"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:327
+msgid "Contains"
+msgstr "Contient"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:327
+msgid "Does Not Contain"
+msgstr "Ne contient pas"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:329
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:386
+msgid "String "
+msgstr "Caract\x00e8res"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:338
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:339
+msgid "OK"
+msgstr "Approuver"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:341
+msgid "Cancel"
+msgstr "Annuler"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:404
+msgid "Numeric Equals"
+msgstr "Equals Num\x00e9rique"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:406
+msgid "Numeric Does Not Equal"
+msgstr "Num\x00e9rique ne fonctionne pas \x00e9galit\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:408
+msgid "Numeric Greater Than"
+msgstr "Num\x00e9rique sup\x00e9rieur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:410
+msgid "Numeric Greater Than Or Equal To"
+msgstr "Num\x00e9rique sup\x00e9rieur ou \x00e9gal \x00e0"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:412
+msgid "Numeric Less Than"
+msgstr "Num\x00e9rique inf\x00e9rieure"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:414
+msgid "Numeric Less Than or Equal To"
+msgstr "Num\x00e9rique inf\x00e9rieure ou \x00e9gal \x00e0"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:425
+msgid "String Equals"
+msgstr "Equals texte"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:427
+msgid "String Does Not Equal"
+msgstr "Texte ne correspond pas"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:429
+msgid "String Begins With"
+msgstr "Texte commence par"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:431
+msgid "String Ends With"
+msgstr "Texte termine par"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:433
+msgid "String Contains"
+msgstr "Texte Contient"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:435
+msgid "String Does Not Contain"
+msgstr "Texte ne contient pas"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:488
+msgid "loadSettings for a filter table"
+msgstr "loadSettings pour un tableau filtre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:491
+msgid "Filter Table Loading"
+msgstr "Tableau filter chargement"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:491
+msgid "Loading Fiter Table"
+msgstr "Tableau filter chargement"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:503
+msgid "Setting Selection"
+msgstr "Cadre de s\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:503
+msgid ""
+"There are more than 1000 selections to set for %s,\n"
+"do you want to discard them?\n"
+"Setting may take a very long time."
+msgstr ""
+"Il ya plus de 1000 pi\x00e8ces \x00e0 d\x00e9finir pour %s,\n"
+"voulez-vous les jeter? \n"
+"Cadre peut prendre tr\x00e8s longtemps."
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\filterTable.py:506
+msgid "Loading Selections"
+msgstr "Chargement S\x00e9lections"
+
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsScene.py:19
+msgid "Error, no scene initialized"
+msgstr "Erreur, pas de sc\x00e8ne initialis\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:18
+msgid "Graph"
+msgstr "Graphique"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:73
+msgid "Parameters"
+msgstr "Param\x00e8tres"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:74
+msgid "Colors"
+msgstr "Couleurs"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:75
+msgid "Set Plotting Colors"
+msgstr "d\x00e9finir les couleurs de l'pointage"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:76
+msgid "Set Axis Colors"
+msgstr "D\x00e9finir les couleurs de l'axe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:77
+msgid "Set Label Colors"
+msgstr "d\x00e9finir les couleurs de label"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:78
+msgid "Set Main Title Color"
+msgstr "D\x00e9finir la couleur \x00e0 titre principal"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:79
+msgid "Set Subtitle Color"
+msgstr "D\x00e9finir la couleur \x00e0 titre secondair"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:80
+msgid "Set Forground Color"
+msgstr "D\x00e9finir la couleur forground"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:81
+msgid "Set Background Color"
+msgstr "D\x00e9finir la couleur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:83
+msgid "Font"
+msgstr "Font"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:84
+msgid "Set Font Family"
+msgstr "D\x00e9finir la famile de font"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:86
+msgid "Legend"
+msgstr "L\x00e9gende"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:87
+msgid "Legend Location"
+msgstr "Locale de L\x00e9gende"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:88
+msgid "Set to bottom right"
+msgstr "l\x00e9gende place en bas \x00e0 droite"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:89
+msgid "Set to bottom left"
+msgstr "l\x00e9gende place en bas \x00e0 gauche"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:90
+msgid "Set to top right"
+msgstr "l\x00e9gende place en haut \x00e0 droite"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:91
+msgid "Set to top left"
+msgstr "l\x00e9gende place en haut \x00e0 gauche"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:107
+msgid ""
+"Set the parameters of the rendered image.\n"
+"These parameters are standard graphics parameters which may or may not be applicable or rendered\n"
+"depending on the image type and the settings of the plotting widget."
+msgstr ""
+"D\x00e9finir les param\x00e8tres de l'image rendue. \n"
+"Ces param\x00e8tres sont les param\x00e8tres standard de graphiques qui peuvent \x00eatre ou ne pas \x00eatre applicables ou rendus \n "
+"selon le type d'image et les param\x00e8tres du widget complot."
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:108
+msgid "Font Attributes"
+msgstr "Des attributs de font"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:109
+msgid "Lines"
+msgstr "Lignes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:110
+msgid "Set Line Type"
+msgstr "D\x00e9finir de sorte de lignes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:111
+msgid "Set Line Width"
+msgstr "D\x00e9finir de largeur de lignes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:112
+msgid "Points"
+msgstr "Points"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:113
+msgid "Set Point Characters"
+msgstr "D\x00e9finir Caract\x00e8res Point"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:115
+msgid "Image"
+msgstr "Image"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:116
+msgid "Type"
+msgstr "Sorte"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:117
+msgid ""
+"Renders the image using vector graphics which are scaleable and zoomable,\n"
+"but may not show all graphical options such as forground color changes."
+msgstr ""
+"Rend l'image en utilisant des graphiques vectoriels qui sont \x00e9volutives et zoomable, \n"
+", mais ne peut pas afficher toutes les options graphiques tels que les changements de couleur forground."
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:117
+msgid "Set Image Vector Graphics"
+msgstr "D\x00e9finir graphiques vecteur d'image"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:118
+msgid ""
+"Redners the image using bitmap graphics which will become distorted on zooming,\n"
+"but will show all graphical options."
+msgstr ""
+"Redners l'image en utilisant des images bitmap qui se d\x00e9forment le zoom, \n"
+"mais afficher toutes les options graphiques."
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:118
+msgid "Set Image Bitmap Graphics"
+msgstr "D\x00e9finir graphiques bitmap d'image"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:120
+msgid ""
+"Changes the plotting type of the rendered image.\n"
+"Different image types may enable or disable certain graphics parameters."
+msgstr ""
+"Change le type de trac\x00e9 de l'image rendue. \n"
+"diff\x00e9rents types d'images peut activer ou d\x00e9sactiver les param\x00e8tres graphiques de certains."
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:122
+msgid "File"
+msgstr "Fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:123
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:71
+msgid "Save"
+msgstr "Enregistrer"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:124
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:142
+msgid "Bitmap"
+msgstr "Bitmap"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:125
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:143
+msgid "PDF"
+msgstr "PDF"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:126
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:144
+msgid "Post Script"
+msgstr "Post Script"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:127
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:145
+msgid "JPEG"
+msgstr "JPEG"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:129
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\textEdit.py:29
+msgid "Print"
+msgstr "Imprimer"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:136
+msgid "Advanced plotting parameters"
+msgstr "Advanced trac\x00e9 param\x00e8tres"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:137
+msgid ""
+"Add extra parameters to the main plot.\n"
+"Please see documentation for more details about parameters."
+msgstr ""
+"Ajouter des param\x00e8tres suppl\x00e9mentaires \x00e0 l'intrigue principale. \n"
+"S'il vous plaît voir la documentation pour plus de d\x00e9tails sur les param\x00e8tres."
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:141
+msgid "Save As"
+msgstr "Enregistrer sous"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:146
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:315
+msgid "Copy"
+msgstr "Copier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:147
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:328
+msgid "Fit In Window"
+msgstr "Ajuster \x00e0 la fen\x00eatre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:148
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:317
+msgid "Zoom Out"
+msgstr "Zoom Out"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:149
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:319
+msgid "Zoom In"
+msgstr "Zoom In"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:150
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:321
+msgid "Undock"
+msgstr "Undock"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:151
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:325
+msgid "Redock"
+msgstr "Redock"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:153
+msgid "Red-R Graphics View"
+msgstr "Graphics Red-R Voir"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:240
+msgid "Not accepted"
+msgstr "Non accept\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:270
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:378
+msgid "loading scene"
+msgstr "chargement de sc\x00e8ne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:277
+msgid "save as pdf"
+msgstr "Enregistrer en PDF "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:278
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:284
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:290
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:296
+msgid "Save Image"
+msgstr "Enregistrer l'image"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:283
+msgid "save as post script"
+msgstr "enregistrer en tant que script de post"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:289
+msgid "save as bitmap"
+msgstr "enregistrer en tant que bitmap"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:295
+msgid "save as jpeg"
+msgstr "enregistrer sous jpeg"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:376
+msgid "Addign Image"
+msgstr "Ajout de l'image"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:376
+msgid "Adding Image"
+msgstr "Ajout de l'image"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:386
+msgid "Error occured"
+msgstr "Une erreur s'est produite"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:387
+msgid "Image type specified is not a valid type for this widget."
+msgstr "type Image sp\x00e9cifi\x00e9 n'est pas un type valide pour ce widget."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:420
+msgid "Error in saving image in graphicsView"
+msgstr "Erreur dans la sauvegarde de l'image dans graphicsView"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:468
+msgid "No legend names specified. Can't make the legend"
+msgstr "Aucun nom de l\x00e9gende sp\x00e9cifi\x00e9. Impossible de faire la l\x00e9gende"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:580
+msgid "Plotting exception occured"
+msgstr "exception pointage s'est produite"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:630
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\textEdit.py:64
+msgid "Printing Rejected"
+msgstr "Impression Rejet\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:649
+msgid "getting DOM model"
+msgstr "mod\x00e8le se DOM"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:724
+msgid "error"
+msgstr "Erreur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:738
+msgid "Color List Dialog"
+msgstr "Liste de dialogue Colour"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:754
+msgid "Color List"
+msgstr "Liste de couleur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:755
+msgid "Add Color"
+msgstr "Ajouter de la couleur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:756
+msgid "Remove Color"
+msgstr "Supprimer la couleur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:757
+msgid "Clear Colors"
+msgstr "Effacer les couleurs"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:758
+msgid "Finished"
+msgstr "Termin\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:760
+msgid "Data Parameters"
+msgstr "Param\x00e8tres de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:815
+msgid "Line Type Dialog"
+msgstr "Type de ligne de dialogue"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\graphicsView.py:821
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\table.py:75
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:65
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:65
+msgid "Done"
+msgstr "Termin\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\groupBox.py:15
+msgid "Group Box"
+msgstr "Zone de groupe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\lineEdit.py:74
+msgid "Loading of lineEdit encountered an error."
+msgstr "Chargement de lineEdit a rencontr\x00e9 une erreur."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\lineEditHint.py:54
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\lineEditHint.py:74
+msgid "SuggestLineEdit error: unsupported type for the items: "
+msgstr "Erreur SuggestLineEdit: type non pris en charge pour les \x00e9l\x00e9ments:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\lineEditHint.py:191
+msgid "Loading of lineEditHint encountered an error."
+msgstr "Chargement de lineEditHint a rencontr\x00e9 une erreur."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:84
+msgid "In listBox, addItems takes a list, dict or OrderedDict"
+msgstr "En listBox, addItems prend une liste, ou dict OrderedDict"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:226
+msgid "loading list box"
+msgstr "chargement de zone de liste"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:240
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:53
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:142
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:151
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:173
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:186
+msgid "Selected"
+msgstr "S\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:242
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:146
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:156
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:179
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:192
+msgid "Not Selected"
+msgstr "N'est pas choisis"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:244
+msgid "Option"
+msgstr "Option"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\listBox.py:244
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:60
+msgid "Selection"
+msgstr "S\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\spinBox.py:57
+msgid "Error occured in Spin Box loading"
+msgstr "Une erreur s'est produite \x00e0 Spin boîte de chargement"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\statusLabel.py:56
+msgid "No Data To Process"
+msgstr "Pas de donn\x00e9es \x00e0 traiter"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\statusLabel.py:58
+msgid "New Data Received, Not Processed"
+msgstr "nouvelles donn\x00e9es re\x00e7ues et non transform\x00e9s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\statusLabel.py:60
+msgid "Data Processed And Sent"
+msgstr "donn\x00e9es trait\x00e9es et envoy\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\statusLabel.py:62
+msgid "Error"
+msgstr "Erreur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\statusLabel.py:64
+msgid "Data Processing..."
+msgstr "Traitement des donn\x00e9es ..."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\statusLabel.py:66
+msgid "Data Processing Complete"
+msgstr "Traitement des donn\x00e9es complet"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\table.py:44
+msgid "in table set"
+msgstr "dans la s\x00e9rie de table"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\table.py:53
+msgid "Set data"
+msgstr "Set"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\table.py:57
+msgid "Set Table"
+msgstr "D\x00e9finir le tableau"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\table.py:62
+msgid "Set Labels"
+msgstr "D\x00e9finir les \x00e9tiquettes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\table.py:66
+msgid "Set Items"
+msgstr "Param\x00e8tres \x00e0 r\x00e9gler"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\treeWidget.py:59
+msgid "Exception during setting assignment."
+msgstr "Exception lors de la prise d'affectation."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\treeWidgetItem.py:55
+msgid "Error setting text"
+msgstr "Erreur de param\x00e9trage de texte"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\treeWidgetItem.py:67
+msgid "Exception occured in loading child items."
+msgstr "Une exception s'est produite lors du chargement des \x00e9l\x00e9ments enfants."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\widgetBox.py:12
+msgid "WidgetBox"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\widgetLabel.py:10
+msgid "widgetLabel"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:58
+msgid "Zooming"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:59
+msgid "Panning"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:61
+msgid "Rectangle selection"
+msgstr "rectangle de s\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:62
+msgid "Polygon selection"
+msgstr "s\x00e9lection Polygone"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:63
+msgid "Remove last selection"
+msgstr "Supprimer la derni\x00e8re s\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:64
+msgid "Remove all selections"
+msgstr "Supprimer toutes les s\x00e9lections"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:66
+msgid "Zoom to extent"
+msgstr "Zoom sur mesure"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\qtWidgets\zoomSelectToolbar.py:67
+msgid "Zoom selection"
+msgstr "Zoom s\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:39
+msgid "R List"
+msgstr "Liste R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:33
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:38
+msgid "R Data Frame"
+msgstr "R du bloc de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:34
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:40
+msgid "R Vector"
+msgstr "R Vector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:36
+msgid "R Variable"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:42
+msgid "R Matrix"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:43
+msgid "List of Data"
+msgstr "Liste des donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\ListSelector.py:109
+msgid "Sent %(NAME)s as %(SLOT)s"
+msgstr "Envoy\x00e9 %(NAME)s que %(SLOT)s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:22
+msgid "data"
+msgstr "donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:24
+msgid "melt.data.frame Output"
+msgstr "Sortie melt.data.frame"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:27
+msgid "Widget Box"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:28
+msgid "Remove NA:"
+msgstr "Supprimer NA:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:45
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:51
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:57
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:26
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:42
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:48
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:33
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:54
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:60
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:69
+msgid "Yes"
+msgstr "Oui"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:26
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:33
+msgid "No"
+msgstr "Non "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:29
+msgid "Result Variable:"
+msgstr "R\x00e9sultat de la variable:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:29
+msgid "The column that contains the result or the measurement that the data should be melted around."
+msgstr "La colonne qui contient le r\x00e9sultat ou la mesure que les donn\x00e9es devraient \x00eatre fondu autour."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:31
+msgid "Groupings:"
+msgstr "Regroupements:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:31
+msgid "The columns indicating the groupings of the data."
+msgstr "Les colonnes indiquant les regroupements des donn\x00e9es."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:33
+msgid "New Group Name:"
+msgstr "Nouveau Nom du groupe:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:33
+msgid "The name of the new column that the groupings will be put into."
+msgstr "Le nom de la nouvelle colonne que les groupes seront mis en."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:42
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\Melt_DF.py:56
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:49
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:34
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\summary.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:107
+msgid "R Libraries Not Loaded."
+msgstr "Biblioth\x00e8ques R n'est pas charg\x00e9."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:27
+msgid "Input Data Table"
+msgstr "donn\x00e9es d'entr\x00e9e du tableau"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:51
+msgid "Data Information"
+msgstr "Les donn\x00e9es de l'information"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:56
+msgid "Save Data"
+msgstr "Enregistrer les donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:61
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:112
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:76
+msgid "Tab"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:61
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:114
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:76
+msgid "Space"
+msgstr "Espace"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:61
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:116
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:76
+msgid "Comma"
+msgstr "Virgule"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:62
+msgid "Save As File"
+msgstr "Enregistrer en tant que fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:63
+msgid "Write the table to a text file."
+msgstr "Donnez la table dans un fichier texte."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:67
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:68
+msgid "Links to Websites"
+msgstr "Liens vers des sites Web"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:70
+msgid "Add Link:"
+msgstr "Ajouter un lien:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:71
+msgid "Add"
+msgstr "Ajouter"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:71
+msgid ""
+"Adds a link to the link section for interactive data exploration.\n"
+"The link must have a marker for the row information in the form\n"
+"{column number}\n"
+"\n"
+"For example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\n"
+"You can test this if you want using the example."
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:72
+msgid "Clear Links"
+msgstr "Effacer Liens"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:72
+msgid "Clears the links from the links section"
+msgstr "Efface les liens de la section de liens"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:89
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRtable.py:22
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:26
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:40
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:36
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:38
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:44
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:35
+msgid "Data Table"
+msgstr "Tableau de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:95
+msgid "Custom Summary:"
+msgstr "Custom R\x00e9sum\x00e9:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:95
+msgid "Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})"
+msgstr "Placer une fonction de r\x00e9sum\x00e9 personnalis\x00e9s ici qui sera ajout\x00e9 \x00e0 la r\x00e9sum\x00e9 r\x00e9guliers, utiliser {Col} pour le num\x00e9ro de colonne. Ex. moyenne({1})"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:96
+msgid "Summary"
+msgstr "R\x00e9sum\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:116
+msgid ""
+"# Row: %(ROWCOUNT)s \n"
+"# Columns: %(COLCOUNT)s"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:127
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:168
+msgid "<strong>Mean</strong>: %(MEAN)s<br/> <strong>Median</strong>: %(MEDIAN)s<br/> <strong>Range</strong>: %(RANGE)s<br/> <strong>Standard Deviation</strong>: %(SD)s<br/> <strong>Count</strong>: %(COUNT)s<br/> <strong>Min</strong>: %(MIN)s<br/> <strong>Max</strong>: %(MAX)s<br/>"
+msgstr "<strong>Mean</strong>: %(MEAN)s<br/> <strong>M\x00e9dian</strong>: %(MEDIAN)s<br/> <strong>Gamme</strong>: %(RANGE)s<br/> <strong>L'\x00e9cart-type</strong>: %(SD)s<br/> <strong>D\x00e9compte</strong>: %(COUNT)s<br/> <strong>Min</strong>: %(MIN)s<br/> <strong>Max</strong>: %(MAX)s<br/>"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:179
+msgid "Custom: %s"
+msgstr "Custom: %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:199
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:63
+msgid "Save File"
+msgstr "Enregistrer le fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RDataTable.py:222
+msgid "Can't write to a file"
+msgstr "Impossible d'\x00e9crire dans un fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:23
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:28
+msgid "R Session"
+msgstr "Session R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:30
+msgid "Select R session"
+msgstr "S\x00e9lectionnez R session"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:33
+msgid "Session File"
+msgstr "fichier de session"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:69
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:66
+msgid "Browse"
+msgstr "Parcourir"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:38
+msgid "Load Session"
+msgstr "Session Load"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:43
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:39
+msgid "Variables"
+msgstr "Variables"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:48
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:83
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:86
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:206
+msgid "Open File"
+msgstr "Ouvrir le fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:64
+msgid "Data loaded from %s"
+msgstr "Les donn\x00e9es charg\x00e9es depuis %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RLoader.py:68
+msgid "Please use the R Variable Separator widget to extract your data."
+msgstr "S'il vous plaît utiliser la variable R S\x00e9parateur widget d'extraire vos donn\x00e9es."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:26
+msgid "R Environment"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:29
+msgid "Non-Standard R Variable"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:30
+msgid "R Data Frame (Data Table)"
+msgstr "R du bloc de donn\x00e9es (le tableau de donn\x00e9es)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:33
+msgid "R Arbitrary List"
+msgstr "R liste arbitraire"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:55
+msgid "No data in the R session"
+msgstr "Aucune donn\x00e9e \x00e0 la session R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:79
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:83
+msgid "Data sent through the R Vector channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie R Vector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:87
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:93
+msgid "Data sent through the R Data Frame channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie R du bloc de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:98
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:124
+msgid "Data sent through the R Arbitrary List channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie R liste arbitraire"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:103
+msgid "Data sent through the R List channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie Liste R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:107
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RVarSeparator.py:111
+msgid "Data sent through the R Object channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie de l'objet R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:23
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:38
+msgid "Input Data A"
+msgstr "Entr\x00e9e de donn\x00e9es A"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:24
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:41
+msgid "Input Data B"
+msgstr "Entr\x00e9e de donn\x00e9es B"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:26
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:48
+msgid "Output Data"
+msgstr "Sortie des donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRcbind.py:29
+msgid "deparse_level:"
+msgstr "deparse_level:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRdata.py:20
+msgid "Example Data"
+msgstr "Exemple de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRdata.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:36
+msgid "Package:"
+msgstr "Paquet:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRdata.py:36
+msgid "Data Name:"
+msgstr "Nom de donn\x00e9es:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRdata.py:76
+msgid "R Error: %s"
+msgstr "R Erreur: %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRdata.py:76
+msgid "Red-R Canvas"
+msgstr "Red-R Canvas"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:23
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:20
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:23
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:27
+msgid "Input Data"
+msgstr "Entr\x00e9e "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:25
+msgid "Eigen Output"
+msgstr "Sortie Eigen"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:28
+msgid "symmetric:"
+msgstr "sym\x00e9trique"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:29
+msgid "only_values:"
+msgstr "only_values:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedReigen.py:30
+msgid "EISPACK:"
+msgstr "EISPACK:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:21
+msgid "Data"
+msgstr "Donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:22
+msgid "Joined Data"
+msgstr "donn\x00e9es fusionn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:23
+msgid "Source of Row / Column Names:"
+msgstr  "Source de noms de ligne / colonne:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:24
+msgid "Binding Mode:"
+msgstr "Rejoindre Mode:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:24
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:48
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:109
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:141
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:172
+msgid "Row"
+msgstr "La ligne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:24
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:48
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:114
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:185
+msgid "Column"
+msgstr "Colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRrbind.py:25
+msgid "Deparse Level:"
+msgstr "Deparse Niveau:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:25
+msgid "R Data"
+msgstr "R de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:27
+msgid "Save File Type"
+msgstr "Enregistrer le fichier de type"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:73
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:82
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:69
+msgid "Text"
+msgstr "Texte"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:106
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:107
+msgid "R Data File"
+msgstr "Fichier de donn\x00e9es R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:31
+msgid "Variable Name"
+msgstr "Nom de la variable"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:34
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:75
+msgid "Column Seperator"
+msgstr "Colonne Seperator"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:35
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:118
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:76
+msgid "Other"
+msgstr "Autres"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:36
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:79
+msgid "Seperator"
+msgstr "S\x00e9parateur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:41
+msgid "File Options"
+msgstr "Fichier d'options"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:45
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:101
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+msgid "Options"
+msgstr "Options"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:46
+msgid "append"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:46
+msgid "row.names"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:46
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:47
+msgid "col.names"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:46
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:47
+msgid "quote"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:48
+msgid "If TRUE, the output is appended to the file."
+msgstr "Si VRAI, la sortie est ajout\x00e9e au dossier."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:49
+msgid " If TRUE, any character or factor columns will be surrounded by double quotes."
+msgstr "Si VRAI, les colonnes de caract\x00e8res ou le facteur sera entour\x00e9 par des guillemets doubles."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:50
+msgid "a logical value indicating whether the row names of data are to be written."
+msgstr "une valeur logique indiquant si les noms de lignes de donn\x00e9es doivent \x00eatre \x00e9crites."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:51
+msgid "a logical value indicating whether the column names of data are to be written."
+msgstr "une valeur logique indiquant si les noms des colonnes de donn\x00e9es sont \x00e0 \x00e9crire."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:54
+msgid "End of line Chr:"
+msgstr "Fin de ligne Chr:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:55
+msgid "Missing Value String:"
+msgstr "Texte pour la valeur manquante:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:56
+msgid "Decimel point Chr:"
+msgstr "Point Decimel Chr:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:58
+msgid "Deal with embedded double quote characters "
+msgstr "Traiter embarqu\x00e9s guillemets doubles"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:59
+msgid "double"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:59
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:60
+msgid "escape"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRsave.py:67
+msgid "File Location"
+msgstr "Emplacement du fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:22
+msgid "scale Output"
+msgstr "Output \x00e9chelle"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:25
+msgid "Apply Scaling To:"
+msgstr "Appliquer mise \x00e0 l'\x00e9chelle:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:55
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:50
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:72
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:56
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:63
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:34
+msgid "Columns"
+msgstr "Colonnes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:50
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:51
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:64
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:70
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:34
+msgid "Rows"
+msgstr "Lignes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:26
+msgid "Scale:"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRscale.py:27
+msgid "Center:"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:26
+msgid "strptime Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:28
+msgid "Data Column:"
+msgstr "Les donn\x00e9es de la colonne:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+msgid "Select the format of the date time.  y is year m is month and d is day."
+msgstr "Ann\x00e9e m s\x00e9lectionnez le format de la date et heure. m est, c'est le mois et j est le jour."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:43
+msgid "yyyymmdd"
+msgstr "aaaammjj"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:47
+msgid "yymmdd"
+msgstr "aammjj"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:51
+msgid "ddmmyy"
+msgstr "jjmmaa"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:55
+msgid "ddmmyyyy"
+msgstr "jjmmaaaa"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:59
+msgid "mmddyy"
+msgstr "mmjjaa"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:29
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrptime.py:63
+msgid "mmddyyyy"
+msgstr "mmjjaaaa"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:25
+msgid "strsplit Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:26
+msgid "strsplit Vector"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:30
+msgid "Split Text Using:"
+msgstr "Split texte \x00e0 l'aide:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:31
+msgid "Use text as expression (Advanced)"
+msgstr "Utiliser le texte comme l'expression (Avanc\x00e9)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:31
+msgid "Use text exactly"
+msgstr "Utiliser le texte exactement"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:31
+msgid "fixed:"
+msgstr "fixe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:32
+msgid "Extend Expressions:"
+msgstr "Elargir expressions:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:33
+msgid "Use Perl Expressions:"
+msgstr "Utiliser Perl expressions:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:34
+msgid "Convert to RVector"
+msgstr "Convertir en RVector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:34
+msgid "Send only the list"
+msgstr "Envoyer uniquement la liste"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:34
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:81
+msgid "Send list and vector"
+msgstr "Envoyer la liste et les vecteurs"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:48
+msgid "No Data to Split"
+msgstr "Aucune donn\x00e9e \x00e0 split "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRstrsplit.py:51
+msgid "No string to split on"
+msgstr "Aucune chaîne \x00e0 d\x00e9couper sur le th\x00e8me "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRtable.py:23
+msgid "Table Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRtable.py:24
+msgid "Prob Table Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRtable.py:26
+msgid "Use Columns:"
+msgstr "Utiliser des Colonnes:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\RedRtable.py:30
+msgid "R Output Window"
+msgstr "Fen\x00eatre de sortie R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:31
+msgid "X"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:33
+msgid "apply Output"
+msgstr  "s'appliquent de Output"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:42
+msgid "Select Function"
+msgstr "S\x00e9lectionnez la fonction"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:47
+msgid "Function:"
+msgstr "Fonction:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:48
+msgid "Additional Parameters:"
+msgstr "Param\x00e8tres suppl\x00e9mentaires:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:50
+msgid "To:"
+msgstr "A:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:52
+msgid "Demension"
+msgstr "Demension"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\apply.py:60
+msgid "Results of Apply"
+msgstr  "R\x00e9sultats de Apply"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:30
+msgid "Column Selector"
+msgstr "Colonne Selector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:31
+msgid "Column Box"
+msgstr "boîte de colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:31
+msgid "Select the columns to find the largest or smallest value"
+msgstr "S\x00e9lectionner les colonnes de trouver la plus grande valeur ou la plus petite"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:33
+msgid "Comarison Selection"
+msgstr "Comparaison de s\x00e9lection"
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\colMatcher.py:33
+msgid "Comparison Selection"
+msgstr "Comparaison de s\x00e9lection"
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:40
+msgid "Column Name:"
+msgstr "Nom de la colonne:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:42
+msgid "Add Column"
+msgstr "Ajouter une colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:44
+msgid "Table"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:49
+msgid "Data Entry"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:62
+msgid "New Name (Overrides Current Value)"
+msgstr "Nouveau nom (Remplace la valeur actuelle)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:63
+msgid "Equation (Overrides Current Values)"
+msgstr "L'\x00e9quation (Remplace Valeurs actuelles)"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dataEntry.py:64
+msgid "Remove Column"
+msgstr "Supprimer la colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dummy.py:30
+msgid "Info"
+msgstr "Information"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dummy.py:31
+msgid "A widget failed to load this was put in it's place."
+msgstr "Un widget n'a pas pu charger cela a \x00e9t\x00e9 mis \x00e0 sa place."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\dummy.py:32
+msgid ""
+"The variables that were saved with this widget are %s .\n"
+" You can use R Executor to retrieve these variables and incorporate them into your schema."
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:22
+msgid "y"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:23
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:25
+msgid "x"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:33
+msgid "intersect Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:29
+msgid "Intersect Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:47
+msgid "No Y data exists"
+msgstr "Aucune donn\x00e9e Y existe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:50
+msgid "No X data exists"
+msgstr "Aucune donn\x00e9e X existe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\intersect.py:57
+msgid ""
+"<br><br><pre>Shared elements between your inputs:\n"
+msgstr "<br><br><pre>\x00e9l\x00e9ments partag\x00e9s entre vos entr\x00e9es:\n"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:24
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:22
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:24
+msgid "Data Frame"
+msgstr "bloc de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:37
+msgid "Table View"
+msgstr "Voir le tableau"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:38
+msgid "Math Box"
+msgstr "boîte de Math"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:43
+msgid "Function Search or Run"
+msgstr "Fonction de recherche ou sur ex\x00e9cuter"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:48
+msgid "List of Functions"
+msgstr "Liste des fonctions"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:54
+msgid "Left Side"
+msgstr "côt\x00e9 gauche"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:55
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:61
+msgid "Constant"
+msgstr "Constant"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:55
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:62
+msgid "Must be a number"
+msgstr "Doivent \x00eatre un nombre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:56
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:64
+msgid "Select one of the columns"
+msgstr "S\x00e9lectionnez l'une des colonnes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:60
+msgid "Right Side"
+msgstr "côt\x00e9 droit"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:104
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:116
+msgid "Top Text Area Does Not Contain A Number"
+msgstr "Top Zone de texte de ne pas contenir un nombre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:129
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:143
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:150
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:156
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:162
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:168
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:173
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:178
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mathWidget.py:186
+msgid "An error occured in your function"
+msgstr "Une erreur s'est produite dans votre fonction"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:32
+msgid "Dataset A"
+msgstr "Entr\x00e9e de donn\x00e9es A"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:33
+msgid "Dataset B"
+msgstr "Entr\x00e9e de donn\x00e9es B"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:35
+msgid "Merged"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:48
+msgid "Columns to Merge From A"
+msgstr "Les colonnes de fusion de A"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:49
+msgid "Columns to Merge From B"
+msgstr "Les colonnes de fusion de B"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:53
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:118
+msgid "Sort by Selected Column"
+msgstr "Trier par colonne s\x00e9lectionn\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:54
+msgid "logical. Should the results be sorted on the by columns?"
+msgstr "logique. Si les r\x00e9sultats sont tri\x00e9es sur le par des colonnes?"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:55
+msgid "Include Row Names in Merge"
+msgstr "Inclure les noms de lignes en fusion"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:55
+msgid "Include Row in Merge"
+msgstr "Inclure ligne en fusion"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:55
+msgid "This will include the row names in the data after merge."
+msgstr "Cela comprendra les noms de lignes dans les donn\x00e9es apr\x00e8s la fusion."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:58
+msgid "Type of merge"
+msgstr "Type de fusion"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\mergeR.py:105
+msgid "Please make valid column selections"
+msgstr "S'il vous plaît faire des s\x00e9lections de colonne valide"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:26
+msgid "object"
+msgstr "objet"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:31
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:36
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:41
+msgid "R.object"
+msgstr "R.object"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:60
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:65
+msgid "Data  sent through the R Vector channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie R Vector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:70
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:75
+msgid "Data  sent through the R Data Frame channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie R du bloc de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:80
+msgid "Data  sent through the R List channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie Liste R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:85
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\na_omit.py:90
+msgid "Data  sent through the R Object channel"
+msgstr "Les donn\x00e9es envoy\x00e9es par la voie de l'objet R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:25
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:28
+msgid "Vector"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:33
+msgid "Protect the names in:"
+msgstr "Prot\x00e9ger les noms de:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:34
+msgid "Use make.names to protect the names in the rows."
+msgstr "Utilisez make.names pour prot\x00e9ger les noms dans les lignes."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:35
+msgid "Use make.names to protect the names in the columns."
+msgstr "Utilisez make.names pour prot\x00e9ger les noms dans les colonnes."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\nameProtector.py:36
+msgid "Column names to protect:"
+msgstr "Les noms de colonnes pour prot\x00e9ger:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:28
+msgid "Column Names:"
+msgstr "Noms de colonnes:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:30
+msgid "Percentile Cutoff Selector:"
+msgstr "Percentile Cutoff Selector:"
+
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:31
+msgid ""
+"Input multiple cutoffs in the form; a, b, c.  Where a, b, and c are cutoffs.\n"
+"This takes the place of the Percentile Cutoff Selector if not blank."
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:31
+msgid "Percentile Cutoff:"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:32
+msgid "Output Summary"
+msgstr "Output R\x00e9sum\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:59
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:62
+msgid "No data to work with"
+msgstr "Aucune donn\x00e9e de travailler avec"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:66
+msgid "No items selected in the Column Names box"
+msgstr "Aucun \x00e9l\x00e9ment s\x00e9lectionn\x00e9 dans la boîte de noms de colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\percentileClassifier.py:74
+msgid "<table class=\"reference\" cellspacing=\"0\" border=\"1\" width=\"100%\"><tr><th align=\"left\" width=\"50%\">New Column Name</th><th align=\"left\" width=\"50%\">Number above percentile</th></tr>"
+msgstr "<table class=\"reference\" cellspacing=\"0\" border=\"1\" width=\"100%\"><tr><th align=\"left\" width=\"50%\">Nouveau Nom de la colonne</th><th align=\"left\" width=\"50%\">Nombre ci-dessus percentile</th></tr>"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:51
+msgid "R Executor Advanced"
+msgstr "R ex\x00e9cuteur avanc\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:63
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:66
+msgid "Command Edit:"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:68
+msgid "&Run"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:69
+msgid "Status"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:70
+msgid "Nothing Sent"
+msgstr "rien envoy\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:71
+msgid "Input Infromation"
+msgstr "Entr\x00e9e Infromation"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:72
+msgid "No Input"
+msgstr "Pas d'entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:77
+msgid "Recieved"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:78
+msgid "RHistory"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:79
+msgid "Clear Output"
+msgstr "Sortie Clear"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:81
+msgid "Available R Items"
+msgstr "\x00e9l\x00e9ments disponibles, R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:84
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:24
+msgid "Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:86
+msgid "&Send"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:86
+msgid "Send the data in the command line into the Red-R schema."
+msgstr "Envoyer les donn\x00e9es dans la ligne de commande dans le sch\x00e9ma Red-R."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:99
+msgid "No object Selected"
+msgstr "Aucun objet s\x00e9lectionn\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:111
+msgid " sent through the R Vector channel"
+msgstr "envoy\x00e9 par la voie R Vector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:115
+msgid " sent through the R Data Frame channel"
+msgstr "envoy\x00e9 par la voie R du bloc de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:119
+msgid " sent through the Matrix channel"
+msgstr "envoy\x00e9 par la voie Matrix"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:129
+msgid " sent through the R List channel"
+msgstr "envoy\x00e9 par la voie Liste R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:133
+msgid " sent through the R Object channel"
+msgstr "envoy\x00e9 par la voie de l'objet R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:154
+msgid "Error Occurred: %s"
+msgstr "Une erreur s'est produite: %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:182
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:196
+msgid "R object is of non-standard type."
+msgstr "objet R est de type non-standard."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:201
+msgid "Numeric Vector Connected of length %s"
+msgstr "Connect\x00e9 Numeric Vecteur de longueur %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:203
+msgid "Character Vector Connected of length %s"
+msgstr "caract\x00e8re vectoriel Connected de longueur %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:205
+msgid "Data Frame Connected with %s columns"
+msgstr "table des donn\x00e9es li\x00e9es aux colonnes %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:216
+msgid "Matrix connected with %s elements and %s columns"
+msgstr "Matrix connect\x00e9s avec des \x00e9l\x00e9ments de %s et %s colonnes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:224
+msgid "Error with colnames, may not exist."
+msgstr "Erreur avec colnames, peut ne pas exister."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rExecutor.py:226
+msgid "List object connected with %s elements"
+msgstr "objet liste des connect\x00e9s avec des \x00e9l\x00e9ments de %s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:22
+msgid "R Variable Data"
+msgstr "R de donn\x00e9es variables"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:26
+msgid "showall"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:28
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:60
+msgid "String Representation"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rViewer.py:64
+msgid "Show All"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:27
+msgid "rank Output"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:32
+msgid "How to handle ties:"
+msgstr "Comment g\x00e9rer les liens:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:33
+msgid "average"
+msgstr "moyenne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:33
+msgid "first"
+msgstr "premi\x00e8re"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:33
+msgid "max"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:33
+msgid "min"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:33
+msgid "random"
+msgstr "al\x00e9atoire"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:35
+msgid "Dataset:"
+msgstr "Donn\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rank.py:64
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:63
+msgid "No data"
+msgstr "Aucune donn\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:60
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:135
+msgid "Load File"
+msgstr "Charger un fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:63
+msgid "Files"
+msgstr "Fichiers"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:68
+msgid "File Type"
+msgstr "Type de fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:69
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:222
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:314
+msgid "Excel"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:83
+msgid "Row and Column Names"
+msgstr "La ligne et de colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:86
+msgid "Column Header"
+msgstr "t\x00eate de colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:87
+msgid "Column Headers"
+msgstr "t\x00eate de colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:88
+msgid "a logical value indicating whether the file contains the names of the variables as its first line. If missing, the value is determined from the file format: header is set to TRUE if and only if the first row contains one fewer field than the number of columns."
+msgstr "une valeur logique indiquant si le fichier contient les noms des variables comme premi\x00e8re ligne Si elle est absente, la valeur est d\x00e9termin\x00e9e \x00e0 partir du format de fichier: en-t\x00eate est d\x00e9fini \x00e0 VRAI si et seulement si la premi\x00e8re ligne contient un champ de moins que le nombre de colonnes. "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:91
+msgid "Select Row Names"
+msgstr "Choisir des noms Row"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:95
+msgid "Other Options"
+msgstr "Autres Options"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:105
+msgid "logical. If TRUE then in case the rows have unequal length, blank fields are implicitly added."
+msgstr "logique. Si VRAI alors dans le cas où les lignes ont une longueur in\x00e9gale, les champs vides sont implicitement ajout\x00e9es."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:106
+msgid "logical. Used only when sep has been specified, and allows the unicodeipping of leading and trailing white space from character fields (numeric fields are always unicodeipped). "
+msgstr "logique. utilis\x00e9 que lorsque le SEP a \x00e9t\x00e9 sp\x00e9cifi\x00e9, et permet \x00e0 l'unicodeipping d'attaque et de fuite des espaces blancs \x00e0 partir de caract\x00e8res des champs (les champs num\x00e9riques sont toujours unicodeipped)."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:107
+msgid "logical: if TRUE blank lines in the input are ignored."
+msgstr "logique: si VRAI lignes vides dans l'entr\x00e9e sont ignor\x00e9es."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:108
+msgid ""
+"logical. Should C-style escapes such as \n"
+" be processed or read verbatim (the default)? "
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:109
+msgid "logical: should character vectors be converted to factors?"
+msgstr "logique: vecteurs devraient \x00eatre convertis en caract\x00e8res facteurs?"
+
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:115
+msgid "Quote:"
+msgstr "Citation:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:116
+msgid "Decimal sign, some countries may want to use the '.'"
+msgstr "signe d\x00e9cimal, certains pays peuvent vouloir utiliser le '.'"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:116
+msgid "Decimal:"
+msgstr "D\x00e9cimal"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:118
+msgid "# Lines to Preview:"
+msgstr "# Lines Extrait de:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:119
+msgid "The maximum number of rows to read in while previewing the file. Negative values are ignored."
+msgstr "Le nombre maximum de lignes \x00e0 lire lors de la pr\x00e9visualisation du fichier. Les valeurs n\x00e9gatives sont ignor\x00e9es."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:121
+msgid "# Lines to Read:"
+msgstr  "# lignes comme suit:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:122
+msgid "Number of lines to read from file. Read whole file if 0 or negative values."
+msgstr "Nombre de lignes \x00e0 lire le fichier. Lire fichier entier si 0 ou des valeurs n\x00e9gatives."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:125
+msgid "# Lines to Skip:"
+msgstr "# lignes \x00e0 ignorer:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:126
+msgid "The number of lines of the data file to skip before beginning to read data."
+msgstr "Le nombre de lignes du fichier de donn\x00e9es \x00e0 sauter avant de commencer \x00e0 lire les donn\x00e9es."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:130
+msgid "Load Clipboard"
+msgstr "Presse-papiers de charge"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:131
+msgid ""
+"Load the file from the clipboard, you can do this if\n"
+"data has been put in the clipboard using the copy command."
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:133
+msgid "Preview a small portion of the file"
+msgstr "Aper\x00e7u d'une petite partie du fichier"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:133
+msgid "Rescan File"
+msgstr "Rescan"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:135
+msgid "Load the file into Red-R"
+msgstr "Charger le fichier dans Red-R"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:139
+msgid "File Info"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:151
+msgid "File Preview"
+msgstr "Le fichier Preview"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:187
+msgid ""
+"The loaded file is not found on your computer.\n"
+"But the data saved in the Red-R session is still available."
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:259
+msgid "No file selected"
+msgstr "Aucun fichier s\x00e9lectionn\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:402
+msgid "Problem reading or scanning the file.  Please check the file integrity and try again."
+msgstr "Probl\x00e8me \x00e0 la lecture ou l'analyse du fichier. S'il vous plaît v\x00e9rifier l'int\x00e9grit\x00e9 du fichier et essayez \x00e0 nouveau."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:408
+msgid "  <tr><td>Rownames</td><td><b>"
+msgstr "  <tr><td>Noms de lignes</td><td><b>"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\readFile.py:422
+msgid ""
+"Rows: %(ROWS)s\n"
+"Columns: %(COLS)s"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:21
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:26
+msgid "Input Object"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:22
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:27
+msgid "Output Object"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:24
+msgid "This widget acts as a save point for analyses so that data is not lost when upstream widgets are removed.  You can use this to help manage memory in your schemas by deleting upstream data (making the schema smaller) yet retaining the analyses."
+msgstr "Ce widget actes comme un point de sauvegarde pour des analyses afin que les donn\x00e9es ne sont pas perdues lorsque widgets amont sont supprim\x00e9s. Vous pouvez l'utiliser pour aider \x00e0 g\x00e9rer la m\x00e9moire de vos sch\x00e9mas en supprimant les donn\x00e9es en amont (fabrication du sch\x00e9ma plus petits), mais en conservant les analyses."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\redRSavePoint.py:41
+msgid "Input Does not Exist"
+msgstr "entr\x00e9e n'existe pas "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:48
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:62
+msgid "Commit on Filter"
+msgstr "Commit sur filtre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowFilter.py:49
+msgid "On filter send data forward."
+msgstr "Le filtre \x00e0 envoyer des donn\x00e9es vers l'avant."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:36
+msgid "Subsetting Vector"
+msgstr "sous-ensembles Vector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:39
+msgid "Selected Items"
+msgstr "\x00e9l\x00e9ments s\x00e9lectionn\x00e9s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:40
+msgid "Non-selected Items"
+msgstr "\x00e9l\x00e9ments non-s\x00e9lectionn\x00e9s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:48
+msgid "Select On"
+msgstr "S\x00e9lectionnez"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:51
+msgid "Create subset from:"
+msgstr "Cr\x00e9er sous-ensemble \x00e0 partir de:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:61
+msgid "Invert Selection"
+msgstr "Inverser la s\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:65
+msgid "Subset by"
+msgstr "Sous-ensemble de"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:66
+msgid "Column:"
+msgstr "Colonne:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:66
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:78
+msgid "Select"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:67
+msgid "Subset by column"
+msgstr "Sous-ensemble de la colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:81
+msgid "Subset on Selection"
+msgstr "Sous-ensemble sur la s\x00e9lection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:86
+msgid "# %(ITEMTYPE)ss selected: %(NUMBERSELECTED)s"
+msgstr "# %(ITEMTYPE)ss s\x00e9lectionn\x00e9es: %(NUMBERSELECTED)s"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:95
+msgid ""
+"# Rows: %(ROWS)s\n"
+"# Columns: %(COLS)s"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:120
+msgid "You must select either Row or Column to procede"
+msgstr "Vous devez s\x00e9lectionner une ou l'autre ligne ou colonne de proc\x00e9der"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rowcolPicker.py:164
+msgid "Connect data before processing"
+msgstr "Connexion de donn\x00e9es avant la transformation"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:29
+msgid "Row or Column Names"
+msgstr "La noms des lignes ou des colonnes"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:34
+msgid "Get row or column names from input object."
+msgstr "R\x00e9cup\x00e9rer les noms ligne ou une colonne de l'objet de saisie."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:36
+msgid "Row or Column"
+msgstr "La ligne ou la colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:37
+msgid "Column Names"
+msgstr "noms de colonne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:67
+msgid "Row Names"
+msgstr "noms de ligne"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:40
+msgid "prefix:"
+msgstr "pr\x00e9fixe:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:41
+msgid "Prepend prefix to simple numbers when creating names."
+msgstr "Ajoute le pr\x00e9fixe \x00e0 de simples lorsque les noms de la cr\x00e9ation."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:44
+msgid "do.NULL:"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:45
+msgid "logical. Should this create names if they are NULL?"
+msgstr "logique. Si cela cr\x00e9er des noms, si elles sont nulles?"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:46
+msgid "FALSE"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:46
+msgid "TRUE"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:49
+msgid "commit"
+msgstr "Commettre"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:50
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:60
+msgid "Commit on Input"
+msgstr "Commettre sur l'entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\rownames.py:85
+msgid ""
+"%s were sent from this widget.\n"
+"\n"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:31
+msgid "Sample Data"
+msgstr "Donn\x00e9es-\x00e9chantillon"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:32
+msgid "Scoring Matrix"
+msgstr  "matrice de notation"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:33
+msgid "Sored Samples"
+msgstr "Les \x00e9chantillons parrain\x00e9"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:34
+msgid "Max Scored Class"
+msgstr "Max Marqu\x00e9s de classe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:37
+msgid "Scoring Method"
+msgstr "M\x00e9thode de notation"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:67
+msgid "Multiplication"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:37
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:71
+msgid "Correlation"
+msgstr "Corr\x00e9lation"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\score.py:39
+msgid "Scores"
+msgstr "Partitions"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:43
+msgid "Results"
+msgstr "R\x00e9sultats"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:51
+msgid "Perform"
+msgstr "Ex\x00e9cuter"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:65
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:117
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:131
+msgid "Set Equal"
+msgstr "\x00e9gal"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:111
+msgid "Intersect"
+msgstr "Intersection"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:113
+msgid "Union"
+msgstr "Union"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\setOperations.py:115
+msgid "Set Difference"
+msgstr "D\x00e9finir diff\x00e9rence"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:26
+msgid "Data Tabel"
+msgstr "Tabel de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:28
+msgid "Sorted Data Table"
+msgstr "Tri tableau de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:67
+msgid "Decreasing"
+msgstr "Diminution"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:32
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:72
+msgid "NA Last"
+msgstr "Derni\x00e8re NA"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:35
+msgid "First Column to Sort:"
+msgstr "Premi\x00e8re colonne pour trier:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:36
+msgid "Second Column to Sort:"
+msgstr "Deuxi\x00e8me colonne pour trier:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\sort.py:37
+msgid "Third Column to Sort:"
+msgstr "Troisi\x00e8me colonne pour trier:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:36
+msgid "Data Table to Subset On"
+msgstr "Tableau de donn\x00e9es au sous-ensemble sur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:37
+msgid "Optional List of Subsetting Attributes"
+msgstr "Liste des sous-ensembles d'attributs facultatifs"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:39
+msgid "Subsetted Data Table"
+msgstr "Sous-ensembles de donn\x00e9es tableau"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:40
+msgid "Subsetted Data Vector"
+msgstr "Sous-ensembles de donn\x00e9es vector"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:45
+msgid "Subset On"
+msgstr "sous-ensemble sur"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subset.py:48
+msgid "Subset By"
+msgstr "sous-ensemble en"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subsetSummary.py:24
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\summary.py:21
+msgid "R Variable Object"
+msgstr  "Objet R variable"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subsetSummary.py:25
+msgid "Splitting Element:"
+msgstr "D\x00e9coupage des \x00e9l\x00e9ments:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subsetSummary.py:27
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subsetSummary.py:36
+msgid "Process On Connect"
+msgstr "Le processus de Connect"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\subsetSummary.py:30
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\summary.py:26
+msgid "RoutputWindow"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\t.py:23
+msgid "Input Data Table or Matrix"
+msgstr "Donn\x00e9es d'entr\x00e9e du tableau ou une matrice"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\t.py:25
+msgid "Transposed Data Table"
+msgstr "Transpos\x00e9 le tableau de donn\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:31
+msgid "Function Info"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:32
+msgid "Code"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:38
+msgid "Function Name:"
+msgstr "Nom de la fonction:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:40
+msgid "GUI Args"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:51
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:237
+msgid "Allow Output"
+msgstr "Autoriser sortie"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:52
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:237
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:274
+msgid "Show Output"
+msgstr "Afficher la sortie"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:56
+msgid "Output Class:"
+msgstr "Classe de sortie:"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:57
+msgid "Accept Inputs"
+msgstr "Accepter les entr\x00e9es"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:58
+msgid "Generate Code"
+msgstr "G\x00e9n\x00e9rer le code"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:59
+msgid "Launch Widget"
+msgstr "Lancement du widget "
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:117
+msgid "Function called successfully."
+msgstr "Fonction appel\x00e9e avec succ\x00e8s."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:121
+msgid "Error with calling function."
+msgstr "Erreur avec fonction d'appel."
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+msgid "Default"
+msgstr "Par d\x00e9faut"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+msgid "Input Type"
+msgstr "Type d'entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+msgid "Input class"
+msgstr "Classe d'entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+msgid "Name"
+msgstr "Nom"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+msgid "Signal Class"
+msgstr "Signal de classe"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:160
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:171
+msgid "Required"
+msgstr "Obligatoires"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:168
+msgid "Connection Input"
+msgstr "Connexion d 'entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:168
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:192
+msgid "Widget Input"
+msgstr "Widget entr\x00e9e"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:171
+msgid "Optional"
+msgstr "Facultatif"
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:177
+msgid "checkBox"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:177
+msgid "comboBox"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:177
+msgid "lineEdit"
+msgstr ""
+
+#:
+#: C:\Python26\Lib\site-packages\RedRWorkingTrunk\libraries\base\widgets\widgetMaker.py:177
+msgid "radioButtons"
+msgstr ""
 

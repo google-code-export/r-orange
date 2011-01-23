@@ -1,5 +1,6 @@
 """ Modified by Kyle R. Covington and Anup Parikh """
 import os, sys, user, cPickle, time
+from OrderedDict import OrderedDict
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 if sys.platform=="win32":
@@ -186,8 +187,9 @@ def loadSettings():
     settings.setdefault("firstLoad", 1)
     settings.setdefault("email", '')
     settings.setdefault('canContact', 1)
-    settings.setdefault('language', ['latin', 'English'])
-    
+    settings.setdefault('language', OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')]))
+    settings['availablelanguages'] = OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')])
+    print settings
     return settings
     
 # Saves settings to this widget's .ini file

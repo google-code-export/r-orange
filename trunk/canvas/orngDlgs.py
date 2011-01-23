@@ -145,7 +145,7 @@ class CanvasOptionsDlg(QDialog):
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
         OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", _("Use style's standard palette"), debuggingEnabled = 0)
         
-        self.language = comboBox(lookFeelBox, label = _('Language'), items = [u'English', u'Fran\u00E7aise', u'Deutsch'])
+        self.language = redRlistBox(lookFeelBox, label = _('Language'), items = redREnviron.settings['availablelanguages'], enableDragDrop = 1)
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
         # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
         # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
@@ -268,6 +268,7 @@ class CanvasOptionsDlg(QDialog):
         # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in _('Show Help Icons'))
         # print self.settings
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
+        self.settings['language'] = self.language.getItems()
         oldLogFile = redREnviron.settings['logFile']
         self.settings['logFile'] = self.logFile.text()
         # print 'a',oldLogFile
@@ -279,6 +280,7 @@ class CanvasOptionsDlg(QDialog):
         if oldLogFile != self.settings['logFile']:
             import redRLog
             redRLog.moveLogFile(redREnviron.settings['logFile'])
+        print redREnviron.settings['language']
         # redRStyle.widgetSelectedColor = self.settings["widgetSelectedColor"]
         # redRStyle.widgetActiveColor   = self.settings["widgetActiveColor"]  
         # redRStyle.lineColor           = self.settings["lineColor"]          

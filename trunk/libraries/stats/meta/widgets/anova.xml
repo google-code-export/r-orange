@@ -6,7 +6,6 @@
     <tags> 
         <tag>Advanced Stats</tag> 
     </tags>
-    <screenshots></screenshots>
     <summary>Performed ANOVA on any model or data received.  This can result in errors if inappropriate models are supplied.</summary>
     <details>Performed ANOVA on any model or data received.  This can result in errors if inappropriate models are supplied.</details>
     <relatedWidgets>

@@ -72,7 +72,7 @@ class readFile(OWRpy):
 
         
         self.delimiter = radioButtons(options, label=_('Column Seperator'),
-        buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked=_('Tab'),callback=self.scanNewFile,
+        buttons = [('\t', _('Tab')), (',', _('Comma')), (' ', _('Space')),("?", _('Other'))], setChecked='\t',callback=self.scanNewFile,
         orientation='horizontal')
         
         self.otherSepText = lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
@@ -172,7 +172,7 @@ class readFile(OWRpy):
     def setForExcel(self):
         self.fileType.show()
     def otherSep(self,text):
-        self.delimiter.setChecked('other')
+        self.delimiter.setChecked('?')
         
     def loadCustomSettings(self,settings):
         # import pprint
@@ -265,20 +265,15 @@ class readFile(OWRpy):
                 # self.delimiter.setChecked('Tab')
             # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
                 # self.delimiter.setChecked('Comma')
-            if self.delimiter.getCheckedId() =='Tab':
-                sep  = '\t'
-            elif self.delimiter.getCheckedId() =='Comma':
-                sep  = ','
-            elif self.delimiter.getCheckedId() =='Space':
-                sep  = ' '
-            elif self.delimiter.getCheckedId() == 'other':
+
+            if self.delimiter.getCheckedId() == '?':
                 sep = unicode(self.otherSepText.text())
                 
             otherOptions = ''
             for i in self.otherOptions.getCheckedIds():
                 otherOptions += unicode(i) + '=TRUE,' 
             
-        if 'Column Headers' in self.hasHeader.getChecked():
+        if _('Column Headers') in self.hasHeader.getChecked():
             header = 'TRUE'
         else:
             header = 'FALSE'

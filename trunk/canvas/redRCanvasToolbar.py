@@ -19,8 +19,10 @@ class redRCanvasToolbarandMenu():
         self.originalPalette = QApplication.palette()
         self.recentDocs = []
         ###############################
+        self.searchBox2 = SearchBox2(None, width=300)
         self.initMenu()
         self.initToolbar()
+        
         
     def initToolbar(self):
         self.toolbar.setOrientation(Qt.Horizontal)
@@ -61,8 +63,8 @@ class redRCanvasToolbarandMenu():
         # self.toolbar.addWidget(QLabel(_('Search  ')))
         # self.toolbar.addWidget(self.searchBox)
         
-        self.searchBox2 = SearchBox2(None, width=300)
-        self.toolbar.addWidget(QLabel(_('Search  ')))
+        
+        self.toolbar.addWidget(QLabel(_('Search')))
         self.toolbar.addWidget(self.searchBox2)
         
         
@@ -80,6 +82,7 @@ class redRCanvasToolbarandMenu():
         self.menuFile.addAction(_("Import Pipeline"), self.importSchema)
         if os.path.exists(os.path.join(redREnviron.directoryNames['canvasSettingsDir'], "lastSchema.tmp")):
             self.menuFile.addAction(_("Reload Last Pipeline"), self.menuItemOpenLastSchema, Qt.CTRL+Qt.Key_R)
+        self.menuFile.addAction(_("Search"), self.searchBox2.setFocus, Qt.CTRL+Qt.Key_F)
         #self.menuFile.addAction( "&Clear", self.menuItemClear)
         self.menuFile.addSeparator()
         self.menuSaveID = self.menuFile.addAction(QIcon(redRStyle.saveFileIcon), _("&Save"), self.menuItemSave, QKeySequence.Save )
