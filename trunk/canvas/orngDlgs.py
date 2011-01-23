@@ -209,8 +209,10 @@ class CanvasOptionsDlg(QDialog):
         #####################################
         # R Settings Tab
         self.rlibrariesBox = OWGUI.widgetBox(RSettings, _('R Libraries'))
-        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL: '+ self.settings['CRANrepos'])
-        
+        self.libInfo = redRwidgetLabel(self.rlibrariesBox, label='Repository URL:\n '+ self.settings['CRANrepos'])
+        self.libListBox = redRlistBox(self.rlibrariesBox, label = _('Mirrors'), 
+        callback = self.setMirror)
+
         
         ################################ Global buttons  ######################
         # OK, Cancel buttons
@@ -242,23 +244,19 @@ class CanvasOptionsDlg(QDialog):
         # get a data frame (dict) of r libraries
         if self.tabs.tabText(index) != _('R Settings'):
             return
-        try:
-            if not self.libListBox: return
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            self.libs = RSession.Rcommand('getCRANmirrors()')
-            # place a listBox in the widget and fill it with a list of mirrors
-            
-            self.libListBox = redRlistBox(self.rlibrariesBox, label = _('Mirrors'), 
-            items = self.libs['Name'], callback = self.setMirror)
+        self.libs = RSession.Rcommand('getCRANmirrors()')
+        #print self.libs
+        self.libListBox.clear()
+        self.libListBox.addItems(zip(self.libs['URL'],self.libs['Name']))
+        self.libListBox.setSelectedIds([self.settings['CRANrepos']])
         
     def setMirror(self):
         # print 'setMirror'
-        item = self.libListBox.currentRow()
-        self.settings['CRANrepos'] = unicode(self.libs['URL'][item])
-        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + unicode(self.libs['URL'][item]) + '"; options(repos=r)})')
+        url = self.libListBox.selectedIds()[0]
+        self.settings['CRANrepos'] = url #unicode(self.libs['URL'][item])
+        RSession.Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + url + '"; options(repos=r)})',silent=True)
         #print self.settings['CRANrepos']
-        self.libInfo.setText('Repository URL changed to: '+unicode(self.libs['URL'][item]))
+        self.libInfo.setText('Repository URL changed to:\n %s'%url)
     def accept(self):
         # self.settings["widgetSelectedColor"] = self.selectedWidgetIcon.color.getRgb()
         # self.settings["widgetActiveColor"]   = self.activeWidgetIcon.color.getRgb()
