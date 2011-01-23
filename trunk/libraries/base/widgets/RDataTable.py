@@ -95,8 +95,8 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         # filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked)
         ##########################################################
         # self.R('data <- data.frame(a=rnorm(1000),b=c("a","b","c","d","e"))')
-        self.data = 'iris'
-        self.table.setRTable(self.data)
+        # self.data = 'iris'
+        # self.table.setRTable(self.data)
         ##########################################################
         
         self.customSummary = lineEdit(self.advancedOptions, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
