@@ -70,12 +70,14 @@ class filterTable(widgetState, QTableView):
         self.filterable=filterable
         self.onFilterCallback = onFilterCallback
         self.selectionCallback = selectionCallback
-        self.selections = QItemSelection()
+        # self.selections = QItemSelection()
         self.working = False
 
         self.setHorizontalHeader(myHeaderView(self))
         self.setSelectionBehavior(selectionBehavior)
         self.setAlternatingRowColors(True)
+        
+        # self.horizontalHeader().setMovable(True)
         
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)
@@ -87,12 +89,11 @@ class filterTable(widgetState, QTableView):
             self.horizontalHeader().hide()
             self.verticalHeader().hide()
             
-        # if sortable:
-            # self.horizontalHeader().setSortIndicatorShown(True)
-            # self.horizontalHeader().setSortIndicator(-1,0)
+        if sortable:
+            self.horizontalHeader().setSortIndicatorShown(True)
+            self.horizontalHeader().setSortIndicator(-1,0)
         if filterable or sortable:
             self.horizontalHeader().setClickable(True)
-            # QObject.connect(self.horizontalHeader(), SIGNAL('sectionClicked (int)'), self.selectColumn)
             self.horizontalHeader().setContextMenuPolicy(Qt.CustomContextMenu)
             self.horizontalHeader().customContextMenuRequested.connect(self.headerClicked)
 
@@ -557,6 +558,7 @@ class filterTable(widgetState, QTableView):
 class MyTableModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
     filterable=False,sortable=False): 
+        QAbstractTableModel.__init__(self,parent) 
 
         self.working = False
         self.range = 500
@@ -566,10 +568,11 @@ class MyTableModel(QAbstractTableModel):
         self.editable = editable
         self.filterable = filterable
         self.filteredOn = filteredOn
-        QAbstractTableModel.__init__(self,parent) 
+        # self.filter_delete = os.path.join(redREnviron.directoryNames['picsDir'],'filterAdd.png')
+        self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
+        
+        # print self.filter_add,os.path.exists(self.filter_add),os.path.exists(self.filter_delete)
         self.initData(Rdata)
-        self.filter_delete = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_delete.gif'))
-        self.filter_add = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'filter_add.gif'))
         
     def flags(self,index):
         if self.editable:
@@ -652,7 +655,8 @@ class MyTableModel(QAbstractTableModel):
         elif not self.Rdata or self.Rdata == None:
             return QVariant()
         # print self.currentRange['rstart'], index.row(), self.currentRange['rend'], self.currentRange['cstart'], index.column(), self.currentRange['cend']
-        
+        # return QVariant(QIcon(self.filter_add))
+
         if (
             (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
             (self.currentRange['cend'] - 100 < index.column() and self.currentRange['cend'] != self.ncol) or 
@@ -675,29 +679,30 @@ class MyTableModel(QAbstractTableModel):
             else: self.arraydata = []
         if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
             return QVariant()
-        #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Filter table R data is %s' % self.Rdata)
         
         rowInd = index.row() - self.currentRange['rstart'] + 1
         colInd = index.column() - self.currentRange['cstart'] + 1
         # self.working = False
         return QVariant(self.arraydata[rowInd][colInd]) 
 
+
     def headerData(self, col, orientation, role):
+        # print col,orientation,role
+        # return QVariant(QIcon(self.filter_add))
         # print _('in headerData'), col, orientation, role
+
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return QVariant(self.colnames[col])
+            if not col >= len(self.colnames):
+                return QVariant(self.colnames[col])
         elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
-            # print _('DecorationRole')
             if col+1 in self.filteredOn:
-                # print self.filter_delete
-                return QVariant(self.filter_delete)
+                return QVariant(self.columnFiltered)
             else:
-                # print self.filter_add
-                return QVariant(self.filter_add)
-                
-            #return QVariant(icon)
-        elif orientation == Qt.Vertical and role == Qt.DisplayRole:     
-            return QVariant(self.rownames[col])
+                return QVariant()
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole: 
+            # print 'row number', col, len(self.rownames)
+            if not col >= len(self.rownames):
+                return QVariant(self.rownames[col])
         return QVariant()
     
 
@@ -710,10 +715,10 @@ class MyTableModel(QAbstractTableModel):
         else:
             self.Rdata = '%s[order(%s[,%d]),]' % (self.orgRdata,self.orgRdata,Ncol+1)
             
-        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list')#, silent=True)
-        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list')#, silent=True)
-        self.nrow = self.R('nrow(as.matrix(%s))' % self.Rdata)#, silent=True)
-        self.ncol = self.R('ncol(as.matrix(%s))' % self.Rdata)#, silent=True)
+        self.colnames = self.R('colnames(as.data.frame(' +self.Rdata+ '))', wantType = 'list', silent=True)
+        self.rownames = self.R('rownames(as.data.frame(' +self.Rdata+'))', wantType = 'list', silent=True)
+        self.nrow = self.R('nrow(as.matrix(%s))' % self.Rdata, silent=True)
+        self.ncol = self.R('ncol(as.matrix(%s))' % self.Rdata, silent=True)
         
         self.arraydata = self.R('as.matrix(as.matrix(%s)[%d:%d,%d:%d])' % (self.Rdata,
         self.currentRange['rstart'],
@@ -721,7 +726,7 @@ class MyTableModel(QAbstractTableModel):
         self.currentRange['cstart'],
         self.currentRange['cend']
         ),
-        wantType = 'listOfLists',silent=False)
+        wantType = 'listOfLists',silent=True)
 
         self.emit(SIGNAL("layoutChanged()"))
 

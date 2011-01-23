@@ -13,6 +13,7 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.filterTable import filterTable
+from libraries.base.qtWidgets.filterTable2 import filterTable2
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
@@ -89,13 +90,14 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         self.tableBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #boxSettings = groupBox(self.advancedOptions, label = _("Settings"))
 
-        self.table = filterTable(self.tableBox,label = _('Data Table'), sortable=True,
+        self.table = filterTable(self.tableBox,label = _('Data Table'),displayLabel=False, sortable=True,
         filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked,selectionCallback=self.cellSelection)
+        # self.table = filterTable2(self.tableBox, sortable=True,
+        # filterable=True,selectionBehavior = QAbstractItemView.SelectItems, callback=self.itemClicked)
         ##########################################################
         # self.R('data <- data.frame(a=rnorm(1000),b=c("a","b","c","d","e"))')
-        # self.data = 'iris'
-        # self.table.setRTable(self.data)
-        #self.data = 'iris'
+        self.data = 'iris'
+        self.table.setRTable(self.data)
         ##########################################################
         
         self.customSummary = lineEdit(self.advancedOptions, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))

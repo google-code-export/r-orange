@@ -74,13 +74,6 @@ class OrangeCanvasDlg(QMainWindow):
         # redRLog.setOutputWindow(self.printOutput)
         redRLog.setOutputManager('dock', self.dockOutputManger)
         
-        #######################
-        #Error Update Manager##
-        #######################
-
-        # self.output = redRSubmitErrors.redRSubmitErrors(self)
-        redRLog.setOutputManager('submitErrors', redRSubmitErrors.errorSubmitter,level=redRLog.CRITICAL)
-        redRLog.setLogTrigger('displayError', lambda x,y: self.showOutputDock(),level=redRLog.CRITICAL)
         
         
         ###################
@@ -136,6 +129,13 @@ class OrangeCanvasDlg(QMainWindow):
             self.showROutputButton.setChecked(redREnviron.settings['dockState']['outputBox'])
             self.showWidgetToolbar.setChecked(redREnviron.settings['dockState']['widgetBox'])
         
+        #######################
+        #Error Update Manager##
+        #######################
+
+        # self.output = redRSubmitErrors.redRSubmitErrors(self)
+        redRLog.setOutputManager('submitErrors', redRSubmitErrors.errorSubmitter,level=redRLog.ERROR)
+        redRLog.setLogTrigger('displayError', lambda x,y: self.showOutputDock(),level=redRLog.ERROR)
 
         ###################
         #Package Manager###
@@ -254,6 +254,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.updateDockState()
         self.raise_()
         self.outputDock.raise_()
+        qApp.setActiveWindow(self.outputDock)
         
     def updateDock(self,ev):
         if self.notesDock.isHidden():
