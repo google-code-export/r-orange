@@ -35,6 +35,8 @@ class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags =  0):
         QMainWindow.__init__(self, parent)
         # self._ = redRi18n.Coreget_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
+        redRSaveLoad.setCanvasDlg(self)
+
         self.setWindowTitle(_("Red-R Canvas %s") % redREnviron.version['REDRVERSION'])
         if os.path.exists(redRStyle.canvasIcon):
             self.setWindowIcon(QIcon(redRStyle.canvasIcon))
@@ -158,12 +160,6 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.reports = redRReports.reports(self,self.schema)
 
-        ###################
-        ##Update Manager###
-        ###################
-        splashWindow.showMessage(_("Creating Update Manager"), Qt.AlignHCenter + Qt.AlignBottom)
-        
-        self.updateManager = redRUpdateManager.updateManager(self)
         
         ###################
         #Toolbar and Menu##
@@ -230,7 +226,13 @@ class OrangeCanvasDlg(QMainWindow):
         
         # redRInitWizard.startSetupWizard()
         
-        redRSaveLoad.setCanvasDlg(self)
+        ###################
+        ##Update Manager###
+        ###################
+        splashWindow.showMessage(_("Check For Updates"), Qt.AlignHCenter + Qt.AlignBottom)
+        self.updateManager = redRUpdateManager.updateManager(self)
+        self.updateManager.showUpdateDialog(auto=True)
+        
         qApp.processEvents()
         
         

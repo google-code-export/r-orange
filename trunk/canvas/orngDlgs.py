@@ -472,8 +472,9 @@ class AboutDlg(QDialog):
         info = redREnviron.version
         self.about = redRwebViewBox(self,label=_('About Info'),displayLabel=False)
         self.about.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.about.setMinimumHeight(150)
-        self.about.setHtml('<h2>%(NAME)s %(RVERSION)s</h2>Type: %(TYPE)s;  Revision: %(SVNVERSION)s; Build Time: %(DATE)s; Copy Number: %(ID)s<h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>' % {'NAME': info['NAME'], 'RVERSION': info['RVERSION'], 'TYPE':info['TYPE'], 'SVNVERSION':info['SVNVERSION'], 'DATE':info['DATE'], 'ID':unicode(redREnviron.settings['id'])})
+        self.about.setMinimumHeight(190)
+
+        self.about.setHtml('<h2>%(NAME)s %(REDRVERSION)s</h2>Type: %(TYPE)s <br> Revision: %(SVNVERSION)s <br> Build Time: %(DATE)s <br> R Version: %(RVERSION)s <br><h3>Red-R Core Development Team (<a href="http://www.red-r.org">Red-R.org</a>)</h3>' % info)
         self.licenceButton = redRbutton(self, _('Licence'), callback = self.showLicence)
         b = QDialogButtonBox(self)
         b.setCenterButtons(1)

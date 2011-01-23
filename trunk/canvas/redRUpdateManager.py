@@ -29,10 +29,8 @@ class updateManager():
         #self.urlOpener = urllib2.FancyURLopener()
         self.version = redREnviron.version['REDRVERSION']
         self.repository = 'http://www.red-r.org/redr_updates/Red-R-' + self.version
-            
         
     def checkForUpdate(self):
-        print 'checkForUpdate'
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RUpdates.xml')
         f = urllib2.urlopen(self.repository +'/currentVersion.xml')
         output = open(file,'wb')
@@ -48,6 +46,8 @@ class updateManager():
         else: return False
     
     def showUpdateDialog(self,auto=False):
+        # print  redREnviron.settings['checkedForUpdates']
+
         if not redREnviron.checkInternetConnection():
             if not auto:
               self.createDialog(_('No Internet Connection'),False)
@@ -61,6 +61,7 @@ class updateManager():
                 
         redREnviron.settings['checkedForUpdates'] = today
         redREnviron.saveSettings()
+        # print  redREnviron.settings['checkedForUpdates']
         avaliable = self.checkForUpdate()
         if avaliable:
             html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s") % (
