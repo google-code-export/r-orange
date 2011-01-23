@@ -187,6 +187,8 @@ def loadSettings():
     settings.setdefault("firstLoad", 1)
     settings.setdefault("email", '')
     settings.setdefault('canContact', 1)
+    
+    ## language settings, these settings exist so that we can detect the language of the system
     settings.setdefault('language', OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')]))
     settings['availablelanguages'] = OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')])
     print settings

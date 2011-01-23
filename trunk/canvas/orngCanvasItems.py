@@ -214,6 +214,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.view = view
         self.canvasDlg = canvasDlg
         canvasPicsDir  = os.path.join(redREnviron.directoryNames['canvasDir'], "icons")
+        self.cloneIcon = QPixmap(os.path.join(canvasPicsDir, "clone.png"))
+        #self.cloneIcon.setToolTip(_("This widget is cloned in another tab"))
         self.imageLeftEdge = QPixmap(os.path.join(canvasPicsDir,"leftEdge.png"))
         self.imageRightEdge = QPixmap(os.path.join(canvasPicsDir,"rightEdge.png"))
         self.imageLeftEdgeG = QPixmap(os.path.join(canvasPicsDir,"leftEdgeG.png"))
@@ -479,12 +481,14 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
-        if not self.ghost:
-            try:
-                if len(self.instance().inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-                if len(self.instance().outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
-            except:
-                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        try:
+            if len(self.instance().inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+            if len(self.instance().outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        ## drwaw the clone icon
+        if len(redRObjects.getIconByIconInstanceID(self.instanceID)) > 1:
+            painter.drawPixmap(-20, -20, self.cloneIcon)
         # draw the label
         painter.setPen(QPen(QColor(0,0,0)))
         midX, midY = self.widgetSize.width()/2., self.widgetSize.height() + 5

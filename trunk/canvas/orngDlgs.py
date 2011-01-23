@@ -143,7 +143,7 @@ class CanvasOptionsDlg(QDialog):
 
         OWGUI.comboBox(lookFeelBox, self.settings, "style", label = _("Window style:"), orientation = "horizontal", 
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
-        OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", _("Use style's standard palette"), debuggingEnabled = 0)
+        #OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", _("Use style's standard palette"), debuggingEnabled = 0)
         
         self.language = redRlistBox(lookFeelBox, label = _('Language'), items = redREnviron.settings['availablelanguages'], enableDragDrop = 1)
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
