@@ -36,7 +36,7 @@ class textEdit(QTextEdit,widgetState):
         
         
     def sizeHint(self):
-        return QSize(10,10)
+        return QSize(1,1)
     def setCursorToEnd(self):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)

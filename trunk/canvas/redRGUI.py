@@ -12,9 +12,10 @@ _ = redRi18n.Coreget_()
 class qtWidgetBox(QWidget):
     def __init__(self,widget):
         QWidget.__init__(self,widget)
-        if widget and widget.layout():
+        if widget and widget.layout() not in [0,None]:
             widget.layout().addWidget(self)
-        self.setLayout(QVBoxLayout())
+        #if widget and widget.layout() not in [0,None]: 
+	self.setLayout(QVBoxLayout())
         self.layout().setSpacing(0)
         self.layout().setMargin(0)
         self.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)

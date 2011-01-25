@@ -211,6 +211,7 @@ def showAllWidgets(): # move to redRObjects
             i.show()
 def closeAllWidgets():
     for k, i in _widgetInstances.items():
+	print 'closing widget k'
         i.close()
         
 def addInstance(sm, info, settings, insig, outsig, id = None):

@@ -22,12 +22,21 @@
 ## Controls the execution of R funcitons into the underlying R session
 
 import sys, os, redREnviron, numpy
-os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
-    
-import rpy3.robjects as rpy
+if sys.platform == 'win32':
+  os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+else:
+  #os.environ['R_HOME'] = os.path.join('/', 'usr', 'bin','R')
+  pass
+
+print 'importing conversion'
+
+import redrrpy._conversion as co
+
+print 'importing rpy3'
+import rpy3.robjects as ro
+print 'importing Qt'
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import redrrpy._conversion as co
 import redRLog
 
 # import redRi18n
@@ -37,7 +46,7 @@ def _(a):
 mutex = QMutex()
 def assign(name, object):
     try:
-        rpy.r.assign(name, object)
+        ro.r.assign(name, object)
         redRLog.log(redRLog.R, redRLog.DEBUG, _('Assigned object to %s') % name)
         return True
     except:
@@ -68,13 +77,13 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # print showException
         #self.status.setText('Error occured!!')
         # mutex.unlock()
-        # raise qApp.rpy.RPyRException(unicode(y))
+        # raise qApp.ro.RPyRException(unicode(y))
         
         # return None # now processes can catch potential errors
     #####################Forked verions of R##############################
     try:
         
-        output = rpy.r(unicode(query).encode('Latin-1'))
+        output = ro.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
         redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s.") % (query, inst))
         mutex.unlock()
@@ -140,8 +149,12 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
 def convertToPy(inobject):
     #print _('in convertToPy'), inobject.getrclass()        
     try:
-        if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
-            return inobject
+	if sys.platform == 'win32':
+	  if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
+	      return inobject
+	else:
+	  if inobject.rclass[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
+	      return inobject
         return co.convert(inobject)
     except Exception as e:
         redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(e))
@@ -160,7 +173,7 @@ def setLibPaths(libLoc):
 if sys.platform=="win32":
     libPath = os.path.join(os.environ['R_HOME'], 'library').replace('\\','/')
 else:
-    libPath = personalLibDir
+    libPath = '~/RedR/Rlib'
 setLibPaths(libPath)
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         

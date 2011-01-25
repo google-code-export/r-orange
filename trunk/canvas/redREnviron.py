@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Modified by Kyle R. Covington and Anup Parikh """
 import os, sys, user, cPickle, time
 from OrderedDict import OrderedDict
@@ -14,14 +15,18 @@ def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
     try:
         redRDir = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
-    except:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+    except Exception as inst:
+        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        print unicode(inst)
         pass
 
     canvasDir = os.path.join(redRDir, "canvas")
     canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
     rpyDir = os.path.join(redRDir, 'rpy3')
-    RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.11.1')
+    if sys.platform == 'win32':
+      RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.11.1')
+    elif sys.platform == 'linux2':
+      RDir = os.path.join('/','usr','bin','R')
     widgetDir = os.path.join(redRDir, "libraries")
     libraryDir = os.path.join(redRDir, "libraries")
     qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')
@@ -43,14 +48,15 @@ def __getDirectoryNames():
         if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
             os.makedirs(os.path.join(os.environ['APPDATA'], 'red-r'))
         settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
-    except:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+    except Exception as inst:
+        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        print unicode(inst)
         try:
             if not os.path.isdir(os.path.join(os.environ['HOME'], '.redr', 'red-r')):
                 os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
             settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
         except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             print _('Error occured in setting the settingsDir')
     
     reportsDir = os.path.join(settingsDir, "RedRReports")
@@ -92,7 +98,7 @@ def checkInternetConnection():
         urllib.urlopen('http://www.google.com/')
         return True
     except:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
@@ -119,7 +125,7 @@ def loadSettings():
         try:
             settings = cPickle.load(open(filename, "rb"))
         except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
     settings['id'] = unicode(time.time())
@@ -230,11 +236,15 @@ def addOrangeDirectoriesToPath(directoryNames):
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-# print __name__
+print __name__
 if __name__ =='redREnviron':
     # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)
+    import rpy3.robjects as ro
+    import redrrpy._conversion as co
+    #print ro.r('iris')
+    #print co.convert(ro.r('iris'))
     version = getVersion()
     settings = loadSettings()
  

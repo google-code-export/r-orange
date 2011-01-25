@@ -25,7 +25,7 @@ class widgetBox(QWidget,widgetState):
             elif orientation == 'grid':
                 self.setLayout(QGridLayout())
             else:
-                self.setLayout(QVBoxLayout())
+               self.setLayout(QVBoxLayout())
         except:
             self.setLayout(QVBoxLayout())
             

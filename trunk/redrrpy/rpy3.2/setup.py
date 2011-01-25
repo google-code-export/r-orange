@@ -2,8 +2,11 @@
 
 from distutils.core import setup, Extension
 import os
-RHOME = 'C:/Program Files/R/R-2.9.2/'  # this must be changed if the location of the R installation is different from the default or if the user wishes to use versions of R other than 2.9.2
-include_dirs = [ os.path.join(RHOME.strip(), 'include'),
+RHOME = '/usr/lib/R'  # this must be changed if the location of the R installation is different from the default or if the user wishes to use versions of R other than 2.9.2
+include_dirs = [ os.path.join(RHOME.strip(), 'include'), os.path.join(RHOME.strip(), 'bin'),
+		os.path.join(RHOME.strip(), 'bin'), os.path.join(RHOME.strip(), 'lib'),
+                '~/R-2.12.1/src/include',         
+                         
                          'src' ]
 libraries= ['R']
 r_libs = [ # Different verisons of R put .so/.dll in different places

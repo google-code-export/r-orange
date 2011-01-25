@@ -73,17 +73,20 @@ class redRWidgetGUI(QMainWindow):
         self.savePosition = True
         self.hasBeenShown = False
         self.hasAdvancedOptions = wantGUIDialog
-        self.setLayout(QVBoxLayout())
+        print 'setting layout for widget'
+        print 'printing the layout', self.layout()
+        #self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         topWidgetPart = redRwidgetBox(self, orientation="vertical", margin=0)
         topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.setCentralWidget(topWidgetPart)
         self.controlArea = redRwidgetBox(topWidgetPart, orientation="vertical", margin=4)
+        #self.controlArea.setLayout(QVBoxLayout())
         self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.controlArea.setMinimumWidth(300)
         # topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
-
+	#self.layout().addWidget(self.controlArea)
         bottomArea = redRwidgetBox(topWidgetPart, orientation="horizontal", margin=4)
         self.bottomAreaLeft = redRwidgetBox(bottomArea, orientation = 'horizontal')
         self.bottomAreaCenter = redRwidgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
