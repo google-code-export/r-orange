@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ Modified by Kyle R. Covington and Anup Parikh """
 import os, sys, user, cPickle, time
 from OrderedDict import OrderedDict
@@ -13,92 +12,89 @@ def _(a):
 # _ = redRi18n.Coreget_()
 def __getDirectoryNames():
     """Return a dictionary with Red-R directories."""
-    try:
-        redRDir = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
-    except Exception as inst:
-        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-        print unicode(inst)
-        pass
-
-    canvasDir = os.path.join(redRDir, "canvas")
-    canvasIconsDir = os.path.join(redRDir, "canvas",'icons')
-    rpyDir = os.path.join(redRDir, 'rpy3')
-    if sys.platform == 'win32':
-      RDir = os.path.join(os.path.split(redRDir)[0], "R", 'R-2.11.1')
-    elif sys.platform == 'linux2':
-      RDir = os.path.join('/','usr','bin','R')
-    widgetDir = os.path.join(redRDir, "libraries")
-    libraryDir = os.path.join(redRDir, "libraries")
-    qtWidgetsDir = os.path.join(redRDir, "libraries",'base','qtWidgets')
-    redRSignalsDir = os.path.join(redRDir, "libraries",'base','signalClasses')
-    examplesDir = os.path.join(redRDir, "Examples")
-    picsDir = os.path.join(widgetDir,'base', "icons")
-    addOnsDir = os.path.join(redRDir, "add-ons")
     
-
-    if not os.path.isdir(widgetDir) or not os.path.isdir(widgetDir):
-        canvasDir = None
-        widgetDir = None
-    if not os.path.isdir(picsDir):
-        picsDir = ""
+    dirs = {}
+    createDir = {}
     
-
-    ## check that the settings directories are in place, this would be skipped over in the try
-    try:
-        if not os.path.isdir(os.path.join(os.environ['APPDATA'], 'red-r')):
-            os.makedirs(os.path.join(os.environ['APPDATA'], 'red-r'))
-        settingsDir = os.path.join(os.environ['APPDATA'],'red-r','settings')
-    except Exception as inst:
-        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-        print unicode(inst)
-        try:
-            if not os.path.isdir(os.path.join(os.environ['HOME'], '.redr', 'red-r')):
-                os.makedirs(os.path.join(os.environ['HOME'], '.redr', 'red-r'))
-            settingsDir = os.path.join(os.environ['HOME'], '.redr', 'red-r','settings')
-        except:
-            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            print _('Error occured in setting the settingsDir')
+    dirs['redRDir'] = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
+    dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
+    dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
+    dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'mac', 'rpy3')
+    dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'mac')
+    dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')
+    dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
+    dirs['libraryDir'] = os.path.join(dirs['redRDir'], "libraries")
+    dirs['qtWidgetsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
+    dirs['redRSignalsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','signalClasses')
+    dirs['examplesDir'] = os.path.join(dirs['redRDir'], "Examples")
+    dirs['picsDir'] = os.path.join(dirs['widgetDir'],'base', "icons")
+    #dirs['addOnsDir'] = os.path.join(dirs['redRDir'], "add-ons")
     
-    reportsDir = os.path.join(settingsDir, "RedRReports")
-    logsDir = os.path.join(settingsDir, "RedRlogs")
-    canvasSettingsDir = os.path.join(settingsDir, "RedRCanvas") 
-    tempDirHolder = os.path.join(canvasSettingsDir, 'temp')
-    widgetSettingsDir = os.path.join(settingsDir, "RedRWidgetSettings")
-    downloadsDir = os.path.join(settingsDir, "downloads")
-    logDB = os.path.join(canvasSettingsDir, "log.db")
+    ####### What does this code block do????################
+    #if not os.path.isdir(widgetDir) or not os.path.isdir(widgetDir):
+    #    canvasDir = None
+    #    widgetDir = None
+    #if not os.path.isdir(picsDir):
+    #    picsDir = ""
+    #####################
     
-    if sys.platform=="win32":
+    
+    
+    ###############################
+    ## Set system specific paths##
+    ###############################
+    
+    
+    ####Windows#####
+    if sys.platform=="win32":        
+        createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
         objShell = win32com.client.Dispatch("WScript.Shell")
-        documentsDir = os.path.join(objShell.SpecialFolders("MyDocuments"),'Red-R')
-        # print documentsDir
+        dirs['documentsDir'] = os.path.join(objShell.SpecialFolders("MyDocuments"))
+        dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library').replace('\\','/')
+    elif sys.platform == 'darwin':
+         createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
+         dirs['documentsDir'] = os.path.join(os.path.expanduser('~'), 'Red-R')
+         dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library')
     else:
-        documentsDir = os.path.join(os.path.expanduser('~'), 'Red-R')
-        
-    templatesDir = os.path.join(documentsDir, 'Templates')    
-    schemaDir = os.path.join(documentsDir, 'Schemas')
+         createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
+         dirs['documentsDir'] = os.path.join(os.path.expanduser('~'))
+         dirs['RlibPath'] = ''
+
+    ###########################
+    ## Red-R settings dir######
+    ###########################
+
+    createDir['reportsDir'] = os.path.join(createDir['settingsDir'], "RedRReports")
+    createDir['logsDir'] = os.path.join(createDir['settingsDir'], "RedRlogs")
+    createDir['canvasSettingsDir'] = os.path.join(createDir['settingsDir'], "RedRCanvas") 
+    createDir['tempDirHolder'] = os.path.join(createDir['settingsDir'], 'RedRTemp')
+    createDir['widgetSettingsDir'] = os.path.join(createDir['settingsDir'], "RedRWidgetSettings")
+    createDir['downloadsDir'] = os.path.join(createDir['settingsDir'], "downloads")
+
+    ###########################
+    ## User doc dirs     ######
+    ###########################
+    createDir['templatesDir'] = os.path.join(dirs['documentsDir'], 'Red-R', 'Templates')    
+    createDir['schemaDir'] = os.path.join(dirs['documentsDir'],'Red-R', 'Schemas')
     
 
-    for dname in [documentsDir,templatesDir,schemaDir, settingsDir, widgetSettingsDir, canvasSettingsDir, reportsDir,logsDir,
-    downloadsDir , tempDirHolder]:
-        if dname <> None and not os.path.isdir(dname):
-            try: os.makedirs(dname)        
+    for dname,path in createDir.items():
+        if path <> None and not os.path.isdir(path):
+            try: 
+               print 
+               os.makedirs(path)        
             # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
-    # print _('create temp')
-    #tempDir = setTempDir(tempDirHolder)
-    # print tempDir
-        
-    return dict([(name, vars()[name]) for name in ['rpyDir',"tempDirHolder", "templatesDir","schemaDir", "documentsDir", 
-    "redRDir", "canvasDir","canvasIconsDir", "libraryDir", "RDir", 'qtWidgetsDir', 'redRSignalsDir', "widgetDir", "examplesDir", 
-    "picsDir", "addOnsDir", "reportsDir","logsDir",
-    "settingsDir", "downloadsDir",'logDB', "widgetSettingsDir",  "canvasSettingsDir"]])
+    dirs.update(createDir)        
+    return dirs
+    
 def checkInternetConnection():
     import urllib
     try:
         urllib.urlopen('http://www.google.com/')
         return True
     except:
-        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
@@ -125,7 +121,7 @@ def loadSettings():
         try:
             settings = cPickle.load(open(filename, "rb"))
         except:
-            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
     settings['id'] = unicode(time.time())
@@ -197,7 +193,7 @@ def loadSettings():
     ## language settings, these settings exist so that we can detect the language of the system
     settings.setdefault('language', OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')]))
     settings['availablelanguages'] = OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')])
-    print settings
+    #print settings
     return settings
     
 # Saves settings to this widget's .ini file
@@ -224,6 +220,9 @@ def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
     pathsToAdd = [directoryNames['rpyDir']]
+    pathsToAdd = [directoryNames['osSpecific']]
+    
+    
     pathsToAdd.append(directoryNames['canvasDir'])
     # pathsToAdd.append(directoryNames['libraryDir'])
 
@@ -236,15 +235,11 @@ def addOrangeDirectoriesToPath(directoryNames):
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-print __name__
+# print __name__
 if __name__ =='redREnviron':
-    # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', unicode(time.time())
+    
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)
-    import rpy3.robjects as ro
-    import redrrpy._conversion as co
-    #print ro.r('iris')
-    #print co.convert(ro.r('iris'))
     version = getVersion()
     settings = loadSettings()
  

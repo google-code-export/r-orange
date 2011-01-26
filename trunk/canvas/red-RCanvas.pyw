@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Kyle R Covington and Anup Parikh, adapted from orangeCanvas
 # Description:
 #    main file, that creates the MDI environment
@@ -8,41 +7,21 @@ from PyQt4.QtGui import *
 import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
-# redREnviron.__getDirectoryNames()
-# redREnviron.addOrangeDirectoriesToPath(directoryNames)
-# redREnviron.getVersion()
-# redREnviron.loadSettings()
 import redREnviron
-print 'loading log'
-try:
-  import redRLog
-except Exception as inst:
-  print unicode(inst)
-print 'loading style'
+import redRLog
 import redRStyle
-
-print 'loading R session'
 import RSession
 import redRHistory
-print 'loaded history'
 import redRi18n
-print 'loaded i18n'
 import orngRegistry, OWGUI
-print 'loaded registry and GUI'
 import redRSubmitErrors, redRSaveLoad
-print 'loaded errors and save'
 import orngDoc, orngDlgs
-print 'loaded doc and dlgs'
 import redRWidgetsTree
-print 'loaded tree'
 import redRPackageManager, redRGUI,signals, redRInitWizard
-print 'loaded pm, gui, signals, and init'
-import redRReports, redRObjects, redRUpdateManager
-print 'loaded reports, objects and um'
+import redRReports
+import redRObjects
+import redRUpdateManager
 import redRCanvasToolbar
-
-print 'Core module Load complete'
-
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
@@ -393,22 +372,16 @@ class OrangeCanvasDlg(QMainWindow):
 
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
-            print 'All widgets closed'
             import shutil
             shutil.rmtree(redREnviron.directoryNames['tempDir'], True) # remove the tempdir, better hope we saved everything we wanted.
             
-            print 'temp dir distroyed'
             # close the entire session dropping anything that was open in case it was left by something else, 
             # makes the closing much cleaner than just loosing the session.
             redRHistory.saveConnectionHistory()
-            print 'history saved'
             redRLog.closeLogFile()
-            print 'log file closed'
-            #RSession.Rcommand('quit("no")',silent=True)
-            #print 'R Session closed'
+            RSession.Rcommand('quit("no")',silent=True) 
             ce.accept()
             QMainWindow.closeEvent(self,ce)
-            print 'I\'m closed'
         else:
             ce.ignore()
         

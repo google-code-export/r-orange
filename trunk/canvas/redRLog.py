@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 ## <log Module.  This module (not a class) will contain and provide access to widget icons, lines, widget instances, and other log.  Accessor functions are provided to retrieve these objects, create new objects, and distroy objects.>
-print 'In loading of log'
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import redREnviron, os, traceback, sys
 from datetime import tzinfo, timedelta, datetime
 #import logging
-print 'loaded imports'
+
 #
 #Red-R output writers
 _outputWriter = {}
@@ -15,7 +14,7 @@ _logTriggers = {}
 # _outputDockWriter = None
 # _outputWindowWriter = None
 # _outputWindow = None
-print 'loaded writers'
+
 ##Error Tables
 REDRCORE = 1
 R = 2
@@ -36,8 +35,6 @@ logLevels = [CRITICAL,ERROR,WARNING,INFO,DEBUG,DEVEL]
 logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG','DEVEL']
 logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
-
-print 'loaded levels'
 
 def setLogTrigger(name,manager,level):
     global _logTriggers
@@ -183,27 +180,25 @@ def saveOutputToFile():
     
 class LogHandler():
     def __init__(self):
-	if sys.platform == 'win32':
-	  self.defaultSysOutHandler = sys.stdout
-	  sys.stdout = self
-	  sys.excepthook = self.exceptionHandler
+        #self.defaultSysOutHandler = sys.stdout
+        #sys.stdout = self
+        sys.excepthook = self.exceptionHandler
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
         self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file
+        
+        
     def clearOldLogs(self):
         ## check the mod date for all of the logs in the log directory and remove those that are older than the max number of days.
         import glob
         import time
-        try:
-	  for f in glob.glob(os.path.split(redREnviron.settings['logFile'])[0]+'/*.html'):
-	      if int(redREnviron.settings['keepForXDays']) > -1 and time.time() - os.path.getmtime(f) > 60*60*24*int(redREnviron.settings['keepForXDays']):
-		  try:
-		      os.remove(f)
-		      self.defaultSysOutHandler.write('file %s removed\n' % f)
-		  except Exception as inst:
-		      self.defaultSysOutHandler.write(unicode(inst))
-	except Exception as inst:
-	    print unicode(inst)
+        for f in glob.glob(os.path.split(redREnviron.settings['logFile'])[0]+'/*.html'):
+            if int(redREnviron.settings['keepForXDays']) > -1 and time.time() - os.path.getmtime(f) > 60*60*24*int(redREnviron.settings['keepForXDays']):
+                try:
+                    os.remove(f)
+                    self.defaultSysOutHandler.write('file %s removed\n' % f)
+                except Exception as inst:
+                    self.defaultSysOutHandler.write(unicode(inst))
     #ONLY FOR DEVEL print statements
     def writetoFile(self,table,logLevel,comment,html):
         if not redREnviron.settings["writeLogFile"]: return
@@ -228,6 +223,8 @@ class LogHandler():
 
     def exceptionHandler(self, type, value, tracebackInfo):
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
-print 'loading log handlers'
+        
+
 lh = LogHandler()
 setOutputManager('file',lh.writetoFile,level=DEVEL)
+

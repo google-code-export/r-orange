@@ -17,8 +17,10 @@ import xml.dom.minidom
 import redRGUI, re , redRLog
 import xml.etree.ElementTree as etree
 from datetime import date
-if sys.platform == 'win32':
-  from win32com.shell import shell, shellcon
+if sys.platform =='win32':
+   import win32api, win32process
+   from win32com.shell import shell, shellcon
+   
 import redRi18n
 # def _(a):
     # return a
@@ -192,12 +194,9 @@ class updateManager():
         # print installDir
         cmd = "%s /D=%s" % (file,installDir)
         try:
-	    if sys.platform == 'win32':
-	      shell.ShellExecuteEx(shellcon.SEE_MASK_NOCLOSEPROCESS,0,'open',file,"/D=%s" % installDir,
-	      redREnviron.directoryNames['downloadsDir'],0)
-	      # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
-	    else:
-	      print 'This is a linus system updates should be done through the Red-R repository'
+            shell.ShellExecuteEx(shellcon.SEE_MASK_NOCLOSEPROCESS,0,'open',file,"/D=%s" % installDir,
+            redREnviron.directoryNames['downloadsDir'],0)
+            # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
         except:
             
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())

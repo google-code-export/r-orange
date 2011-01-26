@@ -21,32 +21,25 @@
 # R Signal Thread
 ## Controls the execution of R funcitons into the underlying R session
 
+
 import sys, os, redREnviron, numpy
-if sys.platform == 'win32':
-  os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
-else:
-  #os.environ['R_HOME'] = os.path.join('/', 'usr', 'bin','R')
-  pass
-
-print 'importing conversion'
-
-import redrrpy._conversion as co
-
-print 'importing rpy3'
-import rpy3.robjects as ro
-print 'importing Qt'
+os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+import rpy3.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import redrrpy._conversion as co
 import redRLog
 
 # import redRi18n
 def _(a):
     return a
-# _ = redRi18n.Coreget_()
+
 mutex = QMutex()
+
+
 def assign(name, object):
     try:
-        ro.r.assign(name, object)
+        rpy.r.assign(name, object)
         redRLog.log(redRLog.R, redRLog.DEBUG, _('Assigned object to %s') % name)
         return True
     except:
@@ -77,13 +70,13 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # print showException
         #self.status.setText('Error occured!!')
         # mutex.unlock()
-        # raise qApp.ro.RPyRException(unicode(y))
+        # raise qApp.rpy.RPyRException(unicode(y))
         
         # return None # now processes can catch potential errors
     #####################Forked verions of R##############################
     try:
         
-        output = ro.r(unicode(query).encode('Latin-1'))
+        output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
         redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s.") % (query, inst))
         mutex.unlock()
@@ -145,36 +138,33 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
                 
     mutex.unlock()
     return output
-	
+
 def convertToPy(inobject):
     #print _('in convertToPy'), inobject.getrclass()        
     try:
-	if sys.platform == 'win32':
-	  if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
-	      return inobject
-	else:
-	  if inobject.rclass[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
-	      return inobject
+        if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
+            return inobject
         return co.convert(inobject)
     except Exception as e:
         redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(e))
         return None
+
 def getInstalledLibraries():
-    if sys.platform=="win32":
-        libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
-        return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
-    else:
-        Rcommand('.libPaths(new = "'+personalLibDir+'")')
-        return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
-loadedLibraries = []
+   setLibPaths(redREnviron.directoryNames['RlibPath'])
+   return Rcommand('as.vector(installed.packages(lib.loc="' + redREnviron.directoryNames['RlibPath'] + '")[,1])', wantType = 'list')
+
+    #if sys.platform=="win32":
+    #    libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
+    #    return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
+    #else:
+    #    Rcommand('.libPaths(new = "'+personalLibDir+'")')
+    #    return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
+#loadedLibraries = []
+
 def setLibPaths(libLoc):
-    Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
+    ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
+    Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') 
     
-if sys.platform=="win32":
-    libPath = os.path.join(os.environ['R_HOME'], 'library').replace('\\','/')
-else:
-    libPath = '~/RedR/Rlib'
-setLibPaths(libPath)
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
         # if sys.platform=="win32":
@@ -205,7 +195,9 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 loadedLibraries.append(library)
             elif library:
                 if redREnviron.checkInternetConnection():
-                    mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it?") % unicode(library), QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+                    mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it?"
+                    ) % unicode(library), 
+                    QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
                             redRLog.log(redRLog.R, redRLog.INFO, _('Installing library %s.') % library)
@@ -226,3 +218,4 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                     loadedLibraries.append(library)
                         
         return loadedOK
+
