@@ -18,6 +18,8 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.scrollArea import scrollArea
+from libraries.base.qtWidgets.splitter import splitter
+from libraries.base.qtWidgets.tabWidget import tabWidget
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RDataTable(OWRpy):
@@ -47,16 +49,17 @@ class RDataTable(OWRpy):
         self.mylink = ''
         self.link = {}
         #The settings
-        self.advancedOptions = widgetBox(self.GUIDialog)
+        self.advancedOptions = tabWidget(self.GUIDialog, position = QTabWidget.West) #orientation = 'vertical')
         self.GUIDialog.layout().setAlignment(self.advancedOptions,Qt.AlignTop)
         
-        
-        self.infoBox = groupBox(self.advancedOptions, label=_("Data Information"))
-        self.infoBox.setHidden(True)
-
+        diBox = self.advancedOptions.createTabPage(_("Data Information"))
+        self.infoBox = groupBox(diBox, label=_("Data Information"))
+        self.infoBox.setHidden(False)
+        widgetLabel(self.infoBox, label = _("A summary of your data will be displayed below when data is available."))
         self.rowColCount = widgetLabel(self.infoBox)
         #saveTab = self.tabWidgeta.createTabPage('Save Data')
-        saveTab = groupBox(self.advancedOptions,label=_('Save Data'),orientation='horizontal')
+        sdBox = self.advancedOptions.createTabPage(_("Save Data"))
+        saveTab = groupBox(sdBox,label=_('Save Data'),orientation='horizontal')
         #widgetLabel(saveTab, label=_("Saves the current table to a file."))
         #button(saveTab, label=_("Set File"), callback = self.chooseDirectory)
         #self.fileName = widgetLabel(saveTab, label="")
@@ -67,7 +70,8 @@ class RDataTable(OWRpy):
         saveTab.layout().setAlignment(save,Qt.AlignRight)
 
         #links:
-        linksTab = groupBox(self.advancedOptions, _('Links to Websites'))        
+        linkBox = self.advancedOptions.createTabPage(_('Links to Websites'), canScroll = True)
+        linksTab = groupBox(linkBox, _('Links to Websites'))        
         self.linkListBox = listBox(linksTab,label=_('Links to Websites'), displayLabel=False,includeInReports=False)
         self.linkListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.customLink = lineEdit(linksTab, label = _('Add Link:'), includeInReports=False)
@@ -100,8 +104,9 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         # self.table.setRTable(self.data)
         ##########################################################
         
-        self.customSummary = lineEdit(self.advancedOptions, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
-        self.summaryLabel = textEdit(self.advancedOptions, label = _('Summary'))
+        sumBox = self.advancedOptions.createTabPage(_("Custom Summary"), orientation = 'vertical', canScroll = True)
+        self.customSummary = lineEdit(sumBox, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
+        self.summaryLabel = textEdit(sumBox, label = _('Summary'))
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""

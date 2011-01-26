@@ -5,19 +5,19 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class tabWidget(QTabWidget,widgetState):
-    def __init__(self,widget):
+    def __init__(self,widget, position = QTabWidget.North):
         
         widgetState.__init__(self,widget, 'tabWidget',includeInReports=True)
         QTabWidget.__init__(self,self.controlArea)
         self.controlArea.layout().addWidget(self)
         
         self.tabs = {}
-        
-    def createTabPage(self, name, widgetToAdd = None, canScroll = False):
+        self.setTabPosition(position)
+    def createTabPage(self, name, widgetToAdd = None, canScroll = False, orientation = 'horizontal'):
         #print 'start: ' + name
         if widgetToAdd == None:
             # print _('make widgetBox')
-            widgetToAdd = widgetBox(self, addToLayout = 0, margin = 4)
+            widgetToAdd = widgetBox(self, addToLayout = 0, margin = 4, orientation = orientation)
         if canScroll:
             scrollArea = QScrollArea() 
             self.addTab(scrollArea, name)
