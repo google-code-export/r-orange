@@ -44,9 +44,10 @@ def __getDirectoryNames():
     
     ####Windows#####
     if sys.platform=="win32":
+        ### architecture specific ####???
         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
         dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win')
-        dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win', 'rpy3')
+        dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
         
         createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
         objShell = win32com.client.Dispatch("WScript.Shell")
@@ -64,10 +65,19 @@ def __getDirectoryNames():
 
     ####Linux#####
     else:
-         print 'loading linx files'
-         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
-         dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux')
-         dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux', 'rpy3')
+         print 'loading linux files'
+         ####### begin platform specific #########
+         import platform
+         bit = platform.architecture()[0]
+         if bit == '32bit':
+            dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
+            dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux32')
+            dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux32', 'rpy3')
+         else:
+            print 'loading 64bit linux'
+            dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
+            dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux64')
+            dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux64', 'rpy3')
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'))
          dirs['RlibPath'] = ''
