@@ -19,9 +19,6 @@ def __getDirectoryNames():
     dirs['redRDir'] = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
     dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
     dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
-    dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'mac', 'rpy3')
-    dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'mac')
-    dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')
     dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
     dirs['libraryDir'] = os.path.join(dirs['redRDir'], "libraries")
     dirs['qtWidgetsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
@@ -46,16 +43,28 @@ def __getDirectoryNames():
     
     
     ####Windows#####
-    if sys.platform=="win32":        
+    if sys.platform=="win32":
+        dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
+        dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win')
+        dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win', 'rpy3')
+        
         createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
         objShell = win32com.client.Dispatch("WScript.Shell")
         dirs['documentsDir'] = os.path.join(objShell.SpecialFolders("MyDocuments"))
         dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library').replace('\\','/')
+
+    ####Mac#####
     elif sys.platform == 'darwin':
+         dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'mac')
+         dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'mac', 'rpy3')
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'), 'Red-R')
          dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library')
+
+    ####Linux#####
     else:
+         dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux')
+         dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux', 'rpy3')
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'))
          dirs['RlibPath'] = ''
