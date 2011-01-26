@@ -46,7 +46,7 @@ def widgetBox(widget, box=None, orientation='vertical', addSpace=False, sizePoli
     else:
         b = QWidget(widget)
         if margin == -1: margin = 0
-    if addToLayout and widget.layout():
+    if addToLayout and widget.layout() not in [0,None]:
         widget.layout().addWidget(b)
 
     if isinstance(orientation, QLayout):
@@ -88,7 +88,7 @@ def widgetLabel(widget, label=None, labelWidth=None, addToLayout = 1):
         lbl = QLabel(label, widget)
         if labelWidth:
             lbl.setFixedSize(labelWidth, lbl.sizeHint().height())
-        if widget.layout() and addToLayout: widget.layout().addWidget(lbl)
+        if widget.layout() not in [0, None] and addToLayout: widget.layout().addWidget(lbl)
     else:
         lbl = None
 
@@ -100,7 +100,7 @@ __re_frmt = re.compile(r"(^|[^%])%\((?P<value>[a-zA-Z]\w*)\)")
 
 def label(widget, master, label, labelWidth = None):
     lbl = QLabel("", widget)
-    if widget.layout(): widget.layout().addWidget(lbl)
+    if widget.layout() not in [0, None]: widget.layout().addWidget(lbl)
 
     reprint = CallFrontLabel(lbl, label, master)
     for mo in __re_frmt.finditer(label):
@@ -471,7 +471,7 @@ def toolButton(widget, master, callback = None, width = None, height = None, too
 
 def separator(widget, width=8, height=8):
     sep = QWidget(widget)
-    if widget.layout(): widget.layout().addWidget(sep)
+    if widget.layout() not in [0, None]: widget.layout().addWidget(sep)
     sep.setFixedSize(width, height)
     return sep
 
@@ -872,7 +872,7 @@ class SmallWidgetButton(QPushButton):
             QPushButton.__init__(self, QIcon(name), text, widget)
         else:
             QPushButton.__init__(self, text, widget)
-        if widget.layout():
+        if widget.layout() not in [0, None]:
             widget.layout().addWidget(self)
         if tooltip != None:
             self.setToolTip(tooltip)
@@ -925,7 +925,7 @@ class SmallWidgetLabel(QLabel):
             else:
                 name = os.path.join(iconDir, "arrow_down.png")
             self.setPixmap(QPixmap(name))
-        if widget.layout():
+        if widget.layout() not in [0, None]:
             widget.layout().addWidget(self)
         if tooltip != None:
             self.setToolTip(tooltip)
@@ -1099,7 +1099,7 @@ class collapsableWidgetBox(QGroupBox):
         if orientation == 'vertical': self.setLayout(QVBoxLayout())
         else:                         self.setLayout(QHBoxLayout())
 
-        if widget.layout():
+        if widget.layout() not in [0, None]:
             widget.layout().addWidget(self)
         if type(box) in (str, unicode): # if you pass 1 for box, there will be a box, but no text
             self.setTitle(" " + box.strip() + " ")
@@ -1137,7 +1137,7 @@ class collapsableWidgetBox(QGroupBox):
 class widgetHider(QWidget):
     def __init__(self, widget, master, value, size = (19,19), widgets = [], tooltip = None):
         QWidget.__init__(self, widget)
-        if widget.layout():
+        if widget.layout() not in [0, None]:
             widget.layout().addWidget(self)
         self.value = value
         self.master = master
@@ -1674,7 +1674,7 @@ class ProgressBar:
 
 def tabWidget(widget):
     w = QTabWidget(widget)
-    if widget.layout():
+    if widget.layout() not in [0, None]:
         widget.layout().addWidget(w)
     return w
 
@@ -1694,7 +1694,7 @@ def createTabPage(tabWidget, name, widgetToAdd = None, canScroll = False):
 
 def table(widget, rows = 0, columns = 0, selectionMode = -1, addToLayout = 1):
     w = QTableWidget(rows, columns, widget)
-    if widget and addToLayout and widget.layout():
+    if widget and addToLayout and widget.layout() not in [0, None]:
         widget.layout().addWidget(w)
     if selectionMode != -1:
         w.setSelectionMode(selectionMode)

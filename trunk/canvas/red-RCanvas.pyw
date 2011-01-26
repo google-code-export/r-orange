@@ -345,9 +345,6 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["windowState"] = self.saveState()
         redREnviron.settings['pos'] = self.pos()
         redREnviron.settings['size'] = self.size()
-
-        
-        
         redREnviron.saveSettings()
         # closed = self.schema.close()
         if redREnviron.settings['dontAskBeforeClose']:
@@ -379,7 +376,7 @@ class OrangeCanvasDlg(QMainWindow):
             # makes the closing much cleaner than just loosing the session.
             redRHistory.saveConnectionHistory()
             redRLog.closeLogFile()
-            RSession.Rcommand('quit("no")',silent=True) 
+
             ce.accept()
             QMainWindow.closeEvent(self,ce)
         else:

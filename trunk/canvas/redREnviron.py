@@ -58,7 +58,7 @@ def __getDirectoryNames():
          dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
          dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'mac')
          dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'mac', 'rpy3')
-         createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
+         createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'), 'Red-R')
          dirs['RlibPath'] = os.path.join(dirs['RDir'], 'library')
 
@@ -67,7 +67,7 @@ def __getDirectoryNames():
          dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
          dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux')
          dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux', 'rpy3')
-         createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
+         createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'))
          dirs['RlibPath'] = ''
 
@@ -92,7 +92,7 @@ def __getDirectoryNames():
     for dname,path in createDir.items():
         if path <> None and not os.path.isdir(path):
             try: 
-               print 
+               print path
                os.makedirs(path)        
             # Vista has roaming profiles that will say that this folder does not exist and will then fail to create it, because it exists...
             except: pass
