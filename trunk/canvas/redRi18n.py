@@ -22,31 +22,29 @@ def Coreget_(domain = 'messages', locale = os.path.join(redREnviron.directoryNam
                     languages == ['en_EN.ISO8859-1']
                     core_ = superfallback
                     return core_
-	    if languages[0] == 'en_EN.ISO8859-1':
-	      core_ = superfallback
-	    else:
-	      t = gettext.translation(domain, localedir = locale, languages = languages, fallback = fallback)
-	      core_ = t.gettext
-            return core_  # returns the function
+            if languages[0] == 'en_EN.ISO8859-1':
+              core_ = superfallback
+            else:
+                t = gettext.translation(domain, localedir = locale, languages = languages, fallback = fallback)
+                core_ = t.gettext
+                return core_  # returns the function
         except Exception as inst:
             print 'Exception occured in setting the Coreget_ function, %s' % unicode(inst)
             return superfallback
         
 def get_(domain = 'messages', package = 'base', languages = None, fallback = False, locale = None):
     #if locale: print locale
-    if languages != None and languages[0] == 'en_EN.ISO8859-1':
-        return superfallback
     try:
         if languages == None:
             try:
-		
                 languages = redREnviron.settings['language'].keys()
             except:
-		print redREnviron.settings['language']
+                print redREnviron.settings['language']
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
                 languages = ['en_EN.ISO8859-1']
-                core_ = superfallback
-                return core_
+                return superfallback
+        if languages[0] == 'en_EN.ISO8859-1':
+            return superfallback
         file = os.path.join(redREnviron.directoryNames['libraryDir'], package, 'languages')
         #print file
         t = gettext.translation(domain, localedir  = os.path.join(redREnviron.directoryNames['libraryDir'], package, 'languages'), languages = languages, fallback = fallback)
