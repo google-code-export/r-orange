@@ -55,6 +55,7 @@ def __getDirectoryNames():
 
     ####Mac#####
     elif sys.platform == 'darwin':
+         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
          dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'mac')
          dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'mac', 'rpy3')
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
@@ -63,6 +64,7 @@ def __getDirectoryNames():
 
     ####Linux#####
     else:
+         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
          dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux')
          dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux', 'rpy3')
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.redr', 'red-r')        
