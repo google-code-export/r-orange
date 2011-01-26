@@ -1,4 +1,5 @@
 from redRGUI import widgetState
+from libraries.base.qtWidgets.widgetBox import widgetBox
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -44,3 +45,4 @@ class scrollArea(QScrollArea,widgetState):
             separator(widget, 0, addSpace)
         elif addSpace:
             separator(widget)
+	

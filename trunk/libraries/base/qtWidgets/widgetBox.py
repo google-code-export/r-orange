@@ -40,7 +40,7 @@ class widgetBox(QWidget,widgetState):
             
         self.controlArea.layout().setAlignment(alignment)            
 
-        if spacing == -1: spacing = 8
+        if spacing == -1: spacing = 4
         self.layout().setSpacing(spacing)
         if margin == -1: margin = 0
         if margin != -1:
