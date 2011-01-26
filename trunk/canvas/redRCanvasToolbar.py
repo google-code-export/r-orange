@@ -25,6 +25,7 @@ class redRCanvasToolbarandMenu():
         
         
     def initToolbar(self):
+        self.toolbar.setObjectName('canvasToolbar')
         self.toolbar.setOrientation(Qt.Horizontal)
         if not redREnviron.settings.get("showToolbar", True): self.toolbar.hide()
         self.toolbar.addAction(QIcon(redRStyle.openFileIcon), _("Open schema"), self.menuItemOpen)

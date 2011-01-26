@@ -52,7 +52,7 @@ class OrangeCanvasDlg(QMainWindow):
         ###############################
         
         self.notesDock = QDockWidget(_('Notes'))
-        self.notesDock.setObjectName(_('CanvasNotes'))
+        self.notesDock.setObjectName('CanvasNotes')
         self.notes = redRTextEdit(None, label = _('Notes'))
         self.notes.setMinimumWidth(200)
         redRSaveLoad.setNotesWidget(self.notes)
@@ -61,7 +61,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
         
         self.outputDock = QDockWidget(_('Output'))
-        self.outputDock.setObjectName(_('CanvasOutput'))
+        self.outputDock.setObjectName('CanvasOutput')
         outbox = redRwidgetBox(None)
         self.printOutput = redRTextEdit(outbox, label = _('Output'),displayLabel=False, editable=False)
         redRbutton(outbox, label = _('Save Output'), callback = redRLog.saveOutputToFile)
@@ -104,7 +104,6 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage(_("Creating Status Bar"), Qt.AlignHCenter + Qt.AlignBottom)
         
         self.statusBar = QStatusBar()
-        self.statusBar.setLayout(QHBoxLayout())
         self.statusBar.setSizeGripEnabled(False)
         self.setStatusBar(self.statusBar)
         
@@ -175,6 +174,7 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage(_("Setting States"), Qt.AlignHCenter + Qt.AlignBottom)
 
         if 'windowState' in redREnviron.settings.keys():
+            print 'windowStats'
             self.restoreState(redREnviron.settings['windowState'])
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
@@ -195,6 +195,7 @@ class OrangeCanvasDlg(QMainWindow):
             w = max(0, deskW/2 - width/2)
             self.move(w,h+2)
             self.resize(width,height)
+        
         if 'pos' in redREnviron.settings.keys():
             self.move(redREnviron.settings['pos'])
 
@@ -231,6 +232,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.updateManager.showUpdateDialog(auto=True)
         
         qApp.processEvents()
+        
         
         
     def dockOutputManger(self,table, level, string, html):

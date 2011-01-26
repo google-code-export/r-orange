@@ -26,10 +26,10 @@ class button(QPushButton,widgetState):
             pass
         elif width: 
             self.setFixedWidth(width)
-        elif len(label)*7+5 < 50:
-            self.setFixedWidth(50)
-        else:
-            self.setFixedWidth(len(label)*7+5)
+#        elif len(label)*7+5 < 50:
+#            self.setFixedWidth(50)
+#        else:
+#            self.setFixedWidth(len(label)*7+5)
             
         if height:
             self.setFixedHeight(height)

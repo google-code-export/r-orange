@@ -97,7 +97,6 @@ class redRWidgetGUI(QMainWindow):
         
         ### status bar ###
         self.statusBar = QStatusBar()
-        self.statusBar.setLayout(QHBoxLayout())
         self.statusBar.setSizeGripEnabled(False)
         
         self.setStatusBar(self.statusBar)

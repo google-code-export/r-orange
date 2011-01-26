@@ -310,7 +310,7 @@ def doubleSpin(widget, master, value, min, max, step=1,
 def checkBox(widget, master, value, label, box=None, tooltip=None, callback=None, getwidget=None, id=None, disabled=0, labelWidth=None, disables = [], addToLayout = 1, debuggingEnabled = 1):
     b = widgetBox(widget, box, orientation=None)
     wa = QCheckBox(label, b)
-    if addToLayout and b.layout(): b.layout().addWidget(wa)
+    if addToLayout and b.layout() not in [0,None]: b.layout().addWidget(wa)
 
     if labelWidth:
         wa.setFixedSize(labelWidth, wa.sizeHint().height())
@@ -335,7 +335,7 @@ def enterButton(parent, height, placeholder = True):
     button = QPushButton(parent)
     button.setFixedSize(height, height)
     button.setIcon(getEnterIcon())
-    if parent.layout(): parent.layout().addWidget(button)
+    if parent.layout() not in [0,None]: parent.layout().addWidget(button)
     if not placeholder:
         return button
 
@@ -410,7 +410,7 @@ def lineEdit(widget, master, value,
         wa = QLineEdit(b)
         wa.enterButton = None
 
-    if b and b.layout(): b.layout().addWidget(wa)
+    if b and b.layout() not in [0,None]: b.layout().addWidget(wa)
     if value:
         wa.setText(unicode(getdeepattr(master, value)))
 
@@ -431,7 +431,7 @@ def lineEdit(widget, master, value,
 
 def button(widget, master, label, callback = None, disabled=0, tooltip=None, debuggingEnabled = 1, width = None, height = None, toggleButton = False, value = "", addToLayout = 1):
     btn = QPushButton(label, widget)
-    if addToLayout and widget.layout():
+    if addToLayout and widget.layout() not in [0,None]:
         widget.layout().addWidget(btn)
 
     if width:
@@ -458,7 +458,7 @@ def button(widget, master, label, callback = None, disabled=0, tooltip=None, deb
 
 def toolButton(widget, master, callback = None, width = None, height = None, tooltip = None, addToLayout = 1, debuggingEnabled = 1):
     btn = QToolButton(widget)
-    if addToLayout and widget.layout(): widget.layout().addWidget(btn)
+    if addToLayout and widget.layout() not in [0,None]: widget.layout().addWidget(btn)
     if width != None: btn.setFixedWidth(width)
     if height!= None: btn.setFixedHeight(height)
     if tooltip != None: btn.setToolTip(tooltip)
@@ -509,7 +509,7 @@ def listBox(widget, master, value = None, labels = None, box = None, tooltip = N
     lb = OrangeListBox(master, value, enableDragDrop, dragDropCallback, dataValidityCallback, sizeHint, bg)
     lb.box = bg
     lb.setSelectionMode(selectionMode)
-    if bg.layout(): bg.layout().addWidget(lb)
+    if bg.layout() not in [0,None]: bg.layout().addWidget(lb)
 
     if value != None:
         clist = getdeepattr(master, value)
@@ -575,7 +575,7 @@ def appendRadioButton(bg, master, value, label, tooltip = None, insertInto = Non
         w = QRadioButton(unicode(i))
         w.setIcon(QIcon(label))
     #w.ogValue = value
-    if dest.layout(): dest.layout().addWidget(w)
+    if dest.layout() not in [0,None]: dest.layout().addWidget(w)
     if not hasattr(bg, "group"):
         bg.group = QButtonGroup(bg)
     bg.group.addButton(w)
@@ -636,7 +636,7 @@ def hSlider(widget, master, value, box=None, minValue=0, maxValue=10, step=1, ca
     if width != None:
         slider.setFixedWidth(width)
 
-    if sliderBox.layout(): sliderBox.layout().addWidget(slider)
+    if sliderBox.layout() not in [0,None]: sliderBox.layout().addWidget(slider)
 
     if ticks:
         slider.setTickPosition(QSlider.TicksBelow)
@@ -644,7 +644,7 @@ def hSlider(widget, master, value, box=None, minValue=0, maxValue=10, step=1, ca
 
     if createLabel:
         label = QLabel(sliderBox)
-        if sliderBox.layout(): sliderBox.layout().addWidget(label)
+        if sliderBox.layout() not in [0,None]: sliderBox.layout().addWidget(label)
         label.setText(labelFormat % minValue)
         width1 = label.sizeHint().width()
         label.setText(labelFormat % maxValue)

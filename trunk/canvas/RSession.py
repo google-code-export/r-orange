@@ -24,7 +24,7 @@
 
 import sys, os, redREnviron, numpy
 os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
-import rpy3.robjects as rpy
+import rpy2.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redrrpy._conversion as co
@@ -140,9 +140,14 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     return output
 
 def convertToPy(inobject):
-    #print _('in convertToPy'), inobject.getrclass()        
     try:
-        if inobject.getrclass()[0] not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
+        if sys.platform =='win32':
+         rclass = inobject._rclass_get()[0]
+        elif sys.platform =='darwin':
+         rclass=inobject.rclass[0]
+        else:
+          rclass=inobject.rclass[0] 
+        if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
             return inobject
         return co.convert(inobject)
     except Exception as e:
@@ -159,7 +164,7 @@ def getInstalledLibraries():
     #else:
     #    Rcommand('.libPaths(new = "'+personalLibDir+'")')
     #    return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
-#loadedLibraries = []
+loadedLibraries = []
 
 def setLibPaths(libLoc):
     ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
