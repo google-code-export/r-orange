@@ -33,6 +33,9 @@ class updateManager():
         self.repository = 'http://www.red-r.org/redr_updates/Red-R-' + self.version
         
     def checkForUpdate(self):
+        ######### system specific ########
+        if sys.platform == 'linux2':
+            return False  ## linux doesn't play nice with the update manager right now.
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RUpdates.xml')
         f = urllib2.urlopen(self.repository +'/currentVersion.xml')
         output = open(file,'wb')

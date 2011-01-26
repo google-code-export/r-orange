@@ -9,7 +9,9 @@ mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redREnviron
 import redRLog
+print 'done with redrlog'
 import redRStyle
+print 'done with redrstyle'
 import RSession
 import redRHistory
 import redRi18n

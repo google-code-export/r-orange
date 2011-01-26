@@ -55,7 +55,7 @@ class RDataTable(OWRpy):
         diBox = self.advancedOptions.createTabPage(_("Data Information"))
         self.infoBox = groupBox(diBox, label=_("Data Information"))
         self.infoBox.setHidden(False)
-        widgetLabel(self.infoBox, label = _("A summary of your data will be displayed below when data is available."))
+        widgetLabel(self.infoBox, label = _("A summary of your data will be displayed below when data is available."),  wordWrap = True)
         self.rowColCount = widgetLabel(self.infoBox)
         #saveTab = self.tabWidgeta.createTabPage('Save Data')
         sdBox = self.advancedOptions.createTabPage(_("Save Data"))

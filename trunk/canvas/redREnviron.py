@@ -64,6 +64,7 @@ def __getDirectoryNames():
 
     ####Linux#####
     else:
+         print 'loading linx files'
          dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
          dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux')
          dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux', 'rpy3')
@@ -253,4 +254,5 @@ if __name__ =='redREnviron':
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
+    print 'done with redREnviron'
  

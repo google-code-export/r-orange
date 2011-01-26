@@ -36,6 +36,8 @@ logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG','DEVEL']
 logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
 
+print 'loading defs'
+
 def setLogTrigger(name,manager,level):
     global _logTriggers
     _logTriggers[name] = {'level':level,'trigger':manager}
@@ -181,8 +183,14 @@ def saveOutputToFile():
 class LogHandler():
     def __init__(self):
         #self.defaultSysOutHandler = sys.stdout
-        sys.stdout = self
-        sys.excepthook = self.exceptionHandler
+        ########## system specific, resetting except hook kills linux #########
+        
+        ##### if linux  #######
+        if sys.platform == 'linux2':
+            pass
+        else:
+            sys.stdout = self
+            sys.excepthook = self.exceptionHandler
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
         self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file

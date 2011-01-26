@@ -24,7 +24,20 @@
 
 import sys, os, redREnviron, numpy
 os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
-import rpy2.robjects as rpy
+
+####### system specific import of rpy in it's various flavors ##########
+## if mac ##
+if sys.platform == 'darwin':
+    import rpy2.robjects as rpy
+## if windows ##
+elif sys.platform == 'win32':
+    import rpy2.robjects as rpy
+## if linux ##
+elif sys.platform == 'linux2':
+    import rpy3.robjects as rpy
+## if we don't know ##
+else:
+    import rpy2.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redrrpy._conversion as co
