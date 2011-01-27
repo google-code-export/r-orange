@@ -1,11 +1,11 @@
 import unittest
-import rpy3.robjects as robjects
+import rpy2.robjects as robjects
 r = robjects.r
 
 try:
     import numpy
     has_numpy = True
-    import rpy3.robjects.numpy2ri as rpyn
+    import rpy2.robjects.numpy2ri as rpyn
 except:
     has_numpy = False
 
@@ -42,7 +42,6 @@ class NumpyConversionsTestCase(unittest.TestCase):
         self.checkHomogeneous(f, "numeric", "double")
 
     def testVectorComplex(self):
-        #self.assertTrue(False) # arrays of complex causing segfault
         c = numpy.array([1j, 2j, 3j], dtype=numpy.complex_)
         self.checkHomogeneous(c, "complex", "complex")
 
@@ -51,9 +50,8 @@ class NumpyConversionsTestCase(unittest.TestCase):
         self.checkHomogeneous(s, "character", "character")
 
     def testVectorUnicodeCharacter(self):
-        self.assertTrue(False) # arrays of unicode characters causing segfault
-#         u = numpy.array([u"a", u"b", u"c"], dtype="U")
-#         self.checkHomogeneous(u, "character", "character")
+        u = numpy.array([u"a", u"b", u"c"], dtype="U")
+        self.checkHomogeneous(u, "character", "character")
 
     def testArray(self):
 
@@ -64,7 +62,7 @@ class NumpyConversionsTestCase(unittest.TestCase):
         self.assertEquals(tuple(r["dim"](i2d_r)), (2, 3))
 
         # Make sure we got the row/column swap right:
-        self.assertEquals(i2d_r.subset(1, 2)[0], i2d[0, 1])
+        self.assertEquals(i2d_r.rx(1, 2)[0], i2d[0, 1])
 
         f3d = numpy.arange(24, dtype="f").reshape((2, 3, 4))
         f3d_r = robjects.conversion.py2ri(f3d)
@@ -73,7 +71,7 @@ class NumpyConversionsTestCase(unittest.TestCase):
         self.assertEquals(tuple(r["dim"](f3d_r)), (2, 3, 4))
 
         # Make sure we got the row/column swap right:
-        self.assertEquals(f3d_r.subset(1, 2, 3)[0], f3d[0, 1, 2])
+        self.assertEquals(f3d_r.rx(1, 2, 3)[0], f3d[0, 1, 2])
 
     def testObjectArray(self):
         o = numpy.array([1, "a", 3.2], dtype=numpy.object_)
@@ -99,6 +97,13 @@ class NumpyConversionsTestCase(unittest.TestCase):
     def testBadArray(self):
         u = numpy.array([1, 2, 3], dtype=numpy.uint32)
         self.assertRaises(ValueError, robjects.conversion.py2ri, u)
+
+    def testAssignNumpyObject(self):
+        x = numpy.arange(-10., 10., 1)
+        env = robjects.Environment()
+        env["x"] = x
+        self.assertEquals(1, len(env))
+        self.assertTrue(isinstance(env["x"], robjects.Array))
 
 def suite():
     if has_numpy:

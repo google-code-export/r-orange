@@ -1,6 +1,6 @@
 import unittest
 import itertools
-import rpy3.rlike.indexing as rfi
+import rpy2.rlike.indexing as rfi
 
 class OrderTestCase(unittest.TestCase):
 

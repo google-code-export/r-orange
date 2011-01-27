@@ -1,15 +1,24 @@
 import unittest
-import rpy3.rinterface as rinterface
+import rpy2.rinterface as rinterface
 
 rinterface.initr()
 
 class SexpEnvironmentTestCase(unittest.TestCase):
 
+    def setUp(self):
+        self.console = rinterface.get_writeconsole()
+        def noconsole(x):
+            pass
+        rinterface.set_writeconsole(noconsole)
+
+    def tearDown(self):
+        rinterface.set_writeconsole(self.console)
+
     def testNew(self):
-        sexp = rinterface.globalEnv
+        sexp = rinterface.globalenv
         sexp_new = rinterface.SexpEnvironment(sexp)
 
-        idem = rinterface.globalEnv.get("identical")
+        idem = rinterface.globalenv.get("identical")
         self.assertTrue(idem(sexp, sexp_new)[0])
 
         sexp_new2 = rinterface.Sexp(sexp)
@@ -20,61 +29,64 @@ class SexpEnvironmentTestCase(unittest.TestCase):
         self.assertRaises(ValueError, rinterface.SexpEnvironment, '2')
 
     def testGlobalEnv(self):
-        ok = isinstance(rinterface.globalEnv, rinterface.SexpEnvironment) 
+        ok = isinstance(rinterface.globalenv, rinterface.SexpEnvironment) 
         self.assertTrue(ok)
 
-    def testGet(self):
-        help_R = rinterface.globalEnv.get("help")
+    def testGetClosure(self):
+        help_R = rinterface.globalenv.get("help")
         ok = isinstance(help_R, rinterface.SexpClosure)
         self.assertTrue(ok)
 
-        pi_R = rinterface.globalEnv.get("pi")
+    def testGetVector(self):
+        pi_R = rinterface.globalenv.get("pi")
         ok = isinstance(pi_R, rinterface.SexpVector)
         self.assertTrue(ok)
 
-        ge_R = rinterface.globalEnv.get(".GlobalEnv")
+    def testGetEnvironment(self):
+        ge_R = rinterface.globalenv.get(".GlobalEnv")
         ok = isinstance(ge_R, rinterface.SexpEnvironment)
         self.assertTrue(ok)
 
-        self.assertRaises(LookupError, rinterface.globalEnv.get, "survfit")
-        rinterface.globalEnv.get("library")(rinterface.SexpVector(["survival", ],
-                                            rinterface.STRSXP))
-        sfit_R = rinterface.globalEnv.get("survfit")
+    def testGetOnlyFromLoadedLibrary(self):
+        self.assertRaises(LookupError, rinterface.globalenv.get, "survfit")
+        rinterface.globalenv.get("library")(rinterface.StrSexpVector(["survival", ]))
+        sfit_R = rinterface.globalenv.get("survfit")
         ok = isinstance(sfit_R, rinterface.SexpClosure)
         self.assertTrue(ok)
 
-    def testGetEmptyString(self):
-        self.assertRaises(ValueError, rinterface.globalEnv.get, "")
 
     def testGet_functionOnly_lookupError(self):
         # now with the function-only option
 
         self.assertRaises(LookupError, 
-                          rinterface.globalEnv.get, "pi", wantFun = True)
+                          rinterface.globalenv.get, "pi", wantfun = True)
 
     def testGet_functionOnly(self):
-        hist = rinterface.globalEnv.get("hist", wantFun = False)
+        hist = rinterface.globalenv.get("hist", wantfun = False)
         self.assertEquals(rinterface.CLOSXP, hist.typeof)
-        rinterface.globalEnv["hist"] = rinterface.SexpVector(["foo", ], 
+        rinterface.globalenv["hist"] = rinterface.SexpVector(["foo", ], 
                                                              rinterface.STRSXP)
 
-        hist = rinterface.globalEnv.get("hist", wantFun = True)
+        hist = rinterface.globalenv.get("hist", wantfun = True)
         self.assertEquals(rinterface.CLOSXP, hist.typeof)
         
+    def testGet_emptyString(self):
+        self.assertRaises(ValueError, rinterface.globalenv.get, "")
 
     def testSubscript(self):
-        ge = rinterface.globalEnv
-        obj = rinterface.globalEnv.get("letters")
+        ge = rinterface.globalenv
+        obj = rinterface.globalenv.get("letters")
         ge["a"] = obj
-        a = rinterface.globalEnv["a"]
+        a = rinterface.globalenv["a"]
         ok = ge.get("identical")(obj, a)
         self.assertTrue(ok[0])
 
-    def testSubscriptEmptyString(self):
-        self.assertRaises(ValueError, rinterface.globalEnv.__getitem__, "")
+    def testSubscript_emptyString(self):
+        ge = rinterface.globalenv
+        self.assertRaises(KeyError, ge.__getitem__, "")
 
     def testLength(self):
-        newEnv = rinterface.globalEnv.get("new.env")
+        newEnv = rinterface.globalenv.get("new.env")
         env = newEnv()
         self.assertEquals(0, len(env))
         env["a"] = rinterface.SexpVector([123, ], rinterface.INTSXP)
@@ -83,7 +95,7 @@ class SexpEnvironmentTestCase(unittest.TestCase):
         self.assertEquals(2, len(env))
 
     def testIter(self):
-        newEnv = rinterface.globalEnv.get("new.env")
+        newEnv = rinterface.globalenv.get("new.env")
         env = newEnv()
         env["a"] = rinterface.SexpVector([123, ], rinterface.INTSXP)
         env["b"] = rinterface.SexpVector([456, ], rinterface.INTSXP)
@@ -97,4 +109,6 @@ def suite():
     return suite
 
 if __name__ == '__main__':
-     unittest.main()
+    tr = unittest.TextTestRunner(verbosity = 2)
+    tr.run(suite())
+

@@ -1,6 +1,6 @@
 import unittest
 import itertools
-import rpy3.rinterface as rinterface
+import rpy2.rinterface as rinterface
 
 
 try:
@@ -71,9 +71,23 @@ class SexpVectorNumericTestCase(unittest.TestCase):
     def testArrayStructNumpyBoolean(self):
         testArrayStructBoolean(self, numpy)
 
+    def testArrayShapeLen3(self):
+        extract = rinterface.baseenv['[']
+        rarray = rinterface.baseenv['array'](rinterface.IntSexpVector(range(30)),
+                                             dim = rinterface.IntSexpVector([5,2,3]))
+        npyarray = numpy.array(rarray)
+        for i in range(5):
+            for j in range(2):
+                for k in range(3):
+                    self.assertEquals(extract(rarray, i+1, j+1, k+1)[0], 
+                                      npyarray[i, j, k])
+
+
 def suite():
     suite = unittest.TestLoader().loadTestsFromTestCase(SexpVectorNumericTestCase)
     return suite
 
 if __name__ == '__main__':
-     unittest.main()
+    tr = unittest.TextTestRunner(verbosity = 2)
+    tr.run(suite())
+

@@ -151,13 +151,23 @@ def py2rpy(obj):
 
 def rpy2py_basic(obj):    
     if hasattr(obj, '__len__'):
-        if obj.typeof in [ri.INTSXP, ri.REALSXP, ri.CPLXSXP, 
-                            ri.STRSXP]:
+        if obj.typeof in [ri.INTSXP, ri.REALSXP, ri.CPLXSXP,
+                          ri.LGLSXP,ri.STRSXP]:
             res = [x for x in obj]
         elif obj.typeof in [ri.VECSXP]:
-            res = [rpy2py(x) for x in obj]
+            try:
+                # if the returned objects is a list with names, return a dict
+                obj_names = obj.do_slot("names")
+                # caution: throw an exception if duplicated names
+                if (len(set(obj_names)) != len(obj_names)):
+                    raise ValueError("Duplicated names in the R named list.")
+                res = dict([(obj_names[i], rpy2py(x)) for i,x in enumerate(obj)])
+            except LookupError:
+                res = [rpy2py(x) for x in obj]
+        elif obj.typeof == [ri.LANGSXP]:
+            res = Robj(obj)
         else:
-            raise ValueError("Invalid type %i (%s) for 'obj'." %(obj.typeof, ri.str_typeint(obj.typeof)))
+            raise ValueError("Invalid type for 'obj'.")
     else:
         res = Robj(obj)
     return res
@@ -186,8 +196,9 @@ class Robj(object):
     __local_mode = NO_DEFAULT
 
     def __init__(self, sexp):
+
         if not isinstance(sexp, ri.Sexp):
-            raise ValueError('"sexp" must inherit from ri.Sexp')
+            raise ValueError('"sexp" must inherit from rinterface.Sexp (not %s)' %str(type(sexp)))
         self.__sexp = sexp
 
     def __call__(self, *args, **kwargs):
@@ -210,7 +221,7 @@ class Robj(object):
             else:                
                 a = py2rpy(a)
             kwargs_r[a_n] = a
-        #import pdb; pdb.set_trace()
+
         res = self.__sexp(*args_r, **kwargs_r)
         res = rpy2py(res)
         return res
@@ -234,16 +245,19 @@ class Robj(object):
     #    res = rpy2py(self)
     #    return res
 
-    def as_py(self, mode = default_mode):
-        res = rpy2py(self, mode)
+    def as_py(self, mode = None):
+        if mode is None:
+            mode = default_mode
+        res = rpy2py(self.__sexp, mode = mode)
         return res
 
-    def local_mode(self, mode = default_mode):
+    def __local_mode(self, mode = default_mode):
         self.__local_mode = mode
+
 
 class R(object):
     def __init__(self):
-        self.get = ri.globalEnv.get
+        self.get = ri.globalenv.get
         self.TRUE = ri.TRUE
         self.FALSE = ri.FALSE
         
@@ -260,8 +274,8 @@ class R(object):
 
     def __getitem__(self, name):
         #FIXME: "get function only" vs "get anything"
-        # wantFun = True ?
-        res = ri.globalEnv.get(name)
+        # wantfun = True ?
+        res = ri.globalenv.get(name)
         res = rpy2py(res)
         return res
 
@@ -272,7 +286,7 @@ class R(object):
         helpobj.helpfun(*arg, **kw)
         
     def __repr__(self):
-        r_version = ri.baseNameSpaceEnv['R.version.string'][0]
+        r_version = ri.baseenv['R.version.string'][0]
         res = 'RPy version %s with %s' %(RPY_VERSION, r_version)
         return res
 

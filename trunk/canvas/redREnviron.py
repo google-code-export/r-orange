@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Modified by Kyle R. Covington and Anup Parikh """
 import os, sys, user, cPickle, time
 from OrderedDict import OrderedDict
@@ -116,7 +117,7 @@ def checkInternetConnection():
         urllib.urlopen('http://www.google.com/')
         return True
     except:
-        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return False
 def samepath(path1, path2):
     return os.path.normcase(os.path.normpath(path1)) == os.path.normcase(os.path.normpath(path2))
@@ -143,7 +144,7 @@ def loadSettings():
         try:
             settings = cPickle.load(open(filename, "rb"))
         except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
 
     settings['id'] = unicode(time.time())
@@ -257,7 +258,7 @@ def addOrangeDirectoriesToPath(directoryNames):
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-# print __name__
+print __name__
 if __name__ =='redREnviron':
     
     directoryNames = __getDirectoryNames()

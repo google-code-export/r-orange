@@ -1,6 +1,6 @@
 import unittest
 import itertools
-import rpy3.rlike.functional as rlf
+import rpy2.rlike.functional as rlf
 
 class TapplyTestCase(unittest.TestCase):
 

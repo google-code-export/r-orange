@@ -40,6 +40,7 @@ else:
     import rpy2.robjects as rpy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+print 'importing conversion'
 import redrrpy._conversion as co
 import redRLog
 

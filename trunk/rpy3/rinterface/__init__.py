@@ -15,15 +15,26 @@ if len(R_HOME) == 0:
                                          0, win32con.KEY_QUERY_VALUE )
             R_HOME = win32api.RegQueryValueEx(hkey, "InstallPath")[0]
             win32api.RegCloseKey( hkey )
+        except ImportError, ie:
+            raise RuntimeError(
+                "No environment variable R_HOME could be found, "
+                "calling the command 'R RHOME' does not return anything, " +\
+                "and unable to import win32api or win32con, " +\
+                    "both of which being needed to retrieve where is R "+\
+                    "from the registry. You should either specify R_HOME " +\
+                    "or install the win32 package.")
         except:
             raise RuntimeError(
-                "Unable to determine R version from the registery." +\
-                "Calling the command 'R RHOME' does not return anything.\n" +\
+                "No environment variable R_HOME could be found, "
+                "calling the command 'R RHOME' does not return anything, " +\
+                "and unable to determine R version from the registery." +\
                     "This might be because R.exe is nowhere in your Path.")
     else:
         raise RuntimeError(
             "R_HOME not defined, and no R command in the PATH."
             )
+elif sys.platform != 'win32':
+  R_HOME = '/usr/lib/R'
 else:
 #Twist if 'R RHOME' spits out a warning
     if R_HOME[0].startswith("WARNING"):
@@ -95,27 +106,64 @@ class BoolSexpVector(SexpVector):
     def __init__(self, v):        
         super(BoolSexpVector, self).__init__(v, LGLSXP)
 
+class ListSexpVector(SexpVector):
+    """ 
+    Vector of objects (list in R terminology).
+    """
+    def __init__(self, v):        
+        super(ListSexpVector, self).__init__(v, VECSXP)
 
-# wrapper because print is strangely not a function
-# Python prior to version 3.0
+class ComplexSexpVector(SexpVector):
+    """ 
+    Vector of complex (complex in R terminology).
+    """
+    def __init__(self, v):        
+        super(ComplexSexpVector, self).__init__(v, CPLXSXP)
+
+
+
+# wrapper in case someone changes sys.stdout:
 def consolePrint(x):
     """This is the default callback for R's console. It simply writes to stdout."""
     sys.stdout.write(x)
 
-setWriteConsole(consolePrint)
+set_writeconsole(consolePrint)
 
 def consoleFlush():
     sys.stdout.flush()
 
-setFlushConsole(consoleFlush)
-
+set_flushconsole(consoleFlush)
 
 def consoleRead(prompt):
     input = raw_input(prompt)
     input += "\n"
     return input
 
-setReadConsole(consoleRead)
+set_readconsole(consoleRead)
+
+def consoleMessage(x):
+    sys.stdout.write(x)
+set_showmessage(consoleMessage)
 
 
+def chooseFile(prompt):
+    res = raw_input(prompt)
+    return res
+set_choosefile(chooseFile)
 
+def showFiles(wtitle, titlefiles, rdel, pager):
+    sys.stdout.write(titlefiles)
+
+    for wt in wtitle:
+        sys.stdout.write(wt[0])
+        f = open(wt[1])
+        for row in f:
+            sys.stdout.write(row)
+        f.close()
+    return 0
+set_showfiles(showFiles)
+
+# def cleanUp(saveact, status, runlast):
+#     return True
+
+# setCleanUp(cleanUp)

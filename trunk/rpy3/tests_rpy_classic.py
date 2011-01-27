@@ -1,7 +1,7 @@
 import unittest
 
-import rpy3.rpy_classic as rpy
-import rpy3.rinterface
+import rpy2.rpy_classic as rpy
+import rpy2.rinterface
 
 
 class RpyClassicTestCase(unittest.TestCase):

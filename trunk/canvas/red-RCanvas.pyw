@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Author: Kyle R Covington and Anup Parikh, adapted from orangeCanvas
 # Description:
 #    main file, that creates the MDI environment
@@ -7,23 +8,33 @@ from PyQt4.QtGui import *
 import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
+# redREnviron.__getDirectoryNames()
+# redREnviron.addOrangeDirectoriesToPath(directoryNames)
+# redREnviron.getVersion()
+# redREnviron.loadSettings()
 import redREnviron
-import redRLog
-print 'done with redrlog'
+print 'loading log'
+try:
+  import redRLog
+except Exception as inst:
+  print unicode(inst)
+print 'loading style'
 import redRStyle
-print 'done with redrstyle'
+
+print 'loading R session'
 import RSession
 import redRHistory
 import redRi18n
 import orngRegistry, OWGUI
-import redRSubmitErrors, redRSaveLoad
+import redROutput, redRSaveLoad
 import orngDoc, orngDlgs
 import redRWidgetsTree
 import redRPackageManager, redRGUI,signals, redRInitWizard
-import redRReports
-import redRObjects
-import redRUpdateManager
+import redRReports, redRObjects, redRUpdateManager
 import redRCanvasToolbar
+
+print 'Core module Load complete'
+
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
@@ -34,8 +45,6 @@ class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags =  0):
         QMainWindow.__init__(self, parent)
         # self._ = redRi18n.Coreget_('messages', os.path.join(redREnviron.directoryNames['redRDir'], 'languages'), languages = ['French'])
-        redRSaveLoad.setCanvasDlg(self)
-
         self.setWindowTitle(_("Red-R Canvas %s") % redREnviron.version['REDRVERSION'])
         if os.path.exists(redRStyle.canvasIcon):
             self.setWindowIcon(QIcon(redRStyle.canvasIcon))
@@ -54,7 +63,7 @@ class OrangeCanvasDlg(QMainWindow):
         ###############################
         
         self.notesDock = QDockWidget(_('Notes'))
-        self.notesDock.setObjectName('CanvasNotes')
+        self.notesDock.setObjectName(_('CanvasNotes'))
         self.notes = redRTextEdit(None, label = _('Notes'))
         self.notes.setMinimumWidth(200)
         redRSaveLoad.setNotesWidget(self.notes)
@@ -63,16 +72,22 @@ class OrangeCanvasDlg(QMainWindow):
         self.connect(self.notesDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
         
         self.outputDock = QDockWidget(_('Output'))
-        self.outputDock.setObjectName('CanvasOutput')
+        self.outputDock.setObjectName(_('CanvasOutput'))
         outbox = redRwidgetBox(None)
         self.printOutput = redRTextEdit(outbox, label = _('Output'),displayLabel=False, editable=False)
         redRbutton(outbox, label = _('Save Output'), callback = redRLog.saveOutputToFile)
         self.outputDock.setWidget(outbox)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.outputDock)
         self.connect(self.outputDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
-        # redRLog.setOutputWindow(self.printOutput)
+        redRLog.setOutputWindow(self.printOutput)
         redRLog.setOutputManager('dock', self.dockOutputManger)
         
+        #######################
+        #####Output Manager####
+        #######################
+
+        # self.output = redROutput.OutputWindow(self)
+        # redRLog.setOutputManager('window', self.output.outputManager)
         
         
         ###################
@@ -106,6 +121,7 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage(_("Creating Status Bar"), Qt.AlignHCenter + Qt.AlignBottom)
         
         self.statusBar = QStatusBar()
+        self.statusBar.setLayout(QHBoxLayout())
         self.statusBar.setSizeGripEnabled(False)
         self.setStatusBar(self.statusBar)
         
@@ -127,13 +143,6 @@ class OrangeCanvasDlg(QMainWindow):
             self.showROutputButton.setChecked(redREnviron.settings['dockState']['outputBox'])
             self.showWidgetToolbar.setChecked(redREnviron.settings['dockState']['widgetBox'])
         
-        #######################
-        #Error Update Manager##
-        #######################
-
-        # self.output = redRSubmitErrors.redRSubmitErrors(self)
-        redRLog.setOutputManager('submitErrors', redRSubmitErrors.errorSubmitter,level=redRLog.ERROR)
-        redRLog.setLogTrigger('displayError', lambda x,y: self.showOutputDock(),level=redRLog.ERROR)
 
         ###################
         #Package Manager###
@@ -158,6 +167,12 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.reports = redRReports.reports(self,self.schema)
 
+        ###################
+        ##Update Manager###
+        ###################
+        splashWindow.showMessage(_("Creating Update Manager"), Qt.AlignHCenter + Qt.AlignBottom)
+        
+        self.updateManager = redRUpdateManager.updateManager(self)
         
         ###################
         #Toolbar and Menu##
@@ -176,7 +191,6 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage(_("Setting States"), Qt.AlignHCenter + Qt.AlignBottom)
 
         if 'windowState' in redREnviron.settings.keys():
-            print 'windowStats'
             self.restoreState(redREnviron.settings['windowState'])
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
@@ -197,7 +211,6 @@ class OrangeCanvasDlg(QMainWindow):
             w = max(0, deskW/2 - width/2)
             self.move(w,h+2)
             self.resize(width,height)
-        
         if 'pos' in redREnviron.settings.keys():
             self.move(redREnviron.settings['pos'])
 
@@ -219,22 +232,12 @@ class OrangeCanvasDlg(QMainWindow):
             if 'firstLoad' not in redREnviron.settings.keys():
                 redREnviron.settings['firstLoad'] = True
             if redREnviron.settings['firstLoad']:
-                redRInitWizard.startSetupWizard()
+                self.startSetupWizard()
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
-        
-        # redRInitWizard.startSetupWizard()
-        
-        ###################
-        ##Update Manager###
-        ###################
-        splashWindow.showMessage(_("Check For Updates"), Qt.AlignHCenter + Qt.AlignBottom)
-        self.updateManager = redRUpdateManager.updateManager(self)
-        self.updateManager.showUpdateDialog(auto=True)
-        
+        redRSaveLoad.setCanvasDlg(self)
         qApp.processEvents()
-        
         
         
     def dockOutputManger(self,table, level, string, html):
@@ -246,17 +249,8 @@ class OrangeCanvasDlg(QMainWindow):
         else:
             self.printOutput.insertPlainText(string)
             
-        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)
-        
-    def showOutputDock(self):
-        if not redREnviron.settings["focusOnCatchException"]: return
-        
-        self.showROutputButton.setChecked(True)
-        self.updateDockState()
-        self.raise_()
-        self.outputDock.raise_()
-        qApp.setActiveWindow(self.outputDock)
-        
+        cursor.movePosition(QTextCursor.End, QTextCursor.MoveAnchor)     
+
     def updateDock(self,ev):
         if self.notesDock.isHidden():
             self.showNotesButton.setChecked(False)
@@ -301,6 +295,28 @@ class OrangeCanvasDlg(QMainWindow):
             redREnviron.settings['dockState']['widgetBox'] = False
         
     
+    def startSetupWizard(self):
+        setupWizard = redRInitWizard.RedRInitWizard()
+        if setupWizard.exec_() == QDialog.Accepted:
+            redREnviron.settings['email'] = unicode(setupWizard.email.text())
+            redREnviron.settings['canContact'] = unicode(setupWizard.allowContact.getChecked()) == _('Yes')
+            try:
+                redREnviron.settings['CRANrepos'] = setupWizard.settings['CRANrepos']
+            except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+                pass
+            redREnviron.settings['focusOnCatchException'] = _('Show output window on exception') in setupWizard.redRExceptionHandling.getChecked()
+            redREnviron.settings['printExceptionInStatusBar'] = _('Print last exception in status bar') in setupWizard.redRExceptionHandling.getChecked()
+            redREnviron.settings['uploadError'] = _('Submit Error Report') in setupWizard.redRExceptionHandling.getChecked()
+            redREnviron.settings['askToUploadError'] = _('Always ask before submitting error report') in setupWizard.redRExceptionHandling.getChecked()
+        
+            if _('Start Example') in setupWizard.showExample.getChecked():
+                self.schema.loadDocument(os.path.join(redREnviron.directoryNames['examplesDir'], 'firstSchema.rrs'))
+            
+        #print redREnviron.settings
+        redREnviron.settings['firstLoad'] = False
+        redREnviron.saveSettings()
+                
         
     def createWidgetsToolbar(self,widgetRegistry=None):
         if widgetRegistry:
@@ -349,6 +365,9 @@ class OrangeCanvasDlg(QMainWindow):
         redREnviron.settings["windowState"] = self.saveState()
         redREnviron.settings['pos'] = self.pos()
         redREnviron.settings['size'] = self.size()
+
+        
+        
         redREnviron.saveSettings()
         # closed = self.schema.close()
         if redREnviron.settings['dontAskBeforeClose']:
@@ -380,7 +399,7 @@ class OrangeCanvasDlg(QMainWindow):
             # makes the closing much cleaner than just loosing the session.
             redRHistory.saveConnectionHistory()
             redRLog.closeLogFile()
-
+            RSession.Rcommand('quit("no")',silent=True) 
             ce.accept()
             QMainWindow.closeEvent(self,ce)
         else:
