@@ -245,7 +245,7 @@ class CanvasOptionsDlg(QDialog):
         if self.tabs.tabText(index) != _('R Settings'):
             return
         self.libs = RSession.Rcommand('getCRANmirrors()')
-        #print self.libs
+        print self.libs
         self.libListBox.clear()
         self.libListBox.addItems(zip(self.libs['URL'],self.libs['Name']))
         self.libListBox.setSelectedIds([self.settings['CRANrepos']])

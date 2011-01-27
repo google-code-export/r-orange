@@ -38,6 +38,7 @@ elif sys.platform == 'linux2':
 ## if we don't know ##
 else:
     import rpy2.robjects as rpy
+    
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 print 'importing conversion'
@@ -156,7 +157,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
 def convertToPy(inobject):
     try:
         if sys.platform =='win32':
-         rclass = inobject._rclass_get()[0]
+         rclass = inobject.getrclass()[0]
         elif sys.platform =='darwin':
          rclass=inobject.rclass[0]
         else:
