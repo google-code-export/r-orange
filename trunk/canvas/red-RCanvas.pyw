@@ -79,7 +79,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.outputDock.setWidget(outbox)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.outputDock)
         self.connect(self.outputDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
-        redRLog.setOutputWindow(self.printOutput)
+        #redRLog.setOutputWindow(self.printOutput)
         redRLog.setOutputManager('dock', self.dockOutputManger)
         
         #######################

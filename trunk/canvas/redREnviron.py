@@ -47,7 +47,7 @@ def __getDirectoryNames():
     if sys.platform=="win32":
         ### architecture specific ####???
         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
-        dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win')
+        dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win32')
         dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
         
         createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
@@ -247,6 +247,7 @@ def addOrangeDirectoriesToPath(directoryNames):
     
     
     pathsToAdd.append(directoryNames['canvasDir'])
+    print pathsToAdd
     # pathsToAdd.append(directoryNames['libraryDir'])
 
     # if directoryNames['libraryDir'] <> None and os.path.isdir(directoryNames['libraryDir']):
