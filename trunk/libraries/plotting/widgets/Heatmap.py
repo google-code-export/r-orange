@@ -23,7 +23,7 @@ class Heatmap(OWRpy):
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
-        
+        self.require_librarys(["fBasics", "gplots"])
         self.setRvariableNames(['heatsubset', 'hclust', 'heatvect'])
         self.plotOnConnect = 0
         self.plotdata = ''
@@ -52,7 +52,10 @@ class Heatmap(OWRpy):
         self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
         self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
         self.endSaturation.setValue(30)
-        redRButton(self.controlArea, label = 'Reset Colors', callback = self.resetColors)
+        colorbuttonbox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
+        redRButton(colorbuttonbox, label = 'Reset Colors', callback = self.resetColors)
+        redRButton(colorbuttonbox, label = 'Set class colors', callback = self.setClassColors)
+        
         #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         
         self.rowDendrogram = checkBox(infobox, label='Dendrogram Options', displayLabel=False,
@@ -66,6 +69,7 @@ class Heatmap(OWRpy):
         self.infoa = widgetLabel(infobox, label = "Nothing to report")
         self.gview1 = graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
         self.gview1.image = 'heatmap1_'+self.widgetID
+        self.gview1.setImagePNG()
         #self.gview2 = graphicsView(self.controlArea)
         #self.gview2.image = 'heatmap2_'+self.widgetID
     def resetColors(self):
@@ -73,6 +77,11 @@ class Heatmap(OWRpy):
         if cd.exec_() != QDialog.Accepted:
             return
         self.listOfColors = cd.listOfColors
+    def setClassColors(self):
+        cd = colorListDialog(self)
+        if cd.exec_() != QDialog.Accepted:
+            return
+        self.classColors = cd.listOfColors
     def onLoadSavedSession(self):
         print 'load heatmap'
         self.processSignals()
@@ -108,8 +117,10 @@ class Heatmap(OWRpy):
         self.status.setText("You are plotting "+self.plotdata)
         # if unicode(self.classesDropdown.currentText()) != '':
             # self.classes = self.classesData+'[,\''+unicode(self.classesDropdown.currentText()) + '\']'
-        if 'Show Classes' in self.showClasses.getChecked():
-            colClasses = ', ColSideColors=' + self.classesData + ''
+        if 'Show Classes' in self.showClasses.getChecked() and self.classesData != '':
+            
+            
+            colClasses = ', ColSideColors= c(%s)[%s]' % (','.join(self.classColors), self.classesData)  #divPalette(length(levels(as.factor(%s))), name="RdYlGn")[%s]' % (self.classesData, self.classesData) 
         else:
             colClasses = ''
         # colorType = unicode(self.colorTypeCombo.currentText())
@@ -121,25 +132,15 @@ class Heatmap(OWRpy):
         # else:
             # col = colorType+'(50)'
         if 'Plot Row Dendrogram' in self.rowDendrogram.getChecked():
-            self.rowvChoice = 'NULL'
+            self.rowvChoice = 'TRUE'
         else:
             self.rowvChoice = 'NA'
         if 'Plot Column Dendrogram' in self.rowDendrogram.getChecked():
-            self.colvChoice = 'NULL'
+            self.colvChoice = 'TRUE'
         else:
             self.colvChoice = 'NA'
         self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))')
-        self.gview1.plot(function = 'heatmap', query = self.plotdata+', Rowv='+self.rowvChoice+', Colv = '+self.colvChoice+', col= tempPalette(50)'+ colClasses+'')
-        # for making the pie plot
-        # if colorType == 'rainbow':
-            # start = float(float(self.startSaturation.value())/100)
-            # end = float(float(self.endSaturation.value())/100)
-            # print start, end
-            # col = 'rev(rainbow(10, start = '+unicode(start)+', end = '+unicode(end)+'))'
-        # else:
-            # col = colorType+'(10)'
-        #self.R('dev.new()')
-        # self.gview2.plot(query = 'rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+'', function = 'pie')
+        self.gview1.plot(function = 'heatmap.2', query = '%(plotdata)s , scale = "row", density.info="none", trace="none", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= tempPalette(50), key = TRUE %(colclasses)s' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses})
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -254,7 +255,7 @@ class colorListDialog(QDialog):
         colorDialog.hide()
         newItem = QListWidgetItem()
         newItem.setBackgroundColor(color)
-        self.colorList.addItem(newItem)
+        self.colorList.addItem(newItem, newItem)
         
         self.processColors()
     def removeColor(self):
@@ -275,7 +276,7 @@ class colorListDialog(QDialog):
             pass # it might happen that we can't show the colors that's not good but also not disasterous either.
     def processColors(self):
         self.listOfColors = []
-        for item in self.colorList.items():
+        for item in self.colorList.getItems():
             self.listOfColors.append('"'+unicode(item.backgroundColor().name())+'"')
     def R(self, query):
         return RSession.Rcommand(query = query)

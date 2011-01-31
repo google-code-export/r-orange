@@ -66,9 +66,9 @@ class dataEntry(OWRpy):
         res = self.menu.exec_()
         if res == Qt.Accept:
             if unicode(equation.text()) != '':
-                self.calculateEquation(current = , equation = unicode(equation.text()))
+                self.calculateEquation(current = index, equation = unicode(equation.text()))
             if unicode(name.text()) != '':
-                self.resetName(current = , new = unicode(name.text()))
+                self.resetName(current = index, new = unicode(name.text()))
             
     def resetName(self, current, new):
         self.data.getData()[new] = self.data.getData()[current].copy()
@@ -145,7 +145,7 @@ class dataEntry(OWRpy):
             trange = self.dataTable.selectedRanges()[0]
         except:
             trange = None
-        if trange and trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow():
+        if trange == None or (trange.leftColumn() == trange.rightColumn() and trange.topRow() == trange.bottomRow()):
             rowi = range(0, self.maxRow+1)
             coli = range(0, self.maxCol+1)
         else:

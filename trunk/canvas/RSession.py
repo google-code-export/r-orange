@@ -160,8 +160,10 @@ def convertToPy(inobject):
          rclass = inobject.getrclass()[0]
         elif sys.platform =='darwin':
          rclass=inobject.rclass[0]
+        elif sys.platform == 'linux2':
+         rclass=inobject.rclass[0] 
         else:
-          rclass=inobject.rclass[0] 
+         rclass=inobject.rclass[0] 
         if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
             return inobject
         return co.convert(inobject)

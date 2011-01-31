@@ -345,8 +345,8 @@ class widgetSession():
         if settings:
             #settingsID = self.sqlite.saveObject(settings)
             file = self.getGlobalSettingsFile()
-            file = open(file, "w")
-            cPickle.dump(settings, file)
+            f = open(file, "w")
+            cPickle.dump(settings, f)
         
         #print '|#| owrpy global save settings done'
 

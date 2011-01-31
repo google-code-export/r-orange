@@ -98,8 +98,12 @@ class mergeR(OWRpy):
             self.run()
     
     def run(self):
-        if self.dataA == '': return
-        if self.dataB == '': return
+        if self.dataA == '':
+            self.status.setText(_("Dataset A Does Not Exist"))
+            return
+        if self.dataB == '': 
+            self.status.setText(_("Dataset B Does Not Exist"))
+            return
         
         if len(self.colA.selectedItems()) == 0 or len(self.colB.selectedItems()) == 0:
             self.status.setText(_('Please make valid column selections'))
@@ -137,26 +141,32 @@ class mergeR(OWRpy):
             # if self.colAsel == 'Rownames':
                 # self.R('rownames('+self.Rvariables['merged']+')<-rownames('+self.dataA+')', wantType = 'NoConversion')
             self.sendMe()
+        else:
+            self.status.setText(_("Dataset failed to find a match!"))
 
     def sendMe(self,kill=False):
-            newDataAll = redRRDataFrame(data = self.Rvariables['merged'])
-            newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
-            newDataAll.dictAttrs.update(self.dataParentA.dictAttrs)
-            self.rSend("id0", newDataAll)
+        newDataAll = redRRDataFrame(data = self.Rvariables['merged'])
+        newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
+        newDataAll.dictAttrs.update(self.dataParentA.dictAttrs)
+        self.rSend("id0", newDataAll)
     
     def setcolA(self):
         try:
-            self.colAsel = '\''+unicode(self.colA.selectedItems()[0].text())+'\''
+            self.colAsel = '\''+unicode(self.colA.currentSelection()[0])+'\''
             if self.colAsel == '\'Rownames\'':
                 self.colAsel = '0'
-        except: return
+        except:
+            self.status.setText(_("Failed to set column A"))
+            return
         if self.commit.processOnChange():
             self.run()
     def setcolB(self):
         try:
-            self.colBsel = '\''+unicode(self.colB.selectedItems()[0].text())+'\''
+            self.colBsel = '\''+unicode(self.colB.currentSelection()[0])+'\''
             if self.colBsel == '\'Rownames\'':
                 self.colBsel = '0'
-        except: return
+        except:
+            self.status.setText(_("Failed to set column B"))
+            return
         if self.commit.processOnChange():
             self.run()

@@ -166,7 +166,7 @@ class rowcolPicker(OWRpy):
         
         selectedDFItems = []
         for name in self.attributes.selectedItems():
-            selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
+            selectedDFItems.append('"'+unicode(name)+'"') # get the text of the selected items
         
         
         if self.rowcolBox.getChecked() == _('Row'):

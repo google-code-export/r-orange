@@ -9,7 +9,7 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class comboBox(QComboBox,widgetState):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, 
-    items=None, editable=False, orientation='horizontal',callback = None):
+    items=None, editable=False, orientation='horizontal',callback = None, toolTip = None):
         
         widgetState.__init__(self,widget,label,includeInReports)
         QComboBox.__init__(self,self.controlArea)
@@ -32,7 +32,8 @@ class comboBox(QComboBox,widgetState):
 
         if callback:
             QObject.connect(self, SIGNAL('activated(int)'), callback)
-
+        if toolTip:
+            self.setToolTip(toolTip)
     def getSettings(self):            
         r = {'items':self.items,
              'current':self.currentIndex()}

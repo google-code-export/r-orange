@@ -268,7 +268,8 @@ class readFile(OWRpy):
 
             if self.delimiter.getCheckedId() == '?':
                 sep = unicode(self.otherSepText.text())
-                
+            else:
+                sep = self.delimiter.getChecked()
             otherOptions = ''
             for i in self.otherOptions.getCheckedIds():
                 otherOptions += unicode(i) + '=TRUE,' 
@@ -310,13 +311,14 @@ class readFile(OWRpy):
         Runicode = 'None'
         try:
             if self.fileType.getChecked() == _('Excel'):
-                Runicode = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
+                
                 self.R('channel <- odbcConnectExcel(%s)' %(self.Rvariables['filename']))
                 table = self.R('sqlTables(channel)$TABLE_NAME[1]')
                 if not scan:
                     nrows = '0'
-                self.R(RStr,
-                processingNotice=processing, wantType = 'NoConversion')
+                RStr = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
+
+                self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
             elif scan == 'clipboard':
                 self.R(self.Rvariables['filename']+'<-\'clipboard\'', wantType = 'NoConversion')
                 RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
