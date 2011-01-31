@@ -205,7 +205,7 @@ class SchemaView(QGraphicsView):
             self.unselectAllWidgets()  ## should clear the selections ahead of time KRC
         # do we start drawing a connection line
         if ev.button() == Qt.LeftButton:
-            widgets = [item for item in self.doc.widgets() if item.mouseInsideRightChannel(self.mouseDownPosition)] + [item for item in self.doc.widgets() if item.mouseInsideLeftChannel(self.mouseDownPosition)]           
+            widgets = [item for item in redRObjects.getIconsByTab(self.name)[self.name] if item.mouseInsideRightChannel(self.mouseDownPosition)] + [item for item in self.doc.widgets() if item.mouseInsideLeftChannel(self.mouseDownPosition)]           
             if widgets:
                 self.tempWidget = widgets[0]
                 if not self.doc.signalManager.signalProcessingInProgress:   # if we are processing some signals, don't allow to add lines
@@ -288,6 +288,7 @@ class SchemaView(QGraphicsView):
             for item in self.getSelectedWidgets():
                 newPos = item.oldPos + (point-self.mouseDownPosition)
                 item.setCoords(newPos.x(), newPos.y())
+                self.ensureVisible(item)
 
         elif self.tempLine:
             self.tempLine.updateLinePos(point)
@@ -298,6 +299,7 @@ class SchemaView(QGraphicsView):
             
 
         self.scene().update()
+        
 
 
     # mouse button was released #########################################

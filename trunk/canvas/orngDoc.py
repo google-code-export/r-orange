@@ -455,11 +455,11 @@ class SchemaDoc(QWidget):
         # move the widget to a valid position if necessary
         invalidPosition = (self.activeTab().findItemTypeCount(self.activeCanvas().collidingItems(newwidget), orngCanvasItems.CanvasWidget) > 0)
         if invalidPosition:
-            for r in range(20, 200, 20):
-                for fi in [90, -90, 180, 0, 45, -45, 135, -135]:
+            for r in range(50, 300, 50):
+                for fi in [90, -90, 0, 45, -45]:
                     xOff = r * math.cos(math.radians(fi))
                     yOff = r * math.sin(math.radians(fi))
-                    rect = QRectF(x+xOff, y+yOff, 48, 48)
+                    rect = QRectF(x+xOff-20, y+yOff-20, 75, 75)
                     invalidPosition = self.activeTab().findItemTypeCount(self.activeCanvas().items(rect), orngCanvasItems.CanvasWidget) > 0
                     if not invalidPosition:
                         newwidget.setCoords(x+xOff, y+yOff)

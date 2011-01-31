@@ -377,6 +377,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             y = round(y/100)*100
         self.setPos(x, y)
         self.updateWidgetState()
+        self.view.ensureVisible(self)
+        self.view.scene().update()
 
     # we have to increase the default bounding rect so that we also repaint the name of the widget and input/output boxes
     def boundingRect(self):
