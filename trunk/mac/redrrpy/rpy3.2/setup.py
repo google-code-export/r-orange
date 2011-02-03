@@ -3,10 +3,10 @@
 from distutils.core import setup, Extension
 import os
 # this must be changed if the location of the R installation is different from the default or if the user wishes to use versions of R other than 2.9.2
-RHOME = '/opt/local/lib/R/'  
+RHOME = '/Users/anupparikh/redr/R/R-2.11.1'  
 include_dirs = [ os.path.join(RHOME.strip(), 'include'), os.path.join(RHOME.strip(), 'bin'),
 		os.path.join(RHOME.strip(), 'bin'), os.path.join(RHOME.strip(), 'lib'),
-                '/Users/anup/redr/R-2.11.1/',         
+                '/Users/anupparikh/redr/makeR/R-2.11.1',         
                          
                          'src' ]
 libraries= ['R']

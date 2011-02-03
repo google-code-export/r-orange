@@ -184,13 +184,12 @@ class LogHandler():
     def __init__(self):
         #self.defaultSysOutHandler = sys.stdout
         ########## system specific, resetting except hook kills linux #########
-        
+        print 'asdfasdf'
         ##### if linux  #######
-        if sys.platform == 'linux2':
-            pass
-        else:
+        if sys.platform == 'win32':
             sys.stdout = self
             sys.excepthook = self.exceptionHandler
+        print 'asdfasdf'
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
         self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file

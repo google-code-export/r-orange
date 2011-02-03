@@ -22,6 +22,7 @@ try:
   import redRLog
 except Exception as inst:
   print unicode(inst)
+
 print 'loading style'
 import redRStyle
 

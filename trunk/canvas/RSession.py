@@ -28,7 +28,7 @@ os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
 ####### system specific import of rpy in it's various flavors ##########
 ## if mac ##
 if sys.platform == 'darwin':
-    import rpy2.robjects as rpy
+    import rpy3.robjects as rpy
 ## if windows ##
 elif sys.platform == 'win32':
     import rpy2.robjects as rpy

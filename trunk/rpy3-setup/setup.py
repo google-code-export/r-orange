@@ -243,6 +243,7 @@ class RConfig(object):
                     else:
                         # if the configuration points to an existing library, 
                         # use it
+			print string
                         if os.path.exists(string):
                             rc += RConfig(library = substring)
                             ok = True
@@ -250,12 +251,14 @@ class RConfig(object):
             if not ok:
                 raise ValueError('Invalid substring\n' + substring 
                                  + '\nin string\n' + string)
+	print rc
         return rc
             
 def get_rconfig(r_home, about, allow_empty = False):
     r_exec = os.path.join(r_home, 'bin', 'R')
     cmd = '"'+r_exec+'" CMD config '+about
     rp = os.popen(cmd)
+    print cmd
     rconfig = rp.readline()
     #Twist if 'R RHOME' spits out a warning
     if rconfig.startswith("WARNING"):
@@ -308,9 +311,10 @@ def getRinterface_ext():
             define_macros = define_macros,
             runtime_library_dirs = r_libs,
             #extra_compile_args=['-O0', '-g'],
-            #extra_link_args = extra_link_args
+            extra_link_args = ['-arch', 'i386','-arch','x86_64']
             )
-
+    #print extra_link_args
+    
     rpy_device_ext = Extension(
         pack_name + '.rinterface.rpy_device',
             [
@@ -338,7 +342,11 @@ pack_dir = {pack_name: 'rpy'}
 import distutils.command.install
 for scheme in distutils.command.install.INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
+##import os
+#os.environ['R_SHARE_DIR'] = '/Users/anupparikh/redr/makeR/Rbuild/R-2.11.1/Resources/share'
+#os.environ['LD_LIBRARY_PATH'] = '/Users/anupparikh/redr/makeR/Rbuild/'
 
+print os.environ
 setup(
     #install_requires=['distribute'],
     cmdclass = {'build': build,
