@@ -203,9 +203,10 @@ class LogHandler():
             if int(redREnviron.settings['keepForXDays']) > -1 and time.time() - os.path.getmtime(f) > 60*60*24*int(redREnviron.settings['keepForXDays']):
                 try:
                     os.remove(f)
-                    self.defaultSysOutHandler.write('file %s removed\n' % f)
+                    print 'file %s removed\n' % f
                 except Exception as inst:
-                    self.defaultSysOutHandler.write(unicode(inst))
+                    print unicode(inst)
+    
     #ONLY FOR DEVEL print statements
     def writetoFile(self,table,logLevel,comment,html):
         if not redREnviron.settings["writeLogFile"]: return
