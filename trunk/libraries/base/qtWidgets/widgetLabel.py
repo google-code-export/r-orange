@@ -9,17 +9,13 @@ class widgetLabel(QLabel,widgetState):
     def __init__(self,widget,label = '', icon=None, wordWrap=False):
         widgetState.__init__(self,widget, _('widgetLabel'),includeInReports=False)
         QLabel.__init__(self,self.controlArea)
-        # if icon:
-            # icon = QIcon(icon)
-            # box = redRWidgetBox(widget,orientation='horizontal')
-            # box.layout().addWidget(icon)
-            # box.layout().addWidget(self)
-        # else:
         self.controlArea.layout().addWidget(self)
         if icon:
             label = "<img style='margin-left:5px' src=\"%s\" /> %s" % (icon, label)
         self.setText(label)
         self.setWordWrap(wordWrap)
+        self.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
     def text(self):
         return unicode(QLabel.text(self))
     def getSettings(self):

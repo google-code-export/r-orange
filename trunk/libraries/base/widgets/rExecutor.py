@@ -63,9 +63,12 @@ class rExecutor(OWRpy):
         runbox = groupBox(rightArea, label = _("Command Edit:"), orientation='horizontal')
         runbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         #self.command = lineEdit(runbox, "", orientation=QHBoxLayout(), callback = self.runR, width = -1)
-        self.command = textEdit(runbox, label = _('Command Edit:'))
+        self.command = textEdit(runbox, label = _('Command Edit:'), displayLabel=False)
         #self.command.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        processbutton = button(runbox, label = _("&Run"), callback = self.runR, width=100)
+        vbox=widgetBox(runbox)
+        processbutton = button(vbox, label = _("&Run"), callback = self.runR, width=100)
+        sendbutton = button(vbox, label = _("&Send"), toolTip = _('Send the data in the command line into the Red-R schema.'), callback =self.sendThis, width=100)
+
         statusBox = groupBox(rightArea, label = _("Status"))
         self.sendStatus = widgetLabel(statusBox, _('Nothing Sent'))
         self.dataBox = groupBox(leftArea, label = _("Input Infromation"))
@@ -83,9 +86,9 @@ class rExecutor(OWRpy):
 
         self.thistext = textEdit(rightArea,label=_('Output'), displayLabel=False)
 
-        sendbutton = button(runbox, label = _("&Send"), toolTip = _('Send the data in the command line into the Red-R schema.'), callback =self.sendThis, width=100)
+
     def addlsList(self):
-        self.command.insertPlainText(unicode(self.lsList.selectedItems()[0].text()))
+        self.command.insertPlainText(unicode(self.lsList.selectedItems().values()[0]))
     def refreshLsList(self):
         self.lsList.update(self.R('ls()', wantType = 'list'))
     def clearOutput(self):

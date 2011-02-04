@@ -276,12 +276,9 @@ class redRWidgetGUI(QMainWindow):
 
         
     def createReport(self, printer = None):
-        
-        
+        import redRObjects
         qApp.canvasDlg.reports.createReportsMenu(
-        [canvasWidget(caption=self._widgetInfo.widgetName, instance=self)],schemaImage=False)
-        
-        
+        [redRObjects.getWidgetInstanceByID(self.widgetID)],schemaImage=False)
     
 
     def updateDock(self,ev):

@@ -131,6 +131,7 @@ class reports(QWizard):
                 item.parent().setCheckState(0,Qt.Checked)
                 item = item.parent()
     def widgetListStateChange(self,item,col):
+        
         try:
             if item.checkState(0) == Qt.Checked:
                 item.pointer['includeInReports'] = True
@@ -138,7 +139,7 @@ class reports(QWizard):
                 item.pointer['includeInReports'] = False
             # print item.pointer
         except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, redRLog.formatException())
             #print 'do nothing'
             pass
         
@@ -241,7 +242,7 @@ class reports(QWizard):
         self.widgetList.setColumnWidth(0,250)
         #self.widgetList.resizeColumnToContents(0)
 
-    def createReportsMenu(self,schemaImage=True):
+    def createReportsMenu(self, widgets = None, schemaImage=True):
         qname = QFileDialog.getSaveFileName(self, _("Write Report to File"), 
         redREnviron.directoryNames['documentsDir'] + "/Report-"+unicode(datetime.date.today())+".odt", 
         "Open Office Text (*.odt);; HTML (*.html);; LaTeX (*.tex)")
@@ -278,8 +279,10 @@ class reports(QWizard):
         # show the report list and allow the user to select widgets to include in the report.
         ## get the report info for the included widgets.
         # reportData = self.getReportData(fileDir2,name)
-        import redRObjects
-        done = self.createReport(fileDir2,name,redRObjects.instances(),schemaImage)
+        if not widgets:
+            import redRObjects
+            widgets = redRObjects.instances()
+        done = self.createReport(fileDir2,name,widgets,schemaImage)
         if not done:
             return
         if os.name =='nt':

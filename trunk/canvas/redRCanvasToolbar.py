@@ -30,11 +30,6 @@ class redRCanvasToolbarandMenu():
         if not redREnviron.settings.get("showToolbar", True): self.toolbar.hide()
         self.toolbar.addAction(QIcon(redRStyle.openFileIcon), _("Open schema"), self.menuItemOpen)
         self.toolSave = self.toolbar.addAction(QIcon(redRStyle.saveFileIcon), "Save schema", self.menuItemSave)
-        #self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.reloadIcon), "Reload Widgets", self.reloadWidgets)
-        # self.toolbar.addAction(QIcon(redRStyle.showAllIcon), "Show All Widget Windows", redRObjects.showAllWidgets)
-        # self.toolbar.addAction(QIcon(redRStyle.closeAllIcon), "Close All Widget Windows", redRObjects.closeAllWidgets)
-        # self.toolbar.addSeparator()
-        # self.toolbar.addAction(QIcon(redRStyle.printIcon), "Print", self.menuItemPrinter)
 
         self.toolbar.addSeparator()
         self.toolbar.addAction(QIcon(redRStyle.showAllIcon), _("Show All Widget Windows"), 
@@ -246,27 +241,6 @@ class redRCanvasToolbarandMenu():
         return ## depricated
         self.canvas.schema.saveDocumentAsApp(asTabs = 1)
         
-    def menuItemPrinter(self):
-        try:
-            printer = QPrinter()
-            printDialog = QPrintDialog(printer)
-            if printDialog.exec_() == QDialog.Rejected: 
-                
-                return
-            painter = QPainter(printer)
-            self.canvas.schema.canvas.render(painter)
-            painter.end()
-            for widget in self.canvas.schema.widgets:
-                try:
-                    widget.instance.printWidget(printer)                
-                except: 
-                    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-                    pass
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Error in printing the schema"))
-        
-        self.reports.createReportsMenu(self.canvas.schema.widgets)
         
 
     def readRecentFiles(self):
@@ -729,17 +703,14 @@ class SearchBox2(lineEdit):
         if self.listUpdateCallback:
             self.listUpdateCallback()
     def doneCompletion(self, *args):
-        print '############',args,args[0].row()
-        print self.model.listdata[args[0].row()]
         if self.listWidget.isVisible():
-            widgetInfo = self.model.listdata[args[0].row()][1]
+            widgetInfo = self.model.listdata[self.listWidget.selectedIndexes()[0].row()][1]
             self.setText(unicode(widgetInfo.name))
             self.listWidget.hide()
             self.setFocus()
             
         if self.callbackOnComplete:
             QTimer.singleShot(0, lambda:self.callbackOnComplete(widgetInfo))
-            #self.callbackOnComplete()
               
     def textEdited(self):
         if len(self.getLastTextItem()) == 0:

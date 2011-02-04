@@ -187,8 +187,7 @@ def loadSettings():
     settings.setdefault("dontAskBeforeClose", 0)
     
     settings.setdefault("writeLogFile", 1)
-    settings["logFile"] = os.path.join(directoryNames['logsDir'], "outputLog_%s.html" % settings['id'])
-    
+    settings.setdefault('logsDir', directoryNames['logsDir'])
     settings.setdefault("uploadError", 0)
     settings.setdefault("askToUploadError", 0)
     
@@ -215,6 +214,7 @@ def loadSettings():
     
     ## language settings, these settings exist so that we can detect the language of the system
     settings.setdefault('language', OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')]))
+    
     settings['availablelanguages'] = OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')])
     #print settings
     return settings
@@ -266,5 +266,8 @@ if __name__ =='redREnviron':
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-    print 'done with redREnviron'
- 
+    # print 'done with redREnviron'
+    # import pprint
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(settings)
+

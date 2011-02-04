@@ -53,10 +53,16 @@ class RDataTable(OWRpy):
         self.GUIDialog.layout().setAlignment(self.advancedOptions,Qt.AlignTop)
         
         diBox = self.advancedOptions.createTabPage(_("Data Information"))
-        self.infoBox = groupBox(diBox, label=_("Data Information"))
+        vbox = widgetBox(diBox)
+        self.infoBox = groupBox(vbox, label=_("Data Information"))
         self.infoBox.setHidden(False)
         widgetLabel(self.infoBox, label = _("A summary of your data will be displayed below when data is available."),  wordWrap = True)
         self.rowColCount = widgetLabel(self.infoBox)
+        summaryBox = groupBox(vbox, label=_("Selected Data Summary"))
+        
+        self.customSummary = lineEdit(summaryBox, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
+        self.summaryLabel = textEdit(summaryBox, label = _('Summary'),displayLabel=False)
+
         #saveTab = self.tabWidgeta.createTabPage('Save Data')
         sdBox = self.advancedOptions.createTabPage(_("Save Data"))
         saveTab = groupBox(sdBox,label=_('Save Data'),orientation='horizontal')
@@ -104,9 +110,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         # self.table.setRTable(self.data)
         ##########################################################
         
-        sumBox = self.advancedOptions.createTabPage(_("Custom Summary"), orientation = 'vertical', canScroll = True)
-        self.customSummary = lineEdit(sumBox, label = _('Custom Summary:'), toolTip = _('Place a custom summary function in here which will be added to the regular summary, use {Col} for the column number.  Ex. mean({Col})'))
-        self.summaryLabel = textEdit(sumBox, label = _('Summary'))
+        # sumBox = self.advancedOptions.createTabPage(_("Custom Summary"), orientation = 'vertical', canScroll = True)
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
