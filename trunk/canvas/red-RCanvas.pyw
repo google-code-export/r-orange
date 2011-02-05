@@ -6,16 +6,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import sys, os, cPickle, time
-for x in sys.path:
-   print x
+# for x in sys.path:
+   # print x
    
    
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
-# redREnviron.__getDirectoryNames()
-# redREnviron.addOrangeDirectoriesToPath(directoryNames)
-# redREnviron.getVersion()
-# redREnviron.loadSettings()
 import redREnviron
 print 'loading log'
 try:

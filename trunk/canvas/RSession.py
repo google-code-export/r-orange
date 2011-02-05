@@ -93,9 +93,9 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         
         output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s.") % (query, inst))
+        redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe original query was %s.\nThe error is %s.") % (query, inst))
         mutex.unlock()
-        raise RuntimeError(unicode(inst) + '  Orriginal Query was:  ' + unicode(query))
+        raise RuntimeError(unicode(inst) + '  Original Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
     if wantType == 'NoConversion': 
         mutex.unlock()
@@ -224,13 +224,13 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                         try:
                             redRLog.log(redRLog.R, redRLog.INFO, _('Installing library %s.') % library)
                             Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
-                            Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')#, lib=' + libPath + ')')
-                            loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')# lib.loc=' + libPath + ')')
+                            Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')
+                            loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
-                            
+
                         except:
-                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-                            redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
+                            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException())
+                            #redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
                             loadedOK = False
                     else:
                         loadedOK = False
