@@ -26,6 +26,7 @@ from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
+
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
@@ -330,7 +331,7 @@ class readFile(OWRpy):
                 
         except:
             import redRLog
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+            redRLog.log(redRLog.REDRCORE, redRLog.WARNING,redRLog.formatException())
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return

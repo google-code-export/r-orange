@@ -46,7 +46,7 @@ def setOutputManager(name,manager,level=None):
     global _outputWriter
     _outputWriter[name] = {'level':level,'writer':manager}
     
-def log(table, logLevel = INFO, comment ='', widget=None):   
+def log(table, logLevel = INFO, comment ='', widget=None,html=True):   
     #fileLogger.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
     # fileLogger.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
     
@@ -58,7 +58,7 @@ def log(table, logLevel = INFO, comment ='', widget=None):
     else:
         stack = None
 
-    formattedLog = formatedLogOutput(table, logLevel, stack, comment,widget)    
+    formattedLog = formatedLogOutput(table, logLevel, stack, comment,widget,html)    
 
     # if redREnviron.settings["writeLogFile"]:
         # fileLogger.logFile.write(unicode(formattedLog).encode('Latin-1'))
@@ -85,11 +85,11 @@ def logOutput(table, logLevel, comment,html=False):
             if logLevel >= logLevels[redREnviron.settings['outputVerbosity']]:
                 writer['writer'](table,logLevel,comment,html)
     
-def formatedLogOutput(table, logLevel, stack, comment, widget=None):
+def formatedLogOutput(table, logLevel, stack, comment, widget,html):
     # if logLevel == DEBUG:
         # comment = comment.rstrip('\n') + '<br>'
     
-    if table == R:
+    if not html:
         comment = getSafeString(comment)
     if logLevel == CRITICAL:
         color = '#FF0000'

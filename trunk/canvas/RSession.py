@@ -90,10 +90,9 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # return None # now processes can catch potential errors
     #####################Forked verions of R##############################
     try:
-        
         output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe original query was %s.\nThe error is %s.") % (query, inst))
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
         raise RuntimeError(unicode(inst) + '  Original Query was:  ' + unicode(query))
         return None # now processes can catch potential errors

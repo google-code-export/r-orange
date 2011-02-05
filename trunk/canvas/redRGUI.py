@@ -6,6 +6,7 @@ import redREnviron
 import os.path
 import imp
 import redRi18n
+import redRLog
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
@@ -93,6 +94,63 @@ class widgetState:
         
 
 
+def forname(modname, classname):
+    ''' Returns a class of "classname" from module "modname". '''
+    #print modname
+    module = __import__(modname, globals(), locals(),classname)
+    #print module
+    classobj = getattr(module, classname)
+    return classobj
+
+qtWidgets = []
+current_module = __import__(__name__)
+def registerQTWidgets():   
+    for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
+        if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
+        and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
+            continue
+        
+        m = imp.new_module(package)
+        directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'qtWidgets')
+        for filename in glob.iglob(os.path.join(directory,  "*.py")):
+            if os.path.isdir(filename) or os.path.islink(filename):
+                continue
+            try:    
+                guiClass = os.path.basename(filename).split('.')[0]
+                qtWidgets.append(guiClass)
+                
+                c = forname('libraries.%s.qtWidgets.%s' % (package,guiClass),guiClass)
+                #c.__dict__['__package__'] = package
+                setattr(m, guiClass,c)
+            except:
+               redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+        setattr(current_module,package,m)
+            
+# def registerQTWidgets():
+    # print '@@@@@@@@@@registerQTWidgets'
+    # import imp
+    # m = imp.new_module(package)
+    # directory = os.path.join(redREnviron.directoryNames['widgetDir'],package,'qtWidgets')
+    # for filename in glob.iglob(os.path.join(directory,  "*.py")):
+        # if os.path.isdir(filename) or os.path.islink(filename):
+            # continue
+        # guiClass = os.path.basename(filename).split('.')[0]
+        # qtWidgets.append(guiClass)
+        # c = forname(guiClass,guiClass)
+        # c.__dict__['__package__'] = package
+        # setattr(m, guiClass,c)
+    # setattr(current_module,package,m)
+
+
+
+# for filename in glob.iglob(os.path.join(redREnviron.directoryNames['widgetDir'] + '/base/qtWidgets', "*.py")):
+    # if os.path.isdir(filename) or os.path.islink(filename):
+        # continue
+    # guiClass = os.path.basename(filename).split('.')[0]
+    # qtWidgets.append(guiClass)
+    # setattr(current_module, guiClass,forname(guiClass,guiClass))
+
+    
 # def forname(modname, classname):
     # ''' Returns a class of "classname" from module "modname". '''
     # module = __import__(modname)
@@ -100,31 +158,7 @@ class widgetState:
     # return classobj
 
 # current_module = __import__(__name__)
-qtWidgets = []
-
-def registerQTWidgets():   
-    for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
-        if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
-        and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
-            continue
-        try:
-            directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'qtWidgets')
-            for filename in glob.iglob(os.path.join(directory,  "*.py")):
-                if os.path.isdir(filename) or os.path.islink(filename):
-                    continue
-                guiClass = os.path.basename(filename).split('.')[0]
-                qtWidgets.append(guiClass)
-        except:
-           import redRLog
-           redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+# qtWidgets = []
 
 
-# def separator(widget, width=8, height=8):
-    # sep = QWidget(widget)
-    # if widget.layout(): widget.layout().addWidget(sep)
-    # sep.setFixedSize(width, height)
-    # return sep
-
-    
-# def rubber(widget):
-    # widget.layout().addStretch(100)
+# registerQTWidgets()
