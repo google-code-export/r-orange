@@ -5,7 +5,7 @@
 """
 
 from OWRpy import *
-import redRGUI 
+import redRGUI, signals
 import re
 import textwrap
 import cPickle
@@ -45,7 +45,7 @@ class readFile(OWRpy):
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
         #signals
-        self.outputs.addOutput('od1', _('Output Data'), rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
+        self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))

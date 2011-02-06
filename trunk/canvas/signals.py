@@ -2,7 +2,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import glob,os.path,redREnviron
 import imp, sys
-import imp, sys
+import redRLog
 # import redRi18n
 def _(a):
     return a
@@ -91,52 +91,43 @@ class BaseRedRVariable:
 ##############################################################
 
 def registerRedRSignals():
-    # import imp, sys ## import the libraries
-    # for package in os.listdir(redREnviron.directoryNames['libraryDir']): ## move across all of the packages to init
-    # if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
-        # and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))): ## check that the package is really a package, if not then ignore.
-            # continue
-    #print _('registerRedRSignals is depricated')
-    return
     import imp, sys
     for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
         if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
         and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
             continue
-        try:
-            m = imp.new_module(package)
-            directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'signalClasses')
-            for filename in glob.iglob(os.path.join(directory,  "*.py")):
-                # print _('import filename'), filename
-                if os.path.isdir(filename) or os.path.islink(filename) or os.path.split(filename)[1] == '__init__.py':
-                    continue
+        
+        m = imp.new_module(package)
+        directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'signalClasses')
+        for filename in glob.iglob(os.path.join(directory,  "*.py")):
+            # print _('import filename'), filename
+            if os.path.isdir(filename) or os.path.islink(filename) or os.path.split(filename)[1] == '__init__.py':
+                continue
+            try:
                 signalClass = os.path.basename(filename).split('.')[0]  ## the signal object filename
                 RedRSignals.append(signalClass) ## append the object filename to the RedRSignals list
-                signalModule = imp.load_source(package+'_'+signalClass,filename) ## load the object file as the package name and signal class.  This just loads the module that has the class but not the class itself.
-                #print qtwidget
-                c = getattr(signalModule,signalClass)  ## c represents the class object that is the signal
-                # print c, _('forname return')
-                # print package, _('package')
-                setattr(c,'__package__',package)  ## set the package attribute of the class
-                setattr(m, signalClass,c)  ## set the object in the empty module named signalClass to c.  This results in the ability to code as module.className to access the class.
-            setattr(current_module,package,m)  ## sets the module.package to m (which is the module that contains the signal object  [[ current_module.package = m.Signal ---> current_module.package.Signal]]
-        except:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+                c = forname('libraries.%s.signalClasses.%s' % (package,signalClass),signalClass)
+                #c.__dict__['__package__'] = package
+                setattr(m, signalClass,c)
+            except:
+                redRLog.log(redRLog.REDRCORE, redRLog.WARNING,redRLog.formatException())
+        setattr(current_module,package,m)
+
 def setRedRSignalModule(modname, mod): # to be called on init of each signalClass package __init__
 
     ## goal is to eventually run setattr(current_module, --packageName--, --someModule--)
     setattr(current_module, modname, mod)
 def forname(modname, classname):
     ''' Returns a class of "classname" from module "modname". '''
-    module = __import__(modname)
+    module = __import__(modname, globals(), locals(),classname)
     classobj = getattr(module, classname)
     return classobj
           
 ################Run on Init###############
 
 
-# current_module = __import__(__name__)
-# RedRSignals = []
+current_module = __import__(__name__)
+RedRSignals = []
 
 # import libraries.base.signalClasses.RVariable 
 # import libraries.base.signalClasses.RVector

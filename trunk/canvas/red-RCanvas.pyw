@@ -104,6 +104,7 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetRegistry = orngRegistry.readCategories() # the widget registry has been created
         redRGUI.registerQTWidgets()
         signals.registerRedRSignals()
+        
         ###################
         #Main Cavas########
         ###################

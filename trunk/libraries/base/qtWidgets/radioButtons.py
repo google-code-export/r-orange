@@ -12,12 +12,12 @@ _ = redRi18n.get_(package = 'base')
 class radioButtons(widgetState,QWidget):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True,
     buttons=None,toolTips = None, setChecked = None,
-    orientation='vertical',callback = None, **args):
+    orientation='vertical',callback = None):
         
         QWidget.__init__(self,widget)
-        widgetState.__init__(self,widget,label,includeInReports,**args)
+        widgetState.__init__(self,widget,label,includeInReports)
         
-        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        
         self.label = label
         
 
@@ -27,6 +27,9 @@ class radioButtons(widgetState,QWidget):
         else:
             self.box = widgetBox(self.controlArea,orientation=orientation)
 
+        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.box.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,
+        QSizePolicy.Preferred))
         # if orientation=='vertical':
             # self.box.setSizePolicy(QSizePolicy(QSizePolicy.Preferred,
             # QSizePolicy.MinimumExpanding))
