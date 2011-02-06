@@ -13,28 +13,35 @@ import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redREnviron
-print 'loading log'
+#print 'loading log'
 try:
   import redRLog
 except Exception as inst:
   print unicode(inst)
 
-print 'loading style'
+#print 'loading style'
 import redRStyle
-
-print 'loading R session'
+import redRReports
+#print 'loading R session'
 import RSession
+#print 'loading histry'
 import redRHistory
+#print 'loading international'
 import redRi18n
-import orngRegistry, OWGUI
+#print 'loading registery'
+import orngRegistry#, OWGUI
+#print 'loading r output and loadsave'
 import redROutput, redRSaveLoad
+#print 'loading orngdoc'
 import orngDoc, orngDlgs
 import redRWidgetsTree
 import redRPackageManager, redRGUI,signals, redRInitWizard
+#print 'loading reports'
 import redRReports, redRObjects, redRUpdateManager
+#print 'loading R session'
 import redRCanvasToolbar
 
-print 'Core module Load complete'
+#print 'Core module Load complete'
 
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
@@ -121,7 +128,7 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage(_("Creating Menu and Toolbar"), Qt.AlignHCenter + Qt.AlignBottom)
         self.toolbar = self.addToolBar(_("Toolbar"))
         self.toolbarFunctions = redRCanvasToolbar.redRCanvasToolbarandMenu(self,self.toolbar)
-        
+        self.toolbarFunctions.updateStyle()
         ######################
         #Create Widgets Dock##
         ######################
@@ -129,6 +136,8 @@ class OrangeCanvasDlg(QMainWindow):
         self.widgetDock = QDockWidget(_('Widgets'))
         self.widgetDock.setObjectName('widgetDock')
         self.widgetDockBox = redRwidgetBox(None)
+        self.widgetDockBox.setMinimumWidth(200)
+        
         self.widgetDock.setWidget(self.widgetDockBox)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.widgetDock)
         self.connect(self.widgetDock,SIGNAL('visibilityChanged(bool)'),self.updateDock)
@@ -145,7 +154,6 @@ class OrangeCanvasDlg(QMainWindow):
         splashWindow.showMessage(_("Creating Status Bar"), Qt.AlignHCenter + Qt.AlignBottom)
         
         self.statusBar = QStatusBar()
-        self.statusBar.setLayout(QHBoxLayout())
         self.statusBar.setSizeGripEnabled(False)
         self.setStatusBar(self.statusBar)
         
@@ -199,12 +207,17 @@ class OrangeCanvasDlg(QMainWindow):
 
         splashWindow.showMessage(_("Setting States"), Qt.AlignHCenter + Qt.AlignBottom)
 
+        #qtsettings = QSettings("Red-R", "Red-R")
+        #print 'adsfasdf', qtsettings.value('windowState').toByteArray()
+        #print self.restoreState(qtsettings.value('windowState').toByteArray())
+
+
         if 'windowState' in redREnviron.settings.keys():
-            self.restoreState(redREnviron.settings['windowState'])
+            print self.restoreState(redREnviron.settings['windowState'])
+
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])
-        # if 'layout' in redREnviron.settings.keys():
-            # self.schema.setSchemaLayout(redREnviron.settings['layout'])
+
         if 'size' in redREnviron.settings.keys():
             self.resize(redREnviron.settings['size'])
         else:
@@ -227,7 +240,6 @@ class OrangeCanvasDlg(QMainWindow):
         #Show Main Red-R window##
         #########################
         
-        self.toolbarFunctions.updateStyle()
         self.show()
 
         if splashWindow:
@@ -330,9 +342,12 @@ class OrangeCanvasDlg(QMainWindow):
             # redREnviron.settings["toolboxWidth"] = self.widgetsToolBar.toolbox.width()
         # redREnviron.settings["showWidgetToolbar"] = self.widgetsToolBar.isVisible()
         # redREnviron.settings["showToolbar"] = self.toolbar.isVisible()
+#         qtsettings = QSettings("Red-R", "Red-R")
+#         qtsettings.setValue("geometry", saveGeometry())
+#         qtsettings.setValue("windowState", saveState())
+        
         
         redREnviron.settings["geometry"] = self.saveGeometry()
-        # redREnviron.settings["layout"] = self.saveLayout()
         redREnviron.settings["windowState"] = self.saveState()
         redREnviron.settings['pos'] = self.pos()
         redREnviron.settings['size'] = self.size()

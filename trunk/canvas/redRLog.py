@@ -33,7 +33,7 @@ logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG','DEVEL']
 logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
 
-print 'loading defs'
+#print 'loading defs'
 
 def setLogTrigger(name,manager,level):
     global _logTriggers
@@ -159,9 +159,9 @@ class LogHandler():
     def __init__(self):
         ########## system specific, resetting except hook kills linux #########
         ##### if linux  #######
-        if sys.platform == 'win32':
-            self.defaultStdout = sys.stdout
-            sys.stdout = self
+        #if sys.platform == 'win32':
+        #self.defaultStdout = sys.stdout
+        sys.stdout = self
         sys.excepthook = self.exceptionHandler
         
         # self.currentLogFile = redREnviron.settings['logFile']

@@ -258,7 +258,7 @@ if __name__ =='redREnviron':
     version = getVersion()
     settings = loadSettings()
     # print 'done with redREnviron'
-    # import pprint
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(settings)
+#     import pprint
+#     pp = pprint.PrettyPrinter(indent=4)
+#     pp.pprint(settings)
 

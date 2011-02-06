@@ -44,7 +44,7 @@ from PyQt4.QtGui import *
 print 'importing conversion'
 import redrrpy._conversion as co
 import redRLog
-
+print 'Rsession loaded'
 # import redRi18n
 def _(a):
     return a

@@ -1,16 +1,25 @@
 ## redRHistory.  Functions and implementations for assessing widget useage and connectivity.  The core of this functionality will be a history file that will represent connections stemming from widgets and to other widgets.  This will be in the form of a dictionary of dictionaries of values.  {widgetA: [(widgetA, c1), (widgetB, c2), ...], widgetB: [(widgetA, c1), (widgetB, c2), ...], ...}.  As new widgets are added using the package manager system this can be modified.
 
 # imports
-import cPickle, redRObjects
-import os, sys, redREnviron,redRLog
+print 'start redRhistry'
 
-## get the data into the history dict
+import cPickle
+print 'robjects'
+import redRObjects
 
-
+print 'enrviron'
+import os, sys, redREnviron
+print 'import log'
+import redRLog
 import redRi18n
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
+
+print 'after import'
+## get the data into the history dict
+
+
 try:
     f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistory.rrdf'))
     hDict = cPickle.load(f)
