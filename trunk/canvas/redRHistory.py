@@ -20,13 +20,13 @@ except Exception as inst:
     print _('widgetHistory not found')
     hDict = {}
     
-try:
-    f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistoryWeb.rrdf'))
-    hDictWeb = cPickle.load(f)
-    f.close()
-except:
-    redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-    hDictWeb = {}
+# try:
+    # f = open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetHistoryWeb.rrdf'))
+    # hDictWeb = cPickle.load(f)
+    # f.close()
+# except:
+    # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+    # hDictWeb = {}
     
 def getSuggestWidgets(outWidget):
     # import pprint
