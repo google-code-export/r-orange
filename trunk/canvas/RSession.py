@@ -29,6 +29,15 @@ import sys, os, redREnviron, numpy
 ## if mac ##
 if sys.platform == 'darwin':
     os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+    os.environ['R_HOME_DIR'] = os.path.join(redREnviron.directoryNames['RDir'])
+    os.environ['R_ARCH'] = 'i386'
+    os.environ['R_INCLUDE_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'include')
+    os.environ['R_SHARE_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'share')
+    os.environ['R_DOC_DIR'] = os.path.join(redREnviron.directoryNames['RDir'],'doc')
+    os.environ['R_LD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')
+    os.environ['DYLD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')    
+    os.environ['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home'
+
     import rpy3.robjects as rpy
 ## if windows ##
 elif sys.platform == 'win32':

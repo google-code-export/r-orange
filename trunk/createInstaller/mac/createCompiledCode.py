@@ -37,7 +37,7 @@ sys.argv = ['createCompiledCode.py','py2app']
 from distutils.core import setup
 import py2app,shutil
 
-
+AppDir = '/Applications/Red-R.app/'
 ##cleanup
 shutil.rmtree('build',True)
 shutil.rmtree(os.path.join(base,'dist'),True)
@@ -90,8 +90,15 @@ import datetime
 d = datetime.datetime.now()
 svn = os.popen("svnversion %s" % base).read()
 print svn
-m = re.match('\d*:?(\d+)',svn)
-svnVersion =  m.group(1)
+
+m = re.match('\d+:(\d+)',svn)
+if m:
+    svnVersion =  m.group(1)
+else:
+    m = re.match('(\d+)',svn)
+    svnVersion =  m.group(1)
+    
+    
 fh = open(os.path.join(base,'dist','Red-R.app','Contents','version.txt'),'w')
 fh.write("""!define DATE "%s"
 !define SVNVERSION "%s"
@@ -120,3 +127,15 @@ os.system('ln -s /Users/anupparikh/redr/trunk/dist/Red-R.app/Contents/libraries 
 os.system('cp /usr/local/lib/libgcc_s.1.dylib /Applications/Red-R.app/Contents/Frameworks/libgcc_s.1.dylib')
 
 
+os.system('mv %s/Contents/MacOS/Red-R %s/Contents/MacOS/Red-R.exe' % (AppDir,AppDir))
+
+fh = open('%s/Contents/MacOS/Red-R' % AppDir,'w')
+fh.write("""#!/bin/bash
+
+export R_HOME=/Applications/Red-R.app/R/R.framework/Resources
+source /Applications/Red-R.app/R/R.framework/Resources/etc/i386/ldpaths
+./Applications/Red-R.app//Contents/MacOS/Red-R.exe
+""")
+fh.close()
+
+os.system('chmod +x %s/Contents/MacOS/Red-R' % AppDir)
