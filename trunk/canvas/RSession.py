@@ -23,17 +23,20 @@
 
 
 import sys, os, redREnviron, numpy
-os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+
 
 ####### system specific import of rpy in it's various flavors ##########
 ## if mac ##
 if sys.platform == 'darwin':
+    os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
     import rpy3.robjects as rpy
 ## if windows ##
 elif sys.platform == 'win32':
+    os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
     import rpy2.robjects as rpy
 ## if linux ##
 elif sys.platform == 'linux2':
+    print 'loading rpy3'
     import rpy3.robjects as rpy
 ## if we don't know ##
 else:
@@ -41,10 +44,11 @@ else:
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-print 'importing conversion'
+#print 'importing conversion'
 import redrrpy._conversion as co
+#print 'done importing conversion'
 import redRLog
-print 'Rsession loaded'
+#print 'Rsession loaded'
 # import redRi18n
 def _(a):
     return a

@@ -160,8 +160,8 @@ class LogHandler():
         ########## system specific, resetting except hook kills linux #########
         ##### if linux  #######
         #if sys.platform == 'win32':
-        #self.defaultStdout = sys.stdout
-        sys.stdout = self
+	self.defaultStdout = sys.stdout
+	sys.stdout = self
         sys.excepthook = self.exceptionHandler
         
         # self.currentLogFile = redREnviron.settings['logFile']
