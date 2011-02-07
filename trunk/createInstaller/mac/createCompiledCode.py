@@ -33,7 +33,6 @@ import os, sys, shutil, re
 #base = 'C:/Users/anup/Documents/red/develop/makeInstallers/code/red-trunk'
 base = sys.argv[1]
 
-"""
 sys.argv = ['createCompiledCode.py','py2app']
 from distutils.core import setup
 import py2app,shutil
@@ -86,12 +85,12 @@ os.path.join(base,'dist','Red-R.app','Contents','mac'))
 
 shutil.copytree(os.path.join(base,'includes'),
 os.path.join(base,'dist','Red-R.app','Contents','includes')) 
-"""
+
 import datetime
 d = datetime.datetime.now()
 svn = os.popen("svnversion %s" % base).read()
 print svn
-m = re.match('(\d+)M',svn)
+m = re.match('\d*:?(\d+)',svn)
 svnVersion =  m.group(1)
 fh = open(os.path.join(base,'dist','Red-R.app','Contents','version.txt'),'w')
 fh.write("""!define DATE "%s"
