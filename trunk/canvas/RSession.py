@@ -39,10 +39,11 @@ if sys.platform == 'darwin':
     os.environ['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home'
 
     import rpy3.robjects as rpy
+
 ## if windows ##
 elif sys.platform == 'win32':
     os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
-    import rpy2.robjects as rpy
+    import rpy3.robjects as rpy
 ## if linux ##
 elif sys.platform == 'linux2':
     print 'loading rpy3'
@@ -104,6 +105,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     #####################Forked verions of R##############################
     try:
         output = rpy.r(unicode(query).encode('Latin-1'))
+        
     except Exception as inst:
         redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()

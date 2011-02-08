@@ -91,7 +91,7 @@ class listBox(QListWidget,widgetState):
 
     def clear(self):
         QListWidget.clear(self)
-        self.items = OrderedDict()
+        self.listItems = OrderedDict()
 
     def invertSelection(self):
         for i in range(self.count()):

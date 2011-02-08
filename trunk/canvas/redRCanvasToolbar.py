@@ -529,7 +529,6 @@ class myQListView(QListView):
             self.emit(SIGNAL("clicked (QModelIndex)"), newIdx)
     
     def mousePressEvent(self, event):
-        print 'asdfasdfasdf',self.indexAt(event.pos())
         if not self.indexAt(event.pos()).isValid():
             print _('invalid index')
         QListView.mousePressEvent(self, event)

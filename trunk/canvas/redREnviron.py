@@ -49,7 +49,7 @@ def __getDirectoryNames():
         ### architecture specific ####???
         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
         dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win32')
-        dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
+        #dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
         
         createDir['settingsDir'] = os.path.join(os.environ['APPDATA'],'red-r')
         objShell = win32com.client.Dispatch("WScript.Shell")
@@ -243,7 +243,7 @@ def getVersion():
 def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
-    pathsToAdd = [directoryNames['osSpecific']]
+    pathsToAdd += [directoryNames['osSpecific']]
     pathsToAdd += [directoryNames['includes']]
     pathsToAdd += [directoryNames['canvasDir']]
         

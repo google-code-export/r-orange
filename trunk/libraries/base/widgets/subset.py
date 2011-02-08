@@ -87,7 +87,7 @@ class subset(OWRpy):
 
     def setcolA(self):
         try:
-            self.colAsel = '\''+unicode(self.colA.selectedItems()[0].text())+'\''
+            self.colAsel = '\''+unicode(self.colA.selectedItems()[0])+'\''
             if self.colAsel == '\'Rownames\'':
                 self.colAsel = '0'
         except: return
@@ -95,7 +95,7 @@ class subset(OWRpy):
             self.subset()
     def setcolB(self):
         try:
-            self.colBsel = '\''+unicode(self.colB.selectedItems()[0].text())+'\''
+            self.colBsel = '\''+unicode(self.colB.selectedItems()[0])+'\''
         except: return
         if self.commit.processOnChange():
             self.subset()
@@ -135,7 +135,7 @@ class subset(OWRpy):
         
         selectedDFItems = []
         for name in self.attributes.selectedItems():
-            selectedDFItems.append('"'+unicode(name.text())+'"') # get the text of the selected items
+            selectedDFItems.append('"'+unicode(name)+'"') # get the text of the selected items
         
         if self.rowcolBox.getChecked() == 'Row':
             self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',])', wantType = 'NoConversion')

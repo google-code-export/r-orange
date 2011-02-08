@@ -16,14 +16,18 @@ class comboBox(QComboBox,widgetState):
         
         if displayLabel:
             self.hb = widgetBox(self.controlArea,orientation=orientation)
-            widgetLabel(self.hb, label)
+            lb = widgetLabel(self.hb, label)
             self.hb.layout().addWidget(self)
             self.hasLabel = True
+            self.hb.layout().setAlignment(lb,Qt.AlignRight)
+            lb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         else:
             self.controlArea.layout().addWidget(self)
             self.hasLabel = False
         self.label = label
-
+        
+        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        
         self.items = OrderedDict()
         self.setEditable(editable)
 

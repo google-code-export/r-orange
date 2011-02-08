@@ -53,7 +53,7 @@ class RedRmelt(OWRpy):
             string = ',variable_name="'+unicode(self.RFunctionParamvariable_name_lineEdit.text())+'"'
             injection.append(string)
         if len(self.RFunctionParamid_vars_listBox.selectedItems()) > 0:
-            string = ',id.vars= c("'+'","'.join([unicode(i.text()) for i in self.RFunctionParamid_vars_listBox.selectedItems()])+'")'   #unicode(self.RFunctionParamid_vars_comboBox.currentText())+''
+            string = ',id.vars= c("'+'","'.join([unicode(i) for i in self.RFunctionParamid_vars_listBox.selectedItems()])+'")'   #unicode(self.RFunctionParamid_vars_comboBox.currentText())+''
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['melt']+'<-melt(data='+unicode(self.RFunctionParam_data)+inj+')')

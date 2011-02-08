@@ -50,7 +50,7 @@ class RedRpreProcess(OWRpy):
         string = ',thresh='+unicode(float(self.RFunctionParamthresh_spinBox.value())/100)+''
         injection.append(string)
         if len(self.RFunctionParammethod_listBox.selectedItems()) > 0:
-            string = ',method= c("'+'","'.join([unicode(i.text()) for i in self.RFunctionParammethod_listBox.selectedItems()])+'")'
+            string = ',method= c("'+'","'.join([unicode(i) for i in self.RFunctionParammethod_listBox.selectedItems()])+'")'
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['preProcess']+'<-preProcess(x='+unicode(self.RFunctionParam_x)+'$'+unicode(self.trainingElement.currentText())+inj+')')

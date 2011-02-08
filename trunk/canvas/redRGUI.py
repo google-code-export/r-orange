@@ -113,7 +113,7 @@ def registerQTWidgets():
         m = imp.new_module(package)
         directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'qtWidgets')
         for filename in glob.iglob(os.path.join(directory,  "*.py")):
-            if os.path.isdir(filename) or os.path.islink(filename):
+            if os.path.isdir(filename) or os.path.islink(filename) or os.path.split(filename)[1] == '__init__.py':
                 continue
             try:    
                 guiClass = os.path.basename(filename).split('.')[0]

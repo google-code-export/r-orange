@@ -62,13 +62,13 @@ class readFile(OWRpy):
         box = widgetBox(self.browseBox,orientation='horizontal')
         self.filecombo = fileNamesComboBox(box, label=_('Files'), displayLabel=False,
         orientation='horizontal',callback=self.scanNewFile)
-        self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
+        #self.filecombo.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         button(box, label = _('Browse'), callback = self.browseFile)
         
         self.fileType = radioButtons(options, label=_('File Type'),
         buttons = [_('Text'), _('Excel')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
-        self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
+        #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         self.fileType.hide()
 
         

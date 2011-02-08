@@ -43,10 +43,10 @@ class RedRcast(OWRpy):
         if unicode(self.RFunctionParam_data) == '': return
         injection = []
         if len(self.RFunctionParamformula_listBox.selectedItems()) > 1:
-            string = ',formula='+'~'.join([unicode(i.text()) for i in self.RFunctionParamformula_listBox.selectedItems()]) #unicode(self.RFunctionParamformula_comboBox.currentText())+''
+            string = ',formula='+'~'.join([unicode(i) for i in self.RFunctionParamformula_listBox.selectedItems()]) #unicode(self.RFunctionParamformula_comboBox.currentText())+''
             injection.append(string)
         elif len(self.RFunctionParamformula_listBox.selectedItems()) == 1:
-            string = ',formula=...~'+unicode(self.RFunctionParamformula_listBox.selectedItems()[0].text()) #unicode(self.RFunctionParamformula_comboBox.currentText())+''
+            string = ',formula=...~'+unicode(self.RFunctionParamformula_listBox.selectedItems()[0]) #unicode(self.RFunctionParamformula_comboBox.currentText())+''
             injection.append(string)
         if unicode(self.RFunctionParamfun_aggregate_lineEdit.currentText()) != '':
             string = ',fun.aggregate='+unicode(self.RFunctionParamfun_aggregate_lineEdit.currentText())+''

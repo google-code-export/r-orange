@@ -202,7 +202,7 @@ class widgetSession():
                                 button(tempDialog, label = 'Cancel', callback = tempDialog.reject)
                                 res = tempDialog.exec_()
                                 if res != QDialog.rejected:
-                                    signalName = unicode(itemListBox.selectedItems()[0].text())
+                                    signalName = unicode(itemListBox.selectedItems()[0])
                                     signalID = self.outputs.getSignalByName(signalName)
                                     self.send(signalID, var)
     #############################################

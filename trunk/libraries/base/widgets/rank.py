@@ -56,7 +56,7 @@ class rank(OWRpy):
 
     def commitFunction(self):
         if self.columns.selectedItems():
-            col = self.columns.selectedItems()[0].text()
+            col = self.columns.selectedItems()[0]
         else:
             col = None
 

@@ -160,8 +160,8 @@ class LogHandler():
         ########## system specific, resetting except hook kills linux #########
         ##### if linux  #######
         #if sys.platform == 'win32':
-	self.defaultStdout = sys.stdout
-	sys.stdout = self
+        self.defaultStdout = sys.stdout
+        sys.stdout = self
         sys.excepthook = self.exceptionHandler
         
         # self.currentLogFile = redREnviron.settings['logFile']
@@ -215,7 +215,8 @@ class LogHandler():
         
         self.logFile.write(unicode(comment).encode('Latin-1')+'<br>')
     
-    
+    def flush(self):
+        pass
     def write(self, text):
         if logLevels[redREnviron.settings['outputVerbosity']] != DEVEL:
             return

@@ -14,7 +14,7 @@ from libraries.base.qtWidgets.textEdit import textEdit
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class subsetSummary(OWRpy): 
-    settingsList = []
+    globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
         self.setRvariableNames(["summary"])
@@ -24,24 +24,23 @@ class subsetSummary(OWRpy):
         self.inputs.addInput('id0', _('R Variable Object'), redRRDataFrame, self.processobject)
         self.namesList = redRListBox(self.controlArea, label = _('Splitting Element:'))
         self.namesList.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.processOnConnect = checkBox(self.controlArea, buttons = [_('Process On Connect')], setChecked = _('Process On Connect'))
         
-        redRCommitButton(self.bottomAreaRight, _('Commit'), callback = self.commitFunction)
+        self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), alignment=Qt.AlignLeft, 
+        callback = self.commitFunction, processOnInput=True)
         self.RoutputWindow = textEdit(self.controlArea, label = _("RoutputWindow"))
     def processobject(self, data):
         if data:
             self.RFunctionParam_object=data.getData()
             self.data = data
             self.namesList.update(self.R('names('+self.RFunctionParam_object+')', wantType = 'list'))
-            if _('Process On Connect') in self.processOnConnect.getChecked():
-                
+            if self.commit.processOnInput():
                 self.commitFunction()
         else:
             self.RFunctionParam_object=''
     def commitFunction(self):
         if unicode(self.RFunctionParam_object) == '': return
         if len(self.namesList.selectedItems()) == 0: return # must select something to split on.
-        listappend = ','.join([self.RFunctionParam_object+'$'+unicode(i.text()) for i in self.namesList.selectedItems()])
+        listappend = ','.join([self.RFunctionParam_object+'$'+unicode(i) for i in self.namesList.selectedItems()])
         self.R('txt<-capture.output(lapply(split(%s, list(%s), drop=F), summary))' % (self.RFunctionParam_object, listappend))
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')

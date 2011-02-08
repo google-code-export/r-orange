@@ -100,8 +100,6 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         try:
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
-            #print _('asdfasdfasdf'), inst
-            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             qApp.restoreOverrideCursor()
             self.setRIndicator(False)
             if showException:

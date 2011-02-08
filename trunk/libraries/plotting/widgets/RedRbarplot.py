@@ -11,7 +11,7 @@ from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
 from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
-from libraries.plotting.qtWidgets.redRPlot import redRPlot as redRgraphicsView
+from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 import libraries.base.signalClasses as signals
 
 class RedRbarplot(OWRpy): 

@@ -765,7 +765,7 @@ class colorListDialog(QDialog):
         self.data = data
     def attsListSelected(self):
         ## return a list of numbers coresponding to the levels of the data selected.
-        self.listOfColors = self.R('as.numeric(as.factor('+self.data+'$'+unicode(self.attsList.selectedItems()[0].text())+'))')
+        self.listOfColors = self.R('as.numeric(as.factor('+self.data+'$'+unicode(self.attsList.selectedItems()[0])+'))')
         
     def addColor(self):
         colorDialog = QColorDialog(self)
