@@ -17,6 +17,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
+import redRi18n
+_ = redRi18n.get_(package = 'base')
 
 class RVarSeparator(OWRpy): 
     globalSettingsList = ['commitButton']

@@ -1,6 +1,6 @@
 """
 <name>aaa</name>
-<tags>Plotting</tags>
+<tags>Prototypes</tags>
 <icon>plot.png</icon>
 """
 from OWRpy import * 

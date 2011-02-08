@@ -475,12 +475,16 @@ class filterTable(widgetState, QTableView):
         
     def getSettings(self):
         # print '############################# getSettings'
-        selections = self.selectionModel().selection()
+        if self.selectionModel():
+    
+          selections = [(x.top(),x.left(),x.bottom(),x.right()) for x in self.selectionModel().selection()]
+        else:
+            selections = None
         r = {
         'Rdata': self.Rdata,
         'filteredData':self.filteredData,
         'criteriaList': self.criteriaList
-        ,'selection2':[(x.top(),x.left(),x.bottom(),x.right()) for x in selections]
+        ,'selection2':selections
         }
         
         if self.sortIndex:
@@ -516,7 +520,7 @@ class filterTable(widgetState, QTableView):
                 selModel.select( QItemSelection(self.tm.createIndex(x[0],x[1]),self.tm.createIndex(x[2],x[3])),QItemSelectionModel.Select)
         
         
-        if 'selection' in data.keys() and len(data['selection']):
+        if 'selection' in data.keys() and selection and len(data['selection']):
             progressBar = self.startProgressBar(_('Filter Table Loading'), _('Loading Fiter Table'), 50)
 
             if len(data['selection']) > 1000:

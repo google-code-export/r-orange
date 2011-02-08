@@ -82,19 +82,20 @@ class RFormulaEntry(widgetState):
     def Formula(self):
         return (unicode(self.outcomeVariable.currentText()), unicode(self.modelLineEdit.text())) # returns the left and right of the formula.  Users are expected to insert the ~ where appropriate.
     def getSettings(self):
-        itemsText = []
-        for item in self.elementsListBox.items():
-           itemsText.append(unicode(item.text()))
+        # itemsText = []
+        # for item in self.elementsListBox.items():
+           # itemsText.append(unicode(item.text()))
                 
         r = {'current':self.outcomeVariable.currentIndex(), 
-        'buttonState': self.elementsListBox.isEnabled(), 'listBoxItems':itemsText}
+        'buttonState': self.elementsListBox.isEnabled(), 'listBoxItems':self.elementsListBox.getSettings()}
         
         return r
         #items = []
         #for item in self.elementsListBox.items():
     def loadSettings(self, data):
         try:
-            self.elementsListBox.addItems(data['listBoxItems'])
+            self.elementsListBox.loadSettings(data['listBoxItems'])
+            # self.elementsListBox.addItems(data['listBoxItems'])
             self.outcomeVariable.addItems(data['listBoxItems'])
             self.updateEnabled(data['buttonState'])
             self.outcomeVariable.setCurrentIndex(data['current'])
