@@ -91,7 +91,6 @@ class BaseRedRVariable:
 ##############################################################
 
 def registerRedRSignals():
-    import imp, sys
     for package in os.listdir(redREnviron.directoryNames['libraryDir']): 
         if not (os.path.isdir(os.path.join(redREnviron.directoryNames['libraryDir'], package)) 
         and os.path.isfile(os.path.join(redREnviron.directoryNames['libraryDir'],package,'package.xml'))):
@@ -99,6 +98,8 @@ def registerRedRSignals():
         
         m = imp.new_module(package)
         directory = os.path.join(redREnviron.directoryNames['libraryDir'],package,'signalClasses')
+        if not os.path.isdir(directory): continue
+        
         for filename in glob.iglob(os.path.join(directory,  "*.py")):
             # print _('import filename'), filename
             if os.path.isdir(filename) or os.path.islink(filename) or os.path.split(filename)[1] == '__init__.py':
