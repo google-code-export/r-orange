@@ -1,7 +1,7 @@
 !define NAME "Red-R"
 !define REDRVERSION "1.85"
 !define TYPE "source"
-!define DATE "$Date:$"
-!define SVNVERSION "$Rev:$"
+!define DATE "$Date$"
+!define SVNVERSION "$Rev$"
 !define RVERSION "R-2.11.1"
 
