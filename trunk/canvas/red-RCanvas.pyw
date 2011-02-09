@@ -13,24 +13,24 @@ import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redREnviron
-#print 'loading log'
+print 'loading log'
 try:
   import redRLog
 except Exception as inst:
   print unicode(inst)
 
-#print 'loading style'
+print 'loading style'
 import redRStyle
 import redRReports
-#print 'loading R session'
+print 'loading R session'
 import RSession
-#print 'loading histry'
+print 'loading histry'
 import redRHistory
-#print 'loading international'
+print 'loading international'
 import redRi18n
-#print 'loading registery'
+print 'loading registery'
 import orngRegistry#, OWGUI
-#print 'loading r output and loadsave'
+print 'loading r output and loadsave'
 import redROutput, redRSaveLoad
 #print 'loading orngdoc'
 import orngDoc, orngDlgs
@@ -241,6 +241,7 @@ class OrangeCanvasDlg(QMainWindow):
         #########################
         
         self.show()
+        redRSaveLoad.setCanvasDlg(self)
 
         if splashWindow:
             splashWindow.hide()
@@ -257,7 +258,7 @@ class OrangeCanvasDlg(QMainWindow):
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             pass
-        redRSaveLoad.setCanvasDlg(self)
+        
         qApp.processEvents()
         
     def saveOutputToFile(self):

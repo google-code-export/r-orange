@@ -98,6 +98,9 @@ class CanvasOptionsDlg(QDialog):
         
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
         _("Don't ask to save schema before closing"), debuggingEnabled = 0)
+        self.dontAskBeforeDeleting = redRCheckBox(generalBox, label = 'askbeforedelete', displayLabel = 0, buttons = [('ask',_("Ask Before Deleting Widget"))])
+        if redREnviron.settings['askBeforeWidgetDelete']:
+	    self.dontAskBeforeDeleting.setChecked('ask')
         
         
         # #################################################################
@@ -266,7 +269,7 @@ class CanvasOptionsDlg(QDialog):
         
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
         
-        redREnviron.settings['language'] != self.settings['language']
+        #redREnviron.settings['language'] != self.settings['language']
         self.settings['language'] = self.language.getItems()
         if redREnviron.settings['language'] != self.settings['language']: 
             mb = QMessageBox(_("Options"), _("You must restart Red-R for all the changes to take effect."), QMessageBox.Information, 
@@ -275,6 +278,10 @@ class CanvasOptionsDlg(QDialog):
             QMessageBox.NoButton, 
             qApp.canvasDlg)
             mb.exec_()
+	if 'ask' in self.dontAskBeforeDeleting.getCheckedIds():
+	  self.settings['askBeforeWidgetDelete'] = 1
+	else:
+	  self.settings['askBeforeWidgetDelete'] = 0
         self.settings['logsDir'] = self.logFile.text()
         if redREnviron.settings['logsDir'] != self.settings['logsDir']:
             redRLog.fileLogger.moveLogFile(redREnviron.settings['logsDir'],self.settings['logsDir'])

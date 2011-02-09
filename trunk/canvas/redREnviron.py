@@ -186,6 +186,7 @@ def loadSettings():
     ############################
 
     settings.setdefault("dontAskBeforeClose", 0)
+    settings.setdefault('askBeforeWidgetDelete', 1)
     
     settings.setdefault("writeLogFile", 1)
     settings.setdefault('logsDir', directoryNames['logsDir'])
@@ -231,13 +232,16 @@ def saveSettings():
     file.close()
 def getVersion():
     version = {}
-    f = open(os.path.join(directoryNames["redRDir"],'version.txt'), 'r')
-    file = f.readlines()
-    f.close()
-    import re
-    for i in file:
-        m = re.search('!define\s(\S+)\s"(.*)"',i)
-        version[m.group(1)] = m.group(2)
+    try:
+      f = open(os.path.join(directoryNames["redRDir"],'version.txt'), 'r')
+      file = f.readlines()
+      f.close()
+      import re
+      for i in file:
+	  m = re.search('!define\s(\S+)\s"(.*)"',i)
+	  version[m.group(1)] = m.group(2)
+    except:
+      version = {'NAME': 'Red-R', 'REDRVERSION':'0', 'TYPE':'0', 'DATE':'2000.1.1', 'SVNVERSION':'0'}
     return version
             
 def addOrangeDirectoriesToPath(directoryNames):
@@ -256,7 +260,7 @@ if __name__ =='redREnviron':
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-    # print 'done with redREnviron'
+    print 'done with redREnviron'
 #     import pprint
 #     pp = pprint.PrettyPrinter(indent=4)
 #     pp.pprint(settings)

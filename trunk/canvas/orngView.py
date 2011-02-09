@@ -7,6 +7,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRObjects, redRLog
 import redRi18n
+import redREnviron
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
@@ -102,8 +103,9 @@ class SchemaView(QGraphicsView):
     # popMenuAction - user selected to delete active widget
     def removeActiveWidget(self):
         #print "Trying to remove the widget"
-        res = QMessageBox.question(self.doc.canvasDlg, _('Red-R Canvas Remove Widget'), _('Are you sure you want to remove selected widget(s)?  This will remove the downstream data.'), QMessageBox.Yes | QMessageBox.No)
-        if res != QMessageBox.Yes: return
+        if redREnviron.settings['askBeforeWidgetDelete']:
+	  res = QMessageBox.question(self.doc.canvasDlg, _('Red-R Canvas Remove Widget'), _('Are you sure you want to remove selected widget(s)?  This will remove the downstream data.'), QMessageBox.Yes | QMessageBox.No)
+	  if res != QMessageBox.Yes: return
         if self.doc.signalManager.signalProcessingInProgress:
             QMessageBox.information( self, _("Red-R Canvas"), _("Unable to remove widgets while signal processing is in progress. Please wait."))
             return

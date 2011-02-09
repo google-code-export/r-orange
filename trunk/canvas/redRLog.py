@@ -159,16 +159,16 @@ class LogHandler():
     def __init__(self):
         ########## system specific, resetting except hook kills linux #########
         ##### if linux  #######
-        #if sys.platform == 'win32':
         self.defaultStdout = sys.stdout
-        sys.stdout = self
-        sys.excepthook = self.exceptionHandler
-        
+	sys.stdout = self
+	sys.excepthook = self.exceptionHandler
+	  
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
         # create the log file
         self.logFilename = "outputLog_%s.html" % redREnviron.settings['id']
         self.openLogFile()
+        
     def moveLogFile(self,oldDir, newDir):
         # print 'aaaaaaaaaaa', oldDir,newDir
         if not self.logFile: return
