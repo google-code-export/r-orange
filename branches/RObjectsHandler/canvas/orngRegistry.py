@@ -37,6 +37,7 @@ def readCategories():
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading repository of packages.'))
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
+    devAddonDir = os.path.realpath(redREnviron.directoryNames['devAddonDir'])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
     # cacheFilename = os.path.join(canvasSettingsDir, "cachedWidgetDescriptions.pickle")
 
@@ -53,7 +54,11 @@ def readCategories():
         directory = os.path.join(widgetDirName, dirName)
         if os.path.isdir(directory):
             directories.append((dirName, directory, ""))
-
+    if os.path.exists(devAddonDir):
+      for dirName in os.listdir(devAddonDir):
+	  directory = os.path.join(widgetDirName, dirName)
+	  if os.path.isdir(directory):
+	      directories.append((dirName, directory, ""))
     categories = {'widgets':[], 'templates':[], 'tags': None}     
     allWidgets = []
     theTags = xml.dom.minidom.parseString('<tree></tree>')

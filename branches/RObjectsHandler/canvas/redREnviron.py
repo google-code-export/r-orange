@@ -21,10 +21,12 @@ def __getDirectoryNames():
     dirs['canvasDir'] = os.path.join(dirs['redRDir'], "canvas")
     dirs['canvasIconsDir'] = os.path.join(dirs['redRDir'], "canvas",'icons')
     dirs['widgetDir'] = os.path.join(dirs['redRDir'], "libraries")
+    dirs['devAddonDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], 'RedRDevAddOn')
     dirs['libraryDir'] = os.path.join(dirs['redRDir'], "libraries")
     dirs['qtWidgetsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','qtWidgets')
     dirs['redRSignalsDir'] = os.path.join(dirs['redRDir'], "libraries",'base','signalClasses')
     dirs['examplesDir'] = os.path.join(dirs['redRDir'], "Examples")
+    dirs['includes'] = os.path.join(dirs['redRDir'], "includes")
     dirs['picsDir'] = os.path.join(dirs['widgetDir'],'base', "icons")
     #dirs['addOnsDir'] = os.path.join(dirs['redRDir'], "add-ons")
     
@@ -57,7 +59,7 @@ def __getDirectoryNames():
 
     ####Mac#####
     elif sys.platform == 'darwin':
-         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
+         dirs['RDir'] = '/Applications/Red-R.app/R/R.framework/Resources/'        
          dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'mac')
          dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'mac', 'rpy3')
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.red-r')        
@@ -67,7 +69,6 @@ def __getDirectoryNames():
     ####Linux#####
     else:
          print 'loading linux files'
-         ####### begin platform specific #########
          import platform
          bit = platform.architecture()[0]
          if bit == '32bit':
@@ -79,6 +80,7 @@ def __getDirectoryNames():
             dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
             dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'linux64')
             dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'linux64', 'rpy3')
+         
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'))
          dirs['RlibPath'] = ''
@@ -187,8 +189,7 @@ def loadSettings():
     settings.setdefault("dontAskBeforeClose", 0)
     
     settings.setdefault("writeLogFile", 1)
-    settings["logFile"] = os.path.join(directoryNames['logsDir'], "outputLog_%s.html" % settings['id'])
-    
+    settings.setdefault('logsDir', directoryNames['logsDir'])
     settings.setdefault("uploadError", 0)
     settings.setdefault("askToUploadError", 0)
     
@@ -215,6 +216,7 @@ def loadSettings():
     
     ## language settings, these settings exist so that we can detect the language of the system
     settings.setdefault('language', OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')]))
+    
     settings['availablelanguages'] = OrderedDict([('en_EN.ISO8859-1', u'English'), ('fr_FR.ISO8859-1', u'Fran\u00E7aise'), ('de_DE.ISO8859-1', u'Deutsch'), ('latin', 'Latin')])
     #print settings
     return settings
@@ -242,29 +244,22 @@ def getVersion():
 def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
-    pathsToAdd = [directoryNames['rpyDir']]
     pathsToAdd = [directoryNames['osSpecific']]
-    
-    
-    pathsToAdd.append(directoryNames['canvasDir'])
-    print pathsToAdd
-    # pathsToAdd.append(directoryNames['libraryDir'])
-
-    # if directoryNames['libraryDir'] <> None and os.path.isdir(directoryNames['libraryDir']):
-        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x) for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
-        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'widgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
-        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'qtWidgets') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
-        # pathsToAdd.extend([os.path.join(directoryNames['libraryDir'], x,'signalClasses') for x in os.listdir(directoryNames['libraryDir']) if os.path.isdir(os.path.join(directoryNames['libraryDir'], x))])
+    pathsToAdd += [directoryNames['includes']]
+    pathsToAdd += [directoryNames['canvasDir']]
         
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-print __name__
+# print __name__
 if __name__ =='redREnviron':
     
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-    print 'done with redREnviron'
- 
+    # print 'done with redREnviron'
+#     import pprint
+#     pp = pprint.PrettyPrinter(indent=4)
+#     pp.pprint(settings)
+

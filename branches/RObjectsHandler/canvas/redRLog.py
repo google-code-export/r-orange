@@ -1,8 +1,5 @@
 ## <log Module.  This module (not a class) will contain and provide access to widget icons, lines, widget instances, and other log.  Accessor functions are provided to retrieve these objects, create new objects, and distroy objects.>
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
 import redREnviron, os, traceback, sys
 from datetime import tzinfo, timedelta, datetime
 #import logging
@@ -36,32 +33,35 @@ logLevelsName = ['CRITICAL','ERROR','WARNING','INFO','DEBUG','DEVEL']
 logLevelsByLevel = dict(zip(logLevels,logLevelsName))
 logLevelsByName = dict(zip(logLevelsName,logLevels))
 
-print 'loading defs'
+#print 'loading defs'
 
 def setLogTrigger(name,manager,level):
     global _logTriggers
     _logTriggers[name] = {'level':level,'trigger':manager}
 
+def removeOutputManager(name):
+    if name in _outputWriter.keys():
+        del _outputWriter[name]
 def setOutputManager(name,manager,level=None):
     global _outputWriter
     _outputWriter[name] = {'level':level,'writer':manager}
     
-def log(table, logLevel = INFO, comment ='', widget=None):   
-    #lh.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
-    # lh.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
+def log(table, logLevel = INFO, comment ='', widget=None,html=True):   
+    #fileLogger.defaultSysOutHandler.write('error type %s, debug mode %s\n' % (logLevel, redREnviron.settings['debugMode']))
+    # fileLogger.defaultSysOutHandler.write(str(logLevelsByName.get(redREnviron.settings['outputVerbosity'],0)) + ' ' + str(redREnviron.settings['outputVerbosity']) + '\n')
     
     # if table == STDOUT:
-        # lh.defaultSysOutHandler.write(comment)
+        # fileLogger.defaultSysOutHandler.write(comment)
         # return
     if redREnviron.settings['displayTraceback']:
         stack = traceback.format_stack()
     else:
         stack = None
 
-    formattedLog = formatedLogOutput(table, logLevel, stack, comment,widget)    
+    formattedLog = formatedLogOutput(table, logLevel, stack, comment,widget,html)    
 
     # if redREnviron.settings["writeLogFile"]:
-        # lh.logFile.write(unicode(formattedLog).encode('Latin-1'))
+        # fileLogger.logFile.write(unicode(formattedLog).encode('Latin-1'))
 
     logOutput(table, logLevel, formattedLog,html=True)
     logTrigger(table, logLevel)
@@ -85,11 +85,11 @@ def logOutput(table, logLevel, comment,html=False):
             if logLevel >= logLevels[redREnviron.settings['outputVerbosity']]:
                 writer['writer'](table,logLevel,comment,html)
     
-def formatedLogOutput(table, logLevel, stack, comment, widget=None):
+def formatedLogOutput(table, logLevel, stack, comment, widget,html):
     # if logLevel == DEBUG:
         # comment = comment.rstrip('\n') + '<br>'
     
-    if table == R:
+    if not html:
         comment = getSafeString(comment)
     if logLevel == CRITICAL:
         color = '#FF0000'
@@ -153,79 +153,72 @@ def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, 
         return text
     # """
     
-def moveLogFile(newFile):
-    #print 'aaaaaaaaaaa'
-    if not lh.logFile: return
-    lh.logFile.close()
-    # if os.path.exists(newFile):
-        # os.remove(newFile)
-    # os.rename(lh.currentLogFile, newFile)
-    lh.logFile = open(newFile, "w")
-    # lh.currentLogFile = newFile
-def closeLogFile():
-    if lh.logFile:
-        lh.logFile.close()
-        #os.remove(redREnviron.settings['logFile'])
-def saveOutputToFile():
-    global _outputWindow
-    ## want to write the output to a file so we can save.
-    import os
-    name = QFileDialog.getSaveFileName(None, "Save File", os.environ['HOMEPATH'], "Document Log (*.html)")
-    if not name or name == None: return False
-    name = unicode(name)
-    if unicode(name) == '': return False
-    if os.path.splitext(unicode(name))[0] == "": return False
-    f = open(name, 'w')
-    f.write(_outputWindow.toHtml())
-    f.close()
     
     
 class LogHandler():
     def __init__(self):
-        #self.defaultSysOutHandler = sys.stdout
         ########## system specific, resetting except hook kills linux #########
-        
         ##### if linux  #######
-        if sys.platform == 'linux2':
-            pass
-        else:
-            sys.stdout = self
-            sys.excepthook = self.exceptionHandler
+        #if sys.platform == 'win32':
+	self.defaultStdout = sys.stdout
+	sys.stdout = self
+        sys.excepthook = self.exceptionHandler
+        
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
-        self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file
+        # create the log file
+        self.logFilename = "outputLog_%s.html" % redREnviron.settings['id']
+        self.openLogFile()
+    def moveLogFile(self,oldDir, newDir):
+        # print 'aaaaaaaaaaa', oldDir,newDir
+        if not self.logFile: return
+        self.logFile.close()
+        os.rename(os.path.join(oldDir,self.logFilename), os.path.join(newDir,self.logFilename))
+        self.logFile = open(os.path.join(newDir,self.logFilename), "a")
+    def openLogFile(self):
+        self.logFile = open(os.path.join(redREnviron.settings['logsDir'],self.logFilename),"w")
+
+    def closeLogFile(self):
+        if self.logFile:
+            self.logFile.close()
+            removeOutputManager('file')
+            #os.remove(redREnviron.settings['logFile'])
         
+    def closeLogger(self):
+        if sys.platform == 'win32':
+            sys.stdout = self.defaultStdout
+    
+    def showLogFile(self):
+        ## open a browser to show the log file.
+        import webbrowser
+        webbrowser.open(unicode(os.path.join(redREnviron.settings['logsDir'],self.logFilename)))
         
     def clearOldLogs(self):
         ## check the mod date for all of the logs in the log directory and remove those that are older than the max number of days.
         import glob
         import time
-        for f in glob.glob(os.path.split(redREnviron.settings['logFile'])[0]+'/*.html'):
+        for f in glob.glob(redREnviron.settings['logsDir']+'/*.html'):
             if int(redREnviron.settings['keepForXDays']) > -1 and time.time() - os.path.getmtime(f) > 60*60*24*int(redREnviron.settings['keepForXDays']):
                 try:
                     os.remove(f)
-                    self.defaultSysOutHandler.write('file %s removed\n' % f)
+                    #print 'file %s removed\n' % f
                 except Exception as inst:
-                    self.defaultSysOutHandler.write(unicode(inst))
+                    print unicode(inst)
+    
+    
     #ONLY FOR DEVEL print statements
     def writetoFile(self,table,logLevel,comment,html):
         if not redREnviron.settings["writeLogFile"]: return
         
         if not self.logFile:
-            self.logFile = open(redREnviron.settings['logFile'], "w") # create the log file
-        else:
-            self.logFile.write(unicode(comment).encode('Latin-1')+'<br>')
+            self.openLogFile()
+        
+        self.logFile.write(unicode(comment).encode('Latin-1')+'<br>')
+    
     
     def write(self, text):
-        # tb = traceback.format_stack()
-        # self.defaultSysOutHandler.write('in write' + str(logLevels[redREnviron.settings['outputVerbosity']]) + "\n")
-        # self.defaultSysOutHandler.write('################\n' + '\n'.join(tb))
-        # return
-        # self.defaultSysOutHandler.write(text)
         if logLevels[redREnviron.settings['outputVerbosity']] != DEVEL:
             return
-        # if redREnviron.settings["writeLogFile"]:
-            # self.logFile.write(unicode(text).encode('Latin-1')+'<br>')
             
         logOutput(REDRCORE,DEVEL, text,html=False)
 
@@ -233,6 +226,6 @@ class LogHandler():
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
         
 
-lh = LogHandler()
-setOutputManager('file',lh.writetoFile,level=DEVEL)
+fileLogger = LogHandler()
+setOutputManager('file',fileLogger.writetoFile,level=DEVEL)
 

@@ -266,35 +266,8 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         self.errorIcon.hide()
         self.warningIcon.hide()
         self.infoIcon.hide()
+        self.canvas.removeItem(self)
         return
-        # save settings
-        if (self.instance() != None):
-            try:
-                if self.canvasDlg.menuSaveSettings == 1:        # save settings only if checked in the main menu
-                    try:
-                        self.instance().saveGlobalSettings()
-                    except:
-                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, "Unable to successfully save settings for %s widget" % (self.instance().captionTitle))
-                        type, val, traceback = sys.exc_info()
-                        sys.excepthook(type, val, traceback)  # we pretend that we handled the exception, so that it doesn't crash canvas
-                self.instance().close()
-                self.instance().linksOut.clear()      # this helps python to more quickly delete the unused objects
-                self.instance().linksIn.clear()
-                self.instance().onDeleteWidget()      # this is a cleanup function that can take care of deleting some unused objects
-                # for x in self.instance().findChildren(QAbstractTableModel):
-                    # print 'in canvasItems', x
-                # print _('delete instance') 
-                # sip.delete(self.instance())
-                # for x in self.canvasDlg.findChildren(QAbstractTableModel):
-                    # print x
-                # import gc
-                # gc.collect()
-                # print _('Remaining references to ')+unicode(gc.get_referrers(self.instance()))
-                # print _('Remaining references from ')+unicode(gc.get_referents(self.instance()))
-
-
-            except: 
-                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
 
     def savePosition(self):
         self.oldPos = self.pos()
@@ -395,9 +368,14 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             try:
                 if self.progressBarShown:
                     rect.setTop(rect.top()-20)
-                widgetState = self.instance().widgetState
-                if widgetState.get("Info", {}).values() + widgetState.get("Warning", {}).values() + widgetState.get("Error", {}).values() != []:
-                    rect.setTop(rect.top()-21)
+                inst = self.instance()
+                if inst != None:
+                    widgetState = inst.widgetState
+                    if widgetState.get("Info", {}).values() + widgetState.get("Warning", {}).values() + widgetState.get("Error", {}).values() != []:
+                        rect.setTop(rect.top()-21)
+                else:
+                    ## remove self.
+                    self.remove()
             except:
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return rect

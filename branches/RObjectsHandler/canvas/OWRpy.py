@@ -8,7 +8,7 @@ from redRWidgetGUI import *
 from widgetSignals import *
 from widgetSession import *
 from PyQt4.QtGui import *
-import RSession, redREnviron, os, redRReports,redRLog
+import RSession, redREnviron, os, redRReports,redRLog, redRRObjects
 #import rpy
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRgraphicsView
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
@@ -79,7 +79,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
             self.RvariablesNames.append(x)
-            
+	redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("adding variables to redRRObjects"))
+	redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
     def makeCM(self, Variable):
         self.R(Variable+'<-list()', wantType = 'NoConversion')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):
@@ -97,11 +98,13 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.status.setStatus(4)
             
         qApp.setOverrideCursor(Qt.WaitCursor)
+        
         try:
+	    redRRObjects.ensureVars(self.widgetID)  # this ensures that all variables that this widget has set are available for use in the R session.
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
             #print _('asdfasdfasdf'), inst
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
             qApp.restoreOverrideCursor()
             self.setRIndicator(False)
             if showException:

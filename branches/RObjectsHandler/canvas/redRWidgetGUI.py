@@ -73,8 +73,8 @@ class redRWidgetGUI(QMainWindow):
         self.savePosition = True
         self.hasBeenShown = False
         self.hasAdvancedOptions = wantGUIDialog
-        print 'setting layout for widget'
-        print 'printing the layout', self.layout()
+        # print 'setting layout for widget'
+        # print 'printing the layout', self.layout()
         #self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
@@ -83,10 +83,10 @@ class redRWidgetGUI(QMainWindow):
         self.setCentralWidget(topWidgetPart)
         self.controlArea = redRwidgetBox(topWidgetPart, orientation="vertical", margin=4)
         #self.controlArea.setLayout(QVBoxLayout())
-        self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.controlArea.setMinimumWidth(300)
-        # topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
-	#self.layout().addWidget(self.controlArea)
+        topWidgetPart.layout().setAlignment(self.controlArea,Qt.AlignTop | Qt.AlignLeft)
+        #self.layout().addWidget(self.controlArea)
         bottomArea = redRwidgetBox(topWidgetPart, orientation="horizontal", margin=4)
         self.bottomAreaLeft = redRwidgetBox(bottomArea, orientation = 'horizontal')
         self.bottomAreaCenter = redRwidgetBox(bottomArea, sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),
@@ -276,12 +276,9 @@ class redRWidgetGUI(QMainWindow):
 
         
     def createReport(self, printer = None):
-        
-        
+        import redRObjects
         qApp.canvasDlg.reports.createReportsMenu(
-        [canvasWidget(caption=self._widgetInfo.widgetName, instance=self)],schemaImage=False)
-        
-        
+        [redRObjects.getWidgetInstanceByID(self.widgetID)],schemaImage=False)
     
 
     def updateDock(self,ev):

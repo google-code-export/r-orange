@@ -145,7 +145,7 @@ class CanvasOptionsDlg(QDialog):
         items = redRStyle.QtStyles, sendSelectedValue = 1, debuggingEnabled = 0)
         #OWGUI.checkBox(lookFeelBox, self.settings, "useDefaultPalette", _("Use style's standard palette"), debuggingEnabled = 0)
         
-        self.language = redRlistBox(lookFeelBox, label = _('Language'), items = redREnviron.settings['availablelanguages'], enableDragDrop = 1)
+        self.language = redRlistBox(lookFeelBox, label = _('Language'), items = self.settings['language'], enableDragDrop = 1)
         # selectedWidgetBox = OWGUI.widgetBox(schemeSettings, orientation = "horizontal")
         # self.selectedWidgetIcon = ColorIcon(selectedWidgetBox, redRStyle.widgetSelectedColor)
         # selectedWidgetBox.layout().addWidget(self.selectedWidgetIcon)
@@ -195,11 +195,11 @@ class CanvasOptionsDlg(QDialog):
         _("Save content of the Output window to a log file"))
         hbox = OWGUI.widgetBox(output, orientation = "horizontal")
         
-        self.logFile = lineEdit(hbox, label= _("Log File:"), orientation = 'horizontal',
-        text=redREnviron.settings['logFile'])
+        self.logFile = lineEdit(hbox, label= _("Log Dir:"), orientation = 'horizontal',
+        text=self.settings['logsDir'])
         self.okButton = OWGUI.button(hbox, self, _("Browse"), callback = self.browseLogFile)
-        self.showOutputLog = redRbutton(output, label = _('Show Log File'), callback = self.showLogFile)
-        self.numberOfDays = redRSpinBox(output, label = 'Keep File for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
+        #self.showOutputLog = redRbutton(output, label = _('Show Log File'), callback = self.showLogFile)
+        self.numberOfDays = redRSpinBox(output, label = 'Keep Log Files for X days:', min = -1, value = self.settings['keepForXDays'], callback = self.numberOfDaysChanged)
         
         # self.focusOnCatchOutputCB = OWGUI.checkBox(output, self.settings, "focusOnCatchOutput", _('Focus output window on system output'))
         # self.printOutputInStatusBarCB = OWGUI.checkBox(output, self.settings, "printOutputInStatusBar", _('Print last system output in status bar'))
@@ -227,13 +227,9 @@ class CanvasOptionsDlg(QDialog):
     def numberOfDaysChanged(self):
         redRLog.log(redRLog.DEBUG, redRLog.ERROR, 'changing day value to %s' % int(self.numberOfDays.value()))
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
-    def showLogFile(self):
-        ## open a browser to show the log file.
-        import webbrowser
-        webbrowser.open(unicode(self.logFile.text()))
+    
     def browseLogFile(self):
-        fn = QFileDialog.getSaveFileName(self, _("Save Log File"), redREnviron.settings['logFile'],
-        "Text file (*.html);; All Files (*.*)")
+        fn = QFileDialog.getExistingDirectory(self, _("Save Logs To"), redREnviron.settings['logsDir'])
         #print unicode(fn)
         if fn.isEmpty(): return
         self.logFile.setText(fn)
@@ -245,7 +241,7 @@ class CanvasOptionsDlg(QDialog):
         if self.tabs.tabText(index) != _('R Settings'):
             return
         self.libs = RSession.Rcommand('getCRANmirrors()')
-        print self.libs
+        #print self.libs
         self.libListBox.clear()
         self.libListBox.addItems(zip(self.libs['URL'],self.libs['Name']))
         self.libListBox.setSelectedIds([self.settings['CRANrepos']])
@@ -267,20 +263,26 @@ class CanvasOptionsDlg(QDialog):
         
         # self.settings['helpMode'] = (str(self.helpModeSelection.getChecked()) in _('Show Help Icons'))
         # print self.settings
+        
         self.settings['keepForXDays'] = int(self.numberOfDays.value())
+        
+        redREnviron.settings['language'] != self.settings['language']
         self.settings['language'] = self.language.getItems()
-        oldLogFile = redREnviron.settings['logFile']
-        self.settings['logFile'] = self.logFile.text()
-        # print 'a',oldLogFile
-        # print 'b',self.settings['logFile']
+        if redREnviron.settings['language'] != self.settings['language']: 
+            mb = QMessageBox(_("Options"), _("You must restart Red-R for all the changes to take effect."), QMessageBox.Information, 
+            QMessageBox.Ok | QMessageBox.Default,
+            QMessageBox.NoButton, 
+            QMessageBox.NoButton, 
+            qApp.canvasDlg)
+            mb.exec_()
+        self.settings['logsDir'] = self.logFile.text()
+        if redREnviron.settings['logsDir'] != self.settings['logsDir']:
+            redRLog.fileLogger.moveLogFile(redREnviron.settings['logsDir'],self.settings['logsDir'])
         
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
         
-        if oldLogFile != self.settings['logFile']:
-            import redRLog
-            redRLog.moveLogFile(redREnviron.settings['logFile'])
-        print redREnviron.settings['language']
+        print redREnviron.settings['logsDir']
         # redRStyle.widgetSelectedColor = self.settings["widgetSelectedColor"]
         # redRStyle.widgetActiveColor   = self.settings["widgetActiveColor"]  
         # redRStyle.lineColor           = self.settings["lineColor"]          

@@ -5,7 +5,7 @@
 """
 
 from OWRpy import *
-import redRGUI 
+import redRGUI, signals
 import re
 import textwrap
 import cPickle
@@ -26,6 +26,7 @@ from libraries.base.qtWidgets.fileNamesComboBox import fileNamesComboBox
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.widgetBox import widgetBox
+
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
@@ -44,7 +45,7 @@ class readFile(OWRpy):
         self.setRvariableNames(['dataframe_org','dataframe_final','filename', 'parent'])
         
         #signals
-        self.outputs.addOutput('od1', _('Output Data'), rdf.RDataFrame) #[("data.frame", rdf.RDataFrame)]
+        self.outputs.addOutput('od1', _('Output Data'), signals.base.RDataFrame) #[("data.frame", rdf.RDataFrame)]
         #GUI
         area = widgetBox(self.controlArea,orientation='horizontal',alignment=Qt.AlignTop)       
         #area.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding))
@@ -72,7 +73,7 @@ class readFile(OWRpy):
 
         
         self.delimiter = radioButtons(options, label=_('Column Seperator'),
-        buttons = [('\t', _('Tab')), (',', _('Comma')), (' ', _('Space')),("?", _('Other'))], setChecked='\t',callback=self.scanNewFile,
+        buttons = [_('Tab'), _('Comma'), _('Space'),_('Other')], setChecked=_('Tab'),callback=self.scanNewFile,
         orientation='horizontal')
         
         self.otherSepText = lineEdit(self.delimiter.box,label=_('Seperator'), displayLabel=False,
@@ -136,8 +137,7 @@ class readFile(OWRpy):
         holder.layout().setAlignment(Qt.AlignRight)
 
         self.FileInfoBox = groupBox(options, label = _("File Info"), addSpace = True)       
-        self.infob = widgetLabel(self.FileInfoBox, label='')
-        self.infob.setWordWrap(True)
+        self.infob = widgetLabel(self.FileInfoBox, label='',wordWrap=True)
         self.infoc = widgetLabel(self.FileInfoBox, label='')
         self.FileInfoBox.setHidden(True)
         
@@ -154,11 +154,7 @@ class readFile(OWRpy):
         
         self.columnTypes = widgetBox(self,orientation=QGridLayout(),margin=10);
         self.scroll.setWidget(self.columnTypes)
-        #self.columnTypes.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
-        self.columnTypes.setMinimumWidth(460)
-        self.columnTypes.layout().setSizeConstraint(QLayout.SetMinimumSize)
-        self.columnTypes.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding ,QSizePolicy.MinimumExpanding ))
-        self.columnTypes.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.columnTypes.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
         #self.setFileList()
         import sys
         if sys.platform=="win32":
@@ -172,7 +168,7 @@ class readFile(OWRpy):
     def setForExcel(self):
         self.fileType.show()
     def otherSep(self,text):
-        self.delimiter.setChecked('?')
+        self.delimiter.setChecked('other')
         
     def loadCustomSettings(self,settings):
         # import pprint
@@ -198,7 +194,7 @@ class readFile(OWRpy):
             q = widgetLabel(self.columnTypes,label=self.colNames[i])
             self.columnTypes.layout().addWidget(s.controlArea, i, 1)
             self.columnTypes.layout().addWidget(q.controlArea, i, 0)
-        
+            
     
     def browseFile(self): 
         print self.path
@@ -261,12 +257,14 @@ class readFile(OWRpy):
         if not scan =='clipboard':
             self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn)) 
             
-            # if os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'tab':
-                # self.delimiter.setChecked('Tab')
-            # elif os.path.basename(self.recentFiles[self.filecombo.currentIndex()]).split('.')[1] == 'csv':
-                # self.delimiter.setChecked('Comma')
 
-            if self.delimiter.getCheckedId() == '?':
+            if self.delimiter.getCheckedId() =='Tab':
+                sep  = '\t'
+            elif self.delimiter.getCheckedId() =='Comma':
+                sep  = ','
+            elif self.delimiter.getCheckedId() =='Space':
+                sep  = ' '
+            elif self.delimiter.getCheckedId() == 'Other':
                 sep = unicode(self.otherSepText.text())
             else:
                 sep = self.delimiter.getChecked()
@@ -274,7 +272,7 @@ class readFile(OWRpy):
             for i in self.otherOptions.getCheckedIds():
                 otherOptions += unicode(i) + '=TRUE,' 
             
-        if _('Column Headers') in self.hasHeader.getChecked():
+        if 'Column Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
         else:
             header = 'FALSE'
@@ -333,7 +331,7 @@ class readFile(OWRpy):
                 
         except:
             import redRLog
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+            redRLog.log(redRLog.REDRCORE, redRLog.WARNING,redRLog.formatException())
             self.rowNamesCombo.setCurrentIndex(0)
             self.updateScan()
             return

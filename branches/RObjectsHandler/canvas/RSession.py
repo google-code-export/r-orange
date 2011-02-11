@@ -23,17 +23,20 @@
 
 
 import sys, os, redREnviron, numpy
-os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+
 
 ####### system specific import of rpy in it's various flavors ##########
 ## if mac ##
 if sys.platform == 'darwin':
-    import rpy2.robjects as rpy
+    os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
+    import rpy3.robjects as rpy
 ## if windows ##
 elif sys.platform == 'win32':
+    os.environ['R_HOME'] = os.path.join(redREnviron.directoryNames['RDir'])
     import rpy2.robjects as rpy
 ## if linux ##
 elif sys.platform == 'linux2':
+    print 'loading rpy3'
     import rpy3.robjects as rpy
 ## if we don't know ##
 else:
@@ -41,10 +44,11 @@ else:
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-print 'importing conversion'
+#print 'importing conversion'
 import redrrpy._conversion as co
+#print 'done importing conversion'
 import redRLog
-
+#print 'Rsession loaded'
 # import redRi18n
 def _(a):
     return a
@@ -90,12 +94,11 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         # return None # now processes can catch potential errors
     #####################Forked verions of R##############################
     try:
-        
         output = rpy.r(unicode(query).encode('Latin-1'))
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.CRITICAL, _("Error occured in the R session.\nThe orriginal query was %s.\nThe error is %s.") % (query, inst))
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
-        raise RuntimeError(unicode(inst) + '  Orriginal Query was:  ' + unicode(query))
+        raise RuntimeError(unicode(inst) + '  Original Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
     if wantType == 'NoConversion': 
         mutex.unlock()
@@ -224,13 +227,13 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                         try:
                             redRLog.log(redRLog.R, redRLog.INFO, _('Installing library %s.') % library)
                             Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
-                            Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')#, lib=' + libPath + ')')
-                            loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')# lib.loc=' + libPath + ')')
+                            Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')
+                            loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')
                             installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
-                            
+
                         except:
-                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-                            redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
+                            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException())
+                            #redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
                             loadedOK = False
                     else:
                         loadedOK = False
