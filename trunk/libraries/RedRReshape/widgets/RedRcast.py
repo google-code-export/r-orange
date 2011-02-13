@@ -40,7 +40,7 @@ class RedRcast(OWRpy):
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if unicode(self.RFunctionParam_data) == '': return
+        if str(self.RFunctionParam_data) == '': return
         injection = []
         if len(self.RFunctionParamformula_listBox.selectedItems()) > 1:
             string = ',formula='+'~'.join([unicode(i) for i in self.RFunctionParamformula_listBox.selectedItems()]) #unicode(self.RFunctionParamformula_comboBox.currentText())+''
@@ -48,12 +48,12 @@ class RedRcast(OWRpy):
         elif len(self.RFunctionParamformula_listBox.selectedItems()) == 1:
             string = ',formula=...~'+unicode(self.RFunctionParamformula_listBox.selectedItems()[0]) #unicode(self.RFunctionParamformula_comboBox.currentText())+''
             injection.append(string)
-        if unicode(self.RFunctionParamfun_aggregate_lineEdit.currentText()) != '':
-            string = ',fun.aggregate='+unicode(self.RFunctionParamfun_aggregate_lineEdit.currentText())+''
+        if str(self.RFunctionParamfun_aggregate_lineEdit.currentText()) != '':
+            string = ',fun.aggregate='+str(self.RFunctionParamfun_aggregate_lineEdit.currentText())+''
             injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['cast']+'<-cast(data='+unicode(self.RFunctionParam_data)+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['cast']+')')
+        self.R(self.Rvariables['cast']+'<-cast(data='+str(self.RFunctionParam_data)+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['cast']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)

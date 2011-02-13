@@ -254,7 +254,7 @@ def addOrangeDirectoriesToPath(directoryNames):
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-# print __name__
+print __name__, "This is the redREnviron name"
 if __name__ =='redREnviron':   
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)

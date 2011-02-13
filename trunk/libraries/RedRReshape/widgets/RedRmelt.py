@@ -43,21 +43,21 @@ class RedRmelt(OWRpy):
         else:
             self.RFunctionParam_data=''
     def commitFunction(self):
-        if unicode(self.RFunctionParam_data) == '': return
+        if str(self.RFunctionParam_data) == '': return
         injection = []
         ## make commit function for self.RFunctionParamna_rm_radioButtons
-        injection.append(',na.rm = '+unicode(self.RFunctionParamna_rm_radioButtons.getChecked()))
-        string = ',measure.vars= "'+unicode(self.RFunctionParammeasure_vars_comboBox.currentText())+'"'
+        injection.append(',na.rm = '+str(self.RFunctionParamna_rm_radioButtons.getChecked()))
+        string = ',measure.vars= "'+str(self.RFunctionParammeasure_vars_comboBox.currentText())+'"'
         injection.append(string)
-        if unicode(self.RFunctionParamvariable_name_lineEdit.text()) != '':
-            string = ',variable_name="'+unicode(self.RFunctionParamvariable_name_lineEdit.text())+'"'
+        if str(self.RFunctionParamvariable_name_lineEdit.text()) != '':
+            string = ',variable_name="'+str(self.RFunctionParamvariable_name_lineEdit.text())+'"'
             injection.append(string)
         if len(self.RFunctionParamid_vars_listBox.selectedItems()) > 0:
             string = ',id.vars= c("'+'","'.join([unicode(i) for i in self.RFunctionParamid_vars_listBox.selectedItems()])+'")'   #unicode(self.RFunctionParamid_vars_comboBox.currentText())+''
             injection.append(string)
         inj = ''.join(injection)
-        self.R(self.Rvariables['melt']+'<-melt(data='+unicode(self.RFunctionParam_data)+inj+')')
-        self.R('txt<-capture.output('+self.Rvariables['melt']+')')
+        self.R(self.Rvariables['melt']+'<-melt(data='+str(self.RFunctionParam_data)+inj+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output('+self.Rvariables['melt']+')', wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)
