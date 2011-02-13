@@ -104,8 +104,8 @@ class SchemaView(QGraphicsView):
     def removeActiveWidget(self):
         #print "Trying to remove the widget"
         if redREnviron.settings['askBeforeWidgetDelete']:
-	  res = QMessageBox.question(self.doc.canvasDlg, _('Red-R Canvas Remove Widget'), _('Are you sure you want to remove selected widget(s)?  This will remove the downstream data.'), QMessageBox.Yes | QMessageBox.No)
-	  if res != QMessageBox.Yes: return
+            res = QMessageBox.question(self.doc.canvasDlg, _('Red-R Canvas Remove Widget'), _('Are you sure you want to remove selected widget(s)?  This will remove the downstream data.'), QMessageBox.Yes | QMessageBox.No)
+            if res != QMessageBox.Yes: return
         if self.doc.signalManager.signalProcessingInProgress:
             QMessageBox.information( self, _("Red-R Canvas"), _("Unable to remove widgets while signal processing is in progress. Please wait."))
             return

@@ -238,8 +238,8 @@ def getVersion():
       f.close()
       import re
       for i in file:
-	  m = re.search('!define\s(\S+)\s"(.*)"',i)
-	  version[m.group(1)] = m.group(2)
+          m = re.search('!define\s(\S+)\s"(.*)"',i)
+          version[m.group(1)] = m.group(2)
     except:
       version = {'NAME': 'Red-R', 'REDRVERSION':'0', 'TYPE':'0', 'DATE':'2000.1.1', 'SVNVERSION':'0'}
     return version
@@ -254,13 +254,13 @@ def addOrangeDirectoriesToPath(directoryNames):
     for path in pathsToAdd:
         if os.path.isdir(path) and not any([samepath(path, x) for x in sys.path]):
             sys.path.insert(0,path)
-print __name__, "This is the redREnviron name"
+#print __name__, "This is the redREnviron name"
 if __name__ =='redREnviron':   
     directoryNames = __getDirectoryNames()
     addOrangeDirectoriesToPath(directoryNames)
     version = getVersion()
     settings = loadSettings()
-    print 'done with redREnviron'
+    #print 'done with redREnviron'
 #     import pprint
 #     pp = pprint.PrettyPrinter(indent=4)
 #     pp.pprint(settings)

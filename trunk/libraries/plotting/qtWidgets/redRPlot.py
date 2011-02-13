@@ -24,12 +24,6 @@ class redRPlot(QGraphicsView, widgetState):
         widgetState.__init__(self,parent,label,includeInReports)
         
         QGraphicsView.__init__(self, self.controlArea)
-        # if displayLabel:
-            # self.controlArea = groupBox(parent,label=label, orientation='vertical')
-        # else:
-            # self.controlArea = widgetBox(parent,orientation='vertical')
-        
-        #self.controlArea = widgetBox(parent)
         self.topArea = widgetBox(self.controlArea,
         sizePolicy = QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Maximum),includeInReports=False)
         self.middleArea = widgetBox(self.controlArea)
@@ -179,10 +173,7 @@ class redRPlot(QGraphicsView, widgetState):
                 }
             }
         }
-        # ,'fg' : None
-        # ,'legendNames' : None
-        # ,'legendLocation' : "'bottomleft'"
-        # }
+        
         
         self.optionWidgets = {}
         self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']       
@@ -331,8 +322,8 @@ class redRPlot(QGraphicsView, widgetState):
         self.menu.addAction('Fit In Window')
         self.menu.addAction('Zoom Out')
         self.menu.addAction('Zoom In')
-        self.menu.addAction('Undock')
-        self.menu.addAction('Redock')
+        #self.menu.addAction('Undock')
+        #self.menu.addAction('Redock')
         
         self.dialog = QDialog()
         self.dialog.setWindowTitle('Red-R Graphics View' + name)
@@ -518,21 +509,13 @@ class redRPlot(QGraphicsView, widgetState):
         self.data = data
         self.function = function
         self.query = query
-        # self.legend = legend
         self.layers = []
-        # self._dwidth = dwidth
-        # self._dheight = dheight
            
         self.plotMultiple()
         
     def plotMultiple(self):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.parameters = self._getParameters()
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(self.parameters)
-
-        #self._startRDevice(self.parameters['device'])
         self.require_librarys(['Cairo'])
         
         self.imageFileName = unicode(self.image)+'.'+unicode(self.options['device']['parameters']['type']['value'][1:-1])
@@ -711,11 +694,12 @@ class redRPlot(QGraphicsView, widgetState):
         #self.image = os.path.abspath(image)
         #print self.image
         # print 'Addign Image'
+        if image == '': return
         if not self.scene():
             # print 'loading scene'
             scene = QGraphicsScene()
             self.setScene(scene)
-            print self.image
+        print self.image
         if imageType == None:
             imageType = image.split('.')[-1]
         if imageType not in ['svg', 'png', 'jpeg']:
@@ -723,30 +707,25 @@ class redRPlot(QGraphicsView, widgetState):
             print imageType, 'Error occured'
             raise Exception, 'Image type specified is not a valid type for this widget.'
         if imageType == 'svg':
-            self.convertSVG(image) ## handle the conversion to glyph free svg
-            mainItem = QGraphicsSvgItem(image)
+            self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
+            mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:
-            mainItem = QGraphicsPixmapItem(QPixmap(image))
+            mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
         else:
             raise Exception, 'Image type %s not specified in a plotting method' % imageType
-        #print mainItem
+            #mainItem = QGraphicsPixmapItem(QPixmap(image))
         self.scene().addItem(mainItem)
         self.mainItem = mainItem
         
-        
     def getSettings(self):
-        print '#################in getSettings'
-        r = {'image':self.imageFileName, 'query':self.query, 'function':self.function, 'addSettings':self.extrasLineEdit.getSettings()}
+        #print '#################in getSettings'
+        r = {'image':self.imageFileName, 'query':self.query, 'function':self.function}
         
-        print r
+        #print r
         return r
     def loadSettings(self,data):
-        # print '@@@@@@@@@@@@@@@@@in loadSettings'
-        # print data
-        
         self.query = data['query']
         self.function = data['function']
-        self.extrasLineEdit.loadSettings(data['addSettings'])
         self.addImage(data['image'])
     def getReportText(self, fileDir):
         

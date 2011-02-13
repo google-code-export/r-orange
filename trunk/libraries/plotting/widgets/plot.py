@@ -13,6 +13,7 @@ from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
+from libraries.plotting.qtWidgets.redRPlot import redRPlot
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
 from libraries.base.qtWidgets.SearchDialog import SearchDialog
 class plot(OWRpy): 
@@ -27,7 +28,7 @@ class plot(OWRpy):
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
-        self.plotArea = redRGraphicsView(self.controlArea)
+        self.plotArea = redRPlot(self.controlArea, label = 'Plot')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         # button(self.bottomAreaRight, 'Inspect Plot', callback = self.InspectPlot)
     # def InspectPlot(self):

@@ -112,26 +112,14 @@ def saveInstances(instances, widgets, doc, progressBar):
     
         widgets.appendChild(temp)
     return (widgets, settingsDict, requireRedRLibraries)
-    
-def makeTemplate(filename = None, copy = False):
+
+def makeTemplate(filename, copy = False):
     ## this is different from saving.  We want to make a special file that only has the selected widgets, their connections, and settings.  No R data or tabs are saved.
-    if copy and len(_tempWidgets) == 0: return 
-    elif len(_tempWidgets) == 0:
-        mb = QMessageBox(_("Save Template"), _("No widgets are selected.\nTemplates require widgets to be selected before saving as template."), 
-            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
-            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
-        
-        mb.exec_()
-        return
     if not copy:
-        if not filename:
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('orngDoc in makeTemplate; no filename specified, this is highly irregular!! Exiting from template save.'))
-            return
         tempDialog = TemplateDialog()
-        if tempDialog.exec_() == QDialog.Rejected:
-            return
-    else:
-        filename = redREnviron.directoryNames['tempDir']+'/copy.rrts'
+        tempDialog.exec_()
+    activeIcons = collectIcons()
+    
     progressBar = startProgressBar(
     _('Saving ')+unicode(os.path.basename(filename)),
     _('Saving ')+unicode(os.path.basename(filename)),
@@ -143,40 +131,26 @@ def makeTemplate(filename = None, copy = False):
     
     # save the widgets
     tempWidgets = {}
-    if copy:
-        for w in _tempWidgets:
-            tempWidgets[w.instanceID] = w.instance()
-    else:
-        for w in redRObjects.activeTab().getSelectedWidgets():
-            tempWidgets[w.instanceID] = w.instance()
+    for w in activeIcons:
+        tempWidgets[w.instanceID] = w.instance()
     (widgets, settingsDict, requireRedRLibraries) = saveInstances(tempWidgets, widgets, doc, progressBar)
-    # save the icons and the lines
-    sw = redRObjects.activeTab().getSelectedWidgets()
+    
     #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'orngDoc makeTemplate; selected widgets: %s' % sw)
     temp = doc.createElement('tab')
     temp.setAttribute('name', 'template')
     
     ## set all of the widget icons on the tab
     widgetIcons = doc.createElement('widgetIcons')
-    for wi in sw:
+    for wi in activeIcons:
         saveIcon(widgetIcons, wi, doc)
         
-    # tabLines = doc.createElement('tabLines')
-    # for line in redRObjects.getLinesByTab()[redRObjects.activeTabName()]:
-        # redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'orngDoc makeTemplate; checking line %s, inWidget %s, outWidget %s' % (line, line.inWidget, line.outWidget))
-        # if (line.inWidget not in sw) or (line.outWidget not in sw): 
-            # continue
-        # saveLine(tabLines, line)
-        
     temp.appendChild(widgetIcons)       ## append the widgetIcons XML to the global XML
-    #temp.appendChild(tabLines)          ## append the tabLines XML to the global XML
     tabs.appendChild(temp)
 
     
     ## save the global settings ##
     settingsDict['_globalData'] = cPickle.dumps(globalData.globalData,2)
     settingsDict['_requiredPackages'] =  cPickle.dumps({'R': requiredRLibraries.keys(),'RedR': requireRedRLibraries},2)
-    #print requireRedRLibraries
     file = open(os.path.join(redREnviron.directoryNames['tempDir'], 'settings.pickle'), "wt")
     file.write(unicode(settingsDict))
     file.close()
@@ -208,21 +182,24 @@ def makeTemplate(filename = None, copy = False):
     progress += 1
     progressBar.setValue(progress)
     progressBar.close()
-    #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Template saved successfully'))
     return True
 def collectIcons():
     global _tempWidgets
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Collecting Icons'))
     _tempWidgets = redRObjects.activeTab().getSelectedWidgets()
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Selected widgets are %s') % _tempWidgets)
+    return _tempWidgets
 def copy():
     ## copy the selected files and reload them as templates in the schema
-    collectIcons()
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('Making a copy with widgets %s') % _tempWidgets)
-    makeTemplate(copy=True)
+    
+    activeIcons = collectIcons()
+    if len(activeIcons) == 0: return
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Making a copy with widgets %s') % _tempWidgets)
+    
+    makeTemplate(filename = redREnviron.directoryNames['tempDir']+'/copy.rrts', copy=True)
 def savePipeline():
     #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('Saving Pipeline'))
-    name = QFileDialog.getSaveFileName(None, _("Save Template"), redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
+    name = QFileDialog.getSaveFileName(None, _("Save Template"), redREnviron.directoryNames['templatesDir'], "Red-R Widget Pipeline (*.rrpipe)")
     if not name or name == None: return False
     name = unicode(name)
     if unicode(name) == '': return False
@@ -844,13 +821,20 @@ def checkWidgetDuplication(widgets):
             return False
     return True
 def saveTemplate():
+    if len(collectIcons()) == 0:
+        mb = QMessageBox(_("Save Template"), _("No widgets are selected.\nTemplates require widgets to be selected before saving as template."), 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton)
+        
+        mb.exec_()
+        return
     name = QFileDialog.getSaveFileName(None, _("Save Template"), redREnviron.directoryNames['templatesDir'], "Red-R Widget Template (*.rrts)")
     if not name or name == None: return False
     name = unicode(name)
     if unicode(name) == '': return False
     if os.path.splitext(unicode(name))[0] == '': return False
     if os.path.splitext(unicode(name))[1].lower() != ".rrts": name = name + '.rrts'
-    return makeTemplate(unicode(name),copy=False)
+    return makeTemplate(unicode(name))
 
 def makeXMLDoc():
     doc = Document() ## generates the main document type.

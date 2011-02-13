@@ -13,32 +13,18 @@ import sys, os, cPickle, time
 mypath = os.path.split(os.path.split(os.path.abspath(sys.argv[0]))[0])[0]
 sys.path.append(mypath)
 import redREnviron
-print 'loading log'
-try:
-  import redRLog
-except Exception as inst:
-  print unicode(inst)
-
-print 'loading style'
+import redRLog
 import redRStyle
 import redRReports
-print 'loading R session'
 import RSession
-print 'loading histry'
 import redRHistory
-print 'loading international'
 import redRi18n
-print 'loading registery'
 import orngRegistry#, OWGUI
-print 'loading r output and loadsave'
 import redROutput, redRSaveLoad
-#print 'loading orngdoc'
 import orngDoc, orngDlgs
 import redRWidgetsTree
 import redRPackageManager, redRGUI,signals, redRInitWizard
-#print 'loading reports'
 import redRReports, redRObjects, redRUpdateManager
-#print 'loading R session'
 import redRCanvasToolbar
 
 #print 'Core module Load complete'
@@ -46,8 +32,6 @@ import redRCanvasToolbar
 from libraries.base.qtWidgets.button import button as redRbutton
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRwidgetBox
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
-# def _(a):
-    # return a
 _ = redRi18n.Coreget_()
 class OrangeCanvasDlg(QMainWindow):
     def __init__(self, app, parent = None, flags =  0):
@@ -207,13 +191,8 @@ class OrangeCanvasDlg(QMainWindow):
 
         splashWindow.showMessage(_("Setting States"), Qt.AlignHCenter + Qt.AlignBottom)
 
-        #qtsettings = QSettings("Red-R", "Red-R")
-        #print 'adsfasdf', qtsettings.value('windowState').toByteArray()
-        #print self.restoreState(qtsettings.value('windowState').toByteArray())
-
-
         if 'windowState' in redREnviron.settings.keys():
-            print self.restoreState(redREnviron.settings['windowState'])
+            self.restoreState(redREnviron.settings['windowState'])
 
         if 'geometry' in redREnviron.settings.keys():
             self.restoreGeometry(redREnviron.settings['geometry'])

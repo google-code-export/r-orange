@@ -2,10 +2,6 @@
 
 import redREnviron, os, traceback, sys
 from datetime import tzinfo, timedelta, datetime
-#import logging
-print redREnviron.settings
-print redREnviron.directoryNames
-print 'settings from redREnviron'
 #
 #Red-R output writers
 _outputWriter = {}
@@ -226,6 +222,7 @@ class LogHandler():
         logOutput(REDRCORE,DEVEL, text,html=False)
 
     def exceptionHandler(self, type, value, tracebackInfo):
+        
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
         
 
