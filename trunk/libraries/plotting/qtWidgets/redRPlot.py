@@ -516,12 +516,13 @@ class redRPlot(QGraphicsView, widgetState):
     def plotMultiple(self):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.parameters = self._getParameters()
-        self.require_librarys(['Cairo'])
-        
+        #self.require_librarys(['Cairo'])
+        self.require_librarys(['RSvgDevice'])
         self.imageFileName = unicode(self.image)+'.'+unicode(self.options['device']['parameters']['type']['value'][1:-1])
         file = unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))
 
-        self.R('Cairo(onefile=F, file="%s",%s,%s)' % ( file, ','.join(self.parameters['device']), ','.join(self.parameters['par'])))
+        #self.R('Cairo(onefile=F, file="%s",%s,%s)' % ( file, ','.join(self.parameters['device']), ','.join(self.parameters['par'])))
+        self.R('devSVG(file = "%s")' % file)
         self.R('par(%s)' % (','.join(self.parameters['par'])))
         
         
@@ -707,7 +708,7 @@ class redRPlot(QGraphicsView, widgetState):
             print imageType, 'Error occured'
             raise Exception, 'Image type specified is not a valid type for this widget.'
         if imageType == 'svg':
-            self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
+            #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))

@@ -216,11 +216,17 @@ class LogHandler():
     def flush(self):
         pass
     def write(self, text):
-        if logLevels[redREnviron.settings['outputVerbosity']] != DEVEL:
-            return
-            
-        logOutput(REDRCORE,DEVEL, text,html=False)
-
+        try:
+            import redREnviron
+            global logOutput
+            try:
+                if logLevels[redREnviron.settings['outputVerbosity']] != DEVEL:
+                    return
+            except Exception as inst:
+                logOutput(REDRCORE, DEVEL, text = unicode(inst))
+                return
+            logOutput(REDRCORE,DEVEL, text,html=False)
+        except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))

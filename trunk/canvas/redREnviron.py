@@ -140,14 +140,16 @@ def setTempDir(temp):
 def loadSettings():
     # print '#################loadSettings'
     settings = {}
-    filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
-    if os.path.exists(filename):
-        try:
-            settings = cPickle.load(open(filename, "rb"))
-        except:
-            #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-            pass
-
+    try:
+        filename = os.path.join(directoryNames['canvasSettingsDir'], "orngCanvas.ini")
+        if os.path.exists(filename):
+            try:
+                settings = cPickle.load(open(filename, "rb"))
+            except:
+                #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+                pass
+    except Exception as inst:
+        print unicode(inst)
     settings['id'] = unicode(time.time())
     setTempDir('temp_'+ settings['id'])
 
