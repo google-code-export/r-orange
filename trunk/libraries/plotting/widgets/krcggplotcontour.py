@@ -1,5 +1,5 @@
 """
-<name>Hexbin Plot</name>
+<name>Contour Plot</name>
 <tags>Plotting</tags>
 <icon>plot.png</icon>
 """
@@ -18,9 +18,10 @@ from libraries.base.qtWidgets.button import button
 from libraries.plotting.qtWidgets.redRGGPlot import redRGGPlot
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.comboBox import comboBox
+from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 
-class krcggplothexbin(OWRpy): 
+class krcggplotcontour(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self)
@@ -28,7 +29,7 @@ class krcggplothexbin(OWRpy):
         self.require_librarys(["ggplot2", "hexbin"])
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
-        self.setRvariableNames(["hexbin"])
+        self.setRvariableNames(["contour"])
         #self.dataFrame = ''
         #self.plotAttributes = {}
         #self.RFunctionParam_plotatt = ''
@@ -44,7 +45,9 @@ class krcggplothexbin(OWRpy):
         #self.namesListX.setEnabled(False)
         self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
         #self.namesListY.setEnabled(False)
-        self.graphicsView = redRGGPlot(self.controlArea,label='Hexbin Plot',displayLabel=False,
+        self.namesListZ = comboBox(self.controlArea, label = 'Z Contours:')
+        self.binwidth = spinBox(self.controlArea, label = 'Binsizes:', min = 0, value = 5)
+        self.graphicsView = redRGGPlot(self.controlArea,label='Contour Plot',displayLabel=False,
         name = self.captionTitle)
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
@@ -57,6 +60,8 @@ class krcggplothexbin(OWRpy):
             self.namesListX.update(self.R('names('+data.getData()+')'))
             self.namesListY.setEnabled(True)
             self.namesListY.update(self.R('names('+data.getData()+')'))
+            self.namesListZ.setEnabled(True)
+            self.namesListZ.update(self.R('names('+data.getData()+')'))
             self.dataFrame = data.getData()
             self.dataFrameAttached = True
 
@@ -81,8 +86,8 @@ class krcggplothexbin(OWRpy):
             string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['hexbin'], 'XDATA':self.namesListX.currentText(), 'YDATA':self.namesListY.currentText()}, wantType = 'NoConversion')
-        self.R('%(VAR)s <- %(VAR)s + stat_binhex()' % {'VAR':self.Rvariables['hexbin']}, wantType = 'NoConversion')
-        self.graphicsView.plot(query = self.Rvariables['hexbin'], function = '')
+        self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s, z = %(ZDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['contour'], 'XDATA':self.namesListX.currentText(), 'YDATA':self.namesListY.currentText(), 'ZDATA':self.namesListZ.currentText()}, wantType = 'NoConversion')
+        self.R('%(VAR)s <- %(VAR)s + stat_contour(binwidth = %(BIN)s)' % {'VAR':self.Rvariables['contour'], 'BIN':self.binwidth.value()}, wantType = 'NoConversion')
+        self.graphicsView.plot(query = self.Rvariables['contour'], function = '')
     
     
