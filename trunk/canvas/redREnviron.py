@@ -82,7 +82,7 @@ def __getDirectoryNames():
          
          createDir['settingsDir'] = os.path.join(os.environ['HOME'], '.red-r')        
          dirs['documentsDir'] = os.path.join(os.path.expanduser('~'))
-         dirs['RlibPath'] = ''
+         createDir['RlibPath'] = os.path.join(createDir['settingsDir'], 'packages')
 
     ###########################
     ## Red-R settings dir######

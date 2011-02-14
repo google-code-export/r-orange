@@ -200,7 +200,7 @@ loadedLibraries = []
 def setLibPaths(libLoc):
     ## sets the libPaths argument for the directory tree that will be searched for loading and installing librarys
     Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') 
-    
+    print 'library location is ', libLoc
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
         # if sys.platform=="win32":
@@ -208,10 +208,12 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         # else:
             # libPath = '\"'+personalLibDir+'\"'
         #Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
+        
         loadedOK = True
         # print 'libPath', libPath
         installedRPackages = getInstalledLibraries()
-        
+        print installedRPackages
+        print Rcommand('.libPaths()', wantType = 'list'), 'library paths' 
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]

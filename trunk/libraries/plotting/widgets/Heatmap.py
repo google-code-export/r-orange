@@ -139,8 +139,8 @@ class Heatmap(OWRpy):
             self.colvChoice = 'TRUE'
         else:
             self.colvChoice = 'NA'
-        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))')
-        self.gview1.plot(function = 'heatmap.2', query = '%(plotdata)s , scale = "row", density.info="none", trace="none", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= tempPalette(50), key = TRUE %(colclasses)s' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses})
+        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))') #scale = "row", density.info="none", trace="none",
+        self.gview1.plot(function = 'heatmap.2', query = '%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= bluered(%(length)s), key = TRUE %(colclasses)s' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'length':'100'})
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -168,52 +168,7 @@ class Heatmap(OWRpy):
         newData = redRRVector(data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         
-        
-    def getReportText(self, fileDir):
-        ## print the plot to the fileDir and then send a text for an image of the plot
-        if self.plotdata != '':
-            self.R('png(file="'+fileDir+'/heatmap'+unicode(self.widgetID)+'.png")')
-            if unicode(self.classesDropdown.currentText()) != '':
-                self.classes = self.classesData+'$'+unicode(self.classesDropdown.currentText())
-            if self.classes and ('Show Classes' in self.showClasses.getChecked()):
-                colClasses = ', ColSideColors=rgb(t(col2rgb(' + self.classes + ' +2)))'
-            else:
-                colClasses = ''
-            colorType = unicode(self.colorTypeCombo.currentText())
-            if colorType == 'rainbow':
-                start = float(float(self.startSaturation.value())/100)
-                end = float(float(self.endSaturation.value())/100)
-                print start, end
-                col = 'rev(rainbow(50, start = '+unicode(start)+', end = '+unicode(end)+'))'
-            else:
-                col = colorType+'(50)'
-            self.R('heatmap('+self.plotdata+', Rowv='+self.rowvChoice+', col= '+col+ colClasses+')')
-            self.R('dev.off()')
-            # for making the pie plot
-            self.R('png(file="'+fileDir+'/pie'+unicode(self.widgetID)+'.png")')
-            if colorType == 'rainbow':
-                start = float(float(self.startSaturation.value())/100)
-                end = float(float(self.endSaturation.value())/100)
-                print start, end
-                col = 'rev(rainbow(10, start = '+unicode(start)+', end = '+unicode(end)+'))'
-            else:
-                col = colorType+'(10)'
-            self.R('pie(rep(1, 10), labels = c(\'Low\', 2:9, \'High\'), col = '+col+')')
-            self.R('dev.off()')
-            self.R('png(file="'+fileDir+'/identify'+unicode(self.widgetID)+'.png")')
-            self.R('plot(hclust(dist(t('+self.plotdata+'))))')
-            self.R('dev.off()')
-            text = 'The following plot was generated in the Heatmap Widget:\n\n'
-            text += '.. image:: '+fileDir+'/heatmap'+unicode(self.widgetID)+'.png\n     :scale: 50%%\n\n'
-            #text += '<strong>Figure Heatmap:</strong> A heatmap of the incoming data.  Columns are along the X axis and rows along the right</br>'
-            text += '.. image:: '+fileDir+'/pie'+unicode(self.widgetID)+'.png\n     :scale: 30%%\n\n'
-            text += '**Intensity Chart:** Intensity levels are shown in this pie chart from low values to high.\n\n'
-            text += '.. image:: '+fileDir+'/identify'+unicode(self.widgetID)+'.png\n   :scale: 50%%\n\n\n'
-            text += '**Clustering:** A cluster dendrogram of the column data.\n\n'
-        else:
-            text = 'Nothing to plot from this widget'
-            
-        return text
+
         
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):

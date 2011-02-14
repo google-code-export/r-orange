@@ -526,8 +526,12 @@ class graphicsView(QGraphicsView, widgetState):
         self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode(imageType)
         # print '###################### filename' , self.imageFileName
         if imageType == 'svg':
-            self.require_librarys(['Cairo'])
-            self.R('CairoSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
+            if not self.require_librarys(['Cairo']):
+	      self.setImagePNG()
+	      self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
+	      imageType = 'png'
+	    else:
+              self.R('CairoSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\', width = '
                 +unicode(dheight)+', height = '+unicode(dheight)
                 +')', wantType = 'NoConversion')
             
