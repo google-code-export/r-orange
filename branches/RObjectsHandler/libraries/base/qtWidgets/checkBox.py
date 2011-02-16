@@ -19,7 +19,6 @@ class checkBox(widgetState,QWidget):
         QWidget.__init__(self,widget)
         widgetState.__init__(self,widget,label,includeInReports)
         
-        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
         self.controlArea.layout().addWidget(self)
 
@@ -28,6 +27,10 @@ class checkBox(widgetState,QWidget):
             # self.layout().addWidget(self.box)
         else:
             self.box = widgetBox(self.controlArea,orientation=orientation)
+        
+        self.controlArea.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.box.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,
+        QSizePolicy.Preferred))
         
         # if orientation=='vertical':
             # self.box.setSizePolicy(QSizePolicy(QSizePolicy.Preferred,
@@ -43,13 +46,6 @@ class checkBox(widgetState,QWidget):
         if buttons:
             self.addButtons(buttons)
 
-        # if buttons:
-            # for i,b in zip(range(len(buttons)),buttons):
-                # w = QCheckBox(b,self.box)
-                # if toolTips:
-                    # w.setToolTip(toolTips[i])
-                # self.buttons.addButton(w,i)
-                # self.box.layout().addWidget(w)
 
         if callback:
             QObject.connect(self.buttons, SIGNAL('buttonClicked(int)'), callback)

@@ -640,7 +640,7 @@ class SearchBox2(lineEdit):
         # print '################', type(items), items
         # if type(items) == dict:
         self.itemsAsStrings = [unicode('%s\n%s' %  (item.name,item.description[:self.descriptionSize])) 
-        for name,item in items.items()]
+	  for name,item in items.items()]
     def updateSuggestedItems(self):
         self.listWidget.setUpdatesEnabled(0)
         self.model.clear()
@@ -725,10 +725,13 @@ class SearchBox2(lineEdit):
             # self.updateSuggestedItems()
     
     def getLastTextItem(self):  ## returns a string of the entered text.
-        text = unicode(self.text())
-        if len(text) == 0: return []
-        if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
-        return text.split(self.delimiters)
+	try:
+	  text = unicode(self.text())
+	  if len(text) == 0: return []
+	  if not self.delimiters: return [unicode(self.text())]     # if no delimiters, return full text
+	  return text.split(self.delimiters)
+	except:
+	  return ''
         # if text[-1] in self.delimiters: return ""
         # return text.translate(self.translation).split(self.delimiters[0])[-1]       # last word that we want to help to complete
         ###########################  old code  #########################

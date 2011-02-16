@@ -17,18 +17,13 @@ print 'start robjects'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-print 'after qt'
+
 import orngCanvasItems
-print 'after canvasitems'
 import redREnviron
-print 'after enrivon'
 import orngView, time, orngRegistry
-print 'after orngview'
 import redRLog
-print 'after log'
 
 import redRi18n
-print 'after imports'
 _ = redRi18n.Coreget_()
 defaultTabName = _('General')
 _widgetRegistry = {}

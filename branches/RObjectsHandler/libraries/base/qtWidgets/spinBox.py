@@ -19,7 +19,9 @@ class spinBox(QDoubleSpinBox ,widgetState):
         self.label = label
         if displayLabel:
             self.hb = widgetBox(self.controlArea,orientation=orientation)
-            widgetLabel(self.hb, label)
+            
+            widgetLabel(self.hb, label,sizePolicy=QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum))
+            
             self.hb.layout().addWidget(self)
         else:
             self.controlArea.layout().addWidget(self)

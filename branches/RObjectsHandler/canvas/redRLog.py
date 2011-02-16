@@ -161,8 +161,8 @@ class LogHandler():
         ##### if linux  #######
         #if sys.platform == 'win32':
 	self.defaultStdout = sys.stdout
-	sys.stdout = self
-        sys.excepthook = self.exceptionHandler
+	#sys.stdout = self
+        #sys.excepthook = self.exceptionHandler
         
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()

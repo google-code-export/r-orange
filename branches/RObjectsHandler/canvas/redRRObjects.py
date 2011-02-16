@@ -25,7 +25,7 @@
 from RSession import Rcommand as R
 import redRi18n
 import redRLog
-import os, sys, redREnviron
+import os, sys, redREnviron, redRObjects
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -47,19 +47,23 @@ def removeWidget(widgetID):
 
 def loadWidgetObjects(widgetID):
   global _rObjects
+  redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were expanded (loaded)") % widgetID)
   R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID), wantType = 'NoConversion', silent = True)
   _rObjects[widgetID]['state'] = 1
+  redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
   extendTimer(widgetID)
   
 def saveWidgetObjects(widgetID):
   global _rObjects
-  _rObjects[widgetID]['timer'].stop()
-  redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were collapsed (saved)") % widgetID)
-  R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID)), wantType = 'NoConversion', silent = True)
-  _rObjects[widgetID]['state'] = 0
-  for v in _rObjects[widgetID]['vars']:
-    R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
-  
+  if _rObjects[widgetID]['state']:
+    _rObjects[widgetID]['timer'].stop()
+    redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were collapsed (saved)") % widgetID)
+    R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID)), wantType = 'NoConversion', silent = True)
+    _rObjects[widgetID]['state'] = 0
+    redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
+    for v in _rObjects[widgetID]['vars']:
+      R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
+    
   
 def ensureVars(widgetID):
   redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("Ensuring variables for widgetID %s") % widgetID)
@@ -71,5 +75,11 @@ def extendTimer(widgetID):
   global _rObjects
   timer = _rObjects[widgetID]['timer']
   timer.stop()
-  timer.setInterval(1000*3)
+  timer.setInterval(1000*60*10)
   timer.start()
+  
+def setWidgetPersistent(widgetID):
+  timer = _rObjects[widgetID]['timer']
+  timer.stop()
+  ensureVars(widgetID)
+  timer.stop()

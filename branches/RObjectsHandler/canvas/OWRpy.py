@@ -17,7 +17,7 @@ from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.lineEdit import lineEdit as redRLineEdit
 from libraries.base.qtWidgets.textEdit import textEdit as redRTextEdit
 from libraries.base.qtWidgets.separator import separator as redRSeparator
-from libraries.base.qtWidgets.filterTable import filterTable as redRFilterTable
+#from libraries.base.qtWidgets.filterTable import filterTable as redRFilterTable
 from libraries.base.qtWidgets.radioButtons import radioButtons as redRRadioButtons
 from libraries.base.qtWidgets.listBox import listBox as redRListBox
 from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
@@ -50,12 +50,12 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.saveSettingsList = []  # a list of lists or strings that we will save.
         OWRpy.uniqueWidgetNumber += 1
         ctime = unicode(time.time())
-        self.sessionID = 0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
+        self.sessionID =0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
         self.widgetID = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
         self.variable_suffix = '_' + self.widgetID
         self.Rvariables = {}
         self.RvariablesNames = []
-        self.setRvariableNames(['title'])
+        #self.setRvariableNames(['title'])
         self.requiredRLibraries = []
         self.device = {}
         self.packagesLoaded = 0
@@ -64,7 +64,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.tempID = None
         
 
-    def log(level,comment):
+    def log(self, comment, level = None):
+	if not level:
+	  level = redRLog.DEVEL
         redRLog.log(redRLog.REDRWIDGET,level,comment,widget=self.widgetID)
         
     def resetRvariableNames(self, id = None):
@@ -73,6 +75,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.variable_suffix = '_' + self.widgetID
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix
+    
     def setRvariableNames(self,names):
         
         #names.append('loadSavedSession')
@@ -81,6 +84,9 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.RvariablesNames.append(x)
 	redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("adding variables to redRRObjects"))
 	redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
+	if len(names) > 0:
+	  self.collapseDataButton.show() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
+	  self.neverCollapseDataButton.show()
     def makeCM(self, Variable):
         self.R(Variable+'<-list()', wantType = 'NoConversion')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):
