@@ -77,7 +77,7 @@ class setOperations(OWRpy):
             return 
             
         self.dataA = data.getData()
-        colsA = self.R('names('+self.dataA+')',wantType='list')
+        colsA = self.R('names(%s)' % self.dataA,wantType='list')
         self.colA.update(colsA)
         
         if self.commit.processOnInput():
@@ -87,7 +87,7 @@ class setOperations(OWRpy):
             self.colB.update([])
             return 
         self.dataB = data.getData()
-        colsB = self.R('names('+self.dataB+')',wantType='list') 
+        colsB = self.R('names(%s)' % self.dataB,wantType='list') 
 
         self.colB.update(colsB)
 
@@ -95,7 +95,7 @@ class setOperations(OWRpy):
             self.commitFunction()
     def commitFunction(self):
         if self.dataA and self.dataB:
-            h = self.R('intersect(names('+self.dataA+'), names('+self.dataB+'))',wantType='list')
+            h = self.R('intersect(names(%s), names(%s))' % (self.dataA, self.dataB),wantType='list')
         else: 
             return
             
@@ -135,6 +135,6 @@ class setOperations(OWRpy):
             else:
                 self.resultInfo.setPlainText('%s is not equal to %s' % (nameA, nameB))
         else:
-            newData = redRRVector(data = self.Rvariables["intersect"])
+            newData = redRRVector(self, data = self.Rvariables["intersect"])
             self.rSend("id0", newData)
     

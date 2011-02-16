@@ -66,13 +66,13 @@ class score(OWRpy):
         ## now make the matrixes
         if unicode(self.scoremethod.currentText()) == _('Multiplication'):
             ## for each col in the samples we need to multiply the cols in the score matrix and save the result.
-            self.R(self.Rvariables['score']+'<-as.data.frame(t(data.matrix('+self.Rvariables['mergedmatrix']+')) %*% data.matrix('+ self.Rvariables['mergedvals'] + '))', wantType = 'NoConversion')
+            self.R(self.Rvariables['score']+'<-as.data.frame(t(data.matrix('+str(self.Rvariables['mergedmatrix'])+')) %*% data.matrix('+ str(self.Rvariables['mergedvals']) + '))', wantType = 'NoConversion')
             
         elif unicode(self.scoremethod.currentText()) == _('Correlation'):
             # perform cor and show the results
             self.R('%s<-as.data.frame(cor(data.matrix(%s), data.matrix(%s)))' % (self.Rvariables['score'], self.Rvariables['mergedmatrix'], self.Rvariables['mergedvals']), wantType = 'NoConversion')
         self.RoutputWindow.setRTable(self.Rvariables['score'])
-        newScores = signals.RDataFrame.RDataFrame(data = self.Rvariables['score'])
+        newScores = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['score'])
         self.rSend('fscoremat', newScores)
             
         

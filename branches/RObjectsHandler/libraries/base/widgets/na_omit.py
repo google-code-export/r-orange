@@ -54,37 +54,37 @@ class na_omit(OWRpy):
             self.rSend("id3", self.data)
         elif type(thisdataclass) == str:
             if thisdataclass == 'numeric': # we have a numeric vector as the object
-                newData = redRRVector(data = self.Rvariables['na.omit'])
+                newData = redRRVector(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
                 self.status.setText(_('Data  sent through the R Vector channel'))
             elif thisdataclass == 'character': #we have a character vector as the object
-                newData = redRRVector(data = self.Rvariables['na.omit'])
+                newData = redRRVector(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id2", newData)
                 self.status.setText(_('Data  sent through the R Vector channel'))
             elif thisdataclass == 'data.frame': # the object is a data.frame
-                newData = redRRDataFrame(data = self.Rvariables['na.omit'])
+                newData = redRRDataFrame(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
                 self.status.setText(_('Data  sent through the R Data Frame channel'))
             elif thisdataclass == 'matrix': # the object is a matrix
-                newData = rmat.RMatrix(data = self.Rvariables['na.omit'])
+                newData = rmat.RMatrix(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id0", newData)
                 self.status.setText(_('Data  sent through the R Data Frame channel'))
             elif thisdataclass == 'list': # the object is a list
-                newData = redRRList(data = self.Rvariables['na.omit'])
+                newData = redRRList(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id1", newData)
                 self.status.setText(_('Data  sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic
-                newData = redRRVariable(data = self.Rvariables['na.omit'])
+                newData = redRRVariable(self, data = self.Rvariables['na.omit'])
                 newData.dictAttrs = self.data.dictAttrs.copy()
                 self.rSend("id3", newData)
                 self.status.setText(_('Data  sent through the R Object channel'))
         else:
-            newData = redRRVariable(data = self.Rvariables['na.omit'])
+            newData = redRRVariable(self, data = self.Rvariables['na.omit'])
             newData.dictAttrs = self.data.dictAttrs.copy()
             self.rSend("id3", newData)
             self.status.setText(_('Data  sent through the R Object channel'))

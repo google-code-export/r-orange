@@ -81,7 +81,7 @@ class Melt_DF(OWRpy):
         self.R(self.Rvariables['melt.data.frame']+'<-melt.data.frame(data=cbind('+unicode(self.RFunctionParam_data)+', OldRownames),na.rm='+unicode(pna)+mvStr+',variable.name="'+unicode(self.RFunctionParam_variable_name.text())+'"'+ivStr+')', wantType = 'NoConversion')
         self.R('rm(OldRownames)', wantType = 'NoConversion')
         # copy the signals class and send the newData
-        newData = redRRDataFrame(data = self.Rvariables['melt.data.frame'])
+        newData = redRRDataFrame(self, data = self.Rvariables['melt.data.frame'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)
         

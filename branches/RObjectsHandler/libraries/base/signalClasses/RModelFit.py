@@ -7,8 +7,8 @@ from libraries.base.signalClasses.RVariable import *
 
 class RModelFit(RList):
     convertToList = [RList, RVariable]
-    def __init__(self, data, parent = None, checkVal = True):
-        RList.__init__(self, data = data, parent = parent, checkVal = False)
+    def __init__(self, widget, data, parent = None, checkVal = True):
+        RList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         self.RListSignal = None
     def convertToClass(self, varClass):
         if varClass == RVariable:

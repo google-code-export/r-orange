@@ -37,6 +37,6 @@ class t(OWRpy):
         
         self.R(self.Rvariables['t']+'<-as.data.frame(t(x='+unicode(self.RFunctionParam_x)+'))', wantType = 'NoConversion')
         
-        newData = redRRDataFrame(data = self.Rvariables['t'])
+        newData = redRRDataFrame(self, data = self.Rvariables['t'])
         newData.dictAttrs = self.data.dictAttrs.copy()
         self.rSend("id0", newData)

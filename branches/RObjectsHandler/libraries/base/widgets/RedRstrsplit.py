@@ -74,7 +74,7 @@ class RedRstrsplit(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+unicode(self.RFunctionParam_x)+') ,'+inj+')', wantType = 'NoConversion')
-        newData = redRRList(data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRList(self, data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
@@ -94,6 +94,6 @@ class RedRstrsplit(OWRpy):
         wantType = 'NoConversion',
         silent = True)
         self.R(self.Rvariables['dataframe']+'<-t(data.frame('+self.Rvariables['strsplit']+'))', wantType = 'NoConversion')
-        newDataFrame = redRDataFrame(data = self.Rvariables['dataframe'], parent = self.Rvariables['dataframe'], checkVal = False)
+        newDataFrame = redRDataFrame(self, data = self.Rvariables['dataframe'], parent = self.Rvariables['dataframe'], checkVal = False)
         self.rSend('dataframe', newDataFrame)
         

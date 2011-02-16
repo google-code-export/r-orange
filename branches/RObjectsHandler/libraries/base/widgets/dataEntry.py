@@ -230,7 +230,7 @@ class dataEntry(OWRpy):
         
         # make a new data table, we copy the dictAttrs from the incoming table but nothing more, as a patch for cm managers we also remove the cm from the dictAttrs if one exists
         
-        self.newData = redRRDataFrame(data = self.Rvariables['table'], parent = self.Rvariables['table'])
+        self.newData = redRRDataFrame(self, data = self.Rvariables['table'], parent = self.Rvariables['table'])
         
         self.rSend("id0", self.newData)
         self.processDF(self.newData)  ## a good way to ensure loading and saving.

@@ -46,7 +46,7 @@ class RedRrbind(OWRpy):
         else:
             function = 'cbind'
         self.R(self.Rvariables['rbind']+'<-'+function+'('+','.join([i for k, i in self.data.items()])+','+inj+')', wantType = 'NoConversion')
-        newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables["rbind"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RDataFrame.RDataFrame(self, data = 'as.data.frame('+self.Rvariables["rbind"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         if unicode(self.bindingMode.getChecked()) == 'Column':
             self.R('rownames(%s)<-rownames(%s)' % (self.Rvariables['rbind'], self.data[unicode(self.rowcolnames.currentText())]), wantType = 'NoConversion', silent = True)

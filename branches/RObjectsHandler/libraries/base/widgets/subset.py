@@ -119,14 +119,14 @@ class subset(OWRpy):
             return
         
         if self.R('class(%s) == "data.frame"' % self.Rvariables['subset']):
-            newData = redRRDataFrame(data = self.Rvariables['subset'])
+            newData = redRRDataFrame(self, data = self.Rvariables['subset'])
         else:
-            newData = redRRDataFrame(data = 'as.data.frame(%s)' % self.Rvariables['subset'])
+            newData = redRRDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables['subset'])
             
         self.rSend('id0', newData)
         
         if self.R('ncol('+self.Rvariables['subset']+')') == 1:
-            newVector = redRRVector(data = 'as.vector('+self.Rvariables['subset']+')')
+            newVector = redRRVector(self, data = 'as.vector('+self.Rvariables['subset']+')')
             self.rSend('id1', newVector)
 
 
@@ -146,19 +146,19 @@ class subset(OWRpy):
             
         if self.R('dim('+self.Rvariables['rowcolSelector']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelector']+')<-c('+','.join(selectedDFItems)+')', wantType = 'NoConversion') # replace the colname if we are left with a 1 column data frame
-            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
+            newVector = rvec.RVector(self, data = 'as.vector('+self.Rvariables['rowcolSelector']+')')
             self.rSend('Reduced Vector', newVector)
             
         if self.R('dim('+self.Rvariables['rowcolSelectorNot']+')')[1] == 1:
             self.R('colnames('+self.Rvariables['rowcolSelectorNot']+')<-c(setdiff(colnames('+self.data+'), colnames('+self.Rvariables['rowcolSelector']+')))', wantType = 'NoConversion')
-            newVector = rvec.RVector(data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
+            newVector = rvec.RVector(self, data = 'as.vector('+self.Rvariables['rowcolSelectorNot']+')')
             self.rSend('Not Reduced Vector', newVector)
             
         
-        newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
+        newData = redRRDataFrame(self, data = self.Rvariables['rowcolSelector'])
         self.rSend('Data Table', newData)
 
-        newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+        newDataNot = redRRDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
         self.rSend('id0', newDataNot)
                 
         

@@ -421,7 +421,7 @@ class readFile(OWRpy):
         self.FileInfoBox.setHidden(False)
     def commit(self):
         self.updateGUI()
-        sendData = rdf.RDataFrame(data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
+        sendData = rdf.RDataFrame(self, data = self.Rvariables['dataframe_org'], parent = self.Rvariables['dataframe_org'])
         self.rSend("od1", sendData)
     
   

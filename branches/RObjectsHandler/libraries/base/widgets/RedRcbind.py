@@ -1,5 +1,5 @@
 """
-<name>cbind</name>
+<name>cbind (depricated)</name>
 <RFunctions>base:cbind</RFunctions>
 """
 from OWRpy import * 

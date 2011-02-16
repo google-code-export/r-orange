@@ -64,7 +64,7 @@ class rowFilter(OWRpy):
 
     def commitSubset(self):
         filteredData = self.table.getFilteredData()
-        newData = redRRDataFrame(data = filteredData, parent = self.dataParent.getData())
+        newData = redRRDataFrame(self, data = filteredData, parent = self.dataParent.getData())
 
         self.rSend('id0', newData)
    

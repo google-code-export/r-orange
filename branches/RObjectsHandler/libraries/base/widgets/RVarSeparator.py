@@ -74,38 +74,38 @@ class RVarSeparator(OWRpy):
             
         if type(dataClass) is str:
             if dataClass in ['numeric', 'character', 'real', 'complex', 'factor']: # we have a numeric vector as the object
-                newData = rvec.RVector(data = self.sendThis)
+                newData = rvec.RVector(self, data = self.sendThis)
                 self.rSend('id4', newData)
                 self.status.setText(_('Data sent through the R Vector channel'))
             elif dataClass == 'character': #we have a character vector as the object
-                newData = rvec.RVector(data = self.sendThis)
+                newData = rvec.RVector(self, data = self.sendThis)
                 self.rSend('id4', newData)
                 self.status.setText(_('Data sent through the R Vector channel'))
             elif dataClass == 'data.frame': # the object is a data.frame
-                newData = rdf.RDataFrame(data = self.sendThis)
+                newData = rdf.RDataFrame(self, data = self.sendThis)
                 self.rSend('id2', newData)
                 self.status.setText(_('Data sent through the R Data Frame channel'))
             elif dataClass == 'matrix': # the object is a matrix
                 
-                newData = rmat.RMatrix(data = self.sendThis)
+                newData = rmat.RMatrix(self, data = self.sendThis)
                 
                 self.rSend('id2', newData)
                 self.status.setText(_('Data sent through the R Data Frame channel'))
             elif dataClass == 'list': # the object is a list
                 for i in range(self.R('length('+self.sendThis+')')):
                     if self.R('class(%s[[%s]])' % (self.sendThis, i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
-                        newData = ral.RArbitraryList(data = self.sendThis)
+                        newData = ral.RArbitraryList(self, data = self.sendThis)
                         self.status.setText(_('Data sent through the R Arbitrary List channel'))
                         self.rSend('ral', newData)
                         return
-                newData = rlist.RList(data = self.sendThis)
+                newData = rlist.RList(self, data = self.sendThis)
                 self.rSend('id3', newData)
                 self.status.setText(_('Data sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic  
-                newData = rvar.RVariable(data = self.sendThis)
+                newData = rvar.RVariable(self, data = self.sendThis)
                 self.rSend('id1', newData)
                 self.status.setText(_('Data sent through the R Object channel'))
         else:
-            newData = rvar.RVariable(data = self.sendThis)
+            newData = rvar.RVariable(self, data = self.sendThis)
             self.rSend('id1', newData)
             self.status.setText(_('Data sent through the R Object channel'))

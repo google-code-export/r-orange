@@ -6,8 +6,8 @@ import time
 class RList(RArbitraryList, UnstructuredDict):
     convertFromList = [UnstructuredDict, StructuredDict]
     convertToList = [RVariable, UnstructuredDict, RArbitraryList]
-    def __init__(self, data, parent = None, checkVal = True):
-        RArbitraryList.__init__(self, data = data, parent = parent, checkVal = False)
+    def __init__(self, widget, data, parent = None, checkVal = True):
+        RArbitraryList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
         self.newDataID = unicode(time.time()).replace('.', '_')

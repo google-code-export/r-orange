@@ -6,10 +6,12 @@ from RSession import assign
 class RVariable(BaseRedRVariable): 
     convertToList = []
     convertFromList = []
-    def __init__(self, data, parent = None, checkVal = False):
+    def __init__(self, widget, data, parent = None, checkVal = False):
         BaseRedRVariable.__init__(self,data)
         if not parent:
             parent = data
+	self.widget = widget
+	self.widgetID = widget.widgetID
         self.parent = parent
         self.R = Rcommand
         self.assignR = assign
@@ -21,7 +23,9 @@ class RVariable(BaseRedRVariable):
         return '###Signal Class: '+unicode(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+unicode(self.dictAttrs)
     def getClass_call(self):
         return 'class('+self.data+')'
-        
+    def getData(self):
+	mydata = RVarStrClass(data = self.data, parentWidget = self.parentWidget)
+	return mydata
     def getClass_data(self):
         return self.R(self.getClass_call(), silent = True)
     def _simpleOutput(self, subsetting = ''):
@@ -57,3 +61,16 @@ class RVariable(BaseRedRVariable):
         return self
     def convertToClass(self, varClass):
         return self
+
+import redRRObjects
+
+class RVarStrClass():
+  def __init__(self, data, parentWidget):
+      self.data = data
+      self.parentWidget = parentWidget
+      
+  def __str__(self):
+      if self.parentWidget != None:
+	redRRObjects.ensureVars(self.parentWidget)
+      return self.data
+      

@@ -66,6 +66,6 @@ class RedRstrptime(OWRpy):
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['strptime']+'$'+self.Rvariables['strptime']+'<-as.numeric(strptime(x='+unicode(self.RFunctionParam_x)+'$'+unicode(self.columnSelection.currentText())+inj+'))')
-        newData = signals.RDataFrame.RDataFrame(data = self.Rvariables["strptime"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RDataFrame.RDataFrame(self, data = self.Rvariables["strptime"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("strptime Output", newData)

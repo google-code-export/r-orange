@@ -63,7 +63,7 @@ class colMatcher(OWRpy):
                         self.R(self.Rvariables['compColumn']+'<-c('+self.Rvariables['compColumn']+', "'+names[i]+'")', wantType = 'NoConversion')
         
         self.R(self.Rvariables['newmat']+'<-cbind('+self.RFunctionParam_x+', '+self.Rvariables['compColumn']+')', wantType = 'NoConversion')
-        newData = redRDataFrame(data = self.Rvariables['newmat'])
+        newData = redRDataFrame(self, data = self.Rvariables['newmat'])
         self.R('rm('+self.Rvariables['compColumn']+')', wantType = 'NoConversion')
         self.rSend('data', newData)
     
