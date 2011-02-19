@@ -178,9 +178,8 @@ class OrangeCanvasDlg(QMainWindow):
         ###################
         ##Update Manager###
         ###################
-        splashWindow.showMessage(_("Creating Update Manager"), Qt.AlignHCenter + Qt.AlignBottom)
-        
-        self.updateManager = redRUpdateManager.updateManager(self)
+        # splashWindow.showMessage(_("Creating Update Manager"), Qt.AlignHCenter + Qt.AlignBottom)
+        # self.updateManager = redRUpdateManager.updateManager(self)
         
         
         
@@ -239,7 +238,7 @@ class OrangeCanvasDlg(QMainWindow):
             pass
         
         qApp.processEvents()
-        
+    
     def saveOutputToFile(self):
         self.toolbarFunctions.menuItemSaveOutputWindow()
     def dockOutputManger(self,table, level, string, html):
@@ -418,6 +417,7 @@ def main(argv = None):
     # manager.start()
     # qApp.R = manager.Rclass()
 #####################Forked verions of R##############################
+    
     app = RedRQApplication(sys.argv)
     QCoreApplication.setOrganizationName("Red-R");
     QCoreApplication.setOrganizationDomain("red-r.com");
@@ -439,6 +439,32 @@ def main(argv = None):
     # dlg.saveSettings()
     app.closeAllWindows()
 
+def updates():
+    app = RedRQApplication(sys.argv)
+    QCoreApplication.setOrganizationName("Red-R");
+    QCoreApplication.setOrganizationDomain("red-r.com");
+    QCoreApplication.setApplicationName("Red-R");
+    updateManager = redRUpdateManager.updateManager(app)
+    if redREnviron.settings['checkForUpdates']:
+        updateManager.checkForUpdate(auto=True)
+    print 'is avaliable', redREnviron.settings['updateAvailable']
+    if redREnviron.settings['updateAvailable']:
+        updateGUI = updateManager.showUpdateDialog()  
+        updateGUI = app.exec_()
+        app.closeAllWindows()
+        redREnviron.saveSettings()
+        return updateGUI
+    else:
+        return 0
+    
 if __name__ == "__main__":
     # freeze_support()
-    sys.exit(main())
+    wasUpdated = 0
+    #if redREnviron.settings['checkForUpdates'] and not redREnviron.settings['updateAvailable']:
+    wasUpdated = updates()
+    
+    print 'updated ended with', wasUpdated
+    if wasUpdated == 0:
+        sys.exit(main())
+    else:
+        sys.exit()

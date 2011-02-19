@@ -25,56 +25,61 @@ import redRi18n
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
-class updateManager():
-    def __init__(self,schema):
+
+
+
+class updateManager(QMainWindow):
+    def __init__(self,app,schema=None):
+        QMainWindow.__init__(self)
+        self.main = redRwidgetBox(None)
+        self.setCentralWidget(self.main)
         self.schema = schema
+        self.app = app
         #self.urlOpener = urllib2.FancyURLopener()
         self.version = redREnviron.version['REDRVERSION']
-        self.repository = 'http://www.red-r.org/redr_updates/Red-R-' + self.version
+        self.repository = redREnviron.settings['updatesRepository']
+        self.updateFile = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RUpdates.xml')
+        if os.path.exists(self.updateFile):
+            self.availableUpdate = self.parseUpdatesXML(self.updateFile)
+        #qApp.processEvents()
+    def checkForUpdate(self, auto=True):
+        today = date.today()
+
+        print 'checkForUpdate', 'date', redREnviron.settings['lastUpdateCheck'], today - redREnviron.settings['lastUpdateCheck']
+        if not redREnviron.checkInternetConnection():
+            return
+
         
-    def checkForUpdate(self):
-        ######### system specific ########
-        if sys.platform == 'linux2':
-            return False  ## linux doesn't play nice with the update manager right now.
-        file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RUpdates.xml')
-        f = urllib2.urlopen(self.repository +'/currentVersion.xml')
-        output = open(file,'wb')
+        if redREnviron.settings['lastUpdateCheck'] != 0:
+            diff =  today - redREnviron.settings['lastUpdateCheck']
+            if int(diff.days) < 7 and auto:
+                    return
+                    
+        f = urllib2.urlopen(redREnviron.settings['updatesRepository'] +'/currentVersion.xml')
+        output = open(self.updateFile,'wb')
         output.write(f.read())
         output.close()
         
-        #self.downloadFile(self.repository +'/currentVersion.xml', file)
+        redREnviron.settings['lastUpdateCheck'] = today
+        redREnviron.saveSettings()
         
-        self.availableUpdate = self.parseUpdatesXML(file)
-        if (self.availableUpdate['redRVerion'] == self.version 
+        self.availableUpdate = self.parseUpdatesXML(self.updateFile)
+        if (self.availableUpdate['redRVerion'] == redREnviron.version['REDRVERSION'] 
         and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']):
-            return True
-        else: return False
+            redREnviron.settings['updateAvailable'] = True
+        else: 
+            redREnviron.settings['updateAvailable'] = False
     
     def showUpdateDialog(self,auto=False):
-        # print  redREnviron.settings['checkedForUpdates']
-
-        if not redREnviron.checkInternetConnection():
-            if not auto:
-              self.createDialog(_('No Internet Connection'),False)
-            return
-
-        today = date.today()
-        if redREnviron.settings['checkedForUpdates'] != 0:
-            diff =  today - redREnviron.settings['checkedForUpdates']
-            if int(diff.days) < 2 and auto:
-                return
-                
-        redREnviron.settings['checkedForUpdates'] = today
-        redREnviron.saveSettings()
-        # print  redREnviron.settings['checkedForUpdates']
-        avaliable = self.checkForUpdate()
-        if avaliable:
-            html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s") % (
-            self.availableUpdate['redRVerion'],self.availableUpdate['SVNVersion'],
-            self.availableUpdate['date'],self.availableUpdate['changeLog']) 
-            self.createDialog(html,True)
-        elif not avaliable and not auto:
-            self.createDialog(_('You have the most current version of Red-R %s.') % self.version,False)
+        print 'in showUpdateDialog'
+        html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s") % (
+        self.availableUpdate['redRVerion'],self.availableUpdate['SVNVersion'],
+        self.availableUpdate['date'],self.availableUpdate['changeLog']) 
+        wasUpdated=self.createDialog(html,True)
+        
+        return wasUpdated
+        # elif not avaliable and not auto:
+            # self.createDialog(_('You have the most current version of Red-R %s.') % self.version,False)
 
     def parseUpdatesXML(self,fileName):
         f = open(fileName, 'r')
@@ -86,8 +91,13 @@ class updateManager():
         update['SVNVersion'] = self.getXMLText(updatesXML.getElementsByTagName('SVNVersion')[0].childNodes)
         update['date'] = self.getXMLText(updatesXML.getElementsByTagName('date')[0].childNodes)
         update['changeLog'] = self.getXMLText(updatesXML.getElementsByTagName('changeLog')[0].childNodes)
-        update['compiledFileName'] = self.getXMLText(updatesXML.getElementsByTagName('compiledFileName')[0].childNodes)
-        update['developerFileName'] = self.getXMLText(updatesXML.getElementsByTagName('developerFileName')[0].childNodes)
+        if sys.platform=="win32":
+            updatesNode = updatesXML.getElementsByTagName('win32')[0]
+        elif sys.platform=="darwin":
+            updatesNode = updatesXML.getElementsByTagName('mac')[0]
+            
+        update['compiledFileName'] = self.getXMLText(updatesNode.getElementsByTagName('compiled')[0].childNodes)
+        update['developerFileName'] = self.getXMLText(updatesNode.getElementsByTagName('src')[0].childNodes)
         return update
 
     def getXMLText(self, nodelist):
@@ -100,20 +110,38 @@ class updateManager():
         return rc
 
     def createDialog(self,html,avaliable):
-        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
-        
-        changeLogBox = redRwebViewBox(UpdatePopup,label=_('Update'),displayLabel=False)
-        changeLogBox.setMinimumWidth(350)
-        changeLogBox.setMinimumHeight(350)
+        print 'in createDialog'
+        width = 350
+        height = 350
+        changeLogBox = redRwebViewBox(self.main,label=_('Update'),displayLabel=False)
+        changeLogBox.setMinimumWidth(width)
+        changeLogBox.setMinimumHeight(width)
         changeLogBox.setHtml(html)
         
-        buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
+        buttonArea2 = redRwidgetBox(self.main,orientation = 'horizontal', 
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
         if avaliable:
-            redRbutton(buttonArea2, label = _('Close Red-R and Update'), callback = UpdatePopup.accept)
-        redRbutton(buttonArea2, label = _('Cancel'), callback = UpdatePopup.reject)
-        if UpdatePopup.exec_() == QDialog.Accepted:
-            self.downloadUpdate(update)
+            redRbutton(buttonArea2, label = _('Close Red-R and Update'), callback = self.accept)
+        redRbutton(buttonArea2, label = _('Cancel'), callback = self.reject)
+        
+        
+        desktop = self.app.desktop()
+        deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
+        deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
+        h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
+        w = max(0, deskW/2 - width/2)
+        self.move(w,h+2)
+        self.show()
+        print 'end createDialog'
+        
+    def accept(self):
+        print 'accept'
+        self.downloadUpdate(self.availableUpdate)
+        redREnviron.settings['updateAvailable'] = False
+        
+    def reject(self):
+        print 'reject'
+        self.app.exit(0)
         
     def showNoUpdates(self):
         UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
@@ -185,7 +213,7 @@ class updateManager():
         self.manager.connect(reply,SIGNAL("downloadProgress(qint64,qint64)"), self.updateProgress)
         
         self.manager.connect(self.manager,SIGNAL("finished(QNetworkReply*)"),
-        lambda reply: self.replyFinished(reply, file,self.closeAndUpdate))
+        lambda reply: self.replyFinished(reply, file,self.execUpdate))
         # self.downloadFile(url,file,finishedFun=self.closeAndUpdate, progressFun=self.updateProgress)
     
     def updateProgress(self, read,total):
@@ -193,35 +221,28 @@ class updateManager():
         qApp.processEvents()
        
     def execUpdate(self,file):
-        installDir = os.path.split(os.path.abspath(redREnviron.directoryNames['redRDir']))[0]
-        # print installDir
-        cmd = "%s /D=%s" % (file,installDir)
-        try:
-            shell.ShellExecuteEx(shellcon.SEE_MASK_NOCLOSEPROCESS,0,'open',file,"/D=%s" % installDir,
-            redREnviron.directoryNames['downloadsDir'],0)
-            # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
-        except:
-            
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
-            mb = QMessageBox(_("Error"), _("There was an Error in updating Red-R."), 
-                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
-                QMessageBox.NoButton, QMessageBox.NoButton, self.schema)
-            mb.exec_()
-            return
-        # print _('asdfasdfa')
         
+        installDir = os.path.split(os.path.abspath(redREnviron.directoryNames['redRDir']))[0]
+        print installDir
+        if sys.platform =='win32':
+            cmd = "%s /D=%s" % (file,installDir)
+            try:
+                shell.ShellExecuteEx(shellcon.SEE_MASK_NOCLOSEPROCESS,0,'open',file,"/D=%s" % installDir,
+                redREnviron.directoryNames['downloadsDir'],0)
+                # win32process.CreateProcess('Red-R update',cmd,'','','','','','','')
+            except:
+                redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+                mb = QMessageBox(_("Error"), _("There was an Error in updating Red-R."), 
+                    QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+                    QMessageBox.NoButton, QMessageBox.NoButton, self.schema)
+                mb.exec_()
+        
+        
+        self.app.exit(1)
+
     def closeAndUpdate(self,file):
         qApp.canvasDlg.closeEvent(QCloseEvent(),postCloseFun=lambda:self.execUpdate(file))
         
-    # def downloadFile(self,url,file,finishedFun=None, progressFun=None):    
-        # self.manager = QNetworkAccessManager(self.schema)
-        # reply = self.manager.get(QNetworkRequest(QUrl(url)))
-        
-        # if progressFun:
-            # self.manager.connect(reply,SIGNAL("downloadProgress(qint64,qint64)"), progressFun)
-        
-        # self.manager.connect(self.manager,SIGNAL("finished(QNetworkReply*)"),
-        # lambda reply: self.replyFinished(reply, file,finishedFun))
     def replyFinished(self, reply,file,finishedFun):
         self.reply = reply
         output = open(file,'wb')
@@ -230,5 +251,4 @@ class updateManager():
         output.close()
         if finishedFun:
             finishedFun(file)
-
 

@@ -199,7 +199,7 @@ class packageManager:
         file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
         from datetime import date
         redREnviron.settings['red-RPackagesUpdated'] = today = date.today()
-        #print url, file
+        print url, file
         self.urlOpener.retrieve(url, file)
     
     # runs through all the installed packages and creates red-RPackages.xml file

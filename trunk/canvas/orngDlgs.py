@@ -96,11 +96,17 @@ class CanvasOptionsDlg(QDialog):
         # _('Show help icons'))
 
         
+        self.checkForUpdates = redRCheckBox(generalBox, label = 'checkForUpdates', displayLabel = 0, buttons = [('checkForUpdates',_("Periodically Check For Updates"))])
+        if redREnviron.settings['checkForUpdates']:
+            self.checkForUpdates.setChecked('checkForUpdates')
+
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
         _("Don't ask to save schema before closing"), debuggingEnabled = 0)
+            
         self.dontAskBeforeDeleting = redRCheckBox(generalBox, label = 'askbeforedelete', displayLabel = 0, buttons = [('ask',_("Ask Before Deleting Widget"))])
+        
         if redREnviron.settings['askBeforeWidgetDelete']:
-	    self.dontAskBeforeDeleting.setChecked('ask')
+            self.dontAskBeforeDeleting.setChecked('ask')
         
         
         # #################################################################
@@ -278,10 +284,14 @@ class CanvasOptionsDlg(QDialog):
             QMessageBox.NoButton, 
             qApp.canvasDlg)
             mb.exec_()
-	if 'ask' in self.dontAskBeforeDeleting.getCheckedIds():
-	  self.settings['askBeforeWidgetDelete'] = 1
-	else:
-	  self.settings['askBeforeWidgetDelete'] = 0
+        
+        if 'ask' in self.dontAskBeforeDeleting.getCheckedIds():
+          self.settings['askBeforeWidgetDelete'] = 1
+        else:
+          self.settings['askBeforeWidgetDelete'] = 0
+        
+        self.settings['checkForUpdates'] =  'checkForUpdates' in self.checkForUpdates.getCheckedIds()
+        
         self.settings['logsDir'] = self.logFile.text()
         if redREnviron.settings['logsDir'] != self.settings['logsDir']:
             redRLog.fileLogger.moveLogFile(redREnviron.settings['logsDir'],self.settings['logsDir'])
@@ -289,7 +299,7 @@ class CanvasOptionsDlg(QDialog):
         redREnviron.settings.update(self.settings)
         redREnviron.saveSettings()
         
-        print redREnviron.settings['logsDir']
+        #print redREnviron.settings['logsDir']
         # redRStyle.widgetSelectedColor = self.settings["widgetSelectedColor"]
         # redRStyle.widgetActiveColor   = self.settings["widgetActiveColor"]  
         # redRStyle.lineColor           = self.settings["lineColor"]          

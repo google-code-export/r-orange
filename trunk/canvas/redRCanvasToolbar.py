@@ -375,8 +375,45 @@ class redRCanvasToolbarandMenu():
         self.canvas.packageManagerGUI.exec_()
  
     def menuCheckForUpdates(self):
-        self.canvas.updateManager.showUpdateDialog(auto=False)
-       
+        import redRUpdateManager
+        updateManager = redRUpdateManager.updateManager(qApp)
+        updateManager.checkForUpdate(auto=False)
+        if redREnviron.settings['updateAvailable']:
+            mb = QMessageBox("Update Available", "Red-R will exit and update?", 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.No | QMessageBox.Escape, QMessageBox.NoButton, self.canvas)
+            if mb.exec_() == QMessageBox.Ok:
+                self.restartRedR()
+        else:
+            mb = QMessageBox(_("No Updates"), _("Red-R is up-to-date."), 
+            QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+            QMessageBox.NoButton, QMessageBox.NoButton, self.canvas)
+            mb.exec_()
+
+    def restartRedR(self):
+        if sys.platform =='win32':
+            if redREnviron.version['TYPE']=='compiled':
+                cmd = os.path.join(redREnviron.directoryNames['redRDir'],'bin','red-RCanvas.exe')
+            else:
+                cmd = 'pythonw ' + os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
+        elif sys.platform =='darwin':
+            cmd = os.path.join(redREnviron.directoryNames['redRDir'])
+        try:
+            print cmd
+            r = QProcess.startDetached(cmd)
+            if r:
+                self.canvas.close()
+                return
+        except:
+            print 'error'
+
+        mb = QMessageBox(_("Error"), _("Please restart Red-R."), 
+        QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
+        QMessageBox.NoButton, QMessageBox.NoButton, self.canvas)
+        mb.exec_()
+    
+        
+            
     def menuOpenLocalOrangeHelp(self):
         import webbrowser
         webbrowser.open("file:///" + os.path.join(redREnviron.directoryNames[_('redRDir')], "doc/catalog/index.html"))

@@ -46,7 +46,7 @@ def __getDirectoryNames():
     
     ####Windows#####
     if sys.platform=="win32":
-        ### architecture specific ####???
+        ### architecture specific ####
         dirs['RDir'] = os.path.join(os.path.split(dirs['redRDir'])[0], "R", 'R-2.11.1')        
         dirs['osSpecific'] = os.path.join(dirs['redRDir'], 'win32')
         #dirs['rpyDir'] = os.path.join(dirs['redRDir'], 'win32', 'rpy3')
@@ -180,9 +180,17 @@ def loadSettings():
     settings.setdefault("useDefaultPalette", 0)
 
     settings.setdefault('CRANrepos','http://cran.r-project.org')
-    settings.setdefault('red-RPackagesUpdated',0)
-    settings.setdefault('checkedForUpdates',0)
     settings.setdefault('keepForXDays', 7)
+    
+    ############################
+    #Updates##
+    ############################
+    settings.setdefault('red-RPackagesUpdated',0)
+    settings.setdefault('checkForUpdates',True)
+    settings.setdefault('lastUpdateCheck',0)
+    settings.setdefault('updateAvailable',False)
+    settings.setdefault('updatesRepository','http://www.red-r.org/redr_updates/Red-R-' + version['REDRVERSION'])
+    
     ############################
     #Dubug and output settings##
     ############################
@@ -250,7 +258,6 @@ def addOrangeDirectoriesToPath(directoryNames):
     """Add orange directory paths to Python path."""
     pathsToAdd = [directoryNames['redRDir']]
     pathsToAdd += [directoryNames['osSpecific']]
-    pathsToAdd += [directoryNames['includes']]
     pathsToAdd += [directoryNames['canvasDir']]
         
     for path in pathsToAdd:
