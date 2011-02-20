@@ -107,7 +107,7 @@ class packageManager:
                 except:
                     redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                     OK=False
-        qApp.canvasDlg.reloadWidgets()
+        qApp.canvasDlg.toolbarFunctions.reloadWidgets()
         progressBar.hide()
         return OK
 
@@ -430,7 +430,7 @@ class packageManagerDialog(redRdialog):
         for name in uninstallList:
             shutil.rmtree(os.path.join(redREnviron.directoryNames['libraryDir'], name), True)
         
-        qApp.canvasDlg.reloadWidgets()
+        qApp.canvasDlg.toolbarFunctions.reloadWidgets()
         self.loadPackagesLists(force=False)
     
     # Lists all packages that will be downloaded and installed
@@ -522,7 +522,7 @@ class packageManagerDialog(redRdialog):
             if len(download.keys()) > 0:
                 results = self.packageManager.downloadPackages(download,window=self)
             else: #need to do this to refresh the widget tree
-                qApp.canvasDlg.reloadWidgets()
+                qApp.canvasDlg.toolbarFunctions.reloadWidgets()
             self.loadPackagesLists()
             self.tabsArea.setCurrentIndex(1)
         except Exception as inst:

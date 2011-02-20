@@ -393,11 +393,13 @@ class redRCanvasToolbarandMenu():
     def restartRedR(self):
         if sys.platform =='win32':
             if redREnviron.version['TYPE']=='compiled':
-                cmd = os.path.join(redREnviron.directoryNames['redRDir'],'bin','red-RCanvas.exe')
+                cmd = '"%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'bin','red-RCanvas.exe')
             else:
-                cmd = 'pythonw ' + os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
+                cmd = 'pythonw "%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
         elif sys.platform =='darwin':
             cmd = os.path.join(redREnviron.directoryNames['redRDir'])
+        
+        
         try:
             print cmd
             r = QProcess.startDetached(cmd)
@@ -405,7 +407,7 @@ class redRCanvasToolbarandMenu():
                 self.canvas.close()
                 return
         except:
-            print 'error'
+            print 'error', cmd
 
         mb = QMessageBox(_("Error"), _("Please restart Red-R."), 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 

@@ -351,8 +351,9 @@ class OrangeCanvasDlg(QMainWindow):
     
         if closed:
             if postCloseFun:
-                postCloseFun()
-
+                print 'asdfasdfasfd'
+                r = postCloseFun()
+                print 'a', r
             self.canvasIsClosing = 1        # output window (and possibly report window also) will check this variable before it will close the window
             redRObjects.closeAllWidgets() # close all the widget first so their global data is saved
             import shutil
@@ -365,6 +366,7 @@ class OrangeCanvasDlg(QMainWindow):
             #redRLog.closeLogger()
             ce.accept()
             QMainWindow.closeEvent(self,ce)
+            
 
         else:
             ce.ignore()

@@ -26,8 +26,6 @@ import redRi18n
     # return a
 _ = redRi18n.Coreget_()
 
-
-
 class updateManager(QMainWindow):
     def __init__(self,app,schema=None):
         QMainWindow.__init__(self)
@@ -44,22 +42,24 @@ class updateManager(QMainWindow):
         #qApp.processEvents()
     def checkForUpdate(self, auto=True):
         today = date.today()
-
-        print 'checkForUpdate', 'date', redREnviron.settings['lastUpdateCheck'], today - redREnviron.settings['lastUpdateCheck']
         if not redREnviron.checkInternetConnection():
             return
 
-        
         if redREnviron.settings['lastUpdateCheck'] != 0:
             diff =  today - redREnviron.settings['lastUpdateCheck']
             if int(diff.days) < 7 and auto:
                     return
-                    
-        f = urllib2.urlopen(redREnviron.settings['updatesRepository'] +'/currentVersion.xml')
-        output = open(self.updateFile,'wb')
-        output.write(f.read())
-        output.close()
-        
+        url =redREnviron.settings['updatesRepository'] +'/currentVersion.xml'
+        print url
+        try:
+            f = urllib2.urlopen(url)
+            output = open(self.updateFile,'wb')
+            output.write(f.read())
+            output.close()
+        except:
+            redREnviron.settings['updateAvailable'] = False
+            return 
+            
         redREnviron.settings['lastUpdateCheck'] = today
         redREnviron.saveSettings()
         
