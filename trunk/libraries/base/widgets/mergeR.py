@@ -148,6 +148,7 @@ class mergeR(OWRpy):
         newDataAll = redRRDataFrame(data = self.Rvariables['merged'])
         newDataAll.dictAttrs = self.dataParentB.dictAttrs.copy()
         newDataAll.dictAttrs.update(self.dataParentA.dictAttrs)
+        print 'Moving to send'
         self.rSend("id0", newDataAll)
     
     def setcolA(self):

@@ -17,10 +17,33 @@ from libraries.base.qtWidgets.spinBox import spinBox as redRSpinBox
 from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
+from libraries.base.qtWidgets.textEdit import textEdit
+from libraries.base.qtWidgets.widgetBox import widgetBox as redRWidgetBox
 import redRi18n
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
+class MetaDialog(QDialog):
+    def __init__(self, filename):
+        QDialog.__init__(self)
+        ## GUI
+        self.setLayout(QVBoxLayout())
+        self.layout().setMargin(2)
+        self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        topWidgetPart = redRWidgetBox(self, orientation="vertical", margin=0)
+        topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self.layout().addWidget(topWidgetPart)
+        self.controlArea = redRWidgetBox(topWidgetPart, orientation="vertical", margin=4)
+        
+        label = redRwidgetLabel(self.controlArea, label = _('Meta data for %s not found you can add it now since you appear to be a developer.') % filename)
+        
+        self.text = textEdit(self.controlArea, label = _('Widget Meta Data'))
+        with open(os.path.join(redREnviron.directoryNames['widgetDir'], 'blank', 'meta', 'widgets', 'widgetTemplate.xml'), 'r') as f:
+            g = f.read()
+        self.text.insertPlainText(g)
+        buttonBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
+        acceptButton = redRbutton(buttonBox, label = _('OK'), callback = self.accept)
+        rejectButton = redRbutton(buttonBox, label = _('Cancel'), callback = self.reject)
 class ColorIcon(QToolButton):
     def __init__(self, parent, color):
         QToolButton.__init__(self, parent)
@@ -64,7 +87,7 @@ class CanvasOptionsDlg(QDialog):
         else:
             self.setWindowTitle(_("Canvas Options"))
         self.topLayout = QVBoxLayout(self)
-        self.topLayout.setSpacing(0)
+        self.topLayout.setSpacing(10)
         self.resize(350,300)
         self.toAdd = []
         self.toRemove = []

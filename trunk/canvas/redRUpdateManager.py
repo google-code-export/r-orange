@@ -82,23 +82,28 @@ class updateManager(QMainWindow):
             # self.createDialog(_('You have the most current version of Red-R %s.') % self.version,False)
 
     def parseUpdatesXML(self,fileName):
-        f = open(fileName, 'r')
-        updatesXML = xml.dom.minidom.parse(f)
-        f.close()
-        # updatesXML = xml.dom.minidom.parseString(xml)
-        update = {}
-        update['redRVerion'] = self.getXMLText(updatesXML.getElementsByTagName('redRVerion')[0].childNodes)
-        update['SVNVersion'] = self.getXMLText(updatesXML.getElementsByTagName('SVNVersion')[0].childNodes)
-        update['date'] = self.getXMLText(updatesXML.getElementsByTagName('date')[0].childNodes)
-        update['changeLog'] = self.getXMLText(updatesXML.getElementsByTagName('changeLog')[0].childNodes)
-        if sys.platform=="win32":
-            updatesNode = updatesXML.getElementsByTagName('win32')[0]
-        elif sys.platform=="darwin":
-            updatesNode = updatesXML.getElementsByTagName('mac')[0]
-            
-        update['compiledFileName'] = self.getXMLText(updatesNode.getElementsByTagName('compiled')[0].childNodes)
-        update['developerFileName'] = self.getXMLText(updatesNode.getElementsByTagName('src')[0].childNodes)
-        return update
+        try:
+            f = open(fileName, 'r')
+            updatesXML = xml.dom.minidom.parse(f)
+            f.close()
+            # updatesXML = xml.dom.minidom.parseString(xml)
+            update = {}
+            update['redRVerion'] = self.getXMLText(updatesXML.getElementsByTagName('redRVerion')[0].childNodes)
+            update['SVNVersion'] = self.getXMLText(updatesXML.getElementsByTagName('SVNVersion')[0].childNodes)
+            update['date'] = self.getXMLText(updatesXML.getElementsByTagName('date')[0].childNodes)
+            update['changeLog'] = self.getXMLText(updatesXML.getElementsByTagName('changeLog')[0].childNodes)
+            if sys.platform=="win32":
+                updatesNode = updatesXML.getElementsByTagName('win32')[0]
+            elif sys.platform=="darwin":
+                updatesNode = updatesXML.getElementsByTagName('mac')[0]
+            elif sys.platform == 'linux2':
+                updatesNode = updatesXML.getElementsByTagName('linux2')[0]
+            if updatesNode and updatesNode != None:
+                update['compiledFileName'] = self.getXMLText(updatesNode.getElementsByTagName('compiled')[0].childNodes)
+                update['developerFileName'] = self.getXMLText(updatesNode.getElementsByTagName('src')[0].childNodes)
+            return update
+        except:
+            return {}
 
     def getXMLText(self, nodelist):
         rc = ''

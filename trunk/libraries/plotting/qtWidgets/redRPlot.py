@@ -752,16 +752,16 @@ class redRPlot(QGraphicsView, widgetState):
         elif imageType == 'jpeg':
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
         
-        if not self.plotExactlySwitch:
-            self.extras = self._setParameters()
-            if unicode(self.extrasLineEdit.text()) != '':
-                self.extras += ', '+unicode(self.extrasLineEdit.text())
-            if self.extras != '':
-                fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
-            else:
-                fullquery = '%s(%s)' % (self.function, self.query)
+        #if not self.plotExactlySwitch:
+        self.extras = self._setParameters()
+        if unicode(self.extrasLineEdit.text()) != '':
+            self.extras += ', '+unicode(self.extrasLineEdit.text())
+        if self.extras != '':
+            fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
         else:
-            fullquery = self.query
+            fullquery = '%s(%s)' % (self.function, self.query)
+        #else:
+         #   fullquery = self.query
         self.R(fullquery)
         for l in self.layers:
             self.R(l)

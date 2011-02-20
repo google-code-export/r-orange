@@ -68,7 +68,7 @@ class RVarSeparator(OWRpy):
             
     def commit(self):
         #must declare explilcitly as a string or an error will occur.  We remove NA's just in case they are in the data
-        self.sendThis = unicode('local('+self.varBox.selectedItems()[0]+', '+self.envName+')') 
+        self.sendThis = unicode('local('+self.varBox.selectedItems().values()[0]+', '+self.envName+')') 
         
         #put logic for finding the type of variable that the object is and sending it from that channel of the output
         

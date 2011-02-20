@@ -190,7 +190,8 @@ class OutputHandler:
                             connection['signal']['value'] = newVal
                             sentSignal = True
                             break
-                    except:
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(inst))
                         redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 if sentSignal == False:
                     ## we made it this far and the signal is still not sent.  The user must have allowed this to get this far so we send the signal anyway.

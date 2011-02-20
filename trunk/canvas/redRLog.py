@@ -159,7 +159,7 @@ class LogHandler():
         ##### if linux  #######
         self.defaultStdout = sys.stdout
         sys.stdout = self
-        sys.excepthook = self.exceptionHandler
+        #sys.excepthook = self.exceptionHandler
 	  
         # self.currentLogFile = redREnviron.settings['logFile']
         self.clearOldLogs()
@@ -231,7 +231,8 @@ class LogHandler():
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
         
-
+print 'setting log handler'
 fileLogger = LogHandler()
+print 'log handler set'
 setOutputManager('file',fileLogger.writetoFile,level=DEVEL)
 

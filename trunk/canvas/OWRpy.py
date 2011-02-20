@@ -64,7 +64,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         self.tempID = None
         
 
-    def log(level,comment):
+    def log(self, comment, level = redRLog.DEVEL):
         redRLog.log(redRLog.REDRWIDGET,level,comment,widget=self.widgetID)
         
     def resetRvariableNames(self, id = None):

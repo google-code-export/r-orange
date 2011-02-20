@@ -10,6 +10,7 @@ from PyQt4.QtGui import *
 import redRPackageManager
 import signals
 import xml.dom.minidom
+import orngDlgs
 # redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 # if not redRDir in sys.path:
     # sys.path.append(redRDir)
@@ -155,7 +156,21 @@ def readWidgets(directory, package):
         metaFile = os.path.join(directory,'meta','widgets',widgetName+'.xml')
         if not os.path.exists(metaFile):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Meta file for %s does not exist.</b>') % (filename))
-            continue
+            if redREnviron.settings['outputVerbosity'] == 5:
+                md = orngDlgs.MetaDialog(filename)
+                if md.exec_() == QDialog.Accepted:
+                    text = md.text.toPlainText()
+                    if not os.path.exists(os.path.join(directory, 'meta')):
+                        os.mkdir(os.path.join(directory, 'meta'))
+                    if not os.path.exists(os.path.join(directory, 'meta', 'widgets')):
+                        os.mkdir(os.path.join(directory, 'meta', 'widgets'))
+                    f = open(os.path.join(directory,'meta','widgets',widgetName+'.xml'), 'w')
+                    f.write(text)
+                    f.close()
+                else:
+                    continue
+            else:
+                continue
         try:
             widgetMetaXML = xml.dom.minidom.parse(metaFile)
         except Exception as inst:

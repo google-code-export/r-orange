@@ -121,7 +121,7 @@ def registerQTWidgets():
                 
                 c = forname('libraries.%s.qtWidgets.%s' % (package,guiClass),guiClass)
                 #c.__dict__['__package__'] = package
-                setattr(m, guiClass,c)
+                setattr(m, guiClass, c)
             except:
                redRLog.log(redRLog.REDRCORE, redRLog.WARNING,redRLog.formatException())
         setattr(current_module,package,m)

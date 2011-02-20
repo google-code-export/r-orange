@@ -74,9 +74,9 @@ class percentileClassifier(OWRpy):
         self.outputWindow.insertHtml(_('<table class="reference" cellspacing="0" border="1" width="100%"><tr><th align="left" width="50%">New Column Name</th><th align="left" width="50%">Number above percentile</th></tr>'))
         for percent in percentile:
             if int(percent) == 0 or int(percent) == 100: continue
-            for item in items:
+            for item in items.values():
                 
-                column = unicode(item.text())
+                column = unicode(item)
                 length = self.R('length(na.omit('+self.data+'[,\''+column+'\']))')
                 
                 self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+unicode(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+unicode(percent).strip(' ')+'/100*'+unicode(length)+']', wantType = 'NoConversion')

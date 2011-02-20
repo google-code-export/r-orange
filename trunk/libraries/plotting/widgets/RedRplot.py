@@ -12,7 +12,7 @@ from libraries.base.signalClasses.RList import RList as redRList
 from libraries.plotting.signalClasses.RPlotAttribute import RPlotAttribute as redRRPlotAttribute
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
-from libraries.base.qtWidgets.graphicsView import graphicsView
+from libraries.plotting.qtWidgets.redRPlot import redRPlot as redRgraphicsView
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.comboBox import comboBox
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
@@ -24,6 +24,7 @@ class RedRplot(OWRpy):
         self.RFunctionParam_y = ''
         self.RFunctionParam_x = ''
         self.dataFrame = ''
+        self.dataFrameAttached = False
         self.plotAttributes = {}
         self.RFunctionParam_plotatt = ''
         self.inputs.addInput('id0', 'y', [redRRVector, redRList], self.processy)
@@ -38,7 +39,7 @@ class RedRplot(OWRpy):
         self.namesListX.setEnabled(False)
         self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
         self.namesListY.setEnabled(False)
-        self.graphicsView = graphicsView(self.controlArea,label='XY Plot',displayLabel=False,
+        self.graphicsView = redRgraphicsView(self.controlArea,label='XY Plot',displayLabel=False,
         name = self.captionTitle)
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
@@ -111,33 +112,5 @@ class RedRplot(OWRpy):
             string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
             injection.append(string)
         inj = ','.join(injection)
-        self.graphicsView.plotMultiple('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj, layers = [a for (k, a) in self.plotAttributes.items()])
+        self.graphicsView.plot('y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj) #, layers = [a for (k, a) in self.plotAttributes.items()])
     
-    def getReportText(self, fileDir):
-        if not self.dataFrameAttached:
-            if unicode(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
-            if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
-        else:
-            if self.dataFrame == '': return 'Nothing to plot from this widget'
-            self.RFunctionParam_x = self.dataFrame + '$' + unicode(self.namesListX.currentText())
-            self.RFunctionParam_y = self.dataFrame + '$' + unicode(self.namesListY.currentText())
-        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
-            
-        injection = []
-        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab=\''+unicode(self.RFunctionParamxlab_lineEdit.text())+'\''
-            injection.append(string)
-        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab=\''+unicode(self.RFunctionParamylab_lineEdit.text())+'\''
-            injection.append(string)
-        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main=\''+unicode(self.RFunctionParammain_lineEdit.text())+'\''
-            injection.append(string)
-        inj = ','.join(injection)
-        self.R('plot(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
-        self.R('dev.off()')
-        text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
-            
-        return text

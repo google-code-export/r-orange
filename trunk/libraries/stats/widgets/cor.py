@@ -47,8 +47,8 @@ class cor(OWRpy):
         
         # Define the inputs that this widget will accept
         # When data is received the three element in the tuple which is a function will be executed
-        self.inputs.addInput('id0', 'x', redRRDataFrame, self.processx)
-        self.inputs.addInput('id1', 'y', redRRDataFrame, self.processy)
+        self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
+        self.inputs.addInput('id1', 'y', redRRMatrix, self.processy)
 
         # Define the outputs of this widget
         self.outputs.addOutput('id0', 'cor Output', redRRMatrix)
@@ -131,13 +131,13 @@ class cor(OWRpy):
             injection.append(string)
             
         if self.RFunctionParam_y:
-            injection.append('y='+unicode(self.RFunctionParam_y))
+            injection.append('y=data.matrix(%s)' % unicode(self.RFunctionParam_y))
 
         # combine all the parameters in the a string    
         inj = ','.join(injection)
         
         # make the R call. The results will be saved in the 'cor' variable we declared earlier
-        self.R(self.Rvariables['cor']+'<-'+test+'(x='+unicode(self.RFunctionParam_x)+','+inj+')')
+        self.R('%s<-%s(x=data.matrix(%s),%s)' % (self.Rvariables['cor'], test, unicode(self.RFunctionParam_x), inj), wantType = 'NoConversion')
         
         # visualize the data in a table
         self.RoutputWindow.clear()
