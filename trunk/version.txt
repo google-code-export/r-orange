@@ -1,5 +1,5 @@
-!define DATE "2011.02.19"
-!define SVNVERSION "1224"
+!define DATE "2011.02.20"
+!define SVNVERSION "1225"
 !define NAME "Red-R" 
 !define REDRVERSION "1.85alpha" 
 !define TYPE "compiled" 

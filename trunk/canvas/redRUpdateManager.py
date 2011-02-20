@@ -198,7 +198,7 @@ class updateManager(QMainWindow):
         
         # self.execUpdate(file)
         # return
-        print url, file
+        # print url, file
         self.progressBar = QProgressDialog(self.schema)
         self.progressBar.setCancelButtonText(QString())
         self.progressBar.setWindowTitle('Downloading...')
@@ -221,9 +221,8 @@ class updateManager(QMainWindow):
         qApp.processEvents()
        
     def execUpdate(self,file):
-        
         installDir = os.path.split(os.path.abspath(redREnviron.directoryNames['redRDir']))[0]
-        print installDir
+        # print installDir
         if sys.platform =='win32':
             cmd = "%s /D=%s" % (file,installDir)
             try:

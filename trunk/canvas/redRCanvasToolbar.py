@@ -407,7 +407,7 @@ class redRCanvasToolbarandMenu():
                 self.canvas.close()
                 return
         except:
-            print 'error', cmd
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,'Red-R could not be restarted. Please restart manually.'
 
         mb = QMessageBox(_("Error"), _("Please restart Red-R."), 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 
