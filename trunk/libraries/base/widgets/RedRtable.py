@@ -49,8 +49,8 @@ class RedRtable(OWRpy):
         self.R('txt<-capture.output('+self.Rvariables['propTable']+')', wantType = 'NoConversion')
         tmp2 = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp+'\n\n'+tmp2)
-        newData = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables["table"]+')', parent = 'as.data.frame('+self.Rvariables["table"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RDataFrame.RDataFrame(self, data = 'as.data.frame('+self.Rvariables["table"]+')', parent = 'as.data.frame('+self.Rvariables["table"]+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("table Output", newData)
-        newDataProp = signals.RDataFrame.RDataFrame(data = 'as.data.frame('+self.Rvariables['propTable']+')', parent = 'as.data.frame('+self.Rvariables['propTable']+')')
+        newDataProp = signals.RDataFrame.RDataFrame(self, data = 'as.data.frame('+self.Rvariables['propTable']+')', parent = 'as.data.frame('+self.Rvariables['propTable']+')')
         self.rSend('propTable', newDataProp)

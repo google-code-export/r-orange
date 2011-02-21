@@ -57,7 +57,3 @@ class kruskal_test(OWRpy):
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<pre>'+tmp+'</pre>')
         self.status.setText('Data sent')
-    def getReportText(self, fileDir):
-        text = 'Perform a kruskal test of the attached data.  A summary of the output is below:\n\n'
-        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
-        return text

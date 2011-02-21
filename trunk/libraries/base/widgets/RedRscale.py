@@ -58,7 +58,7 @@ class RedRscale(OWRpy):
             self.R(self.Rvariables['scale']+'<-t(as.data.frame(scale(x=t(data.matrix('+str(self.RFunctionParam_x)+')),'+inj+')))', wantType = 'NoConversion')
         self.R('rownames('+self.Rvariables['scale']+')<-rownames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
         self.R('colnames('+self.Rvariables['scale']+')<-colnames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
-        newData = redRDataFrame(data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRDataFrame(self, data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
 

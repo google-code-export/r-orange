@@ -5,8 +5,8 @@ from signals import BaseRedRVariable
 class UnstructuredDict(BaseRedRVariable):
     convertToList = [BaseRedRVariable]
     convertFromList = []
-    def __init__(self, data, parent = None, keys = None, checkVal = True):
-        BaseRedRVariable.__init__(self, data = data, parent = parent, checkVal = False)
+    def __init__(self, widget, data, parent = None, keys = None, checkVal = True):
+        BaseRedRVariable.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         
         if checkVal:
             if type(data) not in [dict]:

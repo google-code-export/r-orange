@@ -232,13 +232,7 @@ class widgetSession():
         
         
     def setSignalClass(self, d):
-        #print '|##| setSentRvarClass' #% unicode(d)
-        
-        # print d
-        # print 'setting ', className
         try: # try to reload the output class from the signals
-            
-            # try to get the class variabel (var) this will be done by accessing the class info of the class attribute of data
             import imp
             ## find the libraries directory
             fp, pathname, description = imp.find_module('libraries', [redREnviron.directoryNames['redRDir']])
@@ -248,7 +242,7 @@ class widgetSession():
             for mod in d['class'].split('.')[1:]:
                 #print varc
                 varc = getattr(varc, mod)
-            var = varc(data = d['data']) 
+            var = varc(widget = self, data = d['data']) 
             var.loadSettings(d)
             
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
@@ -264,7 +258,7 @@ class widgetSession():
                     for mod in val['class'].split('.')[1:]:
                         #print varc
                         varc = getattr(varc, mod)
-                    var = varc(data = val['data']) 
+                    var = varc(widget = self, data = val['data']) 
                     var.loadSettings(val)
                     if fp:
                         fp.close()
@@ -273,7 +267,7 @@ class widgetSession():
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 
                 try:
-                    var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+                    var = signals.BaseRedRVariable(widget = self, data = d['data']['data'], checkVal = False)
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
                     redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                     #print 'Fatal exception in loading.  Can\'t assign the signal value'

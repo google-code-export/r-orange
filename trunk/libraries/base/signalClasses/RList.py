@@ -6,8 +6,8 @@ import time
 class RList(RArbitraryList, UnstructuredDict):
     convertFromList = [UnstructuredDict, StructuredDict]
     convertToList = [RVariable, UnstructuredDict, RArbitraryList]
-    def __init__(self, data, parent = None, checkVal = True):
-        RArbitraryList.__init__(self, data = data, parent = parent, checkVal = False)
+    def __init__(self, widget, data, parent = None, checkVal = True):
+        RArbitraryList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'list':
             raise Exception
         self.newDataID = unicode(time.time()).replace('.', '_')
@@ -19,10 +19,10 @@ class RList(RArbitraryList, UnstructuredDict):
             
     def _convertFromStructuredDict(self, signal):
         newVar = self.assignR('RListConversion_'+self.newDataID, signal.getData())
-        return RList(data = 'as.list('+newVar+')')
+        return RList(widget = self.widget, data = 'as.list('+newVar+')')
     def _convertFromUnstructuredDict(self, signal):
         newVar = self.assignR('RListConversion_'+self.newDataID, signal.getData())
-        return RList(data = 'as.list('+newVar+')')
+        return RList(widget = self.widget, data = 'as.list('+newVar+')')
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
@@ -37,7 +37,7 @@ class RList(RArbitraryList, UnstructuredDict):
         else:
             raise Exception
     def _convertToUnstructuredDict(self):
-        return UnstructuredDict(data = self.R(self.getData(), wantType = 'dict'))
+        return UnstructuredDict(widget = self.widget, data = self.R(self.getData(), wantType = 'dict'))
     def _convertToVariable(self):
         return self
     def _fullOutput(self, subsetting = ''):

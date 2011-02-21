@@ -70,9 +70,9 @@ class RedRdata(OWRpy):
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package), wantType = 'NoConversion')
         try:
-            newData = redRRDataFrame(data = 'as.data.frame(' + unicode(self.RFunctionParamdataName_lineEdit.text() + ')'))
+            newData = redRRDataFrame(self, data = 'as.data.frame(' + unicode(self.RFunctionParamdataName_lineEdit.text() + ')'))
             self.rSend("id0", newData)            
-        except RuntimeError as inst:
+        except Exception as inst:
             QMessageBox.information(self, _('Red-R Canvas'),_('R Error: %s') % unicode(inst),  
             QMessageBox.Ok + QMessageBox.Default)
 

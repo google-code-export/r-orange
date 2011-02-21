@@ -245,10 +245,10 @@ class RedRScatterplot(OWRpy):
         index = 'c('+','.join(index) + ')'
         self.R('%s<-%s[%s,]' % (self.Rvariables['selected'],self.data,index),silent=True)
         if self.dataParent:
-            data = redRRDataFrame(data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
+            data = redRRDataFrame(self, data = self.Rvariables['selected'], parent = self.dataParent.getDataParent()) 
             data.copyAllOptionalData(self.dataParent)
         else:
-            data = redRRDataFrame(data = self.Rvariables['selected']) 
+            data = redRRDataFrame(self, data = self.Rvariables['selected']) 
         self.rSend("id0", data)
         #self.sendRefresh()
         
@@ -285,6 +285,3 @@ class RedRScatterplot(OWRpy):
         
         else:
             return self.setColor(colorint - 10) # run back through the levels and reduce by 5, the colors cycle every 5
-            
-    def getReportText(self, fileDir):
-        return 'Please see the Red-R .rrs file or the users notes for more information on how this widget was used.\n\n'

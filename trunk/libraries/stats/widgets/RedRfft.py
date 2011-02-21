@@ -54,6 +54,6 @@ class RedRfft(OWRpy):
             injection.append('inverse = FALSE')
         inj = ','.join(injection)
         self.R(self.Rvariables['fft']+'<-fft(z='+unicode(self.RFunctionParam_z)+','+inj+')')
-        newData = redRRMatrix(data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRMatrix(self, data = self.Rvariables["fft"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

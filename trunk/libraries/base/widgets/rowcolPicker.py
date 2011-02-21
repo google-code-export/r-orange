@@ -172,26 +172,26 @@ class rowcolPicker(OWRpy):
         if self.rowcolBox.getChecked() == _('Row'):
             if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',,drop = FALSE])', wantType = 'NoConversion')
-                newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
+                newData = redRRDataFrame(self, data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             else:
                 self.rSend('id0', None)
             if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+') %in% c('+','.join(selectedDFItems)+'),,drop = FALSE])', wantType = 'NoConversion')
-                newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                newDataNot = redRRDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
             else:
                 self.rSend('id1', None)
         elif self.rowcolBox.getChecked() == _('Column'):
             if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+')'+',drop = FALSE])', wantType = 'NoConversion')
-                newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
+                newData = redRRDataFrame(self, data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             else:
                 self.rSend('id0', None)
             if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+' %in% c('+','.join(selectedDFItems)+'),drop = FALSE])', wantType = 'NoConversion')
-                newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                newDataNot = redRRDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
             else:
                 self.rSend('id1', None)

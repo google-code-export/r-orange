@@ -73,30 +73,3 @@ class dotchart(OWRpy):
             injection.append(string)
         inj = ''.join(injection)
         self.Rplot('dotchart(x='+unicode(self.RFunctionParam_x)+inj+')')
-        
-    def getReportText(self, fileDir):
-        if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
-        
-        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
-            
-        injection = []
-        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+unicode(self.RFunctionParamxlab_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.labels) != '':
-            string = 'labels='+self.labels+ '$' + unicode(self.labelNames.currentText())
-            injection.append(string)
-        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab='+unicode(self.RFunctionParamylab_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParammain_lineEdit.text()) != '':
-            string = 'main='+unicode(self.RFunctionParammain_lineEdit.text())+''
-            injection.append(string)
-        inj = ','.join(injection)
-        self.R('dotchart(x='+unicode(self.RFunctionParam_x)+','+inj+')')
-        self.R('dev.off()')
-        text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
-            
-        return text

@@ -82,6 +82,6 @@ class percentileClassifier(OWRpy):
                 self.R(self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+unicode(percent).strip(' ')+'percentile' + '<- !is.na(' + self.Rvariables['percentileClassifier_df'] +'$'+column+ ') & ' + self.Rvariables['percentileClassifier_df'] + '$'+column+' > sort('+self.Rvariables['percentileClassifier_df']+'$'+column+')['+unicode(percent).strip(' ')+'/100*'+unicode(length)+']', wantType = 'NoConversion')
                 self.outputWindow.insertHtml('<tr><td width="50%">' + column+'_'+unicode(percent)+'percentile</td><td width="50%">'+unicode(self.R('sum(as.numeric('+self.Rvariables['percentileClassifier_df'] + '$' + column+'_'+unicode(percent).strip(' ')+'percentile))'))+'</td></tr>')
         self.outputWindow.insertHtml('</table>')
-        newData = self.dataParent.copy()
-        newData.data = self.Rvariables['percentileClassifier_df']
+        newData = redRRDataFrame(self, data = self.Rvariables['percentileClassifier_df'])
+        
         self.rSend("id0", newData)

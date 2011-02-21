@@ -82,27 +82,27 @@ class ListSelector(OWRpy):
         print myclass
         if myclass == 'data.frame':
             
-            newData = redRRDataFrame(data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'])
+            newData = redRRDataFrame(self, data = self.Rvariables['listelement'], parent = self.Rvariables['listelement'])
             self.rSend("id0", newData)
             #self.infoa.setText('Sent Data Frame')
             slot = 'Data Frame'
         elif myclass == 'list':
-            newData = redRRList(data = self.Rvariables['listelement'])
+            newData = redRRList(self, data = self.Rvariables['listelement'])
             self.rSend("id2", newData)
             #self.infoa.setText('Sent List')
             slot = 'List'
         elif myclass in ['vector', 'character', 'factor', 'logical', 'numeric', 'integer', ['POSIXt', 'POSIXct']]:
-            newData = redRRVector(data = self.Rvariables['listelement'])
+            newData = redRRVector(self, data = self.Rvariables['listelement'])
             self.rSend("id1", newData)
             #self.infoa.setText('Sent Vector')
             slot = 'Vector'
         elif myclass in ['matrix']:
-            newData = redRRMatrix(data = self.Rvariables['listelement'])
+            newData = redRRMatrix(self, data = self.Rvariables['listelement'])
             self.rSend("id4", newData)
             #self.infoa.setText('Sent Matrix')
             slot = 'Matrix'
         else:
-            newData = redRRVariable(data = self.Rvariables['listelement'])
+            newData = redRRVariable(self, data = self.Rvariables['listelement'])
             self.rSend("id3", newData)
             slot = 'R Variable'
         

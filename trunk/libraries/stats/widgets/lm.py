@@ -82,12 +82,9 @@ class lm(OWRpy):
 
         
         self.R(self.Rvariables['lm']+'<-lm(data='+unicode(self.RFunctionParam_data)+',subset='+unicode(self.RFunctionParam_subset.text())+',qr='+unicode(self.RFunctionParam_qr.text())+',formula='+unicode(self.RFunctionParam_formula)+',singular_ok='+unicode(self.RFunctionParam_singular_ok.text())+',y='+unicode(self.RFunctionParam_y.text())+',weights='+unicode(self.RFunctionParam_weights.text())+',offset='+unicode(self.RFunctionParam_offset.text())+',contrasts='+unicode(self.RFunctionParam_contrasts.text())+',x='+unicode(self.RFunctionParam_x.text())+',model='+unicode(self.RFunctionParam_model.text())+',method="'+unicode(self.RFunctionParam_method.text())+'")')
-        newData = redRRLMFit(data = self.Rvariables['lm'])
+        newData = redRRLMFit(self, data = self.Rvariables['lm'])
         self.rSend("id0", newData)
         
-        newPlotAtt = redRRPlotAttribute(data = 'abline('+self.Rvariables['lm']+')')
+        newPlotAtt = redRRPlotAttribute(self, data = 'abline('+self.Rvariables['lm']+')')
         self.rSend("id1", newPlotAtt)
-        
-    def getReportText(self, fileDir):
-        return 'Generates a linear model fit to attached data and a linear model plot attribute.  The data fit was generated based on the following formula:\n\n%s\n\nOther parameters are as follows:\n\n%s\n\n' % (self.formulEntry.Formula()[0] + ' ~ ' + self.formulEntry.Formula()[1], '(data='+unicode(self.RFunctionParam_data)+',subset='+unicode(self.RFunctionParam_subset.text())+',qr='+unicode(self.RFunctionParam_qr.text())+',formula='+unicode(self.RFunctionParam_formula)+',singular_ok='+unicode(self.RFunctionParam_singular_ok.text())+',y='+unicode(self.RFunctionParam_y.text())+',weights='+unicode(self.RFunctionParam_weights.text())+',offset='+unicode(self.RFunctionParam_offset.text())+',contrasts='+unicode(self.RFunctionParam_contrasts.text())+',x='+unicode(self.RFunctionParam_x.text())+',model='+unicode(self.RFunctionParam_model.text())+',method="'+unicode(self.RFunctionParam_method.text())+'")')
         

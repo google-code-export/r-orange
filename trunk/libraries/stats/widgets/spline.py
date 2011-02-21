@@ -103,13 +103,9 @@ class spline(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        newData = redRRModelFit(data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRModelFit(self, data = self.Rvariables["spline"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
         
-        newLine = redRRPlotAttribute(data = 'lines('+self.Rvariables['spline']+')')
+        newLine = redRRPlotAttribute(self, data = 'lines('+self.Rvariables['spline']+')')
         self.rSend("id1", newLine)
-        
-    def getReportText(self, fileDir):
-        text = 'A spline fit was made to the incoming data.  This fit can be used in downstream statistical analysis.  A plot attribute was also generated for this fit and can be appended to any plot from Generic Plot or some other plotting widgets.  Please see the .rrs file or the specific plotting or analysis widgets for more details.\n\n'
-        return text

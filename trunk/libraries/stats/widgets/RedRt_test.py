@@ -24,7 +24,6 @@ class RedRt_test(OWRpy):
         self.RFunctionParam_x = ''
         self.inputs.addInput("y", "y", signals.RVector.RVector, self.processy)
         self.inputs.addInput("x", "x", signals.RVector.RVector, self.processx)
-        self.outputs.addOutput("t.test Output","t.test Output", signals.RModelFit.RModelFit)
         
         
         self.RFunctionParampaired_radioButtons = redRradioButtons(self.controlArea, label = "paired:", buttons = ["TRUE","FALSE"], setChecked = "FALSE", orientation = 'horizontal')

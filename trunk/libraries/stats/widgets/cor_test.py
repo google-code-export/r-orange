@@ -53,7 +53,3 @@ class cor_test(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-    def getReportText(self, fileDir):
-        text = 'Correlations were performed on the attached data vectors.  A summary of the results are below:\n\n'
-        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
-        return text

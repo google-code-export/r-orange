@@ -122,7 +122,7 @@ class apply(OWRpy):
         # try:
         self.R(self.Rvariables['apply']+'<- as.data.frame(apply(X='+unicode(self.data)+','+inj+'))', wantType = 'NoConversion')
         self.outputTable.setRTable(self.Rvariables['apply'])
-        newData = redRRDataFrame(data = self.Rvariables['apply'])
+        newData = redRRDataFrame(self, data = self.Rvariables['apply'])
         self.rSend("id0", newData)
         # except: 
             # self.R('%s <- NULL'%self.Rvariables['apply'],silent=True)

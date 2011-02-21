@@ -77,8 +77,6 @@ class RedRpoints(OWRpy):
             string = 'cex='+unicode(self.RFunctionParamcex_lineEdit.text())+''
             injection.append(string)
         inj = ','.join(injection)
-        newData = plotsigs.redRRPlotAttribute(data = 'points(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+',col='+unicode(self.RFunctionParam_col)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = plotsigs.redRRPlotAttribute(self, data = 'points(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+',col='+unicode(self.RFunctionParam_col)+','+inj+')') # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
-    def getReportText(self, fileDir):
-        return 'Generated a points plot attribute based on the incomming data.  This attribute will plot the specified points on any connected plot.  Please see those plots for more information on the points that were added.\n\n'

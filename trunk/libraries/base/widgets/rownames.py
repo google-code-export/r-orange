@@ -92,7 +92,7 @@ class rownames(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['rownames']+'<-'+function+'(x='+unicode(self.RFunctionParam_x)+','+inj+')', wantType = 'NoConversion')
         
-        newData = redRRVector(data = self.Rvariables["rownames"])
+        newData = redRRVector(self, data = self.Rvariables["rownames"])
 
         self.rSend("id0", newData)
     def setNames(self):
@@ -109,7 +109,7 @@ class rownames(OWRpy):
             'RFunctionParam_x':self.RFunctionParam_x,
             'selectedColumn':self.attsList.currentSelection()[0]}
             , wantType = 'NoConversion')
-        newData = redRRDataFrame(data = self.Rvariables['renamedRowColData'])
+        newData = redRRDataFrame(self, data = self.Rvariables['renamedRowColData'])
         self.rSend('renamedDF', newData)
     def getReportText(self, fileDir):
         text = _('%s were sent from this widget.\n\n') % unicode(self.function.getChecked())

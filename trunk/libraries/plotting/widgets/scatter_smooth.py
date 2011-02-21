@@ -82,39 +82,4 @@ class scatter_smooth(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.Rplot('scatter.smooth(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
-    def getReportText(self, fileDir):
-        if unicode(self.RFunctionParam_y) == '': return 'Nothing to plot from this widget'
-        if unicode(self.RFunctionParam_x) == '': return 'Nothing to plot from this widget'
-        
-        self.R('png(file="'+fileDir+'/plot'+unicode(self.widgetID)+'.png")')
-            
-        injection = []
-        if unicode(self.RFunctionParamxlab_lineEdit.text()) != '':
-            string = 'xlab='+unicode(self.RFunctionParamxlab_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParamspan_lineEdit.text()) != '':
-            string = 'span='+unicode(self.RFunctionParamspan_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParamdegree_lineEdit.text()) != '':
-            string = 'degree='+unicode(self.RFunctionParamdegree_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParamfamily_comboBox.currentText()) != '':
-            string = 'family=\''+unicode(self.RFunctionParamfamily_comboBox.currentText())+'\''
-            injection.append(string)
-        if unicode(self.RFunctionParamylab_lineEdit.text()) != '':
-            string = 'ylab='+unicode(self.RFunctionParamylab_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParamevaluation_lineEdit.text()) != '':
-            string = 'evaluation='+unicode(self.RFunctionParamevaluation_lineEdit.text())+''
-            injection.append(string)
-        if unicode(self.RFunctionParamylim_lineEdit.text()) != '':
-            string = 'ylim='+unicode(self.RFunctionParamylim_lineEdit.text())+''
-            injection.append(string)
-        inj = ','.join(injection)
-        self.R('scatter.smooth(y='+unicode(self.RFunctionParam_y)+',x='+unicode(self.RFunctionParam_x)+','+inj+')')
-        self.R('dev.off()')
-        text = 'The following plot was generated:\n\n'
-        #text += '<img src="plot'+unicode(self.widgetID)+'.png" alt="Red-R R Plot" style="align:center"/></br>'
-        text += '.. image:: '+fileDir+'/plot'+unicode(self.widgetID)+'.png\n    :scale: 50%%\n\n'
-            
-        return text
+    

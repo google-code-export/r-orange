@@ -132,13 +132,3 @@ class RedRsave(OWRpy):
             options.append('dec="%s"' % unicode(self.decStr.text()))
         
             self.R('write.table(%s,%s)' % (self.data, ','.join(options)))
-        # index = 0
-        # items = []
-        # for i in [unicode(a) for (k, a) in self.RFunctionParam_list.items()]:
-            # self.R('temp%s<-%s' % (unicode(index), (i)), wantType = 'NoConversion')
-            
-            # items.append('temp%s' % unicode(index))
-            # index += 1
-        # self.R('save('+unicode(','.join(items))+','+inj+')', wantType = 'NoConversion')
-        # for i in items:
-            # self.R('rm(%s)' % i, wantType = 'NoConversion')

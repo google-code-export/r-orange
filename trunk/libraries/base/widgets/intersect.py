@@ -55,7 +55,7 @@ class intersect(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse =" \n")')
         self.RoutputWindow.insertHtml(_('<br><br><pre>Shared elements between your inputs:\n')+unicode(tmp)+'</pre>')        
-        newData = redRRVector(data = self.Rvariables["intersect"])
+        newData = redRRVector(self, data = self.Rvariables["intersect"])
         
         self.rSend("id0", newData)
 

@@ -47,6 +47,7 @@ class widgetSignals():
         if not self.outputs.hasOutputName(signalName):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _("Warning! Signal '%s' is not a valid signal name for the '%s' widget. Please fix the signal name.") % (signalName, self.captionTitle))
             raise Exception(_('Signal name mismatch'))
+        print 'setting data in output'
         self.outputs.setOutputData(signalName, value)
         self.outputs.processData(signalName)
         ## clear the warnings, info, and errors
@@ -75,17 +76,18 @@ class widgetSignals():
         
     def rSend(self, name, variable, updateSignalProcessingManager = 1):
         #print 'send from:', self.windowTitle(),  '; signal:', name, '; data:', variable
-        try:
-            self.callSignalDelete(name)
-            self.send(name, variable)
-            self.removeInformation(id = 'attention')
-            self.removeError()
-            #self.sentItems.append((name, variable))
-            self.status.setStatus(2)
-        except:
-            self.setError(id = 'sendError', text = _('Failed to send data'))
-            redRLog.log(redRLog.REDRCORE,redRLog.CRITICAL,redRLog.formatException())
-            self.status.setStatus(3)
+        #try:
+        self.callSignalDelete(name)
+        print 'sending'
+        self.send(name, variable)
+        self.removeInformation(id = 'attention')
+        self.removeError()
+        #self.sentItems.append((name, variable))
+        self.status.setStatus(2)
+        # except:
+            # self.setError(id = 'sendError', text = _('Failed to send data'))
+            # redRLog.log(redRLog.REDRCORE,redRLog.CRITICAL,redRLog.formatException())
+            # self.status.setStatus(3)
         
         self.R('gc()', wantType = 'NoConversion')
         redRLog.log(redRLog.REDRWIDGET,redRLog.INFO,_('Data sent from slot %s') % name)

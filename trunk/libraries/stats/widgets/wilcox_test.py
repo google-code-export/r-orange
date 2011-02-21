@@ -23,10 +23,6 @@ class wilcox_test(OWRpy):
         self.inputs.addInput('id0', 'x', redRRVector, self.processx)
         self.inputs.addInput('id1', 'y', redRRVector, self.processy)
 
-        self.outputs.addOutput('id0', 'wilcox.test Output', redRRVariable)
-
-        
-
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         self.RoutputWindow = textEdit(self.controlArea,label='R Output', displayLabel=False)
@@ -54,8 +50,3 @@ class wilcox_test(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertHtml('<br><pre>'+tmp+'</pre>')
-        self.rSend("id0", {"data":self.Rvariables["wilcox.test"]})
-    def getReportText(self, fileDir):
-        text = 'The wilkox test was performed on the incoming data X and Y.  A summary of the results is listed below:\n\n'
-        text += unicode(self.RoutputWindow.toPlainText())+'\n\n'
-        return text

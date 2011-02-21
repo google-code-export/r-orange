@@ -55,8 +55,6 @@ class arrows(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         
-        newData = redRRPlotAttribute(data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRPlotAttribute(self, data = 'arrows('+inj+')')# moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)
-    def getReportText(self, fileDir):
-        return 'This widget places arrows on existing plots by sending a plot attribute.  Please see those plots for more information about the arrows that were displayed.\n\n'

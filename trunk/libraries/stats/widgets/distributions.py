@@ -184,21 +184,6 @@ class distributions(OWRpy):
         self.R('%s <- %s(%s,%s)' % (self.Rvariables['distri'], dist, self.count.value(),inj), wantType = 'NoConversion')
         
         # create a new signal of type RMatrix and load the results 
-        newData = redRRVector(data = '%s' % self.Rvariables["distri"]) 
+        newData = redRRVector(self, data = '%s' % self.Rvariables["distri"]) 
         # send the signal forward
         self.rSend("id0", newData)
-  
-    
-    def getReportText(self, fileDir):
-        text = 'Generate data from a given distribution.\n\n'
-        text += '**Parameters:**\n\n'
-        text += 'Distribution:  '+unicode(self.methodButtons.currentText())+'\n\n'
-        text += 'Number of observations generated:  '+unicode(self.count.value())+'\n\n'
-        text += 'Distribution parameters:\n\n'
-        
-        self.injection = self.collectParameters()
-        for x in self.injection:
-            text += '\t%s\n\n' % x
-            
-        return text
-

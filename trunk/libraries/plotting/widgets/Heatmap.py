@@ -37,9 +37,6 @@ class Heatmap(OWRpy):
         #self.outputs.addOutput('id0', 'Cluster Subset List', redRRVector)
         self.outputs.addOutput('id1', 'Cluster Classes', redRRVector)
 
-        
-
-        
         #GUI
         infobox = groupBox(self.controlArea, label = "Options")
         
@@ -165,7 +162,7 @@ class Heatmap(OWRpy):
             inj = 'h = ' + unicode(self.groupOrHeightSpin.value())
         self.R(self.Rvariables['heatsubset']+'<-cutree('+self.Rvariables['hclust']+', '+inj+')')       
         self.gview1.plotMultiple(query = self.Rvariables['hclust']+',col = %s' % self.Rvariables['heatsubset'], layers = ['rect.hclust(%s, %s, cluster = %s, which = 1:%s, border = 2:(%s + 1))' % (self.Rvariables['hclust'], inj, self.Rvariables['heatsubset'], self.groupOrHeightSpin.value(), self.groupOrHeightSpin.value())])
-        newData = redRRVector(data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
+        newData = redRRVector(self, data = 'as.vector('+self.Rvariables['heatsubset']+')', parent = self.Rvariables['heatsubset'])
         self.rSend("id1", newData)
         
 

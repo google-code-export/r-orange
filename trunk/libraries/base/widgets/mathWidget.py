@@ -179,7 +179,7 @@ class mathWidget(OWRpy):
                 self.counter += 1
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
-            newData = redRRDataFrame(data = self.data, parent = self.data)
+            newData = redRRDataFrame(self, data = self.data, parent = self.data)
             self.rSend("id0", newData)
             self.dialog.hide()
         except:

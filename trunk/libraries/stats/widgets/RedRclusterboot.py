@@ -95,6 +95,6 @@ class RedRclusterboot(OWRpy):
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['clusterboot']+'<-clusterboot(data='+unicode(self.RFunctionParam_data)+inj+')')
-        newData = signals.RArbitraryList.RArbitraryList(data = self.Rvariables["clusterboot"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RArbitraryList.RArbitraryList(self, data = self.Rvariables["clusterboot"], checkVal = False) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("clusterboot Output", newData)

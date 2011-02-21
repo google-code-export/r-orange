@@ -66,7 +66,7 @@ class RLoader(OWRpy):
         dataList = self.R('local(ls(), '+self.Rvariables['sessionEnviron']+')', wantType = 'list')
         self.varBox.update(dataList)
         self.infob.setText(_('Please use the R Variable Separator widget to extract your data.'))
-        newData = redRREnvironment(data = self.Rvariables['sessionEnviron'])
+        newData = redRREnvironment(self, data = self.Rvariables['sessionEnviron'])
         self.rSend('id0', newData)
         #self.status.setText('Data sent.')
         

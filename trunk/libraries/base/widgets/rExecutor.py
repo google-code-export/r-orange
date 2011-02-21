@@ -105,37 +105,37 @@ class rExecutor(OWRpy):
         thisdata = unicode(text)
         # use upclassing to convert to signals class
         if thisdataclass.__class__.__name__ == 'list': #this is a special R type so just send as generic     
-            newData = redRRVariable(data = unicode(text))
+            newData = redRRVariable(self, data = unicode(text))
             self.rSend("id3", newData)
         elif thisdataclass.__class__.__name__ == 'str':
             if thisdataclass in ['numeric', 'character', 'logical']: # we have a numeric vector as the object
-                newData = redRRVector(data = unicode(text))
+                newData = redRRVector(self, data = unicode(text))
                 self.rSend("id2", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R Vector channel'))
             elif thisdataclass in ['data.frame']:
-                newData = redRRDataFrame(data = unicode(text))
+                newData = redRRDataFrame(self, data = unicode(text))
                 self.rSend("id0", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R Data Frame channel'))
             elif thisdataclass in ['matrix']:
-                newData = redRRMatrix(data = unicode(text))
+                newData = redRRMatrix(self, data = unicode(text))
                 self.rSend("id4", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the Matrix channel'))
             elif thisdataclass == 'list': # the object is a list
                 for i in range(self.R('length('+text+')')):
                     if self.R('class(%s[[%s]])' % (text, i), silent = True) not in ['numeric', 'character', 'real', 'complex', 'factor']:
-                        newData = ral.RArbitraryList(data = self.sendThis)
+                        newData = ral.RArbitraryList(self, data = self.sendThis)
                         self.status.setText(_('Data sent through the R Arbitrary List channel'))
                         self.rSend('ral', newData)
                         return
-                newData = redRRList(data = unicode(text))
+                newData = redRRList(self, data = unicode(text))
                 self.rSend("id1", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R List channel'))
             else:    # the data is of a non-normal type send anyway as generic
-                newData = redRRVariable(data = unicode(text))
+                newData = redRRVariable(self, data = unicode(text))
                 self.rSend("id3", newData)
                 self.sendStatus.setText(thisdata+_(' sent through the R Object channel'))
         else:
-            newData = redRRVariable(data = unicode(text))
+            newData = redRRVariable(self, data = unicode(text))
             self.rSend("id3", newData)
             self.sendStatus.setText(thisdata+' sent through the R Object channel')
     def runR(self):

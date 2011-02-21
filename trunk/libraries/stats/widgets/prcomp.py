@@ -51,10 +51,7 @@ class prcomp(OWRpy):
         inj = ','.join(injection)
         self.R(self.Rvariables['prcomp']+'<-prcomp(x=data.matrix('+unicode(self.RFunctionParam_x)+'), '+inj+')')
         
-        newPRComp = redRRModelFit(data = self.Rvariables['prcomp'])
+        newPRComp = redRRModelFit(self, data = self.Rvariables['prcomp'])
         self.rSend("id0", newPRComp)
-        newPRCompMatrix = redRRMatrix(data = self.Rvariables['prcomp']+'$x')
+        newPRCompMatrix = redRRMatrix(self, data = self.Rvariables['prcomp']+'$x')
         self.rSend("id1", newPRCompMatrix)
-    def getReportText(self, fileDir):
-        text = 'This widget generates principal component fits to data and sends that fit and the resulting matrix of components to downstream widgets.  Please see the .rrs file or other output for more informaiton.\n\n'
-        return text
