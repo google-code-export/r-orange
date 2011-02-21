@@ -1,5 +1,5 @@
 ## DynamicComboBox, a widgetBox that dynamically generates comboBoxes, users must set a key, label, and OrderedDict of values for each comboBox.  Boxes are referenced by their key.  There are abilities to add and remove keys as well as updating keys.
-
+import redRLog
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.spinBox import spinBox
 from PyQt4.QtCore import *
@@ -24,14 +24,18 @@ class DynamicSpinBox(groupBox):
     def getSpinBox(self, id):
         return self.spinBoxes[id]
     def addSpinBox(self, key, name, items):
+        print 'Adding spinbox %s' % key
         if key in self.spinBoxes.keys():
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'key exists, loading applying settings')
             self.spinBoxes[key].setMaximum(items[0])
             self.spinBoxes[key].setMinimum(items[1])
             self.spinBoxes[key].setValue(items[2])
             self.spinBoxes[key].setDecimals(items[3])
         else:
             self.spinBoxes[key] = spinBox(self, label = name, max = items[0], min = items[1], value = items[2], decimals = items[3], orientation = self.orientation, callback = self.callback, toolTip = self.toolTip)
-
+    def removeSpinBox(self, id):
+        self.spinBoxes[id].hide()
+        del self.spinBoxes[id]
     def getSettings(self):            
         r = []
         for i in self.spinBoxes:

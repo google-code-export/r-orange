@@ -2,7 +2,7 @@ import redRGUI
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
-
+import redRLog
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import redRi18n
@@ -45,22 +45,24 @@ class spinBox(QDoubleSpinBox ,widgetState):
         singleStep = self.singleStep()
         min = self.minimum()
         max = self.maximum()
-        r = {'value':value, 'prefix':prefix, 'suffix':suffix, 'singleStep':singleStep, 'max':max, 'min':min}
+        r = {'value':value, 'prefix':prefix, 'suffix':suffix, 'singleStep':singleStep, 'max':max, 'min':min, 'decimals':self.decimals()}
         return r
     def loadSettings(self,data):
+        print data
         try:
-            self.setValue(data['value'])
+            self.setDecimals(data['decimals'])
+            self.setMaximum(float(data['max']))
+            self.setMinimum(float(data['min']))
+            self.setValue(float(data['value']))
             self.setPrefix(data['prefix'])
             self.setSuffix(data['suffix'])
-            self.setMaximum(data['max'])
-            self.setMinimum(data['min'])
             self.setSingleStep(data['singleStep'])
+            
+            print self.value(), data['value']
+            print self.minimum(), data['min']
+            print self.maximum(), data['max']
         except:
-            print _('Error occured in Spin Box loading')
-            import traceback,sys
-            print '-'*60
-            traceback.print_exc(file=sys.stdout)
-            print '-'*60
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, redRLog.formatException())
     def update(self, min, max):
         value = self.value()
         self.setMaximum(max)

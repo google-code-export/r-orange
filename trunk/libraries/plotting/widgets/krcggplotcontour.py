@@ -43,25 +43,40 @@ class krcggplotcontour(OWRpy):
         #self.RFunctionParamxlab_lineEdit = lineEdit(self.controlArea, label = "X Label:", text = 'X Label')
         #self.RFunctionParamylab_lineEdit = lineEdit(self.controlArea, label = "Y Label:", text = 'Y Label')
         #self.RFunctionParammain_lineEdit = lineEdit(self.controlArea, label = "Main Title:", text = 'Main Title')
-        self.namesListX = comboBox(self.controlArea, label = 'X Axis Data:')
+        topBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
+        plotData = redRGroupBox(topBox, label = _('Plotting Data'))
+        self.namesListX = comboBox(plotData, label = 'X Axis Data:')
         #self.namesListX.setEnabled(False)
-        self.namesListY = comboBox(self.controlArea, label = 'Y Axis Data:')
+        self.namesListY = comboBox(plotData, label = 'Y Axis Data:')
         #self.namesListY.setEnabled(False)
-        self.namesListZ = comboBox(self.controlArea, label = 'Z Contours:')
-        button(self.controlArea, label = _('Add Contour Lines'), callback = self.addContourLines)
-        contoursBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
+        self.namesListZ = comboBox(plotData, label = 'Z Contours:')
+        
+        
+        contoursBox = redRWidgetBox(topBox, orientation = 'horizontal')
+        buttonBox = redRWidgetBox(contoursBox)
+        
+        button(buttonBox, label = _('Add Contour Lines'), callback = self.addContourLines)
+        button(buttonBox, label = _('Remove Contour Lines'), callback = self.removeContourLines)
+        
         self.binwidth = DynamicSpinBox(contoursBox, label = 'Binsizes:', values = [(('spin1', _('Contour Set 1')), (0, None, 5, 0))])
         self.colour = DynamicComboBox(contoursBox, label = 'Colours:', values = [(('spin1', _('Colour Set 1')), self.colours)])
+        self.size = DynamicSpinBox(contoursBox, label = _('Contour Size'), values = [(('spin1', _('Size Set 1')), (0, None, 1, 2))])
         self.spinCounter = 1
         self.graphicsView = redRGGPlot(self.controlArea,label='Contour Plot',displayLabel=False,
         name = self.captionTitle)
         self.commit = redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction,
         processOnInput=True)
         
+    def removeContourLines(self):
+        key = self.binwidth.getSpinIDs()[-1]
+        self.binwidth.removeSpinBox(key)
+        self.colour.removeComboBox(key)
+        self.size.removeSpinBox(key)
     def addContourLines(self):
         self.spinCounter += 1
         self.binwidth.addSpinBox('spin%s' % self.spinCounter, _('Contour Set %s') % self.spinCounter, (0, None, 5, 0))
         self.colour.addComboBox('spin%s' % self.spinCounter, _('Colour Set %s') % self.spinCounter, self.colours)
+        self.size.addSpinBox('spin%s' % self.spinCounter, _('Size Set %s') % self.spinCounter, (0, None, 1, 2))
     def processy(self, data):
         
         if data:
@@ -98,7 +113,7 @@ class krcggplotcontour(OWRpy):
         #inj = ','.join(injection)
         self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s, z = %(ZDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['contour'], 'XDATA':self.namesListX.currentText(), 'YDATA':self.namesListY.currentText(), 'ZDATA':self.namesListZ.currentText()}, wantType = 'NoConversion')
         for spin in self.binwidth.getSpinIDs():
-            self.R('%(VAR)s <- %(VAR)s + stat_contour(binwidth = %(BIN)s, colour = \'%(COLOUR)s\')' % {'VAR':self.Rvariables['contour'], 'BIN':self.binwidth.getSpinBox(spin).value(), 'COLOUR':self.colour.getComboBox(spin).currentId()}, wantType = 'NoConversion')
+            self.R('%(VAR)s <- %(VAR)s + stat_contour(binwidth = %(BIN)s, colour = \'%(COLOUR)s\', size = %(SIZE)s)' % {'VAR':self.Rvariables['contour'], 'BIN':self.binwidth.getSpinBox(spin).value(), 'COLOUR':self.colour.getComboBox(spin).currentId(), 'SIZE':self.size.getSpinBox(spin).value()}, wantType = 'NoConversion')
         self.graphicsView.plot(query = self.Rvariables['contour'], function = '')
     
     

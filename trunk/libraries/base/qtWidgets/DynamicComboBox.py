@@ -31,7 +31,9 @@ class DynamicComboBox(groupBox):
                 self.comboBoxes[key].update(items)
         else:
             self.comboBoxes[key] = comboBox(self, label = name, items = items, orientation = self.orientation, callback = self.callback, toolTip = self.toolTip)
-
+    def removeComboBox(self, id):
+        self.comboBoxes[id].hide()
+        del self.comboBoxes[id]
     def getSettings(self):            
         r = []
         for i in self.comboBoxes:
