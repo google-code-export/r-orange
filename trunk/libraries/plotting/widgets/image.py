@@ -11,8 +11,8 @@ from libraries.base.qtWidgets.checkBox import checkBox as redRCheckBox
 
 class image(OWRpy): 
     globalSettingsList = ['commitButton']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRMatrix, self.processx)
 

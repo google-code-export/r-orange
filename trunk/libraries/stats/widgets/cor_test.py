@@ -12,8 +12,8 @@ from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.button import button
 class cor_test(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["cor.test"])
         self.data = {}
         self.RFunctionParam_y = ''

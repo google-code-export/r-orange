@@ -21,8 +21,8 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class ListSelector(OWRpy):
     globalSettingsList= ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         
         #self.selection = 0
         self.setRvariableNames(['listelement'])

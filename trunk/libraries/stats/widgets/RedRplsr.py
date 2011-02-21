@@ -16,8 +16,8 @@ from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.button import button
 class RedRplsr(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["plsr"])
         self.data = {}
         self.RFunctionParam_data = ''

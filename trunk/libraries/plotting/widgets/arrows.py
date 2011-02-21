@@ -10,8 +10,8 @@ from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.button import button
 class arrows(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["arrows"])
         self.data = {}
         self.outputs.addOutput('id0', 'arrows Output', redRRPlotAttribute)

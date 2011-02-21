@@ -33,9 +33,9 @@ class cor(OWRpy):
 
     # Python init statement is the class constructor 
     # Here you put all the code that will run as soon as the widget is put on the canvas
-    def __init__(self, parent=None, signalManager=None):
+    def __init__(self, **kwargs):
         #Here we init the parent class of our widget OWRpy.
-        OWRpy.__init__(self)
+        OWRpy.__init__(self, **kwargs)
         
         #create a R variable cor in the R session.  These variables will be in the R session to track the ouputs of functions that run in R.
         #the cor variable will not conflict with some other widgets cor function

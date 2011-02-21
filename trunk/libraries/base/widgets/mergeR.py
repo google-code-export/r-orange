@@ -20,8 +20,8 @@ _ = redRi18n.get_(package = 'base')
 class mergeR(OWRpy):
     globalSettingsList = ['commit']
 
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         
         # self.dataParentA = {}
         # self.dataParentB = {}

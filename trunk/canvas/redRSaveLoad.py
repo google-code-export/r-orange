@@ -714,12 +714,6 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
             ## try to add using the new settings
             sig = inWidget.inputs.getSignal(inName)
             outWidget.outputs.connectSignal(sig, outName, enabled, False)
-            #if not schemaDoc.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
-                ## try to add using the old settings
-            #    schemaDoc.addLink175(outWidget, inWidget, outName, inName, enabled)
-        #print '######## enabled ########\n\n', enabled, '\n\n'
-        #self.addLine(outWidget, inWidget, enabled, process = False)
-        #self.signalManager.setFreeze(0)
         qApp.processEvents()
         
     return (loadedOk, failureText)

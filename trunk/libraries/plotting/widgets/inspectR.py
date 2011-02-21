@@ -13,8 +13,8 @@ from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButt
 
 class inspectR(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_mymodel = ''
         self.inputs.addInput('id0', 'mymodel', redRRModelFit, self.processmymodel)
 

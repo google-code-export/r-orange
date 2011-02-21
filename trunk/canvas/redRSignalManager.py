@@ -5,6 +5,10 @@ import redRi18n
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
+
+
+_linkPairs = {}  ## should be a dict of tuples, keys are the widgetID's values are a list of tuples of connections {('id1', 'id2'):[('out1', 'in2'), ('out2', 'in1')]}
+
 class OutputHandler:
     def __init__(self, parent):                         ## set up the outputHandler, this will take care of sending signals to 
         self.outputSignals = {}
@@ -32,8 +36,8 @@ class OutputHandler:
                 return False
             self.outputSignals[id]['connections'][signal['id']] = {'signal':signal, 'enabled':enabled}
             # now send data through
-            signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))
-            redRObjects.addLine(self.parent, signal['parent'])
+            signal['parent'].inputs.addLink(signal['sid'], self.getSignal(id))  # add a link to the signal in the inputs of the recieving widget.
+            redRObjects.addLine(self.parent, signal['parent']) # add a line between the two widget on the canvas
             if process:
                 #print _('processing signal')
                 self._processSingle(self.outputSignals[id], self.outputSignals[id]['connections'][signal['id']])
@@ -452,4 +456,28 @@ class InputHandler:
     ######### Loading and Saving ##############
     def returnInputs(self):
         return None  ## no real reason to return any of this becasue the outputHandler does all the signal work
+class OutputSignal():
+    def __init__(self, id, name, signalClass, parentWidget, parentHandler):
+        self.name = name
+        self.signalClass = signalClass
+        self.connections = {}
+        self.value = None
+        self.parent = parentWidget
+        self.parentHandler = parentHandler
+        self.id = id
         
+class InputSignal():
+    def __init__(self, id, name, signalClass, handler, parentHandler, parentWidget, multiple = False):
+        self.id = id
+        self.name = name
+        self.signalClass = signalClass
+        self.handler = handler
+        self.multiple = multiple
+        self.parentHandler = parentHandler
+        self.parentWidget = parentWidget
+        self.value = None
+    def valueNone(self):
+        if self.value == None:
+            return True
+        else:
+            return False

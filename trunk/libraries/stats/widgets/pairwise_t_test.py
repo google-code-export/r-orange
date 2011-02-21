@@ -16,8 +16,8 @@ from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.textEdit import textEdit
 class pairwise_t_test(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["pairwise.t.test"])
         self.RFunctionParam_x = ""
         self.RFunctionParam_pool_sd = "TRUE"

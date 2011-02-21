@@ -16,8 +16,8 @@ import libraries.base.signalClasses as signals
 
 class RedRbarplot(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_height = ''
         self.inputs.addInput("height", "Plotting Vector", signals.RList.RList, self.processheight)
         

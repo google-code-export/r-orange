@@ -22,7 +22,7 @@ import orngCanvasItems
 print 'after canvasitems'
 import redREnviron
 print 'after enrivon'
-import orngView, time, orngRegistry
+import orngView, time, orngRegistry, OWRpy
 print 'after orngview'
 import redRLog
 print 'after log'
@@ -236,19 +236,19 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     _owShowStatus = redREnviron.settings["owShow"],
     _packageName = info.packageName)
     instance.__dict__['_widgetInfo'] = info
-    
+    if not id or id == None:
+        OWRpy.uniqueWidgetNumber += 1
+        ctime = unicode(time.time())
+        id = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
     if info.name == 'Dummy': 
         instance.__init__(signalManager = sm,
-        forceInSignals = insig, forceOutSignals = outsig)
-    else: instance.__init__(signalManager = sm)
+        forceInSignals = insig, forceOutSignals = outsig, id = id)
+    else: instance.__init__(signalManager = sm, id = id)
     
     instance.loadGlobalSettings()
     if settings:
         try:
             instance.setSettings(settings)
-            # if '_customSettings' in settings.keys():
-                # instance.loadCustomSettings(settings['_customSettings'])
-            # else:
             instance.loadCustomSettings(settings)
         except Exception as inst:
             # print '##########################\n'*5 
@@ -258,18 +258,9 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
 
     instance.setProgressBarHandler(activeTab().progressBarHandler)   # set progress bar event handler
     instance.setProcessingHandler(activeTab().processingHandler)
-    #instance.setWidgetStateHandler(self.updateWidgetState)
-    #instance.setEventHandler(self.canvasDlg.output.widgetEvents)
     instance.setWidgetWindowIcon(info.icon)
     #instance.canvasWidget = self
     instance.widgetInfo = info
-    if id != None:
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('setting custom widget ID %s, We must be loading') % id)
-        instance.widgetID = id
-        instance.variable_suffix = '_' + instance.widgetID
-        instance.resetRvariableNames()
-    else:
-        id = instance.widgetID
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('instance ID is %s') % instance.widgetID)
     if id in _widgetInstances.keys():
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('id was found in the keys, placing as new ID'))

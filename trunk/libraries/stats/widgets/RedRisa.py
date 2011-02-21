@@ -12,8 +12,8 @@ from libraries.base.signalClasses.RModelFit import RModelFit as redRRModelFit
 from libraries.base.qtWidgets.button import button
 class RedRisa(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["isa"])
         self.data = {}
         self.RFunctionParam_data = ''

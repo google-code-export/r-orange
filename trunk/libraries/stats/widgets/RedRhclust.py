@@ -16,8 +16,8 @@ from libraries.base.signalClasses.RList import RList as redRRList
 
 class RedRhclust(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["hclust"])
         self.data = {}
         self.RFunctionParam_d = ''

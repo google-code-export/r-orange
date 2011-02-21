@@ -18,9 +18,8 @@ from libraries.base.qtWidgets.button import button
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class colMatcher(OWRpy): 
-    
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
         self.setRvariableNames(['newmat', 'compColumn'])
         self.inputs.addInput('id0', _('Data Table'), redRDataFrame, self.processx)

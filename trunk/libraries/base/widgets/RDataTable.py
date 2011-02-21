@@ -24,8 +24,8 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RDataTable(OWRpy):
     globalSettingsList = ['linkListBox','currentLinks']
-    def __init__(self, parent=None, signalManager = None):
-        OWRpy.__init__(self, wantGUIDialog = 1)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, wantGUIDialog = 1, **kwargs)
         
         self.setRvariableNames(['summaryData'])
 

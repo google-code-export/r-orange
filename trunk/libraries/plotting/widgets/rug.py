@@ -12,8 +12,8 @@ from libraries.base.qtWidgets.tabWidget import tabWidget
 from libraries.base.qtWidgets.button import button
 class rug(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["rug"])
         self.data = {}
         self.RFunctionParam_x = ''

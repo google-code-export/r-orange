@@ -13,8 +13,8 @@ _ = redRi18n.get_(package = 'base')
 class rViewer(OWRpy): 
     globalSettingsList = ['commit','showAll']
 
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         
         self.RFunctionParam_data = None
         self.data = None

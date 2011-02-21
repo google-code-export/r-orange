@@ -32,9 +32,8 @@ _ = redRi18n.get_(package = 'base')
 class readFile(OWRpy):
     
     globalSettingsList = ['filecombo','path']
-    def __init__(self, parent=None, signalManager=None):
-
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.path = os.path.abspath('/')
         self.colClasses = []
         self.myColClasses = []

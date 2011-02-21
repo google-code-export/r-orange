@@ -12,8 +12,8 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class intersect(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["intersect"])
         self.data = {}
          

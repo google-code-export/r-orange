@@ -29,14 +29,15 @@ from libraries.base.qtWidgets.splitter import splitter as redRSplitter
 from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
 
 import redRi18n
+uniqueWidgetNumber = 0
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
-    uniqueWidgetNumber = 0
+    
     globalRHistory = []
-    def __init__(self,wantGUIDialog = 0):
-        
+    def __init__(self,wantGUIDialog = 0, **kwargs):
+        global uniqueWidgetNumber
         widgetSignals.__init__(self, None, None)
         self.dontSaveList = self.__dict__.keys()
         #print self.dontSaveList
@@ -48,12 +49,18 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         widgetSession.__init__(self,self.dontSaveList)
         
         self.saveSettingsList = []  # a list of lists or strings that we will save.
-        OWRpy.uniqueWidgetNumber += 1
-        ctime = unicode(time.time())
+        #uniqueWidgetNumber += 1
+        #ctime = unicode(time.time())
         self.sessionID = 0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
-        self.widgetID = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
+        if 'id' in kwargs:
+            self.widgetID = kwargs['id']
+        else:
+            self.widgetID = unicode(uniqueWidgetNumber) + '_' + ctime
         self.variable_suffix = '_' + self.widgetID
-        self.Rvariables = {}
+        if 'Rvariables' in kwargs:
+            self.Rvariables = kwargs['Rvariables']
+        else:
+            self.Rvariables = {}
         self.RvariablesNames = []
         self.setRvariableNames(['title'])
         self.requiredRLibraries = []

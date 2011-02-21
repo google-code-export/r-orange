@@ -13,8 +13,8 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedRdata(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
         self.outputs.addOutput('id0', _('Example Data'), redRRDataFrame)

@@ -16,8 +16,8 @@ from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButt
 
 class dotchart(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs))
         self.setRvariableNames(["dotchart"])
         self.data = {}
         self.RFunctionParam_x = ''

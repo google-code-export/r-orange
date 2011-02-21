@@ -10,9 +10,9 @@ from libraries.base.qtWidgets import tabWidget, lineEdit, widgetLabel, widgetBox
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class widgetMaker(OWRpy):
-    def __init__(self, parent=None, signalManager=None):
+    def __init__(self, **kwargs):
         settingsList = ['output_txt', 'parameters']
-        OWRpy.__init__(self)
+        OWRpy.__init__(self, **kwargs)
         
         self.functionParams = ''
         self.widgetInputsName = []

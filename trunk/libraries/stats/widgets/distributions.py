@@ -34,9 +34,8 @@ class distributions(OWRpy):
     
     # Python init statement is the class constructor 
     # Here you put all the code that will run as soon as the widget is put on the canvas
-    def __init__(self, parent=None, signalManager=None):
-        #Here we init the parent class of our widget OWRpy.
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         
         #create a R variable cor in the R session.
         #the output variable will not conflict with some other widgets variables

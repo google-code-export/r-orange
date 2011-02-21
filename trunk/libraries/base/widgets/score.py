@@ -20,8 +20,8 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class score(OWRpy): 
     settingsList = []
-    def __init__(self, signalManager = None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         
         
         self.setRvariableNames(['score', 'mergedmatrix', 'mergedvals', 'tempmerge'])

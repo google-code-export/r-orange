@@ -12,8 +12,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 class bumpchart(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_y = ''
         self.inputs.addInput('id0', 'y', redRRDataFrame, self.processy)
 

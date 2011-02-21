@@ -11,17 +11,17 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class dummy(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None, forceInSignals = None, forceOutSignals = None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         print unicode(forceInSignals) +' and ' + unicode(forceOutSignals) + ' appending to dummy'
-        if forceInSignals: 
+        if 'forceInSignals' in kwargs: 
             import signals
-            for (a, b) in [signal for signal in forceInSignals]:
+            for (a, b) in [signal for signal in kwargs['forceInSignals']]:
                 print 'Appending ' + unicode(a) + ' in dummy to the '+unicode(b)+' signal'
                 self.inputs.addInput((a, a, b, None))
-        if forceOutSignals:
+        if 'forceOutSignals' in kwargs:
             import signals
-            for (a, b) in [signal for signal in  forceOutSignals]:
+            for (a, b) in [signal for signal in  kwargs['forceOutSignals']]:
                 print 'Appending ' +unicode(a)+' in dummy using the '+unicode(b)+' signal'
                 self.outputs.addOutput((a, a, b))
         print self.inputs

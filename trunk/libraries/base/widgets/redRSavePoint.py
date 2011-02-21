@@ -13,8 +13,8 @@ from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
 class redRSavePoint(OWRpy):
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(['saveData'])
         self.inputObject = None
         self.outputObject = None

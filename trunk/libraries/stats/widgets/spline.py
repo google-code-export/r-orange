@@ -20,8 +20,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.textEdit import textEdit
 class spline(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["spline"])
         self.data = {}
         self.RFunctionParam_y = ''
