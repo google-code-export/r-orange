@@ -16,13 +16,13 @@ import libraries.base.signalClasses as signals
 
 class RedRmelt(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["melt"])
         self.require_librarys(["reshape"])
         self.data = {}
         self.RFunctionParam_data = ''
-        self.inputs.addInput("data", "Data Table", signals.RDataFrame.RDataFrame, self.processdata)
+        self.inputs.addInput("data", "Data Table", [signals.RDataFrame.RDataFrame, signals.RMatrix.RMatrix], self.processdata)
         self.outputs.addOutput("melt Output","Molten Data", signals.RDataFrame.RDataFrame)
         
         self.RFunctionParamna_rm_radioButtons = redRradioButtons(self.controlArea, label = "Remove NA's:", buttons = ["TRUE","FALSE"], setChecked = "TRUE")
@@ -36,8 +36,18 @@ class RedRmelt(OWRpy):
         if data:
             self.RFunctionParam_data=data.getData()
             #self.data = data
-            self.RFunctionParammeasure_vars_comboBox.update(self.R('names('+self.RFunctionParam_data+')'))
-            self.RFunctionParamid_vars_listBox.update(self.R('names('+self.RFunctionParam_data+')'))
+            if data.getClass_data() == 'matrix':
+                self.RFunctionParammeasure_vars_comboBox.setEnabled(False)
+                self.RFunctionParamid_vars_listBox.setEnabled(False)
+                self.RFunctionParammeasure_vars_comboBox.hide()
+                self.RFunctionParamid_vars_listBox.hide()
+            else:
+                self.RFunctionParammeasure_vars_comboBox.show()
+                self.RFunctionParamid_vars_listBox.show()
+                self.RFunctionParammeasure_vars_comboBox.setEnabled(True)
+                self.RFunctionParamid_vars_listBox.setEnabled(True)
+                self.RFunctionParammeasure_vars_comboBox.update(['None'] + self.R('names('+self.RFunctionParam_data+')', wantType = 'list'))
+                self.RFunctionParamid_vars_listBox.update(self.R('names('+self.RFunctionParam_data+')'))
             
             self.commitFunction()
         else:
@@ -47,12 +57,13 @@ class RedRmelt(OWRpy):
         injection = []
         ## make commit function for self.RFunctionParamna_rm_radioButtons
         injection.append(',na.rm = '+str(self.RFunctionParamna_rm_radioButtons.getChecked()))
-        string = ',measure.vars= "'+str(self.RFunctionParammeasure_vars_comboBox.currentText())+'"'
-        injection.append(string)
+        if self.RFunctionParammeasure_vars_comboBox.isEnabled() and unicode(self.RFunctionParammeasure_vars_comboBox.currentText()) != unicode('None'):
+            string = ',measure.vars= "'+str(self.RFunctionParammeasure_vars_comboBox.currentText())+'"'
+            injection.append(string)
         if str(self.RFunctionParamvariable_name_lineEdit.text()) != '':
             string = ',variable_name="'+str(self.RFunctionParamvariable_name_lineEdit.text())+'"'
             injection.append(string)
-        if len(self.RFunctionParamid_vars_listBox.selectedItems()) > 0:
+        if self.RFunctionParamid_vars_listBox.isEnabled() and len(self.RFunctionParamid_vars_listBox.selectedItems()) > 0:
             string = ',id.vars= c("'+'","'.join([unicode(i) for i in self.RFunctionParamid_vars_listBox.selectedItems()])+'")'   #unicode(self.RFunctionParamid_vars_comboBox.currentText())+''
             injection.append(string)
         inj = ''.join(injection)
@@ -61,5 +72,5 @@ class RedRmelt(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)
-        newData = signals.RDataFrame.RDataFrame(data = self.Rvariables['melt'], parent = self.Rvariables['melt'])
+        newData = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['melt'], parent = self.Rvariables['melt'])
         self.rSend('melt Output', newData)

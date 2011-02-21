@@ -5,6 +5,8 @@
 from OWRpy import * 
 import redRGUI 
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.RMatrix import RMatrix as redRRMatrix
+from libraries.base.signalClasses.RVariable import RVariable as redRRVariable
 from libraries.base.qtWidgets.filterTable import filterTable
 from libraries.base.qtWidgets.groupBox import groupBox
 from libraries.base.qtWidgets.lineEdit import lineEdit
@@ -18,6 +20,8 @@ class RedRdata(OWRpy):
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
         self.outputs.addOutput('id0', _('Example Data'), redRRDataFrame)
+        self.outputs.addOutput('id1', _('Example Data (Matrix)'), redRRMatrix)
+        self.outputs.addOutput('id2', _('Example Data (Arbitrary Example [Advanced])'), 'All')
 
                 
         self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
@@ -70,8 +74,15 @@ class RedRdata(OWRpy):
         # self.loadPackage()
         self.R('data("%s", package="%s")' % (dataset,package), wantType = 'NoConversion')
         try:
-            newData = redRRDataFrame(self, data = 'as.data.frame(' + unicode(self.RFunctionParamdataName_lineEdit.text() + ')'))
-            self.rSend("id0", newData)            
+            if self.R('is.data.frame(%s)' % dataset, wantType = 'convert'):
+                newData = redRRDataFrame(self, data = unicode(self.RFunctionParamdataName_lineEdit.text()))
+                self.rSend("id0", newData)
+            elif self.R('is.matrix(%s)' % dataset, wantType = 'convert'):
+                newData = redRRMatrix(self, data = unicode(self.RFunctionParamdataName_lineEdit.text()))
+                self.rSend('id1', newData)
+            else:
+                newData = redRRVariable(self, data = unicode(self.RFunctionParamdataName_lineEdit.text()))
+                self.rSend('id2', newData)
         except Exception as inst:
             QMessageBox.information(self, _('Red-R Canvas'),_('R Error: %s') % unicode(inst),  
             QMessageBox.Ok + QMessageBox.Default)

@@ -106,21 +106,9 @@ class widgetSession():
         from signals import BaseRedRVariable
         # print 'var class', var.__class__.__name__, isinstance(var, BaseRedRVariable), issubclass(var.__class__,BaseRedRVariable)
         if isinstance(var, widgetState):
-            # print 'getting gui settings\n\n'
-            # try:
-            v = {}
-            v = var.getSettings()
-            if v == None:
-                v = var.getDefaultState()
-            else:
-                v.update(var.getDefaultState())
-            # except: 
-                # v = var.getDefaultState()
-                # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Could not save qtWidgets class ' + var.__class__.__name__ + '.')
-                #errorMsg='Could not save qtWidgets class ' + var.__class__.__name__ + '.')
-
             settings['redRGUIObject'] = {}
-            if v: settings['redRGUIObject'] = v
+            settings['redRGUIObject']['widgetSettings'] = var.getSettings()
+            settings['redRGUIObject']['defaultSettings'] = var.getDefaultState()
         #elif isinstance(var, signals.BaseRedRVariable):
         elif isinstance(var, BaseRedRVariable) or issubclass(var.__class__,BaseRedRVariable) :
             settings['signalsObject'] = var.saveSettings()
@@ -211,11 +199,17 @@ class widgetSession():
                 elif 'redRGUIObject' in v.keys():
                     #print getattr(self, k)
                     try:
-                        getattr(self, k).loadSettings(v['redRGUIObject'])
-                        getattr(self, k).setDefaultState(v['redRGUIObject'])
+                        getattr(self, k).loadSettings(v['redRGUIObject']['widgetSettings'])
+                        getattr(self, k).setDefaultState(v['redRGUIObject']['defaultSettings'])
                     except Exception as inst:
-                        #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
+                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading failed using RedR185 Settings, attempting RedR180 Settings')
                         redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
+                        try:
+                            getattr(self, k).loadSettings(v['redRGUIObject'])
+                            getattr(self, k).setDefaultState(v['redRGUIObject'])
+                        except:
+                            #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
+                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 elif 'dict' in v.keys():
                     var = getattr(self, k)
                     #print 'dict',len(var),len(v['dict'])
