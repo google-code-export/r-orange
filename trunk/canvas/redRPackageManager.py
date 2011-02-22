@@ -430,19 +430,20 @@ class packageManagerDialog(redRdialog):
         self.treeViewUpdates.clear()
         if not packages:
             return 
-        
         for name,package in packages.items(): ## move across the package names
             if 'current' in package.keys():
                 current = package['current']
             if 'new' in package.keys():
                 new = package['new']
                 
+            color = 'white'
             line = [name,package['status']]
             if package['status'] == 'Out of date':
                 line += [
                 '%s (%s)' % (current['Version']['Number'],current['Version']['Stability']),
                 '%s (%s)' % (new['Version']['Number'],new['Version']['Stability'])               
                 ]
+                color='red'
             elif package['status'] in ['Current','Local only']:
                 line += [
                 '%s (%s)' % (current['Version']['Number'],current['Version']['Stability']),
@@ -456,18 +457,7 @@ class packageManagerDialog(redRdialog):
             
             line += [current['Author'], current['Summary']]
             
-            newChild = redRtreeWidgetItem(self.treeViewUpdates, line)
-            
-                
-    def setPackageList(self, view, packages):
-        ## there is something in the dict and we need to populate the treeview
-        view.clear()
-        if not packages:
-            return 
-        for name,package in packages.items(): ## move across the package names
-            line = [name, package['Author'], package['Summary'], 
-            package['Version']['Number'], package['Version']['Stability']]
-            newChild = redRtreeWidgetItem(view, line)
+            newChild = redRtreeWidgetItem(self.treeViewUpdates, line,bgcolor=QColor(color))
             
                     
     def installUpdates(self):

@@ -7,7 +7,7 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class treeWidgetItem(QTreeWidgetItem):
-    def __init__(self, widget = None, stringList = None, toolTip = None, flags=None):
+    def __init__(self, widget = None, stringList = None, toolTip = None,bgcolor=None, flags=None):
         #widgetState.__init__(self,widget, _('treeWidgetItem'),includeInReports=False)
         if stringList:
             QTreeWidgetItem.__init__(self, stringList)
@@ -21,6 +21,9 @@ class treeWidgetItem(QTreeWidgetItem):
             self.setToolTip(toolTip)
         if flags:
             self.setFlags(flags);
+        if bgcolor:
+            for x in range(len(stringList)):
+                self.setBackground(x,QBrush(bgcolor))
             
     def text(self,col):
         return str(QTreeWidgetItem.text(self,col))
