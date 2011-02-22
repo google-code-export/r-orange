@@ -445,6 +445,7 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
 
     # draw the widget
     def paint(self, painter, option, widget = None):
+        instance = self.instance()
         if self.isProcessing:
             color = redRStyle.widgetActiveColor
         
@@ -458,12 +459,14 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
         if self.isProcessing or self.selected or self.potentialConnection:
             painter.setPen(QPen(color))
             painter.drawRect(-3, -3, self.widgetSize.width()+6, self.widgetSize.height()+6)
-
+        if instance.collapseDataButton.isChecked():
+            painter.setPen(QPen(Qt.gray))
+            painter.drawRect(-7, -7, self.widgetSize.width()+14, self.widgetSize.height()+14)
         painter.drawPixmap(0,0, self.icon.pixmap(self.widgetSize.width(), self.widgetSize.height()))
         # where the edges are painted
         try:
-            if len(self.instance().inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
-            if len(self.instance().outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
+            if len(instance.inputs.getAllInputs()) != 0:    painter.drawPixmap(-self.edgeSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownLeftEdge)
+            if len(instance.outputs.getAllOutputs()) != 0:   painter.drawPixmap(self.widgetSize.width(), (self.widgetSize.height()-self.edgeSize.height())/2, self.shownRightEdge)
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         ## drwaw the clone icon

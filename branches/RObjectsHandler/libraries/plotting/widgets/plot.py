@@ -16,8 +16,8 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.graphicsView import graphicsView as redRGraphicsView
 from libraries.base.qtWidgets.SearchDialog import SearchDialog
 class plot(OWRpy): 
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.data = None
         self.RFunctionParam_x = ''
         self.plotAttributes = {}

@@ -51,19 +51,19 @@ class RList(RArbitraryList, UnstructuredDict):
         
         
     def names_call(self):
-        return 'names('+self.data+')'
+        return 'names('+str(self.getData())+')'
     def names_data(self):
         return self.R(self.names_call(), silent = True)
     def getLength_call(self):
-        return 'length('+self.data+')'
+        return 'length('+str(self.getData())+')'
     def getLength_data(self):
         return self.R(self.length_call(), silent = True)
     def getItem_call(self, item):
         if type(item) in [int, float, long]:
             item = int(item)
-            return self.data+'[['+unicode(item)+']]'
+            return str(self.getData())+'[['+unicode(item)+']]'
         elif type(item) in [str]:
-            return self.data+'[[\''+unicode(item)+'\']]'
+            return str(self.getData())+'[[\''+unicode(item)+'\']]'
         elif type(item) in [list]:
             newItemList = []
             for i in item:
@@ -71,9 +71,9 @@ class RList(RArbitraryList, UnstructuredDict):
                     newItemList.append(unicode(int(i)))
                 elif type(i) in [str]:
                     newItemList.append('\"'+unicode(i)+'\"')
-            return self.data+'[[c('+unicode(newItemList)[1:-1]+')]]'
+            return str(self.getData())+'[[c('+unicode(newItemList)[1:-1]+')]]'
         else:
-            return self.data #just return all of the data and hope the widget picks up from there
+            return str(self.getData()) #just return all of the data and hope the widget picks up from there
     def getItem_data(self, item):
         call = self.getItem_call(item)
         if call != None:
@@ -83,7 +83,7 @@ class RList(RArbitraryList, UnstructuredDict):
             return {}
             
     def getDims_call(self):
-        return 'dim('+self.data+')'
+        return 'dim('+str(self.getData())+')'
         
     def getDims_data(self):
         output = self.R(self.getDims_call(), wantType = 'list', silent = True)
@@ -91,7 +91,7 @@ class RList(RArbitraryList, UnstructuredDict):
             return output
         else: return [0, 0]
     def getNames_call(self):
-        return 'names('+self.data+')'
+        return 'names('+str(self.getData())+')'
     def getNames_data(self):
         output = self.R(self.getNames_call(), wantType = 'list', silent = True)
         if output != None:

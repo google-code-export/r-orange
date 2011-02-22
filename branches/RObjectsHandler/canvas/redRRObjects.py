@@ -43,7 +43,7 @@ def addRObjects(widgetID, ol):
   if redRSaveLoad.LOADINGINPROGRESS:
     _rObjects[widgetID]['state'] = 0 # we set this as 0 because the data lives in the saved session.  This means that the data really exists but is located still on disk.  The last thing that we want to do is to distroy it at this point by saving over the data.
     #redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
-  redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R Objects are: %s' % _rObjects)
+  #redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R Objects are: %s' % _rObjects)
 def removeWidget(widgetID):
   global _rObjects
   del _rObjects[widgetID]
@@ -72,7 +72,7 @@ def saveWidgetObjects(widgetID):
     
   
 def ensureVars(widgetID):
-  redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("Ensuring variables for widgetID %s") % widgetID)
+  #redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("Ensuring variables for widgetID %s") % widgetID)
   if not _rObjects[widgetID]['state']:
     loadWidgetObjects(widgetID)
   extendTimer(widgetID)
@@ -81,7 +81,7 @@ def extendTimer(widgetID):
   global _rObjects
   timer = _rObjects[widgetID]['timer']
   timer.stop()
-  timer.setInterval(1000*60*10)
+  timer.setInterval(1000*5)
   timer.start()
   
 def setWidgetPersistent(widgetID):
