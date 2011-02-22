@@ -19,20 +19,20 @@ class RVariable(BaseRedRVariable):
     def __str__(self):
         ## print output for the class
         
-        return '###Signal Class: '+unicode(self.__class__)+'; Data: '+self.data+'; Parent: '+self.parent+'; Attributes: '+unicode(self.dictAttrs)
+        return '###Signal Class: '+unicode(self.__class__)+'; Data: '+str(self.getData())+'; Parent: '+self.parent+'; Attributes: '+unicode(self.dictAttrs)
     def getClass_call(self):
-        return 'class('+self.data+')'
+        return 'class('+str(self.getData())+')'
         
     def getClass_data(self):
         return self.R(self.getClass_call(), silent = True)
     def _simpleOutput(self, subsetting = ''):
-        text = 'R Data Variable Name: '+self.data+'\n\n'
+        text = 'R Data Variable Name: '+str(self.getData())+'\n\n'
         return text
     def summary(self):
-        return '\n'.join(self.R('capture.output(summary('+self.data+'))', wantType = 'list'))
+        return '\n'.join(self.R('capture.output(summary('+str(self.getData())+'))', wantType = 'list'))
     def _fullOutput(self, subsetting = ''):
         text = self._simpleOutput()+'\n\n'
-        text += 'R Data Variable Value: '+self.R('paste(capture.output('+self.data+subsetting+'), collapse = "\n")')+'\n\n'
+        text += 'R Data Variable Value: '+self.R('paste(capture.output('+str(self.getData())+subsetting+'), collapse = "\n")')+'\n\n'
         text += 'R Parent Variable Name: '+self.parent+'\n\n'
         text += 'R Parent Variable Value: '+self.R('paste(capture.output('+self.parent+subsetting+'), collapse = "\n")')+'\n\n'
         text += 'Class Dictionary: '+unicode(self.dictAttrs)+'\n\n'
@@ -70,4 +70,4 @@ class RVarStr():
         
     def __str__(self):
         redRRObjects.ensureVars(self.widgetID)
-        return self.data
+        return str(self.data)

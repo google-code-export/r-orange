@@ -48,10 +48,10 @@ class RMatrix(RDataFrame):
         
     def _convertToStructuredDict(self):
         if not self.StructuredDictSignal:
-            data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
+            data = self.R('as.data.frame('+str(self.getData())+')', wantType = 'dict')
             keys = ['row_names']
-            keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
-            rownames = self.R('rownames('+self.data+')', wantType = 'list')
+            keys += self.R('colnames(as.data.frame('+str(self.getData())+'))', wantType = 'list')
+            rownames = self.R('rownames('+str(self.getData())+')', wantType = 'list')
             if rownames[0] in [None, 'NULL', 'NA']:
                 rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
             data['row_names'] = rownames
@@ -61,14 +61,14 @@ class RMatrix(RDataFrame):
             return self.StructuredDictSignal
     def _convertToRDataFrame(self):
         if not self.RDataFrameSignal:
-            self.RDataFrameSignal = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
+            self.RDataFrameSignal = RDataFrame(data = 'as.data.frame('+str(self.getData())+')', parent = self.parent)
             self.RDataFrameSignal.dictAttrs = self.dictAttrs.copy()
             return self.RDataFrameSignal
         else:
             return self.RDataFrameSignal
     def _convertToRList(self):
         if not self.RListSignal:
-            self.RListSignal = RList(data = 'as.list(as.data.frame('+self.data+'))')
+            self.RListSignal = RList(data = 'as.list(as.data.frame('+str(self.getData())+'))')
             self.RListSignal.dictAttrs = self. dictAttrs.copy()
             return self.RListSignal
         else:

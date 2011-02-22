@@ -12,7 +12,7 @@ class RVector(RMatrix):
     def __init__(self, widget, data, parent = None, checkVal = True):
         RMatrix.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         if checkVal:
-            if self.R('class('+self.data+')', wantType = 'list')[0] not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer', 'POSIXt', 'POSIXct']:
+            if self.R('class('+str(self.getData())+')', wantType = 'list')[0] not in ['complex', 'raw', 'numeric', 'factor', 'character', 'logical', 'integer', 'POSIXt', 'POSIXct']:
                 raise Exception, 'Not vector data'
         self.StructuredDictSignal = None
         self.RDataFrameSignal = None
@@ -37,10 +37,10 @@ class RVector(RMatrix):
             raise Exception
     def _convertToStructuredDict(self):
         if not self.StructuredDictSignal:
-            data = self.R('as.data.frame('+self.data+')', wantType = 'dict')
+            data = self.R('as.data.frame('+str(self.getData())+')', wantType = 'dict')
             keys = ['row_names']
-            keys += self.R('colnames(as.data.frame('+self.data+'))', wantType = 'list')
-            rownames = self.R('rownames('+self.data+')', wantType = 'list')
+            keys += self.R('colnames(as.data.frame('+str(self.getData())+'))', wantType = 'list')
+            rownames = self.R('rownames('+str(self.getData())+')', wantType = 'list')
             try:
                 if rownames in [None, 'NULL', 'NA']:
                     rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
@@ -53,22 +53,22 @@ class RVector(RMatrix):
             return self.StructuredDictSignal
     def _convertToMatrix(self):
         if not self.RMatrixSignal:
-            self.RMatrixSignal = RMatrix(widget = self.widget, data = 'as.matrix('+self.data+')')
+            self.RMatrixSignal = RMatrix(widget = self.widget, data = 'as.matrix('+str(self.getData())+')')
             self.RMatrixSignal.dictAttrs = self.dictAttrs.copy()
             return self.RMatrixSignal
         else:
             return self.RMatrixSignal
     def _convertToList(self):
         if not self.RListSignal:
-            self.R('list_of_'+self.data+'<-as.list(as.data.frame('+self.data+'))', wantType = 'NoConversion')
-            self.RListSignal = RList(widget = self.widget, data = 'list_of_'+self.data, parent = self.parent)
+            self.R('list_of_'+str(self.getData())+'<-as.list(as.data.frame('+str(self.getData())+'))', wantType = 'NoConversion')
+            self.RListSignal = RList(widget = self.widget, data = 'list_of_'+str(self.getData()), parent = self.parent)
             self.RListSignal.dictAttrs = self.dictAttrs.copy()
             return self.RListSignal
         else:
             return self.RListSignal
     def _convertToDataFrame(self):
         if not self.RDataFrameSignal:
-            self.RDataFrameSignal = RDataFrame(widget = self.widget, data = 'as.data.frame('+self.data+')', parent = self.parent)
+            self.RDataFrameSignal = RDataFrame(widget = self.widget, data = 'as.data.frame('+str(self.getData())+')', parent = self.parent)
             self.RDataFrameSignal.dictAttrs = self.dictAttrs.copy()
             return self.RDataFrameSignal
         else:
@@ -88,12 +88,12 @@ class RVector(RMatrix):
     def getColumnnames_data(self):
         return self.getNames_data()
     def getNames_call(self):
-        return self.data
+        return str(self.getData())
     def getNames_data(self):
-        return self.data # the only name to speek of the name of the variable
+        return str(self.getData()) # the only name to speek of the name of the variable
 
     def getRange_call(self, rowRange = None, colRange = None):
-        if rowRange == None: return self.data
-        else: return self.data+'['+unicode(rowRange)+']'
+        if rowRange == None: return str(self.getData())
+        else: return str(self.getData())+'['+unicode(rowRange)+']'
         
         
