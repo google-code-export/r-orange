@@ -17,7 +17,9 @@ from libraries.base.qtWidgets.button import button
 from libraries.base.qtWidgets.checkBox import checkBox
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
-unicode(self.function.getChecked())+
+import redRi18n
+_ = redRi18n.get_(package = 'base')
+
 class RVarSeparator(OWRpy): 
     globalSettingsList = ['commitButton']
     def __init__(self, parent=None, signalManager=None):
@@ -66,7 +68,7 @@ class RVarSeparator(OWRpy):
             
     def commit(self):
         #must declare explilcitly as a string or an error will occur.  We remove NA's just in case they are in the data
-        self.sendThis = unicode('local('+self.varBox.selectedItems()[0].text()+', '+self.envName+')') 
+        self.sendThis = unicode('local('+self.varBox.selectedItems().values()[0]+', '+self.envName+')') 
         
         #put logic for finding the type of variable that the object is and sending it from that channel of the output
         

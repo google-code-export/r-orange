@@ -19,10 +19,10 @@ class RList(RArbitraryList, UnstructuredDict):
             
     def _convertFromStructuredDict(self, signal):
         newVar = self.assignR('RListConversion_'+self.newDataID, signal.getData())
-        return RList(data = 'as.list('+newVar+')')
+        return RList(widget = self.widget, data = 'as.list('+newVar+')')
     def _convertFromUnstructuredDict(self, signal):
         newVar = self.assignR('RListConversion_'+self.newDataID, signal.getData())
-        return RList(data = 'as.list('+newVar+')')
+        return RList(widget = self.widget, data = 'as.list('+newVar+')')
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
@@ -37,7 +37,7 @@ class RList(RArbitraryList, UnstructuredDict):
         else:
             raise Exception
     def _convertToUnstructuredDict(self):
-        return UnstructuredDict(data = self.R(self.getData(), wantType = 'dict'))
+        return UnstructuredDict(widget = self.widget, data = self.R(self.getData(), wantType = 'dict'))
     def _convertToVariable(self):
         return self
     def _fullOutput(self, subsetting = ''):

@@ -27,15 +27,15 @@ from libraries.base.qtWidgets.comboBox import comboBox as redRComboBox
 from libraries.base.qtWidgets.groupBox import groupBox as redRGroupBox
 from libraries.base.qtWidgets.splitter import splitter as redRSplitter
 from libraries.base.qtWidgets.statusLabel import statusLabel as redRStatusLabel
-
-import redRi18n
+uniqueWidgetNumber = 0
+import redRi18n, redRSaveLoad
 # def _(a):
     # return a
 _ = redRi18n.Coreget_()
 class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):   
-    uniqueWidgetNumber = 0
+    
     globalRHistory = []
-    def __init__(self,wantGUIDialog = 0):
+    def __init__(self,wantGUIDialog = 0, **kwargs):
         
         widgetSignals.__init__(self, None, None)
         self.dontSaveList = self.__dict__.keys()
@@ -48,10 +48,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         widgetSession.__init__(self,self.dontSaveList)
         
         self.saveSettingsList = []  # a list of lists or strings that we will save.
-        OWRpy.uniqueWidgetNumber += 1
-        ctime = unicode(time.time())
-        self.sessionID =0  # a unique ID for the session.  This is not saved or reset when the widget is loaded.  Rather this added when the widget is loaded.  This allows for multiple widgets to use the same 
-        self.widgetID = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
+        
+        self.widgetID = kwargs['id']
         self.variable_suffix = '_' + self.widgetID
         self.Rvariables = {}
         self.RvariablesNames = []
@@ -75,18 +73,19 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             self.variable_suffix = '_' + self.widgetID
         for x in self.RvariablesNames:
             self.Rvariables[x] = x + self.variable_suffix
-    
+        if redRSaveLoad.LOADINGINPROGRESS: 
+            redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
     def setRvariableNames(self,names):
         
         #names.append('loadSavedSession')
         for x in names:
             self.Rvariables[x] = x + self.variable_suffix
             self.RvariablesNames.append(x)
-	redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("adding variables to redRRObjects"))
-	redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
-	if len(names) > 0:
-	  self.collapseDataButton.show() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
-	  self.neverCollapseDataButton.show()
+        redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("adding variables to redRRObjects"))
+        redRRObjects.addRObjects(self.widgetID, self.Rvariables.values())
+        if len(names) > 0:
+          self.collapseDataButton.show() # these are set to hidden by default because we don't want to belaybor widgets that don't set R data.
+          self.neverCollapseDataButton.show()
     def makeCM(self, Variable):
         self.R(Variable+'<-list()', wantType = 'NoConversion')
     def addToCM(self, colname = 'tmepColname', CM = None, values = None):
@@ -96,7 +95,7 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
             values = 'c('+','.join(values)+')'
         self.R(CM+'$'+colname+self.variable_suffix+'<-'+values, wantType = 'NoConversion') # commit to R
 
-    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = 'convert', listOfLists = True):
+    def R(self, query, callType = 'getRData', processingNotice=False, silent = False, showException=True, wantType = 'convert', listOfLists = True, ensureVariables = True):
         
         self.setRIndicator(True)
         #try:
@@ -106,7 +105,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
         qApp.setOverrideCursor(Qt.WaitCursor)
         
         try:
-	    redRRObjects.ensureVars(self.widgetID)  # this ensures that all variables that this widget has set are available for use in the R session.
+            if ensureVariables:
+                redRRObjects.ensureVars(self.widgetID)  # this ensures that all variables that this widget has set are available for use in the R session.
             commandOutput = RSession.Rcommand(query = query, silent = silent, wantType = wantType, listOfLists = listOfLists)
         except RuntimeError as inst:
             #print _('asdfasdfasdf'), inst

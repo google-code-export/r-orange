@@ -10,8 +10,9 @@ def _(a):
 
 # parent class of all signals.  This class holds base functions such as assignment and item setting
 class BaseRedRVariable:
-    def __init__(self, data, parent = None, checkVal = False):
-        
+    def __init__(self, widget, data, parent = None, checkVal = False):
+        self.widget = widget
+        self.widgetID = widget.widgetID
         self.data = data
         self.dictAttrs = {}
         self.reserved = ['data', 'dictAttrs']

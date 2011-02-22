@@ -13,15 +13,15 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RedRdata(OWRpy): 
     globalSettingsList = ['commit']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(['datasets',"data"])
         self.data = {}
         self.outputs.addOutput('id0', _('Example Data'), redRRDataFrame)
 
                 
-        self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion')
-        self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion')
+        self.R('%s <- as.data.frame(data(package = .packages(all.available = TRUE))$results[,c(1,3:4)])' % self.Rvariables['datasets'],silent=True, wantType = 'NoConversion', ensureVariables = False)
+        self.R('%s$Title <- as.character(%s$Title)' % (self.Rvariables['datasets'],self.Rvariables['datasets']),silent=True, wantType = 'NoConversion', ensureVariables = False)
         
         
         self.table = filterTable(self.controlArea, label='R Datasets', includeInReports=False,
@@ -72,7 +72,7 @@ class RedRdata(OWRpy):
         try:
             newData = redRRDataFrame(self, data = 'as.data.frame(' + unicode(self.RFunctionParamdataName_lineEdit.text() + ')'))
             self.rSend("id0", newData)            
-        except RuntimeError as inst:
+        except Exception as inst:
             QMessageBox.information(self, _('Red-R Canvas'),_('R Error: %s') % unicode(inst),  
             QMessageBox.Ok + QMessageBox.Default)
 

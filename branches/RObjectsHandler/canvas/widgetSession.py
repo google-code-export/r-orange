@@ -47,13 +47,6 @@ class widgetSession():
         settings['_customSettings'] = self.saveCustomSettings()
         tempSentItems = self.processSentItems()
         settings['sentItems'] = {'sentItemsList':tempSentItems}
-        
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
-       
-        
-        
         #settingsID = self.sqlite.saveObject(settings)
         self.progressBarFinished()
         return settings
@@ -162,7 +155,8 @@ class widgetSession():
             try:
                 #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue
-                if v == None:
+                
+                elif v == None:
                     continue
                 elif 'pythonObject' in v.keys():
                     #print '|#| Setting pythonObject %s to %s' % (k,unicode(v['pythonObject']))
@@ -248,7 +242,7 @@ class widgetSession():
             for mod in d['class'].split('.')[1:]:
                 #print varc
                 varc = getattr(varc, mod)
-            var = varc(data = d['data']) 
+            var = varc(self, data = d['data']) 
             var.loadSettings(d)
             
         except: # if it doesn't exist we need to set the class something so we look to the outputs. 
@@ -264,7 +258,7 @@ class widgetSession():
                     for mod in val['class'].split('.')[1:]:
                         #print varc
                         varc = getattr(varc, mod)
-                    var = varc(data = val['data']) 
+                    var = varc(self, data = val['data']) 
                     var.loadSettings(val)
                     if fp:
                         fp.close()
@@ -273,7 +267,7 @@ class widgetSession():
                 redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                 
                 try:
-                    var = signals.BaseRedRVariable(data = d['data']['data'], checkVal = False)
+                    var = signals.BaseRedRVariable(self, data = d['data'], checkVal = False)
                 except: ## fatal exception, there is no data in the data slot (the signal must not have data) we can't do anything so we except...
                     redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())
                     #print 'Fatal exception in loading.  Can\'t assign the signal value'

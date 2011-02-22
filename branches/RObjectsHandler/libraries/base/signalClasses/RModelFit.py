@@ -21,7 +21,7 @@ class RModelFit(RList):
             raise Exception, '%s Not A Known Type' % unicode(varClass)
     def _convertToList(self):
         if not self.RListSignal:
-            self.RListSignal = RList(data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
+            self.RListSignal = RList(widget = self.widget, data = 'as.list('+self.data+')') # we loose the parent at this point because of type conversion
             self.RListSignal.dictAttrs = self.dictAttrs.copy()
             return self.RListSignal
         else:

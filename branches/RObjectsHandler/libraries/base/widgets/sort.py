@@ -42,7 +42,7 @@ class sort(OWRpy):
     def processx(self, data):
         if data:
             self.RFunctionParam_x=data.getData()
-            colNames = self.R('colnames('+self.RFunctionParam_x+')',wantType='list')
+            colNames = self.R('colnames(%s)' % self.RFunctionParam_x,wantType='list')
             colNames.insert(0,'')
             self.sortingColumn1.update(colNames)
             self.sortingColumn2.update(colNames)
@@ -73,7 +73,7 @@ class sort(OWRpy):
             injection.append('na.last = TRUE')
         inj = ','.join(injection)
 
-        self.R(self.Rvariables['sort']+'<-%s[order(%s),]' % (self.RFunctionParam_x, inj), wantType = 'NoConversion')
+        self.R('%s<-%s[order(%s),]' % (self.Rvariables['sort'], self.RFunctionParam_x, inj), wantType = 'NoConversion')
         newData = redRRDataFrame(self, data = self.Rvariables["sort"]) 
         
         self.rSend("id0", newData)

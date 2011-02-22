@@ -25,8 +25,8 @@
 from RSession import Rcommand as R
 import redRi18n
 import redRLog
-import os, sys, redREnviron, redRObjects
-
+import os, sys, redREnviron, redRObjects, redRLog
+import redRSaveLoad
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -40,15 +40,21 @@ def addRObjects(widgetID, ol):
   extendTimer(widgetID)
   for o in ol:
     R('%s<-NULL' % o, wantType = 'NoConversion') #, silent = True)
-
+  if redRSaveLoad.LOADINGINPROGRESS:
+    _rObjects[widgetID]['state'] = 0 # we set this as 0 because the data lives in the saved session.  This means that the data really exists but is located still on disk.  The last thing that we want to do is to distroy it at this point by saving over the data.
+    #redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
+  redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R Objects are: %s' % _rObjects)
 def removeWidget(widgetID):
   global _rObjects
   del _rObjects[widgetID]
+  if os.path.exists(os.path.join(redREnviron.directoryNames['tempDir'], widgetID)):
+    os.remove(redREnviron.directoryNames['tempDir'], widgetID)
 
 def loadWidgetObjects(widgetID):
   global _rObjects
+  if _rObjects[widgetID]['state']: return
   redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were expanded (loaded)") % widgetID)
-  R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID), wantType = 'NoConversion', silent = True)
+  R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion', silent = True)
   _rObjects[widgetID]['state'] = 1
   redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
   extendTimer(widgetID)
@@ -58,7 +64,7 @@ def saveWidgetObjects(widgetID):
   if _rObjects[widgetID]['state']:
     _rObjects[widgetID]['timer'].stop()
     redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were collapsed (saved)") % widgetID)
-    R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID)), wantType = 'NoConversion', silent = True)
+    R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/')), wantType = 'NoConversion', silent = True)
     _rObjects[widgetID]['state'] = 0
     redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
     for v in _rObjects[widgetID]['vars']:

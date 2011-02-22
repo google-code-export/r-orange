@@ -12,7 +12,7 @@ class RDataFrame(RList, StructuredDict):
     convertToList = [RList, RVariable, StructuredDict, UnstructuredDict]
     def __init__(self, widget, data, parent = None, checkVal = True):
         StructuredDict.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
-        RList.__init__(self, data = data, parent = parent, checkVal = False)
+        RList.__init__(self, widget, data = data, parent = parent, checkVal = False)
         if checkVal and self.getClass_data() != 'data.frame':
             raise Exception('not a dataframe') # there this isn't the right kind of data for me to get !!!!!
         self.newDataID = unicode(time.time()).replace('.', '_')

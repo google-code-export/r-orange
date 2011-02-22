@@ -6,9 +6,9 @@ from libraries.base.signalClasses.UnstructuredDict import *
 class StructuredDict(UnstructuredDict):
     convertToList = [BaseRedRVariable, UnstructuredDict]
     convertFromList = []
-    def __init__(self, data, parent = None, keys = None, checkVal = True):
+    def __init__(self, widget, data, parent = None, keys = None, checkVal = True):
         
-        UnstructuredDict.__init__(self, data = data, parent = parent, keys = keys, checkVal = False)
+        UnstructuredDict.__init__(self, widget, data = data, parent = parent, keys = keys, checkVal = False)
         
         
         if checkVal:

@@ -100,11 +100,11 @@ class setOperations(OWRpy):
             return
             
         if self.colA.selectedItems():
-            nameA = self.colA.selectedItems()[0].text()
+            nameA = self.colA.selectedItems()[0]
         else:
             nameA = None
         if self.colB.selectedItems():
-            nameB = self.colB.selectedItems()[0].text()
+            nameB = self.colB.selectedItems()[0]
         else:
             nameB = None
             

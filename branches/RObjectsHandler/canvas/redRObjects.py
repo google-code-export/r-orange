@@ -23,7 +23,7 @@ import redREnviron
 import orngView, time, orngRegistry
 import redRLog
 
-import redRi18n
+import redRi18n, OWRpy
 _ = redRi18n.Coreget_()
 defaultTabName = _('General')
 _widgetRegistry = {}
@@ -218,7 +218,7 @@ def closeAllWidgets():
 	print 'closing widget k'
         i.close()
         
-def addInstance(sm, info, settings, insig, outsig, id = None):
+def addInstance(sm, info, insig, outsig, id = None):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
@@ -232,24 +232,16 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     _packageName = info.packageName)
     instance.__dict__['_widgetInfo'] = info
     
-    if info.name == 'Dummy': 
-        instance.__init__(signalManager = sm,
-        forceInSignals = insig, forceOutSignals = outsig)
-    else: instance.__init__(signalManager = sm)
+    # now we init the widget, this will make a fresh widget we need to set the settings after this
+    if not id: id = unicode(OWRpy.uniqueWidgetNumber) + '_' + str(time.time())
+    OWRpy.uniqueWidgetNumber += 1
+    #if info.name == 'Dummy': 
+    instance.__init__(signalManager = sm,
+        forceInSignals = insig, forceOutSignals = outsig, id = id)
+    #else: instance.__init__(signalManager = sm)
     
+    ## check if an id is present, if this is the case then we should set the id to the widget.
     instance.loadGlobalSettings()
-    if settings:
-        try:
-            instance.setSettings(settings)
-            # if '_customSettings' in settings.keys():
-                # instance.loadCustomSettings(settings['_customSettings'])
-            # else:
-            instance.loadCustomSettings(settings)
-        except Exception as inst:
-            # print '##########################\n'*5 
-            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRObjects addInstance; error in setting settings or custom settings. <b>%s<b>') % inst)
-            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
-            
 
     instance.setProgressBarHandler(activeTab().progressBarHandler)   # set progress bar event handler
     instance.setProcessingHandler(activeTab().processingHandler)
@@ -258,13 +250,7 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     instance.setWidgetWindowIcon(info.icon)
     #instance.canvasWidget = self
     instance.widgetInfo = info
-    if id != None:
-        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('setting custom widget ID %s, We must be loading') % id)
-        instance.widgetID = id
-        instance.variable_suffix = '_' + instance.widgetID
-        instance.resetRvariableNames()
-    else:
-        id = instance.widgetID
+    
     redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('instance ID is %s') % instance.widgetID)
     if id in _widgetInstances.keys():
         redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('id was found in the keys, placing as new ID'))
@@ -279,6 +265,19 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     _widgetInstances[id] = instance
     
     return id
+
+def setInstanceSettings(instID, settings):
+    try:
+        instance = getWidgetInstanceByID(instID)
+        instance.setSettings(settings)
+        # if '_customSettings' in settings.keys():
+            # instance.loadCustomSettings(settings['_customSettings'])
+        # else:
+        instance.loadCustomSettings(settings)
+    except Exception as inst:
+        # print '##########################\n'*5 
+        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRObjects addInstance; error in setting settings or custom settings. <b>%s<b>') % inst)
+        redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
 def getWidgetInstanceByID(id):
     global _widgetInstances
     #redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, 'Loading widget %s keys are %s' % (id, _widgetInstances.keys()))

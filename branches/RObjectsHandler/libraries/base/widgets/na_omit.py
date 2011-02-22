@@ -46,9 +46,8 @@ class na_omit(OWRpy):
             self.RFunctionParam_object=''
     def commitFunction(self):
         if unicode(self.RFunctionParam_object) == '': return
-        injection = []
-        inj = ','.join(injection)
-        self.R(self.Rvariables['na.omit']+'<-na.omit(object='+unicode(self.RFunctionParam_object)+','+inj+')', wantType = 'NoConversion')
+        
+        self.R(self.Rvariables['na.omit']+'<-na.omit(object='+unicode(self.RFunctionParam_object)+')', wantType = 'NoConversion')
         thisdataclass = self.R('class('+self.Rvariables['na.omit']+')')
         if type(thisdataclass) == list: #this is a special R type so just send as generic
             self.rSend("id3", self.data)
@@ -90,6 +89,3 @@ class na_omit(OWRpy):
             self.status.setText(_('Data  sent through the R Object channel'))
         
         
-    def getReportText(self, fileDir):
-        return "NA's were removed from the data and the modified data structure was sent to downstream widgets.\n\n"
-

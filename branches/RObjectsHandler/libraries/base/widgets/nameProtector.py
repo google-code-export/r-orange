@@ -79,8 +79,6 @@ class nameProtector(OWRpy):
         if self.data == '': return
 
         if len(self.nameProtectDFcheckBox.getChecked()) == 0 and unicode(self.namesProtectDFcomboBox.currentText()) == '': return # there is nothing to protect
-        newData = self.parentData.copy()
-        newData.data = self.Rvariables['newDataFromNameProtector']
         if 'Rows' in self.nameProtectDFcheckBox.getChecked():
             self.R('rownames('+self.data+') <- make.names(rownames('+self.data+'))', wantType = 'NoConversion')
             
@@ -88,12 +86,12 @@ class nameProtector(OWRpy):
             self.R(self.data+'$'+self.Rvariables['nameProtector']+'<- make.names('+self.data+'[,\''+unicode(self.namesProtectDFcomboBox.currentText())+'\'])', wantType = 'NoConversion')
         if 'Columns' in self.nameProtectDFcheckBox.getChecked():
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
-        
+        newData = redRRDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
         self.rSend("id0", newData)
         
     def vCommit(self): # make protected names for a vector
         if self.data == '': return
         
         self.R(self.Rvariables['nameProtector']+'<- make.names('+self.data+')', wantType = 'NoConversion')
-        self.parentData['data'] = self.Rvariables['nameProtector']
-        self.rSend("id1", self.parentData)
+        newData = redRRVector(self, data = self.Rvariables['nameProtector'])
+        self.rSend("id1", newData)

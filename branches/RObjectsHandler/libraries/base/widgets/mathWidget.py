@@ -83,7 +83,7 @@ class mathWidget(OWRpy):
         self.executeFunction(text)
         
     def funcionPressed(self):
-        text = unicode(self.functionListBox.selectedItems()[0].text())
+        text = unicode(self.functionListBox.selectedItems()[0])
         self.executeFunction(text)
         
     def executeFunction(self, text):
@@ -104,7 +104,7 @@ class mathWidget(OWRpy):
                     self.status.setText(_('Top Text Area Does Not Contain A Number'))
                     return 
             else:
-                topText = self.data+'$'+unicode(self.dialogTopListBox.selectedItems()[0].text())
+                topText = self.data+'$'+unicode(self.dialogTopListBox.selectedItems()[0])
                 
             if self.dialogBottomArea.isVisible():
                 if unicode(self.dialogBottomLineEdit.text()) != '':
@@ -116,7 +116,7 @@ class mathWidget(OWRpy):
                         self.status.setText(_('Top Text Area Does Not Contain A Number'))
                         return
                 else:
-                    bottomText = self.data+'$'+unicode(self.dialogBottomListBox.selectedItems()[0].text())
+                    bottomText = self.data+'$'+unicode(self.dialogBottomListBox.selectedItems()[0])
                     
             function = unicode(self.dialogLabel.text())
             

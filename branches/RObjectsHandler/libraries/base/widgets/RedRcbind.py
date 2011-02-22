@@ -1,5 +1,5 @@
 """
-<name>cbind (depricated)</name>
+<name>cbind</name>
 <RFunctions>base:cbind</RFunctions>
 """
 from OWRpy import * 
@@ -64,6 +64,6 @@ class RedRcbind(OWRpy):
             injection.append(string)
         inj = ','.join(injection)
         self.R(self.Rvariables['cbind']+'<-cbind('+unicode(self.RFunctionParam_a)+','+unicode(self.RFunctionParam_b)+','+inj+')', wantType = 'NoConversion')
-        newData = redRRDataFrame(data = self.Rvariables["cbind"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = redRRDataFrame(self, data = self.Rvariables["cbind"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

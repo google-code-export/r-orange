@@ -79,7 +79,7 @@ class RedRstrsplit(OWRpy):
         self.rSend("id0", newData)
         
         if unicode(self.RFunctionParamunlist_radioButtons.getChecked()) == _('Send list and vector'):
-            newData = redRRVector(data = 'unlist('+self.Rvariables['strsplit']+')')
+            newData = redRRVector(self, data = 'unlist('+self.Rvariables['strsplit']+')')
             self.rSend("id1", newData)
             
         ## convert to a data frame

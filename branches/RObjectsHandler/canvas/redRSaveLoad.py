@@ -16,7 +16,7 @@
     
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager
+import os, sys, redRObjects, cPickle, redREnviron, redRLog, globalData, RSession, redRPackageManager, redRRObjects
 import redRi18n
 # def _(a):
     # return a
@@ -32,6 +32,7 @@ signalManager = SignalManager()
 _tempWidgets = []
 notesTextWidget = None
 sessionID = 1
+LOADINGINPROGRESS = False
 def setNotesWidget(widget):
     global notesTextWidget
     notesTextWidget = widget
@@ -111,6 +112,7 @@ def saveInstances(instances, widgets, doc, progressBar):
             requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
     
         widgets.appendChild(temp)
+        redRRObjects.saveWidgetObjects(widget.widgetID)
     return (widgets, settingsDict, requireRedRLibraries)
     
 def makeTemplate(filename = None, copy = False):
@@ -394,6 +396,8 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     global schemaPath
     global globalNotes
     global canvasDlg
+    global LOADINGINPROGRESS
+    LOADINGINPROGRESS = True
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading Document %s') % filename)
     import redREnviron
     if filename.split('.')[-1] in ['rrts']:
@@ -443,6 +447,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
             loadDocument180(filename, caption = None, freeze = 0, importing = 0)
             loadingProgressBar.hide()
             loadingProgressBar.close()
+            LOADINGINPROGRESS = False
             return
         else:
             print _('The version is:%s') % version
@@ -452,6 +457,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         loadDocument180(filename, caption = None, freeze = 0, importing = 0)
         loadingProgressBar.hide()
         loadingProgressBar.close()
+        LOADINGINPROGRESS = False
         return
     widgets = schema.getElementsByTagName("widgets")[0]
     tabs = schema.getElementsByTagName("tabs")[0]
@@ -468,7 +474,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         ## need to load the r session before we can load the widgets because the signals will beed to check the classes on init.
         if not checkWidgetDuplication(widgets = widgets):
             QMessageBox.information(canvasDlg, _('Schema Loading Failed'), _('Duplicated widgets were detected between this schema and the active one.  Loading is not possible.'),  QMessageBox.Ok + QMessageBox.Default)
-    
+            LOADINGINPROGRESS = False
             return
         RSession.Rcommand('load("' + os.path.join(redREnviron.directoryNames['tempDir'], "tmp.RData").replace('\\','/') +'")')
     
@@ -479,7 +485,9 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
         globalData.globalData = cPickle.loads(settingsDict['_globalData'])
         if notesTextWidget and ('none' in globalData.globalData.keys()) and ('globalNotes' in globalData.globalData['none'].keys()):
             notesTextWidget.setHtml(globalData.globalData['none']['globalNotes']['data'])
-        (loadedOkW, tempFailureTextW) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
+        (loadedOkW, tempFailureTextW, widgetSettingsList) = loadWidgets(widgets = widgets, loadingProgressBar = loadingProgressBar, loadedSettingsDict = settingsDict, tmp = tmp)
+        for i, s in widgetSettingsList:
+            redRObjects.setInstanceSettings(i, s)
     
     ## LOAD tabs
     #####  move through all of the tabs and load them.
@@ -521,6 +529,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     loadingProgressBar.hide()
     loadingProgressBar.close()
     redRObjects.updateLines()
+    LOADINGINPROGRESS = False
 def loadDocument180(filename, caption = None, freeze = 0, importing = 0):
     global sessionID
     import redREnviron
@@ -664,6 +673,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
     lpb = 0
     loadedOk = 1
     failureText = ''
+    widgetSettingsList = []
     for widget in widgets.getElementsByTagName("widget"):
         try:
             name = widget.getAttribute("widgetName")
@@ -672,10 +682,11 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             caption = widget.getAttribute('captionTitle')
             #print widgetID
             settings = cPickle.loads(loadedSettingsDict[widgetID]['settings'])
+            widgetSettingsList.append((widgetID, settings))  # we need to load the settings after we load all of the widgets, this will prevent errors when we load settings.
             inputs = cPickle.loads(loadedSettingsDict[widgetID]['inputs'])
             outputs = cPickle.loads(loadedSettingsDict[widgetID]['outputs'])
             #print _('adding instance'), widgetID, inputs, outputs
-            newwidget = addWidgetInstanceByFileName(name, settings, inputs, outputs, id = widgetID)
+            newwidget = addWidgetInstanceByFileName(name, inputs, outputs, id = widgetID)
             if newwidget and tmp:
                 import time
                 nw = redRObjects.getWidgetInstanceByID(newwidget)
@@ -687,6 +698,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
                 ## send None through all of the widget ouptuts if this is a template
                 nw.outputs.propogateNone()
             nw = redRObjects.getWidgetInstanceByID(newwidget)
+            nw.setDataCollapsed(True)  # the data must come in colapsed, this will help to prevent loading needless R data.
             nw.setWindowTitle(caption)
             #print _('Settings'), settings
             lpb += 1
@@ -696,7 +708,7 @@ def loadWidgets(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, unicode(inst))
     ## now the widgets are loaded so we can move on to setting the connections
     
-    return (loadedOk, failureText)
+    return (loadedOk, failureText, widgetSettingsList)
 def loadLines(lineList, loadingProgressBar, freeze, tmp):
     global sessionID
     failureText = ""
@@ -737,18 +749,12 @@ def loadLines(lineList, loadingProgressBar, freeze, tmp):
             ## try to add using the new settings
             sig = inWidget.inputs.getSignal(inName)
             outWidget.outputs.connectSignal(sig, outName, enabled, False)
-            #if not schemaDoc.addLink(outWidget, inWidget, outName, inName, enabled, loading = True, process = False): ## connect the signal but don't process.
-                ## try to add using the old settings
-            #    schemaDoc.addLink175(outWidget, inWidget, outName, inName, enabled)
-        #print '######## enabled ########\n\n', enabled, '\n\n'
-        #self.addLine(outWidget, inWidget, enabled, process = False)
-        #self.signalManager.setFreeze(0)
         qApp.processEvents()
         
     return (loadedOk, failureText)
-def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = None, id = None):
+def addWidgetInstanceByFileName(name, inputs = None, outputs = None, id = None):
     widget = redRObjects.widgetRegistry()['widgets'][name]
-    return redRObjects.addInstance(signalManager, widget, settings, inputs, outputs, id)
+    return redRObjects.addInstance(signalManager, widget, inputs, outputs, id)
     
         
 def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
