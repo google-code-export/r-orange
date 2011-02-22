@@ -6,7 +6,7 @@ from PyQt4.QtGui import *
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class widgetLabel(QLabel,widgetState):
-    def __init__(self,widget,label = '', icon=None, wordWrap=False,sizePolicy=None):
+    def __init__(self,widget,label = '', icon=None, wordWrap=False,sizePolicy=QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)):
         widgetState.__init__(self,widget, _('widgetLabel'),includeInReports=False)
         QLabel.__init__(self,self.controlArea)
         self.controlArea.layout().addWidget(self)

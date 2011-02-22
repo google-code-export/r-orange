@@ -22,8 +22,8 @@ _ = redRi18n.get_(package = 'base')
 
 class RVarSeparator(OWRpy): 
     globalSettingsList = ['commitButton']
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
        
         self.inputs.addInput('id0', _('R Environment'), renv.REnvironment, self.process)
 

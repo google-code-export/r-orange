@@ -22,7 +22,7 @@ class RFormulaEntry(widgetState):
 
         ## add the elements to the box
         #place the command keys
-        self.buttonsBox = groupBox(box, label = _("Formula Commands"))
+        self.buttonsBox = groupBox(box, label = _("Formula Commands"), orientation = 'horizontal')
         self.plusButton = button(self.buttonsBox, _("And (+)"), callback = self.plusButtonClicked)
         self.plusButton.setEnabled(False)
         self.colonButton = button(self.buttonsBox, _("Interacting With (:)"), callback = self.colonButtonClicked)
@@ -30,7 +30,7 @@ class RFormulaEntry(widgetState):
         self.starButton = button(self.buttonsBox, _("Together and Interacting (*)"), callback = self.starButtonClicked)
         self.starButton.setEnabled(False)
         button(self.buttonsBox, _('Clear'), self.clearFormula)
-        self.elementsListBox = listBox(self.buttonsBox, label = _('Elements'), callback = self.FormulaEntryElementSelected)
+        self.elementsListBox = listBox(box, label = _('Elements'), callback = self.FormulaEntryElementSelected)
         self.elementsListBox.setEnabled(True)
         
         # place the formula line edit
