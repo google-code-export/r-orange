@@ -33,7 +33,6 @@ class updateManager(QMainWindow):
         self.setCentralWidget(self.main)
         self.schema = schema
         self.app = app
-        #self.urlOpener = urllib2.FancyURLopener()
         self.version = redREnviron.version['REDRVERSION']
         self.repository = redREnviron.settings['updatesRepository']
         self.updateFile = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RUpdates.xml')
@@ -58,28 +57,50 @@ class updateManager(QMainWindow):
             output.close()
         except:
             redREnviron.settings['updateAvailable'] = False
-            return 
+            redRLog.log(redRLog.REDRCORE,redRLog.ERROR,'Could not find updates from web.')
             
         redREnviron.settings['lastUpdateCheck'] = today
         redREnviron.saveSettings()
         
         self.availableUpdate = self.parseUpdatesXML(self.updateFile)
         if (self.availableUpdate['redRVerion'] == redREnviron.version['REDRVERSION'] 
-        and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']):
+        and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']
+        and self.availableUpdate['SVNVersion'] not in redREnviron.settings['ignoredUpdates']
+        ):
             redREnviron.settings['updateAvailable'] = True
         else: 
             redREnviron.settings['updateAvailable'] = False
+        redREnviron.saveSettings()
     
     def showUpdateDialog(self,auto=False):
         print 'in showUpdateDialog'
         html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s") % (
         self.availableUpdate['redRVerion'],self.availableUpdate['SVNVersion'],
         self.availableUpdate['date'],self.availableUpdate['changeLog']) 
-        wasUpdated=self.createDialog(html,True)
         
-        return wasUpdated
-        # elif not avaliable and not auto:
-            # self.createDialog(_('You have the most current version of Red-R %s.') % self.version,False)
+        print 'in createDialog'
+        width = 350
+        height = 350
+        changeLogBox = redRwebViewBox(self.main,label=_('Update'),displayLabel=False)
+        changeLogBox.setMinimumWidth(width)
+        changeLogBox.setMinimumHeight(width)
+        changeLogBox.setHtml(html)
+        
+        buttonArea2 = redRwidgetBox(self.main,orientation = 'horizontal', alignment=Qt.AlignRight)
+        redRbutton(buttonArea2, label = _('Update'), callback = self.accept)
+        redRbutton(buttonArea2, label = _('Ignore Update'), callback = self.ignore)
+        redRbutton(buttonArea2, label = _('Cancel'), callback = self.reject)
+        
+        
+        desktop = self.app.desktop()
+        deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
+        deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
+        h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
+        w = max(0, deskW/2 - width/2)
+        self.move(w,h+2)
+        self.show()
+        print 'end createDialog'
+        
 
     def parseUpdatesXML(self,fileName):
         try:
@@ -114,83 +135,24 @@ class updateManager(QMainWindow):
         rc = str(rc).strip()
         return rc
 
-    def createDialog(self,html,avaliable):
-        print 'in createDialog'
-        width = 350
-        height = 350
-        changeLogBox = redRwebViewBox(self.main,label=_('Update'),displayLabel=False)
-        changeLogBox.setMinimumWidth(width)
-        changeLogBox.setMinimumHeight(width)
-        changeLogBox.setHtml(html)
-        
-        buttonArea2 = redRwidgetBox(self.main,orientation = 'horizontal', 
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
-        if avaliable:
-            redRbutton(buttonArea2, label = _('Close Red-R and Update'), callback = self.accept)
-        redRbutton(buttonArea2, label = _('Cancel'), callback = self.reject)
-        
-        
-        desktop = self.app.desktop()
-        deskH = desktop.screenGeometry(desktop.primaryScreen()).height()
-        deskW = desktop.screenGeometry(desktop.primaryScreen()).width()
-        h = max(0, deskH/2 - height/2)  # if the window is too small, resize the window to desktop size
-        w = max(0, deskW/2 - width/2)
-        self.move(w,h+2)
-        self.show()
-        print 'end createDialog'
-        
     def accept(self):
         print 'accept'
         self.downloadUpdate(self.availableUpdate)
         redREnviron.settings['updateAvailable'] = False
+        redREnviron.saveSettings()
         
     def reject(self):
         print 'reject'
         self.app.exit(0)
+    
+    def ignore(self):
+        print 'ignore'
+        redREnviron.settings['ignoredUpdates'] += self.availableUpdate['SVNVersion']
+        redREnviron.settings['updateAvailable'] = False
+        redREnviron.saveSettings()
+        self.app.exit(0)
         
-    def showNoUpdates(self):
-        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
-        UpdatePopup.setMinimumWidth(350)
-        UpdatePopup.setMinimumHeight(350)
-        changeLogBox = redRwebViewBox(UpdatePopup)
-        changeLogBox.setHtml(_('You have the most current version of Red-R %s.') % self.version)
-        
-        buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
-        
-        redRbutton(buttonArea2, label = _('Done'), callback = UpdatePopup.reject)
-        UpdatePopup.exec_()    
-    def showNoInternet(self):
-        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
-        UpdatePopup.setMinimumWidth(350)
-        UpdatePopup.setMinimumHeight(350)
-        changeLogBox = redRwebViewBox(UpdatePopup)
-        changeLogBox.setHtml(_('No Internet Connection.'))
-        
-        buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
-        
-        redRbutton(buttonArea2, label = _('Done'), callback = UpdatePopup.reject)
-        UpdatePopup.exec_()
-    def showUpdateAvaliable(self,update):
-        UpdatePopup = redRdialog(self.schema, title = _('Update Manager'))
-        
-        changeLogBox = redRwebViewBox(UpdatePopup)
-        changeLogBox.setMinimumWidth(350)
-        changeLogBox.setMinimumHeight(350)
-        html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4>") % (
-        update['redRVerion'],update['SVNVersion'],update['date']) 
 
-        changeLogBox.setHtml(html +'<br>' +update['changeLog'])
-        
-        buttonArea2 = redRwidgetBox(UpdatePopup,orientation = 'horizontal', 
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed),alignment=Qt.AlignRight)
-        
-        redRbutton(buttonArea2, label = 'Close Red-R and Update', callback = UpdatePopup.accept)
-        redRbutton(buttonArea2, label = _('Cancel'), callback = UpdatePopup.reject)
-        if UpdatePopup.exec_() == QDialog.Accepted:
-            self.downloadUpdate(update)
-        
     def downloadUpdate(self,update):
         if redREnviron.version['TYPE'] =='compiled':
             url = update['compiledFileName']
@@ -225,7 +187,10 @@ class updateManager(QMainWindow):
         self.progressBar.setValue(round((float(read) / float(total))*100))
         qApp.processEvents()
        
+    #file is the downloaded installer file
+    #run the installer and exit
     def execUpdate(self,file):
+        
         installDir = os.path.split(os.path.abspath(redREnviron.directoryNames['redRDir']))[0]
         # print installDir
         if sys.platform =='win32':
@@ -241,11 +206,17 @@ class updateManager(QMainWindow):
                     QMessageBox.NoButton, QMessageBox.NoButton, self.schema)
                 mb.exec_()
         
-        
+        elif sys.platform =='darwin':
+            os.mkdir(installDir) ## make the directory to store the zipfile into
+            zfile = zipfile.ZipFile(filename, "r" )
+            zfile.extractall(installDir)
+            zfile.close()
+            compileall.compile_dir(installDir) # compile the directory for later importing.
+        else:
+            raise Exception('Add Linux specific installer code')
+            
         self.app.exit(1)
 
-    def closeAndUpdate(self,file):
-        qApp.canvasDlg.closeEvent(QCloseEvent(),postCloseFun=lambda:self.execUpdate(file))
         
     def replyFinished(self, reply,file,finishedFun):
         self.reply = reply
@@ -256,3 +227,5 @@ class updateManager(QMainWindow):
         if finishedFun:
             finishedFun(file)
 
+
+            

@@ -160,12 +160,6 @@ class OrangeCanvasDlg(QMainWindow):
             self.showWidgetToolbar.setChecked(redREnviron.settings['dockState']['widgetBox'])
         
 
-        ###################
-        #Package Manager###
-        ###################
-        splashWindow.showMessage("Creating Package Manager", Qt.AlignHCenter + Qt.AlignBottom)
-        
-        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
         
 
         ###################
@@ -223,6 +217,15 @@ class OrangeCanvasDlg(QMainWindow):
 
         if splashWindow:
             splashWindow.hide()
+
+        ###################
+        #Package Manager###
+        ###################
+        
+        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
+        if redRPackageManager.packageManager.updatesAvailable(auto=True):
+            self.packageManagerGUI.exec_()
+
 
         #########################
         #First Load##

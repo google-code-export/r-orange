@@ -10,13 +10,13 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class treeWidget(QTreeWidget, widgetState):
-    def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, 
+    def __init__(self, widget, label = None, displayLabel=False, includeInReports=True, sortable=True,
     orientation='vertical', toolTip = None, callback = None):
         
         widgetState.__init__(self,widget,label,includeInReports)
 
         QTreeWidget.__init__(self, self.controlArea)
-        
+        self.setSortingEnabled(sortable)
         if displayLabel:
             self.hb = widgetBox(self.controlArea,orientation=orientation)
             widgetLabel(self.hb, label)

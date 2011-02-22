@@ -186,7 +186,11 @@ def loadSettings():
     #Updates##
     ############################
     settings.setdefault('red-RPackagesUpdated',0)
+    settings.setdefault('lastUpdateCheckPackages',0)
+    
     settings.setdefault('checkForUpdates',True)
+    settings.setdefault('ignoredUpdates',[])
+    
     settings.setdefault('lastUpdateCheck',0)
     settings.setdefault('updateAvailable',False)
     settings.setdefault('updatesRepository','http://www.red-r.org/redr_updates/Red-R-' + version['REDRVERSION'])
