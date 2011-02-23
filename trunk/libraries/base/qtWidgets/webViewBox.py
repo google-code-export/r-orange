@@ -13,6 +13,8 @@ class webViewBox(QtWebKit.QWebView,widgetState):
         widgetState.__init__(self,widget,label,includeInReports)
         QtWebKit.QWebView.__init__(self,self.controlArea)
         
+        self.controlArea.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+        self.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
         if displayLabel:
             hb = widgetBox(self.controlArea,orientation=orientation)
             widgetLabel(hb, label)
@@ -34,6 +36,4 @@ class webViewBox(QtWebKit.QWebView,widgetState):
         #print url.toString()
         webbrowser.open_new_tab(url.toString())
 
-    def sizeHint(self):
-        return QSize(10,10)
 

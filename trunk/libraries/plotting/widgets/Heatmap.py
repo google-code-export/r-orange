@@ -18,55 +18,55 @@ from libraries.base.qtWidgets.widgetLabel import widgetLabel
 from libraries.base.qtWidgets.graphicsView import graphicsView
 from libraries.base.qtWidgets.radioButtons import radioButtons
 from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButton
-
+import redRi18n
+_ = redRi18n.get_(package = 'plotting')
 class Heatmap(OWRpy):
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.require_librarys(["fBasics", "gplots"])
-        self.setRvariableNames(['heatsubset', 'hclust', 'heatvect'])
+        self.setRvariableNames(['heatsubset', 'hclust', 'heatvect', 'heatmapList'])
         self.plotOnConnect = 0
         self.plotdata = ''
         self.rowvChoice = None
         self.colvChoice = None
-        self.listOfColors = ['"red"', '"white"', '"blue"']
+        #self.listOfColors = ['"red"', '"white"', '"blue"']  depricated with heatmap.2 limited to a list of color options.
         
         self.inputs.addInput('id0', 'Expression Matrix', redRRDataFrame, self.processMatrix)
         self.inputs.addInput('id1', 'Classes Data', redRRVector, self.processClasses)
 
         #self.outputs.addOutput('id0', 'Cluster Subset List', redRRVector)
         self.outputs.addOutput('id1', 'Cluster Classes', redRRVector)
+        self.outputs.addOutput('heatmapList', _('Heatmap Parameters (List)'), redRRList)
 
         #GUI
         infobox = groupBox(self.controlArea, label = "Options")
         
         self.commit = redRCommitButton(self.bottomAreaRight, label = "Replot", 
         callback=self.makePlot, width=200, processOnInput=True)
-        
-        button(infobox, label = 'Identify', callback = self.identify, width=200)
-        self.groupOrHeight = radioButtons(infobox, label = 'Identify by:', buttons = ['Groups' , 'Height'], setChecked = 'Groups', orientation = 'horizontal')
-        self.groupOrHeightSpin = spinBox(infobox, label = 'Identify Value:', min = 1, value = 5)
-        self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
-        self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
-        self.endSaturation.setValue(30)
+        identifyBox = groupBox(infobox, label = _('Cluster Identification Options'), orientation = 'horizontal')
+        button(identifyBox, label = 'Identify', callback = self.identify, width=200)
+        self.groupOrHeight = radioButtons(identifyBox, label = _('Identify by:'), buttons = ['Groups' , 'Height'], setChecked = 'Groups', orientation = 'horizontal')
+        self.groupOrHeightSpin = spinBox(identifyBox, label = _('Identify Value:'), min = 1, value = 5)
+        #self.startSaturation = spinBox(infobox, label = 'Starting Saturation:', min = 0, max = 100)
+        #self.endSaturation = spinBox(infobox, label = 'Ending Saturation:', min = 0, max = 100)
+        #self.endSaturation.setValue(30)
         colorbuttonbox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
-        redRButton(colorbuttonbox, label = 'Reset Colors', callback = self.resetColors)
-        redRButton(colorbuttonbox, label = 'Set class colors', callback = self.setClassColors)
-        
+        #redRButton(colorbuttonbox, label = _('Reset Colors'), callback = self.resetColors)
+        #redRButton(colorbuttonbox, label = _('Set class colors'), callback = self.setClassColors)
+        self.heatColorFunctionComboBox = comboBox(infobox, label = _('Heatmap Colors'), items = [('bluered', _('Blue to Red')), ('redblue', _('Red to Blue')), ('redgreen', _('Red to Green')), ('greenred', _('Green to Red'))])
         #self.classesDropdown = comboBox(infobox, label = 'Classes:', toolTip = 'If classes data is connected you may select columns in the data to represent classes of your columns in the plotted data')
         
         self.rowDendrogram = checkBox(infobox, label='Dendrogram Options', displayLabel=False,
         buttons = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], 
-        setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'])
+        setChecked = ['Plot Row Dendrogram', 'Plot Column Dendrogram'], orientation = 'horizontal')
         
         self.showClasses = checkBox(infobox, label='Show Classes', displayLabel=False,
         buttons = ['Show Classes'])
         self.showClasses.setEnabled(False)
         #OWGUI.checkBox(infobox, self, )
-        self.infoa = widgetLabel(infobox, label = "Nothing to report")
         self.gview1 = graphicsView(self.controlArea,label='Heatmap', displayLabel=False)
         self.gview1.image = 'heatmap1_'+self.widgetID
-        self.gview1.setImagePNG()
         #self.gview2 = graphicsView(self.controlArea)
         #self.gview2.image = 'heatmap2_'+self.widgetID
     def resetColors(self):
@@ -80,7 +80,6 @@ class Heatmap(OWRpy):
             return
         self.classColors = cd.listOfColors
     def onLoadSavedSession(self):
-        print 'load heatmap'
         self.processSignals()
     def processMatrix(self, data =None):
         
@@ -95,7 +94,7 @@ class Heatmap(OWRpy):
                 self.plotdata = 'data.matrix('+self.plotdata+')'
             self.rowvChoiceprocess()
             if not self.R('is.numeric('+self.plotdata+')'):
-                self.status.setText('Data connected was not numeric')
+                self.status.setText(_('Data connected was not numeric'))
                 self.plotdata = ''
             if self.commit.processOnInput():
                 self.makePlot()
@@ -136,8 +135,10 @@ class Heatmap(OWRpy):
             self.colvChoice = 'TRUE'
         else:
             self.colvChoice = 'NA'
-        self.R('tempPalette<-colorRampPalette(c('+','.join(self.listOfColors)+'))') #scale = "row", density.info="none", trace="none",
-        self.gview1.plot(function = 'heatmap.2', query = '%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= bluered(%(length)s), key = TRUE %(colclasses)s' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'length':'100'})
+        #self.R(, wantType = 'NoConverstion') 
+        self.gview1.plot(function = '', query = '%(heatmapList)s<-heatmap.2(%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= %(col)s, key = TRUE %(colclasses)s)' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'col':self.heatColorFunctionComboBox.currentId(), 'heatmapList':self.Rvariables['heatmapList']} )
+        newData = redRRList(self, data = self.Rvariables['heatmapList'])
+        self.rSend('heatmapList', newData)
         
     def rowvChoiceprocess(self):
         if self.plotdata:
@@ -148,7 +149,9 @@ class Heatmap(OWRpy):
                 self.rowvChoice = 'NULL'
                 
     def identify(self, kill = True):
-        if self.plotdata == '': return
+        if self.plotdata == '': 
+            self.status.setText(_('No Data To Identify'))
+            return
         ## needs to be rewritten for Red-R 1.85 which uses rpy3.  no interactivity with graphics.
         
         self.R(self.Rvariables['hclust']+'<-hclust(dist(t('+self.plotdata+')))')

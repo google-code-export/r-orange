@@ -47,14 +47,14 @@ class RDataFrame(RList, StructuredDict):
             dictData['row_names'] = self.R('rownames('+self.data+')', wantType = 'list')
             keys = ['row_names']
             keys += self.R('colnames('+self.data+')')
-            self.structuredDict = StructuredDict(data = dictData, parent = self, keys = keys)
+            self.structuredDict = StructuredDict(self.widget, data = dictData, parent = self, keys = keys)
             return self.structuredDict
         else:
             return self.structuredDict
     def _convertToList(self):
         if not self.RListSignal:
             #self.R('list_of_'+self.data+'<-as.list('+self.data+')')
-            self.RListSignal = RList(data = 'as.list('+self.data+')', parent = self.parent)
+            self.RListSignal = RList(self.widget, data = 'as.list('+self.data+')', parent = self.parent)
             self.RListSignal.dictAttrs = self.dictAttrs.copy()
             return self.RListSignal
         else:
