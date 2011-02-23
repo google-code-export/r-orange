@@ -526,12 +526,12 @@ class graphicsView(QGraphicsView, widgetState):
         self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode(imageType)
         # print '###################### filename' , self.imageFileName
         if imageType == 'svg':
-            if not self.require_librarys(['Cairo']):
+            if not self.require_librarys(['RSvgDevice']):
 	      self.setImagePNG()
 	      self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
 	      imageType = 'png'
 	    else:
-              self.R('CairoSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\', width = '
+              self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\', width = '
                 +unicode(dheight)+', height = '+unicode(dheight)
                 +')', wantType = 'NoConversion')
             
@@ -544,12 +544,12 @@ class graphicsView(QGraphicsView, widgetState):
                 +unicode(dheight*100)+', height = '+unicode(dheight*100)
                 +')', wantType = 'NoConversion')
                 
-    def plot(self, query, function = 'plot', dwidth=20, dheight=20, data = None, legend = False):
+    def plot(self, query, function = 'plot', dwidth=5, dheight=5, data = None, legend = False):
         ## performs a quick plot given a query and an imageType
         self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
             
 
-    def plotMultiple(self, query, function = 'plot', dwidth = 20, dheight = 20, layers = [], data = None, legend = False):
+    def plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.data = data
         self.function = function
