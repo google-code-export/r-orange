@@ -257,19 +257,6 @@ class packageManager(redRdialog):
              
         #return self.getPackages()
         
-    """        
-    # downloads the packages.xml file from repository
-    # The file is stored in the canvasSettingsDir/red-RPackages.xml
-    def updatePackagesFromRepository(self):
-        #print '|#| updatePackagesFromRepository'
-        redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Updating packages from repository'))
-        url = self.repository + '/packages.xml'
-        file = os.path.join(redREnviron.directoryNames['canvasSettingsDir'],'red-RPackages.xml')
-        from datetime import date
-        redREnviron.settings['red-RPackagesUpdated'] = today = date.today()
-        print url, file
-        self.urlOpener.retrieve(url, file)
-    """
     # runs through all the installed packages and creates red-RPackages.xml file
     # The file is stored in the canvasSettingsDir until overwritten by updatePackagesFromRepository function
     def createAvailablePackagesXML(self):

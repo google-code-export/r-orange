@@ -185,8 +185,8 @@ def loadSettings():
     ############################
     #Updates##
     ############################
-    settings.setdefault('red-RPackagesUpdated',0)
     settings.setdefault('lastUpdateCheckPackages',0)
+    settings.setdefault('checkForPackageUpdates',True)
     
     settings.setdefault('checkForUpdates',True)
     settings.setdefault('ignoredUpdates',[])

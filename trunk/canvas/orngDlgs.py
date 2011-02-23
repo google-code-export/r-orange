@@ -122,6 +122,10 @@ class CanvasOptionsDlg(QDialog):
         self.checkForUpdates = redRCheckBox(generalBox, label = 'checkForUpdates', displayLabel = 0, buttons = [('checkForUpdates',_("Periodically Check For Updates"))])
         if redREnviron.settings['checkForUpdates']:
             self.checkForUpdates.setChecked('checkForUpdates')
+        
+        self.checkForPackageUpdates = redRCheckBox(generalBox, label = 'checkForPackageUpdates', displayLabel = 0, buttons = [('checkForPackageUpdates',_("Periodically Check For Package Updates"))])
+        if redREnviron.settings['checkForPackageUpdates']:
+            self.checkForPackageUpdates.setChecked('checkForPackageUpdates')
 
         self.dontAskBeforeCloseCB= OWGUI.checkBox(generalBox, self.settings, "dontAskBeforeClose", 
         _("Don't ask to save schema before closing"), debuggingEnabled = 0)
@@ -314,6 +318,7 @@ class CanvasOptionsDlg(QDialog):
           self.settings['askBeforeWidgetDelete'] = 0
         
         self.settings['checkForUpdates'] =  'checkForUpdates' in self.checkForUpdates.getCheckedIds()
+        self.settings['checkForPackageUpdates'] =  'checkForPackageUpdates' in self.checkForPackageUpdates.getCheckedIds()
         
         self.settings['logsDir'] = self.logFile.text()
         if redREnviron.settings['logsDir'] != self.settings['logsDir']:

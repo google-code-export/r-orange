@@ -224,7 +224,7 @@ class OrangeCanvasDlg(QMainWindow):
         
         self.packageManager = redRPackageManager.packageManager(self)
         
-        if self.packageManager.updatesAvailable(auto=True):
+        if redREnviron.settings['checkForPackageUpdates'] and self.packageManager.updatesAvailable(auto=True):
             self.packageManager.exec_()
 
 
