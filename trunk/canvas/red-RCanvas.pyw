@@ -87,7 +87,7 @@ class OrangeCanvasDlg(QMainWindow):
         # self.output = redROutput.OutputWindow(self)
         # redRLog.setOutputManager('window', self.output.outputManager)
         
-        
+
         ###################
         #Register Widgets##
         ###################
@@ -218,13 +218,14 @@ class OrangeCanvasDlg(QMainWindow):
         if splashWindow:
             splashWindow.hide()
 
-        ###################
-        #Package Manager###
-        ###################
+        #######################
+        #####packageManager####
+        #######################
         
-        self.packageManagerGUI = redRPackageManager.packageManagerDialog(self)
-        if redRPackageManager.packageManager.updatesAvailable(auto=True):
-            self.packageManagerGUI.exec_()
+        self.packageManager = redRPackageManager.packageManager(self)
+        
+        if self.packageManager.updatesAvailable(auto=True):
+            self.packageManager.exec_()
 
 
         #########################

@@ -63,7 +63,7 @@ def readCategories():
         f = open(os.path.join(directory,'package.xml'), 'r')
         mainTabs = xml.dom.minidom.parse(f)
         f.close()
-        package = redRPackageManager.packageManager.parsePackageXML(mainTabs)
+        package = parsePackageXML(mainTabs)
         # we read in all the widgets in dirName, directory in the directories
         widgets = readWidgets(os.path.join(directory), package)  ## calls an internal function
         AllPackages[package['Name']] = package
@@ -98,6 +98,46 @@ def readCategories():
 hasErrors = False
 splashWindow = None
 widgetsWithError = []
+
+# takes an xml node and returns the text 
+def getXMLText(self, nodelist):
+    rc = ''
+    for node in nodelist:
+        if node.nodeType == node.TEXT_NODE:
+            rc = rc + node.data
+            
+    rc = unicode(rc).strip()
+    return rc
+
+# takes an xml object representing a red-r package and creates a structured dict
+# TO-DO: should perform error checking to make sure the xml file is valid
+def parsePackageXML(node):
+    packageDict = {}
+    packageDict['Name'] = getXMLText(node.getElementsByTagName('Name')[0].childNodes)
+    packageDict['Author'] = getXMLText(node.getElementsByTagName('Author')[0].childNodes)
+    packageDict['License'] = getXMLText(node.getElementsByTagName('License')[0].childNodes)
+    
+    deps = getXMLText(node.getElementsByTagName('Dependencies')[0].childNodes)
+    if (deps.lower() == 'none' or deps.lower() == 'base' or deps.lower() == ''):
+        packageDict['Dependencies'] = []
+    else:
+        packageDict['Dependencies'] = deps.split(',')
+        
+    packageDict['Summary'] = getXMLText(node.getElementsByTagName('Summary')[0].childNodes)
+    packageDict['Description'] = getXMLText(node.getElementsByTagName('Description')[0].childNodes)
+    if len(node.getElementsByTagName('RLibraries')):
+        Rpacks = getXMLText(node.getElementsByTagName('RLibraries')[0].childNodes)
+        packageDict['RLibraries'] =  [x.strip() for x in Rpacks.split(',')]
+
+
+    version = node.getElementsByTagName('Version')[0]
+    # print node, version
+    packageDict['Version'] = {}
+    packageDict['Version']['Number'] = getXMLText(version.getElementsByTagName('Number')[0].childNodes)
+    packageDict['Version']['Stability'] = getXMLText(version.getElementsByTagName('Stability')[0].childNodes)
+    packageDict['Version']['Date'] = getXMLText(version.getElementsByTagName('Date')[0].childNodes)
+
+    return packageDict
 
 def addTagsSystemTag(tags,newTag):
                 

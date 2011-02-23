@@ -41,8 +41,8 @@ class redRCanvasToolbarandMenu():
         self.toolbar.addAction(QIcon(redRStyle.printIcon), _("Generate Report"), self.menuItemReport)
         
         self.toolbar.addSeparator()
-        self.toolbar.addAction(QIcon(redRStyle.updateIcon), 
-        _("Check for Updates"), self.menuCheckForUpdates)
+        self.toolbar.addAction(QIcon(redRStyle.updateIcon),  _("Check for Updates"), self.menuCheckForUpdates)
+        self.toolbar.addAction(QIcon(redRStyle.packageManagerIcon),  _("Package Manager"), self.menuOpenPackageManager)
         
         self.toolbar.addSeparator()
         self.toolReloadWidgets = self.toolbar.addAction(QIcon(redRStyle.reloadIcon), 
@@ -372,7 +372,7 @@ class redRCanvasToolbarandMenu():
                         os.remove(os.path.join(redREnviron.directoryNames['widgetSettingsDir'], f))
 
     def menuOpenPackageManager(self):
-        self.canvas.packageManagerGUI.exec_()
+        self.canvas.packageManager.exec_()
  
     def menuCheckForUpdates(self):
         import redRUpdateManager
