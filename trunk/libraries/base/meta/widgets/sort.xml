@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Sort</name>
-    <icon>default.png</icon>
+    <icon>sort.png</icon>
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>

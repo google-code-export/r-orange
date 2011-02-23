@@ -22,7 +22,7 @@
 ## Controls the execution of R funcitons into the underlying R session
 
 
-import sys, os, redREnviron, numpy
+import sys, os, redREnviron, numpy, redR
 
 
 ####### system specific import of rpy in it's various flavors ##########
@@ -74,8 +74,17 @@ def assign(name, object):
     except:
         redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
         return False
-def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
-    
+def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False):
+    if wantType == 'convert':
+        wantType = redR.CONVERT
+    elif wantType == 'NoConversion':
+        wantType = redR.NOCONVERSION
+    elif wantType == 'listOfLists':
+        wantType = redR.LISTOFLISTS
+    elif wantType == 'dict':
+        wantType = redR.DICT
+    elif wantType == 'list':
+        wantType = redR.LIST
     unlocked = mutex.tryLock()
     if not unlocked:
         mb = QMessageBox(_("R Session Locked"), _("The R Session is currently locked, please wait for the prior execution to finish."), QMessageBox.Information, 
@@ -111,7 +120,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         mutex.unlock()
         raise RuntimeError(unicode(inst) + '  Original Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
-    if wantType == 'NoConversion': 
+    if wantType == redR.NOCONVERSION: 
         mutex.unlock()
         return output
     # elif wantType == 'list':
@@ -129,7 +138,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
     if type(output) == list and len(output) == 1 and wantType != 'list':
         output = output[0]
     
-    elif wantType == 'list':
+    elif wantType == redR.LIST:
         if type(output) is list:
             pass
         elif type(output) in [str, int, float, bool]:
@@ -144,7 +153,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
             output = output.tolist()
         else:
             print _('Warning, conversion was not of a known type;'), unicode(type(output))
-    elif wantType == 'listOfLists':
+    elif wantType == redR.LISTOFLISTS:
         # print _('Converting to list of lists')
         
         if type(output) in [str, int, float, bool]:
