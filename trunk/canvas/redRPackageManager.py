@@ -76,26 +76,37 @@ class packageManager(redRdialog):
         #print _('installDir'), installDir
         import shutil
         import compileall
-        shutil.rmtree(installDir, ignore_errors = True)  ## remove the old dir for copying
-        
-        os.mkdir(installDir) ## make the directory to store the zipfile into
-        zfile = zipfile.ZipFile(filename, "r" )
-        zfile.extractall(installDir)
-        zfile.close()
-        compileall.compile_dir(installDir) # compile the directory for later importing.
-        ## now process the requires for R
-        
-        pack = self.readXML(os.path.join(installDir, 'package.xml'))
-        packageInfo = orngRegistry.parsePackageXML(pack)
-        import RSession
-        if 'RLibraries' in packageInfo.keys():
-            RSession.require_librarys(packageInfo['RLibraries'])
+        try:
+            shutil.rmtree(installDir,ignore_errors=True)  ## remove the old dir for copying
             
-        redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
+            os.mkdir(installDir) ## make the directory to store the zipfile into
+            zfile = zipfile.ZipFile(filename, "r" )
+            zfile.extractall(installDir)
+            zfile.close()
+            compileall.compile_dir(installDir) # compile the directory for later importing.
+            ## now process the requires for R
+            
+            pack = self.readXML(os.path.join(installDir, 'package.xml'))
+            packageInfo = orngRegistry.parsePackageXML(pack)
+            import RSession
+            if 'RLibraries' in packageInfo.keys():
+                RSession.require_librarys(packageInfo['RLibraries'])
+            redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
         
+
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName})
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
+            mb = QMessageBox(_("Package Installation Error"),_('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName}, QMessageBox.Information, 
+            QMessageBox.Ok | QMessageBox.Default,
+            QMessageBox.NoButton, 
+            QMessageBox.NoButton, 
+            qApp.canvasDlg)
+            mb.exec_()            
+       
         self.canvas.toolbarFunctions.reloadWidgets()
         self.loadPackagesLists()
-        
+    
     # read and parse the package xml file
     # return dict
     def getPackageInfo(self,filename):
