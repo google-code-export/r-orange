@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import os, sys, math, sip
 import orngSignalManager,redRStyle
-import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n
+import signals, redREnviron, redRObjects, redRLog, redRHistory, redRi18n, redRRObjects
 ERROR = 0
 WARNING = 1
 
@@ -487,6 +487,44 @@ class CanvasWidget(QGraphicsRectItem): # not really the widget itself but a grap
             painter.setBrush(QBrush(QColor(0,128,255)))
             painter.drawRect(QRectF(0, yPos, self.widgetSize.width()*self.progressBarValue/100., 16))
             painter.drawText(rect, Qt.AlignCenter, "%d %%" % (self.progressBarValue))
+        
+        ## paint the memory consumption
+        TOTALMEMORY = redRRObjects.TOTALMEMORYUSED
+        MEMORYLIMIT = redRRObjects.MEMORYLIMIT
+        THISWIDGET = redRRObjects.memoryConsumed(self.instanceID)
+            ## this widget consumed
+        percentThisWidget = (THISWIDGET)/MEMORYLIMIT
+        twStart = 0
+        twStop = 360*16*percentThisWidget
+            ## total consumed elipse
+        percentFromOthers = (TOTALMEMORY-THISWIDGET)/MEMORYLIMIT
+        owStart = twStop
+        owStop = 360*16*percentFromOthers
+            ## total elipse
+        percentAvailable = (MEMORYLIMIT-TOTALMEMORY)/MEMORYLIMIT
+        aStart = owStop + owStart + twStop
+        aStop = 360*16*percentAvailable
+        #print twStart, twStop, owStart, owStop, aStart, aStop
+        twElipse = QGraphicsEllipseItem(38, -8, 15, 15)
+        twElipse.setStartAngle(int(twStart))
+        twElipse.setSpanAngle(int(twStop))
+        twElipse.setPen(QPen(Qt.red))
+        twElipse.setBrush(QBrush(Qt.red))
+        twElipse.paint(painter, QStyleOptionGraphicsItem())
+        
+        owElipse = QGraphicsEllipseItem(40, -8, 15, 15)
+        owElipse.setStartAngle(int(owStart))
+        owElipse.setSpanAngle(int(owStop))
+        owElipse.setPen(QPen(Qt.gray))
+        owElipse.setBrush(QBrush(Qt.gray))
+        owElipse.paint(painter, QStyleOptionGraphicsItem())
+        
+        aElipse = QGraphicsEllipseItem(42, -7, 15, 15)
+        aElipse.setStartAngle(int(aStart))
+        aElipse.setSpanAngle(int(aStop))
+        aElipse.setPen(QPen(Qt.green))
+        aElipse.setBrush(QBrush(Qt.green))
+        aElipse.paint(painter, QStyleOptionGraphicsItem())
         
     def addOutLine(self, line):
         self.outLines.append(line)

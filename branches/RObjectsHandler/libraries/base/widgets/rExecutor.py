@@ -22,9 +22,9 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class rExecutor(OWRpy):
     settingsList = ['command', 'sendthis', 'sendt']
-    def __init__(self, parent=None, signalManager=None):
+    def __init__(self, **kwargs):
         #OWWidget.__init__(self, parent, signalManager, "Sample Data")
-        OWRpy.__init__(self, wantGUIDialog = 1)
+        OWRpy.__init__(self, wantGUIDialog = 1, **kwargs)
         
         self.command = ''
         self.sendthis = ''

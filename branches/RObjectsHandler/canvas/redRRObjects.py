@@ -58,6 +58,7 @@ def loadWidgetObjects(widgetID):
   _rObjects[widgetID]['state'] = 1
   redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
   extendTimer(widgetID)
+  setTotalMemory()
   
 def saveWidgetObjects(widgetID):
   global _rObjects
@@ -69,6 +70,7 @@ def saveWidgetObjects(widgetID):
     redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
     for v in _rObjects[widgetID]['vars']:
       R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
+    setTotalMemory()
     
   
 def ensureVars(widgetID):
@@ -89,3 +91,23 @@ def setWidgetPersistent(widgetID):
   timer.stop()
   ensureVars(widgetID)
   timer.stop()
+  
+  
+### memory consumption
+TOTALMEMORYUSED = 0
+MEMORYLIMIT = R('memory.limit()*1024*1024', silent = True)
+def memoryConsumed(id):
+    global _rObjects
+    myMemory = 0
+    if _rObjects[id]['state']:
+        for v in _rObjects[id]['vars']:
+            myMemory += int(R('as.numeric(object.size(%s))' % v, silent = True))
+    return myMemory
+    
+def setTotalMemory():
+    global TOTALMEMORYUSED
+    if len(R('ls()', silent = True)) > 0:
+        TOTALMEMORYUSED = R('sum(as.vector(sapply(unlist(ls()),object.size)))', silent = True)
+    else:
+        TOTALMEMORYUSED = 0
+    

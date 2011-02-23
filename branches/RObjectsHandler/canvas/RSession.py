@@ -168,6 +168,7 @@ def convertToPy(inobject):
         else:
          rclass=inobject.rclass[0] 
         if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
+            print 'Conversion not possible for class %s' % rclass
             return inobject
         return co.convert(inobject)
     except Exception as e:
