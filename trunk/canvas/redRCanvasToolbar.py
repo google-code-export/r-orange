@@ -390,24 +390,33 @@ class redRCanvasToolbarandMenu():
             QMessageBox.NoButton, QMessageBox.NoButton, self.canvas)
             mb.exec_()
 
+    #start a few instance of Red-R and close the current one
     def restartRedR(self):
-        if sys.platform =='win32':
-            if redREnviron.version['TYPE']=='compiled':
-                cmd = '"%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'bin','red-RCanvas.exe')
-            else:
-                cmd = 'pythonw "%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
-        elif sys.platform =='darwin':
-            cmd = os.path.join(redREnviron.directoryNames['redRDir'])
+        print 'in restartRedR'
         
-        
+        #os specific function to start a new red-R instance        
         try:
+            if sys.platform =='win32':
+                if redREnviron.version['TYPE']=='compiled':
+                    cmd = '"%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'bin','red-RCanvas.exe')
+                else:
+                    cmd = 'pythonw "%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
+            elif sys.platform =='darwin':
+                cmd = 'open -Wn /Applications/Red-R.app'
+            else:
+                raise Exception('Your os is not supported for restart')
+            
             print cmd
             r = QProcess.startDetached(cmd)
+            print 'on open', r 
             if r:
                 self.canvas.close()
                 return
+            else:
+                raise Exception('Problem restarting Red-R.')
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,'Red-R could not be restarted. Please restart manually.')
+            redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())
 
         mb = QMessageBox(_("Error"), _("Please restart Red-R."), 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, 

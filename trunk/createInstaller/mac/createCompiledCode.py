@@ -46,6 +46,7 @@ shutil.rmtree(os.path.join(base,'dist'),True)
 #sys.path.insert(0, '/Users/anup/redr/trunk')
 sys.path.insert(0, base)
 sys.path.insert(0, os.path.join(base,'canvas'))
+sys.path.insert(0, os.path.join(base,'mac'))
 # sys.path.insert(0, os.path.join(base,'canvas','rpy'))
 #print sys.path
 info = {}
@@ -68,7 +69,7 @@ setup(name="Red-R",
       "dist_dir": os.path.join(base,'dist'),
       "site_packages":1,
       "excludes": ['libraries'],
-      "includes": ["sip",'PyQt4', 'OWColorPalette','docutils','Image', 'OWGraphTools','PyQt4.QtNetwork','PyQt4', 'PyQt4.Qwt5','PyQt4.QtSvg','PyQt4.Qwt5'] + files
+      "includes": ["sip",'redrrpy','rpy3', 'PyQt4', 'OWColorPalette','docutils','Image', 'OWGraphTools','PyQt4.QtNetwork','PyQt4', 'PyQt4.Qwt5','PyQt4.QtSvg','PyQt4.Qwt5'] + files
       #
       }})
 
@@ -80,11 +81,14 @@ os.path.join(base,'dist','Red-R.app','Contents','libraries'))
 shutil.copytree(os.path.join(base,'canvas','icons'),
 os.path.join(base,'dist','Red-R.app','Contents','canvas','icons')) 
 
-shutil.copytree(os.path.join(base,'mac'),
-os.path.join(base,'dist','Red-R.app','Contents','mac')) 
+#shutil.copytree(os.path.join(base,'mac'),
+#os.path.join(base,'dist','Red-R.app','Contents','mac')) 
 
-shutil.copytree(os.path.join(base,'includes'),
-os.path.join(base,'dist','Red-R.app','Contents','includes')) 
+shutil.copytree('/Users/anupparikh/redr/installIncludes/docutils',
+os.path.join(base,'dist','Red-R.app','Contents','Resources','docutils'))
+
+shutil.copyfile(os.path.join(base,'canvas','redRMacUpdater.py'), os.path.join(base,'dist','Red-R.app','Contents','redRMacUpdater.py'))
+
 
 import datetime
 d = datetime.datetime.now()
@@ -104,9 +108,10 @@ fh.write("""!define DATE "%s"
 !define SVNVERSION "%s"
 !define NAME "Red-R"
 !define REDRVERSION "%s"
-!define TYPE "mac"
+!define OS "mac"
+!define TYPE "compiled"
 !define RVERSION "R-2.11.1"
-""" % (d.strftime('%Y.%m.%d'), svnVersion,'1.85'))
+""" % (d.strftime('%Y.%m.%d'), svnVersion,'1.85alpha'))
 fh.close()
 
 shutil.copyfile(os.path.join(base,'licence.txt'),os.path.join(base,'dist','Red-R.app','Contents','licence.txt'))
@@ -120,7 +125,7 @@ shutil.copyfile('/Users/anupparikh/redr/installIncludes/redR.icns',
 os.path.join(base,'dist','Red-R.app','Contents','Resources','PythonApplet.icns')) 
 
 
-
+###########Move to /Applications dir###################
 os.system('rm -rf /Applications/Red-R.app/Contents')
 os.system('cp -R /Users/anupparikh/redr/trunk/dist/Red-R.app/Contents /Applications/Red-R.app/')
 os.system('ln -s /Users/anupparikh/redr/trunk/dist/Red-R.app/Contents/libraries /Users/anupparikh/redr/trunk/dist/Red-R.app/Contents/Resources/libraries')
@@ -134,8 +139,10 @@ fh.write("""#!/bin/bash
 
 export R_HOME=/Applications/Red-R.app/R/R.framework/Resources
 source /Applications/Red-R.app/R/R.framework/Resources/etc/i386/ldpaths
-./Applications/Red-R.app//Contents/MacOS/Red-R.exe
+/Applications/Red-R.app/Contents/MacOS/Red-R.exe
 """)
 fh.close()
 
 os.system('chmod +x %s/Contents/MacOS/Red-R' % AppDir)
+
+shutil.rmtree('build',True)

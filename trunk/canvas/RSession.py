@@ -37,7 +37,6 @@ if sys.platform == 'darwin':
     os.environ['R_LD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')
     os.environ['DYLD_LIBRARY_PATH'] = os.path.join(redREnviron.directoryNames['RDir'],'lib','i386')    
     os.environ['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home'
-
     import rpy3.robjects as rpy
 
 ## if windows ##

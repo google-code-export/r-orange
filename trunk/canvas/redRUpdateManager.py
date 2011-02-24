@@ -9,7 +9,7 @@ from libraries.base.qtWidgets.webViewBox import webViewBox as redRwebViewBox
 
 ## package manager class redRPackageManager.  Contains a dlg for the package manager which reads xml from the red-r.org website and compares it with a local package system on the computer
 
-import os, sys, redREnviron, urllib2, zipfile, traceback
+import os, sys, redREnviron, urllib2, zipfile, traceback, shutil
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtNetwork import *
@@ -49,12 +49,14 @@ class updateManager(QMainWindow):
             if int(diff.days) < 7 and auto:
                     return
         url =redREnviron.settings['updatesRepository'] +'/currentVersion.xml'
-        print url
+        print 'theurl:', url
+        print 'thesavefile', self.updateFile
         try:
             f = urllib2.urlopen(url)
             output = open(self.updateFile,'wb')
             output.write(f.read())
             output.close()
+            
         except:
             redREnviron.settings['updateAvailable'] = False
             redRLog.log(redRLog.REDRCORE,redRLog.ERROR,'Could not find updates from web.')
@@ -63,19 +65,25 @@ class updateManager(QMainWindow):
         redREnviron.saveSettings()
         
         self.availableUpdate = self.parseUpdatesXML(self.updateFile)
-        if (self.availableUpdate['redRVerion'] == redREnviron.version['REDRVERSION'] 
-        and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']
-        and self.availableUpdate['SVNVersion'] not in redREnviron.settings['ignoredUpdates']
-        ):
-            redREnviron.settings['updateAvailable'] = True
+        print 'avaliable', self.availableUpdate
+        
+        if (self.availableUpdate['redRVersion'] == redREnviron.version['REDRVERSION'] 
+        and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']):
+            print auto, self.availableUpdate['SVNVersion'] in redREnviron.settings['ignoredUpdates']
+            if auto and self.availableUpdate['SVNVersion'] in redREnviron.settings['ignoredUpdates']:
+                redREnviron.settings['updateAvailable'] = False
+            else: 
+                redREnviron.settings['updateAvailable'] = True
         else: 
             redREnviron.settings['updateAvailable'] = False
+        
+        print 'is available', redREnviron.settings['updateAvailable']
         redREnviron.saveSettings()
     
     def showUpdateDialog(self,auto=False):
         print 'in showUpdateDialog'
         html = _("<h2>Red-R %s</h2><h4>Revision:%s; Date: %s</h4><br>%s") % (
-        self.availableUpdate['redRVerion'],self.availableUpdate['SVNVersion'],
+        self.availableUpdate['redRVersion'],self.availableUpdate['SVNVersion'],
         self.availableUpdate['date'],self.availableUpdate['changeLog']) 
         
         print 'in createDialog'
@@ -101,30 +109,38 @@ class updateManager(QMainWindow):
         self.show()
         print 'end createDialog'
         
-
+    #parse the xml from the website and create a dict of avaliable updates
+    #each os that a section in the xml
     def parseUpdatesXML(self,fileName):
         try:
             f = open(fileName, 'r')
             updatesXML = xml.dom.minidom.parse(f)
             f.close()
-            # updatesXML = xml.dom.minidom.parseString(xml)
+            
             update = {}
-            update['redRVerion'] = self.getXMLText(updatesXML.getElementsByTagName('redRVerion')[0].childNodes)
-            update['SVNVersion'] = self.getXMLText(updatesXML.getElementsByTagName('SVNVersion')[0].childNodes)
-            update['date'] = self.getXMLText(updatesXML.getElementsByTagName('date')[0].childNodes)
-            update['changeLog'] = self.getXMLText(updatesXML.getElementsByTagName('changeLog')[0].childNodes)
+            update['redRVersion'] = self.getXMLText(updatesXML.getElementsByTagName('redRVersion')[0].childNodes)
+            
             if sys.platform=="win32":
                 updatesNode = updatesXML.getElementsByTagName('win32')[0]
             elif sys.platform=="darwin":
                 updatesNode = updatesXML.getElementsByTagName('mac')[0]
             elif sys.platform == 'linux2':
-                updatesNode = updatesXML.getElementsByTagName('linux2')[0]
+                updatesNode = updatesXML.getElementsByTagName('linux')[0]
             if updatesNode and updatesNode != None:
-                update['compiledFileName'] = self.getXMLText(updatesNode.getElementsByTagName('compiled')[0].childNodes)
-                update['developerFileName'] = self.getXMLText(updatesNode.getElementsByTagName('src')[0].childNodes)
+                if redREnviron.version['TYPE'] =='compiled':
+                    update['url'] = self.getXMLText(updatesNode.getElementsByTagName('compiled')[0].childNodes)
+                elif redREnviron.version['TYPE'] =='src':
+                    update['url'] = self.getXMLText(updatesNode.getElementsByTagName('src')[0].childNodes)
+                else:
+                    raise Exception('Unknown type')
+                update['SVNVersion'] = self.getXMLText(updatesNode.getElementsByTagName('SVNVersion')[0].childNodes)
+                update['date'] = self.getXMLText(updatesNode.getElementsByTagName('date')[0].childNodes)
+                update['changeLog'] = self.getXMLText(updatesNode.getElementsByTagName('changeLog')[0].childNodes)
+
             return update
         except:
-            return {}
+            redRLog.log(redRLog.REDRCORE,redRLog.ERROR,'Red-R update information cannot be downloaded.')
+            redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,redRLog.formatException())
 
     def getXMLText(self, nodelist):
         rc = ''
@@ -154,18 +170,14 @@ class updateManager(QMainWindow):
         
 
     def downloadUpdate(self,update):
-        if redREnviron.version['TYPE'] =='compiled':
-            url = update['compiledFileName']
-            file = os.path.join(redREnviron.directoryNames['downloadsDir'],
-            os.path.basename(update['compiledFileName']))
-        else:
-            url = update['developerFileName']
-            file = os.path.join(redREnviron.directoryNames['downloadsDir'],
-            os.path.basename(update['developerFileName']))
+        print 'downloadUpdate'
+        url = update['url']
+        file = os.path.join(redREnviron.directoryNames['downloadsDir'],
+        os.path.basename(update['url']))
         
         # self.execUpdate(file)
         # return
-        # print url, file
+        print url, file
         self.progressBar = QProgressDialog(self.schema)
         self.progressBar.setCancelButtonText(QString())
         self.progressBar.setWindowTitle('Downloading...')
@@ -188,11 +200,12 @@ class updateManager(QMainWindow):
         qApp.processEvents()
        
     #file is the downloaded installer file
-    #run the installer and exit
+    #run the installer and exit red-r 
+    #the installer should run independantly and make all the changes needed for the os
     def execUpdate(self,file):
         
         installDir = os.path.split(os.path.abspath(redREnviron.directoryNames['redRDir']))[0]
-        # print installDir
+        ######## WINDOWS ##############
         if sys.platform =='win32':
             cmd = "%s /D=%s" % (file,installDir)
             try:
@@ -206,12 +219,13 @@ class updateManager(QMainWindow):
                     QMessageBox.NoButton, QMessageBox.NoButton, self.schema)
                 mb.exec_()
         
+        ######## MAC ##############
         elif sys.platform =='darwin':
-            os.mkdir(installDir) ## make the directory to store the zipfile into
-            zfile = zipfile.ZipFile(filename, "r" )
-            zfile.extractall(installDir)
-            zfile.close()
-            compileall.compile_dir(installDir) # compile the directory for later importing.
+            cmd = '%s %s %s %s' % (os.path.join(redREnviron.directoryNames['redRDir'],'MacOS','python'), 
+            os.path.join(redREnviron.directoryNames['redRDir'],'redRMacUpdater.py'), file, installDir)
+            print cmd
+            r = QProcess.startDetached(cmd)
+            
         else:
             raise Exception('Add Linux specific installer code')
             
