@@ -13,7 +13,7 @@ from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButt
 class boxplot(OWRpy): 
     globalSettingsList = ['commit']
     def __init__(self, **kwargs):
-        OWRpy.__init__(self, **kwargs)f)
+        OWRpy.__init__(self, **kwargs)
         self.RFunctionParam_x = ''
         self.inputs.addInput('id0', 'x', redRRList, self.processx)
 

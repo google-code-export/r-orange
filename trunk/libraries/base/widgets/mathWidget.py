@@ -15,7 +15,7 @@ from libraries.base.qtWidgets.filterTable import filterTable as redRfilterTable
 from libraries.base.qtWidgets.lineEdit import lineEdit
 from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.widgetBox import widgetBox
-import redRi18n
+import redRi18n, redRLog
 _ = redRi18n.get_(package = 'base')
 class mathWidget(OWRpy): 
     settingsList = []
@@ -83,7 +83,7 @@ class mathWidget(OWRpy):
         self.executeFunction(text)
         
     def funcionPressed(self):
-        text = unicode(self.functionListBox.selectedItems()[0])
+        text = unicode(self.functionListBox.selectedItems().keys()[0])
         self.executeFunction(text)
         
     def executeFunction(self, text):
@@ -104,7 +104,7 @@ class mathWidget(OWRpy):
                     self.status.setText(_('Top Text Area Does Not Contain A Number'))
                     return 
             else:
-                topText = self.data+'$'+unicode(self.dialogTopListBox.selectedItems()[0])
+                topText = self.data+'$'+unicode(self.dialogTopListBox.selectedItems().keys()[0])
                 
             if self.dialogBottomArea.isVisible():
                 if unicode(self.dialogBottomLineEdit.text()) != '':
@@ -116,7 +116,7 @@ class mathWidget(OWRpy):
                         self.status.setText(_('Top Text Area Does Not Contain A Number'))
                         return
                 else:
-                    bottomText = self.data+'$'+unicode(self.dialogBottomListBox.selectedItems()[0])
+                    bottomText = self.data+'$'+unicode(self.dialogBottomListBox.selectedItems().keys()[0])
                     
             function = unicode(self.dialogLabel.text())
             
@@ -125,8 +125,9 @@ class mathWidget(OWRpy):
                     self.R(self.data+'$'+function+unicode(self.counter)+'<-'+function+'('+topText+')', wantType = 'NoConversion')
                     self.table.setRTable(self.data)
                     self.counter += 1
-                except:
-                    self.status.setText(_('An error occured in your function'))
+                except Exception as inst:
+                    redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                    self.status.setText(_('An error occured in your function: %s') % str(inst))
             elif function in ['toDateTime (MDY)', 'toDateTime(YMD)', 'toDateTime(DMY)']:
                 if function == 'toDateTime (MDY)':
                     self.R(self.data+'$dateAsMDY'+unicode(self.counter)+'<-strptime('+topText+', "%m/%d/%y")', wantType = 'NoConversion')
@@ -139,48 +140,56 @@ class mathWidget(OWRpy):
                     self.R(self.data+'$'+function+unicode(self.counter)+'<-'+function+'('+topText+', '+bottomText+')', wantType = 'NoConversion')
                     self.table.setRTable(self.data)
                     self.counter += 1
-                except:
-                    self.status.setText(_('An error occured in your function'))
+                except Exception as inst:
+                    redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                    self.status.setText(_('An error occured in your function %s') % str(inst))
             else:
                 if function == 'add':
                     try:
                         self.R(self.data+'$'+'plus_'+unicode(self.counter)+'<-'+topText+' + '+bottomText, wantType = 'NoConversion')
                         self.table.setRTable(self.data)
-                    except:
-                        self.status.setText(_('An error occured in your function'))
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                        self.status.setText(_('An error occured in your function %s') % str(inst))
                 elif function == 'subtract':
                     try:
                         self.R(self.data+'$'+'minus_'+unicode(self.counter)+'<-'+topText+' - '+bottomText, wantType = 'NoConversion')
                         self.table.setRTable(self.data)
-                    except:
-                        self.status.setText(_('An error occured in your function'))
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                        self.status.setText(_('An error occured in your function %s') % str(inst))
                 elif function == 'multiply':
                     try:
                         self.R(self.data+'$'+'times_'+unicode(self.counter)+'<-as.numeric('+topText+') * as.numeric('+bottomText+')', wantType = 'NoConversion')
                         self.table.setRTable(self.data)
-                    except:
-                        self.status.setText(_('An error occured in your function'))
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                        self.status.setText(_('An error occured in your function %s') % str(inst))
                 elif function == 'divide':
                     try:
                         self.R(self.data+'$'+'divide_'+unicode(self.counter)+'<-as.numeric('+topText+') / as.numeric('+bottomText+')', wantType = 'NoConversion')
                         self.table.setRTable(self.data)
-                    except:
-                        self.status.setText(_('An error occured in your function'))
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                        self.status.setText(_('An error occured in your function %s') % str(inst))
                 elif function == 'logicAND':
                     try:
                         self.R(self.data+'$'+'logic_AND'+unicode(self.counter)+'<-'+topText+'&'+bottomText, wantType = 'NoConversion')
-                    except:
-                        self.status.setText(_('An error occured in your function'))
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                        self.status.setText(_('An error occured in your function %s') % str(inst))
                 elif function == 'logicOR':
                     try:
                         self.R(self.data+'$'+'logic_OR'+unicode(self.counter)+'<-'+topText+'|'+bottomText, wantType = 'NoConversion')
-                    except:
-                        self.status.setText(_('An error occured in your function'))
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+                        self.status.setText(_('An error occured in your function %s') % str(inst))
                 self.counter += 1
             self.dialogBottomListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             self.dialogTopListBox.update(self.R('colnames('+self.data+')', wantType = 'list'))
             newData = redRRDataFrame(self, data = self.data, parent = self.data)
             self.rSend("id0", newData)
             self.dialog.hide()
-        except:
-            self.status.setText(_('An error occured in your function'))
+        except Exception as inst:
+            redRLog.log(redRLog.REDRWIDGET, redRLog.ERROR, redRLog.formatException())
+            self.status.setText(_('An error occured in your function %s') % str(inst))
