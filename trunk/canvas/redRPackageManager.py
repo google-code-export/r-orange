@@ -101,7 +101,7 @@ class packageManager(redRdialog):
             QMessageBox.Ok | QMessageBox.Default,
             QMessageBox.NoButton, 
             QMessageBox.NoButton, 
-            qApp.canvasDlg)
+            self.canvas)
             mb.exec_()            
        
         self.canvas.toolbarFunctions.reloadWidgets()
@@ -123,7 +123,7 @@ class packageManager(redRdialog):
         if not redREnviron.checkInternetConnection():
             return False
         if not window:
-            window  = qApp.canvasDlg
+            window  = self.canvas
         OK = True
         for package,status in packages.items():
             if status['installed']: continue
@@ -521,7 +521,7 @@ class packageManager(redRdialog):
             if len(download.keys()) > 0:
                 results = self.downloadPackages(download,window=self)
             else: #need to do this to refresh the widget tree
-                qApp.canvasDlg.toolbarFunctions.reloadWidgets()
+                self.canvas.toolbarFunctions.reloadWidgets()
         except Exception as inst:
             mb = QMessageBox.warning(self,_("Install Package"), 
                 _('The following error occurred during the installation of your package.\nPlease contact the package maintainer to report this error.\n\n')+unicode(inst),
