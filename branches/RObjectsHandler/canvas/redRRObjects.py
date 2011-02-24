@@ -35,8 +35,11 @@ _rObjects = {}
 
 def addRObjects(widgetID, ol):
   global _rObjects
-  _rObjects[widgetID] = {'vars':ol, 'state':1, 'timer':QTimer()}
-  QObject.connect(_rObjects[widgetID]['timer'], SIGNAL('timeout()'), lambda: saveWidgetObjects(widgetID))
+  if widgetID not in _rObjects.keys():
+    _rObjects[widgetID] = {'vars':ol, 'state':1, 'timer':QTimer()}
+    QObject.connect(_rObjects[widgetID]['timer'], SIGNAL('timeout()'), lambda: saveWidgetObjects(widgetID))
+  else:
+    _rObjects[widgetID]['vars'] += ol
   extendTimer(widgetID)
   for o in ol:
     R('%s<-NULL' % o, wantType = 'NoConversion') #, silent = True)
@@ -46,32 +49,40 @@ def addRObjects(widgetID, ol):
   #redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R Objects are: %s' % _rObjects)
 def removeWidget(widgetID):
   global _rObjects
-  del _rObjects[widgetID]
+  _rObjects[widgetID]['timer'].stop()
+  
   if os.path.exists(os.path.join(redREnviron.directoryNames['tempDir'], widgetID)):
     os.remove(redREnviron.directoryNames['tempDir'], widgetID)
-
+  for v in _rObjects[widgetID]['vars']:
+    R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
+  del _rObjects[widgetID]      
 def loadWidgetObjects(widgetID):
-  global _rObjects
-  if _rObjects[widgetID]['state']: return
-  redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were expanded (loaded)") % widgetID)
-  R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion', silent = True)
-  _rObjects[widgetID]['state'] = 1
-  redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
-  extendTimer(widgetID)
-  setTotalMemory()
+    global _rObjects
+    if _rObjects[widgetID]['state']: return
+    redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were expanded (loaded)") % widgetID)
+    if not RSession.mutex.tryLock():  # the session is locked
+        while not RSession.mutex.tryLock(): pass
+  
+    R('load(\"%s\")' % os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/'), wantType = 'NoConversion', silent = True) != 'SessionLocked':
+    _rObjects[widgetID]['state'] = 1
+    redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(False)
+    extendTimer(widgetID)
+    setTotalMemory()
   
 def saveWidgetObjects(widgetID):
   global _rObjects
   if _rObjects[widgetID]['state']:
     _rObjects[widgetID]['timer'].stop()
     redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("R objects from widgetID %s were collapsed (saved)") % widgetID)
-    R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/')), wantType = 'NoConversion', silent = True)
-    _rObjects[widgetID]['state'] = 0
-    redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
-    for v in _rObjects[widgetID]['vars']:
-      R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
-    setTotalMemory()
-    
+    if not RSession.mutex.tryLock():
+        R('save(%s, file = \"%s\")' % (','.join(_rObjects[widgetID]['vars']), os.path.join(redREnviron.directoryNames['tempDir'], widgetID).replace('\\', '/')), wantType = 'NoConversion', silent = True)
+        _rObjects[widgetID]['state'] = 0
+        redRObjects.getWidgetInstanceByID(widgetID).setDataCollapsed(True)
+        for v in _rObjects[widgetID]['vars']:
+            R('if(exists(\"%s\")){rm(\"%s\")}' % (v, v), wantType = 'NoConversion', silent = True)
+        setTotalMemory()
+    else:  # the session is locked so the data wasn't really saved.  We add time to the timer and try next time.
+        extendTimer(widgetID)
   
 def ensureVars(widgetID):
   #redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, _("Ensuring variables for widgetID %s") % widgetID)
@@ -83,7 +94,7 @@ def extendTimer(widgetID):
   global _rObjects
   timer = _rObjects[widgetID]['timer']
   timer.stop()
-  timer.setInterval(1000*5)
+  timer.setInterval(1000*60*5)
   timer.start()
   
 def setWidgetPersistent(widgetID):

@@ -74,7 +74,7 @@ def Rcommand(query, silent = False, wantType = 'convert', listOfLists = False):
         QMessageBox.NoButton, 
         qApp.canvasDlg)
         mb.exec_()
-        return
+        return 'SessionLocked'
         
     
     output = None
