@@ -33,7 +33,7 @@ class RedRcast(OWRpy):
         self.aggregationMethod = redRradioButtons(self.controlArea, label = 'Aggregation Method:', buttons = [(' | ', 'List'), ('+', 'Data Table')], setChecked = '+')
         self.aggregatingColumns = redRListBox(self.controlArea, label = "Aggregating Variables:", toolTip = "These variables will be combined to make new columns with the values in the Value Column filling them")
         self.aggregatingColumns.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParamfun_aggregate_lineEdit = redRcomboBox(self.controlArea, label = "Aggregating Function:", items = ['NULL', 'mean', 'median', 'mode', 'range'])
+        self.RFunctionParamfun_aggregate_lineEdit = redRcomboBox(self.controlArea, label = "Aggregating Function:", items = ['NULL', 'mean', 'median', 'mode', 'range', 'sd'])
         self.valueColumn = redRcomboBox(self.controlArea, label = "Value Column:", toolTip = "Select the column that represents the values to be cast, these will generally be named values if the data comes from melt.")
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")

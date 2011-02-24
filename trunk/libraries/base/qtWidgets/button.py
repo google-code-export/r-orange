@@ -6,7 +6,7 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class button(QPushButton,widgetState):
     def __init__(self,widget,label, callback = None, disabled=0, icon=None, 
-    toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False):
+    toolTip=None, width = None, height = None,alignment=Qt.AlignLeft, toggleButton = False, setChecked = False):
 
         if icon and (not label or label == ''):
             widgetState.__init__(self,widget,os.path.basename(icon),includeInReports=False)
@@ -40,7 +40,8 @@ class button(QPushButton,widgetState):
             
         if toggleButton:
             self.setCheckable(True)
-            
+            if setChecked:
+                self.setChecked(True)
         if callback:
             QObject.connect(self, SIGNAL("clicked()"), callback)
             

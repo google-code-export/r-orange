@@ -25,9 +25,9 @@ class redRGGPlot(QGraphicsView, widgetState):
         
         QGraphicsView.__init__(self, self.controlArea)
         self.topArea = widgetBox(self.controlArea,
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Maximum),includeInReports=False)
+        sizePolicy = QSizePolicy(QSizePolicy.Maximum,QSizePolicy.Maximum),includeInReports=False)
         self.middleArea = widgetBox(self.controlArea)
-        self.bottomArea = widgetBox(self.controlArea,includeInReports=False)
+        self.bottomArea = widgetBox(self.controlArea,includeInReports=False)  #, sizePolicy = QSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         
         self.middleArea.layout().addWidget(self)  # place the widget into the parent widget
         scene = QGraphicsScene()
@@ -183,7 +183,7 @@ class redRGGPlot(QGraphicsView, widgetState):
     ####   Setup Tabs          #####
     ################################
         self.graphicOptionsButton = button(self.topArea,label='Graphic Options',
-        toggleButton = True,callback=self.displayGraphicOptions)
+        toggleButton = True,callback=self.displayGraphicOptions, setChecked = True)
         self.graphicOptionsWidget = widgetBox(self.topArea)
         self.graphicOptions = tabWidget(self.graphicOptionsWidget)
         self.graphicOptions.setFixedHeight(180)
@@ -495,8 +495,8 @@ class redRGGPlot(QGraphicsView, widgetState):
         file = unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))
         # print '###################### filename' , self.imageFileName
         if imageType == 'svg':
-            self.require_librarys(['Cairo'])
-            self.R('CairoSVG(file="%s",%s)' % ( file, ','.join(parameters)))
+            self.require_librarys(['RSvgDevice'])
+            self.R('devSVG(file="%s",%s)' % ( file, ','.join(parameters)))
             
         if imageType == 'png':
             self.R('png(file="%s",%s)' % ( file, ','.join(parameters)))
@@ -525,25 +525,13 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.R('devSVG(file = "%s")' % file)
         self.R('par(%s)' % (','.join(self.parameters['par'])))
         
-        
-        # self.extras = ','.join(self.parameters['main'])
-        # if unicode(self.optionWidgets['extrasLineEdit'].text()) != '':
-            # self.extras += ', '+unicode(self.optionWidgets['extrasLineEdit'].text())
-        # if self.extras != '':
-            # fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
-        # else:
-            # fullquery = '%s(%s)' % (self.function, self.query)
-        
         fullquery = self.query
         
+        ## we should add the data for the scale_x_discrete("name", limits = c("..")), scale_y_continuous
+        
         try:
+            #self.R('print(%s + xlab("%s") + ylab("%s"))' % (fullquery, self.)
             self.R('print(%s)' % fullquery)
-            #self.R('title(%s)' % (','.join(self.parameters['title'])))
-            # if len(self.layers) > 0:
-                # for l in self.layers:
-                    # self.R(l)
-            # if self.legend:
-                # self._setLegend()
         except Exception as inst:
             self.R('dev.off()') ## we still need to turn off the graphics device
             print 'Plotting exception occured'
