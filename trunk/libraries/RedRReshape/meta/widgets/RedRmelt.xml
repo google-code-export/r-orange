@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Melt Data</name>
-    <icon>default.png</icon>
+    <icon>melt.png</icon>
     <tags> 
         <tag>Reshape</tag> 
     </tags>
