@@ -36,8 +36,8 @@ class krcggplotbarplot(OWRpy):
         self.setRvariableNames(["boxplot"])
         self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
         self.errorBarTypes = [('none', _('None')), ('se', _('Standard Error')), ('sem', _('Standard Error of Mean')), ('95per', _('95% Confidence Interval'))]
-        self.colours = [(0, _('Two Color Gradient')), (2, _('Three Color Gradient')), (4, _('Sequential Brewer Colors')), (6, _('Diverging Brewer Colors')), (8, _('Qualitative Brewer Colors'))]
-        
+        self.colours = [(0, _('Two Color Gradient')), (1, _('Three Color Gradient')), (2, _('Sequential Brewer Colors')), (3, _('Diverging Brewer Colors')), (4, _('Qualitative Brewer Colors'))]
+        self.colourScaleWidgets = []
         topBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
         aestheticsBox = redRGroupBox(topBox, label = _('Aesthetics'), orientation = 'horizontal')
         aestheticsBox.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
@@ -52,28 +52,33 @@ class krcggplotbarplot(OWRpy):
         
         ## vlaue stack 0; gradient selector
         gradientBox = self.colourSelectorStack.createWidgetBox()
+        self.colourScaleWidgets.append(gradientBox)
         self.gradientFrom = colorButton(gradientBox, label = _('From'), startColor = '#000000')
         self.gradientTo = colorButton(gradientBox, label = _('To'), startColor = '#FFFFFF')
         
         ## value stack 1; gradient2 selector
         gradient2Box = self.colourSelectorStack.createWidgetBox()
+        self.colourScaleWidgets.append(gradient2Box)
         self.gradient2From = colorButton(gradient2Box, label = _('From'), startColor = '#FF0000')
         self.gradient2To = colorButton(gradient2Box, label = _('To'), startColor = '#00FF00')
         self.gradient2Via = colorButton(gradient2Box, label = _('Via'), startColor = '#FFFFFF')
         
         ## value stack 2; sequential brewer colors
         sequentialBox = self.colourSelectorStack.createWidgetBox()
+        self.colourScaleWidgets.append(sequentialBox)
         self.sequentialPalettes = comboBox(sequentialBox, label = _('Palette'), items = [('Blues', _('Blues')), ('BuGn', _('Blue Green')), ('BuPu', _('Blue Purple')), ('GnBu', _('Green Blue')), ('Greens', _('Greens')), ('Greys', _('Greys')), ('Oranges', _('Oranges')), ('OrRd', _('Orange Red')), ('PuBu', _('Purple Blue')), ('PuBuGn', _('Purple Blue Green')), ('PuRd', _('Purple Red')), ('Purples', _('Purples')), ('RdPu', _('Red Purple')), ('Reds', _('Reds')), ('YlGn', _('Yellow Green')), ('YlGnBu', _('Yellow Green Blue')), ('YlOrBr', _('Yellow Orange Brown')), ('YlOrRd', _('Yellow Orange Red'))])
         self.sequentialVariations = spinBox(sequentialBox, label = _('Variations'), decimals = 0, min = 3, max = 9, value = 5)
         
         ## value stack 3; diverging brewer colors
         divergingBox = self.colourSelectorStack.createWidgetBox()
+        self.colourScaleWidgets.append(divergingBox)
         paletteItems = [('BrBG', _('Brown Blue Green')), ('PiYG', _('Pink Yellow Green')), ('PRGn', _('Pink Red Green')), ('PuOr', _('Purple Orange')), ('RdBu', _('Red Blue')), ('RdGy', _('Red Grey')), ('RdYlBu', _('Red Yellow Blue')), ('RdYlGn', _('Red Yellow Green')), ('Spectral', _('Spectral'))]
         self.divergingPalettes = comboBox(divergingBox, label = _('Palette'), items = paletteItems)
         self.divergingVariations = spinBox(divergingBox, label = _('Variations'), decimals = 0, min = 3, max = 11, value = 5)
         
         ## value stack 4; qualitative brewer colors
         qualitativeBox = self.colourSelectorStack.createWidgetBox()
+        self.colourScaleWidgets.append(qualitativeBox)
         self.qualitativePalettes = comboBox(qualitativeBox, label = _('Palette'), items = [('Accent', _('Accent')), ('Dark2', _('Dark2')), ('Paired', _('Paired')), ('Pastel1', _('Pastel1')), ('Pastel2', _('Pastel2')), ('Set1', _('Set1')), ('Set2', _('Set2')), ('Set3', _('Set3'))])
         self.qualitativeVariations = spinBox(qualitativeBox, label = _('Variations'), decimals = 0, min = 3, max = 8, value = 5)
         
@@ -89,10 +94,11 @@ class krcggplotbarplot(OWRpy):
         name = self.captionTitle)
         self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction,
         processOnInput=True)
+        self.colourScaleChanged()
     def fillDataChanged(self): pass
     def colourScaleChanged(self):
         print self.colourScale.currentId()
-        self.colourSelectorStack.setCurrentIndex(self.colourScale.currentId())
+        self.colourSelectorStack.setCurrentWidget(self.colourScaleWidgets[self.colourScale.currentId()])
     def removeContourLines(self):
         key = self.binwidth.getSpinIDs()[-1]
         self.binwidth.removeSpinBox(key)

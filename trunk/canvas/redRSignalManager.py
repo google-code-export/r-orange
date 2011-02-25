@@ -186,7 +186,7 @@ class OutputHandler:
                             sentSignal = True
                             break
                         elif signal['signalClass'] in sig.convertFromList:
-                            tempSignal = sig(data = '', checkVal = False)                       ## make a temp holder to handle the processing.
+                            tempSignal = sig(self.parent, data = '', checkVal = False)                       ## make a temp holder to handle the processing.
                             newVal = tempSignal.convertFromClass(signal['value'])
                             self._handleSignal(newVal, handler, multiple, connection['signal']['parent'])
                             self._handleDirty(connection['signal']['parent'], connection['signal']['sid'], False)  ## undo the dirty signal
