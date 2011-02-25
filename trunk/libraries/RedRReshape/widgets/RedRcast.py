@@ -90,7 +90,7 @@ class RedRcast(OWRpy):
         ## rename the parent variable back
         self.R('names(%s)<-make.names(names(%s))' % (self.Rvariables['cast'], self.Rvariables['cast']), wantType = 'NoConversion')
         self.R('rename.vars(%s, from = "value", to = "%s")' % (self.RFunctionParam_data, self.valueColumn.currentText()), wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['cast']+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output(head(%s))' % (self.Rvariables['cast'],), wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)

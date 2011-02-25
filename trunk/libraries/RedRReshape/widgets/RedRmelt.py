@@ -68,7 +68,7 @@ class RedRmelt(OWRpy):
             injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['melt']+'<-melt(data='+str(self.RFunctionParam_data)+inj+')', wantType = 'NoConversion')
-        self.R('txt<-capture.output('+self.Rvariables['melt']+')', wantType = 'NoConversion')
+        self.R('txt<-capture.output(head(%s))' % self.Rvariables['melt'], wantType = 'NoConversion')
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText('This is your data:\n\n'+tmp)

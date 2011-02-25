@@ -37,6 +37,11 @@ class nameProtector(OWRpy):
         self.commit =commitButton(self.dfbox, _("Commit"), callback = self.dfCommit,processOnInput=True)
         
         
+        self.newRowNames = redRLineEdit(self.dfbox, label = _('Custom Row Names'), toolTip = _('Set new custom names for the rows.'))
+        self.newColumnNames = redRLineEdit(self.dfbox, label = _('Custom Column Names'), toolTip = _('Set new custom names for the columns'))
+        self.commitNewNames = commitButton(self.dfbox, label = _('Commit Custom'), callback = self.commitNewNames)
+        
+        
         
         ### The Vector GUI
         self.vbox = widgetBox(self.controlArea)
@@ -55,6 +60,10 @@ class nameProtector(OWRpy):
             cols = self.R('colnames('+self.data+')', wantType = 'list')
             cols.insert(0, '') # in case you don't want to protect a column name
             self.namesProtectDFcomboBox.update(cols)
+            rowNames = self.R('rownames(%s)' % self.data, wantType = 'list')
+            colNames = self.R('colnames(%s)' % self.data, wantType = 'list')
+            self.newRowNames.setText(','.join(rowNames))
+            self.newColumnNames.setText(','.join(colNames))
             if self.commit.processOnInput():
                 self.dfCommit()
         else:
@@ -88,7 +97,12 @@ class nameProtector(OWRpy):
             self.R('colnames('+self.data+') <- make.names(colnames('+self.data+'))', wantType = 'NoConversion')
         newData = redRRDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
         self.rSend("id0", newData)
-        
+    def commitNewNames(self):
+        ## reset the names to those listed in the line Edits
+        self.R('rownames(%s)<-c(\"%s\")' % (self.data, '\",\"'.join([i.strip() for i in unicode(self.newRowNames.text()).split(',')])), wantType = 'NoConversion')
+        self.R('colnames(%s)<-c(\"%s\")' % (self.data, '\",\"'.join([i.strip() for i in unicode(self.newColumnNames.text()).split(',')])), wantType = 'NoConversion')
+        newData = redRRDataFrame(self, data = self.Rvariables['newDataFromNameProtector'])
+        self.rSend("id0", newData)
     def vCommit(self): # make protected names for a vector
         if self.data == '': return
         

@@ -13,9 +13,10 @@ class colorButton(QPushButton, widgetState):
     def __init__(self, widget, label = None, displayLabel = True, startColor = '#000000', callback = None, toolTip=None, width = 15, height = 15):
         widgetState.__init__(self,widget, label, includeInReports=True)
         
-        QPushButton.__init__(self,self.controlArea)
+        QToolButton.__init__(self, self.controlArea)
         
-        if label:
+        
+        if label and displayLabel:
             self.hb = redRWidgetBox(self.controlArea,orientation='horizontal')
             lb = widgetLabel(self.hb, label)
             self.hb.layout().addWidget(self)
@@ -25,26 +26,39 @@ class colorButton(QPushButton, widgetState):
         else:
             self.controlArea.layout().addWidget(self)
             self.hasLabel = False
+            
         self.label = label
+        self.w = width
+        self.h = height
         self.setMinimumSize(width, height)
-        
-        self.color = QColor()
-        self.color.setNamedColor(startColor)
-        self.setButtonColor()
-        QObject.connect(self, SIGNAL("clicked()"), self.colorButtonPressed)
         self.callback = callback
-    def setButtonColor(self):
-        palette = QPalette()
-        palette.setColor(QPalette.Button, self.color)
-        self.setPalette(palette)
-        self.setAutoFillBackground(True)
-    def colorButtonPressed(self):
-        newColor = QColorDialog.getColor(self.color)
-        if (newColor.isValid()):
-            self.color = newColor
-            self.setButtonColor()
+        self.color = '#000000'
+        self.setMaximumSize(self.w + 5, self.h + 5)
+        self.connect(self, SIGNAL("clicked()"), self.showColorDialog)
+        self.updateColor()
+
+    def updateColor(self):
+        pixmap = QPixmap(self.w,self.h)
+        painter = QPainter()
+        painter.begin(pixmap)
+        painter.setPen(QPen(QColor(self.color)))
+        painter.setBrush(QBrush(QColor(self.color)))
+        painter.drawRect(0, 0, self.w+1, self.h+1);
+        painter.end()
+        self.setIcon(QIcon(pixmap))
+        self.setIconSize(QSize(self.w+1,self.h+1))
+
+
+    def drawButtonLabel(self, painter):
+        painter.setBrush(QBrush(QColor(self.color)))
+        painter.setPen(QPen(QColor(self.color)))
+        painter.drawRect(3, 3, self.width()-6, self.height()-6)
+
+    def showColorDialog(self):
+        color = QColorDialog.getColor(QColor(self.color), self)
+        if color.isValid():
+            self.color = color.name()
+            self.updateColor()
+            self.repaint()
         if self.callback:
             self.callback()
-    def getColor(self):
-        print self.color.name()
-        return self.color.name()

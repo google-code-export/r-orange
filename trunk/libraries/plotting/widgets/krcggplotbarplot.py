@@ -128,20 +128,20 @@ class krcggplotbarplot(OWRpy):
             self.status.setText(_("X and Y data can't be the same"))
             return
         
-        self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s, fill = %(ZDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
+        self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
         self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity")' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
         if self.errorType.currentId() != 'none':
             self.R('%(VAR)s<-%(VAR)s + geom_errorbar(aes(ymax = %(YDATA)s + %(ERROR)s, ymin = %(YDATA)s - %(ERROR)s), position = position_dodge(width = 0.9), width = 0.25)' % {'VAR':self.Rvariables['boxplot'], 'YDATA':self.yData.currentText(), 'ERROR':self.errorBarData.currentId()})
         scale = self.colourScale.currentId()
         if scale == 0:
-            self.R('%(VAR)s<-%(VAR)s + scale_fill_continuous(low = "%(LOW)s", high = "%(HIGH)s")' % {'VAR':self.Rvariables['boxplot'], 'LOW':self.gradientFrom.getColor(), 'HIGH':self.gradientTo.getColor()}, wantType = 'NoConversion')
-        elif scale == 2:# scale_fill_gradient2
-            self.R('%(VAR)s<-%(VAR)s + scale_fill_gradient2(low = "%(LOW)s", high = "%(HIGH)s", mid = "%(VIA)s")' % {'VAR':self.Rvariables['boxplot'], 'LOW':self.gradient2From.getColor(), 'HIGH':self.gradient2To.getColor(), 'VIA':self.gradient2Via.getColor()}, wantType = 'NoConversion')
-        elif scale == 4:
+            self.R('%(VAR)s<-%(VAR)s + scale_fill_continuous(low = "%(LOW)s", high = "%(HIGH)s")' % {'VAR':self.Rvariables['boxplot'], 'LOW':self.gradientFrom.color, 'HIGH':self.gradientTo.color}, wantType = 'NoConversion')
+        elif scale == 1:# scale_fill_gradient2
+            self.R('%(VAR)s<-%(VAR)s + scale_fill_gradient2(low = "%(LOW)s", high = "%(HIGH)s", mid = "%(VIA)s")' % {'VAR':self.Rvariables['boxplot'], 'LOW':self.gradient2From.color, 'HIGH':self.gradient2To.color, 'VIA':self.gradient2Via.color}, wantType = 'NoConversion')
+        elif scale == 2:
             self.R('%(VAR)s<- %(VAR)s + scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['boxplot'], 'PALETTE':self.sequentialPalettes.currentId()}, wantType = 'NoConversion')
-        elif scale == 6:
+        elif scale == 3:
             self.R('%(VAR)s<- %(VAR)s + scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['boxplot'], 'PALETTE':self.divergingPalettes.currentId()}, wantType = 'NoConversion')
-        elif scale == 8:
+        elif scale == 4:
             self.R('%(VAR)s<- %(VAR)s + scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['boxplot'], 'PALETTE':self.qualitativePalettes.currentId()}, wantType = 'NoConversion')
         
         self.graphicsView.plot(query = self.Rvariables['boxplot'], function = '')
