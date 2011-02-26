@@ -225,9 +225,14 @@ class updateManager(QMainWindow):
             os.path.join(redREnviron.directoryNames['redRDir'],'redRMacUpdater.py'), file, installDir)
             print cmd
             r = QProcess.startDetached(cmd)
-            
+        
+        ######## Linux ############
+        elif sys.platform == 'linux2':
+            cmd = 'python %s %s %s' % (os.path.join(redREnviron.directoryNames['redRDir'], 'redRLinuxUpdater.py'), file, installDir)
+            print cmd
+            r = QProcess.startDetached(cmd)
         else:
-            raise Exception('Add Linux specific installer code')
+            raise Exception('Update instructions are not present for the %s platform' % sys.platform)
             
         self.app.exit(1)
 

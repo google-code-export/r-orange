@@ -401,6 +401,8 @@ class redRCanvasToolbarandMenu():
                     cmd = '"%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'bin','red-RCanvas.exe')
                 else:
                     cmd = 'pythonw "%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
+            elif sys.platform == 'linux2':
+                cmd = 'python "%s"' % os.path.join(redREnviron.directoryNames['redRDir'],'canvas','red-RCanvas.pyw')
             elif sys.platform =='darwin':
                 cmd = 'open -Wn /Applications/Red-R.app'
             else:
