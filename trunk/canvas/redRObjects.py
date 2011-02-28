@@ -227,7 +227,6 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
     global _widgetInstances
     global _widgetIcons
     global _widgetInfo
-    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('adding instance number %s name %s') % (id, info.name))
     m = __import__(info.fileName)
     instance = m.__dict__[info.widgetName].__new__(m.__dict__[info.widgetName],
     _owInfo = redREnviron.settings["owInfo"],
@@ -240,6 +239,7 @@ def addInstance(sm, info, settings, insig, outsig, id = None):
         OWRpy.uniqueWidgetNumber += 1
         ctime = unicode(time.time())
         id = unicode(OWRpy.uniqueWidgetNumber) + '_' + ctime
+    redRLog.log(redRLog.REDRCORE, redRLog.DEBUG, _('adding instance number %s name %s') % (id, info.name))
     if info.name == 'Dummy': 
         instance.__init__(signalManager = sm,
         forceInSignals = insig, forceOutSignals = outsig, id = id)
