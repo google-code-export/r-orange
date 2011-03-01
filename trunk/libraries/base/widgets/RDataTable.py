@@ -6,6 +6,7 @@
 
 from OWRpy import *
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.StructuredDict import StructuredDict
 ##############################################################################
 
 from libraries.base.qtWidgets.comboBox import comboBox
@@ -29,7 +30,7 @@ class RDataTable(OWRpy):
         
         self.setRvariableNames(['summaryData'])
 
-        self.inputs.addInput('id1', _('Input Data Table'), redRRDataFrame, self.dataset) 
+        self.inputs.addInput('id1', _('Input Data Table'), [redRRDataFrame, StructuredDict], self.dataset) 
 
         self.data = {}          # dict containing the table infromation
         self.dataParent = None
@@ -111,6 +112,9 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         ##########################################################
         
         # sumBox = self.advancedOptions.createTabPage(_("Custom Summary"), orientation = 'vertical', canScroll = True)
+        #print 'setting dict'
+        #self.dataset(StructuredDict(self, data = {'t1':[1,2,3], 't2':['a', 'b', 'c'], 't3':['x', 'y', 'd']}))
+        
         
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
@@ -122,20 +126,22 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         #self.table.show()
         self.data = dataset.getData()
         self.dataParent = dataset
-            
+        #print type(dataset)
         if dataset.optionalDataExists('links'):
             linksData = dataset.getOptionalData('links')['data']
             self.linksListBox.update(linksData.keys())
             self.currentLinks.update(linksData)
-        
-        #self.currentData = dataset.getData()
-        dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
-        self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
-        self.infoBox.setHidden(False)
-        self.table.setRTable(self.data)
+        #print type(dataset)
+        if isinstance(dataset, redRRDataFrame):
+            #self.currentData = dataset.getData()
+            dim = dataset.getDims_data()#self.R('dim(' + dataset['data'] + ')')
+            self.rowColCount.setText(_('# Row: %(ROWCOUNT)s \n# Columns: %(COLCOUNT)s') %  {'ROWCOUNT':unicode(dim[0]), 'COLCOUNT':unicode(dim[1])})
+            self.infoBox.setHidden(False)
+            self.table.setRTable(self.data)
 
-        self.supressTabClick = False
-    
+            self.supressTabClick = False
+        elif isinstance(dataset, StructuredDict):
+            self.table.setStructuredDictTable(dataset.getData())
     
     def cellSelection(self,selections):
         # return

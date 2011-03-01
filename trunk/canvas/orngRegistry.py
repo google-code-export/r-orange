@@ -194,9 +194,11 @@ def readWidgets(directory, package):
         
         widgetMetaData = {}
         metaFile = os.path.join(directory,'meta','widgets',widgetName+'.xml')
+        makeXML = True
         if not os.path.exists(metaFile):
             redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Meta file for %s does not exist.</b>') % (filename))
-            if redREnviron.settings['outputVerbosity'] == 5:
+            
+            if redREnviron.settings['outputVerbosity'] == 5 and makeXML:
                 md = orngDlgs.MetaDialog(filename)
                 if md.exec_() == QDialog.Accepted:
                     text = md.text.toPlainText()
@@ -208,7 +210,11 @@ def readWidgets(directory, package):
                     f.write(text)
                     f.close()
                 else:
-                    continue
+                    if md.notNow:
+                        makeXML = False
+                        continue
+                    else:
+                        continue
             else:
                 continue
         try:

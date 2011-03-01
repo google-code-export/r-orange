@@ -136,7 +136,8 @@ class Heatmap(OWRpy):
         else:
             self.colvChoice = 'NA'
         #self.R(, wantType = 'NoConverstion') 
-        self.gview1.plot(function = '', query = '%(heatmapList)s<-heatmap.2(%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= %(col)s, key = TRUE %(colclasses)s)' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'col':self.heatColorFunctionComboBox.currentId(), 'heatmapList':self.Rvariables['heatmapList']} )
+        self.R('%(heatmapList)s<-heatmap.2(%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= %(col)s, key = TRUE %(colclasses)s)' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'col':self.heatColorFunctionComboBox.currentId(), 'heatmapList':self.Rvariables['heatmapList']}, wantType = 'NoConverstion')
+        #self.gview1.plot(function = 'heatmap.2', query = '%(plotdata)s , trace="none", scale = "row", cexRow=0.5, Rowv=%(rc)s, Colv = %(cc)s, col= %(col)s, key = TRUE %(colclasses)s' % {'plotdata':self.plotdata, 'rc': self.rowvChoice, 'cc': self.colvChoice, 'colclasses':colClasses, 'col':self.heatColorFunctionComboBox.currentId(), 'heatmapList':self.Rvariables['heatmapList']} )
         newData = redRRList(self, data = self.Rvariables['heatmapList'])
         self.rSend('heatmapList', newData)
         

@@ -27,9 +27,11 @@ class MetaDialog(QDialog):
     def __init__(self, filename):
         QDialog.__init__(self)
         ## GUI
+        
         self.setLayout(QVBoxLayout())
         self.layout().setMargin(2)
         self.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
+        self.setMinimumSize(QSize(500, 400))
         topWidgetPart = redRWidgetBox(self, orientation="vertical", margin=0)
         topWidgetPart.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.layout().addWidget(topWidgetPart)
@@ -41,9 +43,14 @@ class MetaDialog(QDialog):
         with open(os.path.join(redREnviron.directoryNames['widgetDir'], 'blank', 'meta', 'widgets', 'widgetTemplate.xml'), 'r') as f:
             g = f.read()
         self.text.insertPlainText(g)
+        self.notNow = False
         buttonBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
         acceptButton = redRbutton(buttonBox, label = _('OK'), callback = self.accept)
         rejectButton = redRbutton(buttonBox, label = _('Cancel'), callback = self.reject)
+        doneButton = redRbutton(buttonBox, label = _('Not Now'), callback = self.notNowCallback)
+    def notNowCallback(self):
+        self.notNow = True
+        self.reject()
 class ColorIcon(QToolButton):
     def __init__(self, parent, color):
         QToolButton.__init__(self, parent)

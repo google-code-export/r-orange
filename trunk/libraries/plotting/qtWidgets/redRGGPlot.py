@@ -34,7 +34,7 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.setScene(scene)
         self.parent = parent
         self.data = data
-        
+        self.printQuery = ''
         self.widgetSelectionRect = None
         self.mainItem = None
         self.query = ''
@@ -179,136 +179,7 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']       
 
         self.extraOptionsLineEdit = lineEdit(self.topArea, label = 'Extra Options', toolTip = 'These options will be appended to the plotting call, remember that these are ggplot options that will be added to the plot object')
-    ################################
-    ####   Setup Tabs          #####
-    ################################
-        # self.graphicOptionsButton = button(self.topArea,label='Graphic Options',
-        # toggleButton = True,callback=self.displayGraphicOptions, setChecked = True)
-        # self.graphicOptionsWidget = widgetBox(self.topArea)
-        # self.graphicOptions = tabWidget(self.graphicOptionsWidget)
-        # self.graphicOptions.setFixedHeight(180)
-        # hbox = widgetBox(self.graphicOptionsWidget,orientation='horizontal',alignment= Qt.AlignLeft)
-        # self.resizeCheck = checkBox(hbox,label='resize',displayLabel=False,buttons={'true':'Resize Image'},setChecked='true')
-        # button(hbox,label='Update Graphic', alignment=Qt.AlignLeft, callback=self.plotMultiple)
-        
-
-        # self.labels = self.graphicOptions.createTabPage('Main')
-        # self.points = self.graphicOptions.createTabPage('Points/Lines')
-        # self.advanced = self.graphicOptions.createTabPage('Advanced')
-        # #self.graphicOptions.hide()
-        
-        # firstTab = widgetBox(self.labels,orientation='horizontal',alignment=Qt.AlignLeft | Qt.AlignTop)
-        # secondTab = widgetBox(self.points,orientation='horizontal',alignment=Qt.AlignLeft | Qt.AlignTop)
-        # advancedTab = widgetBox(self.advanced,orientation='vertical',alignment=Qt.AlignLeft | Qt.AlignTop)
-    # ################################
-    # ####   Advanced Tabs       #####
-    # ################################
-        
-        # self.optionWidgets['extrasLineEdit'] = lineEdit(advancedTab, label = 'Advanced plotting parameters', 
-        # toolTip = 'Add extra parameters to the main plot.\nPlease see documentation for more details about parameters.')
-        
-        # self.optionWidgets['onlyAdvanced'] = checkBox(advancedTab,
-        # buttons=['Only use the advanced options here'],
-        # label='advancedOnly',displayLabel=False)
-
-    # ################################
-    # ####   First Tabs          #####
-    # ################################
-        # imageBox = groupBox(firstTab,label='Image Properties', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-        
-        # self.optionWidgets['imageType'] = comboBox(imageBox,label='Image Type',items=['svg','png'])
-        # self.optionWidgets['imageType'].setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
-        
-        # hbox = widgetBox(imageBox,orientation='horizontal')
-        # self.optionWidgets['dheight'] = spinBox(hbox, label = 'Height', min = 1, max = 5000, value = 400)
-        # self.optionWidgets['dwidth'] = spinBox(hbox, label = 'Width', min = 1, max = 5000, value = 400)
-        # hbox = widgetBox(imageBox,orientation='horizontal')
-        # self.optionWidgets['units'] = comboBox(hbox,label='units',items=[('px','Pixel'),('in','Inches')])
-        # self.optionWidgets['dpi'] = comboBox(hbox,label='DPI',items=['75','100','150','auto'],editable=True)
-        
-        
-        # labelBox = groupBox(firstTab,label='Labels', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-        
-        # self.optionWidgets['mainTitle'] = lineEdit(labelBox,label='Main Title')
-        # self.optionWidgets['xLab'] = lineEdit(labelBox,label='X Axis Label')        
-        # self.optionWidgets['yLab'] = lineEdit(labelBox,label='Y Axis Label')
-
-        
-        # fontBox = groupBox(firstTab,label='Sizes', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-        # fontColumnBox = widgetBox(fontBox,orientation='horizontal')
-        # fontColumn1 = widgetBox(fontColumnBox,orientation='vertical')
-        # fontColumn2 = widgetBox(fontColumnBox,orientation='vertical')
-        
-        # #self.optionWidgets['fontCombo'] = comboBox(fontColumn1, items = ['serif', 'sans', 'mono'], label='Font Family')
-        
-        # self.optionWidgets['lineWidth'] = spinBox(fontColumn1,label='Point/Line Size',decimals=2,min=1,max=50)
-        # self.optionWidgets['plotFont'] = spinBox(fontColumn1, label = 'Plot Text Size',decimals=2, min = 1, max = 50)
-        # self.optionWidgets['axisFont'] = spinBox(fontColumn1, label = 'Axis Text Size',decimals=2, min = 1, max = 50)
-        # self.optionWidgets['mainFont'] = spinBox(fontColumn2, label = 'Title Text Size',decimals=2, min = 1, max = 50)
-        # self.optionWidgets['subFont'] = spinBox(fontColumn2, label = 'Subtitle Text Size',decimals=2, min = 1, max = 50)
-        # self.optionWidgets['labFont'] = spinBox(fontColumn2, label = ' XY Label Text Size',decimals=2, min = 1, max = 50)
-        
-        # colorBox = groupBox(firstTab,label='Colors', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-        
-        # hbox = widgetBox(colorBox,orientation='horizontal')
-
-        # self.optionWidgets['colorSeries'] = comboBox(hbox,label='Generate Colors Series',orientation='vertical',
-        # items = ['select','rainbow','heat.colors','terrain.colors','topo.colors','cm.colors'])
-        # self.optionWidgets['colorSeriesLen'] = spinBox(hbox,label='Length of Series',displayLabel=False, min=0, max=500)
-        # hbox.layout().setAlignment(self.optionWidgets['colorSeriesLen'].controlArea, Qt.AlignBottom)
-        
-        # self.optionWidgets['bgColor'] = ColorIcon(colorBox,label='Background')
-
-        # #self.optionWidgets['customColors'] = button(colorBox,label='Custom Plot Colors',callback=self.setPlotColors)
-
     
-    # ################################
-    # ####   Second Tabs         #####
-    # ################################
-        # colorBox2 = groupBox(secondTab,label='Colors', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-        
-        # # colorColumnBox = widgetBox(colorBox2,orientation='horizontal')
-        # # colorColumn1 = widgetBox(colorColumnBox,orientation='vertical')
-        # # colorColumn2 = widgetBox(colorColumnBox,orientation='vertical')
-      
-         
-        # self.optionWidgets['titleColor'] = ColorIcon(colorBox2,label='Title')
-        # self.optionWidgets['subColor'] = ColorIcon(colorBox2,label='Subtitle')
-        # self.optionWidgets['labColor'] = ColorIcon(colorBox2,label='Subtitle')
-        # self.optionWidgets['axisColor'] = ColorIcon(colorBox2,label='Axis')
-        
-        # lineBox = groupBox(secondTab,label='Lines', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-       
-        # self.optionWidgets['linesListBox'] = listBox(lineBox, label = 'Line types', displayLabel=False,
-        # selectionMode = QAbstractItemView.ExtendedSelection,
-        # items = [(1,'________'), (2,'- - - -'), (3,'........'), (4,'_._._._.'), 
-        # (5,'__ __ __'), (6,'__.__.__.')])
-        
-        
-        
-        # pointBox = groupBox(secondTab,label='Points', orientation='vertical',
-        # sizePolicy = QSizePolicy(QSizePolicy.Maximum ,QSizePolicy.Minimum))
-        
-        # items = []
-        # for i in range(1,26):
-            # items.append((i-1,QListWidgetItem(QIcon(os.path.join(redREnviron.directoryNames['picsDir'],
-            # 'R icon (%d).png' %i)),'')))
-        
-        # for i in range(32,128):
-            # items.append((i-1,'%s' % (chr(i))))
-            
-        # self.optionWidgets['pointListBox'] = listBox(pointBox, label = 'Line types', displayLabel=False,
-        # selectionMode = QAbstractItemView.ExtendedSelection, items = items)
-        
-
-
-        #self.setTheme(self.options)
     ################################
     ### right click menu     #######
     ################################
@@ -486,7 +357,7 @@ class redRGGPlot(QGraphicsView, widgetState):
         # pp.pprint(self.options)            
         return injection            
         
-    def _startRDevice(self, parameters):
+    def _startRDevice(self, imageType):
         if imageType not in ['svg', 'png', 'jpeg']:
             imageType = 'png'
         
@@ -497,15 +368,15 @@ class redRGGPlot(QGraphicsView, widgetState):
         # print '###################### filename' , self.imageFileName
         if imageType == 'svg':
             self.require_librarys(['RSvgDevice'])
-            self.R('devSVG(file="%s",%s)' % ( file, ','.join(parameters)))
+            self.R('devSVG(file="%s")' % ( file,))
             
         if imageType == 'png':
-            self.R('png(file="%s",%s)' % ( file, ','.join(parameters)))
+            self.R('png(file="%s")' % ( file,))
 
         elif imageType == 'jpeg':
-            self.R('jpeg(file="%s",%s)' % ( file, ','.join(parameters)))
+            self.R('jpeg(file="%s")' % (file,))
                 
-    def plot(self, query, function = 'plot', parameters=None,data=None):
+    def plot(self, query, function = 'print', parameters=None,data=None):
         ## performs a quick plot given a query and an imageType
         self.data = data
         self.function = function
@@ -515,27 +386,23 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.plotMultiple()
         
     def plotMultiple(self):
-        ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
-        #self.parameters = self._getParameters()
-        #self.require_librarys(['Cairo'])
+        
         self.require_librarys(['RSvgDevice'])
         self.imageFileName = unicode(self.image)+'.svg'
         file = unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))
 
-        #self.R('Cairo(onefile=F, file="%s",%s,%s)' % ( file, ','.join(self.parameters['device']), ','.join(self.parameters['par'])))
+        self._startRDevice(file, self.imageType)
         self.R('devSVG(file = "%s")' % file)
-        #self.R('par(%s)' % (','.join(self.parameters['par'])))
         
         fullquery = self.query
-        
-        ## we should add the data for the scale_x_discrete("name", limits = c("..")), scale_y_continuous
-        
         try:
             #self.R('print(%s + xlab("%s") + ylab("%s"))' % (fullquery, self.)  opts(grid.fill = 'white') + scale_x_discrete(limits = c('V', 'M2', 'M3'))
             if self.extraOptionsLineEdit.text() != '':
-                self.R('print(%s + %s)' % (fullquery, self.extraOptionsLineEdit.text()))
+                self.printQuery = 'print(%s + %s)' % (fullquery, self.extraOptionsLineEdit.text())
+                self.R(self.printQuery)
             else:
-                self.R('print(%s)' % fullquery)
+                self.printQuery = 'print(%s)' % fullquery
+                self.R(self.printQuery)
         except Exception as inst:
             self.R('dev.off()') ## we still need to turn off the graphics device
             print 'Plotting exception occured'
@@ -694,7 +561,6 @@ class redRGGPlot(QGraphicsView, widgetState):
             # print 'loading scene'
             scene = QGraphicsScene()
             self.setScene(scene)
-        print self.image
         if imageType == None:
             imageType = image.split('.')[-1]
         if imageType not in ['svg', 'png', 'jpeg']:
@@ -714,12 +580,12 @@ class redRGGPlot(QGraphicsView, widgetState):
         
     def getSettings(self):
         #print '#################in getSettings'
-        r = {'image':self.imageFileName, 'query':self.query, 'function':self.function}
+        r = {'image':self.imageFileName, 'query':self.printQuery, 'function':self.function}
         
         #print r
         return r
     def loadSettings(self,data):
-        self.query = data['query']
+        self.printQuery = data['query']
         self.function = data['function']
         self.addImage(data['image'])
     def getReportText(self, fileDir):
@@ -736,7 +602,7 @@ class redRGGPlot(QGraphicsView, widgetState):
         return {self.widgetName:{'includeInReports':self.includeInReports,'text':text}}  
         
     def saveAs(self, fileName, imageType):
-        if self.query == '': return
+        if self.printQuery == '': return
         if imageType == 'pdf':
             self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'))
         elif imageType == 'ps':
@@ -746,19 +612,7 @@ class redRGGPlot(QGraphicsView, widgetState):
         elif imageType == 'jpeg':
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
         
-        if not self.plotExactlySwitch:
-            self.extras = self._setParameters()
-            if unicode(self.extrasLineEdit.text()) != '':
-                self.extras += ', '+unicode(self.extrasLineEdit.text())
-            if self.extras != '':
-                fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
-            else:
-                fullquery = '%s(%s)' % (self.function, self.query)
-        else:
-            fullquery = self.query
-        self.R(fullquery)
-        for l in self.layers:
-            self.R(l)
+        self.R(self.printQuery)
         
         self.R('dev.off()')
 

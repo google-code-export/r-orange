@@ -148,6 +148,9 @@ class filterTable(widgetState, QTableView):
         self.selectionCallback(tmpData)
         self.working = False
         """    
+    def setStructuredDictTable(self, data):
+        self.tm = StructuredDictTableModel(data, self, [], False, False, True)
+        self.setModel(self.tm)
         
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         # print _('in setRTable'), data
@@ -297,6 +300,7 @@ class filterTable(widgetState, QTableView):
         self.optionsBox = widgetBox(self.menu)
         self.optionsBox.layout().setAlignment(Qt.AlignTop)
         
+        #### Logic if R variable ###
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
         
         if colClass in ['factor','logical']:
@@ -344,7 +348,10 @@ class filterTable(widgetState, QTableView):
                     e = lineEdit(self.optionsBox,label=x)
                 self.connect(e, SIGNAL("textEdited(QString)"),
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
-            
+        #### Logic if Python Dict ####
+        
+        #### Logic if SQLite Database ####
+        
         buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)
         okButton = button(buttonBox,label=_('OK'),
@@ -558,7 +565,143 @@ class filterTable(widgetState, QTableView):
             return {self.widgetName:{'includeInReports': self.includeInReports, 'text':''}}
         
 
+class StructuredDictTableModel(QAbstractTableModel):
+    def __init__(self, data, parent, filteredOn = [], editable = False, filterable=False, sortable=False):
+        QAbstractTableModel.__init__(self, parent)
+        
+        self.Pdata = parent
+        self.working = False
+        self.working = False
+        self.range = 500
+        self.parent =  parent
+        self.R = Rcommand
+        self.sortable = sortable
+        self.editable = editable
+        self.filterable = filterable
+        self.filteredOn = filteredOn
+        self.columnFiltered = QIcon(os.path.join(redREnviron.directoryNames['picsDir'],'columnFilter.png'))
+        self.initData(data)
+    def flags(self,index):
+        if self.editable:
+            return (Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
+        else:
+            return (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+ 
+    def getRange(self, row, col):
+        r = {}
+        if row - self.range < 0:
+            r['rstart'] = 0
+        else:
+            r['rstart'] = row-self.range
+        
+        if row + self.range > self.nrow:
+            r['rend'] = self.nrow
+        else:
+            r['rend'] = row + self.range
+            
+        if col-self.range < 0:
+            r['cstart'] = 0
+        else:
+            r['cstart'] = col-self.range
+        
+        #print 'cend: ', row+self.range,  self.nrow        
+        if col+self.range > self.ncol:
+            r['cend'] = self.ncol
+        else:
+            r['cend'] = col+self.range
+        
+        return r
+        
+    def initData(self, data):
+        self.Pdata = data
+        self.orgData = data
+        self.colnames = data.keys()
+        self.nrow = len(data[self.colnames[0]])
+        self.rownames = range(1, self.nrow+1)
+        self.ncol = len(self.colnames)
+        
+        self.currentRange = self.getRange(0, 0)
+        
+        self.arraydata = self.dictToArray(self.Pdata, self.currentRange['rstart'], self.currentRange['rend'], self.currentRange['cstart'], self.currentRange['cend'])  ## we now get a list of lists
+        
+    def rowCount(self, parent): 
+        return self.nrow
+        #return len(self.arraydata)
+    def columnCount(self, parent): 
+        return self.ncol
+        #return len(self.arraydata[0])
+        
+    def data(self, index, role): 
+        # print _('in data')
+        # if self.working == True:
+            # return QVariant()
+        # self.working = True
+        if not index.isValid(): 
+            return QVariant() 
+        elif role != Qt.DisplayRole: 
+            return QVariant() 
+        elif not self.Pdata or self.Pdata == None:
+            return QVariant()
+            
+        if (
+            (self.currentRange['cstart'] + 100 > index.column() and self.currentRange['cstart'] !=1) or 
+            (self.currentRange['cend'] - 100 < index.column() and self.currentRange['cend'] != self.ncol) or 
+            (self.currentRange['rstart'] + 100 > index.row() and self.currentRange['rstart'] !=1) or 
+            (self.currentRange['rend'] - 100 < index.row() and self.currentRange['rend'] != self.nrow)
+        ):
 
+            self.currentRange = self.getRange(index.row(), index.column())
+            self.arraydata = self.dictToArray(self.Pdata, self.currentRange['rstart'], self.currentRange['rend'], self.currentRange['cstart'], self.currentRange['cend'])  ## we now get a list of lists
+            
+        if len(self.arraydata) == 0 or len(self.arraydata[0]) == 0:
+            return QVariant()
+        rowInd = index.row() - self.currentRange['rstart']
+        colInd = index.column() - self.currentRange['cstart']
+        # self.working = False
+        return QVariant(self.arraydata[rowInd][colInd]) 
+        
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            if not col >= len(self.colnames):
+                return QVariant(self.colnames[col])
+        elif orientation == Qt.Horizontal and role == Qt.DecorationRole and (self.filterable or self.sortable):
+            if col+1 in self.filteredOn:
+                return QVariant(self.columnFiltered)
+            else:
+                return QVariant()
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole: 
+            # print 'row number', col, len(self.rownames)
+            if not col >= len(self.rownames):
+                return QVariant(self.rownames[col])
+        return QVariant()
+    def get_sorted(self, vector):
+        return sorted(range(len(vector)), key = vector.__getitem__)
+    def sort(self, Ncol, order):
+        if self.editable: return
+        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        #print 'adfasfasdfasdfas', self.R('class(%s)' % self.orgRdata)
+        self.Pdata = self.sortDict(self.orgData, Ncol, decreasing = (order == Qt.DescendingOrder))  ## returns a list of lists sorted 
+        self.arraydata = self.dictToArray(self.Pdata, self.currentRange['rstart'], self.currentRange['rend'], self.currentRange['cstart'], self.currentRange['cend'])  ## we now get a list of lists
+        self.emit(SIGNAL("layoutChanged()"))
+    def delete(self):
+        sip.delete(self)  
+    def dictToArray(self, data, rstart, rend, cstart, cend):
+        ## we have a dict and we need to make a list of lists
+        returnData = []
+        for r in range(rstart, rend):
+            row = []
+            for c in range(cstart, cend):
+                row.append(data[self.colnames[c]][r])
+            returnData.append(row)
+        return returnData
+    def sortDict(self, data, col, decreasing):
+        indecies = self.get_sorted(data[self.colnames[col]])
+        if not decreasing:
+            indecies.reverse()
+        newDict = {}
+        for k, v in data.items():
+            newDict[k] = [v[i] for i in indecies]
+        return newDict
 class MyTableModel(QAbstractTableModel): 
     def __init__(self,Rdata,parent, filteredOn = [], editable=False,
     filterable=False,sortable=False): 

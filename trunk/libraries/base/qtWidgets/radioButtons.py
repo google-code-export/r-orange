@@ -119,15 +119,19 @@ class radioButtons(widgetState,QWidget):
     
     def getSettings(self):
         #print _('radioButtons getSettings') + self.getChecked()
-        r = {'items':self.items, 'checked': self.getCheckedId()}
+        r = {'items':self.items, 'checked': self.getCheckedId(), 'visible':self.box.isVisible()}
         return r
     def loadSettings(self,data):
         #print _('radioButtons loadSettings') + data
         #self.addButtons(data['items'])
         self.setChecked(data['checked'])
-        
+        self.box.setVisible(data['visible'])
     def getReportText(self, fileDir):
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getChecked()}}
         return r
 
 
+    def hide(self):
+        self.box.hide()
+    def show(self):
+        self.box.show()

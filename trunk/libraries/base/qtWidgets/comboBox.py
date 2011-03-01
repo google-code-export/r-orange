@@ -47,7 +47,7 @@ class comboBox(QComboBox,widgetState):
         # print _('in comboBox load')
         # print data
 
-        self.addItems(data['items'])
+        self.update(data['items'])
         self.setCurrentIndex(data['current'])
     
     def currentId(self):

@@ -32,7 +32,7 @@ class colorButton(QPushButton, widgetState):
         self.h = height
         self.setMinimumSize(width, height)
         self.callback = callback
-        self.color = '#000000'
+        self.color = startColor
         self.setMaximumSize(self.w + 5, self.h + 5)
         self.connect(self, SIGNAL("clicked()"), self.showColorDialog)
         self.updateColor()
