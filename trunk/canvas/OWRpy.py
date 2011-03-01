@@ -271,7 +271,8 @@ class OWRpy(widgetSignals,redRWidgetGUI,widgetSession):
     def reloadWidget(self):
         pass
     def sendRefresh(self):
-        self.signalManager.refresh()
+        for i in redRObjects.instances():
+            i.refresh()
             
     def refresh(self):
         pass # function that listens for a refresh signal.  This function should be overloaded in widgets that need to listen.

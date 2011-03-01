@@ -2,6 +2,7 @@
 import orngSignalManager
 
 globalData = {}
+globalSettings = {}
 def _(a):
     return a
 def setGlobalData(creatorWidget, name, data, description = None):
@@ -20,13 +21,20 @@ def setGlobalData(creatorWidget, name, data, description = None):
     }
 
 def getGlobalData(widget,name):
-    parents = orngSignalManager.globalSignalManager.getParents(widget)
-    parentIDs = [w.widgetID for w in parents]
-    data = []
-    for key,value in globalData.items():
-        if key in parentIDs and  name in value.keys(): 
-            data.append(value[name])
-    return data
+    if widget != None:
+        parents = orngSignalManager.globalSignalManager.getParents(widget)
+        parentIDs = [w.widgetID for w in parents]
+        data = []
+        for key,value in globalData.items():
+            if key in parentIDs and  name in value.keys(): 
+                data.append(value[name])
+        return data
+    else:
+        data = []
+        for k, v in globalData.items():
+            if name in v.keys():
+                data.append(v[name])
+        return data
     
 def globalDataExists(widget,name):
     parents = orngSignalManager.globalSignalManager.getParents(widget)
@@ -37,6 +45,21 @@ def globalDataExists(widget,name):
     
     return False
     
-def removeGlobalData(creatorWidget,name):
-    if creatorWidget.widgetID in globalData.keys() and name in globalData[creatorWidget.widgetID].keys():
-        del value[name]
+def removeGlobalData(creatorWidget,name = None):
+    if name:
+        if creatorWidget.widgetID in globalData.keys() and name in globalData[creatorWidget.widgetID].keys():
+            del globalData[creatorWidget.widgetID][name]
+    else:
+        if creatorWidget.widgetID in globalData.keys():
+            del globalData[creatorWidget.widgetID]
+        
+def setGlobalSettings(name, data):
+    if name not in globalSettings.keys():
+        globalSettings[name] = []
+    globalSettings[name].append(data)
+    
+def getGlobalSettings(name):
+    if name in globalSettings:
+        return globalSettings[name]
+    else:
+        return []

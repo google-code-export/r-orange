@@ -5,6 +5,7 @@
 """
 
 from OWRpy import *
+import globalData
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
 from libraries.base.signalClasses.StructuredDict import StructuredDict
 ##############################################################################
@@ -79,11 +80,11 @@ class RDataTable(OWRpy):
         #links:
         linkBox = self.advancedOptions.createTabPage(_('Links to Websites'), canScroll = True)
         linksTab = groupBox(linkBox, _('Links to Websites'))        
-        self.linkListBox = listBox(linksTab,label=_('Links to Websites'), displayLabel=False,includeInReports=False)
-        self.linkListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.linksListBox = listBox(linksTab,label=_('Links to Websites'))
+        self.linksListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.customLink = lineEdit(linksTab, label = _('Add Link:'), includeInReports=False)
         hbox = widgetBox(linksTab,orientation='horizontal')
-        b = button(hbox, label = _('Add'), toolTip = _('Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q={2}, would do a search Google(TM) for whatever was in column 2 of the row of the cell you clicked.\nYou can test this if you want using the example.'), callback=self.addCustomLink)
+        b = button(hbox, label = _('Add'), toolTip = _('Adds a link to the link section for interactive data exploration.\nThe link must have a marker for the row information in the form\n{column number}\n\nFor example:http://www.google.com/#q=%s, would do a search Google(TM) for whatever was in the cell you clicked.\nYou can test this if you want using the example.'), callback=self.addCustomLink)
         button(hbox, label = _('Clear Links'), toolTip = _('Clears the links from the links section'), 
         callback = self.clearLinks)
         hbox.layout().setAlignment(Qt.AlignRight)
@@ -111,11 +112,30 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         # self.table.setRTable(self.data)
         ##########################################################
         
-        # sumBox = self.advancedOptions.createTabPage(_("Custom Summary"), orientation = 'vertical', canScroll = True)
-        #print 'setting dict'
-        #self.dataset(StructuredDict(self, data = {'t1':[1,2,3], 't2':['a', 'b', 'c'], 't3':['x', 'y', 'd']}))
+        globalData.setGlobalData(self, 'links', [('http://www.google.com/search?q=%s', 'Google'), ('http://en.wikipedia.org/w/index.php?title=Special:Search&search=%s', 'Wikipedia')])
+        self.setLinks()
+    def customWidgetDelete(self):
+        try:
+            globalData.removeGlobalData(self)
+        except Exception as inst:
+            self.log(str(inst))
+
+    def reloadWidget(self):
+        self.setLinks()
+    def refresh(self)
+        self.setLinks()
+    def setLinks(self):
+        gLinks = [v['data'] for v in globalData.getGlobalData(widget = None, name = 'links')]
         
-        
+        links = []
+        for l in gLinks: ## l is now an ordered dict used for the 
+            if type(l) == dict:
+                links += [(k, v) for k, v in l.items()]
+            elif type(l) == list:
+                links += l
+        self.log(links)
+        self.linksListBox.update(links)
+            
     def dataset(self, dataset):
         """Generates a new table and puts it in the table section.  If no table is present the table section remains hidden."""
         if not dataset:
@@ -126,11 +146,6 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         #self.table.show()
         self.data = dataset.getData()
         self.dataParent = dataset
-        #print type(dataset)
-        if dataset.optionalDataExists('links'):
-            linksData = dataset.getOptionalData('links')['data']
-            self.linksListBox.update(linksData.keys())
-            self.currentLinks.update(linksData)
         #print type(dataset)
         if isinstance(dataset, redRRDataFrame):
             #self.currentData = dataset.getData()
@@ -144,24 +159,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
             self.table.setStructuredDictTable(dataset.getData())
     
     def cellSelection(self,selections):
-        # return
-        # print 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n'
-        # for x in selections:
-            # rstart = min(x.top()+1,x.bottom()+1)
-            # rend = max(x.top()+1,x.bottom()+1)
-            # cstart = min(x.right()+1,x.left()+1)
-            # cend = max(x.right()+1,x.left()+1)
-            # print rstart,rend,cstart,cend
-            # self.R('%s <- c(%s,((%s[%d:%d,%d:%d])))' % (
-                # self.Rvariables['summaryData'],self.Rvariables['summaryData'],self.table.getFilteredData(),
-                # rstart,rend,cstart,cend),silent=True)
         
-        # print self.R(self.Rvariables['summaryData'],silent=True)
-        # self.R('rowInd <- c(' + ','.join(rows) + ')',silent=True)
-        # self.R('colInd <- c(' + ','.join(cols) + ')',silent=True)
-        
-        # self.R('tmpData <- apply(cbind(rowInd,colInd),1,FUN=function(x) {%s[x[1],x[2]]})' % self.Rdata, silent=True)
-        # tmpData = self.Rvariables['summaryData']
         if len(selections) > 1:
             self.R('%s <- NULL' % self.Rvariables['summaryData'],silent=True)
             rows = []
@@ -224,25 +222,17 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
     def itemClicked(self, val):
         # print 'item clicked'
         # print self.data
+        
+        ######## if R data #########
         clickedRow = int(val.row())+1
         clickedCol = int(val.column())+1
-        
-        for item in self.linkListBox.selectedItems():
+        self.log('%s was clicked at row: %s and column %s' % (str(val.data().toString()), int(val.row()), int(val.column())))
+        for k, v in self.linksListBox.selectedItems().items():
             #print item.text()
             #print unicode(self.currentLinks)
-            url = self.currentLinks[unicode(item.text())]
-            col = url[url.find('{')+1:url.find('}')]
-            print 'col', col, type(col)
-            if col == 0 or col == 'row': #special cases for looking into rownames
-                #cellVal = self.data.getData()['row_names'][val.row()]  
-                cellVal = self.R('rownames('+self.data+')['+clickedRow+']')
-            else:
-                
-                #cellVal = self.data.getData()[col][val.row()]  
-                cellVal = self.R(self.data+'['+clickedRow+',"'+col+'"]')
-            url = url.replace('{'+col+'}', unicode(cellVal))
-            #print url
+            url = k % str(val.data().toString())
             import webbrowser
+            self.log(url)
             webbrowser.open_new_tab(url)
         return
         ## make the summary of the data.
