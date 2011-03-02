@@ -219,7 +219,7 @@ class redRCanvasToolbarandMenu():
         redRSaveLoad.saveDocument()
     def reloadWidgets(self): # should have a way to set the desired tab location 
         
-        self.widgetRegistry = orngRegistry.readCategories()
+        self.widgetRegistry = orngRegistry.readCategories(force = True)
         redREnviron.addOrangeDirectoriesToPath(redREnviron.directoryNames)
         signals.registerRedRSignals()
         redRGUI.registerQTWidgets()

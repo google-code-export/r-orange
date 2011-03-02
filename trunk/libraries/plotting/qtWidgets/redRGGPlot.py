@@ -201,6 +201,7 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.dialog.setLayout(QHBoxLayout())
         
         self.standardImageType = 'svg'
+        self.imageType = 'svg'
         QObject.connect(self.dialog, SIGNAL('finished(int)'), self.dialogClosed)
 
 
@@ -375,7 +376,7 @@ class redRGGPlot(QGraphicsView, widgetState):
 
         elif imageType == 'jpeg':
             self.R('jpeg(file="%s")' % (file,))
-                
+        return file
     def plot(self, query, function = 'print', parameters=None,data=None):
         ## performs a quick plot given a query and an imageType
         self.data = data
@@ -389,10 +390,8 @@ class redRGGPlot(QGraphicsView, widgetState):
         
         self.require_librarys(['RSvgDevice'])
         self.imageFileName = unicode(self.image)+'.svg'
-        file = unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))
-
-        self._startRDevice(file, self.imageType)
-        self.R('devSVG(file = "%s")' % file)
+        
+        file = self._startRDevice(self.imageType)
         
         fullquery = self.query
         try:
@@ -562,7 +561,7 @@ class redRGGPlot(QGraphicsView, widgetState):
             scene = QGraphicsScene()
             self.setScene(scene)
         if imageType == None:
-            imageType = image.split('.')[-1]
+            imageType = self.imageType
         if imageType not in ['svg', 'png', 'jpeg']:
             self.clear()
             print imageType, 'Error occured'

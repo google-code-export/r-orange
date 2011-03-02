@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 import redRPackageManager
 import signals
 import xml.dom.minidom
-import orngDlgs
+import orngDlgs, cPickle
 # redRDir = os.path.split(os.path.split(os.path.abspath(__file__))[0])[0]
 # if not redRDir in sys.path:
     # sys.path.append(redRDir)
@@ -33,7 +33,11 @@ class WidgetCategory(dict):
         self.directory = directory
 
 AllPackages = {}
-def readCategories():
+def readCategories(force = False):
+    if not force:
+        if os.path.exists(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic')):
+            with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'rb') as f:
+                return cPickle.load(f)
     # print '##########################in readCategories'
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading repository of packages.'))
     global widgetsWithError 
@@ -93,6 +97,8 @@ def readCategories():
         splashWindow.hide()
     
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Finished loading repository of packages.'))
+    with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'wb') as f:
+        cPickle.dump(categories, f, -1)
     return categories ## return the widgets and the templates
 
 hasErrors = False
