@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Apply</name>
-    <icon>default.png</icon>
+    <icon>apply.png</icon>
     <tags> 
         <tag>Data Manipulation</tag> 
     </tags>

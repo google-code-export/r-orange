@@ -22,12 +22,12 @@ class RMatrix(RDataFrame):
             
     def _convertFromStructuredDict(self, signal):
         self.assignR('matrixConversion'+self.newDataID, signal.getData())
-        return RMatrix(data = 'as.matrix('+'matrixConversion'+self.newDataID+')')
+        return RMatrix(self.widget, data = 'as.matrix('+'matrixConversion'+self.newDataID+')')
     def _convertFromRDataFrame(self, signal):
         #self.R('matrix_'+self.newDataID+'<-apply(data.matrix('+signal.getData()+'),2, as.numeric)', wantType = 'NoConversion')
         if not self.matrix:
-            self.matrix = RMatrix(data = 'data.matrix('+signal.getData()+')')
-            return RMatrix(data = 'data.matrix('+signal.getData()+')')
+            self.matrix = RMatrix(self.widget, data = 'data.matrix('+signal.getData()+')')
+            return RMatrix(self.widget, data = 'data.matrix('+signal.getData()+')')
         else:
             return self.matrix
     def convertToClass(self, varClass):
@@ -55,20 +55,20 @@ class RMatrix(RDataFrame):
             if rownames[0] in [None, 'NULL', 'NA']:
                 rownames = [unicode(i+1) for i in range(len(data[data.keys()[0]]))]
             data['row_names'] = rownames
-            self.StructuredDictSignal = StructuredDict(data = data, parent = self, keys = keys)
+            self.StructuredDictSignal = StructuredDict(self.widget, data = data, parent = self, keys = keys)
             return self.StructuredDictSignal
         else:
             return self.StructuredDictSignal
     def _convertToRDataFrame(self):
         if not self.RDataFrameSignal:
-            self.RDataFrameSignal = RDataFrame(data = 'as.data.frame('+self.data+')', parent = self.parent)
+            self.RDataFrameSignal = RDataFrame(self.widget, data = 'as.data.frame('+self.data+')', parent = self.parent)
             self.RDataFrameSignal.dictAttrs = self.dictAttrs.copy()
             return self.RDataFrameSignal
         else:
             return self.RDataFrameSignal
     def _convertToRList(self):
         if not self.RListSignal:
-            self.RListSignal = RList(data = 'as.list(as.data.frame('+self.data+'))')
+            self.RListSignal = RList(self.widget, data = 'as.list(as.data.frame('+self.data+'))')
             self.RListSignal.dictAttrs = self. dictAttrs.copy()
             return self.RListSignal
         else:
