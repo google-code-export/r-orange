@@ -136,7 +136,7 @@ class dataEntry(OWRpy):
             self.rowCount += 1
         if row > self.maxRow: self.maxRow = row #update the extremes of the row and cols
         if col > self.maxCol: self.maxCol = col
-        self.data.getData()[self.data.keys[col]][row] = 
+        self.data.getData()[self.data.keys[col]][row] = unicode(self.dataTable.item(row, col).text())
         self.dataTable.setCurrentCell(row+1, col)
 
     def commitTable(self):

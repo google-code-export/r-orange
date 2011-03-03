@@ -122,7 +122,7 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
 
     def reloadWidget(self):
         self.setLinks()
-    def refresh(self)
+    def refresh(self):
         self.setLinks()
     def setLinks(self):
         gLinks = [v['data'] for v in globalData.getGlobalData(widget = None, name = 'links')]
