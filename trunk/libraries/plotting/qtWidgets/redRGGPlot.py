@@ -179,6 +179,11 @@ class redRGGPlot(QGraphicsView, widgetState):
         self.colorList = ['#000000', '#ff0000', '#00ff00', '#0000ff']       
 
         self.extraOptionsLineEdit = lineEdit(self.topArea, label = 'Extra Options', toolTip = 'These options will be appended to the plotting call, remember that these are ggplot options that will be added to the plot object')
+        self.extraOptionsLineEdit.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        
+        self.heightSpinBox = spinBox(self.topArea, label = 'Height', min = 0, value = 7, decimals = 3)
+        self.widthSpinBox = spinBox(self.topArea, label = 'Width', min = 0, value = 7, decimals = 3)
+        
     
     ################################
     ### right click menu     #######
@@ -189,10 +194,12 @@ class redRGGPlot(QGraphicsView, widgetState):
         save.addAction('PDF')
         save.addAction('Post Script')
         save.addAction('JPEG')
+        save.addAction('SVG')
         self.menu.addAction('Copy')
         self.menu.addAction('Fit In Window')
         self.menu.addAction('Zoom Out')
         self.menu.addAction('Zoom In')
+        self.menu.addAction('R Graphics Device')
         #self.menu.addAction('Undock')
         #self.menu.addAction('Redock')
         
@@ -456,6 +463,12 @@ class redRGGPlot(QGraphicsView, widgetState):
 
     def toClipboard(self):
         QApplication.clipboard().setImage(self.returnImage())
+    def saveAsSVG(self):
+        print 'save as svg'
+        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".svg", "Vector Graphics (.svg)")
+        if qname.isEmpty(): return
+        qname = unicode(qname)
+        self.saveAs(unicode(qname), 'svg')
     def saveAsPDF(self):
         print 'save as pdf'
         qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
@@ -519,6 +532,10 @@ class redRGGPlot(QGraphicsView, widgetState):
                     self.saveAsPostScript()
                 elif unicode(action.text()) == 'JPEG':
                     self.saveAsJPEG()
+                elif unicode(action.text()) == 'SVG':
+                    self.saveAsSVG()
+                elif unicode(action.text()) == 'R Graphics Device':
+                    self.rGraphicsDevice()
         else:
             self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
             self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
@@ -602,19 +619,23 @@ class redRGGPlot(QGraphicsView, widgetState):
         
     def saveAs(self, fileName, imageType):
         if self.printQuery == '': return
+        opts = {'FILE':fileName.replace('\\', '/'), 'WIDTH':self.widthSpinBox.value() , 'HEIGHT':self.heightSpinBox.value()}
         if imageType == 'pdf':
-            self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('pdf(file = \'%(FILE)s\', width = %(WIDTH)s, height = %(HEIGHT)s)' % opts)
         elif imageType == 'ps':
-            self.R('postscript(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('postscript(file = \'%(FILE)s\', width = %(WIDTH)s, height = %(HEIGHT)s)' % opts)
         elif imageType == 'bmp':
-            self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'))
+            self.R('bmp(file = \'%(FILE)s\', width = %(WIDTH)s, height = %(HEIGHT)s, units = "in")' % opts)
         elif imageType == 'jpeg':
-            self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
-        
+            self.R('jpeg(file = \'%(FILE)s\', width = %(WIDTH)s, height = %(HEIGHT)s, units = "in")' % opts)
+        elif imageType == 'svg':
+            self.R('devSVG(file = \'%(FILE)s\', width = %(WIDTH)s, height = %(HEIGHT)s)' % opts)
+            
         self.R(self.printQuery)
         
         self.R('dev.off()')
-
+    def rGraphicsDevice(self):
+        self.R(self.printQuery)
     ###########
     ## Convert an SVG for pyqt
     ###########

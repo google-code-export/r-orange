@@ -115,7 +115,7 @@ class krcggplotbarplot(OWRpy):
             names = self.R('names(%s)' % self.RFunctionParam_y, wantType = 'list')
             self.xGroup.update(names)
             self.yData.update(names) # = comboBox(aestheticsBox, label = _('Y Values'))
-            self.fillData.update(names) # = comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
+            self.fillData.update(['None'] + names) # = comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
             self.errorBarData.update(names)
             if self.commit.processOnInput():
                 self.commitFunction()
@@ -127,9 +127,12 @@ class krcggplotbarplot(OWRpy):
         if self.xGroup.currentText() == self.yData.currentText(): 
             self.status.setText(_("X and Y data can't be the same"))
             return
-        
-        self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
-        self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity")' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
+        if self.fillData.currentText() != 'None':
+            
+            self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
+        else:
+            self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
+        self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity", weight = 10)' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
         if self.errorType.currentId() != 'none':
             self.R('%(VAR)s<-%(VAR)s + geom_errorbar(aes(ymax = %(YDATA)s + %(ERROR)s, ymin = %(YDATA)s - %(ERROR)s), position = position_dodge(width = 0.9), width = 0.25)' % {'VAR':self.Rvariables['boxplot'], 'YDATA':self.yData.currentText(), 'ERROR':self.errorBarData.currentId()})
         scale = self.colourScale.currentId()

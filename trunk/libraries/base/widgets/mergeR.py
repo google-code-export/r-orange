@@ -135,9 +135,9 @@ class mergeR(OWRpy):
             else: cbs = self.colBsel
             
             if 'Include Row in Merge' in self.rownamesOption.getChecked():
-                self.R(self.Rvariables['merged']+'<-merge(cbind('+self.dataA+', RownamesA = rownames('+self.dataA+')), cbind('+self.dataB+', RownamesB = rownames('+self.dataB+')), by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
+                self.R(self.Rvariables['merged']+'<-merge(as.data.frame(cbind(as.data.frame('+self.dataA+'), RownamesA = rownames(as.data.frame('+self.dataA+')))), as.data.frame(cbind(as.data.frame('+self.dataB+'), RownamesB = rownames(as.data.frame('+self.dataB+')))), by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
             else:
-                self.R(self.Rvariables['merged']+'<-merge('+self.dataA+', '+self.dataB+', by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
+                self.R(self.Rvariables['merged']+'<-merge(as.data.frame('+self.dataA+'), as.data.frame('+self.dataB+'), by.x='+cas+', by.y='+cbs+','+options+')', wantType = 'NoConversion')
             # if self.colAsel == 'Rownames':
                 # self.R('rownames('+self.Rvariables['merged']+')<-rownames('+self.dataA+')', wantType = 'NoConversion')
             self.sendMe()

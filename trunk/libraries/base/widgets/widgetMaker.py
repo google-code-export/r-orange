@@ -48,8 +48,8 @@ class widgetMaker(OWRpy):
         #self.inputArea.hide()
         self.connect(self.inputArea, SIGNAL("itemClicked(QTableWidgetItem*)"), self.inputcellClicked)
         
-        self.functionAllowOutput = checkBox.checkBox(box, label = _('Allow Output'), displayLable = False, buttons = [_('Allow Output')])
-        self.captureROutput = checkBox.checkBox(box, buttons = [_('Show Output')])
+        self.functionAllowOutput = checkBox.checkBox(box, label = _('Allow Output'), buttons = [_('Allow Output')])
+        self.captureROutput = checkBox.checkBox(box, label = 'Show Output', buttons = [_('Show Output')])
         
         
         #self.inputsCombobox = redRGUI.comboBox(box, label = 'Input Class:', items = self.getRvarClass_classes())

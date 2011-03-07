@@ -37,22 +37,23 @@ def readCategories(force = False):
     if not force:
         if os.path.exists(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic')):
             with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'rb') as f:
-                return cPickle.load(f)
+                categories = cPickle.load(f)
+                import imp
+                for c, v in categories['widgets'].items():
+                    print c, v, v.name
+                    try:
+                        wmod = imp.load_source(v.fileName, v.fullName)
+                    except Exception as inst:
+                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
+                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
+                        continue
+                return categories
     # print '##########################in readCategories'
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading repository of packages.'))
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
-    # cacheFilename = os.path.join(canvasSettingsDir, "cachedWidgetDescriptions.pickle")
-
-    # try:
-        # import cPickle
-        # cats = cPickle.load(file(cacheFilename, "rb"))
-        # cachedWidgetDescriptions = dict([(w.fullName, w) for cat in cats.values() for w in cat.values()])
-    # except:
-        # redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
-        # cachedWidgetDescriptions = {} 
-
+    
     directories = []
     for dirName in os.listdir(widgetDirName):
         directory = os.path.join(widgetDirName, dirName)

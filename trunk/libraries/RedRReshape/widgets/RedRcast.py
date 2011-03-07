@@ -33,7 +33,7 @@ class RedRcast(OWRpy):
         self.aggregationMethod = redRradioButtons(self.controlArea, label = 'Aggregation Method:', buttons = [(' | ', 'List'), ('+', 'Data Table')], setChecked = '+')
         self.aggregatingColumns = redRListBox(self.controlArea, label = "Aggregating Variables:", toolTip = "These variables will be combined to make new columns with the values in the Value Column filling them")
         self.aggregatingColumns.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.RFunctionParamfun_aggregate_lineEdit = redRcomboBox(self.controlArea, label = "Aggregating Function:", items = ['NULL', 'mean', 'median', 'mode', 'range', 'sd'])
+        self.RFunctionParamfun_aggregate_lineEdit = redRcomboBox(self.controlArea, label = "Aggregating Function:", items = ['NULL', 'mean', 'median', 'mode', 'range', 'sd', 'mean and sd'])
         self.valueColumn = redRcomboBox(self.controlArea, label = "Value Column:", toolTip = "Select the column that represents the values to be cast, these will generally be named values if the data comes from melt.")
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
@@ -79,9 +79,13 @@ class RedRcast(OWRpy):
                 agg = ' | '.join([unicode(i) for i in self.aggregatingColumns.selectedItems()])
         string = ',formula=%s~%s' % (static, agg)
         injection.append(string)
-        
-        string = ',fun.aggregate='+str(self.RFunctionParamfun_aggregate_lineEdit.currentText())+''
-        injection.append(string)
+        if self.RFunctionParamfun_aggregate_lineEdit.currentText() not in ['mean and sd']:
+            string = ',fun.aggregate='+str(self.RFunctionParamfun_aggregate_lineEdit.currentText())+''
+            injection.append(string)
+        elif self.RFunctionParamfun_aggregate_lineEdit.currentText() == 'mean and sd':
+            self.R('krcmsd<-function(a){return(list(Mean = mean(a),SD = sd(a), SEM = sd(a)/sqrt(length(a))))}', wantType = 'NoConversion')
+            string = ',fun.aggregate=krcmsd'
+            injection.append(string)
         
         inj = ''.join(injection)
         ## rename the value column

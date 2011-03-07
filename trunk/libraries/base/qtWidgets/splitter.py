@@ -12,7 +12,7 @@ class splitter(QSplitter, widgetState):
         QSplitter.__init__(self, widget)
         
         self.controlArea.layout().addWidget(self)
-        
+        self.controlArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         if orientation == 'horizontal':
             self.setOrientation(Qt.Horizontal)
         else:
@@ -20,6 +20,7 @@ class splitter(QSplitter, widgetState):
             
     def widgetArea(self, orientation = 'horizontal', margin = -1):
         newWidgetBox = widgetBox(None, orientation = orientation, margin = margin)
+        newWidgetBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.addWidget(newWidgetBox)
         return newWidgetBox
     def getSettings(self):
