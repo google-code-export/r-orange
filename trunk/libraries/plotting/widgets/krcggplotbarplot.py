@@ -35,7 +35,7 @@ class krcggplotbarplot(OWRpy):
         self.RFunctionParam_x = ''
         self.setRvariableNames(["boxplot"])
         self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
-        self.errorBarTypes = [('none', _('None')), ('se', _('Standard Error')), ('sem', _('Standard Error of Mean')), ('95per', _('95% Confidence Interval'))]
+        #self.errorBarTypes = [('none', _('None')), ('se', _('Standard Error')), ('sem', _('Standard Error of Mean')), ('95per', _('95% Confidence Interval'))]
         self.colours = [(0, _('Two Color Gradient')), (1, _('Three Color Gradient')), (2, _('Sequential Brewer Colors')), (3, _('Diverging Brewer Colors')), (4, _('Qualitative Brewer Colors'))]
         self.colourScaleWidgets = []
         topBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
@@ -84,7 +84,7 @@ class krcggplotbarplot(OWRpy):
         
         ## error bars
         errorBox = redRGroupBox(self.controlArea, label = _('Error Bar Options'), orientation = 'horizontal')
-        self.errorType = comboBox(errorBox, label = _('Error Bar Type'), items = self.errorBarTypes)
+        #self.errorType = comboBox(errorBox, label = _('Error Bar Type'), items = self.errorBarTypes)
         self.errorBarData = comboBox(errorBox, label = _('Error Bar Data'))
         
         
@@ -116,7 +116,7 @@ class krcggplotbarplot(OWRpy):
             self.xGroup.update(names)
             self.yData.update(names) # = comboBox(aestheticsBox, label = _('Y Values'))
             self.fillData.update(['None'] + names) # = comboBox(aestheticsBox, label = _('Fill Data'), callback = self.fillDataChanged)
-            self.errorBarData.update(names)
+            self.errorBarData.update(['None'] + names)
             if self.commit.processOnInput():
                 self.commitFunction()
         else:
@@ -133,7 +133,7 @@ class krcggplotbarplot(OWRpy):
         else:
             self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
         self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity", weight = 10)' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
-        if self.errorType.currentId() != 'none':
+        if self.errorBarData.currentText() != 'None':
             self.R('%(VAR)s<-%(VAR)s + geom_errorbar(aes(ymax = %(YDATA)s + %(ERROR)s, ymin = %(YDATA)s - %(ERROR)s), position = position_dodge(width = 0.9), width = 0.25)' % {'VAR':self.Rvariables['boxplot'], 'YDATA':self.yData.currentText(), 'ERROR':self.errorBarData.currentId()})
         scale = self.colourScale.currentId()
         if scale == 0:
