@@ -36,7 +36,7 @@ class krcggplotbarplot(OWRpy):
         self.setRvariableNames(["boxplot"])
         self.inputs.addInput('id0', 'Data Table', redRDataFrame, self.processy)
         #self.errorBarTypes = [('none', _('None')), ('se', _('Standard Error')), ('sem', _('Standard Error of Mean')), ('95per', _('95% Confidence Interval'))]
-        self.colours = [(0, _('Two Color Gradient')), (1, _('Three Color Gradient')), (2, _('Sequential Brewer Colors')), (3, _('Diverging Brewer Colors')), (4, _('Qualitative Brewer Colors'))]
+        self.colours = [(0, _('Two Color Gradient')), (1, _('Three Color Gradient')), (2, _('Sequential Brewer Colors')), (3, _('Diverging Brewer Colors')), (4, _('Qualitative Brewer Colors')), (5, _('Greyscale'))]
         self.colourScaleWidgets = []
         topBox = redRWidgetBox(self.controlArea, orientation = 'horizontal')
         aestheticsBox = redRGroupBox(topBox, label = _('Aesthetics'), orientation = 'horizontal')
@@ -81,6 +81,9 @@ class krcggplotbarplot(OWRpy):
         self.colourScaleWidgets.append(qualitativeBox)
         self.qualitativePalettes = comboBox(qualitativeBox, label = _('Palette'), items = [('Accent', _('Accent')), ('Dark2', _('Dark2')), ('Paired', _('Paired')), ('Pastel1', _('Pastel1')), ('Pastel2', _('Pastel2')), ('Set1', _('Set1')), ('Set2', _('Set2')), ('Set3', _('Set3'))])
         self.qualitativeVariations = spinBox(qualitativeBox, label = _('Variations'), decimals = 0, min = 3, max = 8, value = 5)
+        
+        greyScaleBox = self.colourSelectorStack.createWidgetBox()
+        self.colourScaleWidgets.append(greyScaleBox)
         
         ## error bars
         errorBox = redRGroupBox(self.controlArea, label = _('Error Bar Options'), orientation = 'horizontal')
@@ -132,7 +135,7 @@ class krcggplotbarplot(OWRpy):
             self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
         else:
             self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
-        self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity", weight = 10)' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
+        self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity", weight = 10, colour = "#000000", linetype = "solid") + geom_hline(aes(yintercept = 0), size = 1)' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
         if self.errorBarData.currentText() != 'None':
             self.R('%(VAR)s<-%(VAR)s + geom_errorbar(aes(ymax = %(YDATA)s + %(ERROR)s, ymin = %(YDATA)s - %(ERROR)s), position = position_dodge(width = 0.9), width = 0.25)' % {'VAR':self.Rvariables['boxplot'], 'YDATA':self.yData.currentText(), 'ERROR':self.errorBarData.currentId()})
         scale = self.colourScale.currentId()
@@ -146,6 +149,8 @@ class krcggplotbarplot(OWRpy):
             self.R('%(VAR)s<- %(VAR)s + scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['boxplot'], 'PALETTE':self.divergingPalettes.currentId()}, wantType = 'NoConversion')
         elif scale == 4:
             self.R('%(VAR)s<- %(VAR)s + scale_fill_brewer(palette = "%(PALETTE)s")' % {'VAR':self.Rvariables['boxplot'], 'PALETTE':self.qualitativePalettes.currentId()}, wantType = 'NoConversion')
+        elif scale == 5:
+            self.R('%(VAR)s<- %(VAR)s + scale_fill_grey(end = 1)' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')
         
         self.graphicsView.plot(query = self.Rvariables['boxplot'], function = '')
     

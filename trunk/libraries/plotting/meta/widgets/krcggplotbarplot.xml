@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Barplot (GGPLOT)<!-- [REQUIRED] title --></name>
-    <icon></icon>
+    <icon>plot.png</icon>
     <tags>
         <tag>Plotting</tag>
     </tags>
