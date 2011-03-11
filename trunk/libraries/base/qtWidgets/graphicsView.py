@@ -342,12 +342,16 @@ class graphicsView(QGraphicsView, widgetState):
             self.widgetSelectionRect.setZValue(-100)
             self.widgetSelectionRect.show()
     def mouseMoveEvent(self, ev):
-        point = self.mapToScene(ev.pos())
+        try:
+            point = self.mapToScene(ev.pos())
 
-        if self.widgetSelectionRect:
-            self.widgetSelectionRect.setRect(QRectF(self.mouseDownPosition, point))            
+            if self.widgetSelectionRect:
+                self.widgetSelectionRect.setRect(QRectF(self.mouseDownPosition, point))            
 
-        self.scene().update()
+            self.scene().update()
+        except:
+            ## this excepts if the underlying C object is deleted.  the only thing that is in here is either the scene or the widgetSelectionRect
+            pass
     def mouseReleaseEvent(self, ev):
         point = self.mapToScene(ev.pos())
         if self.widgetSelectionRect:

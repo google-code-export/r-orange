@@ -183,19 +183,19 @@ class redRGGPlot(QGraphicsView, widgetState):
         
         plotGridTab = self.optionsTab.createTabPage("Plot Grid Area", orientation = 'vertical')
         
-        self.pannelGridMajorTheme = comboBox(plotGridTab, label = 'Major Grid General Theme', toolTip = 'If Ignore, no options are set for this.  If not None overrides all other options set and sets the theme specified.', items = [('ignore', 'Ignore'), ('none', 'None'), ('theme_bw()', 'Black and White'), ('theme_blank()', 'Blank Theme')])
-        self.pannelGridMajorColour = colorButton(plotGridTab, label = "Major Grid Color")
-        self.pannelGridMajorSize = spinBox(plotGridTab, label = "Major Grid Size")
-        self.pannelGridMajorLineType = comboBox(plotGridTab, label = "Major Grid Line Type", items = [('solid', 'Solid'), ('dotted', 'Dotted'), ('dashed', 'Dashed')])
+        self.panelGridMajorTheme = comboBox(plotGridTab, label = 'Major Grid General Theme', toolTip = 'If Ignore, no options are set for this.  If not None overrides all other options set and sets the theme specified.', items = [('ignore', 'Ignore'), ('none', 'None'), ('theme_bw()', 'Black and White'), ('theme_blank()', 'Blank Theme')])
+        self.panelGridMajorColour = colorButton(plotGridTab, label = "Major Grid Color")
+        self.panelGridMajorSize = spinBox(plotGridTab, label = "Major Grid Size")
+        self.panelGridMajorLineType = comboBox(plotGridTab, label = "Major Grid Line Type", items = [('solid', 'Solid'), ('dotted', 'Dotted'), ('dashed', 'Dashed')])
         
-        self.pannelGridMinorTheme = comboBox(plotGridTab, label = 'Minor Grid General Theme', toolTip = 'If Ignore, no options are set for this.  If not None overrides all other options set and sets the theme specified.', items = [('ignore', 'Ignore'), ('none', 'None'), ('theme_bw()', 'Black and White'), ('theme_blank()', 'Blank Theme')])
-        self.pannelGridMinorColour = colorButton(plotGridTab, label = "Minor Grid Color")
-        self.pannelGridMinorSize = spinBox(plotGridTab, label = "Minor Grid Size")
-        self.pannelGridMinorLineType = comboBox(plotGridTab, label = "Minor Grid Line Type", items = [('solid', 'Solid'), ('dotted', 'Dotted'), ('dashed', 'Dashed')])
+        self.panelGridMinorTheme = comboBox(plotGridTab, label = 'Minor Grid General Theme', toolTip = 'If Ignore, no options are set for this.  If not None overrides all other options set and sets the theme specified.', items = [('ignore', 'Ignore'), ('none', 'None'), ('theme_bw()', 'Black and White'), ('theme_blank()', 'Blank Theme')])
+        self.panelGridMinorColour = colorButton(plotGridTab, label = "Minor Grid Color")
+        self.panelGridMinorSize = spinBox(plotGridTab, label = "Minor Grid Size")
+        self.panelGridMinorLineType = comboBox(plotGridTab, label = "Minor Grid Line Type", items = [('solid', 'Solid'), ('dotted', 'Dotted'), ('dashed', 'Dashed')])
         
-        pannelTab = self.optionsTab.createTabPage("Pannel Background Options", orientation = 'vertical')
+        panelTab = self.optionsTab.createTabPage("panel Background Options", orientation = 'vertical')
         
-        self.pannelBackgroundTheme = comboBox(pannelTab, label = 'Pannel Background Theme', toolTip = 'If Ignore, no options are set for this.  If not None overrides all other options set and sets the theme specified.', items = [('ignore', 'Ignore'), ('none', 'None'), ('theme_bw()', 'Black and White'), ('theme_blank()', 'Blank Theme')])
+        self.panelBackgroundTheme = comboBox(panelTab, label = 'panel Background Theme', toolTip = 'If Ignore, no options are set for this.  If not None overrides all other options set and sets the theme specified.', items = [('ignore', 'Ignore'), ('none', 'None'), ('theme_bw()', 'Black and White'), ('theme_blank()', 'Blank Theme')])
         
         textTab = self.optionsTab.createTabPage("Text Options", orientation = 'vertical')
         
@@ -459,23 +459,23 @@ class redRGGPlot(QGraphicsView, widgetState):
         try:
             options = []
             ## build the options from what we have set in the gui.
-            if self.pannelBackgroundTheme.currentId() != 'ignore':
-                if self.pannelBackgroundTheme.currentId() == 'none':
+            if self.panelBackgroundTheme.currentId() != 'ignore':
+                if self.panelBackgroundTheme.currentId() == 'none':
                     pass
                 else:
-                    options.append('opts(pannel.background = %s)' % self.pannelBackgroundTheme.currentId())
-            if self.pannelGridMajorTheme.currentId() != 'ignore':
-                if self.pannelGridMajorTheme.currentId() == 'none':
-                    options.append('opts(pannel.grid.major = theme_line(colour = "%(COLOUR)s", size = %(SIZE)s, linetype = "%(LINE)s))' % {'COLOUR':self.pannelGridMajorColour.color, 'SIZE':str(self.pannelGridMajorSize.value()), 'LINE':self.pannelGridMajorLineType.currentId()})
+                    options.append('opts(panel.background = %s)' % self.panelBackgroundTheme.currentId())
+            if self.panelGridMajorTheme.currentId() != 'ignore':
+                if self.panelGridMajorTheme.currentId() == 'none':
+                    options.append('opts(panel.grid.major = theme_line(colour = "%(COLOUR)s", size = %(SIZE)s, linetype = "%(LINE)s))' % {'COLOUR':self.panelGridMajorColour.color, 'SIZE':str(self.panelGridMajorSize.value()), 'LINE':self.panelGridMajorLineType.currentId()})
                 else:
-                    options.append('opts(pannel.grid.major = %s)' % self.pannelGridMajorTheme.currentId())
-            if self.pannelGridMinorTheme.currentId() != 'ignore':
-                if self.pannelGridMinorTheme.currentId() == 'none':
-                    options.append('opts(pannel.grid.minor = theme_line(colour = "%(COLOUR)s", size = %(SIZE)s, linetype = "%(LINE)s))' % {'COLOUR':self.pannelGridMinorColour.color, 'SIZE':str(self.pannelGridMinorSize.value()), 'LINE':self.pannelGridMinorLineType.currentId()})
+                    options.append('opts(panel.grid.major = %s)' % self.panelGridMajorTheme.currentId())
+            if self.panelGridMinorTheme.currentId() != 'ignore':
+                if self.panelGridMinorTheme.currentId() == 'none':
+                    options.append('opts(panel.grid.minor = theme_line(colour = "%(COLOUR)s", size = %(SIZE)s, linetype = "%(LINE)s))' % {'COLOUR':self.panelGridMinorColour.color, 'SIZE':str(self.panelGridMinorSize.value()), 'LINE':self.panelGridMinorLineType.currentId()})
                 else:
-                    options.append('opts(pannel.grid.major = %s)' % self.pannelGridMinorTheme.currentId())
+                    options.append('opts(panel.grid.major = %s)' % self.panelGridMinorTheme.currentId())
             if self.useTextOptions.currentId() != 'ignore':
-                options.append('opts(axis.title.x = theme_text(label = %(XLAB)s, colour = "%(XCOL)s, size = %(XSIZE)s, face = "%(XFACE)s", angle = %(XANGLE)s), axis.title.y = theme_text(label = %(YLAB)s, colour = "%(YCOL)s, size = %(YSIZE)s, face = "%(YFACE)s", angle = %(YANGLE)s), axis.text.x = theme_text(colour = "%(XTCOL)s, size = %(XTSIZE)s, face = "%(XTFACE)s", angle = %(XTANGLE)s), axis.text.y = theme_text(colour = "%(YTCOL)s, size = %(YTSIZE)s, face = "%(YTFACE)s", angle = %(YTANGLE)s))' % {'XLAB':self.axisTitleX.currentText(), 'XCOL':self.axisTitleXColor.color, 'XSIZE':str(self.axisTitleXSize.value()), 'XFACE':self.axisTitleXFontFace.currentId(), 'XANGLE':str(self.axisTitleXAngle.value()), 'YLAB':self.axisTitleY.currentText(), 'YCOL':self.axisTitleYColor.color, 'YSIZE':str(self.axisTitleYSize.value()), 'YFACE':self.axisTitleYFontFace.currentId(), 'YANGLE':str(self.axisTitleYAngle.value()), 'XTCOL':self.axisTextXColor.color, 'XTSIZE':str(self.axisTextXSize.value()), 'XTFACE':self.axisTextXFontFace.currentId(), 'XTANGLE':str(self.axisTextXAngle.value()), 'YTCOL':self.axisTextYColor.color, 'YTSIZE':str(self.axisTextYSize.value()), 'YTFACE':self.axisTextYFontFace.currentId(), 'YTANGLE':str(self.axisTextYAngle.value())})
+                options.append('opts(axis.title.x = theme_text(label = %(XLAB)s, colour = "%(XCOL)s, size = %(XSIZE)s, face = "%(XFACE)s", angle = %(XANGLE)s), axis.title.y = theme_text(label = %(YLAB)s, colour = "%(YCOL)s, size = %(YSIZE)s, face = "%(YFACE)s", angle = %(YANGLE)s), axis.text.x = theme_text(colour = "%(XTCOL)s, size = %(XTSIZE)s, face = "%(XTFACE)s", angle = %(XTANGLE)s), axis.text.y = theme_text(colour = "%(YTCOL)s, size = %(YTSIZE)s, face = "%(YTFACE)s", angle = %(YTANGLE)s))' % {'XLAB':self.axisTitleX.text(), 'XCOL':self.axisTitleXColor.color, 'XSIZE':str(self.axisTitleXSize.value()), 'XFACE':self.axisTitleXFontFace.currentId(), 'XANGLE':str(self.axisTitleXAngle.value()), 'YLAB':self.axisTitleY.text(), 'YCOL':self.axisTitleYColor.color, 'YSIZE':str(self.axisTitleYSize.value()), 'YFACE':self.axisTitleYFontFace.currentId(), 'YANGLE':str(self.axisTitleYAngle.value()), 'XTCOL':self.axisTextXColor.color, 'XTSIZE':str(self.axisTextXSize.value()), 'XTFACE':self.axisTextXFontFace.currentId(), 'XTANGLE':str(self.axisTextXAngle.value()), 'YTCOL':self.axisTextYColor.color, 'YTSIZE':str(self.axisTextYSize.value()), 'YTFACE':self.axisTextYFontFace.currentId(), 'YTANGLE':str(self.axisTextYAngle.value())})
             #self.R('print(%s + xlab("%s") + ylab("%s"))' % (fullquery, self.)  opts(grid.fill = 'white') + scale_x_discrete(limits = c('V', 'M2', 'M3'))
             if self.extraOptionsLineEdit.text() != '' and len(options) != 0:
                 self.printQuery = 'print(%s + %s + %s)' % (fullquery, self.extraOptionsLineEdit.text(), ' + '.join(options))
