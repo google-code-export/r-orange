@@ -28,9 +28,9 @@ class widgetMaker(OWRpy):
         # GUI
         # several tabs with different parameters such as loading in a function, setting parameters, setting inputs and outputs
         tabs = tabWidget.tabWidget(self.controlArea)
-        functionTab = tabs.createTabPage(_("Function Info"))
+        functionTab = tabs.createTabPage(_("Function Info"), orientation = 'vertical')
         codeTab = tabs.createTabPage(_("Code"))
-        box = widgetBox.widgetBox(functionTab, "")
+        box = widgetBox.widgetBox(functionTab)
         box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.infoa = widgetLabel.widgetLabel(box, '')
         self.packageName = lineEdit.lineEdit(box, label = _('Package:'), orientation = 1)
@@ -216,10 +216,6 @@ class widgetMaker(OWRpy):
     def makeHeader(self):
         self.headerCode = '"""\n'
         self.headerCode += '&lt;name&gt;'+self.functionName.text()+'&lt;/name&gt;\n'
-        self.headerCode += '&lt;author&gt;Generated using Widget Maker written by Kyle R. Covington&lt;/author&gt;\n'
-        self.headerCode += '&lt;description&gt;&lt;/description&gt;\n'
-        self.headerCode += '&lt;RFunctions&gt;'+self.packageName.text()+':'+self.functionName.text()+'&lt;/RFunctions&gt;\n'
-        self.headerCode += '&lt;tags&gt;Prototypes&lt;/tags&gt;\n'
         self.headerCode += '&lt;icon&gt;&lt;/icon&gt;\n'
         self.headerCode += '"""\n'
         self.headerCode += 'from OWRpy import * \n'
@@ -230,25 +226,25 @@ class widgetMaker(OWRpy):
     def makeInitHeader(self):
         self.initCode = ''
         self.initCode += 'class RedR'+self.functionName.text().replace('.', '_')+'(OWRpy): \n'
-        self.initCode += '\tsettingsList = []\n'
-        self.initCode += '\tdef __init__(self, parent=None, signalManager=None):\n'
+        self.initCode += '    settingsList = []\n'
+        self.initCode += '    def __init__(self, **kwargs):\n'
 
-        self.initCode += '\t\tOWRpy.__init__(self)\n'
+        self.initCode += '        OWRpy.__init__(self, **kwargs)\n'
         if (_('Allow Output') in self.functionAllowOutput.getChecked()) or (_('Show Output') in self.captureROutput.getChecked()):
-            self.initCode += '\t\tself.setRvariableNames(["'+self.functionName.text()+'"])\n'
-            self.initCode += '\t\tself.data = {}\n'
+            self.initCode += '        self.setRvariableNames(["'+self.functionName.text()+'"])\n'
+            self.initCode += '        self.data = {}\n'
         if unicode(self.packageName.text()) != '':
-            self.initCode += '\t\tif not self.require_librarys(["'+unicode(self.packageName.text())+'"]):\n'
-            self.initCode += '\t\t\tself.status.setText(_(\'R Libraries Not Loaded.\'))\n'
+            self.initCode += '        if not self.require_librarys(["'+unicode(self.packageName.text())+'"]):\n'
+            self.initCode += '            self.status.setText(_(\'R Libraries Not Loaded.\'))\n'
         if len(self.functionInputs.keys()) > 0:
             for inputName in self.functionInputs.keys():
-                self.initCode += "\t\tself.RFunctionParam_"+inputName+" = ''\n"
-            #self.initCode += '\t\tself.inputs = ['
+                self.initCode += "        self.RFunctionParam_"+inputName+" = ''\n"
+            #self.initCode += '        self.inputs = ['
             for element in self.functionInputs.keys():
-                self.initCode += '\t\tself.inputs.addInput("'+element+'", _("'+element+'"), signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+')\n'
+                self.initCode += '        self.inputs.addInput("'+element+'", _("'+element+'"), signals.'+self.functionInputs[element]+'.'+self.functionInputs[element]+', self.process'+element+')\n'
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.initCode += '\t\tself.outputs.addOutput("'+self.functionName.text()+' Output",_("'+self.functionName.text()+' Output"), signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+')\n'
-        self.initCode += '\t\t\n'
+            self.initCode += '        self.outputs.addOutput("'+self.functionName.text()+' Output",_("'+self.functionName.text()+' Output"), signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+')\n'
+        self.initCode += '        \n'
         
     def makeGUI(self):
         self.guiCode = ''
@@ -257,7 +253,7 @@ class widgetMaker(OWRpy):
             if element == '___':
                 continue
             else:
-                self.guiCode += '\t\tself.RFunctionParam'+element+'_'+unicode(self.fieldList[element]['ipt'])+' = redR'+unicode(self.fieldList[element]['ipt'])+'(self.controlArea, label = "'+element+':"'
+                self.guiCode += '        self.RFunctionParam'+element+'_'+unicode(self.fieldList[element]['ipt'])+' = redR'+unicode(self.fieldList[element]['ipt'])+'(self.controlArea, label = "'+element+':"'
                 ## ipt types ['lineEdit', 'radioBox', 'comboBox', 'checkBox']
                 
                 if self.fieldList[element]['ipt'] == 'lineEdit':
@@ -270,47 +266,47 @@ class widgetMaker(OWRpy):
                 elif self.fieldList[element]['ipt'] == 'checkBox':
                     self.guiCode += ')\n'
                 
-        self.guiCode += '\t\tredRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
+        self.guiCode += '        redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)\n'
         if _('Show Output') in self.captureROutput.getChecked():
-            self.guiCode += '\t\tself.RoutputWindow = redRtextEdit(self.controlArea, label = _("R Output Window"))\n'
-            #self.guiCode += '\t\tself.controlArea.layout().addWidget(self.RoutputWindow)\n'
+            self.guiCode += '        self.RoutputWindow = redRtextEdit(self.controlArea, label = _("R Output Window"))\n'
+            #self.guiCode += '        self.controlArea.layout().addWidget(self.RoutputWindow)\n'
 
     def makeProcessSignals(self):
         self.processSignals = ''
         for inputName in self.functionInputs.keys():
-            self.processSignals += '\tdef process'+inputName+'(self, data):\n'
+            self.processSignals += '    def process'+inputName+'(self, data):\n'
             
-            self.processSignals += '\t\tif data:\n'
-            self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=data.getData()\n'
-            self.processSignals += '\t\t\t#self.data = data\n'
+            self.processSignals += '        if data:\n'
+            self.processSignals += '            self.RFunctionParam_'+inputName+'=data.getData()\n'
+            self.processSignals += '            #self.data = data\n'
             if self.processOnConnect:
-                self.processSignals += '\t\t\tself.commitFunction()\n'
-            self.processSignals += '\t\telse:\n'
-            self.processSignals += '\t\t\tself.RFunctionParam_'+inputName+'=\'\'\n'
+                self.processSignals += '            self.commitFunction()\n'
+            self.processSignals += '        else:\n'
+            self.processSignals += '            self.RFunctionParam_'+inputName+'=\'\'\n'
                 
     def makeCommitFunction(self):
         self.commitFunction = ''
-        self.commitFunction += '\tdef commitFunction(self):\n'
+        self.commitFunction += '    def commitFunction(self):\n'
         for inputName in self.functionInputs.keys():
-            self.commitFunction += "\t\tif unicode(self.RFunctionParam_"+inputName+") == '': return\n"
+            self.commitFunction += "        if unicode(self.RFunctionParam_"+inputName+") == '': return\n"
         for element in self.fieldList.keys():
             if self.fieldList[element]['required'] == 'Required' and self.fieldList[element]['ipt'] == 'lineEdit':
-                self.commitFunction += "\t\tif unicode(self.RFunctionParam"+ element +"_lineEdit.text()) == '': return\n"
-        self.commitFunction += "\t\tinjection = []\n"
+                self.commitFunction += "        if unicode(self.RFunctionParam"+ element +"_lineEdit.text()) == '': return\n"
+        self.commitFunction += "        injection = []\n"
         for element in self.fieldList.keys():
             relement = element.replace('_', '.')
             if self.fieldList[element]['ipt'] == 'lineEdit':
-                self.commitFunction += "\t\tif unicode(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
-                self.commitFunction += "\t\t\tstring = '"+relement+"='+unicode(self.RFunctionParam"+ element +"_lineEdit.text())+''\n"
-                self.commitFunction += "\t\t\tinjection.append(string)\n"
+                self.commitFunction += "        if unicode(self.RFunctionParam"+ element +"_lineEdit.text()) != '':\n"
+                self.commitFunction += "            string = ',"+relement+"='+unicode(self.RFunctionParam"+ element +"_lineEdit.text())+''\n"
+                self.commitFunction += "            injection.append(string)\n"
             elif self.fieldList[element]['ipt'] == 'comboBox':
-                self.commitFunction += "\t\tstring = ',"+relement+"='+unicode(self.RFunctionParam"+element+"_comboBox.currentText())+''\n"
-                self.commitFunction += "\t\tinjection.append(string)\n"
+                self.commitFunction += "        string = ',"+relement+"='+unicode(self.RFunctionParam"+element+"_comboBox.currentText())+''\n"
+                self.commitFunction += "        injection.append(string)\n"
             else:
-                self.commitFunction += "\t\t## make commit function for self.RFunctionParam"+element+"_"+self.fieldList[element]['ipt']+"\n\n"
+                self.commitFunction += "        ## make commit function for self.RFunctionParam"+element+"_"+self.fieldList[element]['ipt']+"\n\n"
                 
-        self.commitFunction += "\t\tinj = ''.join(injection)\n"
-        self.commitFunction += "\t\tself.R("
+        self.commitFunction += "        inj = ''.join(injection)\n"
+        self.commitFunction += "        self.R("
         if ('Allow Output' in self.functionAllowOutput.getChecked()) or ('Show Output' in self.captureROutput.getChecked()):
             self.commitFunction += "self.Rvariables['"+self.functionName.text()+"']+'&lt;-"+self.functionName.text()+"("
         else:
@@ -318,7 +314,7 @@ class widgetMaker(OWRpy):
         for element in self.functionInputs.keys():
             if element != '___':
                 relement = element.replace('_', '.')
-                self.commitFunction += relement+"='+unicode(self.RFunctionParam_"+element+")+',"
+                self.commitFunction += relement+"='+unicode(self.RFunctionParam_"+element+")+'"
         #self.commitFunction = self.commitFunction[:-2] #remove the last element
         # for element in self.fieldList.keys():
             # if element == '...':
@@ -329,10 +325,10 @@ class widgetMaker(OWRpy):
         self.commitFunction += "'+inj+'"
         self.commitFunction += ")')\n"
         if 'Show Output' in self.captureROutput.getChecked():
-            self.commitFunction += "\t\tself.R(\'txt<-capture.output(\'+self.Rvariables[\'"+self.functionName.text()+"\']+\')\')\n"
-            self.commitFunction += "\t\tself.RoutputWindow.clear()\n"
-            self.commitFunction += "\t\ttmp = self.R('paste(txt, collapse =\x22\x5cn\x22)')\n"
-            self.commitFunction += "\t\tself.RoutputWindow.insertHtml('&lt;br&gt;&lt;pre&gt;'+tmp+'&lt;/pre&gt;')\n"
+            self.commitFunction += "        self.R(\'txt&lt;-capture.output(\'+self.Rvariables[\'"+self.functionName.text()+"\']+\')\')\n"
+            self.commitFunction += "        self.RoutputWindow.clear()\n"
+            self.commitFunction += "        tmp = self.R('paste(txt, collapse =\x22\x5cn\x22)')\n"
+            self.commitFunction += "        self.RoutputWindow.insertHtml('&lt;br&gt;&lt;pre&gt;'+tmp+'&lt;/pre&gt;')\n"
             
                     # pasted = self.rsession('paste(txt, collapse = " \n")')
         # self.thistext.insertPlainText('>>>'+self.command+'##Done')
@@ -340,9 +336,9 @@ class widgetMaker(OWRpy):
         
         
         if 'Allow Output' in self.functionAllowOutput.getChecked():
-            self.commitFunction += '\t\tnewData = signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+'(data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
-            self.commitFunction += '\t\t#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.\n'
-            self.commitFunction += '\t\tself.rSend("'+self.functionName.text()+' Output", newData)\n'
+            self.commitFunction += '        newData = signals.'+unicode(self.outputsCombobox.currentText())+'.'+unicode(self.outputsCombobox.currentText())+'(self, data = self.Rvariables["'+self.functionName.text()+'"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.\n'
+            self.commitFunction += '        #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.\n'
+            self.commitFunction += '        self.rSend("'+self.functionName.text()+' Output", newData)\n'
 
     def combineCode(self):
         self.completeCode = '<pre>'

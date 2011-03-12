@@ -45,7 +45,7 @@ def readCategories(force = False):
                         wmod = imp.load_source(v.fileName, v.fullName)
                     except Exception as inst:
                         redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException()) 
-                        redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
+                        #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('<b>Error loading meta data for %s; %s</b>') % (metaFile, unicode(inst)))
                         continue
                 return categories
     # print '##########################in readCategories'

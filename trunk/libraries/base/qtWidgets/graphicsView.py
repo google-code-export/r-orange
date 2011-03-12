@@ -373,10 +373,12 @@ class graphicsView(QGraphicsView, widgetState):
         
         
             
-    def addImage(self, image, imageType = None):
+    def addImage(self, image = None, imageType = None):
         ## add an image to the view
         #self.image = os.path.abspath(image)
         #print self.image
+        if image == None:
+            image = self.imageFileName
         print _('Addign Image')
         if not self.scene():
             print _('loading scene')
@@ -596,6 +598,8 @@ class graphicsView(QGraphicsView, widgetState):
         self._dwidth = dwidth
         self._dheight = dheight
         self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
+    
+    
     def setExtrasLineEditEnabled(self, enabled = True):
         
         self.extrasLineEdit.enabled(enabled)
@@ -621,7 +625,6 @@ class graphicsView(QGraphicsView, widgetState):
                 fullquery = '%s(%s)' % (self.function, self.query)
         else:
             fullquery = self.query
-        
         
         self.R(fullquery, wantType = 'NoConversion')
         if len(self.layers) > 0:
