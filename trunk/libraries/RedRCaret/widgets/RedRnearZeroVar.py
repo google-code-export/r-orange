@@ -16,8 +16,8 @@ import libraries.base.signalClasses as signals
 
 class RedRnearZeroVar(OWRpy): 
 	settingsList = []
-	def __init__(self, parent=None, signalManager=None):
-		OWRpy.__init__(self)
+	def __init__(self, **kwargs):
+		OWRpy.__init__(self, **kwargs)
 		self.setRvariableNames(["nearZeroVar"])
 		self.data = {}
 		self.RFunctionParam_x = ''
@@ -48,6 +48,6 @@ class RedRnearZeroVar(OWRpy):
 			injection.append(string)
 		inj = ''.join(injection)
 		self.R(self.Rvariables['nearZeroVar']+'<-nearZeroVar(x='+unicode(self.RFunctionParam_x)+','+inj+')')
-		newData = signals.RArbitraryList.RArbitraryList(data = self.Rvariables["nearZeroVar"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+		newData = signals.RArbitraryList.RArbitraryList(self, data = self.Rvariables["nearZeroVar"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
 		#newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
 		self.rSend("nearZeroVar Output", newData)

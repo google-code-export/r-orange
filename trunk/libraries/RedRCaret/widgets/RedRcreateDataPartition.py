@@ -16,8 +16,8 @@ import libraries.base.signalClasses as signals
 
 class RedRcreateDataPartition(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.require_librarys(["caret"])
         self.setRvariableNames(["createDataPartition", 'dataOutputList'])
         self.data = {}
@@ -83,5 +83,5 @@ class RedRcreateDataPartition(OWRpy):
             else:
                 self.R('%s$Sample_%s<-%s[-%s[[%s]],]' % (self.Rvariables['dataOutputList'], unicode(i+1), self.RFunctionParam_y, self.Rvariables['createDataPartition'], unicode(i+1)))
         
-        newDataOutputList = signals.RList.RList(data = self.Rvariables['dataOutputList'])
+        newDataOutputList = signals.RList.RList(self, data = self.Rvariables['dataOutputList'])
         self.rSend("dataOutputList", newDataOutputList)

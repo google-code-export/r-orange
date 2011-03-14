@@ -16,8 +16,8 @@ import libraries.base.signalClasses as signals
 
 class RedRpredict(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(["predict", 'tempData'])
         self.data = {}
         self.RFunctionParam_object = ''
@@ -64,5 +64,5 @@ class RedRpredict(OWRpy):
         self.RoutputWindow.clear()
         tmp = self.R('paste(txt, collapse ="\n")')
         self.RoutputWindow.insertPlainText(tmp)
-        new = signals.RModelFit.RModelFit(data = self.Rvariables['predict'])
+        new = signals.RModelFit.RModelFit(self, data = self.Rvariables['predict'])
         self.rSend('predict Output', new)

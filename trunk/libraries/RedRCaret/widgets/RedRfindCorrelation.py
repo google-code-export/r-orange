@@ -16,8 +16,8 @@ import libraries.base.signalClasses as signals
 
 class RedRfindCorrelation(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.require_librarys(["caret"])
         self.setRvariableNames(["findCorrelation"])
         self.data = {}
@@ -86,7 +86,7 @@ class RedRfindCorrelation(OWRpy):
             self.R(self.Rvariables['findCorrelationOutput']+'<-list()', wantType = 'NoConversion')
             for i in range(self.R('length('+self.RFunctionParam_data+')')):
                 self.R(self.Rvariables['findCorrelationOutput']+'[['+unicode(i+1)+']]<-'+self.RFunctionParam_data+'[['+unicode(i + 1)+']][, -'+remove+']')
-            newData = signals.RList.RList(data = self.Rvariables['findCorrelationOutput'])
+            newData = signals.RList.RList(self, data = self.Rvariables['findCorrelationOutput'])
             self.rSend("findCorrelation Output List", newData)
             self.rSend("findCorrelation Output", None)
         if self.dataClass == 'data.frame':
@@ -100,7 +100,7 @@ class RedRfindCorrelation(OWRpy):
                 self.R(self.Rvariables['findCorrelation']+'<-findCorrelation(x=tempCor'+inj+')')
                 remove = self.Rvariables['findCorrelation']
             self.R(self.Rvariables['findCorrelationOutput']+'<-'+self.RFunctionParam_data+'[, -'+remove+']', wantType = 'NoConversion')
-            newData = signals.RDataFrame.RDataFrame(data = self.Rvariables['findCorrelationOutput'], parent = self.Rvariables['findCorrelationOutput'])
+            newData = signals.RDataFrame.RDataFrame(self, data = self.Rvariables['findCorrelationOutput'], parent = self.Rvariables['findCorrelationOutput'])
             self.rSend("findCorrelation Output", newData)
             self.rSend("findCorrelation Output List", None)
         self.RoutputWindow.clear()

@@ -16,8 +16,8 @@ import libraries.base.signalClasses as signals
 
 class RedRpreProcess(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.require_librarys(["caret"])
         self.setRvariableNames(["preProcess", 'preProcess_values'])
         self.data = {}
@@ -61,5 +61,5 @@ class RedRpreProcess(OWRpy):
         newData = signals.RModelFit.RModelFit(data = self.Rvariables["preProcess"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("preProcess Output", newData)
-        newData_values = signals.RList.RList(data = self.Rvariables['preProcess_values'])
+        newData_values = signals.RList.RList(self, data = self.Rvariables['preProcess_values'])
         self.rSend('preProcess_values', newData_values)

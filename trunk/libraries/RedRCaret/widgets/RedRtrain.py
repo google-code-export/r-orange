@@ -17,8 +17,8 @@ import libraries.base.signalClasses as signals
 
 class RedRtrain(OWRpy): 
     settingsList = []
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.require_librarys(["caret"])
         self.setRvariableNames(["train", 'tempData'])
         self.data = {}
@@ -59,20 +59,11 @@ class RedRtrain(OWRpy):
         #if unicode(self.RFunctionParamtrControl_lineEdit.text()) != '':
         string = ',trControl= trainControl(verbose = FALSE, returnResamp = "all")'#+unicode(self.RFunctionParamtrControl_lineEdit.text())+''
         injection.append(string)
-        
-        # formula = self.formula.Formula()
-        # if formula[0] != '':
-            # string = ',form='+formula[0]+' ~ '  ##unicode(self.RFunctionParamform_lineEdit.text())+''
-            # if formula[1] != '':
-                # string += formula[1]
-            # else:
-                # string += '.'
-            # injection.append(string)
         string = ',method=\"'+unicode(self.RFunctionParammethod_comboBox.currentText())+'\"'
         injection.append(string)
         inj = ''.join(injection)
         self.R(self.Rvariables['train']+'<-train(x='+unicode(self.RFunctionParam_data)+'[[\''+unicode(self.trainingData.currentText())+'\']][,!names('+unicode(self.RFunctionParam_data)+'[[\''+unicode(self.trainingData.currentText())+'\']]) %in% c(\''+unicode(self.resultVariable.currentText())+'\')], y = '+unicode(self.RFunctionParam_data)+'[[\''+unicode(self.trainingData.currentText())+'\']][,c(\''+unicode(self.resultVariable.currentText())+'\')]'+inj+')')
-        newData = signals.RModelFit.RModelFit(data = self.Rvariables["train"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+        newData = signals.RModelFit.RModelFit(self, data = self.Rvariables["train"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("train Output", newData)
         self.R('txt<-capture.output('+self.Rvariables['train']+')', wantType = 'NoConversion')
