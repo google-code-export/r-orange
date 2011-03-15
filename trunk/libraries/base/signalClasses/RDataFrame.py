@@ -43,7 +43,8 @@ class RDataFrame(RList, StructuredDict):
 
     def _convertToStructuredDict(self):
         if not self.structuredDict:
-            dictData = self.R(self.data, wantType = 'dict', silent = False)
+            dictData = self.R('as.data.frame(%s)' % self.data, wantType = 'dict', silent = False)
+            
             dictData['row_names'] = self.R('rownames('+self.data+')', wantType = 'list')
             keys = ['row_names']
             keys += self.R('colnames('+self.data+')')

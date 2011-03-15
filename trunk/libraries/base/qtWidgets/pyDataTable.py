@@ -1,7 +1,7 @@
 ## python filter table
 
 from redRGUI import widgetState
-import os.path, log
+import os.path, redRLog
 import redREnviron, redRReports
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -18,7 +18,7 @@ from PyQt4.QtGui import *
 import sip
 import redRi18n
 _ = redRi18n.get_(package = 'base')
-class pyDataTable(widgetState, QTableView):
+class pyDataTable(widgetState, QTableWidget):
     def __init__(self,widget,label=None, displayLabel=True, includeInReports=True, data=None, 
     editable=False, sortable=True, filterable=False,
     selectionBehavior=QAbstractItemView.SelectRows, 
@@ -35,7 +35,7 @@ class pyDataTable(widgetState, QTableView):
             mainBox = widgetBox(self.controlArea,orientation='vertical')
         self.label = label
         
-        QTableView.__init__(self,self.controlArea)
+        QTableWidget.__init__(self,self.controlArea)
         mainBox.layout().addWidget(self)
         box = widgetBox(mainBox,orientation='horizontal')
         leftBox = widgetBox(box,orientation='horizontal')
@@ -93,8 +93,23 @@ class pyDataTable(widgetState, QTableView):
         
         if callback:
             QObject.connect(self, SIGNAL('clicked (QModelIndex)'), callback)
+            
     def setTable(self, data):
-        ## data is of the Unstructured Dict object type.  This gives access to the keys object
+        keys = data.keys()
+        self.setColumnCount(len(keys))
+        l = 0
+        for k in keys:
+            if type(data[k]) in [list, tuple]:
+                if len(data[k]) > l:
+                    l = len(data[k])
+        self.setRowCount(l)
+        self.setHorizontalHeaderLabels(keys)
+        for k in range(len(keys)):
+            if type(data[keys[k]]) in [list, tuple]:
+                for i in range(len(data[keys[k]])):
+                    self.setItem(i, k, QTableWidgetItem(data[keys[k]][i]))
+            else:
+                self.setItem(0, k, QTableWidgetItem(str(data[keys[k]])))
         
     def resizeColumnsToContents(self):
         QTableView.resizeColumnsToContents(self)
@@ -137,6 +152,8 @@ class pyDataTable(widgetState, QTableView):
 
         self.data = data['data']
         self.setTable(self.data)
+    def headerClicked(self):
+        pass
         
 class MyTableModel(QAbstractTableModel):   # a table model based on the filterTable table model but centered around data in the UnstructuredDict signal class.
     def __init__(self,data,parent, filteredOn = [], editable=False,
