@@ -7,6 +7,7 @@
 import redRGUI
 from OWRpy import *
 from libraries.base.signalClasses.RDataFrame import RDataFrame as redRRDataFrame
+from libraries.base.signalClasses.UnstructuredDict import UnstructuredDict
 from libraries.base.qtWidgets.table import table
 from libraries.base.qtWidgets.pyDataTable import pyDataTable as pyDataTable
 from libraries.base.qtWidgets.button import button
@@ -27,9 +28,9 @@ class dataEntry(OWRpy):
         self.savedData = None
         self.setRvariableNames(['table', 'table_cm'])
         
-        self.inputs.addInput('id0', _('Data Table'), redRRDataFrame, self.processDF)
+        self.inputs.addInput('id0', _('Data Table'), UnstructuredDict, self.processDF)
 
-        self.outputs.addOutput('id0', _('Data Table'), redRRDataFrame)
+        self.outputs.addOutput('id0', _('Data Table'), UnstructuredDict)
         #GUI.
         
         redRCommitButton(self.bottomAreaRight, _('Commit'), self.commitTable)
@@ -96,6 +97,7 @@ class dataEntry(OWRpy):
                 self.data.getData()[current].append(None)
         self.table.setTable(self.data)
         self.rSend('id0', self.data)
+    
     def commitNewColumn(self):
         labels = []
         for i in range(self.dataTable.columnCount()):
@@ -111,7 +113,7 @@ class dataEntry(OWRpy):
         self.columnDialog.hide()
     def processDF(self, data):
         if data:
-            self.data = data.copy()
+            self.data = data.getData().copy()
             self.populateTable()
         else:
             return
@@ -136,7 +138,7 @@ class dataEntry(OWRpy):
             self.rowCount += 1
         if row > self.maxRow: self.maxRow = row #update the extremes of the row and cols
         if col > self.maxCol: self.maxCol = col
-        self.data.getData()[self.data.keys[col]][row] = unicode(self.dataTable.item(row, col).text())
+        self.data[self.data.keys()[col]][row] = unicode(self.dataTable.item(row, col).text())
         self.dataTable.setCurrentCell(row+1, col)
 
     def commitTable(self):
