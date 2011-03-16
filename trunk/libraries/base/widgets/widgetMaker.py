@@ -30,7 +30,7 @@ class widgetMaker(OWRpy):
         tabs = tabWidget.tabWidget(self.controlArea)
         functionTab = tabs.createTabPage(_("Function Info"), orientation = 'vertical')
         codeTab = tabs.createTabPage(_("Code"))
-        box = widgetBox.widgetBox(functionTab)
+        box = widgetBox.widgetBox(functionTab, orientation = 'horizontal')
         box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.infoa = widgetLabel.widgetLabel(box, '')
         self.packageName = lineEdit.lineEdit(box, label = _('Package:'), orientation = 1)
@@ -226,8 +226,8 @@ class widgetMaker(OWRpy):
     def makeInitHeader(self):
         self.initCode = ''
         self.initCode += 'class RedR'+self.functionName.text().replace('.', '_')+'(OWRpy): \n'
-        self.initCode += '    settingsList = []\n'
-        self.initCode += '    def __init__(self, **kwargs):\n'
+        self.initCode += '\tsettingsList = []\n'
+        self.initCode += '\tdef __init__(self, **kwargs):\n'
 
         self.initCode += '        OWRpy.__init__(self, **kwargs)\n'
         if (_('Allow Output') in self.functionAllowOutput.getChecked()) or (_('Show Output') in self.captureROutput.getChecked()):

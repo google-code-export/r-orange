@@ -30,7 +30,11 @@ class tabWidget(QTabWidget,widgetState):
             self.addTab(widgetToAdd, name)
         self.tabs[name] = widgetToAdd
         
-        return widgetToAdd 
+        return widgetToAdd
+    def currentTab(self):
+        return self.tabs.keys()[self.currentIndex()]
+    def removeTab(self, name):
+        QTabWidget.removeTab(self, self.tabs.keys().index(name))
     def getSettings(self):
         r= {'currentIndex': self.currentIndex()}
         return r

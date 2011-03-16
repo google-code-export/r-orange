@@ -22,8 +22,8 @@ class RedRks_test(OWRpy):
             self.data = {}
             self.RFunctionParam_y = ''
             self.RFunctionParam_x = ''
-            self.inputs.addInput('id0', 'y', redRRVector, self.processy)
-            self.inputs.addInput('id1', 'x', redRRVector, self.processx)
+            self.inputs.addInput('id0', 'y', signals.RVector.RVector, self.processy)
+            self.inputs.addInput('id1', 'x', signals.RVector.RVector, self.processx)
 
             
             self.RFunctionParamalternative_comboBox = comboBox(self.controlArea, label = "alternative:", items = ["two.sided","less","greater"])

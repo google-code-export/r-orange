@@ -392,7 +392,7 @@ class graphicsView(QGraphicsView, widgetState):
             print imageType, _('Error occured')
             raise Exception, _('Image type specified is not a valid type for this widget.')
         if imageType == 'svg':
-            self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
+            #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
         elif imageType in ['png', 'jpeg']:
             mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
