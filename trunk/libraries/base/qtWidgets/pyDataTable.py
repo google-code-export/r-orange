@@ -110,7 +110,7 @@ class pyDataTable(widgetState, QTableWidget):
                     self.setItem(i, k, QTableWidgetItem(data[keys[k]][i]))
             else:
                 self.setItem(0, k, QTableWidgetItem(str(data[keys[k]])))
-        
+        pass
     def resizeColumnsToContents(self):
         QTableView.resizeColumnsToContents(self)
         for i in range(self.tm.columnCount(self)):

@@ -446,9 +446,9 @@ class graphicsView(QGraphicsView, widgetState):
             if unicode(self.extrasLineEdit.text()) != '':
                 self.extras += ', '+unicode(self.extrasLineEdit.text())
             if self.extras != '':
-                fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
+                query = '%s(%s, %s)' % (self.function, self.query, self.extras)
             else:
-                fullquery = '%s(%s)' % (self.function, self.query)
+                query = '%s(%s)' % (self.function, self.query)
         else:
             query = self.query
         self.R(query, wantType = 'NoConversion')
@@ -543,11 +543,11 @@ class graphicsView(QGraphicsView, widgetState):
             
         if imageType == 'png':
             self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dheight*100)+', height = '+unicode(dheight*100)
+                +unicode(dheight*50)+', height = '+unicode(dheight*10)
                 +')', wantType = 'NoConversion')
         elif imageType == 'jpeg':
             self.R('jpeg(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dheight*100)+', height = '+unicode(dheight*100)
+                +unicode(dheight*50)+', height = '+unicode(dheight*10)
                 +')', wantType = 'NoConversion')
                 
     def plot(self, query, function = 'plot', dwidth=5, dheight=5, data = None, legend = False):

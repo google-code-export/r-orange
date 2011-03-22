@@ -52,6 +52,7 @@ def readCategories(force = False):
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Loading repository of packages.'))
     global widgetsWithError 
     widgetDirName = os.path.realpath(redREnviron.directoryNames["libraryDir"])
+    
     canvasSettingsDir = os.path.realpath(redREnviron.directoryNames["canvasSettingsDir"])
     
     directories = []
@@ -59,7 +60,12 @@ def readCategories(force = False):
         directory = os.path.join(widgetDirName, dirName)
         if os.path.isdir(directory):
             directories.append((dirName, directory, ""))
-
+    # addOnDirName = os.path.realpath(redREnviron.directoryNames['addOnDirName'])
+    # if os.path.isdir(addOnDirName):  ## can't implement because everything imports from libraries
+        # for dirName in os.listdir(addOnDirName):
+            # directory = os.path.join(addOnDirName, dirName)
+            # if os.path.isdir(directory):
+                # directories.append((dirName, directory, ""))
     categories = {'widgets':[], 'templates':[], 'tags': None}     
     allWidgets = []
     theTags = xml.dom.minidom.parseString('<tree></tree>')

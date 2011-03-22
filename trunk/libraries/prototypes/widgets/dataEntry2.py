@@ -1,5 +1,5 @@
 """
-<name>Data Entry2</name>
+<name>Data Entry</name>
 <description>A table input data entry into a data.frame.</description>
 <tags>Prototypes</tags>
 <RFunctions>base:data.frame</RFunctions>
@@ -21,8 +21,8 @@ class dataEntry2(OWRpy):
     def __init__(self, parent=None, signalManager=None):
         OWRpy.__init__(self, wantGUIDialog = 1)
 
-        self.rowCount = 1
-        self.colCount = 1
+        self.rowCount = 10
+        self.colCount = 10
         self.maxRow = 0 # sets the most extreme row and cols
         self.maxCol = 0
         self.classes = None
@@ -48,8 +48,8 @@ class dataEntry2(OWRpy):
         self.columnDialog.hide()
         self.columnNameLineEdit = lineEdit(self.columnDialog, label = 'Column Name:')
         button(self.columnDialog, 'Commit', callback = self.commitNewColumn)
-        button(self.bottomAreaRight, "Add Column", callback = self.addColumn)
-        button(self.bottomAreaRight, "Add Row", callback = self.addRow)
+        #button(self.bottomAreaRight, "Add Column", callback = self.addColumn)
+        #button(self.bottomAreaRight, "Add Row", callback = self.addRow)
         box = groupBox(self.controlArea, label = "Table", 
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         #self.splitCanvas.addWidget(box)

@@ -207,6 +207,7 @@ class widgetSession():
                         try:
                             getattr(self, k).loadSettings(v['redRGUIObject'])
                             getattr(self, k).setDefaultState(v['redRGUIObject'])
+                            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading using 180 setting was successful.')
                         except:
                             #print 'Exception occured during loading of settings.  These settings may not be the same as when the widget was closed.'
                             redRLog.log(redRLog.REDRCORE, redRLog.ERROR,redRLog.formatException())

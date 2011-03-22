@@ -414,7 +414,7 @@ def loadDocument(filename, caption = None, freeze = 0, importing = 0):
     schema = doc.firstChild
     try:
         
-        version = schema.getElementsByTagName("header")[0].getAttribute('version')
+        version = doc.getElementsByTagName("header")[0].getAttribute('version')
         if not version:
             redRLog.log(redRLog.REDRCORE, redRLog.WARNING, _('Version Tag Missing, using Red-R 1.80 loading specifications'))            ## we should move everything to the earlier versions of orngDoc for loading.
             loadDocument180(filename, caption = None, freeze = 0, importing = 0)

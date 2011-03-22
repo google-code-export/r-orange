@@ -27,6 +27,7 @@ def __getDirectoryNames():
     dirs['examplesDir'] = os.path.join(dirs['redRDir'], "Examples")
     dirs['includes'] = os.path.join(dirs['redRDir'], "includes")
     dirs['picsDir'] = os.path.join(dirs['widgetDir'],'base', "icons")
+    #dirs['addOnDirName'] = os.path.join(os.path.split(dirs['redRDir'])[0], 'RedRAddOns')
     #dirs['addOnsDir'] = os.path.join(dirs['redRDir'], "add-ons")
     
     ####### What does this code block do????################
