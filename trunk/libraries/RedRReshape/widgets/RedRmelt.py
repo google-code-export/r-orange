@@ -12,6 +12,7 @@ from libraries.base.qtWidgets.radioButtons import radioButtons as redRradioButto
 from libraries.base.qtWidgets.comboBox import comboBox as redRcomboBox 
 from libraries.base.qtWidgets.checkBox import checkBox as redRcheckBox 
 from libraries.base.qtWidgets.textEdit import textEdit as redRtextEdit 
+from libraries.base.qtWidgets.gridBox import gridBox
 import libraries.base.signalClasses as signals
 
 class RedRmelt(OWRpy): 
@@ -24,11 +25,12 @@ class RedRmelt(OWRpy):
         self.RFunctionParam_data = ''
         self.inputs.addInput("data", "Data Table", [signals.RDataFrame.RDataFrame, signals.RMatrix.RMatrix], self.processdata)
         self.outputs.addOutput("melt Output","Molten Data", signals.RDataFrame.RDataFrame)
-        
-        self.RFunctionParamna_rm_radioButtons = redRradioButtons(self.controlArea, label = "Remove NA's:", buttons = ["TRUE","FALSE"], setChecked = "TRUE")
-        self.RFunctionParammeasure_vars_comboBox = redRcomboBox(self.controlArea, label = "Measure Variables (Values):")
-        self.RFunctionParamvariable_name_lineEdit = redRlineEdit(self.controlArea, label = "New Variable Column Name:", text = 'variable')
-        self.RFunctionParamid_vars_listBox = redRListBox(self.controlArea, label = "id_vars:")
+        box = gridBox(self.controlArea)
+        self.RFunctionParamna_rm_radioButtons = redRradioButtons(self.controlArea, label = "Remove NA's:", buttons = ["TRUE","FALSE"], setChecked = "TRUE", orientation = 'horizontal')
+        self.RFunctionParammeasure_vars_listBox = redRListBox(box.cell(0,0), label = "Measure Variables (Values):")
+        self.RFunctionParammeasure_vars_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        #self.RFunctionParamvariable_name_lineEdit = redRlineEdit(self.controlArea, label = "New Variable Column Name:", text = 'variable')
+        self.RFunctionParamid_vars_listBox = redRListBox(box.cell(0,1), label = "Static Variables:")
         self.RFunctionParamid_vars_listBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
         self.RoutputWindow = redRtextEdit(self.controlArea, label = "R Output Window")
@@ -37,16 +39,16 @@ class RedRmelt(OWRpy):
             self.RFunctionParam_data=data.getData()
             #self.data = data
             if data.getClass_data() == 'matrix':
-                self.RFunctionParammeasure_vars_comboBox.setEnabled(False)
+                self.RFunctionParammeasure_vars_listBox.setEnabled(False)
                 self.RFunctionParamid_vars_listBox.setEnabled(False)
-                self.RFunctionParammeasure_vars_comboBox.hide()
+                self.RFunctionParammeasure_vars_listBox.hide()
                 self.RFunctionParamid_vars_listBox.hide()
             else:
-                self.RFunctionParammeasure_vars_comboBox.show()
+                self.RFunctionParammeasure_vars_listBox.show()
                 self.RFunctionParamid_vars_listBox.show()
-                self.RFunctionParammeasure_vars_comboBox.setEnabled(True)
+                self.RFunctionParammeasure_vars_listBox.setEnabled(True)
                 self.RFunctionParamid_vars_listBox.setEnabled(True)
-                self.RFunctionParammeasure_vars_comboBox.update(['None'] + self.R('names('+self.RFunctionParam_data+')', wantType = 'list'))
+                self.RFunctionParammeasure_vars_listBox.update(['None'] + self.R('names('+self.RFunctionParam_data+')', wantType = 'list'))
                 self.RFunctionParamid_vars_listBox.update(self.R('names('+self.RFunctionParam_data+')'))
             
             self.commitFunction()
@@ -57,12 +59,12 @@ class RedRmelt(OWRpy):
         injection = []
         ## make commit function for self.RFunctionParamna_rm_radioButtons
         injection.append(',na.rm = '+str(self.RFunctionParamna_rm_radioButtons.getChecked()))
-        if self.RFunctionParammeasure_vars_comboBox.isEnabled() and unicode(self.RFunctionParammeasure_vars_comboBox.currentText()) != unicode('None'):
-            string = ',measure.vars= "'+str(self.RFunctionParammeasure_vars_comboBox.currentText())+'"'
+        if self.RFunctionParammeasure_vars_listBox.isEnabled() and len(self.RFunctionParammeasure_vars_listBox.selectedItems()) > 0:
+            string = ',measure.vars= c("'+'","'.join([unicode(i) for i in self.RFunctionParammeasure_vars_listBox.selectedItems()])+'")'
             injection.append(string)
-        if str(self.RFunctionParamvariable_name_lineEdit.text()) != '':
-            string = ',variable_name="'+str(self.RFunctionParamvariable_name_lineEdit.text())+'"'
-            injection.append(string)
+        #if str(self.RFunctionParamvariable_name_lineEdit.text()) != '':
+            #string = ',variable_name="'+str(self.RFunctionParamvariable_name_lineEdit.text())+'"'
+            #injection.append(string)
         if self.RFunctionParamid_vars_listBox.isEnabled() and len(self.RFunctionParamid_vars_listBox.selectedItems()) > 0:
             string = ',id.vars= c("'+'","'.join([unicode(i) for i in self.RFunctionParamid_vars_listBox.selectedItems()])+'")'   #unicode(self.RFunctionParamid_vars_comboBox.currentText())+''
             injection.append(string)
