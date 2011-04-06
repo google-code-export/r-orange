@@ -29,7 +29,7 @@ class aplot(OWRpy):
         # self.RFunctionParam_x = 'data'
         self.data = 'iris'
         self.plotArea = graphicsView2(self.controlArea,label='Plot', displayLabel=False)
-        self.plotArea.hideTab('Points/Lines')
+        #self.plotArea.hideTab('Points/Lines')
         
         self.plotArea.setCustomPlot(self.updatePlot)
         

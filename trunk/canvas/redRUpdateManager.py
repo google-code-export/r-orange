@@ -67,7 +67,7 @@ class updateManager(QMainWindow):
         self.availableUpdate = self.parseUpdatesXML(self.updateFile)
         print 'avaliable', self.availableUpdate
         
-        if (self.availableUpdate['redRVersion'] == redREnviron.version['REDRVERSION'] 
+        if self.availableUpdate and (self.availableUpdate['redRVersion'] == redREnviron.version['REDRVERSION'] 
         and self.availableUpdate['SVNVersion'] > redREnviron.version['SVNVERSION']):
             print auto, self.availableUpdate['SVNVersion'] in redREnviron.settings['ignoredUpdates']
             if auto and self.availableUpdate['SVNVersion'] in redREnviron.settings['ignoredUpdates']:
@@ -133,6 +133,8 @@ class updateManager(QMainWindow):
                     update['url'] = self.getXMLText(updatesNode.getElementsByTagName('src')[0].childNodes)
                 else:
                     raise Exception('Unknown type')
+                    return False
+                    
                 update['SVNVersion'] = self.getXMLText(updatesNode.getElementsByTagName('SVNVersion')[0].childNodes)
                 update['date'] = self.getXMLText(updatesNode.getElementsByTagName('date')[0].childNodes)
                 update['changeLog'] = self.getXMLText(updatesNode.getElementsByTagName('changeLog')[0].childNodes)

@@ -3,7 +3,7 @@
     <Author>Kyle R Covington kyle@red-r.org</Author>
     <RLibraries>reshape</RLibraries>
     <Version>
-        <Number>.9</Number>
+        <Number>1</Number>
         <Stability>New</Stability>
         <Date>2010-09-28</Date>
     </Version>
