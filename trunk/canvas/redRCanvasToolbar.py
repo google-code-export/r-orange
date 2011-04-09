@@ -440,8 +440,8 @@ class redRCanvasToolbarandMenu():
         if name.isEmpty(): return
         name = unicode(name)
         redREnviron.settings['saveSchemaDir'] = os.path.split(unicode(name))[0]
-        self.canvas.packageManagerGUI.show()
-        self.canvas.packageManagerGUI.installPackageFromFile(unicode(name))
+        self.canvas.packageManager.show()
+        self.canvas.packageManager.installPackageFromFile(unicode(name))
 
     def menuOpenOnlineOrangeHelp(self):
         import webbrowser
