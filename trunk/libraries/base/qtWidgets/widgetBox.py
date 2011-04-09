@@ -1,7 +1,6 @@
 from redRGUI import widgetState
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from libraries.base.qtWidgets.button import button as redRButton
 import redREnviron, os
 import redRi18n
 _ = redRi18n.get_(package = 'base')

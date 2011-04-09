@@ -148,10 +148,17 @@ class filterTable(widgetState, QTableView):
         self.selectionCallback(tmpData)
         self.working = False
         """    
+    def setDataModel(self, data):
+        self.tm = data.getTableModel()
+        self.setModel(self.tm)
+        self.dataInfo.setText(self.tm.getSummary())
+        
+        
+        
     def setStructuredDictTable(self, data):
         self.tm = StructuredDictTableModel(data, self, [], False, False, True)
         self.setModel(self.tm)
-        
+        self.dataInfo.setText(self.tm.getSummary())
     def setRTable(self,data, setRowHeaders = 1, setColHeaders = 1,filtered=False):
         # print _('in setRTable'), data
         if self.R('class(%s)' %data, silent=True) != 'data.frame':
@@ -241,8 +248,8 @@ class filterTable(widgetState, QTableView):
     def headerClicked(self,val):
         
         selectedCol = self.horizontalHeader().logicalIndexAt(val) + 1
+        #self.tm.createMenu(selectedCol)
         self.createMenu(selectedCol)
-    
     def getData(self,row,col):
         if not self.tm: return False
         return self.tm.data(self.tm.createIndex(row,col),Qt.DisplayRole).toString()
@@ -287,6 +294,7 @@ class filterTable(widgetState, QTableView):
         
         self.numericLabel = widgetLabel(self.menu,label=_('Enter a value for one of these critera:'))
         self.numericLabel.hide()
+        
         self.stringLabel = widgetLabel(self.menu,label=_('Enter a value for one of these critera (case sensitive):'))
         self.stringLabel.hide()
         
@@ -301,6 +309,7 @@ class filterTable(widgetState, QTableView):
         self.optionsBox.layout().setAlignment(Qt.AlignTop)
         
         #### Logic if R variable ###
+        #if self.varType == 0:
         colClass = self.R('class(%s[,%d])' % (self.Rdata,selectedCol),silent=True)
         
         if colClass in ['factor','logical']:
@@ -348,9 +357,6 @@ class filterTable(widgetState, QTableView):
                     e = lineEdit(self.optionsBox,label=x)
                 self.connect(e, SIGNAL("textEdited(QString)"),
                 lambda val, col=selectedCol,field=x : self.clearOthers(val,self.optionsBox,field))
-        #### Logic if Python Dict ####
-        
-        #### Logic if SQLite Database ####
         
         buttonBox = widgetBox(self.optionsBox,orientation='horizontal')
         buttonBox.layout().setAlignment(Qt.AlignRight)

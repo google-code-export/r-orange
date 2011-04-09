@@ -3,6 +3,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtSvg import *
+import sys
 from redRGUI import widgetState
 from libraries.base.qtWidgets.widgetBox import widgetBox
 from libraries.base.qtWidgets.groupBox import groupBox
@@ -125,6 +126,8 @@ class graphicsView(QGraphicsView, widgetState):
         save.addAction(_('PDF'), self.saveAsPDF)
         save.addAction(_('Post Script'), self.saveAsPostScript)
         save.addAction(_('JPEG'), self.saveAsJPEG)
+        if sys.platform == 'win32':
+            save.addAction('WMF', self.saveAsWMF)
         
         printScene = self.fileParameters.addAction(_('Print'), self.printMe)
         
@@ -285,6 +288,12 @@ class graphicsView(QGraphicsView, widgetState):
         if qname.isEmpty(): return
         qname = unicode(qname)
         self.saveAs(unicode(qname), 'ps')
+    def saveAsWMF(self):
+        print _('save as wmf')
+        qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".wmf", "WindowsMetafile (.wmf)")
+        if qname.isEmpty(): return
+        qname = unicode(qname)
+        self.saveAs(unicode(qname), 'wmf')
     def saveAsBitmap(self):
         print _('save as bitmap')
         qname = QFileDialog.getSaveFileName(self, _("Save Image"), redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
@@ -440,7 +449,8 @@ class graphicsView(QGraphicsView, widgetState):
             self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'), wantType = 'NoConversion')
         elif imageType == 'jpeg':
             self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'), wantType = 'NoConversion')
-        
+        elif imageType == 'wmf':
+            self.R('win.metafile(file = \"%s\")' % fileName.replace('\\', '/'), wantType = 'NoConversion')
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
             if unicode(self.extrasLineEdit.text()) != '':
