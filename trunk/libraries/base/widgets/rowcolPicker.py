@@ -140,22 +140,22 @@ class rowcolPicker(OWRpy):
         if self.rowcolBox.getChecked() == _('Row'):
             if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],,drop = FALSE])', wantType = 'NoConversion')
-                newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
+                newData = redRRDataFrame(self, data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[!rownames('+self.data+')'+' %in% '+self.ssv+'[["'+col+'"]],,drop = FALSE])', wantType = 'NoConversion')
-                newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                newDataNot = redRRDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         elif self.rowcolBox.getChecked() == 'Column':
             if _("Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelector']+'<-as.data.frame('+self.data+'[,colnames('+self.data+')'+
             ' %in% '+self.ssv+'[[\''+col+'\']],drop = FALSE])', wantType = 'NoConversion')
-                newData = redRRDataFrame(data = self.Rvariables['rowcolSelector'])
+                newData = redRRDataFrame(self, data = self.Rvariables['rowcolSelector'])
                 self.rSend('id0', newData)
             if _("Not Selected") in self.sendSection.getChecked():
                 self.R(self.Rvariables['rowcolSelectorNot']+'<-as.data.frame('+self.data+'[,!colnames('+self.data+')'+
             ' %in% '+self.ssv+'[[\''+col+'\']],drop = FALSE])', wantType = 'NoConversion')
-                newDataNot = redRRDataFrame(data = self.Rvariables['rowcolSelectorNot'])
+                newDataNot = redRRDataFrame(self, data = self.Rvariables['rowcolSelectorNot'])
                 self.rSend('id1', newDataNot)
         self.SubsetByAttached = 1
     def subset(self): # now we need to make the R command that will handle the subsetting.

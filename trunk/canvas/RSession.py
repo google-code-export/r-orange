@@ -134,10 +134,8 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         mutex.unlock()
         raise Exception(_('WantType not specified'))
     
-    if type(output) == list and len(output) == 1 and wantType != 'list':
-        output = output[0]
-    
     elif wantType == redR.LIST:
+        print 'converting %s to list' % output
         if type(output) is list:
             pass
         elif type(output) in [str, int, float, bool]:
@@ -187,6 +185,7 @@ def convertToPy(inobject):
         else:
          rclass=inobject.rclass[0] 
         if rclass not in ['data.frame', 'matrix', 'list', 'array', 'numeric', 'vector', 'complex', 'boolean', 'bool', 'factor', 'logical', 'character', 'integer']:
+            print 'can not convert %s yet' % rclass
             return inobject
         return co.convert(inobject)
     except Exception as e:

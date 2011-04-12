@@ -77,39 +77,41 @@ def saveInstances(instances, widgets, doc, progressBar):
     if type(instances) == dict:
         instances = instances.values()
     for widget in instances:
-        temp = doc.createElement("widget")
-        
-        temp.setAttribute("widgetName", widget.widgetInfo.fileName)
-        temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
-        temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
-        temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
-        temp.setAttribute('widgetID', widget.widgetID)
-        temp.setAttribute('captionTitle', unicode(widget.windowTitle()))
-        print _('save in orngDoc ') + unicode(widget.captionTitle)
-        progress += 1
-        progressBar.setValue(progress)
-        
-        s = widget.getSettings()
-        i = widget.getInputs()
-        o = widget.getOutputs()
-        # print '#############', s 
-        # print '#############', i 
-        # print '#############', o 
-        # print widget.widgetID
-        # if not i:
-            # i = {}
-        # if not s:
-        # s = {'id':None}
-        c = widget.outputs.returnOutputs()
-        settingsDict[widget.widgetID] = {}
-        settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
-        settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
-        settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
-        settingsDict[widget.widgetID]['connections'] = cPickle.dumps(c, 2)
-        
-        if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
-            requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
-    
+        try:
+            temp = doc.createElement("widget")
+            
+            temp.setAttribute("widgetName", widget.widgetInfo.fileName)
+            temp.setAttribute("packageName", widget.widgetInfo.package['Name'])
+            temp.setAttribute("packageVersion", widget.widgetInfo.package['Version']['Number'])
+            temp.setAttribute("widgetFileName", os.path.basename(widget.widgetInfo.fullName))
+            temp.setAttribute('widgetID', widget.widgetID)
+            temp.setAttribute('captionTitle', unicode(widget.windowTitle()))
+            print _('save in orngDoc ') + unicode(widget.captionTitle)
+            progress += 1
+            progressBar.setValue(progress)
+            
+            s = widget.getSettings()
+            i = widget.getInputs()
+            o = widget.getOutputs()
+            # print '#############', s 
+            # print '#############', i 
+            # print '#############', o 
+            # print widget.widgetID
+            # if not i:
+                # i = {}
+            # if not s:
+            # s = {'id':None}
+            c = widget.outputs.returnOutputs()
+            settingsDict[widget.widgetID] = {}
+            settingsDict[widget.widgetID]['settings'] = cPickle.dumps(s,2)
+            settingsDict[widget.widgetID]['inputs'] = cPickle.dumps(i,2)
+            settingsDict[widget.widgetID]['outputs'] = cPickle.dumps(o,2)
+            settingsDict[widget.widgetID]['connections'] = cPickle.dumps(c, 2)
+            
+            if widget.widgetInfo.package['Name'] != 'base' and widget.widgetInfo.package['Name'] not in requireRedRLibraries.keys():
+                requireRedRLibraries[widget.widgetInfo.package['Name']] = widget.widgetInfo.package
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, _('redRSaveLoad error saving widget %s-%s,  %s') % (widget.widgetInfo.package['Name'], str(widget), inst))
         widgets.appendChild(temp)
     return (widgets, settingsDict, requireRedRLibraries)
 

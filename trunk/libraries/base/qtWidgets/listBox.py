@@ -226,7 +226,7 @@ class listBox(QListWidget,widgetState):
         self.listItems = newDict
     def getSettings(self):
         print 'saving list box'
-        r = {'items':self.listItems, 'selected':self.selectedIds(), 'visible':self.hb.isVisible()}
+        r = {'items':self.listItems, 'selected':self.selectedIds()}#, 'visible':self.hb.isVisible()}
         print r
         return r
     def loadSettings(self,data):
@@ -235,7 +235,7 @@ class listBox(QListWidget,widgetState):
         self.clear()
         self.addItems(data['items'])
         self.setSelectedIds(data['selected'])
-        self.hb.setVisible(data['visible'])
+        #self.hb.setVisible(data['visible'])
 
     def getReportText(self, fileDir):
         items = self.getItems()

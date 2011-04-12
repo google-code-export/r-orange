@@ -46,7 +46,7 @@ class lineEditHint(lineEdit):
         
         if items:
             self.itemsAsItems = items
-            if (type(items[0]) == str) or (type(items[0]) == numpy.string_):
+            if (type(items[0]) in [str, unicode]) or (type(items[0]) == numpy.string_):
                 self.itemsAsStrings = items
             elif type(items[0]) in [numpy.float64]:
                 self.itemsAsStrings = [unicode(item) for item in items]

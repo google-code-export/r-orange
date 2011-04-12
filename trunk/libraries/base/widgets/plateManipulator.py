@@ -33,6 +33,7 @@ class plateManipulator(OWRpy):
         self.processedData = {}
         self.groupings = {}
         self.tables = {}
+        self.processInt = 1
         self.inputs.addInput('plateData', 'Plate Data (must be numeric)', redRRMatrix, self.processData, multiple = True)
         self.outputs.addOutput('normPlate', 'Processed Values', redRRList)
         
@@ -63,7 +64,7 @@ class plateManipulator(OWRpy):
         #reshapeBox = groupBox(rightBox, label = _('Commit Data'))
         self.commit = redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def byGroupSelectChanged(self):
-        self.bySubGroupSelect.update(['Constant'] + self.groupings[self.byGroupSelect.currentText()])
+        self.bySubGroupSelect.update(['Constant'] + self.groupings[unicode(self.byGroupSelect.currentText())].keys())
     def processAdjustment(self):
         ## this is how we are going to process the data
         ## reads as [Normalize] across [acrossSelect] by [byGroupSelect]:[Control] or Constant, this will perform Normalize across all levels of acrossSelect using those members that are labeled as [byGroupSelect]:[Control] as the right side of the equation, this happens across all tables and samples, no action is taken if no members of the acrossSelect group are also in the [byGroupSelect]:[Control] group.  For example, let's say there is a table like so 
@@ -80,12 +81,13 @@ class plateManipulator(OWRpy):
             self.processInt += 1  # index up the number of new plates
             self.setRvariableNames([newPlate])
             self.R('%s<-%s' % (self.Rvariables[newPlate], self.data[t]), wantType = 'NoConversion')
-            tempTables[t] = self.Rvariables[newPlate]
-        normlizeMethod = str(self.processSelect.currentText())
-        acrossSelect = str(self.acrossSelect.currentText())
-        byGroupSelect = str(self.byGroupSelect.currentText())
-        control = str(self.bySubGroupSelect.currentText())
-        combineMethod = str(self.methodSelect.currentText())
+            tempTables[self.data[t]] = self.Rvariables[newPlate]
+            print tempTables, 'tempTables'
+        normlizeMethod = unicode(self.processSelect.currentText())
+        acrossSelect = unicode(self.acrossSelect.currentText())
+        byGroupSelect = unicode(self.byGroupSelect.currentText())
+        control = unicode(self.bySubGroupSelect.currentText())
+        combineMethod = unicode(self.methodSelect.currentText())
         for c in self.groupings[acrossSelect].keys():  ## c are the first set of groupings (a, b, and c from our example)
             controlLocs = [l for l in self.groupings[byGroupSelect][control] if l in self.groupings[acrossSelect][c]]
             if len(controlLocs) == 0: continue  ## continue because there are apparently no control locations to do anything with.
@@ -107,16 +109,16 @@ class plateManipulator(OWRpy):
             
             if normlizeMethod == 'Subtract':
                 for i in self.groupings[acrossSelect][c]:
-                    self.R('%s[%s,%s]<-%s[%s, %s] - %s' % (tempTables[i[0]], i[1], i[2], i[0], i[1], i[2], conVal), wantType = 'NoConversion')
+                    self.R('%s[%s,%s]<-%s[%s, %s] - %s' % (tempTables[i[0]], i[1]+1, i[2]+1, i[0], i[1]+1, i[2]+1, conVal), wantType = 'NoConversion')
             elif normlizeMethod == 'Divide':
                 for i in self.groupings[acrossSelect][c]:
-                    self.R('%s[%s,%s]<-%s[%s, %s] / %s' % (tempTables[i[0]], i[1], i[2], i[0], i[1], i[2], conVal), wantType = 'NoConversion')
+                    self.R('%s[%s,%s]<-%s[%s, %s] / %s' % (tempTables[i[0]], i[1]+1, i[2]+1, i[0], i[1]+1, i[2]+1, conVal), wantType = 'NoConversion')
             elif normlizeMethod == 'Add':
                 for i in self.groupings[acrossSelect][c]:
-                    self.R('%s[%s,%s]<-%s[%s, %s] + %s' % (tempTables[i[0]], i[1], i[2], i[0], i[1], i[2], conVal), wantType = 'NoConversion')
+                    self.R('%s[%s,%s]<-%s[%s, %s] + %s' % (tempTables[i[0]], i[1]+1, i[2]+1, i[0], i[1]+1, i[2]+1, conVal), wantType = 'NoConversion')
             elif normlizeMethod == 'Multiply':
                 for i in self.groupings[acrossSelect][c]:
-                    self.R('%s[%s,%s]<-%s[%s, %s] * %s' % (tempTables[i[0]], i[1], i[2], i[0], i[1], i[2], conVal), wantType = 'NoConversion')
+                    self.R('%s[%s,%s]<-%s[%s, %s] * %s' % (tempTables[i[0]], i[1]+1, i[2]+1, i[0], i[1]+1, i[2]+1, conVal), wantType = 'NoConversion')
         for table in tempTables.values():
             self.processData(redRRDataFrame(self, data = 'as.data.frame(%s)' % table), table)
             
@@ -124,7 +126,7 @@ class plateManipulator(OWRpy):
         if data:
             if id not in self.data.keys():
                 page = self.tableTabWidget.createTabPage(str(id))
-                self.tables[str(id)] = table(page, label = str(id), displayLabel = False, data = self.R('as.data.frame(%s)' % data.getData(), wantType = 'dict'))
+                self.tables[str(id)] = table(page, label = str(id), displayLabel = False, data = self.R('as.data.frame(%s)' % data.getData(), wantType = 'dict'), keys = self.R('colnames(%s)' % data.getData(), wantType = 'list'))
             self.data[id] = data.getData()
             
                 
@@ -155,14 +157,14 @@ class plateManipulator(OWRpy):
         return self.tableTabWidget.currentTab()
     ## adds selections to the data model, takes the group and class from the GUI
     def addSelections(self):
-        if str(self.groupEdit.text()) not in self.groupings: self.addGroupingData(str(self.groupEdit.text()))
-        if str(self.classEdit.text()) not in self.groupings[str(self.groupEdit.text())]: self.addGroupingGroup(str(self.classEdit.text()))
+        if unicode(self.groupEdit.text()) not in self.groupings: self.addGroupingData(unicode(self.groupEdit.text()))
+        if unicode(self.classEdit.text()) not in self.groupings[unicode(self.groupEdit.text())]: self.addGroupingGroup(unicode(self.groupEdit.text()), unicode(self.classEdit.text()))
         
         ## convert selections to tuples
         tuples = [(self.data[self.currentTable()], i.row(), i.column()) for i in self.tables[self.currentTable()].selectedItems()]
         
-        self.appendValueTuple(str(self.groupEdit.text()), str(self.classEdit.text()), tuples)
-        self.addBoxLable.setText(_('Added selected items to %(GROUP)s, %(CLASS)s') % {'GROUP':str(self.groupEdit.text()), 'CLASS':str(self.classEdit.text())})
+        self.appendValueTuple(unicode(self.groupEdit.text()), unicode(self.classEdit.text()), tuples)
+        self.addBoxLable.setText(_('Added selected items to %(GROUP)s, %(CLASS)s') % {'GROUP':unicode(self.groupEdit.text()), 'CLASS':unicode(self.classEdit.text())})
         
     def commitFunction(self):
         self.R('%s<-list(%s)' % (self.Rvariables['normList'], ','.join(self.data.values())))

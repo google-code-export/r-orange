@@ -8,7 +8,7 @@ import redRi18n
 _ = redRi18n.get_(package = 'base')
 class table(widgetState,QTableWidget):
     def __init__(self,widget,label=None, displayLabel=True,includeInReports=True, 
-    data=None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
+    data=None, keys = None, rows = 0, columns = 0, sortable = False, selectionMode = -1, addToLayout = 1, callback = None):
         
         
         widgetState.__init__(self,widget,label,includeInReports)
@@ -30,7 +30,10 @@ class table(widgetState,QTableWidget):
         if selectionMode != -1:
             self.setSelectionMode(selectionMode)
         if data:
-            self.setTable(data)
+            if keys:
+                self.setTable(data, keys)
+            else:
+                self.setTable(data)
         if sortable:
             self.setSortingEnabled(True)
             self.connect(self.horizontalHeader(), SIGNAL("sectionClicked(int)"), self.sort)
