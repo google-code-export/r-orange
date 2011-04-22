@@ -2,13 +2,13 @@
     <Name>base</Name>
     <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
     <Version>
-        <Number>1.2</Number>
+        <Number>1.21</Number>
         <Stability>Good</Stability>
-        <Date>2010-05-12</Date>
+        <Date>2011-04-04</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
     <Dependencies></Dependencies>
-    <Red-RVersion>Red-R-1.7</Red-RVersion>
+    <Red-RVersion>Red-R-1.85</Red-RVersion>
     <Summary>Base widgets, signals, and templates.</Summary>
     <Description>Base functionality of Red-R.  This functionality includes the base signal classes, base widgets, base gui widgets, common templates, etc.  This package can not be deleted, only upgraded.  Bases are considered stable within an official release, though bug fixes and updates may become available from time to time.</Description>
     <menuTags>

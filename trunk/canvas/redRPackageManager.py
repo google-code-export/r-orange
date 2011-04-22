@@ -78,22 +78,26 @@ class packageManager(redRdialog):
         import compileall
         try:
             shutil.rmtree(installDir,ignore_errors=True)  ## remove the old dir for copying
-            
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'shutil remove complete')
             os.mkdir(installDir) ## make the directory to store the zipfile into
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'os mkdir complete')
             zfile = zipfile.ZipFile(filename, "r" )
             zfile.extractall(installDir)
             zfile.close()
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'zip file extraction complete')
             compileall.compile_dir(installDir) # compile the directory for later importing.
             ## now process the requires for R
             
             pack = self.readXML(os.path.join(installDir, 'package.xml'))
             packageInfo = orngRegistry.parsePackageXML(pack)
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package xml parsing complete')
             import RSession
             if 'RLibraries' in packageInfo.keys():
                 RSession.require_librarys(packageInfo['RLibraries'])
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'R library installation complete')
             redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Installing package %(PACKAGENAME)s') % {'PACKAGENAME':packageName})
         
-
+            redRLog.log(redRLog.REDRCORE, redRLog.DEVEL, 'package installation complete')
         except:
             redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL, _('This was an error installing %(PACKAGENAME)s.') % {'PACKAGENAME':packageName})
             redRLog.log(redRLog.REDRCORE, redRLog.DEBUG,redRLog.formatException())

@@ -15,35 +15,18 @@ from libraries.base.qtWidgets.listBox import listBox
 from libraries.base.qtWidgets.spinBox import spinBox
 from libraries.base.qtWidgets.textEdit import textEdit
 from libraries.base.qtWidgets.checkBox import checkBox
-import RSession, redREnviron, datetime, os, time
+from libraries.base.qtWidgets.graphicsView import graphicsView
+import RSession, redREnviron, datetime, os, time, sys, redRi18n
+_ = redRi18n.get_(package = 'base')
     
 
-class redRPlot(QGraphicsView, widgetState):
+class redRPlot(graphicsView):
     def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
-        widgetState.__init__(self,parent,label,includeInReports)
+        graphicsView.__init__(self, parent, label = label, displayLabel = displayLabel, includeInReports = includeInReports,
+            name = name, data = data)
+        ## __init__(self, parent,label=_('Graph'), displayLabel=True,includeInReports=True, name = '', data = None)
         
-        QGraphicsView.__init__(self, self.controlArea)
-        self.topArea = widgetBox(self.controlArea,
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Maximum),includeInReports=False)
-        self.middleArea = widgetBox(self.controlArea)
-        self.bottomArea = widgetBox(self.controlArea,includeInReports=False)
-        
-        self.middleArea.layout().addWidget(self)  # place the widget into the parent widget
-        scene = QGraphicsScene()
-        self.setScene(scene)
-        self.parent = parent
-        self.data = data
-        
-        self.widgetSelectionRect = None
-        self.mainItem = None
-        self.query = ''
-        self.function = 'plot'
-        self.layers = []
-        self.image = 'plot'+unicode(time.time()) # the base file name without an extension
-        self.imageFileName = ''
-        self.currentScale = 1
-
     ################################
     ####   Themes              #####
     ################################
@@ -318,6 +301,8 @@ class redRPlot(QGraphicsView, widgetState):
         save.addAction('PDF')
         save.addAction('Post Script')
         save.addAction('JPEG')
+        if sys.platform == 'win32':
+            save.addAction('WMF')
         self.menu.addAction('Copy')
         self.menu.addAction('Fit In Window')
         self.menu.addAction('Zoom Out')
@@ -484,25 +469,6 @@ class redRPlot(QGraphicsView, widgetState):
             
         # pp.pprint(self.options)            
         return injection            
-        
-    def _startRDevice(self, parameters):
-        if imageType not in ['svg', 'png', 'jpeg']:
-            imageType = 'png'
-        
-        # fileName = redREnviron.directoryNames['tempDir']+'/plot'+unicode(self.widgetID).replace('.', '_')+'.'+imageType
-        # fileName = fileName.replace('\\', '/')
-        self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode(imageType)
-        file = unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))
-        # print '###################### filename' , self.imageFileName
-        if imageType == 'svg':
-            self.require_librarys(['Cairo'])
-            self.R('CairoSVG(file="%s",%s)' % ( file, ','.join(parameters)))
-            
-        if imageType == 'png':
-            self.R('png(file="%s",%s)' % ( file, ','.join(parameters)))
-
-        elif imageType == 'jpeg':
-            self.R('jpeg(file="%s",%s)' % ( file, ','.join(parameters)))
                 
     def plot(self, query, function = 'plot', parameters=None,data=None):
         ## performs a quick plot given a query and an imageType
@@ -510,58 +476,13 @@ class redRPlot(QGraphicsView, widgetState):
         self.function = function
         self.query = query
         self.layers = []
-           
         self.plotMultiple()
-        
-    def plotMultiple(self):
-        ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
-        self.parameters = self._getParameters()
-        #self.require_librarys(['Cairo'])
-        self.require_librarys(['RSvgDevice'])
-        self.imageFileName = unicode(self.image)+'.'+unicode(self.options['device']['parameters']['type']['value'][1:-1])
-        file = unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))
-
-        #self.R('Cairo(onefile=F, file="%s",%s,%s)' % ( file, ','.join(self.parameters['device']), ','.join(self.parameters['par'])))
-        self.R('devSVG(file = "%s")' % file)
-        self.R('par(%s)' % (','.join(self.parameters['par'])))
-        
-        
-        self.extras = ','.join(self.parameters['main'])
-        if unicode(self.optionWidgets['extrasLineEdit'].text()) != '':
-            self.extras += ', '+unicode(self.optionWidgets['extrasLineEdit'].text())
-        if self.extras != '':
-            fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
-        else:
-            fullquery = '%s(%s)' % (self.function, self.query)
-        
-        try:
-            self.R(fullquery)
-            self.R('title(%s)' % (','.join(self.parameters['title'])))
-            # if len(self.layers) > 0:
-                # for l in self.layers:
-                    # self.R(l)
-            # if self.legend:
-                # self._setLegend()
-        except Exception as inst:
-            self.R('dev.off()') ## we still need to turn off the graphics device
-            print 'Plotting exception occured'
-            raise Exception(unicode(inst))
-            
-        self.R('dev.off()')
-        self.clear()
-        self.addImage(file)
-        self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
+        ## plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False)
+    
     def resizeEvent(self,ev):
         if self.mainItem and 'true' in self.resizeCheck.getCheckedIds():
             self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
         
-    def setExtrasLineEditEnabled(self, enabled = True):
-        
-        self.extrasLineEdit.enabled(enabled)
-        if enabled:
-            self.extrasLineEdit.show()
-        else:
-            self.extrasLineEdit.hide()
     def printMe(self):
         printer = QPrinter()
         printDialog = QPrintDialog(printer)
@@ -572,15 +493,6 @@ class redRPlot(QGraphicsView, widgetState):
         self.scene().render(painter)
         painter.end()    
     
-
-    #########################
-    ## R session functions ##
-    #########################
-    def R(self, query):
-        return RSession.Rcommand(query = query)
-    def require_librarys(self, libraries):
-        return RSession.require_librarys(libraries)
-        
     ##########################
     ## Interaction Functions #
     ##########################
@@ -596,89 +508,10 @@ class redRPlot(QGraphicsView, widgetState):
 
     def toClipboard(self):
         QApplication.clipboard().setImage(self.returnImage())
-    def saveAsPDF(self):
-        print 'save as pdf'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".pdf", "PDF Document (.pdf)")
-        if qname.isEmpty(): return
-        qname = unicode(qname)
-        self.saveAs(unicode(qname), 'pdf')
-    def saveAsPostScript(self):
-        print 'save as post script'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".eps", "Post Script (.eps)")
-        if qname.isEmpty(): return
-        qname = unicode(qname)
-        self.saveAs(unicode(qname), 'ps')
-    def saveAsBitmap(self):
-        print 'save as bitmap'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".bmp", "Bitmap (.bmp)")
-        if qname.isEmpty(): return
-        qname = unicode(qname)
-        self.saveAs(unicode(qname), 'bmp')
-    def saveAsJPEG(self):
-        print 'save as jpeg'
-        qname = QFileDialog.getSaveFileName(self, "Save Image", redREnviron.directoryNames['documentsDir'] + "/Image-"+unicode(datetime.date.today())+".jpg", "JPEG Image (.jpg)")
-        if qname.isEmpty(): return
-        qname = unicode(qname)
-        self.saveAs(unicode(qname), 'jpeg')
+    
     def backToParent(self):
         self.parent.layout().addWidget(self.controlArea)
         self.dialog.hide()
-    def mousePressEvent(self, mouseEvent):
-        
-        if mouseEvent.button() == Qt.RightButton:
-            # remove the selection rect
-            if self.widgetSelectionRect:
-                self.widgetSelectionRect.hide()
-                self.widgetSelectionRect = None
-            
-            # show the action menu
-            newCoords = QPoint(mouseEvent.globalPos())
-            action = self.menu.exec_(newCoords)
-            if action:
-                if unicode(action.text()) == 'Copy':
-                    self.toClipboard()
-                elif unicode(action.text()) == 'Zoom Out':
-                    self.scale(0.80, 0.80)
-                elif unicode(action.text()) == 'Zoom In':
-                    self.scale(1.50, 1.50)
-                elif unicode(action.text()) == 'Undock':
-                    ## want to undock from the widget and make an independent viewing dialog.
-                    self.dialog.layout().addWidget(self.controlArea)
-                    self.dialog.show()
-                elif unicode(action.text()) == 'Redock':
-                    self.parent.layout().addWidget(self.controlArea)
-                    self.dialog.hide()
-                elif unicode(action.text()) == 'Fit In Window':
-                    print self.mainItem.boundingRect()
-                    self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
-                elif unicode(action.text()) == 'Bitmap':
-                    self.saveAsBitmap()
-                elif unicode(action.text()) == 'PDF':
-                    self.saveAsPDF()
-                elif unicode(action.text()) == 'Post Script':
-                    self.saveAsPostScript()
-                elif unicode(action.text()) == 'JPEG':
-                    self.saveAsJPEG()
-        else:
-            self.mouseDownPosition = self.mapToScene(mouseEvent.pos())
-            self.widgetSelectionRect = QGraphicsRectItem(QRectF(self.mouseDownPosition, self.mouseDownPosition), None, self.scene())
-            self.widgetSelectionRect.setZValue(-100)
-            self.widgetSelectionRect.show()
-    def mouseMoveEvent(self, ev):
-        point = self.mapToScene(ev.pos())
-
-        if self.widgetSelectionRect:
-            self.widgetSelectionRect.setRect(QRectF(self.mouseDownPosition, point))            
-
-        self.scene().update()
-    def mouseReleaseEvent(self, ev):
-        point = self.mapToScene(ev.pos())
-        if self.widgetSelectionRect:
-            self.fitInView(self.widgetSelectionRect.rect(), Qt.KeepAspectRatio)
-            self.widgetSelectionRect.hide()
-            self.widgetSelectionRect = None
-            
-        self.scene().update()
 
     def returnImage(self):
         ## generate a rendering of the graphicsView and return the image
@@ -689,34 +522,7 @@ class redRPlot(QGraphicsView, widgetState):
         self.scene().render(painter)
         painter.end()
         return image
-        
-    def addImage(self, image, imageType = None):
-        ## add an image to the view
-        #self.image = os.path.abspath(image)
-        #print self.image
-        # print 'Addign Image'
-        if image == '': return
-        if not self.scene():
-            # print 'loading scene'
-            scene = QGraphicsScene()
-            self.setScene(scene)
-        print self.image
-        if imageType == None:
-            imageType = image.split('.')[-1]
-        if imageType not in ['svg', 'png', 'jpeg']:
-            self.clear()
-            print imageType, 'Error occured'
-            raise Exception, 'Image type specified is not a valid type for this widget.'
-        if imageType == 'svg':
-            #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
-            mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
-        elif imageType in ['png', 'jpeg']:
-            mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
-        else:
-            raise Exception, 'Image type %s not specified in a plotting method' % imageType
-            #mainItem = QGraphicsPixmapItem(QPixmap(image))
-        self.scene().addItem(mainItem)
-        self.mainItem = mainItem
+
         
     def getSettings(self):
         #print '#################in getSettings'
@@ -741,134 +547,7 @@ class redRPlot(QGraphicsView, widgetState):
         
         return {self.widgetName:{'includeInReports':self.includeInReports,'text':text}}  
         
-    def saveAs(self, fileName, imageType):
-        if self.query == '': return
-        if imageType == 'pdf':
-            self.R('pdf(file = \'%s\')' % fileName.replace('\\', '/'))
-        elif imageType == 'ps':
-            self.R('postscript(file = \'%s\')' % fileName.replace('\\', '/'))
-        elif imageType == 'bmp':
-            self.R('bmp(file = \'%s\')' % fileName.replace('\\', '/'))
-        elif imageType == 'jpeg':
-            self.R('jpeg(file = \'%s\')' % fileName.replace('\\', '/'))
-        
-        #if not self.plotExactlySwitch:
-        self.extras = self._setParameters()
-        if unicode(self.extrasLineEdit.text()) != '':
-            self.extras += ', '+unicode(self.extrasLineEdit.text())
-        if self.extras != '':
-            fullquery = '%s(%s, %s)' % (self.function, self.query, self.extras)
-        else:
-            fullquery = '%s(%s)' % (self.function, self.query)
-        #else:
-         #   fullquery = self.query
-        self.R(fullquery)
-        for l in self.layers:
-            self.R(l)
-        
-        self.R('dev.off()')
 
-    ###########
-    ## Convert an SVG for pyqt
-    ###########
-    def convertSVG(self, file):
-        print file
-        dom = self._getsvgdom(file)
-        #print dom
-        self._switchGlyphsForPaths(dom)
-        self._commitSVG(file, dom)
-    def _commitSVG(self, file, dom):
-        f = open(file, 'w')
-        dom.writexml(f)
-        f.close()
-    def _getsvgdom(self, file):
-        print 'getting DOM model'
-        import xml.dom
-        import xml.dom.minidom as mini
-        f = open(file, 'r')
-        svg = f.read()
-        f.close()
-        dom = mini.parseString(svg)
-        return dom
-    def _getGlyphPaths(self, dom):
-        symbols = dom.getElementsByTagName('symbol')
-        glyphPaths = {}
-        for s in symbols:
-            pathNode = [p for p in s.childNodes if 'tagName' in dir(p) and p.tagName == 'path']
-            glyphPaths[s.getAttribute('id')] = pathNode[0].getAttribute('d')
-        return glyphPaths
-    def _switchGlyphsForPaths(self, dom):
-        glyphs = self._getGlyphPaths(dom)
-        use = self._getUseTags(dom)
-        for glyph in glyphs.keys():
-            #print glyph
-            nl = self.makeNewList(glyphs[glyph].split(' '))
-            u = self._matchUseGlyphs(use, glyph)
-            for u2 in u:
-                #print u2, 'brefore'
-                self._convertUseToPath(u2, nl)
-                #print u2, 'after'
-            
-    def _getUseTags(self, dom):
-        return dom.getElementsByTagName('use')
-    def _matchUseGlyphs(self, use, glyph):
-        matches = []
-        for i in use:
-            #print i.getAttribute('xlink:href')
-            if i.getAttribute('xlink:href') == '#'+glyph:
-                matches.append(i)
-        #print matches
-        return matches
-    def _convertUseToPath(self, use, strokeD):
-        ## strokeD is a list of lists of strokes to make the glyph
-        newD = self.nltostring(self.resetStrokeD(strokeD, use.getAttribute('x'), use.getAttribute('y')))
-        use.tagName = 'path'
-        use.removeAttribute('xlink:href')
-        use.removeAttribute('x')
-        use.removeAttribute('y')
-        use.setAttribute('style', 'fill: rgb(0%,0%,0%); stroke-width: 0.5; stroke-linecap: round; stroke-linejoin: round; stroke: rgb(0%,0%,0%); stroke-opacity: 1;stroke-miterlimit: 10; ')
-        use.setAttribute('d', newD)
-    def makeNewList(self, inList):
-        i = 0
-        nt = []
-        while i < len(inList):
-            start = i + self.listFind(inList[i:], ['M', 'L', 'C', 'Z'])
-            end = start + self.listFind(inList[start+1:], ['M', 'L', 'C', 'Z', '', ' '])
-            nt.append(inList[start:end+1])
-            i = end + 1
-        return nt
-    def listFind(self, x, query):
-        for i in range(len(x)):
-            if x[i] in query:
-                return i
-        return len(x)
-    def resetStrokeD(self, strokeD, x, y):
-        nsd = []
-        for i in strokeD:
-            nsd.append(self.resetXY(i, x, y))
-        return nsd
-    def resetXY(self, nl, x, y): # convert a list of strokes to xy coords
-        nl2 = []
-        for i in range(len(nl)):
-            if i == 0:
-                nl2.append(nl[i])
-            elif i%2: # it's odd
-                nl2.append(float(nl[i]) + float(x))
-            elif not i%2: # it's even
-                nl2.append(float(nl[i]) + float(y))
-            else:
-                print i, nl[i], 'error'
-        return nl2
-    def nltostring(self, nl): # convert a colection of nl's to a string
-        col = []
-        for l in nl:
-            templ = []
-            for c in l:
-                templ.append(unicode(c))
-            templ = ' '.join(templ)
-            col.append(templ)
-        return ' '.join(col)
-        
     
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = 'Color List Dialog', data = ''):

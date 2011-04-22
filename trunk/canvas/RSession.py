@@ -135,7 +135,6 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         raise Exception(_('WantType not specified'))
     
     elif wantType == redR.LIST:
-        print 'converting %s to list' % output
         if type(output) is list:
             pass
         elif type(output) in [str, int, float, bool]:

@@ -16,7 +16,7 @@ class qtWidgetBox(QWidget):
         if widget and widget.layout() not in [0,None]:
             widget.layout().addWidget(self)
         #if widget and widget.layout() not in [0,None]: 
-	self.setLayout(QVBoxLayout())
+        self.setLayout(QVBoxLayout())
         self.layout().setSpacing(0)
         self.layout().setMargin(0)
         self.layout().setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -92,6 +92,12 @@ class widgetState:
     def setEnabled(self,b):
         self.controlArea.setEnabled(b)
         
+    def safeLoad(self, data, name, default = None):
+        try:
+            return data[name]
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.WARNING, 'Error loading setting for %s, defaulting to %s' % (name, default))
+            return default
 
 
 def forname(modname, classname):

@@ -22,21 +22,17 @@ class plot(OWRpy):
         self.data = None
         self.RFunctionParam_x = ''
         self.plotAttributes = {}
+        self.plotLayers = []
         self.saveSettingsList = ['plotArea', 'data', 'RFunctionParam_x', 'plotAttributes']
         self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
+        self.inputs.addInput('id1', 'Plot Layer(s)', redRRPlotAttribute, self.processLayer, multiple = True)
 
         
         box = OWGUI.widgetBox(self.controlArea, "Widget Box")
         self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
         self.plotArea = redRPlot(self.controlArea, label = 'Plot')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
-        # button(self.bottomAreaRight, 'Inspect Plot', callback = self.InspectPlot)
-    # def InspectPlot(self):
-        # fn = QFileDialog.getOpenFileName(self, "Open File", '~',
-        # "Text file (*.png);; All Files (*.*)")
-        # print str(fn)
-        # if fn.isEmpty(): return
-        # self.plotArea.addImage(str(fn))
+
     def processx(self, data):
         if data:
             self.data = data
@@ -44,6 +40,12 @@ class plot(OWRpy):
             self.commitFunction()
         else:
             self.clearPlots()
+    def processLayer(self, data, id):
+        if data:
+            self.plotAttributes[id.widgetID] = data.getData()
+            self.commitFunction()
+        else:
+            del self.plotAttributes[id.widgetID]
     def commitFunction(self):
         #if self.RFunctionParam_y == '': return
         if self.RFunctionParam_x == '': return
@@ -54,7 +56,7 @@ class plot(OWRpy):
             inj = ','+','.join(injection)
         else: inj = ''
         
-        self.plotArea.plot(query = str(self.RFunctionParam_x)+inj, data = self.RFunctionParam_x)
+        self.plotArea.plotMultiple(query = str(self.RFunctionParam_x)+inj, data = self.RFunctionParam_x, layers = self.plotAttributes.values())
     
     def clearPlots(self):
         self.plotArea.clear()

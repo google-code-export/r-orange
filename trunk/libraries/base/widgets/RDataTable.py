@@ -25,7 +25,7 @@ from libraries.base.qtWidgets.tabWidget import tabWidget
 import redRi18n
 _ = redRi18n.get_(package = 'base')
 class RDataTable(OWRpy):
-    globalSettingsList = ['linkListBox','currentLinks']
+    globalSettingsList = ['linksListBox','currentLinks']
     def __init__(self, **kwargs):
         OWRpy.__init__(self, wantGUIDialog = 1, **kwargs)
         

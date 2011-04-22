@@ -125,6 +125,12 @@ class krcggplotbarplot(OWRpy):
         else:
             self.graphicsView.clear()
             self.RFunctionParam_y=''
+            
+    def _getXData(self): # called in the commitFunction to return the X groupings
+        # if self.xGroup.currentText() == unicode('Rownames'):
+            # return 'rownames(%s)' % unicode(self.RFunctionParam_y)
+        # else:
+        return 'as.factor(%s)' % self.xGroup.currentText()
     def commitFunction(self):
         if unicode(self.RFunctionParam_y) == '': return
         if self.xGroup.currentText() == self.yData.currentText(): 
@@ -132,7 +138,7 @@ class krcggplotbarplot(OWRpy):
             return
         if self.fillData.currentText() != 'None':
             
-            self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
+            self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = %(XDATA)s, y = %(YDATA)s, fill = as.factor(%(ZDATA)s)))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self._getXData(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
         else:
             self.R('%(VAR)s<-ggplot(%(DATA)s, aes(x = as.factor(%(XDATA)s), y = %(YDATA)s))' % {'DATA':self.RFunctionParam_y, 'VAR':self.Rvariables['boxplot'], 'XDATA':self.xGroup.currentText(), 'YDATA':self.yData.currentText(), 'ZDATA':self.fillData.currentText()}, wantType = 'NoConversion')
         self.R('%(VAR)s<-%(VAR)s + geom_bar(position = position_dodge(width = 0.9), stat = "identity", weight = 10, colour = "#000000", linetype = "solid") + geom_hline(aes(yintercept = 0), size = 1)' % {'VAR':self.Rvariables['boxplot']}, wantType = 'NoConversion')

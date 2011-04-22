@@ -31,9 +31,6 @@ class RedRscale(OWRpy):
         self.label = widgetLabel(self.controlArea)
         redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
-        if not self.require_librarys(["base"]):
-            self.status.setText(_('R Libraries Not Loaded.'))
-            return
         if data:
             self.RFunctionParam_x=data.getData()
             if self.R('is.data.frame(%s)' % self.RFunctionParam_x):
@@ -69,7 +66,7 @@ class RedRscale(OWRpy):
                 self.R(self.Rvariables['scale']+'<-t(as.data.frame(scale(x=t(data.matrix('+str(self.RFunctionParam_x)+')),'+inj+')))', wantType = 'NoConversion')
             self.R('rownames('+self.Rvariables['scale']+')<-rownames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
             self.R('colnames('+self.Rvariables['scale']+')<-colnames('+self.RFunctionParam_x+')', wantType = 'NoConversion')
-            newData = redRDataFrame(self, data = self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
+            newData = redRDataFrame(self, data = 'as.data.frame(%s)' % self.Rvariables["scale"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
             #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
             self.rSend("id0", newData)
         else:

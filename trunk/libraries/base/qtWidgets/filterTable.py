@@ -153,7 +153,9 @@ class filterTable(widgetState, QTableView):
         self.setModel(self.tm)
         self.dataInfo.setText(self.tm.getSummary())
         
-        
+    def setTable(self, data):
+        self.tm = data.getTableModel(self)
+        self.setModel(self.tm)
         
     def setStructuredDictTable(self, data):
         self.tm = StructuredDictTableModel(data, self, [], False, False, True)
@@ -180,7 +182,7 @@ class filterTable(widgetState, QTableView):
             self.dataInfo.setText(_('Showing %d rows.') % (total))
 
         self.tm = MyTableModel(data,self,editable=self.editable, 
-        filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
+            filteredOn = filteredCols, filterable=self.filterable,sortable=self.sortable)
         self.setModel(self.tm)
     
     def setModel(self, model):
@@ -254,6 +256,9 @@ class filterTable(widgetState, QTableView):
         if not self.tm: return False
         return self.tm.data(self.tm.createIndex(row,col),Qt.DisplayRole).toString()
     def createMenu(self, selectedCol):
+        '''
+        self.tm.createMenu(selectedCol, sortable = self.sortable, filterable = self.filterable
+        '''
         #print selectedCol, pos
         # print _('in createMenu'), self.criteriaList
 
@@ -269,12 +274,7 @@ class filterTable(widgetState, QTableView):
             box.layout().setAlignment(Qt.AlignLeft)
             button(box,label='Z->A',callback= lambda: self.sort(selectedCol,Qt.DescendingOrder))
             widgetLabel(box,label=_('Descending Sort'))
-            # qmenu = QMenu(self.menu)
-            # self.menu.layout().addWidget(qmenu)
-            # a = QAction('A->Z',self.menu)
-            # qmenu.addAction(a)
-            # self.menu.addAction(a)
-
+            
         if not self.filterable:
             self.menu.move(globalPos)
             self.menu.show()

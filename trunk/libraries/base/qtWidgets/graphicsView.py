@@ -29,7 +29,8 @@ class graphicsView(QGraphicsView, widgetState):
             self.controlArea = widgetBox(self.controlArea,orientation='vertical')
         
         #self.controlArea = widgetBox(parent)
-        self.topArea = widgetBox(self.controlArea)
+        self.topArea = widgetBox(self.controlArea,
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Maximum),includeInReports=False)
         self.middleArea = widgetBox(self.controlArea)
         self.bottomArea = widgetBox(self.controlArea)
         self.middleArea.layout().addWidget(self)  # place the widget into the parent widget
@@ -383,23 +384,13 @@ class graphicsView(QGraphicsView, widgetState):
         
             
     def addImage(self, image = None, imageType = None):
-        ## add an image to the view
-        #self.image = os.path.abspath(image)
-        #print self.image
         if image == None:
             image = self.imageFileName
-        print _('Addign Image')
         if not self.scene():
-            print _('loading scene')
             scene = QGraphicsScene()
             self.setScene(scene)
-            print self.image
         if imageType == None:
             imageType = image.split('.')[-1]
-        if imageType not in ['svg', 'png', 'jpeg']:
-            self.clear()
-            print imageType, _('Error occured')
-            raise Exception, _('Image type specified is not a valid type for this widget.')
         if imageType == 'svg':
             #self.convertSVG(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/')) ## handle the conversion to glyph free svg
             mainItem = QGraphicsSvgItem(unicode(os.path.join(redREnviron.directoryNames['tempDir'], image)).replace('\\', '/'))
@@ -407,8 +398,6 @@ class graphicsView(QGraphicsView, widgetState):
             mainItem = QGraphicsPixmapItem(QPixmap(os.path.join(redREnviron.directoryNames['tempDir'], image.replace('\\', '/'))))
         else:
             raise Exception, 'Image type %s not specified in a plotting method' % imageType
-            #mainItem = QGraphicsPixmapItem(QPixmap(image))
-        print mainItem
         self.scene().addItem(mainItem)
         self.mainItem = mainItem
         
@@ -420,13 +409,13 @@ class graphicsView(QGraphicsView, widgetState):
         print r
         return r
     def loadSettings(self,data):
-        # print '@@@@@@@@@@@@@@@@@in loadSettings'
-        # print data
-        
-        self.query = data['query']
-        self.function = data['function']
-        self.extrasLineEdit.loadSettings(data['addSettings'])
-        self.addImage(data['image'])
+        self.query = self.safeLoad(data, 'query', '')
+        self.function = self.safeLoad(data, 'function', 'plot')
+        try:
+            self.extrasLineEdit.loadSettings(data['addSettings'])
+        except:
+            pass
+        self.addImage(self.safeLoad(data, 'image', self.imageFileName))
     def getReportText(self, fileDir):
         image = self.returnImage()
         image = image.scaled(1000,1000, Qt.KeepAspectRatio)
@@ -533,25 +522,25 @@ class graphicsView(QGraphicsView, widgetState):
         print inj
         #self.R('par('+inj+')')
         return inj
-    def _startRDevice(self, dwidth, dheight, imageType):
+    def _startRDevice(self, imageType):
+        dwidth = self._dwidth
+        dheight = self._dheight
+        
         if imageType not in ['svg', 'png', 'jpeg']:
             imageType = 'png'
         
-        # fileName = redREnviron.directoryNames['tempDir']+'/plot'+unicode(self.widgetID).replace('.', '_')+'.'+imageType
-        # fileName = fileName.replace('\\', '/')
         self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode(imageType)
-        # print '###################### filename' , self.imageFileName
         if imageType == 'svg':
             if not self.require_librarys(['RSvgDevice']):
-	      self.setImagePNG()
-	      self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
-	      imageType = 'png'
-	    else:
-              self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dheight)+', height = '+unicode(dheight)
-                +')', wantType = 'NoConversion')
+              self.setImagePNG()
+              self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
+              imageType = 'png'
+            else:
+                  self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\', width = '
+                    +unicode(dheight)+', height = '+unicode(dheight)
+                    +')', wantType = 'NoConversion')
             
-        if imageType == 'png':
+        elif imageType == 'png':
             self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +unicode(dheight*50)+', height = '+unicode(dheight*10)
                 +')', wantType = 'NoConversion')
@@ -570,7 +559,10 @@ class graphicsView(QGraphicsView, widgetState):
         self.data = data
         self.function = function
         self.query = query
-        self._startRDevice(dwidth, dheight, self.standardImageType)
+        
+        self._dwidth = dwidth
+        self._dheight = dheight
+        self._startRDevice(self.standardImageType)
         
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
@@ -586,27 +578,20 @@ class graphicsView(QGraphicsView, widgetState):
         try:
             self.R(fullquery, wantType = 'NoConversion')
         
-            
-            print fullquery
             if len(layers) > 0:
                 for l in layers:
                     self.R(l, wantType = 'NoConversion')
             if legend:
                 self._setLegend()
             fileName = unicode(self.imageFileName)
-            print fileName
         except Exception as inst:
             self.R('dev.off()', wantType = 'NoConversion') ## we still need to turn off the graphics device
-            print _('Plotting exception occured')
             raise Exception(unicode(inst))
         self.R('dev.off()', wantType = 'NoConversion')
         self.clear()
         fileName = unicode(self.imageFileName)
-        print fileName
         self.addImage(fileName)
         self.layers = layers
-        self._dwidth = dwidth
-        self._dheight = dheight
         self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
     
     
@@ -624,7 +609,7 @@ class graphicsView(QGraphicsView, widgetState):
             self._replotAfterChange = False
     def replot(self):
         if self.query == '': return ## no plot can be generated.
-        self._startRDevice(self._dwidth, self._dheight, self.standardImageType)
+        self._startRDevice(self.standardImageType)
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
             if unicode(self.extrasLineEdit.text()) != '':
@@ -653,107 +638,7 @@ class graphicsView(QGraphicsView, widgetState):
         painter = QPainter(printer)
         self.scene().render(painter)
         painter.end()
-    ###########
-    ## Convert an SVG for pyqt
-    ###########
-    def convertSVG(self, file):
-        print file
-        dom = self._getsvgdom(file)
-        #print dom
-        self._switchGlyphsForPaths(dom)
-        self._commitSVG(file, dom)
-    def _commitSVG(self, file, dom):
-        f = open(file, 'w')
-        dom.writexml(f)
-        f.close()
-    def _getsvgdom(self, file):
-        print _('getting DOM model')
-        import xml.dom
-        import xml.dom.minidom as mini
-        f = open(file, 'r')
-        svg = f.read()
-        f.close()
-        dom = mini.parseString(svg)
-        return dom
-    def _getGlyphPaths(self, dom):
-        symbols = dom.getElementsByTagName('symbol')
-        glyphPaths = {}
-        for s in symbols:
-            pathNode = [p for p in s.childNodes if 'tagName' in dir(p) and p.tagName == 'path']
-            glyphPaths[s.getAttribute('id')] = pathNode[0].getAttribute('d')
-        return glyphPaths
-    def _switchGlyphsForPaths(self, dom):
-        glyphs = self._getGlyphPaths(dom)
-        use = self._getUseTags(dom)
-        for glyph in glyphs.keys():
-            #print glyph
-            nl = self.makeNewList(glyphs[glyph].split(' '))
-            u = self._matchUseGlyphs(use, glyph)
-            for u2 in u:
-                #print u2, 'brefore'
-                self._convertUseToPath(u2, nl)
-                #print u2, 'after'
-            
-    def _getUseTags(self, dom):
-        return dom.getElementsByTagName('use')
-    def _matchUseGlyphs(self, use, glyph):
-        matches = []
-        for i in use:
-            #print i.getAttribute('xlink:href')
-            if i.getAttribute('xlink:href') == '#'+glyph:
-                matches.append(i)
-        #print matches
-        return matches
-    def _convertUseToPath(self, use, strokeD):
-        ## strokeD is a list of lists of strokes to make the glyph
-        newD = self.nltostring(self.resetStrokeD(strokeD, use.getAttribute('x'), use.getAttribute('y')))
-        use.tagName = 'path'
-        use.removeAttribute('xlink:href')
-        use.removeAttribute('x')
-        use.removeAttribute('y')
-        use.setAttribute('style', 'fill: rgb(0%,0%,0%); stroke-width: 0.5; stroke-linecap: round; stroke-linejoin: round; stroke: rgb(0%,0%,0%); stroke-opacity: 1;stroke-miterlimit: 10; ')
-        use.setAttribute('d', newD)
-    def makeNewList(self, inList):
-        i = 0
-        nt = []
-        while i < len(inList):
-            start = i + self.listFind(inList[i:], ['M', 'L', 'C', 'Z'])
-            end = start + self.listFind(inList[start+1:], ['M', 'L', 'C', 'Z', '', ' '])
-            nt.append(inList[start:end+1])
-            i = end + 1
-        return nt
-    def listFind(self, x, query):
-        for i in range(len(x)):
-            if x[i] in query:
-                return i
-        return len(x)
-    def resetStrokeD(self, strokeD, x, y):
-        nsd = []
-        for i in strokeD:
-            nsd.append(self.resetXY(i, x, y))
-        return nsd
-    def resetXY(self, nl, x, y): # convert a list of strokes to xy coords
-        nl2 = []
-        for i in range(len(nl)):
-            if i == 0:
-                nl2.append(nl[i])
-            elif i%2: # it's odd
-                nl2.append(float(nl[i]) + float(x))
-            elif not i%2: # it's even
-                nl2.append(float(nl[i]) + float(y))
-            else:
-                print i, nl[i], _('error')
-        return nl2
-    def nltostring(self, nl): # convert a colection of nl's to a string
-        col = []
-        for l in nl:
-            templ = []
-            for c in l:
-                templ.append(unicode(c))
-            templ = ' '.join(templ)
-            col.append(templ)
-        return ' '.join(col)
-        
+    
     
 class colorListDialog(QDialog):
     def __init__(self, parent = None, layout = 'vertical', title = _('Color List Dialog'), data = ''):
