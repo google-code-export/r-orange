@@ -2,12 +2,12 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>Generate Distributions</name>
-    <icon>rexecutor.png</icon>
+    <icon>default.png</icon>
     <tags> 
-        <tag>Stats</tag> 
+        <tag>Distributions</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Generate a variety of distributions for data.</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>

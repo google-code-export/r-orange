@@ -7,7 +7,7 @@
         <tag>Stats</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Calculate correlation or variance for data.  Comparisons can be made across two different matrices or input vectors depending on the connections.</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>

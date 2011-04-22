@@ -42,13 +42,19 @@ class widgetState:
     
     def hide(self):
         self.controlArea.hide()
+    
     def show(self):
         self.controlArea.show()
+    def isVisible(self):
+        return self.controlArea.isVisible()
+    def isEnabled(self):
+        return self.controlArea.isEnabled()
     def setDisabled(self,e):
         self.controlArea.setDisabled(e)
     def setEnabled(self,e):
         self.controlArea.setEnabled(e)
-        
+    def isEnabled(self):
+        return self.controlArea.isEnabled()
     def getReportTextDefault(self,fileDir):
         # print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
         # print _('self'), self, self.widgetName
@@ -63,15 +69,6 @@ class widgetState:
                 d = i.getReportText(fileDir)
                 if type(d) is dict:
                     reportData.update(d)
-                # dd = []
-                # if type(d) is dict:
-                    # for x in d.items():
-                        # x['includeInReports'] = i.includeInReports
-                        # dd.append(x)
-                    # reportData = reportData + dd
-                # elif d:
-                    # d['includeInReports'] = i.includeInReports
-                    # reportData.append(d)
         
         return reportData
     

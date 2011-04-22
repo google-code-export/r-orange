@@ -101,7 +101,10 @@ def formatedLogOutput(table, logLevel, stack, comment, widget,html):
     return string
     
 def getSafeString(s):
-    return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
+    try:
+        return unicode(s).replace("<", "&lt;").replace(">", "&gt;")
+    except:
+        return s ## can't convert the string so we just return it and hope for the best.
 
 def formatException(type=None, value=None, tracebackInfo=None, errorMsg = None, plainText=False):
     if not tracebackInfo:
@@ -158,6 +161,7 @@ class LogHandler():
         ########## system specific, resetting except hook kills linux #########
         ##### if linux  #######
         self.defaultStdout = sys.stdout
+        self.defaultExceptionHandler = sys.excepthook
         sys.stdout = self
         sys.excepthook = self.exceptionHandler
 	  
@@ -226,10 +230,12 @@ class LogHandler():
                 logOutput(REDRCORE, DEVEL, text = unicode(inst))
                 return
             logOutput(REDRCORE,DEVEL, text,html=False)
+            self.defaultStdout.write(text)
         except: pass
     def exceptionHandler(self, type, value, tracebackInfo):
         
         log(REDRCORE,CRITICAL,formatException(type,value,tracebackInfo))
+        self.defaultExceptionHandler(type, value, tracebackInfo)
         
 print 'setting log handler'
 fileLogger = LogHandler()

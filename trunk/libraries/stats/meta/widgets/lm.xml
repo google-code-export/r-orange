@@ -7,7 +7,7 @@
         <tag>Parametric</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Generates a linear model fit to data.</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>

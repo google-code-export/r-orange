@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>ks.test</name>
+    <name>Kolmogorov-Smirnov</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag>Distributions</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
-    <details></details>
+    <summary>Kolmogorov-Smirnov test providing a comparison of a fitted distribution with the empirical distribution.</summary>
+    <details>
+        The Kolmogorov-Smirnov test compares the null distribution with the empirical distribution function of the observed data, where left truncated data samples are allowed. The test statistic is given by
+
+KS+ = sqrt(n)/(1-zH) sup(zH + j/n (1-zH) -zj)
+
+KS+ = sqrt(n)/(1-zH) sup(zj - (zH + (j-1)/n (1-zH)))
+
+KS = max(KS+, KS-)
+
+with z_H = F_theta(H) and z_j=F_theta(x_j), where x_1, ..., x_n are the ordered data values. Here, F_theta is the null distribution.
+    </details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
         <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>

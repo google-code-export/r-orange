@@ -255,11 +255,11 @@ http://www.ncbi.nlm.nih.gov/gene/{gene_id}
         #print summaryText
     
     def clearLinks(self):
-        self.linkListBox.clear()
+        self.linksListBox.clear()
         self.currentLinks = {}
     def addCustomLink(self):
         url = unicode(self.customLink.text())
-        self.linkListBox.addItem(url)
+        self.linksListBox.addItem(url)
         self.currentLinks[url] = url
         self.customLink.clear()
         self.saveGlobalSettings()

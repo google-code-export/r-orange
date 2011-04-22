@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>clusterboot</name>
-    <icon>Default.png</icon>
+    <name>Cluster Boot</name>
+    <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag>Advanced Stats</tag> 
     </tags>
-    <summary></summary>
-    <details></details>
+    <summary>Clusterwise cluster stability assessment by resampling</summary>
+    <details>
+        Assessment of the clusterwise stability of a clustering of data, which can be cases*variables or dissimilarity data. The data is resampled using several schemes (bootstrap, subsetting, jittering, replacement of points by noise) and the Jaccard similarities of the original clusters to the most similar clusters in the resampled data are computed. The mean over these similarities is used as an index of the stability of a cluster (other statistics can be computed as well). The methods are described in Hennig (2007).
+
+clusterboot is an integrated function that computes the clustering as well, using interface functions for various clustering methods implemented in R (several interface functions are provided, but you can implement further ones for your favourite clustering method). See the documentation of the input parameter clustermethod below.
+
+Quite general clustering methods are possible, i.e. methods estimating or fixing the number of clusters, methods producing overlapping clusters or not assigning all cases to clusters (but declaring them as "noise"). Fuzzy clusterings cannot be processed and have to be transformed to crisp clusterings by the interface function.
+
+    </details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
         <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>

@@ -1,15 +1,16 @@
 <package>
     <Name>stats</Name>
     <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
+    <RLibraries>stats, pls, isa2, fpc</RLibraries>
     <Version>
-        <Number>1.1</Number>
+        <Number>1.15</Number>
         <Stability>Good</Stability>
-        <Date>2010-08-17</Date>
+        <Date>2011-04-21</Date>
     </Version>
     <License>GPL (>= 2.0)</License>
     <Dependencies></Dependencies>
-    <Red-RVersion>Red-R-1.7</Red-RVersion>
-    <Summary>Base statistical widgets and signals.  </Summary>
+    <Red-RVersion>Red-R-1.85b</Red-RVersion>
+    <Summary>Base statistical widgets and signals.  (Included with base Red-R install)</Summary>
     <Description>A collection of basic statiscical widgets.  These allow for basic statistical tests such as t.test and anova.  May also include some higher order statistical functions that are deemed to be of "General Use" such that most users will find them useful or at least interesting.</Description>
     <menuTags>
         <group name="Stats">
@@ -21,6 +22,9 @@
                 <Description>Non-Parametric Statistics</Description>
             </group>
             <group name = 'Advanced Stats'>
+                <Description>Advanced Statistical Tools</Description>
+            </group>
+            <group name = 'Distributions'>
                 <Description>Advanced Statistical Tools</Description>
             </group>
         </group>      

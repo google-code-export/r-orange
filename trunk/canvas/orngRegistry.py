@@ -71,21 +71,25 @@ def readCategories(force = False):
     theTags = xml.dom.minidom.parseString('<tree></tree>')
     for dirName, directory, plugin in directories:
         if not os.path.isfile(os.path.join(directory,'package.xml')): continue
-        f = open(os.path.join(directory,'package.xml'), 'r')
-        mainTabs = xml.dom.minidom.parse(f)
-        f.close()
-        package = parsePackageXML(mainTabs)
-        # we read in all the widgets in dirName, directory in the directories
-        widgets = readWidgets(os.path.join(directory), package)  ## calls an internal function
-        AllPackages[package['Name']] = package
-        if mainTabs.getElementsByTagName('menuTags'):
-            newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
-            for tag in newTags:
-                if tag.nodeName == 'group': 
-                    addTagsSystemTag(theTags.childNodes[0],tag)
+        try:
+            f = open(os.path.join(directory,'package.xml'), 'r')
+            mainTabs = xml.dom.minidom.parse(f)
+            f.close()
+            package = parsePackageXML(mainTabs)
+            # we read in all the widgets in dirName, directory in the directories
+            widgets = readWidgets(os.path.join(directory), package)  ## calls an internal function
+            AllPackages[package['Name']] = package
+            if mainTabs.getElementsByTagName('menuTags'):
+                newTags = mainTabs.getElementsByTagName('menuTags')[0].childNodes
+                for tag in newTags:
+                    if tag.nodeName == 'group': 
+                        addTagsSystemTag(theTags.childNodes[0],tag)
 
-        #print '#########widgets',widgets
-        allWidgets += widgets
+            #print '#########widgets',widgets
+            allWidgets += widgets
+        except:
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, redRLog.formatException())
+            redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Error in loading package %s' % directory)
     categories['tags'] = theTags
     # print theTags
     if allWidgets: ## collect all of the widgets and set them in the catepories

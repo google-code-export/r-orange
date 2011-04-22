@@ -7,7 +7,7 @@
         <tag>Parametric</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Perfors correlation analysis on two vectors.  Displays R2, P, and other correlation summary stats.</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>

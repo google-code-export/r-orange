@@ -7,7 +7,7 @@
         <tag>Non Parametric</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Performs the wilcoxon rank sum test on a set of data.</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>

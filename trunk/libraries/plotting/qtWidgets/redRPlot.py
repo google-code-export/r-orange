@@ -34,128 +34,31 @@ class redRPlot(graphicsView):
         
         self.options = {
             'device': {
-                'Rcall': 'Cairo',
-                'parameters': {
-                    'type':{
-                            'default':'svg',
-                            'qtWidget': 'imageType'
-                        }
-                    ,'dpi':{
-                            'default':'75',
-                            'qtWidget': 'dpi'
-                        }
-                    ,'bg': {
-                            'default':'#FFFFFF', 
-                            'color': '#FFFFFF',
-                            'qtWidget':'bgColor'
-                            
-                            }
-                    ,'height': {
-                            'default':400, 
-                            'qtWidget': 'dheight'
-                            }
-                    ,'width': {
-                            'default':400, 
-                            'qtWidget': 'dwidth'
-                            }
-                    ,'units': {
-                            'default':'px', 
-                            'qtWidget': 'units'
-                            }
-                    }
-                }
-            ,'main': {
-                'Rcall': 'plot',
-                'parameters': {
-                    'col': {
-                        'default':None, 
-                        'qtWidget':'colorSeries',
-                        'series': '',
-                        'seriesLen': 0,
-                        'getFunction': self.getColorSeries,
-                        'setFunction': self.setColorSeries,
-                        }
-                    ,'lty': {
-                        'default':None, 
-                        'qtWidget':'linesListBox',
-                        'getFunction': self.getLineTypes,
-                        'setFunction': self.setLineTypes,
-                        }
-                    ,'lwd': {
-                        'default':None, 
-                        'qtWidget':'lineWidth'
-                        }
-                    ,'pch': {
-                        'default':None, 
-                        'qtWidget':'pointListBox',
-                        'getFunction': self.getLineTypes,
-                        'setFunction': self.setLineTypes,
-                        }
-                }
-            },
-            'title': {
-                'Rcall': 'title',
-                'parameters': {
-                    'main': {
-                          'default':"Title", 
-                          'qtWidget':'mainTitle' 
-                          }
-                    ,'xlab': {
-                        'default':"XLab", 
-                        'qtWidget':'xLab'
-                        }
-                    ,'ylab': {
-                        'default':"YLab", 
-                        'qtWidget':'yLab'
-                        }   
-                    ,'col.main': {
-                          'default':'#000000', 
-                          'qtWidget':'titleColor' 
-                          }
-                    ,'col.sub': {
-                          'default':'#000000', 
-                          'qtWidget':'subColor' 
-                          }
-                    ,'col.lab': {
-                          'default':'#000000', 
-                          'qtWidget':'labColor' 
-                          }                        
-                }
-            },
-            'par': {
-                'Rcall':'par',
-                'parameters': {
-                    'cex.axis': {
-                          'default':1, 
-                          'qtWidget':'axisFont' 
-                          }
-                    ,'cex.lab': {
-                          'default':1, 
-                          'qtWidget':'labFont' 
-                          }
-                    ,'cex': {
-                          'default':1, 
-                          'qtWidget':'plotFont' 
-                          }
-                    ,'cex.main': {
-                          'default':1, 
-                          'qtWidget':'mainFont' 
-                          }
-                    ,'cex.sub': {
-                          'default':1, 
-                          'qtWidget':'subFont' 
-                          }
-                    ,'col.axis': {
-                          'default':'#000000', 
-                          'qtWidget':'axisColor' 
-                          }
-                    # ,'family': {
-                          # 'default':'serif', 
-                          # 'qtWidget':'fontCombo' 
-                          # }
-                }
+                'imageType':'svg',
+                'dpi':'75',
+                'bgColor':'#FFFFFF',
+                'dheight':400,
+                'dwidth':400,
+                'units':'px'},
+            'main':{
+                'col':None,
+                'lty':None,
+                'lwd':None,
+                'pch':None,},
+            'title':{
+                'main':'',
+                'xlab':'',
+                'ylab':'',
+                'col.main':'#000000',
+                'col.sub':'#000000',
+                'col.lab':'#000000'},
+            'par':{
+                'cex.axis':1,
+                'cex.lab':1,
+                'cex.main':1,
+                'cex.sub':1,
+                'col.axis':'#000000'}
             }
-        }
         
         
         self.optionWidgets = {}
@@ -330,14 +233,44 @@ class redRPlot(graphicsView):
         else:
             self.graphicOptionsWidget.hide()
     
-    def setTheme(self,options):
-        for Rcall,parameters in self.options.items():
-            for k,v in parameters['parameters'].items():
-                #call function to collect data  
-                if 'setFunction' in v.keys():
-                    v['setFunction'](self.options[Rcall]['parameters'][k])
-                else:
-                    self.setOptions(self.options[Rcall]['parameters'][k])
+    def setTheme(self,options = None):
+        if option != None:
+            self.options = options
+            
+        ## device options
+        dos = self.options['device']
+        self.optionWidgets['imageType'].setCurrentId(dos['type'])
+        self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
+        self.optionWidgets['bgColor'].setColor(dos['bg'])
+        self.optionWidgets['dheight'].setValue(dow['height'])
+        self.optionWidgets['dwidth'].setValue(dow['width'])
+        self.optionWidgets['units'].setCurrentId(dow['units'])
+        
+        ## main options
+        mos = self.options['main']
+        self.optionWidgets['colorSeries'].setColorSeries(mos['col'])
+        self.optionWidgets['linesListBox'].setLineTypes(mos['lty'])
+        self.optionWidgets['lineWidth'].setValue(mos['lwd'])
+        self.optionWidgets['pointListBox'].setLineTypes(mos['pch'])
+            
+        ## title options
+        tos = self.options['title']
+        self.optionWidgets['mainTitle'].setText(tos['main'])
+        self.optionWidgets['xLab'].setText(tos['xlab'])
+        self.optionWidgets['yLab'].setText(tos['ylab'])
+        self.optionWidgets['titleColor'].setColor(tos['col.main'])
+        self.optionWidgets['subColor'].setColor(tos['col.sub'])
+        self.optionWidgets['labColor'].setColor(tos['col.lab'])
+        
+        ## par options
+        pos = self.options['par']
+        self.optionWidgets['axisFont'].setValue(pos['cex.axis'])
+        self.optionWidgets['labFont'].setValue(pos['cex.lab'])
+        self.optionWidgets['plotFont'].setValue(pos['cex'])
+        self.optionWidgets['mainFont'].setValue(pos['cex.main'])
+        self.optionWidgets['subFont'].setValue(pos['cex.sub'])
+        self.optionWidgets['axisColor'].setColor(pos['col.axis'])
+        
         
         
     ################################
@@ -408,8 +341,7 @@ class redRPlot(graphicsView):
             options['value'] = qtWidget.value()
     
     def getLineTypes(self,options):
-        qtWidget = self.optionWidgets[options['qtWidget']]
-        print qtWidget.selectedIds()
+        qtWidget = self.optionWidgets['linesListBox']
         options['value'] = 'c('+','.join([unicode(x) for x in qtWidget.selectedIds()])+')'
         
     def setLineTypes(self,options):
@@ -454,7 +386,24 @@ class redRPlot(graphicsView):
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(self.options)
 
-        injection = {}
+        injection = {'title':[
+            '%s = \'%s\'' % ('main', self.optionWidgets['mainTitle'].text()),
+            '%s = \'%s\'' % ('xlab', self.optionWidgets['xLab'].text()),
+            '%s = \'%s\'' % ('ylab', self.optionWidgets['yLab'].text()),
+            '%s = \'%s\'' % ('col.main', self.optionWidgets['titleColor'].color),
+            '%s = \'%s\'' % ('col.sub', self.optionWidgets['subColor'].color),
+            '%s = \'%s\'' % ('col.lab', self.optionWidgets['labColor'].color)
+            ],
+                    'par':[
+            '%s = %s' % ('cex.axis', self.optionWidgets['axisFont'].value()),
+            '%s = %s' % ('cex.lab', self.optionWidgets['labFont'].value()),
+            '%s = %s' % ('cex', self.optionWidgets['plotFont'].value()),
+            '%s = %s' % ('cex.main', self.optionWidgets['mainFont'].value()),
+            '%s = %s' % ('cex.sub', self.optionWidgets['subFont'].value()),
+            '%s = \'%s\'' % ('col.axis', self.optionWidgets['axisColor'].color)
+            ],
+                    
+        
         for Rcall,parameters in self.options.items():
             injection[Rcall] = []
             for k,v in parameters['parameters'].items():
@@ -469,12 +418,37 @@ class redRPlot(graphicsView):
             
         # pp.pprint(self.options)            
         return injection            
-                
+        #def setTheme(self,options = None):
+        #if option != None:
+            #self.options = options
+            
+        ### device options
+        #dos = self.options['device']
+        #self.optionWidgets['imageType'].setCurrentId(dos['type'])
+        #self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
+        #self.optionWidgets['bgColor'].setColor(dos['bg'])
+        #self.optionWidgets['dheight'].setValue(dow['height'])
+        #self.optionWidgets['dwidth'].setValue(dow['width'])
+        #self.optionWidgets['units'].setCurrentId(dow['units'])
+        
+        ### main options
+        #mos = self.options['main']
+        #self.colorSeries.setColorSeries(mos['col'])
+        #self.linesListBox.setLineTypes(mos['lty'])
+        #self.lineWidth.setValue(mos['lwd'])
+        #self.pointListBox.setLineTypes(mos['pch'])
+    def processQuery(self, query):
+        widgetPars = [
+            '%s = %s' % ('lty', self.getLineTypes()),
+            '%s = %s' % ('lwd', self.optionWidgets['lineWidth'].currentId()),
+            '%s = %s' % ('pch', self.optionWidgets['pointListBox'].currentId())]
+        # color series temporarily disabled...
+        return '%s, %s' % (query, ','.join(widgetPars))
     def plot(self, query, function = 'plot', parameters=None,data=None):
         ## performs a quick plot given a query and an imageType
         self.data = data
         self.function = function
-        self.query = query
+        self.processQuery(query)
         self.layers = []
         self.plotMultiple()
         ## plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False)
@@ -531,9 +505,9 @@ class redRPlot(graphicsView):
         #print r
         return r
     def loadSettings(self,data):
-        self.query = data['query']
-        self.function = data['function']
-        self.addImage(data['image'])
+        self.query = self.safeLoad(data, 'query', '')
+        self.function = self.safeLoad(data, 'function', 'plot')
+        self.addImage(self.safeLoad(data, 'image', self.imageFileName))
     def getReportText(self, fileDir):
         
         image = self.returnImage()
@@ -653,7 +627,9 @@ class ColorIcon(QToolButton):
         self.setIcon(QIcon(pixmap))
         self.setIconSize(QSize(16,16))
 
-
+    def setColor(self, color):
+        self.color = color
+        self.updateColor()
     def drawButtonLabel(self, painter):
         painter.setBrush(QBrush(QColor(self.color)))
         painter.setPen(QPen(QColor(self.color)))

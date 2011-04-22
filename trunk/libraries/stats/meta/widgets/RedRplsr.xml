@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
-    <name>plsr</name>
+    <name>Partial Least Squares Reg.</name>
     <icon>default.png</icon>
     <tags> 
-        <tag>Prototypes</tag> 
+        <tag>Stats</tag> 
     </tags>
     <screenshots></screenshots>
     <summary>Beginning module for the pls package to generate a model fit.</summary>
-    <details>Beginning module for the pls package to generate a model fit.</details>
+    <details>
+        Functions to perform partial least squares regression (PLSR) with a formula interface. Cross-validation can be used. Prediction, model extraction, plot, print and summary methods exist.
+        
+        The functions fit PLSR or PCR models with 1, ..., ncomp number of components. Multi-response models are fully supported.
+
+The type of model to fit is specified with the method argument. Three PLSR algorithms are available: the kernel algorithm ("kernelpls"), SIMPLS ("simpls") and the classical orthogonal scores algorithm ("oscorespls"). One PCR algorithm is available: using the singular value decomposition ("svdpc"). If method is "model.frame", the model frame is returned. The functions pcr and plsr are wrappers for mvr, with different values for method.
+
+The formula argument should be a symbolic formula of the form response ~ terms, where response is the name of the response vector or matrix (for multi-response models) and terms is the name of one or more predictor matrices, usually separated by +, e.g., water ~ FTIR or y ~ X + Z. See lm for a detailed description. The named variables should exist in the supplied data data frame or in the global environment. Note: Do not use mvr(mydata$y ~ mydata$X, ...), instead use mvr(y ~ X, data = mydata, ...). Otherwise, predict.mvr will not work properly. The chapter Statistical models in R of the manual An Introduction to R distributed with R is a good reference on formulas in R.
+
+The number of components to fit is specified with the argument ncomp. It this is not supplied, the maximal number of components is used (taking account of any cross-validation).
+
+If validation = "CV", cross-validation is performed. The number and type of cross-validation segments are specified with the arguments segments and segment.type. See mvrCv for details. If validation = "LOO", leave-one-out cross-validation is performed. It is an error to specify the segments when validation = "LOO" is specified.
+
+Note that the cross-validation is optimised for speed, and some generality has been sacrificed. Especially, the model matrix is calculated only once for the complete cross-validation, so models like y ~ msc(X) will not be properly cross-validated. However, scaling requested by scale = TRUE is properly cross-validated. For proper cross-validation of models where the model matrix must be updated/regenerated for each segment, use the separate function crossval.
+
+    </details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
         <outputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></outputWidget>

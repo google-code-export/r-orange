@@ -7,7 +7,7 @@
         <tag>Parametric</tag> 
     </tags>
     <screenshots></screenshots>
-    <summary></summary>
+    <summary>Produces a spline fit of X/Y data.</summary>
     <details></details>
     <relatedWidgets>
         <inputWidget><!-- <package>:<widget> ie. base:apply, plotting:heatmap --></inputWidget>
