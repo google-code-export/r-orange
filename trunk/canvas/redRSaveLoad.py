@@ -746,7 +746,13 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             if tmp:
                 widgetID += '_'+str(sessionID)
             schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
-            #print _('Settings'), settings
+            
+            instanceID = redRObjects.addInstance(signalManager, widgetInfo, settings = settings, insig = inputs, outsig = outputs, id = id)
+            newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
+            
+            if newwidget.instanceID not in redRObjects._widgetInstances.keys():
+                raise Exception('widget instance not in instance keys')
+            
             lpb += 1
             loadingProgressBar.setValue(lpb)
         except Exception as inst:

@@ -147,6 +147,7 @@ class widgetSession():
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(settings)
         for k,v in settings.iteritems():
+            print 'loading %s in widget %s' % (k, self.captionTitle)
             try:
                 #redRLog.log(redRLog.REDRCORE, redRLog.ERROR, 'Loading %s' % k)
                 if k in ['inputs', 'outputs']: continue
@@ -193,6 +194,7 @@ class widgetSession():
                                     signalName = unicode(itemListBox.selectedItems()[0])
                                     signalID = self.outputs.getSignalByName(signalName)
                                     self.send(signalID, var)
+                                    print 'Sending complete from load'
     #############################################
                 elif not hasattr(self,k):
                     continue

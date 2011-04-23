@@ -59,6 +59,7 @@ class widgetSignals():
         self.ROutput.append(_('\n##Data sent through the %s channel\n') % unicode(self.outputs.outputNames()[signalName])) #Keep track automatically of what R functions were performed.
         
         redRObjects.updateLines()
+        print 'sending complete'
     def refreshToolTips(self):
         lines = redRObjects.lines()
         for l in lines.values():

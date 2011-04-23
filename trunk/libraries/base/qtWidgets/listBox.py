@@ -8,6 +8,17 @@ from PyQt4.QtGui import *
 from OrderedDict import OrderedDict
 import redRi18n
 _ = redRi18n.get_(package = 'base')
+
+def startProgressBar(title,text,max):
+    progressBar = QProgressDialog()
+    progressBar.setCancelButtonText(QString())
+    progressBar.setWindowTitle(title)
+    progressBar.setLabelText(text)
+    progressBar.setMaximum(max)
+    progressBar.setValue(0)
+    progressBar.show()
+    return progressBar
+    
 class listBox(QListWidget,widgetState):
     def __init__(self, widget, value=None, label=None, displayLabel=True, includeInReports=True, 
     orientation='vertical', selectionMode=QAbstractItemView.SingleSelection,
@@ -61,27 +72,42 @@ class listBox(QListWidget,widgetState):
         QListWidget.addItem(self,item)
         self.listItems[id] = item
     def addItems(self,items):
+        progressBar = startProgressBar('Setting List Items', '', len(items))
+        progress = 0
         if type(items) in [dict,OrderedDict]:
+            
             for k,v in items.items():
                 self.addItem(k,v)
+                progress += 1
+                progressBar.setValue(progress)
+            
         elif type(items) in [list]:
+            progressBar = startProgressBar('Setting List Items', '', len(items))
             if len(items) > 0 and type(items[0]) is tuple:
                 for k,v in items:
                     self.addItem(k,v)
+                    progress += 1
+                    progressBar.setValue(progress)
             else:
                 for v in items:
                     self.addItem(v,v)
+                    progress += 1
+                    progressBar.setValue(progress)
             # redRLog.log(redRLog.REDRCORE,redRLog.DEBUG,_('In listBox should not use list'))
         else:
+            progressBar.hide()
             raise Exception(_('In listBox, addItems takes a list, dict or OrderedDict'))
-
+        progressBar.hide()
     def setSelectedIds(self,ids):
+        progressBar = startProgressBar('Setting Selected Items', '', len(ids))
+        progress = 0
         for x in ids:
             try:
                 self.item(self.listItems.keys().index(x)).setSelected(True)
             except:
                 pass
-                
+            progress += 1
+            progressBar.setValue(progress)
     def update(self, items):
         current = self.selectedIds()
         self.clear()
@@ -110,16 +136,15 @@ class listBox(QListWidget,widgetState):
             items[self.listItems.keys()[x.row()]] = self.listItems.values()[x.row()]
         return items
     def selectedIds(self):
-        ids = []
         for x in self.selectedIndexes():
             ids.append(self.listItems.keys()[x.row()])
         return ids
         
-    def setSelectedIds(self, ids):
-        if ids == None: return
-        for i in range(self.count()):
-            if self.listItems.keys()[i] in ids:
-                self.item(i).setSelect(True)
+    #def setSelectedIds(self, ids):
+        #if ids == None: return
+        #for i in range(self.count()):
+            #if self.listItems.keys()[i] in ids:
+                #self.item(i).setSelect(True)
     
     def sizeHint(self):
         return self.defaultSizeHint
@@ -237,9 +262,11 @@ class listBox(QListWidget,widgetState):
         return r
     def loadSettings(self,data):
         self.clear()
-        self.addItems(data['items'])
-        self.setSelectedIds(data['selected'])
-
+        print 'adding items'
+        self.addItems(self.safeLoad(data, 'items', []))
+        print 'setting selected ids'
+        self.setSelectedIds(self.safeLoad(data, 'selected', None))
+        print 'done loading list box'
     def getReportText(self, fileDir):
         items = self.getItems()
         selected = self.currentSelection()
