@@ -553,7 +553,8 @@ class graphicsView(QGraphicsView, widgetState):
         ## performs a quick plot given a query and an imageType
         self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
             
-
+    def prePlottingCommands(self):
+        pass
     def plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.data = data
@@ -563,7 +564,18 @@ class graphicsView(QGraphicsView, widgetState):
         self._dwidth = dwidth
         self._dheight = dheight
         self._startRDevice(self.standardImageType)
-        
+        self.prePlottingCommands() ## reimplemented in child classes
+        self._plot(self.query, function)
+        self._plotLayers(layers)
+        self._plotLegend(legend)
+        self.R('dev.off()', wantType = 'NoConversion')
+        self.clear()
+        fileName = unicode(self.imageFileName)
+        self.addImage(fileName)
+        self.layers = layers
+        self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
+    
+    def _plot(self, query, function):
         if not self.plotExactlySwitch:
             self.extras = self._setParameters()
             if unicode(self.extrasLineEdit.text()) != '':
@@ -574,27 +586,20 @@ class graphicsView(QGraphicsView, widgetState):
                 fullquery = '%s(%s)' % (function, query)
         else:
             fullquery = self.query
-        
         try:
             self.R(fullquery, wantType = 'NoConversion')
-        
-            if len(layers) > 0:
-                for l in layers:
-                    self.R(l, wantType = 'NoConversion')
-            if legend:
-                self._setLegend()
-            fileName = unicode(self.imageFileName)
         except Exception as inst:
             self.R('dev.off()', wantType = 'NoConversion') ## we still need to turn off the graphics device
             raise Exception(unicode(inst))
-        self.R('dev.off()', wantType = 'NoConversion')
-        self.clear()
-        fileName = unicode(self.imageFileName)
-        self.addImage(fileName)
-        self.layers = layers
-        self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
-    
-    
+        
+    def _plotLayers(self, layers):
+        if len(layers) > 0:
+                for l in layers:
+                    self.R(l, wantType = 'NoConversion')
+    def _plotLegend(self, legend):
+        if legend:
+                self._setLegend()
+                
     def setExtrasLineEditEnabled(self, enabled = True):
         
         self.extrasLineEdit.enabled(enabled)

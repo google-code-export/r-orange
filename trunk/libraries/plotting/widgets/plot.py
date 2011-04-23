@@ -27,9 +27,6 @@ class plot(OWRpy):
         self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
         self.inputs.addInput('id1', 'Plot Layer(s)', redRRPlotAttribute, self.processLayer, multiple = True)
 
-        
-        box = OWGUI.widgetBox(self.controlArea, "Widget Box")
-        self.RFunctionParam_main = lineEdit(box, label = 'Main Title:')
         self.plotArea = redRPlot(self.controlArea, label = 'Plot')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 
@@ -48,15 +45,11 @@ class plot(OWRpy):
             del self.plotAttributes[id.widgetID]
     def commitFunction(self):
         #if self.RFunctionParam_y == '': return
-        if self.RFunctionParam_x == '': return
-        injection = []
-        if str(self.RFunctionParam_main.text()) != '':
-            injection.append('main = "'+str(self.RFunctionParam_main.text())+'"')
-        if injection != []:
-            inj = ','+','.join(injection)
-        else: inj = ''
+        if self.RFunctionParam_x == '': 
+            self.status.setText('No Data Available')
+            return
         
-        self.plotArea.plotMultiple(query = str(self.RFunctionParam_x)+inj, data = self.RFunctionParam_x, layers = self.plotAttributes.values())
+        self.plotArea.plotMultiple(query = str(self.RFunctionParam_x), data = self.RFunctionParam_x, layers = self.plotAttributes.values())
     
     def clearPlots(self):
         self.plotArea.clear()

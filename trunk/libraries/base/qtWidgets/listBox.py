@@ -114,6 +114,12 @@ class listBox(QListWidget,widgetState):
         for x in self.selectedIndexes():
             ids.append(self.listItems.keys()[x.row()])
         return ids
+        
+    def setSelectedIds(self, ids):
+        if ids == None: return
+        for i in range(self.count()):
+            if self.listItems.keys()[i] in ids:
+                self.item(i).setSelect(True)
     
     def sizeHint(self):
         return self.defaultSizeHint

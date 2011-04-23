@@ -57,6 +57,7 @@ class redRPlot(graphicsView):
                 'cex.lab':1,
                 'cex.main':1,
                 'cex.sub':1,
+                'cex':1,
                 'col.axis':'#000000'}
             }
         
@@ -234,24 +235,25 @@ class redRPlot(graphicsView):
             self.graphicOptionsWidget.hide()
     
     def setTheme(self,options = None):
-        if option != None:
+        if options != None:
             self.options = options
-            
+        
         ## device options
         dos = self.options['device']
-        self.optionWidgets['imageType'].setCurrentId(dos['type'])
+        self.optionWidgets['imageType'].setCurrentId(dos['imageType'])
         self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
-        self.optionWidgets['bgColor'].setColor(dos['bg'])
-        self.optionWidgets['dheight'].setValue(dow['height'])
-        self.optionWidgets['dwidth'].setValue(dow['width'])
-        self.optionWidgets['units'].setCurrentId(dow['units'])
+        self.optionWidgets['bgColor'].setColor(dos['bgColor'])
+        self.optionWidgets['dheight'].setValue(dos['dheight'])
+        self.optionWidgets['dwidth'].setValue(dos['dwidth'])
+        self.optionWidgets['units'].setCurrentId(dos['units'])
         
         ## main options
         mos = self.options['main']
-        self.optionWidgets['colorSeries'].setColorSeries(mos['col'])
-        self.optionWidgets['linesListBox'].setLineTypes(mos['lty'])
-        self.optionWidgets['lineWidth'].setValue(mos['lwd'])
-        self.optionWidgets['pointListBox'].setLineTypes(mos['pch'])
+        self.optionWidgets['colorSeries'].setCurrentId(mos['col'])
+        self.optionWidgets['linesListBox'].setSelectedIds(mos['lty'])
+        if mos['lwd']:
+            self.optionWidgets['lineWidth'].setValue(mos['lwd'])
+        self.optionWidgets['pointListBox'].setSelectedIds(mos['pch'])
             
         ## title options
         tos = self.options['title']
@@ -340,11 +342,11 @@ class redRPlot(graphicsView):
 
             options['value'] = qtWidget.value()
     
-    def getLineTypes(self,options):
+    def getLineTypes(self):
         qtWidget = self.optionWidgets['linesListBox']
-        options['value'] = 'c('+','.join([unicode(x) for x in qtWidget.selectedIds()])+')'
+        return 'c('+','.join([unicode(x) for x in qtWidget.selectedIds()])+')'
         
-    def setLineTypes(self,options):
+    def setLineTypes(self):
         if 'default' not in options.keys() or options['default'] == None: return
         qtWidget = self.optionWidgets[options['qtWidget']]
         qtWidget.setSelectedIds(options['default'])
@@ -401,58 +403,64 @@ class redRPlot(graphicsView):
             '%s = %s' % ('cex.main', self.optionWidgets['mainFont'].value()),
             '%s = %s' % ('cex.sub', self.optionWidgets['subFont'].value()),
             '%s = \'%s\'' % ('col.axis', self.optionWidgets['axisColor'].color)
-            ],
-                    
-        
-        for Rcall,parameters in self.options.items():
-            injection[Rcall] = []
-            for k,v in parameters['parameters'].items():
-                #call function to collect data  
-                if 'getFunction' in v.keys():
-                    v['getFunction'](self.options[Rcall]['parameters'][k])
-                else:
-                    self.updateOptions(self.options[Rcall]['parameters'][k])
-                print Rcall,k
-                if v['value']:
-                    injection[Rcall].append('%s = %s' % (k,v['value']))
-            
-        # pp.pprint(self.options)            
+            ]}
+         
         return injection            
-        #def setTheme(self,options = None):
-        #if option != None:
-            #self.options = options
-            
-        ### device options
-        #dos = self.options['device']
-        #self.optionWidgets['imageType'].setCurrentId(dos['type'])
-        #self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
-        #self.optionWidgets['bgColor'].setColor(dos['bg'])
-        #self.optionWidgets['dheight'].setValue(dow['height'])
-        #self.optionWidgets['dwidth'].setValue(dow['width'])
-        #self.optionWidgets['units'].setCurrentId(dow['units'])
-        
-        ### main options
-        #mos = self.options['main']
-        #self.colorSeries.setColorSeries(mos['col'])
-        #self.linesListBox.setLineTypes(mos['lty'])
-        #self.lineWidth.setValue(mos['lwd'])
-        #self.pointListBox.setLineTypes(mos['pch'])
+    def prePlottingCommands(self):
+        parOpts = [
+            '%s = %s' % ('cex.axis', self.optionWidgets['axisFont'].value()),
+            '%s = %s' % ('cex.lab', self.optionWidgets['labFont'].value()),
+            '%s = %s' % ('cex', self.optionWidgets['plotFont'].value()),
+            '%s = %s' % ('cex.main', self.optionWidgets['mainFont'].value()),
+            '%s = %s' % ('cex.sub', self.optionWidgets['subFont'].value()),
+            '%s = \'%s\'' % ('col.axis', self.optionWidgets['axisColor'].color)
+            ]
+        self.R('par(%s)' % ','.join(parOpts))
     def processQuery(self, query):
-        widgetPars = [
-            '%s = %s' % ('lty', self.getLineTypes()),
-            '%s = %s' % ('lwd', self.optionWidgets['lineWidth'].currentId()),
-            '%s = %s' % ('pch', self.optionWidgets['pointListBox'].currentId())]
+        widgetPars = []
+        if self.getLineTypes() != 'c()':
+            widgetPars.append('%s = %s' % ('lty', self.getLineTypes()))
+        
+        widgetPars.append('%s = %s' % ('lwd', self.optionWidgets['lineWidth'].value()))
+        if len(self.optionWidgets['pointListBox'].selectedIds()) > 0:
+            widgetPars.append('%s = c(%s)' % ('pch', ','.join([str(i) for i in self.optionWidgets['pointListBox'].selectedIds()])))
         # color series temporarily disabled...
         return '%s, %s' % (query, ','.join(widgetPars))
     def plot(self, query, function = 'plot', parameters=None,data=None):
         ## performs a quick plot given a query and an imageType
         self.data = data
         self.function = function
-        self.processQuery(query)
         self.layers = []
-        self.plotMultiple()
-        ## plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False)
+        self.plotMultiple(self, self.processQuery(query), function = function, dwidth = self.optionWidgets['dwidth'].value(), dheight = self.optionWidgets['dheight'].value(), layers = [], data = None, legend = False)
     
+    def plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False):
+        self.data = data
+        self.function = function
+        self.query = self.processQuery(query)
+        
+        self._dwidth = dwidth
+        self._dheight = dheight
+        self._startRDevice(self.standardImageType)
+        self.prePlottingCommands() ## reimplemented in child classes
+        self._plot(self.query, function)
+        titleOpts = [
+            '%s = \'%s\'' % ('main', self.optionWidgets['mainTitle'].text()),
+            '%s = \'%s\'' % ('xlab', self.optionWidgets['xLab'].text()),
+            '%s = \'%s\'' % ('ylab', self.optionWidgets['yLab'].text()),
+            '%s = \'%s\'' % ('col.main', self.optionWidgets['titleColor'].color),
+            '%s = \'%s\'' % ('col.sub', self.optionWidgets['subColor'].color),
+            '%s = \'%s\'' % ('col.lab', self.optionWidgets['labColor'].color)
+            ]
+        self._plotLayers(layers + ['title(%s)' % ','.join(titleOpts)])
+        self._plotLegend(legend)
+        self.R('dev.off()', wantType = 'NoConversion')
+        self.clear()
+        fileName = unicode(self.imageFileName)
+        self.addImage(fileName)
+        self.layers = layers
+        self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
+        
+        
     def resizeEvent(self,ev):
         if self.mainItem and 'true' in self.resizeCheck.getCheckedIds():
             self.fitInView(self.mainItem.boundingRect(), Qt.KeepAspectRatio)
