@@ -136,6 +136,7 @@ class listBox(QListWidget,widgetState):
             items[self.listItems.keys()[x.row()]] = self.listItems.values()[x.row()]
         return items
     def selectedIds(self):
+        ids = []
         for x in self.selectedIndexes():
             ids.append(self.listItems.keys()[x.row()])
         return ids

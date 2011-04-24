@@ -620,6 +620,7 @@ def loadTabs(tabs, loadingProgressBar, tmp, loadedSettingsDict = None):
                 except Exception as inst:
                     redRLog.log(1, 9, 1, _('Loading exception occured for %s, %s') % (name, inst))
             else:
+                print 'loading widget as tmp widget'
                 #print 'loadedSettingsDict %s' % loadedSettingsDict.keys()
                 caption = ""
                 settings = cPickle.loads(loadedSettingsDict[instance]['settings'])
