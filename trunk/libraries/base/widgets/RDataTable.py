@@ -80,7 +80,7 @@ class RDataTable(OWRpy):
         #links:
         linkBox = self.advancedOptions.createTabPage(_('Links to Websites'), canScroll = True)
         linksTab = groupBox(linkBox, _('Links to Websites'))        
-        self.linksListBox = listBox(linksTab,label=_('Links to Websites'))
+        self.linksListBox = listBox(linksTab,label=_('Links to Websites'),displayLabel=False)
         self.linksListBox.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.customLink = lineEdit(linksTab, label = _('Add Link:'), includeInReports=False)
         hbox = widgetBox(linksTab,orientation='horizontal')

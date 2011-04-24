@@ -1,9 +1,4 @@
 ## ConSig Widget.  Purpose is to calculate the consig score from a list of genes.
-
-
-
-
-
 """
 <name>ConSig</name>
 <author>Kyle R Covington kyle@red-r.org</author>
@@ -28,8 +23,8 @@ from libraries.base.qtWidgets.commitButton import commitButton as redRCommitButt
 from libraries.base.qtWidgets.button import button
 class ConSig(OWRpy): 
     
-    def __init__(self, parent=None, signalManager=None):
-        OWRpy.__init__(self)
+    def __init__(self, **kwargs):
+        OWRpy.__init__(self, **kwargs)
         self.setRvariableNames(['genesScores', 'conceptScores'])
         self.concepts = ''          ## the concepts, optional will replace the reading of the file
         self.geneIDs = ''           ## the geneIDs to be found in the concepts

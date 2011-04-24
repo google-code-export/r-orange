@@ -44,7 +44,7 @@ class rank(OWRpy):
             
         self.RFunctionParam_x=data.getData()
         columns = self.R('names('+self.RFunctionParam_x+')',wantType='list')
-        print columns
+        #print columns
         self.columns.update(columns)
 
         if self.commit.processOnInput():
@@ -55,12 +55,8 @@ class rank(OWRpy):
             self.commitFunction()
 
     def commitFunction(self):
-        if self.columns.selectedItems():
-            col = self.columns.selectedItems()[0]
-        else:
-            col = None
-
-        if self.RFunctionParam_x == '' and not col: 
+        selectCols = self.columns.selectedIds()
+        if self.RFunctionParam_x == '' and not len(selectCols) !=1: 
             self.status.setText(_('No data'))
             return
         
@@ -71,7 +67,8 @@ class rank(OWRpy):
         
         
         inj = ','.join(injection)
-        self.R(self.Rvariables['rank']+'<-rank(x='+unicode(self.RFunctionParam_x)+','+inj+', na.last = TRUE)', wantType = 'NoConversion')
+        self.R(self.Rvariables['rank']+'<-rank(x=%s$%s,%s, na.last = TRUE)' % (self.RFunctionParam_x,selectCols[0],inj), 
+        wantType = 'NoConversion')
         newData = redRRMatrix(self, data = 'as.matrix('+self.Rvariables['rank']+')')
         self.rSend("id0", newData)
 

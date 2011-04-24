@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="../../help.xsl"?>
 <documentation>
     <name>View Pyton Dict<!-- [REQUIRED] title --></name>
-    <icon></icon>
+    <icon>default.png</icon>
     <tags>
         <tag>R</tag>
     </tags>

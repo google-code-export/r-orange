@@ -60,7 +60,7 @@ class RedRcast(OWRpy):
             self.RFunctionParamformula_listBox.update(names)
             self.aggregatingColumns.update(names)
             #self.valueColumn.update(names)
-            self.margins.update([('FALSE', 'Don\'t Use'), ('TRUE', 'Use All'), ('grand\_col', 'Grand Column'), ('grand\_row', 'Grand Row')] + [(n, n) for n in names])
+            self.margins.update([('FALSE', 'Don\'t Use'), ('TRUE', 'Use All'), ('grand_col', 'Grand Column'), ('grand_row', 'Grand Row')] + [(n, n) for n in names])
             self.commitFunction()
         else:
             self.RFunctionParam_data=''

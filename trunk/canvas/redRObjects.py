@@ -17,15 +17,15 @@ print 'start robjects'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-print 'after qt'
+# print 'after qt'
 import orngCanvasItems
-print 'after canvasitems'
+# print 'after canvasitems'
 import redREnviron
-print 'after enrivon'
+# print 'after enrivon'
 import orngView, time, orngRegistry, OWRpy
-print 'after orngview'
+# print 'after orngview'
 import redRLog
-print 'after log'
+# print 'after log'
 
 import redRi18n
 print 'after imports'
