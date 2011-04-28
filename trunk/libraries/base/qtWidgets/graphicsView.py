@@ -542,11 +542,11 @@ class graphicsView(QGraphicsView, widgetState):
             
         elif imageType == 'png':
             self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dheight*50)+', height = '+unicode(dheight*10)
+                +unicode(dwidth*50)+', height = '+unicode(dheight*50)
                 +')', wantType = 'NoConversion')
         elif imageType == 'jpeg':
             self.R('jpeg(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dheight*50)+', height = '+unicode(dheight*10)
+                +unicode(dwidth*50)+', height = '+unicode(dheight*50)
                 +')', wantType = 'NoConversion')
                 
     def plot(self, query, function = 'plot', dwidth=5, dheight=5, data = None, legend = False):

@@ -99,6 +99,7 @@ class listBox(QListWidget,widgetState):
             raise Exception(_('In listBox, addItems takes a list, dict or OrderedDict'))
         progressBar.hide()
     def setSelectedIds(self,ids):
+        if ids == None: return
         progressBar = startProgressBar('Setting Selected Items', '', len(ids))
         progress = 0
         for x in ids:

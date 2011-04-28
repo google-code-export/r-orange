@@ -21,7 +21,7 @@ _ = redRi18n.get_(package = 'base')
     
 
 class redRPlot(graphicsView):
-    def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None):
+    def __init__(self, parent,label=None, displayLabel=True,includeInReports=True, name = '', data = None, prePlottingCallback = None):
         ## want to init a graphics view with a new graphics scene, the scene will be accessable through the widget.
         graphicsView.__init__(self, parent, label = label, displayLabel = displayLabel, includeInReports = includeInReports,
             name = name, data = data)
@@ -31,7 +31,7 @@ class redRPlot(graphicsView):
     ####   Themes              #####
     ################################
         
-        
+        self.prePlottingCallback = prePlottingCallback
         self.options = {
             'device': {
                 'imageType':'svg',
@@ -95,7 +95,7 @@ class redRPlot(graphicsView):
         toolTip = 'Add extra parameters to the main plot.\nPlease see documentation for more details about parameters.')
         
         self.optionWidgets['onlyAdvanced'] = checkBox(advancedTab,
-        buttons=['Only use the advanced options here'],
+        buttons=[(1, 'Only use the advanced options here')],
         label='advancedOnly',displayLabel=False)
 
     ################################
@@ -407,6 +407,11 @@ class redRPlot(graphicsView):
          
         return injection            
     def prePlottingCommands(self):
+        if 1 in self.optionWidgets['onlyAdvanced'].getCheckedIds():
+            return
+        if self.prePlottingCallback:
+            self.prePlottingCallback()
+            return
         parOpts = [
             '%s = %s' % ('cex.axis', self.optionWidgets['axisFont'].value()),
             '%s = %s' % ('cex.lab', self.optionWidgets['labFont'].value()),
@@ -417,6 +422,8 @@ class redRPlot(graphicsView):
             ]
         self.R('par(%s)' % ','.join(parOpts))
     def processQuery(self, query):
+        if 1 in self.optionWidgets['onlyAdvanced'].getCheckedIds():
+            return query
         widgetPars = []
         if self.getLineTypes() != 'c()':
             widgetPars.append('%s = %s' % ('lty', self.getLineTypes()))
@@ -438,9 +445,10 @@ class redRPlot(graphicsView):
         self.function = function
         self.query = self.processQuery(query)
         
-        self._dwidth = dwidth
-        self._dheight = dheight
-        self._startRDevice(self.standardImageType)
+        self._dwidth = self.optionWidgets['dwidth'].value()
+        
+        self._dheight = self.optionWidgets['dheight'].value()
+        self._startRDevice(self.optionWidgets['imageType'].currentId())
         self.prePlottingCommands() ## reimplemented in child classes
         self._plot(self.query, function)
         titleOpts = [
