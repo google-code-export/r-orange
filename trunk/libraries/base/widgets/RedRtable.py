@@ -31,7 +31,7 @@ class RedRtable(OWRpy):
     def processdata(self, data):
         if data:
             self.RFunctionParam_data=data.getData()
-            self.cols.update(self.R('colnames('+self.RFunctionParam_data+')', wantType = 'NoConversion'))
+            self.cols.update(self.R('colnames('+self.RFunctionParam_data+')', wantType = 'list'))
             if self.commit.processOnInput():
                 self.commitFunction()
         else:

@@ -726,6 +726,7 @@ def addWidgetInstanceByFileName(name, settings = None, inputs = None, outputs = 
     
         
 def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
+    print 'loading widget using 1.80 settings'
     lpb = 0
     loadedOk = 1
     failureText = ''
@@ -746,10 +747,10 @@ def loadWidgets180(widgets, loadingProgressBar, loadedSettingsDict, tmp):
             widgetInfo =  redRObjects.widgetRegistry()['widgets'][name]
             if tmp:
                 widgetID += '_'+str(sessionID)
-            schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
+            #schemaDoc.addWidget(widgetInfo, x= xPos, y= yPos, caption = caption, widgetSettings = settings, forceInSignals = inputs, forceOutSignals = outputs, id = widgetID)
             
             instanceID = redRObjects.addInstance(signalManager, widgetInfo, settings = settings, insig = inputs, outsig = outputs, id = id)
-            newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
+            #newwidget = redRObjects.newIcon(redRObjects.activeCanvas(), redRObjects.activeTab(), widgetInfo, redRStyle.defaultWidgetIcon, canvasDlg, instanceID =  instanceID, tabName = redRObjects.activeTabName())
             
             if newwidget.instanceID not in redRObjects._widgetInstances.keys():
                 raise Exception('widget instance not in instance keys')
