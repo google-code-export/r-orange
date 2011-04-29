@@ -27,7 +27,7 @@ class plot(OWRpy):
         self.saveSettingsList = ['plotArea', 'data', 'RFunctionParam_x', 'plotAttributes']
         self.inputs.addInput('id0', 'x', redRRVariable, self.processx)
         self.inputs.addInput('id1', 'Plot Layer(s)', redRRPlotAttribute, self.processLayer, multiple = True)
-        self.label = redRWidgetLabel(self.controlArea, '')
+        self.label = redRWidgetLabel(self.bottomAreaLeft, '')
         self.plotArea = redRPlot(self.controlArea, label = 'Plot')
         redRCommitButton(self.bottomAreaRight, "Commit", callback = self.commitFunction)
 
@@ -35,6 +35,8 @@ class plot(OWRpy):
         if data:
             self.data = data
             self.RFunctionParam_x=data.getData()
+            if data.optionalDataExists('plotTheme'):
+                self.plotArea.setTheme(data.getOptionalData('plotTheme')['data'])
             self.commitFunction()
         else:
             self.clearPlots()
@@ -50,7 +52,8 @@ class plot(OWRpy):
             self.status.setText('No Data Available')
             return
         self.status.setText('Plotting in Progress')
-        self.status.setStatus(2)
+        self.status.setStatus(1)
+        self.label.setText('')
         try:
             self.plotArea.plotMultiple(query = str(self.RFunctionParam_x), data = self.RFunctionParam_x, layers = self.plotAttributes.values())
         except Exception as inst:
@@ -59,6 +62,6 @@ class plot(OWRpy):
             self.label.setText(unicode(inst))
             return
         self.status.setText('Plotting Complete')
-        self.status.setStatus(1)
+        self.status.setStatus(2)
     def clearPlots(self):
         self.plotArea.clear()

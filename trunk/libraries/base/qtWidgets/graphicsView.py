@@ -542,20 +542,20 @@ class graphicsView(QGraphicsView, widgetState):
             
         elif imageType == 'png':
             self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dwidth*50)+', height = '+unicode(dheight*50)
+                +unicode(dwidth)+', height = '+unicode(dheight)
                 +')', wantType = 'NoConversion')
         elif imageType == 'jpeg':
             self.R('jpeg(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
-                +unicode(dwidth*50)+', height = '+unicode(dheight*50)
+                +unicode(dwidth)+', height = '+unicode(dheight)
                 +')', wantType = 'NoConversion')
                 
-    def plot(self, query, function = 'plot', dwidth=5, dheight=5, data = None, legend = False):
+    def plot(self, query, function = 'plot', dwidth=250, dheight=250, data = None, legend = False):
         ## performs a quick plot given a query and an imageType
         self.plotMultiple(query, function = function, dwidth = dwidth, dheight = dheight, layers = [], data = data, legend = legend)
             
     def prePlottingCommands(self):
         pass
-    def plotMultiple(self, query, function = 'plot', dwidth = 5, dheight = 5, layers = [], data = None, legend = False):
+    def plotMultiple(self, query, function = 'plot', dwidth = 250, dheight = 250, layers = [], data = None, legend = False):
         ## performs plotting using multiple layers, each layer should be a query to be executed in RSession
         self.data = data
         self.function = function
