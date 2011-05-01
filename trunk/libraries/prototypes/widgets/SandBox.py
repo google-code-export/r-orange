@@ -16,7 +16,7 @@ class SandBox(OWRpy):
     def __init__(self, **kwargs):
         OWRpy.__init__(self, **kwargs)
         self.lineEditText = ''
-        
+        #self.require_librarys(['abc', 'adb', 'AMORE'])
         ### GUI ###
         self.shuffle = shuffleBox(self.controlArea, label = 'Shuffle', items = [(1, 'apple'), (2, 'banana'), (3, 'cranberry')])
         self.textEdit = redRTextEdit(self.controlArea, label = 'output')

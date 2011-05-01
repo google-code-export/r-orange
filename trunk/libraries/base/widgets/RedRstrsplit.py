@@ -1,6 +1,5 @@
 """
-<name>strsplit</name>
-<tags>Prototypes</tags>
+<name>String Split</name>
 """
 from OWRpy import * 
 import redRGUI 
@@ -20,7 +19,7 @@ class RedRstrsplit(OWRpy):
         self.setRvariableNames(["strsplit", "dataframe"])
         self.data = {}
         self.RFunctionParam_x = ''
-        self.inputs.addInput('id0', _('Input Data'), redRRVector, self.processx)
+        self.inputs.addInput('id0', _('Input Data'), [redRRVector, redRRList], self.processx)
 
         self.outputs.addOutput('id0', _('strsplit Output'), redRRList)
         self.outputs.addOutput('id1', _('strsplit Vector'), redRRVector)
@@ -34,12 +33,20 @@ class RedRstrsplit(OWRpy):
         self.RFunctionParamunlist_radioButtons = radioButtons(self.controlArea, label = _('Convert to RVector'), buttons = [_('Send only the list'), _('Send list and vector')], setChecked = _('Send list and vector'), orientation = 'horizontal')
         redRCommitButton(self.bottomAreaRight, _("Commit"), callback = self.commitFunction)
     def processx(self, data):
-        if not self.require_librarys(["base"]):
-            self.status.setText('R Libraries Not Loaded.')
-            return
+        
         if data:
             self.RFunctionParam_x=data.getData()
             #self.data = data
+            if type(data) == redRRVector:
+                self.dataType = 1
+                self.dataSelector.clear()
+                self.dataSelector.setEnabled(False)
+            elif type(data) == redRDataFrame:
+                self.dataType = 2
+                if self.R('names(%s)' % self.RFunctionParam_x, wantType = 'convert') == None:
+                    self.R('names(%s)<-c(%s)' % (self.RFunctionParam_x, ','.join(['\'Item_%s\'' % str(i) for i in range(self.R('length(%s)' % self.RFunctionParam_x, wantType = 'convert'))])), wantType = 'NoConversion')
+                self.dataSelector.update(self.R('names(%s)' % self.RFunctionParam_x, wantType = 'list'))
+                self.dataSelector.setEnabled(True)
             self.commitFunction()
         else:
             self.RFunctionParam_x=''
@@ -73,7 +80,11 @@ class RedRstrsplit(OWRpy):
             string = 'perl=FALSE'
             injection.append(string)
         inj = ','.join(injection)
-        self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+unicode(self.RFunctionParam_x)+') ,'+inj+')', wantType = 'NoConversion')
+        if self.dataType == 1:
+            thisData = self.RFunctionParam_x
+        elif self.dataType == 2:
+            thisData = '%s$%s' % (self.RFunctionParam_x, self.dataSelector.currentText())
+        self.R(self.Rvariables['strsplit']+'<-strsplit(x= as.character('+unicode(thisData)+') ,'+inj+')', wantType = 'NoConversion')
         newData = redRRList(self, data = self.Rvariables["strsplit"]) # moment of variable creation, no preexisting data set.  To pass forward the data that was received in the input uncomment the next line.
         #newData.copyAllOptinoalData(self.data)  ## note, if you plan to uncomment this please uncomment the call to set self.data in the process statemtn of the data whose attributes you plan to send forward.
         self.rSend("id0", newData)

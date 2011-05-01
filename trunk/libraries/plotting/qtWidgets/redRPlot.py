@@ -240,38 +240,60 @@ class redRPlot(graphicsView):
         
         ## device options
         dos = self.options['device']
-        self.optionWidgets['imageType'].setCurrentId(dos['imageType'])
-        self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
-        self.optionWidgets['bgColor'].setColor(dos['bgColor'])
-        self.optionWidgets['dheight'].setValue(dos['dheight'])
-        self.optionWidgets['dwidth'].setValue(dos['dwidth'])
-        self.optionWidgets['units'].setCurrentId(dos['units'])
+        if 'imageType' in dos.keys():
+            self.optionWidgets['imageType'].setCurrentId(dos['imageType'])
+        if 'dpi' in dos.keys():
+            self.optionWidgets['dpi'].setCurrentId(dos['dpi'])
+        if 'bgColor' in dos.keys():
+            self.optionWidgets['bgColor'].setColor(dos['bgColor'])
+        if 'dheight' in dos.keys():
+            self.optionWidgets['dheight'].setValue(dos['dheight'])
+        if 'dwidth' in dos.keys():
+            self.optionWidgets['dwidth'].setValue(dos['dwidth'])
+        if 'units' in dow.keys():
+            self.optionWidgets['units'].setCurrentId(dos['units'])
         
         ## main options
         mos = self.options['main']
-        self.optionWidgets['colorSeries'].setCurrentId(mos['col'])
-        self.optionWidgets['linesListBox'].setSelectedIds(mos['lty'])
-        if mos['lwd']:
+        if 'colorSeries' in mos.keys():
+            self.optionWidgets['colorSeries'].setCurrentId(mos['col'])
+        if 'lty' in mos.keys():
+            self.optionWidgets['linesListBox'].setSelectedIds(mos['lty'])
+        if 'lwd' in mos.keys() and mos['lwd']:
             self.optionWidgets['lineWidth'].setValue(mos['lwd'])
-        self.optionWidgets['pointListBox'].setSelectedIds(mos['pch'])
+        if 'pch' in mos.keys():
+            self.optionWidgets['pointListBox'].setSelectedIds(mos['pch'])
             
         ## title options
+        
         tos = self.options['title']
-        self.optionWidgets['mainTitle'].setText(tos['main'])
-        self.optionWidgets['xLab'].setText(tos['xlab'])
-        self.optionWidgets['yLab'].setText(tos['ylab'])
-        self.optionWidgets['titleColor'].setColor(tos['col.main'])
-        self.optionWidgets['subColor'].setColor(tos['col.sub'])
-        self.optionWidgets['labColor'].setColor(tos['col.lab'])
+        if 'main' in tos.keys():
+            self.optionWidgets['mainTitle'].setText(tos['main'])
+        if 'xlab' in tos.keys():
+            self.optionWidgets['xLab'].setText(tos['xlab'])
+        if 'ylab' in tos.keys():
+            self.optionWidgets['yLab'].setText(tos['ylab'])
+        if 'col.main' in tos.keys():
+            self.optionWidgets['titleColor'].setColor(tos['col.main'])
+        if 'col.sub' in tos.keys():
+            self.optionWidgets['subColor'].setColor(tos['col.sub'])
+        if 'col.lab' in tos.keys():
+            self.optionWidgets['labColor'].setColor(tos['col.lab'])
         
         ## par options
         pos = self.options['par']
-        self.optionWidgets['axisFont'].setValue(pos['cex.axis'])
-        self.optionWidgets['labFont'].setValue(pos['cex.lab'])
-        self.optionWidgets['plotFont'].setValue(pos['cex'])
-        self.optionWidgets['mainFont'].setValue(pos['cex.main'])
-        self.optionWidgets['subFont'].setValue(pos['cex.sub'])
-        self.optionWidgets['axisColor'].setColor(pos['col.axis'])
+        if 'cex.axis' in pos.keys():
+            self.optionWidgets['axisFont'].setValue(pos['cex.axis'])
+        if 'cex.lab' in pos.keys():
+            self.optionWidgets['labFont'].setValue(pos['cex.lab'])
+        if 'cex' in pos.keys():
+            self.optionWidgets['plotFont'].setValue(pos['cex'])
+        if 'cex.main' in pos.keys():
+            self.optionWidgets['mainFont'].setValue(pos['cex.main'])
+        if 'cex.sub' in pos.keys():
+            self.optionWidgets['subFont'].setValue(pos['cex.sub'])
+        if 'col.axis' in pos.keys():
+            self.optionWidgets['axisColor'].setColor(pos['col.axis'])
         
         
         

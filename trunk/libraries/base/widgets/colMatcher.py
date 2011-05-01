@@ -1,5 +1,5 @@
 """
-<name>Column Matcher</name>
+<name>Column Matcher (Max/Min Column)</name>
 <author>Kyle R Covington kyle@red-r.org</author>
 <description>Generates a table that is identical to the input table but with a new column added that contains the names of a series of selected columns that is either the greatest of the selected columns or the least of the selected columns.  This only works on numbers.</description>
 <RFunctions>graphics:hist</RFunctions>

@@ -65,7 +65,7 @@ class readFile(OWRpy):
         button(box, label = _('Browse'), callback = self.browseFile)
         
         self.fileType = radioButtons(options, label=_('File Type'),
-        buttons = [_('Text'), _('Excel')], setChecked=_('Text'),callback=self.scanNewFile,
+        buttons = [_('Text'), _('Excel'), _('Clipboard')], setChecked=_('Text'),callback=self.scanNewFile,
         orientation='horizontal')
         #self.fileType.setSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred)
         self.fileType.hide()
@@ -126,9 +126,9 @@ class readFile(OWRpy):
         width=50,orientation='horizontal')
         
         holder = widgetBox(options,orientation='horizontal')
-        clipboard = button(holder, label = _('Load Clipboard'), 
-        toolTip = _('Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.'), 
-        callback = self.loadClipboard)
+        #clipboard = button(holder, label = _('Load Clipboard'), 
+        # toolTip = _('Load the file from the clipboard, you can do this if\ndata has been put in the clipboard using the copy command.'), 
+        # callback = self.loadClipboard)
         rescan = button(holder, label = _('Rescan File'),toolTip=_("Preview a small portion of the file"),
         callback = self.scanNewFile)
         load = button(holder, label = _('Load File'),toolTip=_("Load the file into Red-R"),
@@ -159,10 +159,6 @@ class readFile(OWRpy):
         if sys.platform=="win32":
             self.require_librarys(['RODBC'])
             self.setForExcel()
-        ##self.require_librarys(['ff'])
-    # def rep(self):
-        # for x in range(10):
-            # self.loadFile()
 
     def setForExcel(self):
         self.fileType.show()
@@ -170,18 +166,8 @@ class readFile(OWRpy):
         self.delimiter.setChecked('other')
         
     def loadCustomSettings(self,settings):
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(settings)
-        # print settings['colClasses']['pythonObject']
-        # self.colClasses = settings['colClasses']['pythonObject']
-        # self.colNames = settings['colNames']['pythonObject']
-        # self.myColClasses = settings['myColClasses']['list']
         if not self.filecombo.getCurrentFile():
             widgetLabel(self.browseBox,label=_('The loaded file is not found on your computer.\nBut the data saved in the Red-R session is still available.')) 
-        # print '#############################', self.colClasses
-        # print '#############################', self.colNames
-        # print '#############################', self.myColClasses #, settings['myColClasses']['list']
         for i in range(len(self.colClasses)):
             s = radioButtons(self.columnTypes,label=self.colNames[i],displayLabel=False,
             buttons = ['factor','numeric','character','integer','logical'], 
@@ -238,13 +224,12 @@ class readFile(OWRpy):
         self.myColClasses = []
         for i in self.dataTypes:
             self.myColClasses.append(unicode(i[1].getCheckedId()))
-        # print '#####################myColClasses' , self.myColClasses
         self.loadFile(scan=True)
     def scanFile(self):
         self.loadFile(scan=True)
 
-    def loadClipboard(self):
-        self.loadFile(scan = 'clipboard')
+    # def loadClipboard(self):
+        # self.loadFile(scan = 'clipboard')
     
     def loadFile(self,scan=False):
         #print scan
@@ -252,8 +237,8 @@ class readFile(OWRpy):
         fn = self.filecombo.getCurrentFile()
         if not fn and not scan == 'clipboard':
             print _('No file selected')
-            return
-        if not scan =='clipboard':
+            return 
+        if not self.fileType.getChecked() ==_('Clipboard'):
             self.R('%s <- "%s"' % (self.Rvariables['filename'] , fn)) 
             
 
@@ -270,14 +255,18 @@ class readFile(OWRpy):
             otherOptions = ''
             for i in self.otherOptions.getCheckedIds():
                 otherOptions += unicode(i) + '=TRUE,' 
-            
+        else:
+            sep = ''
+            otherOptions = ''
+            for i in self.otherOptions.getCheckedIds():
+                otherOptions += unicode(i) + '=TRUE,'
         if 'Column Headers' in self.hasHeader.getChecked():
             header = 'TRUE'
         else:
             header = 'FALSE'
         
         
-        if scan and scan != 'clipboard':
+        if scan:
             nrows = unicode(self.numLinesScan.text())
             processing=False
         else:
@@ -316,16 +305,15 @@ class readFile(OWRpy):
                 RStr = '%s <- sqlQuery(channel, "select * from [%s]",max=%s)' % (self.Rvariables['dataframe_org'], table,nrows)
 
                 self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
-            elif scan == 'clipboard':
-                self.R(self.Rvariables['filename']+'<-\'clipboard\'', wantType = 'NoConversion')
-                RStr = self.Rvariables['dataframe_org'] + '<- read.table("clipboard", fill = TRUE)'
-                self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
-                print 'scan was to clipboard'
-                self.commit()
             else:
-                print 
-                RStr = self.Rvariables['dataframe_org'] + '<- read.table(' + self.Rvariables['filename'] + ', header = '+header +', sep = "'+sep +'",quote="' + unicode(self.quote.text()).replace('"','\\"') + '", colClasses = '+ ccl +', row.names = '+param_name +',skip='+unicode(self.numLinesSkip.text())+', nrows = '+nrows +',' + otherOptions + 'dec = \''+unicode(self.decimal.text())+'\')'
-                #print '####################', processing
+                if self.fileType.getChecked() ==_('Clipboard'):
+                    settings = {'NEWDATA':self.Rvariables['dataframe_org'], 'FILENAME':'"clipboard"', 'HEADER':header, 'SEP':sep, 'QUOTE':unicode(self.quote.text()).replace('"','\\"'), 'COLCLASSES':ccl, 'PARAMNAME':param_name, 'SKIP':unicode(self.numLinesSkip.text()), 'NROWS':nrows, 'OTHER':otherOptions, 'DEC':unicode(self.decimal.text())}
+                    
+                else:
+                    settings = {'NEWDATA':self.Rvariables['dataframe_org'], 'FILENAME':self.Rvariables['filename'], 'HEADER':header, 'SEP':sep, 'QUOTE':unicode(self.quote.text()).replace('"','\\"'), 'COLCLASSES':ccl, 'PARAMNAME':param_name, 'SKIP':unicode(self.numLinesSkip.text()), 'NROWS':nrows, 'OTHER':otherOptions, 'DEC':unicode(self.decimal.text())}
+                
+                RStr = '%(NEWDATA)s <- read.table(%(FILENAME)s, header = %(HEADER)s, sep = "%(SEP)s", quote = "%(QUOTE)s", colClasses = %(COLCLASSES)s, row.names = %(PARAMNAME)s, skip = %(SKIP)s, nrows = %(NROWS)s , dec = "%(DEC)s", %(OTHER)s)' % settings
+                    
                 self.R(RStr, processingNotice=processing, wantType = 'NoConversion')
                 
         except:
@@ -335,10 +323,8 @@ class readFile(OWRpy):
             self.updateScan()
             return
         
-        if scan:
-            self.updateScan()
-        else:
-            self.commit()
+        self.updateScan()
+        self.commit()
 
     def updateScan(self):
         if self.rowNamesCombo.count() == 0:
@@ -348,24 +334,12 @@ class readFile(OWRpy):
             for x in self.colNames:
                 self.rowNamesCombo.addItem(x,x)
         self.scanarea.clear()
-        # print self.R(self.Rvariables['dataframe_org'])
-        # return
-        
         data = self.R('rbind(colnames(' + self.Rvariables['dataframe_org'] 
         + '), as.matrix(' + self.Rvariables['dataframe_org'] + '))',wantType='list')
         rownames = self.R('rownames(' + self.Rvariables['dataframe_org'] + ')',wantType='list')
-        #print data
-        txt = self.html_table(data,rownames)
-        # print 'paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")'
-        # try:
-            #txt = self.R('paste(capture.output(' + self.Rvariables['dataframe_org'] +'),collapse="\n")',processingNotice=True, showException=False)
-        # txt = self.R(self.Rvariables['dataframe_org'],processingNotice=True, showException=False)
         
+        txt = self.html_table(data,rownames)
         self.scanarea.setText(txt)
-        # except:
-            # QMessageBox.information(self,'R Error', _("Try selected a different Column Seperator."), 
-            # QMessageBox.Ok + QMessageBox.Default)
-            # return
             
         
         try:
@@ -415,7 +389,10 @@ class readFile(OWRpy):
         
     def updateGUI(self):
         dfsummary = self.R('dim('+self.Rvariables['dataframe_org'] + ')', wantType='list',silent=True)
-        self.infob.setText(self.R(self.Rvariables['filename']))
+        if self.fileType.getChecked() == _("Clipboard"):
+            self.infob.setText('Clipboard')
+        else:
+            self.infob.setText(self.R(self.Rvariables['filename']))
         self.infoc.setText(_("Rows: %(ROWS)s\nColumns: %(COLS)s") % {'ROWS':unicode(dfsummary[0]), 'COLS':unicode(dfsummary[1])})
         self.FileInfoBox.setHidden(False)
     def commit(self):
