@@ -5,14 +5,17 @@ from PyQt4.QtGui import *
 from libraries.base.signalClasses.RModelFit import *
 
 class RLMFit(RModelFit):
-    def __init__(self, data, parent = None, checkVal = True):
-        RList.__init__(self, data = data, parent = parent, checkVal = False)
+    convertToList = [RVariable, RModelFit, RList]
+    def __init__(self, widget, data, parent = None, checkVal = True):
+        RList.__init__(self, widget = widget, data = data, parent = parent, checkVal = False)
         self.RListSignal = None
     def convertToClass(self, varClass):
         if varClass == RVariable:
             return self._convertToVariable()
         elif varClass == RModelFit:
             return self
+        elif varClass == RList:
+            return self._convertToList()
         elif varClass == RLMFit:
             return self
         else:
