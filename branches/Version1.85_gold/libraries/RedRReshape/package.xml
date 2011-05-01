@@ -1,9 +1,9 @@
 <package>
     <Name>RedRReshape</Name>
-    <Author>Kyle R Covington kyle@red-r.org</Author>
+    <Author>Red-R Development Team</Author>
     <RLibraries>reshape</RLibraries>
     <Version>
-        <Number>1</Number>
+        <Number>1.1</Number>
         <Stability>New</Stability>
         <Date>2010-09-28</Date>
     </Version>

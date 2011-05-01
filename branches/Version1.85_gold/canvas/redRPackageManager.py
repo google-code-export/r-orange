@@ -55,7 +55,7 @@ class packageManager(redRdialog):
         
           
         #self.treeViewUpdates.setSelectionModel(QItemSelectModel.Rows)
-        self.treeViewUpdates.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.treeViewUpdates.setSelectionMode(QAbstractItemView.SingleSelection)
         self.infoViewUpdates = redRtextEdit(self.controlArea, label=_('Update Info'), displayLabel=False)  ## holds the         
         #### buttons and the like
         buttonArea2 = redRwidgetBox(self,orientation = 'horizontal')

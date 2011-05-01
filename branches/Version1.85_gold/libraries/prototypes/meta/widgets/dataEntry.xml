@@ -4,7 +4,7 @@
     <name>Data Entry</name>
     <icon>readfile.png</icon>
     <tags> 
-        <tag>Data Input</tag> 
+        <tag>Prototypes</tag> 
     </tags>
     <screenshots></screenshots>
     <summary>A table input data entry into a data.frame.</summary>

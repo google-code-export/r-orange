@@ -1,9 +1,9 @@
 <package>
     <Name>stats</Name>
-    <Author>Kyle R Covington kyle@red-r.org, Anup Parikh anup@red-r.org</Author>
+    <Author>Red-R Development Team</Author>
     <RLibraries>stats, pls, isa2, fpc</RLibraries>
     <Version>
-        <Number>1.15</Number>
+        <Number>1.16</Number>
         <Stability>Good</Stability>
         <Date>2011-04-21</Date>
     </Version>
