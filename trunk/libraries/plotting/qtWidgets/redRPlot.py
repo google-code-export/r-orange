@@ -250,7 +250,7 @@ class redRPlot(graphicsView):
             self.optionWidgets['dheight'].setValue(dos['dheight'])
         if 'dwidth' in dos.keys():
             self.optionWidgets['dwidth'].setValue(dos['dwidth'])
-        if 'units' in dow.keys():
+        if 'units' in dos.keys():
             self.optionWidgets['units'].setCurrentId(dos['units'])
         
         ## main options
