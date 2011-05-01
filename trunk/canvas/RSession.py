@@ -195,13 +195,6 @@ def convertToPy(inobject):
 def getInstalledLibraries():
    setLibPaths(redREnviron.directoryNames['RlibPath'])
    return Rcommand('as.vector(installed.packages(lib.loc="' + redREnviron.directoryNames['RlibPath'] + '")[,1])', wantType = 'list')
-
-    #if sys.platform=="win32":
-    #    libPath = os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')
-    #    return Rcommand('as.vector(installed.packages(lib.loc="' + libPath + '")[,1])', wantType = 'list')
-    #else:
-    #    Rcommand('.libPaths(new = "'+personalLibDir+'")')
-    #    return Rcommand('as.vector(installed.packages()[,1])', wantType = 'list')
 loadedLibraries = []
 
 def setLibPaths(libLoc):
@@ -210,57 +203,34 @@ def setLibPaths(libLoc):
     print 'library location is ', libLoc
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
-        # if sys.platform=="win32":
-            # libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
-        # else:
-            # libPath = '\"'+personalLibDir+'\"'
-        #Rcommand('Sys.chmod('+libPath+', mode = "7777")') ## set the file permissions
-        
         loadedOK = True
-        # print 'libPath', libPath
         installedRPackages = getInstalledLibraries()
-        print installedRPackages
-        print Rcommand('.libPaths()', wantType = 'list'), 'library paths' 
         Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]
-        # print _('librarys'), librarys
-        # print _('installedRPackages'), installedRPackages
-        
-        for library in librarys:
-            if library in loadedLibraries: 
-                redRLog.log(redRLog.R, redRLog.DEBUG, _('Library already loaded'))
-                continue
-            # print _('in loop'), library, library in installedRPackages
-            # print installedRPackages
+        newLibs = [l for l in librarys if l not in installedRPackages]
+        if len(newLibs) > 0:
+            if redREnviron.checkInternetConnection():
+                mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it(them)?"
+                ) % unicode(','.join(newLibs)), 
+                QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+                if mb.exec_() == QMessageBox.Ok:
+                    try:
+                        redRLog.log(redRLog.R, redRLog.INFO, _('Installing library(s) %s.') % ','.join(newLibs))
+                        Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
+                        Rcommand('install.packages(c(%s), dependencies = c("Depends", "Suggests", "Enhances"))' % ','.join(['"%s"' % l for l in newLibs]), wantType = 'NoConversion')
+                        
+                    except:
+                        redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException())
+        installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
+        for library in [l for l in librarys if l not in loadedLibraries]:
             if installedRPackages and library and (library in installedRPackages):
                 redRLog.log(redRLog.R, redRLog.DEBUG, 'Loading library %s.' % library)
                 Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
                 
                 loadedLibraries.append(library)
-            elif library:
-                if redREnviron.checkInternetConnection():
-                    mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it?"
-                    ) % unicode(library), 
-                    QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
-                    if mb.exec_() == QMessageBox.Ok:
-                        try:
-                            redRLog.log(redRLog.R, redRLog.INFO, _('Installing library %s.') % library)
-                            Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
-                            Rcommand('install.packages("' + library + '")', wantType = 'NoConversion')
-                            loadedOK = Rcommand('require(' + library + ')', wantType = 'NoConversion')
-                            installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
-
-                        except:
-                            redRLog.log(redRLog.REDRCORE, redRLog.CRITICAL,_('Library load failed') +"<br>"+ redRLog.formatException())
-                            #redRLog.log(redRLog.R, redRLog.CRITICAL, _('Library load failed'))
-                            loadedOK = False
-                    else:
-                        loadedOK = False
-                else:
-                    loadedOK = False
-                if loadedOK:
-                    loadedLibraries.append(library)
-                        
+                loadedOK = True
+            else:
+                loadedOK = False
         return loadedOK
 
