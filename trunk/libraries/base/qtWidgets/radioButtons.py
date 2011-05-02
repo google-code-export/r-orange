@@ -129,8 +129,3 @@ class radioButtons(widgetState,QWidget):
         r = {self.widgetName:{'includeInReports': self.includeInReports, 'text': self.getChecked()}}
         return r
 
-
-    def hide(self):
-        self.box.hide()
-    def show(self):
-        self.box.show()

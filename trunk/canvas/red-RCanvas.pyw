@@ -19,7 +19,6 @@ import redRReports
 import RSession
 import redRHistory
 import redRi18n
-import orngRegistry#, OWGUI
 import redROutput, redRSaveLoad
 import orngDoc, orngDlgs
 import redRWidgetsTree

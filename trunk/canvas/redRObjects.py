@@ -47,9 +47,9 @@ def setSchemaDoc(doc):
 def setCanvasDlg(dlg):
     global canvasDlg
     canvasDlg = dlg
-def readCategories():
+def readCategories(force = False):
     global _widgetRegistry
-    _widgetRegistry = orngRegistry.readCategories()
+    _widgetRegistry = orngRegistry.readCategories(force)
 
 def widgetRegistry():
     global _widgetRegistry
