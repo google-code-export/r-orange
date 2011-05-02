@@ -110,6 +110,7 @@ def readCategories(force = False):
     redRLog.log(redRLog.REDRCORE, redRLog.INFO, _('Finished loading repository of packages.'))
     with open(os.path.join(redREnviron.directoryNames['settingsDir'], 'widgetRegistry.pic'), 'wb') as f:
         cPickle.dump(categories, f, -1)
+    
     return categories ## return the widgets and the templates
 
 hasErrors = False
