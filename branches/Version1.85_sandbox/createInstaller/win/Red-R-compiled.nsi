@@ -119,10 +119,9 @@ Section "" ;this is the section that will install Red-R and all of it's files
         SetOutPath $INSTDIR\R\${RVER}
         File /r /x .svn ${RDIRECTORY}\*
         ; grant access to modify the files in this directory
-        AccessControl::GrantOnFile "$INSTDIR\R\library" "(BU)" "FullAccess" 
-        AccessControl::GrantOnFile "$INSTDIR\R\doc" "(BU)" "FullAccess" 
     has_R:
          ; RmDir /r $INSTDIR\R
+    AccessControl::GrantOnFile "$INSTDIR\R" "(BU)" "FullAccess" 
          
 
 ;------------------------

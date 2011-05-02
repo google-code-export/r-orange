@@ -115,9 +115,9 @@ def Rcommand(query, silent = False, wantType = redR.CONVERT, listOfLists = False
         output = rpy.r(unicode(query).encode('Latin-1'))
         
     except Exception as inst:
-        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
+        redRLog.log(redRLog.R, redRLog.DEBUG, "<br>##################################<br>Error occured in the R session.<br>%s<br><br>The original query:<br> <b>%s</b><br>##################################<br>" % (inst,redRLog.getSafeString(query)))
         mutex.unlock()
-        raise RuntimeError(unicode(inst) + '  Original Query was:  ' + unicode(query))
+        raise RuntimeError(unicode(inst) + '<br>Original Query was:  ' + unicode(query))
         return None # now processes can catch potential errors
     if wantType == redR.NOCONVERSION: 
         mutex.unlock()
@@ -209,7 +209,8 @@ def setLibPaths(libLoc):
     Rcommand('.libPaths(\''+unicode(libLoc)+'\')', wantType = 'NoConversion') 
     print 'library location is ', libLoc
 def require_librarys(librarys, repository = 'http://cran.r-project.org'):
-        
+        setLibPaths(redREnviron.directoryNames['RlibPath'])
+        print redREnviron.directoryNames['RlibPath']
         # if sys.platform=="win32":
             # libPath = '\"'+os.path.join(redREnviron.directoryNames['RDir'],'library').replace('\\','/')+'\"'
         # else:
@@ -234,7 +235,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
             # print _('in loop'), library, library in installedRPackages
             # print installedRPackages
             if installedRPackages and library and (library in installedRPackages):
-                redRLog.log(redRLog.R, redRLog.DEBUG, 'Loading library %s.' % library)
+                redRLog.log(redRLog.R, redRLog.INFO, 'Loading library %s.' % library)
                 Rcommand('require(' + library + ')') #, lib.loc=' + libPath + ')')
                 
                 loadedLibraries.append(library)
@@ -242,7 +243,7 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 if redREnviron.checkInternetConnection():
                     mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it?"
                     ) % unicode(library), 
-                    QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
+                    QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton)
                     if mb.exec_() == QMessageBox.Ok:
                         try:
                             redRLog.log(redRLog.R, redRLog.INFO, _('Installing library %s.') % library)

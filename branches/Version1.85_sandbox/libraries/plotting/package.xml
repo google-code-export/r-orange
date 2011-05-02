@@ -1,9 +1,9 @@
 <package>
     <Name>plotting</Name>
-    <Author>Kyle R Covington kyle@red-r.org</Author>
+    <Author>Red-R Development Team</Author>
     <RLibraries>graphics, stats</RLibraries>
     <Version>
-        <Number>1</Number>
+        <Number>1.2</Number>
         <Stability>Generally Good Some Experimental</Stability>
         <Date>2010-05-30</Date>
     </Version>

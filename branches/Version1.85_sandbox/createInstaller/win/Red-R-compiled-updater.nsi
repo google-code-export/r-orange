@@ -99,6 +99,7 @@ Section "" ;this is the section that will install Red-R and all of it's files
 
 
     AccessControl::GrantOnFile "$INSTDIR\${NAME}-${REDRVERSION}" "(BU)" "FullAccess" 
+    AccessControl::GrantOnFile "$INSTDIR\R" "(BU)" "FullAccess" 
        
 	WriteUninstaller "$INSTDIR\uninst ${NAME}-${REDRVERSION}.exe"
 

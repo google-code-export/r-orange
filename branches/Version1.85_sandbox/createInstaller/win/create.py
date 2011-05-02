@@ -1,6 +1,6 @@
 import os, subprocess, sys
 baseDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/installerCode'
-redRDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/code/trunk'
+redRDir = 'C:/Users/anup/Documents/red/develop/makeInstallers/code/Version1.85_gold'
 
 runCompile = sys.argv[1]
 runInstaller = sys.argv[2]
