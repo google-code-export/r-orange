@@ -205,13 +205,12 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
         
         loadedOK = True
         installedRPackages = getInstalledLibraries()
-        Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})')
+        Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})', wantType = 'NoConversion')
         if type(librarys) == str: # convert to list if it isn't already
             librarys = [librarys]
         
-        if len(newLibs) > 0:
-            if not install_libraries(librarys):
-                return False
+	if not install_libraries(librarys, repository):
+	    return False
         installedRPackages = getInstalledLibraries() ## remake the installedRPackages list
         for library in [l for l in librarys if l not in loadedLibraries]:
             if installedRPackages and library and (library in installedRPackages):
@@ -224,15 +223,18 @@ def require_librarys(librarys, repository = 'http://cran.r-project.org'):
                 loadedOK = False
         return loadedOK
 
-def install_libraries(librarys):
+def install_libraries(librarys, repository = 'http://cran.r-project.org'):
     installedRPackages = getInstalledLibraries()
     newLibs = [l for l in librarys if l not in installedRPackages]
+    if len(newLibs) == 0: return True
+    
     if redREnviron.checkInternetConnection():
         mb = QMessageBox(_("Download R Library"), _("You are missing some key files for this widget.\n\n%s\n\nWould you like to download it(them)?"
         ) % unicode(','.join(newLibs)), 
         QMessageBox.Information, QMessageBox.Ok | QMessageBox.Default, QMessageBox.Cancel | QMessageBox.Escape, QMessageBox.NoButton,qApp.canvasDlg)
         if mb.exec_() == QMessageBox.Ok:
             try:
+                #updatePackages(repository)
                 redRLog.log(redRLog.R, redRLog.INFO, _('Installing library(s) %s.') % ','.join(newLibs))
                 Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
                 Rcommand('install.packages(c(%s))' % ','.join(['"%s"' % l for l in newLibs]), wantType = 'NoConversion')
@@ -242,5 +244,11 @@ def install_libraries(librarys):
         return True
     else:
         return False
+        
+def updatePackages(repository = 'http://cran.r-project.org'):
+    redRLog.log(redRLog.REDRCORE, redRLog.INFO, 'Updating Libraries')
+    Rcommand('local({r <- getOption("repos"); r["CRAN"] <- "' + repository + '"; options(repos=r)})', wantType = 'NoConversion')
+    Rcommand('setRepositories(ind=1:7)', wantType = 'NoConversion')
+    Rcommand('update.packages(ask=F)', wantType = 'NoConversion')
                         
                     

@@ -539,7 +539,7 @@ class graphicsView(QGraphicsView, widgetState):
               self.imageFileName = unicode(self.image).replace('\\', '/')+'.'+unicode('png')
               imageType = 'png'
             else:
-                  self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
+                  self.R('devSVG(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
         if imageType == 'cairo':
             if not self.require_librarys(['Cairo']):
                 self.setImagePNG()
@@ -548,7 +548,7 @@ class graphicsView(QGraphicsView, widgetState):
             else:
                 self.R('Cairo(file = \'%s\')' % unicode(os.path.join(redREnviron.directoryNames['tempDir'],   self.imageFileName).replace('\\', '/')), wantType = 'NoConversion')
         if imageType == 'png':
-            self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', paper = "a4")', wantType = 'NoConversion')
+            self.R('png(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\')', wantType = 'NoConversion')
         if imageType == 'jpeg':
             self.R('jpeg(file=\''+unicode(os.path.join(redREnviron.directoryNames['tempDir'], self.imageFileName).replace('\\', '/'))+'\', width = '
                 +unicode(dwidth)+', height = '+unicode(dheight)
